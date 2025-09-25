@@ -2,9 +2,9 @@
 import { useChartStore } from '@/state/store'
 import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/geom'
 import { Drawing, createDrawing, updateDrawingGeometry } from '@/lib/drawings'
-import { loadCurrent, saveVersion, saveCurrent } from '@/lib/persist'
-import { getChart } from '@/lib/chartBus'
+import { applyCtxStyle } from '@/lib/styles'
 import { snapPxToGrid } from '@/lib/chartMap'
+import { loadCurrent, saveCurrent } from '@/lib/persist'
 
 type Point = { x: number; y: number }
 
@@ -17,7 +17,7 @@ export default function DrawingLayer() {
   const [dragId, setDragId] = React.useState<string | null>(null)
   const [marquee, setMarquee] = React.useState<{start:Point,end:Point}|null>(null)
 
-  // 1) Load persisted snapshot once on mount
+  // load snapshot once
   React.useEffect(() => {
     const snap = loadCurrent()
     if (snap && snap.drawings) {
@@ -26,7 +26,7 @@ export default function DrawingLayer() {
     }
   }, [])
 
-  // 2) Subscribe to drawings and autosave current snapshot
+  // subscribe + autosave
   React.useEffect(() => {
     const unsub = useChartStore.subscribe(state => {
       setDrawings(state.drawings)
@@ -53,8 +53,11 @@ export default function DrawingLayer() {
       ctx.save()
       ctx.scale(devicePixelRatio, devicePixelRatio)
       drawings.forEach(d => {
-        ctx.strokeStyle = s.selection.has(d.id) ? '#60a5fa' : '#9ca3af'
-        ctx.lineWidth = 1.5
+        applyCtxStyle(ctx, d.style)
+        if (s.selection.has(d.id)) {
+          // highlight selection stroke color slightly
+          ctx.strokeStyle = d.style.stroke
+        }
         switch (d.kind) {
           case 'trendline': {
             const [a,b] = d.points
@@ -82,13 +85,21 @@ export default function DrawingLayer() {
           }
           case 'rect': {
             const r = rectFromPoints(d.points[0], d.points[1])
+            if (d.style.fill && d.style.fill !== 'transparent') {
+              ctx.fillStyle = d.style.fill as string
+              ctx.globalAlpha = (d.style.opacity ?? 1) * 0.2
+              ctx.fillRect(r.x, r.y, r.w, r.h)
+              ctx.globalAlpha = d.style.opacity ?? 1
+            }
             ctx.strokeRect(r.x, r.y, r.w, r.h)
             break
           }
           case 'text': {
             const p = d.points[0]
-            ctx.fillStyle = '#e5e7eb'
-            ctx.font = '12px ui-sans-serif, system-ui'
+            ctx.fillStyle = d.style.stroke
+            const fs = Math.max(8, Math.min(64, d.style.fontSize ?? 12))
+            ctx.font = ${fs}px ui-sans-serif, system-ui
+            ctx.globalAlpha = d.style.opacity ?? 1
             ctx.fillText(d.text || 'Text', p.x, p.y)
             break
           }
@@ -98,6 +109,24 @@ export default function DrawingLayer() {
             ctx.moveTo(a.x, a.y)
             ctx.lineTo(b.x, b.y)
             ctx.stroke()
+            // simple arrow head
+            const vx = b.x - a.x, vy = b.y - a.y
+            const m = Math.hypot(vx, vy) || 1
+            const nx = vx / m, ny = vy / m
+            const px = -ny, py = nx
+            const size = 10 + (d.style.width ?? 1)
+            const tip = b
+            const baseX = b.x - nx*size, baseY = b.y - ny*size
+            ctx.beginPath()
+            ctx.moveTo(tip.x, tip.y)
+            ctx.lineTo(baseX + px*size*0.6, baseY + py*size*0.6)
+            ctx.lineTo(baseX - px*size*0.6, baseY - py*size*0.6)
+            ctx.closePath()
+            const prevAlpha = ctx.globalAlpha
+            ctx.globalAlpha = (d.style.opacity ?? 1)
+            ctx.fillStyle = d.style.stroke
+            ctx.fill()
+            ctx.globalAlpha = prevAlpha
             break
           }
           case 'parallel-channel': {
@@ -116,11 +145,12 @@ export default function DrawingLayer() {
         }
       })
       if (marquee) {
+        ctx.save()
         const r = rectFromPoints(marquee.start, marquee.end)
         ctx.strokeStyle = '#818cf8'
         ctx.setLineDash([4,4])
         ctx.strokeRect(r.x, r.y, r.w, r.h)
-        ctx.setLineDash([])
+        ctx.restore()
       }
       ctx.restore()
     }
@@ -133,32 +163,21 @@ export default function DrawingLayer() {
   const toLocal = (e: React.MouseEvent): Point => {
     const r = containerRef.current!.getBoundingClientRect()
     const raw = { x: e.clientX - r.left, y: e.clientY - r.top }
-    // chart-aware snap if chart is available
     try { return snapPxToGrid(raw) } catch { return raw }
   }
 
   const onMouseDown = (e: React.MouseEvent) => {
-    // commit a history point before any mutation
     s.commit()
-
     const p = toLocal(e)
     if (s.activeTool === 'select') {
       const hit = drawings.find(d => hitTest(d, p) < 6)
-      if (!hit) {
-        setMarquee({ start: p, end: p })
-        s.clearSelection()
-        return
-      }
+      if (!hit) { setMarquee({ start: p, end: p }); s.clearSelection(); return }
       s.toggleSelect(hit.id, !e.shiftKey)
       setDragId(hit.id)
       return
     }
-
     const d = createDrawing(s.activeTool as any, p)
-    if (d) {
-      s.addDrawing(d)
-      setDragId(d.id)
-    }
+    if (d) { s.addDrawing(d as any); setDragId((d as any).id) }
   }
 
   const onMouseMove = (e: React.MouseEvent) => {
@@ -173,8 +192,7 @@ export default function DrawingLayer() {
     if (marquee) {
       const r = rectFromPoints(marquee.start, marquee.end)
       const ids = drawings.filter(d => d.points.some(pt => withinRect(pt, r))).map(d => d.id)
-      s.setSelection(new Set(ids))
-      setMarquee(null)
+      s.setSelection(new Set(ids)); setMarquee(null)
     }
     setDragId(null)
   }
@@ -185,12 +203,20 @@ export default function DrawingLayer() {
     if ((ctrl && e.key.toLowerCase() === 'y') || (ctrl && e.shiftKey && e.key.toLowerCase() === 'z')) { e.preventDefault(); s.redo(); return }
     if (ctrl && e.key.toLowerCase() === 'c') { e.preventDefault(); s.copySelected(); return }
     if (ctrl && e.key.toLowerCase() === 'v') { e.preventDefault(); s.commit(); s.paste({dx: 12, dy: 12}); return }
-    if (ctrl && e.key.toLowerCase() === 's') { e.preventDefault(); try { saveVersion(s.drawings, s.selection) } catch {} return }
+    if (ctrl && e.key.toLowerCase() === 's') { e.preventDefault(); try { saveCurrent(s.drawings, s.selection) } catch {} return }
 
     if (e.key === 'Delete' || e.key === 'Backspace') { s.commit(); s.deleteSelected() }
     else if (e.key === 'Escape') { s.clearSelection(); setDragId(null); setMarquee(null) }
     else if (e.key === 'a' && ctrl) { s.setSelection(new Set(drawings.map(d => d.id))); e.preventDefault() }
-    else if (e.key.toLowerCase() === 's' && !ctrl) { s.setDrawingSettings({ snapEnabled: !s.drawingSettings.snapEnabled }) }
+
+    // quick color hotkeys 1..0 for palette indices 0..9
+    if (!ctrl && e.key >= '0' && e.key <= '9') {
+      const idx = (e.key === '0') ? 9 : (parseInt(e.key,10)-1)
+      const PALETTE = ['#60a5fa','#22c55e','#f59e0b','#ef4444','#e879f9','#a78bfa','#f472b6','#f97316','#94a3b8','#e5e7eb']
+      s.setStyleForSelection({ stroke: PALETTE[idx] })
+    }
+    if (e.key === '+' || e.key === '=') { s.setStyleForSelection({ width:  (getStyleAvg(s, 'width') ?? 2) + 1 }) }
+    if (e.key === '-') { s.setStyleForSelection({ width: Math.max(1, (getStyleAvg(s, 'width') ?? 2) - 1) }) }
   }
 
   return (
@@ -207,6 +233,15 @@ export default function DrawingLayer() {
       />
     </div>
   )
+}
+
+function getStyleAvg(store: any, key: string): number | undefined {
+  const ids = Array.from(store.selection)
+  const ds = store.drawings.filter((d:any)=>ids.includes(d.id))
+  if (ds.length === 0) return
+  const vals = ds.map((d:any)=>Number(d.style?.[key] ?? 0)).filter((n:number)=>!Number.isNaN(n))
+  if (vals.length === 0) return
+  return Math.round(vals.reduce((a:number,b:number)=>a+b,0)/vals.length)
 }
 
 function hitTest(d: Drawing, p: Point): number {

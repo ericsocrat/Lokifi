@@ -1,6 +1,7 @@
 ﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { saveCurrent } from '@/lib/persist'
+import type { DrawingStyle } from '@/lib/styles'
 
 export type Tool =
   | 'select' | 'trendline' | 'hline' | 'vline' | 'ray' | 'arrow'
@@ -76,6 +77,10 @@ type ChartState = {
   setSelection: (sel: Set<string>) => void
   toggleSelect: (id: string, single?: boolean) => void
   setDrawingSettings: (p: Partial<DrawingSettings>) => void
+
+  // Style editing
+  setStyleForSelection: (p: Partial<DrawingStyle>) => void
+  setTextForSelection: (text: string) => void
 }
 
 function deepClone<T>(v: T): T {
@@ -120,7 +125,6 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
     const nextPast = [...s.past, entry]
     if (nextPast.length > s.maxHistory) nextPast.shift()
     set({ past: nextPast, future: [] })
-    // Persist current snapshot too
     try { saveCurrent(s.drawings, s.selection) } catch {}
   },
   undo: () => {
@@ -182,6 +186,14 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
     return { selection: next }
   }),
   setDrawingSettings: (p) => set((s)=>({ drawingSettings: { ...s.drawingSettings, ...p } })),
+
+  // Style editing
+  setStyleForSelection: (p) => set((s) => ({
+    drawings: s.drawings.map((d:any) => s.selection.has(d.id) ? ({ ...d, style: { ...d.style, ...p } }) : d )
+  })),
+  setTextForSelection: (text) => set((s) => ({
+    drawings: s.drawings.map((d:any) => s.selection.has(d.id) && d.kind==='text' ? ({ ...d, text }) : d )
+  })),
 
   setTool: (t) => set({ activeTool: t }),
   setTheme: (t) => set({ theme: t }),
