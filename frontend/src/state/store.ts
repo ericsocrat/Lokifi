@@ -1,5 +1,6 @@
 ﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { saveCurrent } from '@/lib/persist'
 
 export type Tool =
   | 'select' | 'trendline' | 'hline' | 'vline' | 'ray' | 'arrow'
@@ -32,6 +33,11 @@ type DrawingSettings = {
   showHandles: boolean
 }
 
+type HistoryEntry = {
+  drawings: any[]
+  selection: string[]
+}
+
 type ChartState = {
   timeframe: string
   activeTool: Tool
@@ -48,6 +54,21 @@ type ChartState = {
   drawings: any[]
   selection: Set<string>
   drawingSettings: DrawingSettings
+
+  // History
+  past: HistoryEntry[]
+  future: HistoryEntry[]
+  maxHistory: number
+  commit: (label?: string) => void
+  undo: () => void
+  redo: () => void
+
+  // Clipboard
+  clipboard: any[] | null
+  copySelected: () => void
+  paste: (offset?: {dx:number, dy:number}) => void
+
+  // Mutation helpers
   addDrawing: (d: any) => void
   updateDrawing: (id: string, fn: (d:any)=>any) => void
   deleteSelected: () => void
@@ -57,7 +78,11 @@ type ChartState = {
   setDrawingSettings: (p: Partial<DrawingSettings>) => void
 }
 
-export const useChartStore = create<ChartState>()(persist((set) => ({
+function deepClone<T>(v: T): T {
+  return JSON.parse(JSON.stringify(v))
+}
+
+export const useChartStore = create<ChartState>()(persist((set, get) => ({
   timeframe: '1H',
   activeTool: 'select',
   theme: 'dark',
@@ -82,6 +107,70 @@ export const useChartStore = create<ChartState>()(persist((set) => ({
   selection: new Set<string>(),
   drawingSettings: { snapEnabled: true, snapStep: 10, showHandles: true },
 
+  // History
+  past: [],
+  future: [],
+  maxHistory: 100,
+  commit: () => {
+    const s = get()
+    const entry: HistoryEntry = {
+      drawings: deepClone(s.drawings),
+      selection: Array.from(s.selection)
+    }
+    const nextPast = [...s.past, entry]
+    if (nextPast.length > s.maxHistory) nextPast.shift()
+    set({ past: nextPast, future: [] })
+    // Persist current snapshot too
+    try { saveCurrent(s.drawings, s.selection) } catch {}
+  },
+  undo: () => {
+    const s = get()
+    if (s.past.length === 0) return
+    const prev = s.past[s.past.length - 1]
+    const now: HistoryEntry = { drawings: deepClone(s.drawings), selection: Array.from(s.selection) }
+    set({
+      drawings: deepClone(prev.drawings),
+      selection: new Set(prev.selection),
+      past: s.past.slice(0, -1),
+      future: [...s.future, now]
+    })
+  },
+  redo: () => {
+    const s = get()
+    if (s.future.length === 0) return
+    const next = s.future[s.future.length - 1]
+    const now: HistoryEntry = { drawings: deepClone(s.drawings), selection: Array.from(s.selection) }
+    set({
+      drawings: deepClone(next.drawings),
+      selection: new Set(next.selection),
+      past: [...s.past, now],
+      future: s.future.slice(0, -1)
+    })
+  },
+
+  // Clipboard
+  clipboard: null,
+  copySelected: () => {
+    const s = get()
+    const ids = Array.from(s.selection)
+    const items = s.drawings.filter(d => ids.includes(d.id))
+    set({ clipboard: deepClone(items) })
+  },
+  paste: (offset = {dx: 10, dy: 10}) => {
+    const s = get()
+    if (!s.clipboard || s.clipboard.length === 0) return
+    const clones = s.clipboard.map((d: any) => ({
+      ...deepClone(d),
+      id: crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36)+Math.random().toString(36).slice(2)),
+      points: d.points.map((p: any) => ({ x: p.x + offset.dx, y: p.y + offset.dy }))
+    }))
+    set({
+      drawings: [...s.drawings, ...clones],
+      selection: new Set(clones.map((c:any)=>c.id))
+    })
+  },
+
+  // Mutations
   addDrawing: (d) => set((s)=>({ drawings: [...s.drawings, d] })),
   updateDrawing: (id, fn) => set((s)=>({ drawings: s.drawings.map(dr => dr.id===id ? fn(dr) : dr) })),
   deleteSelected: () => set((s)=>({ drawings: s.drawings.filter(d => !s.selection.has(d.id)), selection: new Set() })),

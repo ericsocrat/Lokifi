@@ -3,6 +3,7 @@ import { createChart, ISeriesApi, LineStyle, Time } from 'lightweight-charts'
 import { useChartStore } from '@/state/store'
 import { bollinger, vwap, vwma, stdDevChannels, Candle } from '@/lib/indicators'
 import useHotkeys from '@/lib/hotkeys'
+import { setChart } from '@/lib/chartBus'
 
 type Series = ISeriesApi<'Candlestick'>
 
@@ -49,9 +50,11 @@ export default function PriceChart() {
     volRef.current = vol
     vol.setData(candles.map(c => ({ time: c.time as Time, value: c.volume })))
 
-    const resize = () => chart.applyOptions({ width: ref.current!.clientWidth, height: ref.current!.clientHeight })
+    const publish = () => setChart({ chart, series, candles })
+    publish()
+    const resize = () => { chart.applyOptions({ width: ref.current!.clientWidth, height: ref.current!.clientHeight }); publish() }
     resize(); window.addEventListener('resize', resize)
-    return () => { window.removeEventListener('resize', resize); chart.remove() }
+    return () => { window.removeEventListener('resize', resize); chart.remove(); setChart({ chart: null, series: null, candles: [] }) }
   }, [ref, theme, candles])
 
   React.useEffect(() => {
@@ -80,9 +83,10 @@ export default function PriceChart() {
       ;(window as any)._bbSeries = [basis, upper, lower]
     }
 
-    // VWAP
+    // VWAP (with anchor index)
     if (indicators.showVWAP) {
-      const v = vwap(candles, 0)
+      const anchor = indicatorSettings.vwapAnchorIndex ?? 0
+      const v = vwap(candles, Math.max(0, Math.min(anchor, candles.length-1)))
       const vwapLine = chart.addLineSeries({ lineWidth: 2 })
       vwapLine.setData(v.map((vv, i) => ({ time: candles[i].time as Time, value: vv ?? NaN })))
       ;(window as any)._vwap = vwapLine
@@ -107,7 +111,7 @@ export default function PriceChart() {
       lo.setData(ch.map((c, i) => ({ time: candles[i].time as Time, value: c.lower ?? NaN })))
       ;(window as any)._stdch = [mid, up, lo]
     }
-  }, [indicators, indicatorSettings, candles])
+  }, [useChartStore.getState().indicators, useChartStore.getState().indicatorSettings, candles])
 
-  return <div ref={ref} className="absolute inset-0 rounded-2xl overflow-hidden" />
+  return <div ref={ref} className='absolute inset-0 rounded-2xl overflow-hidden' />
 }
