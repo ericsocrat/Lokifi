@@ -40,7 +40,10 @@ type HistoryEntry = {
 }
 
 type ChartState = {
+  // data selection
+  symbol: string
   timeframe: string
+
   activeTool: Tool
   theme: Theme
   indicators: IndicatorToggles
@@ -48,6 +51,7 @@ type ChartState = {
   setTool: (t: Tool) => void
   setTheme: (t: Theme) => void
   setTimeframe: (tf: string) => void
+  setSymbol: (s: string) => void
   toggleIndicator: (k: keyof IndicatorToggles) => void
   updateIndicatorSettings: (p: Partial<IndicatorSettings>) => void
 
@@ -88,7 +92,9 @@ function deepClone<T>(v: T): T {
 }
 
 export const useChartStore = create<ChartState>()(persist((set, get) => ({
-  timeframe: '1H',
+  symbol: (process.env.NEXT_PUBLIC_SYMBOL || 'BTCUSDT') as string,
+  timeframe: (process.env.NEXT_PUBLIC_TIMEFRAME || '1h') as string,
+
   activeTool: 'select',
   theme: 'dark',
   indicators: {
@@ -198,6 +204,7 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
   setTool: (t) => set({ activeTool: t }),
   setTheme: (t) => set({ theme: t }),
   setTimeframe: (tf) => set({ timeframe: tf }),
+  setSymbol: (sym) => set({ symbol: sym }),
   toggleIndicator: (k) => set((s) => ({ indicators: { ...s.indicators, [k]: !s.indicators[k] } })),
   updateIndicatorSettings: (p) => set((s) => ({ indicatorSettings: { ...s.indicatorSettings, ...p } }))
 }), { name: 'fynix-chart' }))
