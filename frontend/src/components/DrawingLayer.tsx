@@ -2,189 +2,138 @@
 import { useChartStore } from '@/state/store'
 import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/geom'
 import { Drawing, createDrawing, updateDrawingGeometry } from '@/lib/drawings'
-import { applyCtxStyle } from '@/lib/styles'
-import { snapPxToGrid } from '@/lib/chartMap'
-import { loadCurrent, saveCurrent } from '@/lib/persist'
+import { snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/chartMap'
 
-type Point = { x: number; y: number }
+type Point = { x:number; y:number }
+type Menu = { open: boolean; x:number; y:number }
+
+const HANDLE_R = 4
+const HIT_PAD = 6
 
 export default function DrawingLayer() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const s = useChartStore()
   const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings)
-  const [hoverId, setHoverId] = React.useState<string | null>(null)
-  const [dragId, setDragId] = React.useState<string | null>(null)
+  const [hoverId, setHoverId] = React.useState<string|null>(null)
+  const [dragId, setDragId] = React.useState<string|null>(null)
   const [marquee, setMarquee] = React.useState<{start:Point,end:Point}|null>(null)
+  const [menu, setMenu] = React.useState<Menu>({ open:false, x:0, y:0 })
 
-  // load snapshot once
-  React.useEffect(() => {
-    const snap = loadCurrent()
-    if (snap && snap.drawings) {
-      useChartStore.setState({ drawings: snap.drawings, selection: new Set(snap.selection || []) })
-      setDrawings(snap.drawings as any)
-    }
-  }, [])
-
-  // subscribe + autosave
-  React.useEffect(() => {
-    const unsub = useChartStore.subscribe(state => {
-      setDrawings(state.drawings)
-      try { saveCurrent(state.drawings, state.selection) } catch {}
-    })
-    return unsub
-  }, [])
+  React.useEffect(() => useChartStore.subscribe(state => setDrawings(state.drawings)), [])
 
   React.useEffect(() => {
-    const el = canvasRef.current
-    const container = containerRef.current
+    const el = canvasRef.current, container = containerRef.current
     if (!el || !container) return
     const ctx = el.getContext('2d')!
     const resize = () => {
       const r = container.getBoundingClientRect()
       el.width = Math.floor(r.width * devicePixelRatio)
       el.height = Math.floor(r.height * devicePixelRatio)
-      el.style.width = r.width + 'px'
-      el.style.height = r.height + 'px'
+      el.style.width = r.width + 'px'; el.style.height = r.height + 'px'
       drawAll()
     }
     const drawAll = () => {
       ctx.clearRect(0,0,el.width, el.height)
       ctx.save()
       ctx.scale(devicePixelRatio, devicePixelRatio)
+      ctx.lineCap = s.drawingSettings.lineCap
+
       drawings.forEach(d => {
-        applyCtxStyle(ctx, d.style)
-        if (s.selection.has(d.id)) {
-          // highlight selection stroke color slightly
-          ctx.strokeStyle = d.style.stroke
-        }
+        const selected = s.selection.has(d.id)
+        ctx.strokeStyle = selected ? '#60a5fa' : '#9ca3af'
+        ctx.lineWidth = 1.75
+        ctx.setLineDash([])
+
         switch (d.kind) {
-          case 'trendline': {
+          case 'trendline':
+          case 'arrow': {
             const [a,b] = d.points
-            ctx.beginPath()
-            ctx.moveTo(a.x, a.y)
-            ctx.lineTo(b.x, b.y)
-            ctx.stroke()
+            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke()
+            if (d.kind === 'arrow') {
+              drawArrowHead(ctx, a, b, s.drawingSettings.arrowHead, s.drawingSettings.arrowHeadSize, getStrokeColor(ctx))
+            }
+            if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b) }
+            if (s.drawingSettings.showLineLabels) { drawLineLabel(ctx, a, b) }
             break
           }
           case 'hline': {
             const y = d.points[0].y
-            ctx.beginPath()
-            ctx.moveTo(0, y)
-            ctx.lineTo(el.width, y)
-            ctx.stroke()
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(el.width, y); ctx.stroke()
+            if (selected && s.drawingSettings.showHandles) drawHandle(ctx, {x:24,y})
             break
           }
           case 'vline': {
             const x = d.points[0].x
-            ctx.beginPath()
-            ctx.moveTo(x, 0)
-            ctx.lineTo(x, el.height)
-            ctx.stroke()
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, el.height); ctx.stroke()
+            if (selected && s.drawingSettings.showHandles) drawHandle(ctx, {x, y:24})
             break
           }
           case 'rect': {
             const r = rectFromPoints(d.points[0], d.points[1])
-            if (d.style.fill && d.style.fill !== 'transparent') {
-              ctx.fillStyle = d.style.fill as string
-              ctx.globalAlpha = (d.style.opacity ?? 1) * 0.2
-              ctx.fillRect(r.x, r.y, r.w, r.h)
-              ctx.globalAlpha = d.style.opacity ?? 1
-            }
             ctx.strokeRect(r.x, r.y, r.w, r.h)
+            if (selected && s.drawingSettings.showHandles) {
+              drawHandle(ctx, {x:r.x,y:r.y}); drawHandle(ctx, {x:r.x+r.w,y:r.y})
+              drawHandle(ctx, {x:r.x,y:r.y+r.h}); drawHandle(ctx, {x:r.x+r.w,y:r.y+r.h})
+            }
             break
           }
           case 'text': {
             const p = d.points[0]
-            ctx.fillStyle = d.style.stroke
-            const fs = Math.max(8, Math.min(64, d.style.fontSize ?? 12))
-            ctx.font = ${fs}px ui-sans-serif, system-ui
-            ctx.globalAlpha = d.style.opacity ?? 1
+            ctx.fillStyle = '#e5e7eb'
+            ctx.font = '12px ui-sans-serif, system-ui'
             ctx.fillText(d.text || 'Text', p.x, p.y)
-            break
-          }
-          case 'arrow': {
-            const [a,b] = d.points
-            ctx.beginPath()
-            ctx.moveTo(a.x, a.y)
-            ctx.lineTo(b.x, b.y)
-            ctx.stroke()
-            // simple arrow head
-            const vx = b.x - a.x, vy = b.y - a.y
-            const m = Math.hypot(vx, vy) || 1
-            const nx = vx / m, ny = vy / m
-            const px = -ny, py = nx
-            const size = 10 + (d.style.width ?? 1)
-            const tip = b
-            const baseX = b.x - nx*size, baseY = b.y - ny*size
-            ctx.beginPath()
-            ctx.moveTo(tip.x, tip.y)
-            ctx.lineTo(baseX + px*size*0.6, baseY + py*size*0.6)
-            ctx.lineTo(baseX - px*size*0.6, baseY - py*size*0.6)
-            ctx.closePath()
-            const prevAlpha = ctx.globalAlpha
-            ctx.globalAlpha = (d.style.opacity ?? 1)
-            ctx.fillStyle = d.style.stroke
-            ctx.fill()
-            ctx.globalAlpha = prevAlpha
-            break
-          }
-          case 'parallel-channel': {
-            const [p1,p2,p3] = d.points
-            const vx = p2.x - p1.x, vy = p2.y - p1.y
-            const m = Math.hypot(vx, vy) || 1
-            const nx = vx/m, ny = vy/m
-            const px = -ny, py = nx
-            const width = (p3.x - p1.x)*px + (p3.y - p1.y)*py
-            const q1 = { x: p1.x + px*width, y: p1.y + py*width }
-            const q2 = { x: p2.x + px*width, y: p2.y + py*width }
-            ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke()
-            ctx.beginPath(); ctx.moveTo(q1.x,q1.y); ctx.lineTo(q2.x,q2.y); ctx.stroke()
+            if (selected && s.drawingSettings.showHandles) drawHandle(ctx, p)
             break
           }
         }
       })
+
       if (marquee) {
-        ctx.save()
         const r = rectFromPoints(marquee.start, marquee.end)
         ctx.strokeStyle = '#818cf8'
-        ctx.setLineDash([4,4])
-        ctx.strokeRect(r.x, r.y, r.w, r.h)
-        ctx.restore()
+        ctx.setLineDash([4,4]); ctx.strokeRect(r.x, r.y, r.w, r.h); ctx.setLineDash([])
       }
+
       ctx.restore()
     }
+
     resize()
     const ro = new ResizeObserver(resize)
     ro.observe(container)
     return () => ro.disconnect()
-  }, [drawings, s.selection, marquee])
+  }, [drawings, s.selection, marquee, s.drawingSettings])
 
   const toLocal = (e: React.MouseEvent): Point => {
     const r = containerRef.current!.getBoundingClientRect()
-    const raw = { x: e.clientX - r.left, y: e.clientY - r.top }
-    try { return snapPxToGrid(raw) } catch { return raw }
+    let p = { x: e.clientX - r.left, y: e.clientY - r.top }
+    p = snapPxToGrid(p, s.drawingSettings.snapStep, s.drawingSettings.snapEnabled)
+    if (s.drawingSettings.snapPriceLevels) p = { x:p.x, y: snapYToPriceLevels(p.y, 6) }
+    return p
   }
 
   const onMouseDown = (e: React.MouseEvent) => {
-    s.commit()
+    if (e.button === 2) return
+    setMenu({ open:false, x:0, y:0 })
     const p = toLocal(e)
+
     if (s.activeTool === 'select') {
-      const hit = drawings.find(d => hitTest(d, p) < 6)
-      if (!hit) { setMarquee({ start: p, end: p }); s.clearSelection(); return }
+      const hit = drawings.find(d => hitTest(d, p) < HIT_PAD)
+      if (!hit) { setMarquee({ start:p, end:p }); s.clearSelection(); return }
       s.toggleSelect(hit.id, !e.shiftKey)
       setDragId(hit.id)
       return
     }
+
     const d = createDrawing(s.activeTool as any, p)
-    if (d) { s.addDrawing(d as any); setDragId((d as any).id) }
+    if (d) { s.addDrawing(d); setDragId(d.id) }
   }
 
   const onMouseMove = (e: React.MouseEvent) => {
     const p = toLocal(e)
-    if (marquee) { setMarquee(v => v ? ({...v, end: p}) : null); return }
+    if (marquee) { setMarquee(v => v ? ({...v, end:p}) : null); return }
     if (dragId) { s.updateDrawing(dragId, dr => updateDrawingGeometry(dr, p)); return }
-    const id = drawings.find(d => hitTest(d, p) < 6)?.id ?? null
+    const id = drawings.find(d => hitTest(d, p) < HIT_PAD)?.id ?? null
     setHoverId(id)
   }
 
@@ -197,78 +146,124 @@ export default function DrawingLayer() {
     setDragId(null)
   }
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const ctrl = e.ctrlKey || e.metaKey
-    if (ctrl && e.key.toLowerCase() === 'z') { e.preventDefault(); s.undo(); return }
-    if ((ctrl && e.key.toLowerCase() === 'y') || (ctrl && e.shiftKey && e.key.toLowerCase() === 'z')) { e.preventDefault(); s.redo(); return }
-    if (ctrl && e.key.toLowerCase() === 'c') { e.preventDefault(); s.copySelected(); return }
-    if (ctrl && e.key.toLowerCase() === 'v') { e.preventDefault(); s.commit(); s.paste({dx: 12, dy: 12}); return }
-    if (ctrl && e.key.toLowerCase() === 's') { e.preventDefault(); try { saveCurrent(s.drawings, s.selection) } catch {} return }
-
-    if (e.key === 'Delete' || e.key === 'Backspace') { s.commit(); s.deleteSelected() }
-    else if (e.key === 'Escape') { s.clearSelection(); setDragId(null); setMarquee(null) }
-    else if (e.key === 'a' && ctrl) { s.setSelection(new Set(drawings.map(d => d.id))); e.preventDefault() }
-
-    // quick color hotkeys 1..0 for palette indices 0..9
-    if (!ctrl && e.key >= '0' && e.key <= '9') {
-      const idx = (e.key === '0') ? 9 : (parseInt(e.key,10)-1)
-      const PALETTE = ['#60a5fa','#22c55e','#f59e0b','#ef4444','#e879f9','#a78bfa','#f472b6','#f97316','#94a3b8','#e5e7eb']
-      s.setStyleForSelection({ stroke: PALETTE[idx] })
-    }
-    if (e.key === '+' || e.key === '=') { s.setStyleForSelection({ width:  (getStyleAvg(s, 'width') ?? 2) + 1 }) }
-    if (e.key === '-') { s.setStyleForSelection({ width: Math.max(1, (getStyleAvg(s, 'width') ?? 2) - 1) }) }
+  const onContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    const r = containerRef.current!.getBoundingClientRect()
+    setMenu({ open:true, x: e.clientX - r.left, y: e.clientY - r.top })
   }
 
   return (
-    <div ref={containerRef} className='absolute inset-0'>
+    <div ref={containerRef} className='absolute inset-0' onContextMenu={onContextMenu}>
       <canvas
         ref={canvasRef}
         className='absolute inset-0'
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
-        onKeyDown={onKeyDown}
         tabIndex={0}
-        style={{ outline: 'none', cursor: s.activeTool==='select' ? (hoverId ? 'pointer' : 'crosshair') : 'crosshair' }}
+        style={{ outline:'none', cursor: s.activeTool==='select' ? (hoverId ? 'pointer':'default') : 'crosshair' }}
       />
+      {menu.open && <ContextMenu x={menu.x} y={menu.y} onClose={()=>setMenu({open:false,x:0,y:0})} />}
     </div>
   )
 }
 
-function getStyleAvg(store: any, key: string): number | undefined {
-  const ids = Array.from(store.selection)
-  const ds = store.drawings.filter((d:any)=>ids.includes(d.id))
-  if (ds.length === 0) return
-  const vals = ds.map((d:any)=>Number(d.style?.[key] ?? 0)).filter((n:number)=>!Number.isNaN(n))
-  if (vals.length === 0) return
-  return Math.round(vals.reduce((a:number,b:number)=>a+b,0)/vals.length)
+/** ===== Helpers & UI ===== */
+
+function drawHandle(ctx: CanvasRenderingContext2D, p: Point) {
+  ctx.save(); ctx.fillStyle = '#0b1220'; ctx.strokeStyle = '#60a5fa'; ctx.lineWidth = 1
+  ctx.beginPath(); ctx.rect(p.x-HANDLE_R, p.y-HANDLE_R, HANDLE_R*2, HANDLE_R*2); ctx.fill(); ctx.stroke()
+  ctx.restore()
+}
+function getStrokeColor(ctx: CanvasRenderingContext2D): string {
+  const s = ctx.strokeStyle as any; return typeof s === 'string' ? s : '#9ca3af'
+}
+function drawArrowHead(ctx: CanvasRenderingContext2D, a: Point, b: Point, kind: 'none'|'open'|'filled', size: number, color: string) {
+  if (kind === 'none') return
+  const vx=b.x-a.x, vy=b.y-a.y; const len=Math.hypot(vx,vy)||1; const nx=vx/len, ny=vy/len; const px=-ny, py=nx
+  const tip=b; const baseX=b.x-nx*size; const baseY=b.y-ny*size
+  ctx.save(); ctx.beginPath()
+  if (kind === 'filled') {
+    ctx.moveTo(tip.x, tip.y); ctx.lineTo(baseX+px*size*0.6, baseY+py*size*0.6); ctx.lineTo(baseX-px*size*0.6, baseY-py*size*0.6)
+    ctx.closePath(); ctx.fillStyle=color; ctx.fill()
+  } else {
+    ctx.moveTo(tip.x, tip.y); ctx.lineTo(baseX+px*size*0.6, baseY+py*size*0.6)
+    ctx.moveTo(tip.x, tip.y); ctx.lineTo(baseX-px*size*0.6, baseY-py*size*0.6); ctx.stroke()
+  }
+  ctx.restore()
+}
+
+/** % label using y->price */
+function drawLineLabel(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
+  const p1 = yToPrice(a.y), p2 = yToPrice(b.y)
+  if (p1 == null || p2 == null || p1 === 0) return
+  const pct = ((p2 - p1) / Math.abs(p1)) * 100
+  const txt = (pct >= 0 ? '+' : '') + pct.toFixed(2) + '%'
+  const pad = 6
+  ctx.save()
+  ctx.font = '12px ui-sans-serif, system-ui'
+  const w = ctx.measureText(txt).width + pad*2
+  const h = 18
+  const x = b.x + 8
+  const y = b.y - h - 8
+  ctx.fillStyle = 'rgba(0,0,0,0.65)'
+  ctx.fillRect(x, y, w, h)
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)'
+  ctx.strokeRect(x+0.5, y+0.5, w-1, h-1)
+  ctx.fillStyle = '#e5e7eb'
+  ctx.fillText(txt, x + pad, y + 13)
+  ctx.restore()
 }
 
 function hitTest(d: Drawing, p: Point): number {
   switch (d.kind) {
-    case 'trendline': return distanceToSegment(p, d.points[0], d.points[1])
+    case 'trendline':
+    case 'arrow':
+      return distanceToSegment(p, d.points[0], d.points[1])
     case 'hline': return Math.abs(p.y - d.points[0].y)
     case 'vline': return Math.abs(p.x - d.points[0].x)
     case 'rect': {
       const r = rectFromPoints(d.points[0], d.points[1])
-      const inside = withinRect(p, r)
-      return inside ? 0 : 999
-    }
-    case 'text': {
-      const a = d.points[0]
-      const r = { x: a.x, y: a.y-12, w: 80, h: 16 }
       return withinRect(p, r) ? 0 : 999
     }
-    case 'arrow': {
-      return distanceToSegment(p, d.points[0], d.points[1])
-    }
-    case 'parallel-channel': {
-      const [p1,p2] = d.points
-      return Math.min(
-        distanceToSegment(p, p1, p2),
-        distanceToSegment(p, p1, { x: p2.x + (d.points[2].x-p1.x), y: p2.y + (d.points[2].y-p1.y) })
-      )
+    case 'text': {
+      const a = d.points[0]; const r = { x:a.x, y:a.y-12, w:80, h:16 }
+      return withinRect(p, r) ? 0 : 999
     }
     default: return 999
   }
+}
+
+function ContextMenu({ x, y, onClose }:{x:number;y:number;onClose:()=>void}) {
+  const s = useChartStore()
+  const run = (fn:()=>void) => { fn(); onClose() }
+  return (
+    <div className='absolute z-20 rounded-md border border-white/10 bg-black/80 text-sm shadow-lg'
+         style={{ left:x, top:y, minWidth:220 }}>
+      <MenuBtn onClick={()=>run(()=>s.duplicateSelected())}>Duplicate</MenuBtn>
+      <MenuBtn onClick={()=>run(()=>s.deleteSelected())}>Delete</MenuBtn>
+
+      <div className='h-px bg-white/10 my-1' />
+
+      <MenuBtn onClick={()=>run(()=>s.alignSelected('left'))}>Align Left</MenuBtn>
+      <MenuBtn onClick={()=>run(()=>s.alignSelected('right'))}>Align Right</MenuBtn>
+      <MenuBtn onClick={()=>run(()=>s.alignSelected('top'))}>Align Top</MenuBtn>
+      <MenuBtn onClick={()=>run(()=>s.alignSelected('bottom'))}>Align Bottom</MenuBtn>
+
+      <MenuBtn onClick={()=>run(()=>s.distributeSelected('h'))}>Distribute Horizontal</MenuBtn>
+      <MenuBtn onClick={()=>run(()=>s.distributeSelected('v'))}>Distribute Vertical</MenuBtn>
+
+      <div className='h-px bg-white/10 my-1' />
+
+      <MenuBtn onClick={()=>run(()=>s.setDrawingSettings({ snapPriceLevels: !s.drawingSettings.snapPriceLevels }))}>
+        Snap to Price Levels: {s.drawingSettings.snapPriceLevels ? 'On' : 'Off'}
+      </MenuBtn>
+      <MenuBtn onClick={()=>run(()=>s.setDrawingSettings({ showLineLabels: !s.drawingSettings.showLineLabels }))}>
+        Line Labels: {s.drawingSettings.showLineLabels ? 'On' : 'Off'}
+      </MenuBtn>
+    </div>
+  )
+}
+function MenuBtn({children, onClick}:{children:React.ReactNode; onClick:()=>void}) {
+  return <button onClick={onClick} className='w-full text-left px-3 py-2 hover:bg-white/10'>{children}</button>
 }

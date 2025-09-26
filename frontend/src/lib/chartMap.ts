@@ -1,80 +1,106 @@
 ﻿import { getChart } from '@/lib/chartBus'
 import type { Time } from 'lightweight-charts'
 
-export type Px = { x: number; y: number }
-export type Coord = { time: Time; price: number }
+type Pt = { x:number; y:number }
 
-export function pxToCoord(px: Px): Coord | null {
-  const { chart, series } = getChart()
-  if (!chart || !series) return null
-  const tscale = chart.timeScale()
-  const time = tscale.coordinateToTime(px.x as number)
-  const price = (series as any).coordinateToPrice?.(px.y)
-  if (time == null || price == null) return null
-  return { time, price }
+export function snapPxToGrid(p: Pt, step = 10, enabled = true): Pt {
+  if (!enabled || step <= 1) return p
+  return { x: Math.round(p.x / step) * step, y: Math.round(p.y / step) * step }
 }
 
-export function coordToPx(c: Coord): Px | null {
-  const { chart, series } = getChart()
-  if (!chart || !series) return null
-  const tscale = chart.timeScale()
-  const x = tscale.timeToCoordinate(c.time)
-  const y = (series as any).priceToCoordinate?.(c.price)
-  if (x == null || y == null) return null
-  return { x, y }
+export function priceToY(price: number): number | null {
+  try {
+    const bus = getChart(); const s = bus?.series as any
+    const ps = s?.priceScale?.()
+    const y = ps?.priceToCoordinate?.(price)
+    return (typeof y === 'number') ? y : null
+  } catch { return null }
+}
+export function yToPrice(y: number): number | null {
+  try {
+    const bus = getChart(); const s = bus?.series as any
+    const ps = s?.priceScale?.()
+    const p = ps?.coordinateToPrice?.(y)
+    return (typeof p === 'number') ? p : null
+  } catch { return null }
 }
 
-export function nearestIndexForX(x: number): number | null {
-  const { chart, candles } = getChart()
-  if (!chart) return null
-  const tscale = chart.timeScale()
-  let bestIdx = -1
-  let bestDist = Infinity
-  for (let i=0;i<candles.length;i++){
-    const px = tscale.timeToCoordinate(candles[i].time as any)
-    if (px == null) continue
-    const d = Math.abs(px - x)
-    if (d < bestDist) { bestDist = d; bestIdx = i }
+export function pxToBars(dx: number): number | null {
+  try {
+    const bus = getChart(); const chart = bus?.chart as any
+    if (!chart) return null
+    const ts = chart.timeScale?.()
+    const range = ts?.getVisibleLogicalRange?.()
+    if (!range) return null
+    const width = chart?.width?.() ?? 1200
+    const barsVisible = (range.to - range.from)
+    if (!isFinite(barsVisible) || barsVisible <= 0) return null
+    return (dx / Math.max(1, width)) * barsVisible
+  } catch { return null }
+}
+
+function timeToSec(t: Time): number {
+  if (typeof t === 'number') return t
+  if (typeof (t as any) === 'string') return Number(t)
+  const bd = t as any
+  if (bd && typeof bd === 'object' && 'year' in bd) {
+    const d = new Date(Date.UTC(bd.year, (bd.month||1)-1, bd.day))
+    return Math.floor(d.getTime()/1000)
   }
-  return bestIdx >= 0 ? bestIdx : null
+  return 0
+}
+function lowerBoundByTime(data: any[], ts: number): number {
+  let lo=0, hi=data.length
+  while (lo<hi) { const mid=(lo+hi)>>1; const v = timeToSec(data[mid].time as any); if (v < ts) lo = mid+1; else hi = mid }
+  return lo
+}
+function upperBoundByTime(data: any[], ts: number): number {
+  let lo=0, hi=data.length
+  while (lo<hi) { const mid=(lo+hi)>>1; const v = timeToSec(data[mid].time as any); if (v <= ts) lo = mid+1; else hi = mid }
+  return lo-1
 }
 
-// a very simple 'nice' tick step ~ 1/50th of visible price range
-export function autoTickStep(): number | null {
-  const { chart, series } = getChart()
-  if (!chart || !series) return null
-  const pr = (series as any).priceScale()?.priceRange()?.minMax()
-  if (!pr) return null
-  const range = pr.max - pr.min
-  const raw = range / 50
-  const pow10 = Math.pow(10, Math.floor(Math.log10(raw || 1)))
-  const mant = raw / pow10
-  const niceMant = mant < 1.5 ? 1 : mant < 3 ? 2 : mant < 7 ? 5 : 10
-  return niceMant * pow10
+export function getVisibleCandles(): any[] {
+  try {
+    const bus = getChart()
+    const chart: any = bus?.chart
+    const all = (bus?.candles as any[]) || []
+    const vr = chart?.timeScale?.().getVisibleRange?.()
+    if (!vr || !all.length) return all
+    const from = timeToSec(vr.from as Time), to = timeToSec(vr.to as Time)
+    const start = lowerBoundByTime(all, from), end = upperBoundByTime(all, to)
+    if (end < start) return all
+    return all.slice(start, end+1)
+  } catch { return [] }
 }
 
-export function snapPxToGrid(px: Px): Px {
-  const { chart, candles } = getChart()
-  if (!chart || candles.length === 0) return px
-  const tscale = chart.timeScale()
-  const idx = nearestIndexForX(px.x)
-  const step = autoTickStep()
-  let x = px.x
-  let y = px.y
-  if (idx != null) {
-    const t = candles[idx].time as any
-    const sx = tscale.timeToCoordinate(t)
-    if (sx != null) x = Math.round(sx)
+export function visiblePriceLevels(maxLevels = 200): number[] {
+  const vis = getVisibleCandles()
+  if (!vis.length) return []
+  const levels = new Set<number>()
+  const take = Math.min(vis.length, maxLevels)
+  const start = vis.length - take
+  for (let i=start;i<vis.length;i++){
+    const c = vis[i]; if (!c) continue
+    if (isFinite(c.open))  levels.add(c.open)
+    if (isFinite(c.high))  levels.add(c.high)
+    if (isFinite(c.low))   levels.add(c.low)
+    if (isFinite(c.close)) levels.add(c.close)
   }
-  if (step != null) {
-    // map to price, snap, map back
-    const series = (getChart().series as any)
-    const price = series?.coordinateToPrice?.(px.y)
-    if (price != null) {
-      const snapped = Math.round(price/step) * step
-      const sy = series?.priceToCoordinate?.(snapped)
-      if (sy != null) y = Math.round(sy)
-    }
+  const last = vis[vis.length-1]
+  if (last?.close != null) levels.add(last.close)
+  return Array.from(levels)
+}
+
+export function snapYToPriceLevels(yPx: number, tolerancePx = 6): number {
+  const levels = visiblePriceLevels()
+  if (!levels.length) return yPx
+  let bestY = yPx, bestD = Infinity
+  for (const p of levels) {
+    const yy = priceToY(p)
+    if (yy == null) continue
+    const d = Math.abs(yy - yPx)
+    if (d < bestD) { bestD = d; bestY = yy }
   }
-  return { x, y }
+  return bestD <= tolerancePx ? bestY : yPx
 }

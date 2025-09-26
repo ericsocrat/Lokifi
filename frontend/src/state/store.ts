@@ -1,24 +1,8 @@
 ﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { saveCurrent } from '@/lib/persist'
-import type { DrawingStyle } from '@/lib/styles'
 
-export type Tool =
-  | 'select' | 'trendline' | 'hline' | 'vline' | 'ray' | 'arrow'
-  | 'rect' | 'ellipse' | 'text'
-  | 'fib' | 'pitchfork' | 'channel' | 'parallel-channel'
-
-export type Theme = 'dark' | 'light' | 'midnight'
-
-type IndicatorSettings = {
-  bbPeriod: number
-  bbMult: number
-  vwapAnchor: 'session' | 'day' | 'week' | 'month' | 'anchored'
-  vwapAnchorIndex?: number
-  vwmaPeriod: number
-  stdChannelPeriod: number
-  stdChannelMult: number
-}
+export type Tool = 'select' | 'trendline' | 'hline' | 'vline' | 'rect' | 'text' | 'arrow'
+export type Theme = 'light' | 'dark'
 
 type IndicatorToggles = {
   showBB: boolean
@@ -27,74 +11,91 @@ type IndicatorToggles = {
   showStdChannels: boolean
   bandFill: boolean
 }
+type IndicatorSettings = {
+  bbPeriod: number
+  bbMult: number
+  vwapAnchor: 'session' | 'index'
+  vwapAnchorIndex?: number
+  vwmaPeriod: number
+  stdChannelPeriod: number
+  stdChannelMult: number
+}
 
 type DrawingSettings = {
   snapEnabled: boolean
-  snapStep: number   // pixels
+  snapStep: number
   showHandles: boolean
+  snapPriceLevels: boolean
+  lineCap: 'butt'|'round'|'square'
+  arrowHead: 'none'|'open'|'filled'
+  arrowHeadSize: number
+  showLineLabels: boolean
 }
 
-type HistoryEntry = {
-  drawings: any[]
-  selection: string[]
+const defaultDrawingSettings: DrawingSettings = {
+  snapEnabled: true,
+  snapStep: 10,
+  showHandles: true,
+  snapPriceLevels: true,
+  lineCap: 'round',
+  arrowHead: 'filled',
+  arrowHeadSize: 12,
+  showLineLabels: true,
+}
+
+const defaultHotkeys: Record<string,string> = {
+  DeleteSelected: 'Delete',
+  DuplicateSelected: 'Ctrl+D',
+  ArrowSizeDecrease: '[',
+  ArrowSizeIncrease: ']',
+  CycleLineCap: ';',
+  CycleArrowHead: "'",
+  AlignLeft: 'Ctrl+Alt+ArrowLeft',
+  AlignRight: 'Ctrl+Alt+ArrowRight',
+  AlignTop: 'Ctrl+Alt+ArrowUp',
+  AlignBottom: 'Ctrl+Alt+ArrowDown',
+  DistributeHoriz: 'Ctrl+Shift+H',
+  DistributeVert: 'Ctrl+Shift+V',
 }
 
 type ChartState = {
-  // data selection
-  symbol: string
   timeframe: string
-
   activeTool: Tool
   theme: Theme
   indicators: IndicatorToggles
   indicatorSettings: IndicatorSettings
-  setTool: (t: Tool) => void
-  setTheme: (t: Theme) => void
-  setTimeframe: (tf: string) => void
-  setSymbol: (s: string) => void
-  toggleIndicator: (k: keyof IndicatorToggles) => void
-  updateIndicatorSettings: (p: Partial<IndicatorSettings>) => void
 
-  // Drawing state
   drawings: any[]
   selection: Set<string>
   drawingSettings: DrawingSettings
 
-  // History
-  past: HistoryEntry[]
-  future: HistoryEntry[]
-  maxHistory: number
-  commit: (label?: string) => void
-  undo: () => void
-  redo: () => void
+  setTool: (t: Tool) => void
+  setTheme: (t: Theme) => void
+  setTimeframe: (tf: string) => void
+  toggleIndicator: (k: keyof IndicatorToggles) => void
+  updateIndicatorSettings: (p: Partial<IndicatorSettings>) => void
 
-  // Clipboard
-  clipboard: any[] | null
-  copySelected: () => void
-  paste: (offset?: {dx:number, dy:number}) => void
-
-  // Mutation helpers
   addDrawing: (d: any) => void
   updateDrawing: (id: string, fn: (d:any)=>any) => void
   deleteSelected: () => void
   clearSelection: () => void
   setSelection: (sel: Set<string>) => void
   toggleSelect: (id: string, single?: boolean) => void
+
   setDrawingSettings: (p: Partial<DrawingSettings>) => void
+  resetDrawingSettings: () => void
 
-  // Style editing
-  setStyleForSelection: (p: Partial<DrawingStyle>) => void
-  setTextForSelection: (text: string) => void
-}
+  hotkeys: Record<string,string>
+  setHotkey: (action: string, key: string) => void
+  resetHotkeys: () => void
 
-function deepClone<T>(v: T): T {
-  return JSON.parse(JSON.stringify(v))
+  duplicateSelected: () => void
+  alignSelected: (pos: 'left'|'right'|'top'|'bottom') => void
+  distributeSelected: (axis: 'h'|'v') => void
 }
 
 export const useChartStore = create<ChartState>()(persist((set, get) => ({
-  symbol: (process.env.NEXT_PUBLIC_SYMBOL || 'BTCUSDT') as string,
-  timeframe: (process.env.NEXT_PUBLIC_TIMEFRAME || '1h') as string,
-
+  timeframe: '1H',
   activeTool: 'select',
   theme: 'dark',
   indicators: {
@@ -116,95 +117,96 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
 
   drawings: [],
   selection: new Set<string>(),
-  drawingSettings: { snapEnabled: true, snapStep: 10, showHandles: true },
+  drawingSettings: { ...defaultDrawingSettings },
 
-  // History
-  past: [],
-  future: [],
-  maxHistory: 100,
-  commit: () => {
-    const s = get()
-    const entry: HistoryEntry = {
-      drawings: deepClone(s.drawings),
-      selection: Array.from(s.selection)
-    }
-    const nextPast = [...s.past, entry]
-    if (nextPast.length > s.maxHistory) nextPast.shift()
-    set({ past: nextPast, future: [] })
-    try { saveCurrent(s.drawings, s.selection) } catch {}
-  },
-  undo: () => {
-    const s = get()
-    if (s.past.length === 0) return
-    const prev = s.past[s.past.length - 1]
-    const now: HistoryEntry = { drawings: deepClone(s.drawings), selection: Array.from(s.selection) }
-    set({
-      drawings: deepClone(prev.drawings),
-      selection: new Set(prev.selection),
-      past: s.past.slice(0, -1),
-      future: [...s.future, now]
-    })
-  },
-  redo: () => {
-    const s = get()
-    if (s.future.length === 0) return
-    const next = s.future[s.future.length - 1]
-    const now: HistoryEntry = { drawings: deepClone(s.drawings), selection: Array.from(s.selection) }
-    set({
-      drawings: deepClone(next.drawings),
-      selection: new Set(next.selection),
-      past: [...s.past, now],
-      future: s.future.slice(0, -1)
-    })
-  },
+  setTool: (t) => set({ activeTool: t }),
+  setTheme: (t) => set({ theme: t }),
+  setTimeframe: (tf) => set({ timeframe: tf }),
+  toggleIndicator: (k) => set((s) => ({ indicators: { ...s.indicators, [k]: !s.indicators[k] } })),
+  updateIndicatorSettings: (p) => set((s) => ({ indicatorSettings: { ...s.indicatorSettings, ...p } })),
 
-  // Clipboard
-  clipboard: null,
-  copySelected: () => {
-    const s = get()
-    const ids = Array.from(s.selection)
-    const items = s.drawings.filter(d => ids.includes(d.id))
-    set({ clipboard: deepClone(items) })
-  },
-  paste: (offset = {dx: 10, dy: 10}) => {
-    const s = get()
-    if (!s.clipboard || s.clipboard.length === 0) return
-    const clones = s.clipboard.map((d: any) => ({
-      ...deepClone(d),
-      id: crypto.randomUUID ? crypto.randomUUID() : (Date.now().toString(36)+Math.random().toString(36).slice(2)),
-      points: d.points.map((p: any) => ({ x: p.x + offset.dx, y: p.y + offset.dy }))
-    }))
-    set({
-      drawings: [...s.drawings, ...clones],
-      selection: new Set(clones.map((c:any)=>c.id))
-    })
-  },
-
-  // Mutations
   addDrawing: (d) => set((s)=>({ drawings: [...s.drawings, d] })),
   updateDrawing: (id, fn) => set((s)=>({ drawings: s.drawings.map(dr => dr.id===id ? fn(dr) : dr) })),
   deleteSelected: () => set((s)=>({ drawings: s.drawings.filter(d => !s.selection.has(d.id)), selection: new Set() })),
   clearSelection: () => set({ selection: new Set() }),
   setSelection: (sel) => set({ selection: sel }),
-  toggleSelect: (id, single) => set((s)=> {
-    const next = new Set(single ? [] : Array.from(s.selection));
-    if (next.has(id)) next.delete(id); else next.add(id);
-    return { selection: next }
-  }),
+  toggleSelect: (id, single) => set((s)=> { const next = new Set(single ? [] : Array.from(s.selection)); if (next.has(id)) next.delete(id); else next.add(id); return { selection: next } }),
+
   setDrawingSettings: (p) => set((s)=>({ drawingSettings: { ...s.drawingSettings, ...p } })),
+  resetDrawingSettings: () => set({ drawingSettings: { ...defaultDrawingSettings } }),
 
-  // Style editing
-  setStyleForSelection: (p) => set((s) => ({
-    drawings: s.drawings.map((d:any) => s.selection.has(d.id) ? ({ ...d, style: { ...d.style, ...p } }) : d )
-  })),
-  setTextForSelection: (text) => set((s) => ({
-    drawings: s.drawings.map((d:any) => s.selection.has(d.id) && d.kind==='text' ? ({ ...d, text }) : d )
-  })),
+  hotkeys: { ...defaultHotkeys },
+  setHotkey: (action, key) => set((s)=> ({ hotkeys: { ...s.hotkeys, [action]: key } })),
+  resetHotkeys: () => set({ hotkeys: { ...defaultHotkeys } }),
 
-  setTool: (t) => set({ activeTool: t }),
-  setTheme: (t) => set({ theme: t }),
-  setTimeframe: (tf) => set({ timeframe: tf }),
-  setSymbol: (sym) => set({ symbol: sym }),
-  toggleIndicator: (k) => set((s) => ({ indicators: { ...s.indicators, [k]: !s.indicators[k] } })),
-  updateIndicatorSettings: (p) => set((s) => ({ indicatorSettings: { ...s.indicatorSettings, ...p } }))
-}), { name: 'fynix-chart' }))
+  duplicateSelected: () => set((s) => {
+    const ids = Array.from(s.selection)
+    if (!ids.length) return {}
+    const items = s.drawings.filter((d:any)=>ids.includes(d.id))
+    const clones = items.map((d:any) => ({
+      ...structuredClone(d),
+      id: (globalThis.crypto as any)?.randomUUID?.() || (Date.now().toString(36)+Math.random().toString(36).slice(2)),
+      points: d.points.map((p:any)=>({ x: p.x + 12, y: p.y + 12 }))
+    }))
+    return { drawings: [...s.drawings, ...clones], selection: new Set(clones.map((c:any)=>c.id)) }
+  }),
+
+  alignSelected: (pos) => set((s)=>{
+    const ids = Array.from(s.selection); if (!ids.length) return {}
+    const sel = s.drawings.filter((d:any)=>ids.includes(d.id))
+    const boxes = sel.map((d:any)=>bbox(d))
+    const minX = Math.min(...boxes.map((b:any)=>b.x)), maxX = Math.max(...boxes.map((b:any)=>b.x+b.w))
+    const minY = Math.min(...boxes.map((b:any)=>b.y)), maxY = Math.max(...boxes.map((b:any)=>b.y+b.h))
+    const moved = s.drawings.map((d:any)=>{
+      if (!ids.includes(d.id)) return d
+      const b = bbox(d)
+      let dx = 0, dy = 0
+      if (pos==='left') dx = minX - b.x
+      if (pos==='right') dx = maxX - (b.x + b.w)
+      if (pos==='top') dy = minY - b.y
+      if (pos==='bottom') dy = maxY - (b.y + b.h)
+      return { ...d, points: d.points.map((p:any)=>({ x: p.x + dx, y: p.y + dy })) }
+    })
+    return { drawings: moved }
+  }),
+
+  distributeSelected: (axis) => set((s)=>{
+    const ids = Array.from(s.selection); if (ids.length < 3) return {}
+    const sel = s.drawings.filter((d:any)=>ids.includes(d.id))
+    const arr = sel.map((d:any)=>({ d, b: bbox(d) }))
+    arr.sort((a:any,b:any)=> axis==='h' ? (a.b.x - b.b.x) : (a.b.y - b.b.y))
+    const first = arr[0].b, last = arr[arr.length-1].b
+    const span = (axis==='h' ? (last.x - first.x) : (last.y - first.y))
+    const gap = span / (arr.length - 1)
+    const desired = arr.map((_,i)=> (axis==='h' ? (first.x + i*gap) : (first.y + i*gap)))
+    const moved = s.drawings.map((d:any)=>{
+      const i = arr.findIndex((x:any)=>x.d.id===d.id)
+      if (i<0) return d
+      const b = arr[i].b
+      const cur = axis==='h' ? b.x : b.y
+      const delta = desired[i] - cur
+      return { ...d, points: d.points.map((p:any)=> axis==='h' ? ({ x: p.x + delta, y: p.y }) : ({ x: p.x, y: p.y + delta })) }
+    })
+    return { drawings: moved }
+  }),
+
+}), {
+  name: 'fynix-chart',
+  // Persist only the pieces we actually want in localStorage
+  partialize: (s) => ({
+    hotkeys: s.hotkeys,
+    drawingSettings: s.drawingSettings,
+    // keep theme/timeframe if you want them persisted too:
+    theme: s.theme,
+    timeframe: s.timeframe,
+  }),
+}))
+
+function bbox(d:any){
+  const xs = d.points.map((p:any)=>p.x); const ys = d.points.map((p:any)=>p.y)
+  const x = Math.min(...xs), y = Math.min(...ys)
+  const w = Math.max(...xs)-x, h = Math.max(...ys)-y
+  return { x,y,w,h }
+}
+
+export { defaultDrawingSettings, defaultHotkeys }
