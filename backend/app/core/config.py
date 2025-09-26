@@ -1,29 +1,21 @@
-from pydantic_settings import BaseSettings
-from typing import List, Optional
+﻿from pydantic_settings import BaseSettings
+from pydantic import Field
 
 class Settings(BaseSettings):
-    # LLM endpoints
-    LMSTUDIO_HOST: str | None = None  # e.g., http://host.docker.internal:1234
-    OPENAI_BASE_URL: str | None = None
+    # Auth / JWT
+    fynix_jwt_secret: str = Field("dev-secret", env="FYNIX_JWT_SECRET")
+    fynix_jwt_ttl_min: int = Field(1440, env="FYNIX_JWT_TTL_MIN")
 
-    API_PREFIX: str = "/api"
-    PROJECT_NAME: str = "Fynix API"
-    DATABASE_URL: str = "postgresql+psycopg://fynix:fynix@db:5432/fynix"
-    REDIS_URL: str = "redis://redis:6379/0"
-    JWT_PUBLIC_KEY: str = ""
-    JWT_ALGS: str = "RS256"
-    CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    # Frontend origin for CORS
+    frontend_origin: str = Field("http://localhost:3000", env="FRONTEND_ORIGIN")
 
-    POLYGON_KEY: Optional[str] = None
-    ALPHAVANTAGE_KEY: Optional[str] = None
-    FINNHUB_KEY: Optional[str] = None
-    COINGECKO_KEY: Optional[str] = None
-    CMC_KEY: Optional[str] = None
-    NEWSAPI_KEY: Optional[str] = None
-    MARKETAUX_KEY: Optional[str] = None
-    FMP_KEY: Optional[str] = None
+    # OpenAI / LLM integration
+    openai_api_key: str | None = Field(default=None, env="OPENAI_API_KEY")
+    openai_base: str = Field("https://api.openai.com/v1", env="OPENAI_BASE")
+    openai_model: str = Field("gpt-4o-mini", env="OPENAI_MODEL")
 
     class Config:
         env_file = ".env"
+        extra = "ignore"  # ignore harmless extra env vars
 
 settings = Settings()
