@@ -1,4 +1,4 @@
-﻿import { useChartStore } from '@/state/store'
+import { useChartStore } from '@/state/store'
 import { priceToY } from '@/lib/chartMap'
 
 /**

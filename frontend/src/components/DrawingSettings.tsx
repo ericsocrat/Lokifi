@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useChartStore } from '@/state/store'
 
 export default function DrawingSettings() {

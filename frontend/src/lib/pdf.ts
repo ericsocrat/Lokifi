@@ -1,4 +1,4 @@
-﻿import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { exportPNG } from '@/lib/exporters'
 
 export async function exportReportPDF(title = 'Fynix Chart Report') {

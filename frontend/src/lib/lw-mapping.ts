@@ -1,4 +1,4 @@
-﻿import { setMappers, setVisibleBarCoords, setVisiblePriceLevels } from '@/lib/chartMap'
+import { setMappers, setVisibleBarCoords, setVisiblePriceLevels } from '@/lib/chartMap'
 
 export function wireLightweightChartsMappings(chart: any, series: any) {
   if (!chart || !series) return

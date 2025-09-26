@@ -1,4 +1,4 @@
-﻿import { apiFetch } from "./apiFetch";
+import { apiFetch } from "./apiFetch";
 
 export interface Position {
   id: number;

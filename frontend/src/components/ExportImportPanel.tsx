@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useChartStore } from '@/state/store'
 import { downloadText, exportPngFromRoot } from '@/lib/io'
 import { encodeShare, decodeShare } from '@/lib/share'
@@ -26,7 +26,7 @@ export default function ExportImportPanel() {
       timeframe: s.timeframe
     }
     const pretty = JSON.stringify(payload, null, 2)
-    downloadText(ynix-scene-.json, pretty)
+    downloadText(`fynix-scene-.json`, pretty)
   }
 
   const onImportJson = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +63,7 @@ export default function ExportImportPanel() {
     const root = rootRef.current || (document.querySelector('main.relative') as HTMLElement | null)
     if (!root) { alert('Chart area not found'); return }
     try {
-      await exportPngFromRoot(root, ynix-.png)
+      await exportPngFromRoot(root, `fynix-.png`)
     } catch (e) {
       alert('PNG export failed. Make sure the chart is visible.')
     }
@@ -79,7 +79,7 @@ export default function ExportImportPanel() {
       timeframe: s.timeframe
     }
     const hash = encodeShare(payload)
-    const url = ${location.origin}#
+    const url = `${location.origin}#`
     try {
       await navigator.clipboard.writeText(url)
       alert('Sharable URL copied to clipboard.')

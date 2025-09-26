@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useChartStore } from '@/state/store'
 import { TF_PRESETS, SYMBOL_SUGGESTIONS, normalizeTf } from '@/lib/timeframes'
 

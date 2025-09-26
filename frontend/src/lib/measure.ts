@@ -1,4 +1,4 @@
-﻿export function fmtNum(n: number, dec = 2) {
+export function fmtNum(n: number, dec = 2) {
   if (!isFinite(n)) return '—'
   const f = Math.abs(n) >= 100 ? 0 : dec
   return n.toFixed(f)

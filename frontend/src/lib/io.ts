@@ -1,4 +1,4 @@
-﻿export function downloadText(filename: string, text: string) {
+export function downloadText(filename: string, text: string) {
   const blob = new Blob([text], { type: 'application/json;charset=utf-8' })
   downloadBlob(filename, blob)
 }

@@ -1,4 +1,4 @@
-﻿import type { Drawing } from '@/lib/drawings'
+import type { Drawing } from '@/lib/drawings'
 import { rectFromPoints } from '@/lib/geom'
 import { yToPrice } from '@/lib/chartMap'
 

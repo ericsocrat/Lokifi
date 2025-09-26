@@ -1,4 +1,4 @@
-﻿let permissionPromise: Promise<NotificationPermission> | null = null
+let permissionPromise: Promise<NotificationPermission> | null = null
 
 export function ensureNotificationPermission(): Promise<NotificationPermission> {
   if (typeof window === 'undefined' || !('Notification' in window)) {

@@ -1,4 +1,4 @@
-﻿import * as Y from 'yjs'
+import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import type { Drawing } from '@/lib/drawings'
 import { useChartStore } from '@/state/store'

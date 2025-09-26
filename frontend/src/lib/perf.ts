@@ -1,4 +1,4 @@
-﻿export function rafThrottle<T extends (...args:any[])=>void>(fn: T): T {
+export function rafThrottle<T extends (...args:any[])=>void>(fn: T): T {
   let queued = false
   let lastArgs: any[] | null = null
   let lastThis: any = null

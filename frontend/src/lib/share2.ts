@@ -1,4 +1,4 @@
-﻿import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string"
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string"
 
 export type ShareMode = "view" | "edit"
 export type ShareLink = { id: string; createdAt: number; mode: ShareMode; password?: string | null; url: string }

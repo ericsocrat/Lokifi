@@ -1,4 +1,4 @@
-﻿const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
 import { apiFetch } from "./apiFetch";
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string; name?: string };

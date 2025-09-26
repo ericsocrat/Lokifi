@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useChartStore } from '@/state/store'
 import { keyFromEvent } from '@/lib/keys'
 

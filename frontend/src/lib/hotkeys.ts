@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useChartStore } from '@/state/store'
 
 export default function useHotkeys() {

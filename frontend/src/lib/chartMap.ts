@@ -1,4 +1,4 @@
-﻿export type Point = { x:number; y:number }
+export type Point = { x:number; y:number }
 
 /** --- Mapping hooks (host wires real chart scales here) --- */
 type Mappers = {

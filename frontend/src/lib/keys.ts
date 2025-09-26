@@ -1,4 +1,4 @@
-﻿export function keyFromEvent(e: KeyboardEvent | React.KeyboardEvent<HTMLInputElement>) {
+export function keyFromEvent(e: KeyboardEvent | React.KeyboardEvent<HTMLInputElement>) {
   const parts: string[] = []
   if ((e as KeyboardEvent).ctrlKey || (e as KeyboardEvent).metaKey) parts.push('Ctrl')
   if (e.altKey) parts.push('Alt')

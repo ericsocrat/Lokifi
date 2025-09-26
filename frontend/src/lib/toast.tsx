@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 type ToastMsg = { id: number; text: string; ttl: number }
 
 let listeners: ((msg: ToastMsg)=>void)[] = []

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { me, login, register as registerApi, logout as logoutApi } from "@/src/lib/auth";

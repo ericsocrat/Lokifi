@@ -1,4 +1,4 @@
-﻿import { me } from "./auth";
+import { me } from "./auth";
 
 /**
  * Simple guard you can call at page load (client) to ensure auth.

@@ -1,4 +1,4 @@
-﻿import type { Drawing } from "@/lib/drawings"
+import type { Drawing } from "@/lib/drawings"
 import { rectFromPoints } from "@/lib/geom"
 
 type B = { minX:number; maxX:number; minY:number; maxY:number, cx:number, cy:number }

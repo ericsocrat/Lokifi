@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useChartStore } from '@/state/store'
 import type { Alert } from '@/lib/alerts'
 import { ensureNotificationPermission } from '@/lib/notify'

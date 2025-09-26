@@ -1,4 +1,4 @@
-﻿export type PluginMeta = {
+export type PluginMeta = {
   id: string
   name: string
   description?: string

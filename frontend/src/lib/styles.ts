@@ -1,4 +1,4 @@
-﻿export type LineStyleKind = 'solid' | 'dash' | 'dot'
+export type LineStyleKind = 'solid' | 'dash' | 'dot'
 
 export type DrawingStyle = {
   stroke: string

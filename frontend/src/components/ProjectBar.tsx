@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useChartStore } from '@/state/store'
 import { listSlots, saveSlot, loadSlot, deleteSlot, projectFromState } from '@/lib/persistence'
 import { exportPNG, exportSVG } from '@/lib/exporters'

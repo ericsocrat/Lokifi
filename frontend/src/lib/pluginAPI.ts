@@ -1,4 +1,4 @@
-﻿import type { Drawing } from '@/lib/drawings'
+import type { Drawing } from '@/lib/drawings'
 import { useChartStore } from '@/state/store'
 
 type ContextAction = { id: string; label: string; run: (selection: string[]) => void }

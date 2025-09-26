@@ -1,4 +1,4 @@
-﻿import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
 import type { Drawing } from '@/lib/drawings'
 
 export type ShareSnapshot = {

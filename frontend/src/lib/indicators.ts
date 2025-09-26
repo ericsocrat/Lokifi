@@ -1,4 +1,4 @@
-﻿export type Candle = { time: number; open: number; high: number; low: number; close: number; volume: number }
+export type Candle = { time: number; open: number; high: number; low: number; close: number; volume: number }
 
 export function sma(values: number[], period: number): (number | null)[] {
   const out: (number|null)[] = new Array(values.length).fill(null)

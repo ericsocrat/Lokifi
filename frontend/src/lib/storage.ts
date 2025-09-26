@@ -1,4 +1,4 @@
-﻿export function saveJSON<T>(key: string, data: T) {
+export function saveJSON<T>(key: string, data: T) {
   localStorage.setItem(key, JSON.stringify(data))
 }
 export function loadJSON<T>(key: string, fallback: T): T {

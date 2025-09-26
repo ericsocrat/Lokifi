@@ -1,4 +1,4 @@
-﻿import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts'
+import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts'
 import type { Candle } from '@/lib/indicators'
 
 type ChartCtx = {

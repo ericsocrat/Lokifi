@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Drawing, DrawingStyle } from '@/lib/drawings'
 import { align as __alignDrawings, distribute as __distributeDrawings } from '@/lib/alignment'
@@ -27,7 +27,8 @@ type IndicatorSettings = {
   stdChannelMult: number
 }
 
-type DrawingSettings = {\n  xSnapToBars: boolean
+type DrawingSettings = {
+  xSnapToBars: boolean
   snapEnabled: boolean
   snapStep: number
   showHandles: boolean
@@ -43,7 +44,8 @@ type DrawingSettings = {\n  xSnapToBars: boolean
   fibDefaultLevels: number[]             // global defaults if drawing has none
 }
 
-const defaultDrawingSettings: DrawingSettings = {\n  xSnapToBars: true,
+const defaultDrawingSettings: DrawingSettings = {
+  xSnapToBars: true,
   snapEnabled: true,
   snapStep: 10,
   showHandles: true,
@@ -54,12 +56,9 @@ const defaultDrawingSettings: DrawingSettings = {\n  xSnapToBars: true,
   showLineLabels: true,
   snapToOHLC: true,
   magnetTolerancePx: 6,
-   param($m)
   $obj = $m.Groups[1].Value
-  if ($obj -notmatch "ruler") { return "perToolSnap: {" + $obj + ", ruler: true }" }
-  else { return "perToolSnap: {" + $obj + "}" }
-,
-  fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1]
+
+  fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1,]
 }
 
 const defaultHotkeys: Record<string,string> = {
@@ -77,7 +76,8 @@ const defaultHotkeys: Record<string,string> = {
   DistributeVert: 'Ctrl+Shift+V',
 }
 
-type ChartState = {\n  __snapIdx?: number
+type ChartState = {
+  __snapIdx?: number
   // Phase V2
   layers: Layer[]
   activeLayerId: string | null
@@ -92,7 +92,16 @@ type ChartState = {\n  __snapIdx?: number
   saveSnapshot: (name: string) => void
   loadSnapshot: (id: string) => void
   deleteSnapshot: (id: string) => void
-  cycleSnapshot: (delta: number) => void\n  alerts: Alert[]\n  alertEvents: AlertEvent[]\n  addAlert: (p: Omit<Alert, 'id'|'enabled'|'triggers'|'lastTriggeredAt'> & { enabled?: boolean }) => void\n  updateAlert: (id: string, patch: Partial<Alert>) => void\n  removeAlert: (id: string) => void\n  toggleAlert: (id: string) => void\n  snoozeAlert: (id: string, until: number | null) => void\n  clearAlertEvents: () => void\n  evaluateAlerts: (yPrev: number | null, yNow: number | null) => void
+  cycleSnapshot: (delta: number) => void
+  alerts: Alert[]
+  alertEvents: AlertEvent[]
+  addAlert: (p: Omit<Alert, 'id'|'enabled'|'triggers'|'lastTriggeredAt'> & { enabled?: boolean }) => void
+  updateAlert: (id: string, patch: Partial<Alert>) => void
+  removeAlert: (id: string) => void
+  toggleAlert: (id: string) => void
+  snoozeAlert: (id: string, until: number | null) => void
+  clearAlertEvents: () => void
+  evaluateAlerts: (yPrev: number | null, yNow: number | null) => void
   timeframe: string
   activeTool: Tool
   theme: Theme

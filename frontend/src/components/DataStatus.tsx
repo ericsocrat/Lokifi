@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 
 export default function DataStatus(props: { provider: string; symbol: string; timeframe: string }) {
   return (

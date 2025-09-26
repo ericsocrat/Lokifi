@@ -1,4 +1,4 @@
-﻿import React from "react"
+import React from "react"
 import ReportComposer from "@/components/ReportComposer"
 
 export default function ReportPortal() {

@@ -1,4 +1,4 @@
-﻿import { apiFetch, setToken, getToken } from "./apiFetch";
+import { apiFetch, setToken, getToken } from "./apiFetch";
 
 export async function register(handle: string, password: string, avatar_url?: string, bio?: string) {
   const res = await apiFetch(`/auth/register`, {

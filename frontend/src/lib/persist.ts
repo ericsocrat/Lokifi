@@ -1,4 +1,4 @@
-﻿export type PersistSnapshot = {
+export type PersistSnapshot = {
   ts: number
   drawings: any[]
   selection: string[]

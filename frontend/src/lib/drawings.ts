@@ -1,4 +1,4 @@
-﻿import { nanoid } from 'nanoid'
+import { nanoid } from 'nanoid'
 export type Point = { x: number; y: number }
 export type DrawingKind =
   | 'trendline' | 'hline' | 'vline' | 'rect' | 'text' | 'arrow'
@@ -14,7 +14,8 @@ export type DrawingStyle = {
   fill?: string | null
 }
 
-export type Drawing = {\n  layerId?: string
+export type Drawing = {
+  layerId?: string
   id: string
   kind: DrawingKind
   points: Point[]

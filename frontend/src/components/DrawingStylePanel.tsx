@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useChartStore } from '@/state/store'
 import { PALETTE } from '@/lib/styles'
 
@@ -79,7 +79,7 @@ export default function DrawingStylePanel() {
         </div>
 
         <div className='text-xs text-neutral-400 pt-1'>
-          {selCount ? ${selCount} selected : 'Select a drawing to edit.'}
+          {selCount ? `${selCount} selected` : 'Select a drawing to edit.'}
         </div>
       </div>
     </div>

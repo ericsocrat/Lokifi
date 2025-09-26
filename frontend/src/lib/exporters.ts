@@ -1,4 +1,4 @@
-﻿import { drawingsToSVG } from '@/lib/svg'
+import { drawingsToSVG } from '@/lib/svg'
 import { useChartStore } from '@/state/store'
 
 /** Merge the visible chart canvas (if found) with DrawingLayer canvas and download PNG */

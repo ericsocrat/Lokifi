@@ -1,4 +1,4 @@
-﻿import { setVisibleBarCoords } from '@/lib/chartMap'
+import { setVisibleBarCoords } from '@/lib/chartMap'
 import { startPriceFeed } from '@/lib/price-feed'
 
 /**
@@ -22,9 +22,9 @@ export function wireLightweightChartsExtras(
       if (!data.length) { setVisibleBarCoords([]); return }
       const vr = ts?.getVisibleRange?.() ?? ts?.getVisibleLogicalRange?.()
       let slice = data
-      if (vr && 'from' in vr && 'to' in vr && [vr.from, vr.to].every([double]::TryParse)) {
-        const fromIdx = Math.max(0, [int][math]::Floor([double].from))
-        const toIdx = [int][math]::Ceiling([double].to)
+      if (vr && 'from' in vr && 'to' in vr && [vr.from, vr.to].every(v => Number.isFinite(Number(v)))) {
+        const fromIdx = Math.max(0, Math.floor(Number(vr.from)))
+        const toIdx = Math.ceil(Number(vr.to))
         slice = data.slice(fromIdx, Math.min(data.length, toIdx + 1))
       } else {
         slice = data.slice(-400)

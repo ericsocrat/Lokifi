@@ -1,4 +1,4 @@
-﻿export const TF_PRESETS = ['1m','5m','15m','1h','4h','1d','1w'] as const
+export const TF_PRESETS = ['1m','5m','15m','1h','4h','1d','1w'] as const
 export type Timeframe = typeof TF_PRESETS[number] | string
 
 export const SYMBOL_SUGGESTIONS = [

@@ -1,4 +1,4 @@
-﻿// frontend/src/lib/indicators.test.ts
+// frontend/src/lib/indicators.test.ts
 import { describe, it, expect } from "vitest";
 import {
   sma,

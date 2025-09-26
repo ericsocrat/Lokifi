@@ -1,4 +1,4 @@
-﻿import type { Drawing } from '@/lib/drawings'
+import type { Drawing } from '@/lib/drawings'
 
 export type ProjectV1 = {
   version: 1

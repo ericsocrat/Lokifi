@@ -1,4 +1,4 @@
-﻿import React from "react"
+import React from "react"
 import AlertModal from "@/components/AlertModal"
 
 export default function AlertPortal() {

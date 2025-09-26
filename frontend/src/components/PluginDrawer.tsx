@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { listPlugins } from '@/lib/plugins'
 import { saveJSON, loadJSON } from '@/lib/storage'
 

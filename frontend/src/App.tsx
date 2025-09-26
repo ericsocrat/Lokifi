@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import PriceChart from '@/components/PriceChart'
 import DrawingSidePanel from '@/components/DrawingSidePanel'
 import SnapshotsPanel from '@/components/SnapshotsPanel'
