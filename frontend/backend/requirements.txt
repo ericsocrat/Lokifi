@@ -15,3 +15,7 @@ black
 passlib[bcrypt]
 
 python-jose[cryptography]
+
+httpx>=0.24
+
+python-dotenv
