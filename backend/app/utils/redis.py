@@ -3,7 +3,7 @@ from typing import Any
 from redis.asyncio import from_url
 from app.core.config import settings
 
-r = from_url(settings.REDIS_URL, decode_responses=True)
+r = from_url(settings.redis_url, decode_responses=True)
 
 async def redis_json_get(key: str):
     val = await r.get(key)
