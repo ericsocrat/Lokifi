@@ -124,6 +124,14 @@ type ChartState = {
 }
 
 export const useChartStore = create<ChartState>()(persist((set, get) => ({
+  setAll: (p) => set((s)=>({ ...s, ...p })),
+  alerts: [],
+  alertEvents: [],
+  addAlertForDrawing: (drawingId, note) => set((s:any)=>({ alerts:[...s.alerts, { id: (globalThis.crypto as any)?.randomUUID?.() || (Date.now().toString(36)+Math.random().toString(36).slice(2)), drawingId, kind:'cross', enabled:true, note }] })),
+  removeAlert: (id) => set((s:any)=>({ alerts: s.alerts.filter((a:any)=>a.id!==id) })),
+  toggleAlert: (id) => set((s:any)=>({ alerts: s.alerts.map((a:any)=> a.id===id ? ({...a, enabled: !a.enabled}) : a ) })),
+  evaluateAlerts: (yPrev, yNow) => { try { const mod = require('@/lib/alerts'); const ev = mod.evaluateAlerts(get().drawings, get().alerts, yPrev, yNow); if (ev.length) set((s:any)=>({ alertEvents:[...s.alertEvents, ...ev] })); } catch {} },
+  clearAlertEvents: ()=> set({ alertEvents: [] }),
   timeframe: '1H',
   activeTool: 'select',
   theme: 'dark',
@@ -304,3 +312,4 @@ function bbox(d:any){
 }
 
 export { defaultDrawingSettings, defaultHotkeys }
+

@@ -1,24 +1,34 @@
-﻿type ShareState = {
-  drawings: any[]
-  indicators: any
-  indicatorSettings: any
-  theme?: string
-  symbol?: string
+﻿import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
+import type { Drawing } from '@/lib/drawings'
+
+export type ShareSnapshot = {
+  v: 1
+  t: 'readOnly' | 'editable'
+  drawings: Drawing[]
+  theme?: 'light'|'dark'
   timeframe?: string
+  createdAt: number
 }
 
-export function encodeShare(state: ShareState): string {
-  // url-safe base64 of URI-encoded JSON
-  const json = JSON.stringify(state)
-  const base64 = btoa(unescape(encodeURIComponent(json)))
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+export function makeShareURL(s: ShareSnapshot): string {
+  const payload = JSON.stringify(s)
+  const packed = compressToEncodedURIComponent(payload)
+  const url = new URL(window.location.href)
+  url.hash = 'share=' + packed
+  return url.toString()
 }
 
-export function decodeShare(hash: string): ShareState | null {
+export function tryLoadFromURL(): ShareSnapshot | null {
+  const h = window.location.hash
+  const m = /share=([^&]+)/.exec(h)
+  if (!m) return null
   try {
-    const base64 = hash.replace(/-/g, '+').replace(/_/g, '/')
-    const pad = base64.length % 4 === 0 ? '' : '='.repeat(4 - (base64.length % 4))
-    const txt = decodeURIComponent(escape(atob(base64 + pad)))
-    return JSON.parse(txt)
-  } catch { return null }
+    const payload = decompressFromEncodedURIComponent(m[1])
+    if (!payload) return null
+    const snap = JSON.parse(payload)
+    if (snap?.v === 1) return snap as ShareSnapshot
+    return null
+  } catch {
+    return null
+  }
 }
