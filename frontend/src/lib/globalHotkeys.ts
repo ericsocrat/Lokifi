@@ -1,17 +1,6 @@
 ﻿import { useEffect } from 'react'
 import { useChartStore } from '@/state/store'
-
-type BindingMap = Record<string, string>
-
-function keyFromEvent(e: KeyboardEvent) {
-  const parts: string[] = []
-  if (e.ctrlKey || e.metaKey) parts.push('Ctrl')
-  if (e.altKey) parts.push('Alt')
-  if (e.shiftKey) parts.push('Shift')
-  const k = e.key.length === 1 ? e.key.toUpperCase() : e.key
-  parts.push(k)
-  return parts.join('+')
-}
+import { keyFromEvent } from '@/lib/keys'
 
 export function useGlobalHotkeys() {
   const bindings = useChartStore(s => s.hotkeys)

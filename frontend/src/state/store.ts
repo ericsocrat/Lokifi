@@ -1,7 +1,10 @@
 ﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type Tool = 'select' | 'trendline' | 'hline' | 'vline' | 'rect' | 'text' | 'arrow'
+export type Tool =
+  | 'select' | 'trendline' | 'hline' | 'vline'
+  | 'rect' | 'text' | 'arrow'
+  | 'ray' | 'ellipse' | 'fib'
 export type Theme = 'light' | 'dark'
 
 type IndicatorToggles = {
@@ -65,7 +68,7 @@ type ChartState = {
   indicators: IndicatorToggles
   indicatorSettings: IndicatorSettings
 
-  drawings: any[]
+  drawings: import('@/lib/drawings').Drawing[]
   selection: Set<string>
   drawingSettings: DrawingSettings
 
@@ -75,8 +78,8 @@ type ChartState = {
   toggleIndicator: (k: keyof IndicatorToggles) => void
   updateIndicatorSettings: (p: Partial<IndicatorSettings>) => void
 
-  addDrawing: (d: any) => void
-  updateDrawing: (id: string, fn: (d:any)=>any) => void
+  addDrawing: (d: import('@/lib/drawings').Drawing) => void
+  updateDrawing: (id: string, fn: (d: import('@/lib/drawings').Drawing)=>import('@/lib/drawings').Drawing) => void
   deleteSelected: () => void
   clearSelection: () => void
   setSelection: (sel: Set<string>) => void
@@ -142,22 +145,22 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
   duplicateSelected: () => set((s) => {
     const ids = Array.from(s.selection)
     if (!ids.length) return {}
-    const items = s.drawings.filter((d:any)=>ids.includes(d.id))
-    const clones = items.map((d:any) => ({
+    const items = s.drawings.filter((d)=>ids.includes(d.id))
+    const clones = items.map((d) => ({
       ...structuredClone(d),
       id: (globalThis.crypto as any)?.randomUUID?.() || (Date.now().toString(36)+Math.random().toString(36).slice(2)),
-      points: d.points.map((p:any)=>({ x: p.x + 12, y: p.y + 12 }))
+      points: d.points.map((p)=>({ x: p.x + 12, y: p.y + 12 }))
     }))
-    return { drawings: [...s.drawings, ...clones], selection: new Set(clones.map((c:any)=>c.id)) }
+    return { drawings: [...s.drawings, ...clones], selection: new Set(clones.map((c)=>c.id)) }
   }),
 
   alignSelected: (pos) => set((s)=>{
     const ids = Array.from(s.selection); if (!ids.length) return {}
-    const sel = s.drawings.filter((d:any)=>ids.includes(d.id))
-    const boxes = sel.map((d:any)=>bbox(d))
-    const minX = Math.min(...boxes.map((b:any)=>b.x)), maxX = Math.max(...boxes.map((b:any)=>b.x+b.w))
-    const minY = Math.min(...boxes.map((b:any)=>b.y)), maxY = Math.max(...boxes.map((b:any)=>b.y+b.h))
-    const moved = s.drawings.map((d:any)=>{
+    const sel = s.drawings.filter((d)=>ids.includes(d.id))
+    const boxes = sel.map((d)=>bbox(d))
+    const minX = Math.min(...boxes.map((b)=>b.x)), maxX = Math.max(...boxes.map((b)=>b.x+b.w))
+    const minY = Math.min(...boxes.map((b)=>b.y)), maxY = Math.max(...boxes.map((b)=>b.y+b.h))
+    const moved = s.drawings.map((d)=>{
       if (!ids.includes(d.id)) return d
       const b = bbox(d)
       let dx = 0, dy = 0
@@ -165,38 +168,36 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
       if (pos==='right') dx = maxX - (b.x + b.w)
       if (pos==='top') dy = minY - b.y
       if (pos==='bottom') dy = maxY - (b.y + b.h)
-      return { ...d, points: d.points.map((p:any)=>({ x: p.x + dx, y: p.y + dy })) }
+      return { ...d, points: d.points.map((p)=>({ x: p.x + dx, y: p.y + dy })) }
     })
     return { drawings: moved }
   }),
 
   distributeSelected: (axis) => set((s)=>{
     const ids = Array.from(s.selection); if (ids.length < 3) return {}
-    const sel = s.drawings.filter((d:any)=>ids.includes(d.id))
-    const arr = sel.map((d:any)=>({ d, b: bbox(d) }))
-    arr.sort((a:any,b:any)=> axis==='h' ? (a.b.x - b.b.x) : (a.b.y - b.b.y))
+    const sel = s.drawings.filter((d)=>ids.includes(d.id))
+    const arr = sel.map((d)=>({ d, b: bbox(d) }))
+    arr.sort((a,b)=> axis==='h' ? (a.b.x - b.b.x) : (a.b.y - b.b.y))
     const first = arr[0].b, last = arr[arr.length-1].b
     const span = (axis==='h' ? (last.x - first.x) : (last.y - first.y))
     const gap = span / (arr.length - 1)
     const desired = arr.map((_,i)=> (axis==='h' ? (first.x + i*gap) : (first.y + i*gap)))
-    const moved = s.drawings.map((d:any)=>{
-      const i = arr.findIndex((x:any)=>x.d.id===d.id)
+    const moved = s.drawings.map((d)=>{
+      const i = arr.findIndex((x)=>x.d.id===d.id)
       if (i<0) return d
       const b = arr[i].b
       const cur = axis==='h' ? b.x : b.y
       const delta = desired[i] - cur
-      return { ...d, points: d.points.map((p:any)=> axis==='h' ? ({ x: p.x + delta, y: p.y }) : ({ x: p.x, y: p.y + delta })) }
+      return { ...d, points: d.points.map((p)=> axis==='h' ? ({ x: p.x + delta, y: p.y }) : ({ x: p.x, y: p.y + delta })) }
     })
     return { drawings: moved }
   }),
 
 }), {
   name: 'fynix-chart',
-  // Persist only the pieces we actually want in localStorage
   partialize: (s) => ({
     hotkeys: s.hotkeys,
     drawingSettings: s.drawingSettings,
-    // keep theme/timeframe if you want them persisted too:
     theme: s.theme,
     timeframe: s.timeframe,
   }),

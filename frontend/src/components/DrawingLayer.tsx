@@ -57,6 +57,14 @@ export default function DrawingLayer() {
             if (s.drawingSettings.showLineLabels) { drawLineLabel(ctx, a, b) }
             break
           }
+          case 'ray': {
+            const [a,b] = d.points
+            const ext = extendRayToBounds(a, b, el.width, el.height)
+            ctx.beginPath(); ctx.moveTo(ext.start.x, ext.start.y); ctx.lineTo(ext.end.x, ext.end.y); ctx.stroke()
+            if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b) }
+            if (s.drawingSettings.showLineLabels) { drawLineLabel(ctx, a, b) }
+            break
+          }
           case 'hline': {
             const y = d.points[0].y
             ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(el.width, y); ctx.stroke()
@@ -76,6 +84,36 @@ export default function DrawingLayer() {
               drawHandle(ctx, {x:r.x,y:r.y}); drawHandle(ctx, {x:r.x+r.w,y:r.y})
               drawHandle(ctx, {x:r.x,y:r.y+r.h}); drawHandle(ctx, {x:r.x+r.w,y:r.y+r.h})
             }
+            break
+          }
+          case 'ellipse': {
+            const r = rectFromPoints(d.points[0], d.points[1])
+            const cx = r.x + r.w/2, cy = r.y + r.h/2
+            const rx = Math.abs(r.w/2), ry = Math.abs(r.h/2)
+            ctx.beginPath()
+            ctx.ellipse(cx, cy, Math.max(rx,0.1), Math.max(ry,0.1), 0, 0, Math.PI*2)
+            ctx.stroke()
+            if (selected && s.drawingSettings.showHandles) {
+              drawHandle(ctx, {x:r.x,y:r.y}); drawHandle(ctx, {x:r.x+r.w,y:r.y+r.h})
+            }
+            break
+          }
+          case 'fib': {
+            const [a,b] = d.points
+            const levels = [0, 0.236, 0.382, 0.5, 0.618, 1]
+            const y0 = a.y, y1 = b.y
+            const left = 0, right = el.width
+            ctx.font = '12px ui-sans-serif, system-ui'
+            levels.forEach(p => {
+              const y = y0 + (y1 - y0) * p
+              ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke()
+              // labels: % and price if possible
+              const price = yToPrice(y)
+              const txt = ${Math.round(p*100)}% + (price!=null ?    : '')
+              ctx.fillStyle = '#e5e7eb'
+              ctx.fillText(txt, right - 8 - ctx.measureText(txt).width, y - 4)
+            })
+            if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b) }
             break
           }
           case 'text': {
@@ -118,7 +156,7 @@ export default function DrawingLayer() {
     const p = toLocal(e)
 
     if (s.activeTool === 'select') {
-      const hit = drawings.find(d => hitTest(d, p) < HIT_PAD)
+      const hit = drawings.find(d => hitTest(d, p, containerRef.current! ) < HIT_PAD)
       if (!hit) { setMarquee({ start:p, end:p }); s.clearSelection(); return }
       s.toggleSelect(hit.id, !e.shiftKey)
       setDragId(hit.id)
@@ -133,7 +171,7 @@ export default function DrawingLayer() {
     const p = toLocal(e)
     if (marquee) { setMarquee(v => v ? ({...v, end:p}) : null); return }
     if (dragId) { s.updateDrawing(dragId, dr => updateDrawingGeometry(dr, p)); return }
-    const id = drawings.find(d => hitTest(d, p) < HIT_PAD)?.id ?? null
+    const id = drawings.find(d => hitTest(d, p, containerRef.current! ) < HIT_PAD)?.id ?? null
     setHoverId(id)
   }
 
@@ -215,16 +253,57 @@ function drawLineLabel(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
   ctx.restore()
 }
 
-function hitTest(d: Drawing, p: Point): number {
+/** Extend segment AB as a forward ray through B until canvas bounds */
+function extendRayToBounds(a: Point, b: Point, w: number, h: number) {
+  const vx = b.x - a.x, vy = b.y - a.y
+  const len = Math.hypot(vx, vy) || 1
+  const nx = vx/len, ny = vy/len
+  // project far enough to hit an edge
+  const far = Math.max(w, h) * 2
+  const end = { x: b.x + nx * far, y: b.y + ny * far }
+  // back to start just a little before A for visual continuity
+  const start = { x: a.x - nx * 8, y: a.y - ny * 8 }
+  return { start, end }
+}
+
+function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
   switch (d.kind) {
     case 'trendline':
     case 'arrow':
       return distanceToSegment(p, d.points[0], d.points[1])
+    case 'ray': {
+      // distance to infinite segment in forward direction
+      const [a,b] = d.points
+      // reuse distanceToSegment against our extended ray segment
+      const r = container.getBoundingClientRect()
+      const ext = extendRayToBounds(a,b, r.width, r.height)
+      return distanceToSegment(p, ext.start, ext.end)
+    }
     case 'hline': return Math.abs(p.y - d.points[0].y)
     case 'vline': return Math.abs(p.x - d.points[0].x)
     case 'rect': {
       const r = rectFromPoints(d.points[0], d.points[1])
       return withinRect(p, r) ? 0 : 999
+    }
+    case 'ellipse': {
+      const R = rectFromPoints(d.points[0], d.points[1])
+      const cx = R.x + R.w/2, cy = R.y + R.h/2
+      const rx = Math.max(Math.abs(R.w/2), 0.1), ry = Math.max(Math.abs(R.h/2), 0.1)
+      // normalized ellipse equation value
+      const v = Math.abs(((p.x - cx) ** 2) / (rx ** 2) + ((p.y - cy) ** 2) / (ry ** 2) - 1)
+      // approximate distance band
+      return v < 0.15 ? 0 : 999
+    }
+    case 'fib': {
+      const [a,b] = d.points
+      const levels = [0, 0.236, 0.382, 0.5, 0.618, 1]
+      const y0 = a.y, y1 = b.y
+      let best = 999
+      levels.forEach(pct => {
+        const y = y0 + (y1 - y0) * pct
+        best = Math.min(best, Math.abs(p.y - y))
+      })
+      return best
     }
     case 'text': {
       const a = d.points[0]; const r = { x:a.x, y:a.y-12, w:80, h:16 }
@@ -234,6 +313,7 @@ function hitTest(d: Drawing, p: Point): number {
   }
 }
 
+/** Context Menu */
 function ContextMenu({ x, y, onClose }:{x:number;y:number;onClose:()=>void}) {
   const s = useChartStore()
   const run = (fn:()=>void) => { fn(); onClose() }
