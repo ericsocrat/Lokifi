@@ -1,5 +1,5 @@
 ﻿import React from 'react'
-import { useChartStore } from '@/state/store'
+import AlertModal from '@/components/AlertModal'\nimport { useChartStore } from '@/state/store'
 import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/geom'
 import { Drawing, createDrawing, updateDrawingGeometry } from '@/lib/drawings'
 import { snapPxToGrid, snapYToPriceLevels, magnetYToOHLC, yToPrice } from '@/lib/chartMap'
@@ -14,10 +14,11 @@ export default function DrawingLayer() {
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const containerRef = React.useRef<HTMLDivElement>(null)
   const s = useChartStore()
-  const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings)
+  const layerOf = (id: string) => s.layers.find(l => l.id === id) || { visible: true, locked: false, opacity: 1 }  const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings)
   const [hoverId, setHoverId] = React.useState<string|null>(null)
   const [dragId, setDragId] = React.useState<string|null>(null)
-  const [marquee, setMarquee] = React.useState<{start:Point,end:Point}|null>(null)
+  
+  const [alertModalOpen, setAlertModalOpen] = React.useState(false)
   const [menu, setMenu] = React.useState<Menu>({ open:false, x:0, y:0 })
 
   // perf flags
@@ -51,7 +52,7 @@ export default function DrawingLayer() {
       ctx.scale(devicePixelRatio, devicePixelRatio)
       ctx.lineCap = s.drawingSettings.lineCap
 
-      drawings.forEach(d => {
+      drawings.forEach(d => {\n        const ly = layerOf((d as any).layerId || s.activeLayerId || 'layer-1'); if (!ly.visible) return;
         if (d.hidden) return
         const selected = s.selection.has(d.id)
         const sty = d.style || {}
@@ -194,8 +195,8 @@ export default function DrawingLayer() {
       s.toggleSelect(hit.id, !e.shiftKey); setDragId(hit.id); invalidate(); return
     }
 
-    const d = createDrawing(s.activeTool as any, p)
-    if (d) { s.addDrawing(d); setDragId(d.id); invalidate() }
+    const d = createDrawing(, p) as any
+    if (d) { d.layerId = d.layerId ?? s.activeLayerId; s.addDrawing(d); setDragId(d.id); invalidate() }
   }
 
   const onMouseMove = (e: React.MouseEvent) => {
@@ -274,7 +275,7 @@ function hitTest(d:any, p: Point, container: HTMLDivElement): number {
 }
 function ContextMenu({ x, y, onClose }:{x:number;y:number;onClose:()=>void}) {
   const s = useChartStore()
-  const run = (fn:()=>void) => { fn(); onClose() }
+  const layerOf = (id: string) => s.layers.find(l => l.id === id) || { visible: true, locked: false, opacity: 1 }  const run = (fn:()=>void) => { fn(); onClose() }
   return (
     <div className='absolute z-20 rounded-md border border-white/10 bg-black/80 text-sm shadow-lg'
          style={{ left:x, top:y, minWidth:220 }}>
@@ -290,3 +291,5 @@ function ContextMenu({ x, y, onClose }:{x:number;y:number;onClose:()=>void}) {
   )
 }
 function MenuBtn({children, onClick}:{children:React.ReactNode; onClick:()=>void}) { return <button onClick={onClick} className='w-full text-left px-3 py-2 hover:bg-white/10'>{children}</button> }
+
+

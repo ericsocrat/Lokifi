@@ -35,8 +35,7 @@ export default function PriceChart() {
   useHotkeys()
 
   // build chart once
-  React.useEffect(() => {
-    if (!ref.current) return
+  React.useEffect(() => {\n  // Fynix Phase U: ensure extras are stopped on unmount\n  const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;\nif (!ref.current) return
     const chart = createChart(ref.current, {
       layout: { background: { color: theme==='light' ? '#fff' : '#0a0a0a' }, textColor: theme==='light' ? '#111' : '#ddd' },
       grid: { horzLines: { color: '#222' }, vertLines: { color: '#222' } },
@@ -71,8 +70,7 @@ export default function PriceChart() {
   const bumpRangeTick = React.useCallback(() => setRangeTick(t => (t + 1) | 0), [])
 
   // attach data adapter
-  React.useEffect(() => {
-    const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timeframe })
+  React.useEffect(() => {\n  // Fynix Phase U: ensure extras are stopped on unmount\n  const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;\nconst adapter = new MarketDataAdapter({ provider: provider as any, symbol, timeframe })
     let unsub = () => {}
     unsub = adapter.on(rafThrottle((ev: any) => {
       const s = seriesRef.current
@@ -90,8 +88,7 @@ export default function PriceChart() {
   }, [provider, symbol, timeframe, bumpRangeTick])
 
   /** ========== Indicator plotting (windowed LOD) ========== */
-  React.useEffect(() => {
-    const run = () => {
+  React.useEffect(() => {\n  // Fynix Phase U: ensure extras are stopped on unmount\n  const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;\nconst run = () => {
       const s = seriesRef.current
       const chart = chartRef.current
       if (!s || !chart || candles.length === 0) return
@@ -232,4 +229,5 @@ export default function PriceChart() {
     </div>
   )
 }
+
 

@@ -76,7 +76,22 @@ const defaultHotkeys: Record<string,string> = {
   DistributeVert: 'Ctrl+Shift+V',
 }
 
-type ChartState = {
+type ChartState = {\n  __snapIdx?: number
+  // Phase V2
+  layers: Layer[]
+  activeLayerId: string | null
+  addLayer: (name?: string) => void
+  renameLayer: (id: string, name: string) => void
+  toggleLayerVisibility: (id: string) => void
+  toggleLayerLock: (id: string) => void
+  setLayerOpacity: (id: string, value: number) => void
+  setActiveLayer: (id: string) => void
+  moveLayer: (id: string, dir: 'up'|'down') => void
+  snapshots: Snapshot[]
+  saveSnapshot: (name: string) => void
+  loadSnapshot: (id: string) => void
+  deleteSnapshot: (id: string) => void
+  cycleSnapshot: (delta: number) => void\n  alerts: Alert[]\n  alertEvents: AlertEvent[]\n  addAlert: (p: Omit<Alert, 'id'|'enabled'|'triggers'|'lastTriggeredAt'> & { enabled?: boolean }) => void\n  updateAlert: (id: string, patch: Partial<Alert>) => void\n  removeAlert: (id: string) => void\n  toggleAlert: (id: string) => void\n  snoozeAlert: (id: string, until: number | null) => void\n  clearAlertEvents: () => void\n  evaluateAlerts: (yPrev: number | null, yNow: number | null) => void
   timeframe: string
   activeTool: Tool
   theme: Theme
@@ -163,7 +178,7 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
   toggleIndicator: (k) => set((s) => ({ indicators: { ...s.indicators, [k]: !s.indicators[k] } })),
   updateIndicatorSettings: (p) => set((s) => ({ indicatorSettings: { ...s.indicatorSettings, ...p } })),
 
-  addDrawing: (d) => set((s)=>({ drawings: [...s.drawings, d] })),
+  addDrawing: (d) => set((s:any)=>({ drawings: [...s.drawings, { ...d, layerId: d.layerId ?? s.activeLayerId }] })),
   updateDrawing: (id, fn) => set((s)=>({ drawings: s.drawings.map(dr => dr.id===id ? fn(dr) : dr) })),
   deleteSelected: () => set((s)=>({ drawings: s.drawings.filter(d => !s.selection.has(d.id)), selection: new Set() })),
   clearSelection: () => set({ selection: new Set() }),
@@ -313,5 +328,10 @@ function bbox(d:any){
 }
 
 export { defaultDrawingSettings, defaultHotkeys }
+
+
+
+
+
 
 

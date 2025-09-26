@@ -14,7 +14,7 @@ export type DrawingStyle = {
   fill?: string | null
 }
 
-export type Drawing = {
+export type Drawing = {\n  layerId?: string
   id: string
   kind: DrawingKind
   points: Point[]
@@ -87,3 +87,4 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
       return d
   }
 }
+
