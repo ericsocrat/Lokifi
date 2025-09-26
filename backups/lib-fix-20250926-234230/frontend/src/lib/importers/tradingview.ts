@@ -1,4 +1,4 @@
-﻿import type { Drawing } from "@/lib/drawings"
+import type { Drawing } from "@/lib/drawings"
 
 export type TVImportResult = { drawings: Drawing[]; errors: string[] }
 
@@ -27,7 +27,8 @@ export function importTradingViewJSON(json: any): TVImportResult {
 }
 
 export function importTradingViewCSV(csv: string): TVImportResult {
-  const lines = csv.split(/\r?\n/).filter(Boolean)
+  const lines = csv.split(/\r?
+/).filter(Boolean)
   const out: Drawing[] = []
   const errors: string[] = []
   for (const ln of lines) {

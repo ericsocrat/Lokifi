@@ -41,7 +41,7 @@ type DrawingSettings = {
   snapToOHLC: boolean
   magnetTolerancePx: number
   perToolSnap: Record<string, boolean>   // e.g. trendline:true, fib:false, etc.
-  fibDefaultLevels: number[]             // global defaults if drawing has none
+  , fibDefaultLevels: number[]             // global defaults if drawing has none
 }
 
 const defaultDrawingSettings: DrawingSettings = {
@@ -57,8 +57,7 @@ const defaultDrawingSettings: DrawingSettings = {
   snapToOHLC: true,
   magnetTolerancePx: 6,
   $obj = $m.Groups[1].Value
-
-  fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1,]
+  , fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1,]
 }
 
 const defaultHotkeys: Record<string,string> = {

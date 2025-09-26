@@ -1,99 +1,172 @@
-import type { Drawing } from '@/lib/drawings'
-import { rectFromPoints } from '@/lib/geom'
+/**
+ * Minimal SVG string builders — no JSX, no DOM, TypeScript-safe.
+ * Usage: build element strings with helpers, then join with serializeSvg(...)
+ */
 
-type P = { x:number; y:number }
-const esc = (s:string)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;')
+export type P = { x: number; y: number };
 
-export function drawingsToSVG(drawings: Drawing[], width: number, height: number): string {
-  const parts:string[] = []
-  parts.push(`<'svg xmlns='http://www.w3.org/2000/svg' width='' height='' viewBox='0 0  '>`)
-  parts.push(`<'g fill='none' stroke-linecap='round' stroke-linejoin='round'>`)
-  drawings.forEach(d => {
-    if (d.hidden) return
-    const sty = d.style || {}
-    const stroke = sty.stroke || '#9ca3af'
-    const sw = sty.strokeWidth || 1.75
-    const dash = sty.dash==='dash' ? '8,6' : sty.dash==='dot' ? '2,4' : sty.dash==='dashdot' ? '10,6,2,6' : null
-    const opacity = sty.opacity ?? 1
-    const common = stroke=\"\" stroke-width=\"\" opacity=\"\" + (dash? stroke-dasharray='':'')
-    switch (d.kind) {
-      case 'trendline':
-      case 'arrow':
-      case 'ray': {
-        const [a,b] = d.points
-        parts.push(`<'line x1='' y1='' x2='' y2=''  />`)
-        break
-      }
-      case 'hline': {
-        const y = d.points[0].y
-        parts.push(`<'line x1='0' y1='' x2='' y2=''  />`)
-        break
-      }
-      case 'vline': {
-        const x = d.points[0].x
-        parts.push(`<'line x1='' y1='0' x2='' y2=''  />`)
-        break
-      }
-      case 'rect': {
-        const r = rectFromPoints(d.points[0], d.points[1])
-        const fill = d.style?.fill ?  fill='' fill-opacity='0.18' :  fill='none'
-        parts.push(`<'rect x='' y='' width='' height=''  />`)
-        break
-      }
-      case 'ellipse': {
-        const r = rectFromPoints(d.points[0], d.points[1])
-        const cx = r.x + r.w/2, cy = r.y + r.h/2
-        const rx = Math.abs(r.w/2), ry = Math.abs(r.h/2)
-        const fill = d.style?.fill ?  fill='' fill-opacity='0.18' :  fill='none'
-        parts.push(`<'ellipse cx='' cy='' rx='' ry=''  />`)
-        break
-      }
-      case 'parallel-channel': {
-        const [a,b,c] = d.points
-        const vx=b.x-a.x, vy=b.y-a.y; const len=Math.hypot(vx,vy)||1
-        const nx=vx/len, ny=vy/len, px=-ny, py=nx
-        const dist = ((c.x-a.x)*px + (c.y-a.y)*py)
-        const ox=px*dist, oy=py*dist
-        const A2={x:a.x+ox,y:a.y+oy}, B2={x:b.x+ox,y:b.y+oy}
-        const fill = d.style?.fill ?  fill='' fill-opacity='0.18' :  fill='none'
-        parts.push(`<'polyline points=', ,'  />`)
-        parts.push(`<'polyline points=', ,'  />`)
-        parts.push(`<'polygon points=', , , ,'  stroke='none' />`)
-        break
-      }
-      case 'pitchfork': {
-        const [a,b,c] = d.points
-        const m={x:(b.x+c.x)/2, y:(b.y+c.y)/2}
-        const vx=m.x-a.x, vy=m.y-a.y; const len=Math.hypot(vx,vy)||1
-        const nx=vx/len, ny=vy/len, px=-ny, py=nx
-        const distB = ((b.x-a.x)*px + (b.y-a.y)*py)
-        const distC = ((c.x-a.x)*px + (c.y-a.y)*py)
-        const mk=(p:P)=>${p.x},
-        const M1={x:a.x-nx*1000,y:a.y-ny*1000}, M2={x:a.x+nx*1000,y:a.y+ny*1000}
-        const PB1={x:M1.x+px*distB,y:M1.y+py*distB}, PB2={x:M2.x+px*distB,y:M2.y+py*distB}
-        const PC1={x:M1.x+px*distC,y:M1.y+py*distC}, PC2={x:M2.x+px*distC,y:M2.y+py*distC}
-        parts.push(`<'polyline points=' '  />`)
-        parts.push(`<'polyline points=' '  />`)
-        parts.push(`<'polyline points=' '  />`)
-        break
-      }
-      case 'fib': {
-        const [a,b] = d.points
-        const levels = (d.fibLevels ?? [0,0.236,0.382,0.5,0.618,1]).slice().sort((x,y)=>x-y)
-        const y0 = a.y, y1 = b.y
-        levels.forEach(p => {
-          const y = y0 + (y1 - y0) * p
-          parts.push(`<'line x1='0' y1='' x2='' y2=''  />`)
-        })
-        break
-      }
-      case 'text': {
-        const p = d.points[0]
-        parts.push(`<'text x='' y='' fill='#e5e7eb' font-size='12'></text>`)
-        break
-      }
-    }
-  })
-  parts.push(`<'/g></svg>`)
-  return parts.join('')
+export type SvgStyle = {
+  stroke?: string;
+  strokeWidth?: number;
+  opacity?: number;
+  fill?: string;
+  dash?: boolean | string;     // true -> "6,4" (default), string -> custom "a,b"
+  lineCap?: "butt" | "round" | "square";
+  lineJoin?: "miter" | "round" | "bevel";
+  className?: string;
+};
+
+export type TextStyle = {
+  fill?: string;
+  fontSize?: number;           // px
+  fontFamily?: string;
+  anchor?: "start" | "middle" | "end";
+  className?: string;
+  opacity?: number;
+};
+
+function escAttr(v: string | number | boolean | null | undefined): string {
+  if (v === null || v === undefined) return "";
+  return String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
+
+function joinAttrs(obj: Record<string, string | number | boolean | null | undefined>): string {
+  const parts: string[] = [];
+  for (const k of Object.keys(obj)) {
+    const v = obj[k];
+    if (v === undefined || v === null || v === false) continue;
+    if (v === true) { parts.push(`${k}="true"`); continue; }
+    const sv = escAttr(v);
+    if (sv === "") continue;
+    parts.push(`${k}="${sv}"`);
+  }
+  return parts.length ? " " + parts.join(" ") : "";
+}
+
+function commonStroke(style: SvgStyle = {}): Record<string, string | number> {
+  const dashArray = style.dash === true ? "6,4" : (typeof style.dash === "string" ? style.dash : "");
+  return {
+    stroke: style.stroke ?? "currentColor",
+    "stroke-width": style.strokeWidth ?? 1.5,
+    opacity: style.opacity ?? 1,
+    ...(dashArray ? { "stroke-dasharray": dashArray } : {}),
+    ...(style.lineCap ? { "stroke-linecap": style.lineCap } : {}),
+    ...(style.lineJoin ? { "stroke-linejoin": style.lineJoin } : {}),
+    ...(style.className ? { class: style.className } : {}),
+  };
+}
+
+function commonFill(style: SvgStyle = {}): Record<string, string | number> {
+  // If explicit fill provided, use it with light opacity; else "none"
+  return style.fill
+    ? { fill: style.fill, "fill-opacity": 0.18 }
+    : { fill: "none" };
+}
+
+/** <line .../> */
+export function lineEl(a: P, b: P, style: SvgStyle = {}): string {
+  const attrs = {
+    x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+    ...commonStroke(style),
+  };
+  return `<line${joinAttrs(attrs)} />`;
+}
+
+/** <polyline .../> */
+export function polylineEl(points: P[], style: SvgStyle = {}): string {
+  const pts = points.map(p => `${p.x},${p.y}`).join(" ");
+  const attrs = {
+    points: pts,
+    ...commonStroke(style),
+    ...commonFill(style),
+  };
+  return `<polyline${joinAttrs(attrs)} />`;
+}
+
+/** <rect .../> (defined by opposite corners) */
+export function rectEl(a: P, b: P, style: SvgStyle = {}): string {
+  const x = Math.min(a.x, b.x);
+  const y = Math.min(a.y, b.y);
+  const w = Math.max(0.0001, Math.abs(b.x - a.x));
+  const h = Math.max(0.0001, Math.abs(b.y - a.y));
+  const attrs = {
+    x, y, width: w, height: h,
+    ...commonStroke(style),
+    ...commonFill(style),
+  };
+  return `<rect${joinAttrs(attrs)} />`;
+}
+
+/** <circle .../> */
+export function circleEl(c: P, r: number, style: SvgStyle = {}): string {
+  const attrs = {
+    cx: c.x, cy: c.y, r: Math.max(0.0001, r),
+    ...commonStroke(style),
+    ...commonFill(style),
+  };
+  return `<circle${joinAttrs(attrs)} />`;
+}
+
+/** <path .../> (pass a prebuilt "d" attribute) */
+export function pathEl(d: string, style: SvgStyle = {}): string {
+  const attrs = {
+    d,
+    ...commonStroke(style),
+    ...commonFill(style),
+  };
+  return `<path${joinAttrs(attrs)} />`;
+}
+
+/** <text ...>content</text> */
+export function textEl(p: P, text: string, style: TextStyle = {}): string {
+  const attrs = {
+    x: p.x, y: p.y,
+    fill: style.fill ?? "currentColor",
+    "font-size": style.fontSize ?? 12,
+    "font-family": style.fontFamily ?? "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto",
+    "text-anchor": style.anchor ?? "start",
+    opacity: style.opacity ?? 1,
+    class: style.className,
+  };
+  return `<text${joinAttrs(attrs)}>${escAttr(text)}</text>`;
+}
+
+/** Helper to group multiple elements */
+export function groupEl(children: string[], className?: string, opacity?: number): string {
+  const attrs: Record<string, string | number> = {};
+  if (className) attrs["class"] = className;
+  if (opacity !== undefined) attrs["opacity"] = opacity;
+  return `<g${joinAttrs(attrs)}>${children.join("")}</g>`;
+}
+
+/** Serialize a whole SVG document with given width/height (optional viewBox) */
+export function serializeSvg(children: string[], width = 800, height = 400, viewBox?: { x: number; y: number; w: number; h: number }): string {
+  const vb = viewBox ? ` viewBox="${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}"` : "";
+  const head = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"${vb}>`;
+  return head + children.join("") + "</svg>";
+}
+
+/** Convenience: convert 2 points to a path "d" for a simple line */
+export function dLine(a: P, b: P): string {
+  return `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
+}
+
+/** Convenience: polygon/polyline "points" from points array */
+export function pointsAttr(points: P[]): string {
+  return points.map(p => `${p.x},${p.y}`).join(" ");
+}
+
+/** Default export with common helpers for flexible imports */
+const Svg = {
+  lineEl,
+  polylineEl,
+  rectEl,
+  circleEl,
+  pathEl,
+  textEl,
+  groupEl,
+  serializeSvg,
+  dLine,
+  pointsAttr,
+};
+export default Svg;

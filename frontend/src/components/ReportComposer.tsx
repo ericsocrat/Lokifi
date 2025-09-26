@@ -29,8 +29,7 @@ export default function ReportComposer({ open, onClose }:{ open:boolean; onClose
       if (includeRecent && s.alertEvents?.length) {
         const lines = s.alertEvents.slice(-12).map(ev => `- ${new Date(ev.at).toLocaleString()} — ${ev.kind}${ev.price!=null?` @ ${ev.price.toFixed(2)}`:""}`)
         blocks.push({ kind: "text", markdown: `### Recent Alerts
-${lines.join("
-")}` })
+${lines.join("\n")}` })
       }
       const bytes = await buildReportPDF(blocks)
       downloadPdf(bytes, (title || "report").replace(/\s+/g,"_") + ".pdf")

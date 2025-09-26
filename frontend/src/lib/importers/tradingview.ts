@@ -1,47 +1,128 @@
-import type { Drawing } from "@/lib/drawings"
+/**
+ * TradingView CSV importer (robust)
+ *
+ * Accepts CSV exported from TradingView or similar sources.
+ * - Delimiters: comma, semicolon, or tab
+ * - Timestamp: seconds, milliseconds, or ISO-ish "YYYY-MM-DD HH:mm[:ss]"
+ * - Header variants tolerated: time|timestamp|date, open, high, low, close|close*, volume|vol
+ */
 
-export type TVImportResult = { drawings: Drawing[]; errors: string[] }
+export type TVBar = {
+  time: number;   // unix seconds
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+};
 
-export function importTradingViewJSON(json: any): TVImportResult {
-  const out: Drawing[] = []
-  const errors: string[] = []
-  try {
-    const arr = Array.isArray(json) ? json : (json?.drawings ?? [])
-    for (const d of arr) {
-      try {
-        if (d.type === "trend_line" && d.points?.length>=2) {
-          out.push({
-            id: "tv-" + (Math.random().toString(36).slice(2)),
-            kind: "trendline" as any,
-            points: d.points.map((p:any)=>({ x: p.x ?? 0, y: p.y ?? 0 }))
-          } as any)
-        } else if (d.type === "horizontal_line" && d.priceY != null) {
-          out.push({ id: "tv-" + Math.random().toString(36).slice(2), kind: "hline" as any, points: [{ x: 0, y: d.priceY }] } as any)
-        } else if (d.type === "rectangle" && d.points?.length>=2) {
-          out.push({ id:"tv-"+Math.random().toString(36).slice(2), kind:"rect" as any, points: d.points.slice(0,2).map((p:any)=>({x:p.x,y:p.y})) } as any)
-        }
-      } catch (e:any) { errors.push(e?.message || String(e)) }
-    }
-  } catch (e:any) { errors.push(e?.message || String(e)) }
-  return { drawings: out, errors }
+export type TVImport = {
+  symbol?: string;
+  timeframe?: string;
+  bars: TVBar[];
+};
+
+function detectDelimiter(sample: string): string {
+  const head = sample.split(/\r?\n/).find(l => l.trim().length > 0) ?? "";
+  const counts = [
+    { d: ",", n: (head.match(/,/g) || []).length },
+    { d: ";", n: (head.match(/;/g) || []).length },
+    { d: "\t", n: (head.match(/\t/g) || []).length },
+  ].sort((a, b) => b.n - a.n);
+  return counts[0].n > 0 ? counts[0].d : ",";
 }
 
-export function importTradingViewCSV(csv: string): TVImportResult {
-  const lines = csv.split(/\r?
-/).filter(Boolean)
-  const out: Drawing[] = []
-  const errors: string[] = []
-  for (const ln of lines) {
-    try {
-      const [type, ...rest] = ln.split(",")
-      if (type==="hline") {
-        const y = parseFloat(rest[0]); if (!isFinite(y)) throw new Error("bad y")
-        out.push({ id:"tv-"+Math.random().toString(36).slice(2), kind:"hline" as any, points:[{x:0,y}] } as any)
-      } else if (type==="trendline") {
-        const [x1,y1,x2,y2] = rest.map(parseFloat)
-        out.push({ id:"tv-"+Math.random().toString(36).slice(2), kind:"trendline" as any, points:[{x:x1,y:y1},{x:x2,y:y2}] } as any)
-      }
-    } catch (e:any) { errors.push(e?.message || String(e)) }
+function toNumber(v: string | undefined): number | null {
+  if (!v) return null;
+  const n = Number(v.replace(/_/g, "").trim());
+  return Number.isFinite(n) ? n : null;
+}
+
+function parseDateToUnixSeconds(s: string): number | null {
+  const t = s.trim();
+  // numeric seconds or ms
+  if (/^-?\d+(\.\d+)?$/.test(t)) {
+    const num = Number(t);
+    if (!Number.isFinite(num)) return null;
+    if (num > 1e12) return Math.round(num / 1000);   // ms
+    if (num > 1e10) return Math.round(num / 1000);   // ms-ish
+    if (num > 1e9)  return Math.round(num);          // seconds
+    return Math.round(num);                           // seconds (small ranges)
   }
-  return { drawings: out, errors }
+  // ISO-ish string
+  // Replace common separators to be safe
+  const normalized = t.replace(/T/, " ").replace(/\//g, "-");
+  const d = new Date(normalized);
+  if (isNaN(d.getTime())) return null;
+  return Math.round(d.getTime() / 1000);
 }
+
+type HeaderMap = {
+  time: number; open: number; high: number; low: number; close: number; volume: number;
+};
+
+function mapHeader(cols: string[]): HeaderMap | null {
+  const idx = (want: RegExp) =>
+    cols.findIndex(c => want.test(c.trim().toLowerCase()));
+  const time = idx(/^(time|timestamp|date)$/);
+  const open = idx(/^open($|[^a-z])/);
+  const high = idx(/^high($|[^a-z])/);
+  const low  = idx(/^low($|[^a-z])/);
+  const close = idx(/^close($|[^a-z])/); // matches "close", "close*"
+  const volume = idx(/^(volume|vol)($|[^a-z])/);
+  if ([time, open, high, low, close, volume].some(i => i < 0)) return null;
+  return { time, open, high, low, close, volume };
+}
+
+export function parseTradingViewCSV(csv: string): TVImport {
+  const lines = csv.split(/\r?\n/).filter(l => l.trim().length > 0 && !/^\s*(#|\/\/|;{3,}|={3,})/.test(l));
+  if (!lines.length) return { bars: [] };
+
+  // Optional metadata line (e.g., "Symbol,Timeframe" or "SYMBOL:BTCUSD, 1h")
+  let symbol: string | undefined;
+  let timeframe: string | undefined;
+
+  // Pick header line: the first line with recognizable columns
+  const delim = detectDelimiter(lines[0]);
+  let headerLineIndex = 0;
+  let header: HeaderMap | null = null;
+
+  for (let i = 0; i < Math.min(lines.length, 5); i++) {
+    const cols = lines[i].split(delim).map(c => c.trim());
+    const hm = mapHeader(cols);
+    if (hm) { header = hm; headerLineIndex = i; break; }
+    // Try to pick up a symbol/timeframe style metadata line
+    if (!symbol && cols.length >= 1 && /[A-Z0-9:_\-\/]+/i.test(cols[0])) symbol = cols[0];
+    if (!timeframe && cols.length >= 2 && /(\d+[mhdw]|[1-9]\d*\s*(min|hour|day|week)s?)/i.test(cols[1])) timeframe = cols[1];
+  }
+
+  if (!header) {
+    // fallback: assume traditional TV order
+    header = { time: 0, open: 1, high: 2, low: 3, close: 4, volume: 5 };
+  }
+
+  const bars: TVBar[] = [];
+  for (let i = headerLineIndex + 1; i < lines.length; i++) {
+    const cols = lines[i].split(delim);
+    if (cols.length < 6) continue;
+
+    const t = parseDateToUnixSeconds(cols[header.time]);
+    const o = toNumber(cols[header.open]);
+    const h = toNumber(cols[header.high]);
+    const l = toNumber(cols[header.low]);
+    const c = toNumber(cols[header.close]);
+    const v = toNumber(cols[header.volume]) ?? 0;
+
+    if (t == null || o == null || h == null || l == null || c == null) continue;
+
+    bars.push({ time: t, open: o, high: h, low: l, close: c, volume: v });
+  }
+
+  // Ensure ascending by time (some CSVs export newest-first)
+  bars.sort((a, b) => a.time - b.time);
+
+  return { symbol, timeframe, bars };
+}
+
+// convenient default export
+export default parseTradingViewCSV;
