@@ -6,6 +6,7 @@ import { snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/chartMap'
 
 type Point = { x:number; y:number }
 type Menu = { open: boolean; x:number; y:number }
+type Multi = { id: string|null; kind: 'pitchfork'|'parallel-channel'|null; stage: 0|1 } // stage 0: placing A->B (drag); stage 1: awaiting C
 
 const HANDLE_R = 4
 const HIT_PAD = 6
@@ -19,6 +20,8 @@ export default function DrawingLayer() {
   const [dragId, setDragId] = React.useState<string|null>(null)
   const [marquee, setMarquee] = React.useState<{start:Point,end:Point}|null>(null)
   const [menu, setMenu] = React.useState<Menu>({ open:false, x:0, y:0 })
+  const [multi, setMulti] = React.useState<Multi>({ id:null, kind:null, stage:0 })
+  const [cursorHint, setCursorHint] = React.useState<{x:number;y:number;text:string}|null>(null)
 
   React.useEffect(() => useChartStore.subscribe(state => setDrawings(state.drawings)), [])
 
@@ -50,11 +53,9 @@ export default function DrawingLayer() {
           case 'arrow': {
             const [a,b] = d.points
             ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke()
-            if (d.kind === 'arrow') {
-              drawArrowHead(ctx, a, b, s.drawingSettings.arrowHead, s.drawingSettings.arrowHeadSize, getStrokeColor(ctx))
-            }
+            if (d.kind === 'arrow') drawArrowHead(ctx, a, b, s.drawingSettings.arrowHead, s.drawingSettings.arrowHeadSize, getStrokeColor(ctx))
             if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b) }
-            if (s.drawingSettings.showLineLabels) { drawLineLabel(ctx, a, b) }
+            if (s.drawingSettings.showLineLabels) drawLineLabel(ctx, a, b)
             break
           }
           case 'ray': {
@@ -62,7 +63,7 @@ export default function DrawingLayer() {
             const ext = extendRayToBounds(a, b, el.width, el.height)
             ctx.beginPath(); ctx.moveTo(ext.start.x, ext.start.y); ctx.lineTo(ext.end.x, ext.end.y); ctx.stroke()
             if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b) }
-            if (s.drawingSettings.showLineLabels) { drawLineLabel(ctx, a, b) }
+            if (s.drawingSettings.showLineLabels) drawLineLabel(ctx, a, b)
             break
           }
           case 'hline': {
@@ -107,13 +108,24 @@ export default function DrawingLayer() {
             levels.forEach(p => {
               const y = y0 + (y1 - y0) * p
               ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke()
-              // labels: % and price if possible
               const price = yToPrice(y)
               const txt = ${Math.round(p*100)}% + (price!=null ?    : '')
               ctx.fillStyle = '#e5e7eb'
               ctx.fillText(txt, right - 8 - ctx.measureText(txt).width, y - 4)
             })
             if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b) }
+            break
+          }
+          case 'parallel-channel': {
+            const [a,b,c] = d.points
+            drawParallelChannel(ctx, a, b, c, el.width, el.height, true) // with fill
+            if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b); drawHandle(ctx, c) }
+            break
+          }
+          case 'pitchfork': {
+            const [a,b,c] = d.points
+            drawPitchfork(ctx, a, b, c, el.width, el.height, true) // with subtle guides
+            if (selected && s.drawingSettings.showHandles) { drawHandle(ctx, a); drawHandle(ctx, b); drawHandle(ctx, c) }
             break
           }
           case 'text': {
@@ -145,15 +157,34 @@ export default function DrawingLayer() {
   const toLocal = (e: React.MouseEvent): Point => {
     const r = containerRef.current!.getBoundingClientRect()
     let p = { x: e.clientX - r.left, y: e.clientY - r.top }
+    // grid snap
     p = snapPxToGrid(p, s.drawingSettings.snapStep, s.drawingSettings.snapEnabled)
+    // price-level snap (Y)
     if (s.drawingSettings.snapPriceLevels) p = { x:p.x, y: snapYToPriceLevels(p.y, 6) }
     return p
   }
+
+  const isMultiTool = (tool: string) => tool === 'pitchfork' || tool === 'parallel-channel'
 
   const onMouseDown = (e: React.MouseEvent) => {
     if (e.button === 2) return
     setMenu({ open:false, x:0, y:0 })
     const p = toLocal(e)
+
+    // Step 2 click for multi-tools: place P3 and finish
+    if (s.activeTool && isMultiTool(s.activeTool) && multi.stage === 1 && multi.id) {
+      const id = multi.id
+      s.updateDrawing(id, (dr) => {
+        const pts = dr.points.slice()
+        pts[2] = p
+        return { ...dr, points: pts }
+      })
+      setMulti({ id:null, kind:null, stage:0 })
+      setCursorHint(null)
+      setDragId(null)
+      try { (window as any).__fynix_toast?.('Tool completed') } catch {}
+      return
+    }
 
     if (s.activeTool === 'select') {
       const hit = drawings.find(d => hitTest(d, p, containerRef.current! ) < HIT_PAD)
@@ -163,15 +194,59 @@ export default function DrawingLayer() {
       return
     }
 
+    // Create new drawing
     const d = createDrawing(s.activeTool as any, p)
-    if (d) { s.addDrawing(d); setDragId(d.id) }
+    if (d) {
+      s.addDrawing(d)
+      setDragId(d.id)
+      if (isMultiTool(d.kind)) setMulti({ id: d.id, kind: d.kind as any, stage: 0 })
+    }
   }
 
   const onMouseMove = (e: React.MouseEvent) => {
-    const p = toLocal(e)
-    if (marquee) { setMarquee(v => v ? ({...v, end:p}) : null); return }
-    if (dragId) { s.updateDrawing(dragId, dr => updateDrawingGeometry(dr, p)); return }
-    const id = drawings.find(d => hitTest(d, p, containerRef.current! ) < HIT_PAD)?.id ?? null
+    const pRaw = toLocal(e)
+
+    // If awaiting P3 (multi.stage===1), show hint + live preview by dragging P3 with cursor (no mouse button needed)
+    if (multi.id && multi.stage === 1 && multi.kind) {
+      const id = multi.id
+      let p = pRaw
+      // perpendicular snap for channel & pitchfork using snapStep when grid snapping is ON
+      if (s.drawingSettings.snapEnabled) {
+        s.updateDrawing(id, dr => {
+          const pts = dr.points.slice()
+          const A = pts[0], B = pts[1]
+          const snap = (pt:Point) => {
+            if (multi.kind === 'parallel-channel') {
+              const sp = snapPerpToAB(A, B, pt, s.drawingSettings.snapStep)
+              return sp
+            } else if (multi.kind === 'pitchfork') {
+              // snap along perpendicular to median (A->mid(B,C_guess)), C is moving so use pt as C_guess
+              const mid = { x:(B.x + pt.x)/2, y:(B.y + pt.y)/2 }
+              const sp = snapPerpToAB(A, mid, pt, s.drawingSettings.snapStep)
+              return sp
+            }
+            return pt
+          }
+          p = snap(pt)
+          pts[2] = p
+          return { ...dr, points: pts }
+        })
+      } else {
+        s.updateDrawing(id, dr => ({ ...dr, points: [dr.points[0], dr.points[1], p] }))
+      }
+      setCursorHint({ x:p.x+12, y:p.y-18, text: 'Place 3rd point (click)' })
+      return
+    }
+
+    if (marquee) { setMarquee(v => v ? ({...v, end:pRaw}) : null); return }
+
+    if (dragId) {
+      // normal dragging (A->B)
+      s.updateDrawing(dragId, dr => updateDrawingGeometry(dr, pRaw))
+      return
+    }
+
+    const id = drawings.find(d => hitTest(d, pRaw, containerRef.current! ) < HIT_PAD)?.id ?? null
     setHoverId(id)
   }
 
@@ -181,7 +256,28 @@ export default function DrawingLayer() {
       const ids = drawings.filter(d => d.points.some(pt => withinRect(pt, r))).map(d => d.id)
       s.setSelection(new Set(ids)); setMarquee(null)
     }
+    // For multi-tools, transition to awaiting P3
+    if (multi.id && multi.stage === 0) {
+      setMulti(m => ({ ...m, stage: 1 }))
+      setCursorHint({ x: (drawings.find(d=>d.id===m.id)?.points[1].x ?? 0) + 12, y: (drawings.find(d=>d.id===m.id)?.points[1].y ?? 0) - 18, text: 'Place 3rd point (click)' })
+      try { (window as any).__fynix_toast?.('Awaiting 3rd point…') } catch {}
+    }
     setDragId(null)
+  }
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      if (multi.id) {
+        // cancel in-progress multi tool
+        s.updateDrawing(multi.id, () => null as any) // mark for removal
+        s.deleteSelected() // no-op if not selected; we’ll filter null below anyway
+        setMulti({ id:null, kind:null, stage:0 })
+        setCursorHint(null)
+        return
+      }
+    }
+    if (e.key === 'Delete' || e.key === 'Backspace') s.deleteSelected()
+    if (e.key === 'a' && (e.ctrlKey || e.metaKey)) { s.setSelection(new Set(drawings.map(d => d.id))); e.preventDefault() }
   }
 
   const onContextMenu = (e: React.MouseEvent) => {
@@ -198,10 +294,17 @@ export default function DrawingLayer() {
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
+        onKeyDown={onKeyDown}
         tabIndex={0}
         style={{ outline:'none', cursor: s.activeTool==='select' ? (hoverId ? 'pointer':'default') : 'crosshair' }}
       />
       {menu.open && <ContextMenu x={menu.x} y={menu.y} onClose={()=>setMenu({open:false,x:0,y:0})} />}
+      {cursorHint && (
+        <div className="absolute z-20 px-2 py-1 text-xs rounded bg-black/70 border border-white/10"
+             style={{ left: cursorHint.x, top: cursorHint.y }}>
+          {cursorHint.text}
+        </div>
+      )}
     </div>
   )
 }
@@ -253,17 +356,92 @@ function drawLineLabel(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
   ctx.restore()
 }
 
-/** Extend segment AB as a forward ray through B until canvas bounds */
 function extendRayToBounds(a: Point, b: Point, w: number, h: number) {
   const vx = b.x - a.x, vy = b.y - a.y
   const len = Math.hypot(vx, vy) || 1
   const nx = vx/len, ny = vy/len
-  // project far enough to hit an edge
   const far = Math.max(w, h) * 2
   const end = { x: b.x + nx * far, y: b.y + ny * far }
-  // back to start just a little before A for visual continuity
   const start = { x: a.x - nx * 8, y: a.y - ny * 8 }
   return { start, end }
+}
+
+/** Quantize perpendicular distance from P to line AB in steps */
+function snapPerpToAB(A: Point, B: Point, P: Point, step: number): Point {
+  const vx = B.x - A.x, vy = B.y - A.y
+  const len = Math.hypot(vx, vy) || 1
+  const nx = vx/len, ny = vy/len
+  const px = -ny, py = nx
+  const relx = P.x - A.x, rely = P.y - A.y
+  const along = relx*nx + rely*ny
+  let perp = relx*px + rely*py
+  perp = Math.round(perp / step) * step
+  return { x: A.x + nx*along + px*perp, y: A.y + ny*along + py*perp }
+}
+
+/** Parallel Channel: with optional soft fill between rails */
+function drawParallelChannel(ctx: CanvasRenderingContext2D, a: Point, b: Point, c: Point, w: number, h: number, withFill=false) {
+  const vx = b.x - a.x, vy = b.y - a.y
+  const len = Math.hypot(vx, vy) || 1
+  const nx = vx/len, ny = vy/len
+  const px = -ny, py = nx
+
+  const dist = ( (c.x - a.x)*px + (c.y - a.y)*py )
+  const ox = px * dist, oy = py * dist
+
+  const far = Math.max(w, h) * 2
+  const A1 = { x: a.x - nx * far, y: a.y - ny * far }
+  const B1 = { x: b.x + nx * far, y: b.y + ny * far }
+  const A2 = { x: A1.x + ox, y: A1.y + oy }
+  const B2 = { x: B1.x + ox, y: B1.y + oy }
+
+  if (withFill) {
+    ctx.save()
+    ctx.fillStyle = 'rgba(96,165,250,0.08)' // soft indigo
+    ctx.beginPath(); ctx.moveTo(A1.x, A1.y); ctx.lineTo(B1.x, B1.y); ctx.lineTo(B2.x, B2.y); ctx.lineTo(A2.x, A2.y); ctx.closePath(); ctx.fill()
+    ctx.restore()
+  }
+
+  ctx.beginPath(); ctx.moveTo(A1.x, A1.y); ctx.lineTo(B1.x, B1.y); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(A2.x, A2.y); ctx.lineTo(B2.x, B2.y); ctx.stroke()
+}
+
+/** Pitchfork: subtle mid tick marks for guidance when withGuides=true */
+function drawPitchfork(ctx: CanvasRenderingContext2D, a: Point, b: Point, c: Point, w: number, h: number, withGuides=false) {
+  const m = { x: (b.x + c.x)/2, y: (b.y + c.y)/2 }
+  const vx = m.x - a.x, vy = m.y - a.y
+  const len = Math.hypot(vx, vy) || 1
+  const nx = vx/len, ny = vy/len
+  const far = Math.max(w, h) * 2
+
+  const M1 = { x: a.x - nx * far, y: a.y - ny * far }
+  const M2 = { x: a.x + nx * far, y: a.y + ny * far }
+
+  const px = -ny, py = nx
+  const distB = ((b.x - a.x) * px + (b.y - a.y) * py)
+  const distC = ((c.x - a.x) * px + (c.y - a.y) * py)
+  const PB1 = { x: M1.x + px*distB, y: M1.y + py*distB }
+  const PB2 = { x: M2.x + px*distB, y: M2.y + py*distB }
+  const PC1 = { x: M1.x + px*distC, y: M1.y + py*distC }
+  const PC2 = { x: M2.x + px*distC, y: M2.y + py*distC }
+
+  if (withGuides) {
+    ctx.save()
+    ctx.setLineDash([4,4])
+    // small cross ticks near A along parallels
+    const tick = 10
+    ;[{p1:PB1,p2:PB2},{p1:PC1,p2:PC2}].forEach(({p1,p2})=>{
+      const tx1 = p1.x + nx * tick, ty1 = p1.y + ny * tick
+      const tx2 = p2.x - nx * tick, ty2 = p2.y - ny * tick
+      ctx.beginPath(); ctx.moveTo(tx1, ty1); ctx.lineTo(p1.x, p1.y); ctx.stroke()
+      ctx.beginPath(); ctx.moveTo(tx2, ty2); ctx.lineTo(p2.x, p2.y); ctx.stroke()
+    })
+    ctx.restore()
+  }
+
+  ctx.beginPath(); ctx.moveTo(M1.x, M1.y); ctx.lineTo(M2.x, M2.y); ctx.stroke() // median
+  ctx.beginPath(); ctx.moveTo(PB1.x, PB1.y); ctx.lineTo(PB2.x, PB2.y); ctx.stroke() // through B
+  ctx.beginPath(); ctx.moveTo(PC1.x, PC1.y); ctx.lineTo(PC2.x, PC2.y); ctx.stroke() // through C
 }
 
 function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
@@ -272,9 +450,7 @@ function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
     case 'arrow':
       return distanceToSegment(p, d.points[0], d.points[1])
     case 'ray': {
-      // distance to infinite segment in forward direction
       const [a,b] = d.points
-      // reuse distanceToSegment against our extended ray segment
       const r = container.getBoundingClientRect()
       const ext = extendRayToBounds(a,b, r.width, r.height)
       return distanceToSegment(p, ext.start, ext.end)
@@ -289,9 +465,7 @@ function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
       const R = rectFromPoints(d.points[0], d.points[1])
       const cx = R.x + R.w/2, cy = R.y + R.h/2
       const rx = Math.max(Math.abs(R.w/2), 0.1), ry = Math.max(Math.abs(R.h/2), 0.1)
-      // normalized ellipse equation value
       const v = Math.abs(((p.x - cx) ** 2) / (rx ** 2) + ((p.y - cy) ** 2) / (ry ** 2) - 1)
-      // approximate distance band
       return v < 0.15 ? 0 : 999
     }
     case 'fib': {
@@ -304,6 +478,47 @@ function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
         best = Math.min(best, Math.abs(p.y - y))
       })
       return best
+    }
+    case 'parallel-channel': {
+      const [a,b,c] = d.points
+      const r = container.getBoundingClientRect()
+      const vx = b.x - a.x, vy = b.y - a.y
+      const len = Math.hypot(vx, vy) || 1
+      const nx = vx/len, ny = vy/len
+      const px = -ny, py = nx
+      const far = Math.max(r.width, r.height) * 2
+      const A1 = { x: a.x - nx * far, y: a.y - ny * far }
+      const B1 = { x: b.x + nx * far, y: b.y + ny * far }
+      const dist = ((c.x - a.x) * px + (c.y - a.y) * py)
+      const A2 = { x: A1.x + px*dist, y: A1.y + py*dist }
+      const B2 = { x: B1.x + px*dist, y: B1.y + py*dist }
+      return Math.min(
+        distanceToSegment(p, A1, B1),
+        distanceToSegment(p, A2, B2)
+      )
+    }
+    case 'pitchfork': {
+      const [a,b,c] = d.points
+      const r = container.getBoundingClientRect()
+      const m = { x: (b.x + c.x)/2, y: (b.y + c.y)/2 }
+      const vx = m.x - a.x, vy = m.y - a.y
+      const len = Math.hypot(vx, vy) || 1
+      const nx = vx/len, ny = vy/len
+      const far = Math.max(r.width, r.height) * 2
+      const M1 = { x: a.x - nx * far, y: a.y - ny * far }
+      const M2 = { x: a.x + nx * far, y: a.y + ny * far }
+      const px = -ny, py = nx
+      const distB = ((b.x - a.x) * px + (b.y - a.y) * py)
+      const distC = ((c.x - a.x) * px + (c.y - a.y) * py)
+      const PB1 = { x: M1.x + px*distB, y: M1.y + py*distB }
+      const PB2 = { x: M2.x + px*distB, y: M2.y + py*distB }
+      const PC1 = { x: M1.x + px*distC, y: M1.y + py*distC }
+      const PC2 = { x: M2.x + px*distC, y: M2.y + py*distC }
+      return Math.min(
+        distanceToSegment(p, M1, M2),
+        distanceToSegment(p, PB1, PB2),
+        distanceToSegment(p, PC1, PC2),
+      )
     }
     case 'text': {
       const a = d.points[0]; const r = { x:a.x, y:a.y-12, w:80, h:16 }

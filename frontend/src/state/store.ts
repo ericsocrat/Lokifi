@@ -5,6 +5,7 @@ export type Tool =
   | 'select' | 'trendline' | 'hline' | 'vline'
   | 'rect' | 'text' | 'arrow'
   | 'ray' | 'ellipse' | 'fib'
+  | 'pitchfork' | 'parallel-channel'
 export type Theme = 'light' | 'dark'
 
 type IndicatorToggles = {
