@@ -6,7 +6,7 @@ export type Tool =
   | 'select' | 'trendline' | 'hline' | 'vline'
   | 'rect' | 'text' | 'arrow'
   | 'ray' | 'ellipse' | 'fib'
-  | 'pitchfork' | 'parallel-channel'
+  | 'pitchfork' | 'parallel-channel' | 'ruler'
 export type Theme = 'light' | 'dark'
 
 type IndicatorToggles = {
@@ -26,7 +26,7 @@ type IndicatorSettings = {
   stdChannelMult: number
 }
 
-type DrawingSettings = {
+type DrawingSettings = {\n  xSnapToBars: boolean
   snapEnabled: boolean
   snapStep: number
   showHandles: boolean
@@ -42,7 +42,7 @@ type DrawingSettings = {
   fibDefaultLevels: number[]             // global defaults if drawing has none
 }
 
-const defaultDrawingSettings: DrawingSettings = {
+const defaultDrawingSettings: DrawingSettings = {\n  xSnapToBars: true,
   snapEnabled: true,
   snapStep: 10,
   showHandles: true,
@@ -53,10 +53,11 @@ const defaultDrawingSettings: DrawingSettings = {
   showLineLabels: true,
   snapToOHLC: true,
   magnetTolerancePx: 6,
-  perToolSnap: {
-    trendline: true, arrow: true, ray: true, rect: true, ellipse: true, fib: true,
-    'parallel-channel': true, pitchfork: true, 'hline': true, 'vline': true, text: false
-  },
+   param($m)
+  $obj = $m.Groups[1].Value
+  if ($obj -notmatch "ruler") { return "perToolSnap: {" + $obj + ", ruler: true }" }
+  else { return "perToolSnap: {" + $obj + "}" }
+,
   fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1]
 }
 
@@ -312,4 +313,5 @@ function bbox(d:any){
 }
 
 export { defaultDrawingSettings, defaultHotkeys }
+
 

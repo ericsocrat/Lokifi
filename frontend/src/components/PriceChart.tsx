@@ -1,5 +1,4 @@
-﻿import React from 'react'
-import { createChart, LineStyle, Time, ISeriesApi, IChartApi } from 'lightweight-charts'
+﻿ param($m) "$($m.Value)import { wireLightweightChartsMappings } from '@/lib/lw-mapping'\n" import { createChart, LineStyle, Time, ISeriesApi, IChartApi } from 'lightweight-charts'
 import { useChartStore } from '@/state/store'
 import { bollinger, vwap, vwma, stdDevChannels, Candle as IndCandle } from '@/lib/indicators'
 import useHotkeys from '@/lib/hotkeys'
@@ -231,3 +230,4 @@ export default function PriceChart() {
     </div>
   )
 }
+

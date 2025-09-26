@@ -2,16 +2,16 @@
 export type Point = { x: number; y: number }
 export type DrawingKind =
   | 'trendline' | 'hline' | 'vline' | 'rect' | 'text' | 'arrow'
-  | 'ray' | 'ellipse' | 'fib'
-  | 'pitchfork' | 'parallel-channel'
+  | 'ray' | 'ellipse' | 'fib' | 'pitchfork' | 'parallel-channel'
+  | 'ruler'
 
 export type StrokeDash = 'solid' | 'dash' | 'dot' | 'dashdot'
 export type DrawingStyle = {
-  stroke: string        // CSS color
-  strokeWidth: number   // px
+  stroke: string
+  strokeWidth: number
   dash: StrokeDash
-  opacity: number       // 0..1
-  fill?: string | null  // for rect/ellipse/channel fill
+  opacity: number
+  fill?: string | null
 }
 
 export type Drawing = {
@@ -24,7 +24,7 @@ export type Drawing = {
   hidden?: boolean
   groupId?: string | null
   style?: DrawingStyle
-  fibLevels?: number[]   // override; if absent use global defaults
+  fibLevels?: number[]
 }
 
 export const DEFAULT_STYLE: DrawingStyle = {
@@ -35,7 +35,7 @@ export const DEFAULT_STYLE: DrawingStyle = {
   fill: null,
 }
 
-export function createDrawing(kind: string, start: Point): Drawing | null {
+export function createDrawing(kind: string, start: Point) {
   const base: Partial<Drawing> = { style: { ...DEFAULT_STYLE }, groupId: null }
   switch (kind) {
     case 'trendline':
@@ -44,6 +44,7 @@ export function createDrawing(kind: string, start: Point): Drawing | null {
     case 'rect':
     case 'ellipse':
     case 'fib':
+    case 'ruler':
       return { id: nanoid(), kind: kind as DrawingKind, points: [start, start], ...base }
     case 'pitchfork':
     case 'parallel-channel':
@@ -67,6 +68,7 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
     case 'rect':
     case 'ellipse':
     case 'fib':
+    case 'ruler':
       return { ...d, points: [d.points[0], p] }
     case 'pitchfork':
     case 'parallel-channel': {
