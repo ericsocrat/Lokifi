@@ -35,3 +35,5 @@ backend/.env
 backend/data/*
 !backend/data/.gitkeep
 # OS/IDE
+frontend/frontend/
+frontend/backend/
