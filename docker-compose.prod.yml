@@ -1,0 +1,11 @@
+﻿services:
+  frontend:
+    build:
+      context: ./frontend
+      target: prod
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://backend:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend

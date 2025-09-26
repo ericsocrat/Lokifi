@@ -1,0 +1,14 @@
+﻿services:
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://backend:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
