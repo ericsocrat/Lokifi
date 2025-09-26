@@ -1,44 +1,51 @@
-version: "3.9"
 services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_USER: fynix
-      POSTGRES_PASSWORD: fynix
-      POSTGRES_DB: fynix
-    ports: ["5432:5432"]
-  redis:
-    image: redis:7
-    ports: ["6379:6379"]
   backend:
-    build: ./backend
-    env_file: ./backend/.env.example
-    environment:
-      POLYGON_KEY: ${POLYGON_KEY}
-      ALPHAVANTAGE_KEY: ${ALPHAVANTAGE_KEY}
-      FINNHUB_KEY: ${FINNHUB_KEY}
-      COINGECKO_KEY: ${COINGECKO_KEY}
-      CMC_KEY: ${CMC_KEY}
-      NEWSAPI_KEY: ${NEWSAPI_KEY}
-      MARKETAUX_KEY: ${MARKETAUX_KEY}
-      FMP_KEY: ${FMP_KEY}
-    ports: ["8000:8000"]
-    depends_on: [db, redis]
-  frontend:
-    build: ./frontend
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000/api
-    ports: ["3000:3000"]
-    depends_on: [backend]
-
-  ollama:
-    image: ollama/ollama:latest
-    container_name: fynix_ollama
-    restart: unless-stopped
-    ports: ["11434:11434"]
+    build:
+      context: ./backend
+    working_dir: /app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
     volumes:
-      - ollama_models:/root/.ollama
-    # Optionally preload a model on first run:
-    # entrypoint: ["bash","-lc","ollama serve & sleep 2 && ollama pull llama3.1 && tail -f /dev/null"]
-volumes:
-  ollama_models:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    env_file:
+      - ./backend/.env
+    environment:
+      - FYNIX_JWT_SECRET
+      - FYNIX_JWT_TTL_MIN
+      - FRONTEND_ORIGIN
+      - REDIS_URL
+      - OPENAI_API_KEY
+      - OPENAI_BASE
+      - OPENAI_MODEL
+      - ALPHAVANTAGE_API_KEY
+      - FINNHUB_API_KEY
+      - POLYGON_API_KEY
+      - COINGECKO_API_KEY
+      - COINMARKETCAP_API_KEY
+      - NEWSAPI_KEY
+      - MARKETAUX_API_KEY
+      - FMPREP_API_KEY
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+    working_dir: /app
+    # dev-friendly command; uses volumes to live-reload
+    command: sh -c "corepack enable && pnpm i && pnpm dev --host 0.0.0.0"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://backend:8000/api
+    depends_on:
+      - backend
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
