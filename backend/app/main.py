@@ -31,3 +31,7 @@ app.include_router(portfolio.router, prefix=settings.API_PREFIX)
 app.include_router(alerts.router, prefix=settings.API_PREFIX)
 app.include_router(chat.router, prefix=settings.API_PREFIX)
 
+
+@__import__('fastapi').FastAPI.get if False else app.get('/api/health')
+def health():
+    return {'ok': True}
