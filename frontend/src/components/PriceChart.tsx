@@ -7,6 +7,8 @@ import DataStatus from '@/components/DataStatus'
 import SymbolTfBar from '@/components/SymbolTfBar'
 import { MarketDataAdapter } from '@/lib/data/adapter'
 import { rafThrottle, debounce } from '@/lib/perf'
+import { wireLightweightChartsMappings } from '@/lib/lw-mapping'
+
 import {
   bucketCountFor,
   downsampleCandlesMinMax,
