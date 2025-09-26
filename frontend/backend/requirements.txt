@@ -1,3 +1,17 @@
 ﻿fastapi
 uvicorn
 sse-starlette
+
+SQLAlchemy>=2.0.0
+
+pytest
+
+httpx
+
+ruff
+
+black
+
+passlib[bcrypt]
+
+python-jose[cryptography]

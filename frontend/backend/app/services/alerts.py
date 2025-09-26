@@ -24,7 +24,8 @@ class Alert:
     min_interval_sec: int
     last_triggered_at: Optional[float]
     # free-form config per type
-    config: Dict[str, Any]  # e.g., { "direction":"above","price":42000 } or { "window_minutes":60,"direction":"down","threshold_pct":-3 }
+    config: Dict[str, Any]
+    owner_handle: Optional[str] = None  # e.g., { "direction":"above","price":42000 } or { "window_minutes":60,"direction":"down","threshold_pct":-3 }
 
 class AlertStore:
     def __init__(self, path: str):
@@ -205,3 +206,4 @@ STORE_PATH = os.getenv("FYNIX_ALERTS_PATH", os.path.join(os.path.dirname(os.path
 store = AlertStore(STORE_PATH)
 hub = SSEHub()
 evaluator = AlertEvaluator(store=store, hub=hub, interval_sec=int(os.getenv("FYNIX_ALERTS_INTERVAL", "15")))
+
