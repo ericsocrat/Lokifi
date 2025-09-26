@@ -1,5 +1,6 @@
 ﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { Drawing, DrawingStyle } from '@/lib/drawings'
 
 export type Tool =
   | 'select' | 'trendline' | 'hline' | 'vline'
@@ -29,11 +30,16 @@ type DrawingSettings = {
   snapEnabled: boolean
   snapStep: number
   showHandles: boolean
-  snapPriceLevels: boolean
+  snapPriceLevels: boolean      // legacy simple Y snap
   lineCap: 'butt'|'round'|'square'
   arrowHead: 'none'|'open'|'filled'
   arrowHeadSize: number
   showLineLabels: boolean
+  // S.1:
+  snapToOHLC: boolean
+  magnetTolerancePx: number
+  perToolSnap: Record<string, boolean>   // e.g. trendline:true, fib:false, etc.
+  fibDefaultLevels: number[]             // global defaults if drawing has none
 }
 
 const defaultDrawingSettings: DrawingSettings = {
@@ -45,6 +51,13 @@ const defaultDrawingSettings: DrawingSettings = {
   arrowHead: 'filled',
   arrowHeadSize: 12,
   showLineLabels: true,
+  snapToOHLC: true,
+  magnetTolerancePx: 6,
+  perToolSnap: {
+    trendline: true, arrow: true, ray: true, rect: true, ellipse: true, fib: true,
+    'parallel-channel': true, pitchfork: true, 'hline': true, 'vline': true, text: false
+  },
+  fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1]
 }
 
 const defaultHotkeys: Record<string,string> = {
@@ -69,7 +82,7 @@ type ChartState = {
   indicators: IndicatorToggles
   indicatorSettings: IndicatorSettings
 
-  drawings: import('@/lib/drawings').Drawing[]
+  drawings: Drawing[]
   selection: Set<string>
   drawingSettings: DrawingSettings
 
@@ -79,8 +92,8 @@ type ChartState = {
   toggleIndicator: (k: keyof IndicatorToggles) => void
   updateIndicatorSettings: (p: Partial<IndicatorSettings>) => void
 
-  addDrawing: (d: import('@/lib/drawings').Drawing) => void
-  updateDrawing: (id: string, fn: (d: import('@/lib/drawings').Drawing)=>import('@/lib/drawings').Drawing) => void
+  addDrawing: (d: Drawing) => void
+  updateDrawing: (id: string, fn: (d: Drawing)=>Drawing) => void
   deleteSelected: () => void
   clearSelection: () => void
   setSelection: (sel: Set<string>) => void
@@ -96,6 +109,18 @@ type ChartState = {
   duplicateSelected: () => void
   alignSelected: (pos: 'left'|'right'|'top'|'bottom') => void
   distributeSelected: (axis: 'h'|'v') => void
+
+  // S.1 new object ops:
+  bringToFront: () => void
+  sendToBack: () => void
+  groupSelected: () => void
+  ungroupSelected: () => void
+  setSelectedStyle: (p: Partial<DrawingStyle>) => void
+  toggleLockSelected: () => void
+  toggleVisibilitySelected: () => void
+  renameSelected: (name: string) => void
+  setFibDefaultLevels: (levels: number[]) => void
+  setFibLevelsForSelected: (levels: number[]) => void
 }
 
 export const useChartStore = create<ChartState>()(persist((set, get) => ({
@@ -134,7 +159,11 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
   deleteSelected: () => set((s)=>({ drawings: s.drawings.filter(d => !s.selection.has(d.id)), selection: new Set() })),
   clearSelection: () => set({ selection: new Set() }),
   setSelection: (sel) => set({ selection: sel }),
-  toggleSelect: (id, single) => set((s)=> { const next = new Set(single ? [] : Array.from(s.selection)); if (next.has(id)) next.delete(id); else next.add(id); return { selection: next } }),
+  toggleSelect: (id, single) => set((s)=> {
+    const next = new Set(single ? [] : Array.from(s.selection))
+    if (next.has(id)) next.delete(id); else next.add(id)
+    return { selection: next }
+  }),
 
   setDrawingSettings: (p) => set((s)=>({ drawingSettings: { ...s.drawingSettings, ...p } })),
   resetDrawingSettings: () => set({ drawingSettings: { ...defaultDrawingSettings } }),
@@ -150,6 +179,7 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
     const clones = items.map((d) => ({
       ...structuredClone(d),
       id: (globalThis.crypto as any)?.randomUUID?.() || (Date.now().toString(36)+Math.random().toString(36).slice(2)),
+      name: (d.name || d.kind) + ' copy',
       points: d.points.map((p)=>({ x: p.x + 12, y: p.y + 12 }))
     }))
     return { drawings: [...s.drawings, ...clones], selection: new Set(clones.map((c)=>c.id)) }
@@ -163,6 +193,7 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
     const minY = Math.min(...boxes.map((b)=>b.y)), maxY = Math.max(...boxes.map((b)=>b.y+b.h))
     const moved = s.drawings.map((d)=>{
       if (!ids.includes(d.id)) return d
+      if (d.locked) return d
       const b = bbox(d)
       let dx = 0, dy = 0
       if (pos==='left') dx = minX - b.x
@@ -186,12 +217,73 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
     const moved = s.drawings.map((d)=>{
       const i = arr.findIndex((x)=>x.d.id===d.id)
       if (i<0) return d
+      if (d.locked) return d
       const b = arr[i].b
       const cur = axis==='h' ? b.x : b.y
       const delta = desired[i] - cur
       return { ...d, points: d.points.map((p)=> axis==='h' ? ({ x: p.x + delta, y: p.y }) : ({ x: p.x, y: p.y + delta })) }
     })
     return { drawings: moved }
+  }),
+
+  // Z-order
+  bringToFront: () => set((s)=>{
+    const ids = new Set(s.selection)
+    if (!ids.size) return {}
+    const rest = s.drawings.filter(d=>!ids.has(d.id))
+    const sel = s.drawings.filter(d=>ids.has(d.id))
+    return { drawings: [...rest, ...sel] }
+  }),
+  sendToBack: () => set((s)=>{
+    const ids = new Set(s.selection)
+    if (!ids.size) return {}
+    const rest = s.drawings.filter(d=>!ids.has(d.id))
+    const sel = s.drawings.filter(d=>ids.has(d.id))
+    return { drawings: [...sel, ...rest] }
+  }),
+
+  // Grouping
+  groupSelected: () => set((s)=>{
+    const ids = Array.from(s.selection); if (ids.length < 2) return {}
+    const gid = 'grp_' + (Date.now().toString(36)+Math.random().toString(36).slice(2))
+    const drawings = s.drawings.map(d => s.selection.has(d.id) ? { ...d, groupId: gid } : d )
+    return { drawings }
+  }),
+  ungroupSelected: () => set((s)=>{
+    if (!s.selection.size) return {}
+    const drawings = s.drawings.map(d => s.selection.has(d.id) ? { ...d, groupId: null } : d )
+    return { drawings }
+  }),
+
+  setSelectedStyle: (p) => set((s)=>{
+    if (!s.selection.size) return {}
+    const drawings = s.drawings.map(d => s.selection.has(d.id) ? { ...d, style: { ...(d.style||{}), ...p } } : d )
+    return { drawings }
+  }),
+
+  toggleLockSelected: () => set((s)=>{
+    if (!s.selection.size) return {}
+    const drawings = s.drawings.map(d => s.selection.has(d.id) ? { ...d, locked: !d.locked } : d )
+    return { drawings }
+  }),
+
+  toggleVisibilitySelected: () => set((s)=>{
+    if (!s.selection.size) return {}
+    const drawings = s.drawings.map(d => s.selection.has(d.id) ? { ...d, hidden: !d.hidden } : d )
+    return { drawings }
+  }),
+
+  renameSelected: (name) => set((s)=>{
+    if (!s.selection.size) return {}
+    const drawings = s.drawings.map(d => s.selection.has(d.id) ? { ...d, name } : d )
+    return { drawings }
+  }),
+
+  setFibDefaultLevels: (levels) => set((s)=>({ drawingSettings: { ...s.drawingSettings, fibDefaultLevels: levels } })),
+  setFibLevelsForSelected: (levels) => set((s)=>{
+    if (!s.selection.size) return {}
+    const drawings = s.drawings.map(d => s.selection.has(d.id) && d.kind==='fib' ? { ...d, fibLevels: levels } : d )
+    return { drawings }
   }),
 
 }), {

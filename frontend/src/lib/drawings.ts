@@ -5,14 +5,38 @@ export type DrawingKind =
   | 'ray' | 'ellipse' | 'fib'
   | 'pitchfork' | 'parallel-channel'
 
+export type StrokeDash = 'solid' | 'dash' | 'dot' | 'dashdot'
+export type DrawingStyle = {
+  stroke: string        // CSS color
+  strokeWidth: number   // px
+  dash: StrokeDash
+  opacity: number       // 0..1
+  fill?: string | null  // for rect/ellipse/channel fill
+}
+
 export type Drawing = {
   id: string
   kind: DrawingKind
-  points: Point[]   // generally 2 points; 3 for pitchfork/parallel-channel
+  points: Point[]
   text?: string
+  name?: string
+  locked?: boolean
+  hidden?: boolean
+  groupId?: string | null
+  style?: DrawingStyle
+  fibLevels?: number[]   // override; if absent use global defaults
+}
+
+export const DEFAULT_STYLE: DrawingStyle = {
+  stroke: '#9ca3af',
+  strokeWidth: 1.75,
+  dash: 'solid',
+  opacity: 1,
+  fill: null,
 }
 
 export function createDrawing(kind: string, start: Point): Drawing | null {
+  const base: Partial<Drawing> = { style: { ...DEFAULT_STYLE }, groupId: null }
   switch (kind) {
     case 'trendline':
     case 'arrow':
@@ -20,17 +44,16 @@ export function createDrawing(kind: string, start: Point): Drawing | null {
     case 'rect':
     case 'ellipse':
     case 'fib':
-      return { id: nanoid(), kind: kind as DrawingKind, points: [start, start] }
+      return { id: nanoid(), kind: kind as DrawingKind, points: [start, start], ...base }
     case 'pitchfork':
     case 'parallel-channel':
-      // initialize 3 points; first drag sets P2, second click sets P3
-      return { id: nanoid(), kind: kind as DrawingKind, points: [start, start, start] }
+      return { id: nanoid(), kind: kind as DrawingKind, points: [start, start, start], ...base }
     case 'hline':
-      return { id: nanoid(), kind: 'hline', points: [start] }
+      return { id: nanoid(), kind: 'hline', points: [start], ...base }
     case 'vline':
-      return { id: nanoid(), kind: 'vline', points: [start] }
+      return { id: nanoid(), kind: 'vline', points: [start], ...base }
     case 'text':
-      return { id: nanoid(), kind: 'text', points: [start], text: 'Text' }
+      return { id: nanoid(), kind: 'text', points: [start], text: 'Text', ...base }
     default:
       return null
   }
@@ -47,7 +70,6 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
       return { ...d, points: [d.points[0], p] }
     case 'pitchfork':
     case 'parallel-channel': {
-      // during drag we update second point; third point is added by a click later
       const pts = d.points.slice()
       if (pts.length < 3) pts.push(p)
       pts[1] = p
