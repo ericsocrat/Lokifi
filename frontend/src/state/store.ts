@@ -1,6 +1,7 @@
 ﻿import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Drawing, DrawingStyle } from '@/lib/drawings'
+import { align as __alignDrawings, distribute as __distributeDrawings } from '@/lib/alignment'
 
 export type Tool =
   | 'select' | 'trendline' | 'hline' | 'vline'
@@ -328,6 +329,7 @@ function bbox(d:any){
 }
 
 export { defaultDrawingSettings, defaultHotkeys }
+
 
 
 
