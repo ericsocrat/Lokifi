@@ -1,0 +1,41 @@
+services:
+  frontend:
+    build:
+      context: .
+      target: dev
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_BASE=http://backend:8000/api
+      - NEXT_TELEMETRY_DISABLED=1
+      - WATCHPACK_POLLING=true
+      - NODE_OPTIONS=--inspect=0.0.0.0:9229
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Node.js inspector port
+    depends_on:
+      - backend
+    command: sh -c "npm install && npm run dev"
+    stdin_open: true
+    tty: true
+    security_opt:
+      - seccomp:unconfined  # Required for debugging
+    cap_add:
+      - SYS_PTRACE  # Required for debugging
+
+  redis:
+    ports:
+      - "6380:6379"  # Changed Redis port to avoid conflicts
+
+  # Add browser sync for easier development
+  browsersync:
+    image: browsersync/browsersync
+    command: start --proxy "frontend:3000" --files "app/**/*"
+    ports:
+      - "3001:3000"  # BrowserSync UI
+      - "3002:3001"  # BrowserSync proxy
+    depends_on:
+      - frontend

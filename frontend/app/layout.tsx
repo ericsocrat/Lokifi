@@ -1,13 +1,20 @@
 import "../styles/globals.css";
-import { SWRConfig } from "swr";
+import { SWRProvider } from "@/components/SWRProvider";
+import type { Metadata } from "next";
+import { AuthProvider } from "@/src/components/AuthProvider";
+import "@/styles/globals.css";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const metadata: Metadata = { title: "Fynix" };
+
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen bg-neutral-950 text-neutral-100">
-        <SWRConfig value={{ fetcher: (url: string) => fetch(url).then(r => r.json()) }}>
-          {children}
-        </SWRConfig>
+    <html>
+      <body>
+        <SWRProvider>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </SWRProvider>
       </body>
     </html>
   );

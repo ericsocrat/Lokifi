@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(health.router, prefix=settings.API_PREFIX)
+app.include_router(health.router)  # Health check endpoint at /health
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(news.router, prefix=settings.API_PREFIX)
 app.include_router(social.router, prefix=settings.API_PREFIX)

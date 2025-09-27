@@ -1,5 +1,6 @@
 ﻿services:
   frontend:
+    profiles: ["dev"]
     build:
       context: ./frontend
       target: dev
@@ -13,4 +14,5 @@
     depends_on:
       - backend
   backend:
+    profiles: ["dev"]
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude .pytest_cache

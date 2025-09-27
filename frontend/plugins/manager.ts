@@ -8,11 +8,15 @@ import { timeframeStore } from "@/lib/timeframeStore";
 
 export type { PluginManager };
 
-type Env = {
+interface Env {
   chart: IChartApi;
   candle: ISeriesApi<"Candlestick">;
   canvas: HTMLCanvasElement;
-  snap: (t:number, p:number) => { t:number, p:number };
+  snap: (t: number, p: number) => { t: number, p: number };
+}
+
+type SafeEnv = {
+  [K in keyof Env]: NonNullable<Env[K]>;
 };
 
 class PluginManager {
@@ -30,14 +34,31 @@ class PluginManager {
     return this.plugins.slice();
   }
 
-  setEnv(env: Env){
+  setEnv(env: Env): void {
+    if (!env.chart || !env.candle || !env.canvas || !env.snap) {
+      throw new Error('Invalid environment configuration');
+    }
     this.env = env;
-    // mount all
-    for (const p of this.plugins){ p.mount?.(this.ctx()); }
+    // mount all plugins with the new environment
+    for (const plugin of this.plugins) {
+      try {
+        plugin.mount?.(this.ctx());
+      } catch (err) {
+        console.error(`Failed to mount plugin ${plugin.id}:`, err);
+      }
+    }
   }
 
-  clearEnv(){
-    for (const p of this.plugins){ p.unmount?.(); }
+  clearEnv(): void {
+    if (!this.env) return;
+    // safely unmount all plugins
+    for (const plugin of this.plugins) {
+      try {
+        plugin.unmount?.();
+      } catch (err) {
+        console.error(`Failed to unmount plugin ${plugin.id}:`, err);
+      }
+    }
     this.env = null;
   }
 
@@ -51,29 +72,80 @@ class PluginManager {
 
   private ctx(): PluginCtx {
     if (!this.env) throw new Error("Plugin env not set");
-    const env = this.env;
+    const { chart, candle, canvas, snap } = this.env;
+
+    const getPointerPosition = (e: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    };
+
+    const getTimeAndPrice = (x: number, y: number): { time: number, price: number } => {
+      const timeScale = chart.timeScale();
+      const time = Number(timeScale.coordinateToTime(x));
+
+      // Ensure the candlestick series exists and has the coordinateToPrice method
+      if (typeof candle?.coordinateToPrice !== 'function') {
+        throw new Error("Candlestick series not properly initialized");
+      }
+      const price = candle.coordinateToPrice(y);
+
+      if (!timeScale || !Number.isFinite(time) || typeof price !== 'number') {
+        throw new Error("Invalid coordinate conversion");
+      }
+
+      return { time, price };
+    };
+
     return {
-      chart: env.chart,
-      candle: env.candle,
-      canvas: env.canvas,
+      chart,
+      candle,
+      canvas,
       symbol: () => symbolStore.get(),
       timeframe: () => timeframeStore.get(),
-      snap: env.snap,
+      snap,
       xy: (e: PointerEvent) => {
-        const rect = env.canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        const ts = env.chart.timeScale();
-        const t = (ts.coordinateToTime(x) as any as number);
-        const p = env.candle.coordinateToPrice(y) ?? 0;
-        const snapped = env.snap(t, p);
-        return { x, y, t, p, snapped };
+        try {
+          const { x, y } = getPointerPosition(e);
+          const { time, price } = getTimeAndPrice(x, y);
+          const snapped = snap(time, price);
+          return { x, y, t: time, p: price, snapped };
+        } catch (err) {
+          console.error('Error computing coordinates:', err);
+          return { x: 0, y: 0, t: 0, p: 0, snapped: { t: 0, p: 0 } };
+        }
       },
       draw: {
-        add: (shape: Shape) => drawStore.addShape(shape),
-        update: (id, updater) => drawStore.updateShape(id, updater),
-        select: (ids) => drawStore.setSelection(ids),
-        clearSelection: () => drawStore.clearSelection(),
+        add: (shape: Shape) => {
+          try {
+            drawStore.addShape(shape);
+          } catch (err) {
+            console.error('Error adding shape:', err);
+          }
+        },
+        update: (id: string, updater: (s: Shape) => Shape) => {
+          try {
+            drawStore.updateShape(id, updater);
+          } catch (err) {
+            console.error('Error updating shape:', err);
+          }
+        },
+        select: (ids: string[]) => {
+          try {
+            drawStore.setSelection(Array.isArray(ids) ? ids : Array.from(ids));
+          } catch (err) {
+            console.error('Error setting selection:', err);
+          }
+        },
+        clearSelection: () => {
+          try {
+            drawStore.clearSelection();
+          } catch (err) {
+            console.error('Error clearing selection:', err);
+          }
+        }
       }
     };
   }
@@ -84,19 +156,39 @@ class PluginManager {
   }
 
   pointerDown(e: PointerEvent): boolean {
-    const a = this.active(); if (!a || !a.onPointerDown) return false;
-    a.onPointerDown(e, this.ctx());
-    return true;
+    const activePlugin = this.active();
+    if (!activePlugin?.onPointerDown) return false;
+    try {
+      activePlugin.onPointerDown(e, this.ctx());
+      return true;
+    } catch (err) {
+      console.error('Plugin pointer down error:', err);
+      return false;
+    }
   }
+
   pointerMove(e: PointerEvent): boolean {
-    const a = this.active(); if (!a || !a.onPointerMove) return false;
-    a.onPointerMove(e, this.ctx());
-    return true;
+    const activePlugin = this.active();
+    if (!activePlugin?.onPointerMove) return false;
+    try {
+      activePlugin.onPointerMove(e, this.ctx());
+      return true;
+    } catch (err) {
+      console.error('Plugin pointer move error:', err);
+      return false;
+    }
   }
+
   pointerUp(e: PointerEvent): boolean {
-    const a = this.active(); if (!a || !a.onPointerUp) return false;
-    a.onPointerUp(e, this.ctx());
-    return true;
+    const activePlugin = this.active();
+    if (!activePlugin?.onPointerUp) return false;
+    try {
+      activePlugin.onPointerUp(e, this.ctx());
+      return true;
+    } catch (err) {
+      console.error('Plugin pointer up error:', err);
+      return false;
+    }
   }
 }
 

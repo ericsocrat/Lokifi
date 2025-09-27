@@ -1,6 +1,7 @@
 "use client";
+import React from 'react';
 import { useEffect, useRef, useState } from "react";
-import { createChart, Time } from "lightweight-charts";
+import { createChart, Time, IChartApi, ISeriesApi } from "lightweight-charts";
 import useSWR from "swr";
 import { API } from "@/lib/api";
 import { symbolStore } from "@/lib/symbolStore";
@@ -175,8 +176,8 @@ export default function ChartPanel() {
       }
       const sync = () => {
         const rScale = subChart.timeScale(); const mScale = chart.timeScale();
-        rScale.subscribeVisibleTimeRangeChange(range => { if (range) mScale.setVisibleRange(range); });
-        mScale.subscribeVisibleTimeRangeChange(range => { if (range) rScale.setVisibleRange(range); });
+        rScale.subscribeVisibleTimeRangeChange((range: { from: number; to: number }) => { if (range) mScale.setVisibleRange(range); });
+        mScale.subscribeVisibleTimeRangeChange((range: { from: number; to: number }) => { if (range) rScale.setVisibleRange(range); });
       };
       sync();
     }
@@ -239,17 +240,37 @@ export default function ChartPanel() {
     ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, width, height);
 
-    const chart: any = (window as any).__fynixChart; const candle: any = (window as any).__fynixCandle; if (!chart || !candle) return;
+    const chart = (window as any).__fynixChart as IChartApi;
+    const candle = (window as any).__fynixCandle as ISeriesApi<"Candlestick">;
+    if (!chart || !candle) return;
 
     const ts = chart.timeScale();
-    const priceToY = (price: number) => candle.priceToCoordinate(price) ?? 0;
-    const timeToX = (t: number) => ts.timeToCoordinate(t as any) ?? 0;
+    const priceToY = (price: number): number => {
+      if (!candle?.priceToCoordinate) return 0;
+      return candle.priceToCoordinate(price) ?? 0;
+    };
+
+    const timeToX = (t: number): number => {
+      if (!ts?.timeToCoordinate) return 0;
+      return ts.timeToCoordinate(t as Time) ?? 0;
+    };
 
     const HANDLE = 5;
     const dist = (x1: number, y1: number, x2: number, y2: number, px: number, py: number) => {
       const A = px - x1, B = py - y1, C = x2 - x1, D = y2 - y1; const dot = A * C + B * D; const len_sq = C * C + D * D || 1; const t = Math.max(0, Math.min(1, dot / len_sq)); const xx = x1 + t * C, yy = y1 + t * D; return Math.hypot(px - xx, py - yy);
     };
-    function drawHandle(x: number, y: number) { ctx.save(); ctx.fillStyle = 'rgba(59,130,246,0.95)'; ctx.strokeStyle = 'rgba(17,24,39,1)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.rect(x - HANDLE, y - HANDLE, HANDLE * 2, HANDLE * 2); ctx.fill(); ctx.stroke(); ctx.restore(); }
+    function drawHandle(x: number, y: number) {
+      if (!ctx) return;
+      ctx.save();
+      ctx.fillStyle = 'rgba(59,130,246,0.95)';
+      ctx.strokeStyle = 'rgba(17,24,39,1)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.rect(x - HANDLE, y - HANDLE, HANDLE * 2, HANDLE * 2);
+      ctx.fill();
+      ctx.stroke();
+      ctx.restore();
+    }
     const drawLine = (x1: number, y1: number, x2: number, y2: number, dash = false) => { ctx.save(); if (dash) ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.strokeStyle = 'rgba(229,231,235,0.9)'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.restore(); };
     const drawLabel = (x: number, y: number, text: string) => {
       const padX = 6; const h = 18; const r = 6;
@@ -279,7 +300,8 @@ export default function ChartPanel() {
       }
     }
     const inters: { t: number, p: number, x: number, y: number }[] = [];
-    const timeToX2 = (t: number) => ts.timeToCoordinate(t as any) ?? 0; const priceToY2 = (p: number) => candle.priceToCoordinate(p) ?? 0;
+    const timeToX2 = (t: number): number => ts?.timeToCoordinate?.(t as Time) ?? 0;
+    const priceToY2 = (p: number): number => candle?.priceToCoordinate?.(p) ?? 0;
     function lineParams(l: any) { const x1 = timeToX2(l.a.t), y1 = priceToY2(l.a.p); const x2 = timeToX2(l.b.t), y2 = priceToY2(l.b.p); return { x1, y1, x2, y2 }; }
     function intersect(l1: any, l2: any) {
       const { x1, y1, x2, y2 } = lineParams(l1); const { x1: x3, y1: y3, x2: x4, y2: y4 } = lineParams(l2);
@@ -287,7 +309,8 @@ export default function ChartPanel() {
       const px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / den;
       const py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / den;
       // Convert px,py back to time/price
-      const t = ts.coordinateToTime(px) as any as number; const p = candle.coordinateToPrice(py) ?? 0;
+      const t = ts?.coordinateToTime?.(px) as number ?? 0;
+      const p = candle?.coordinateToPrice?.(py) ?? 0;
       // Segment/ray validation
       function within(l: any) {
         const { x1, y1, x2, y2 } = lineParams(l); const len = Math.hypot(x2 - x1, y2 - y1) || 1; const ux = (x2 - x1) / len, uy = (y2 - y1) / len;
@@ -359,8 +382,8 @@ export default function ChartPanel() {
       return px >= left && px <= right && py >= top && py <= bottom;
     }
     function shapeIntersectsRect(sh: Shape, left: number, top: number, right: number, bottom: number) {
-      const timeToX = (t: number) => ts.timeToCoordinate(t as any) ?? 0;
-      const priceToY = (p: number) => candle.priceToCoordinate(p) ?? 0;
+      const timeToX = (t: number): number => ts?.timeToCoordinate?.(t as Time) ?? 0;
+      const priceToY = (p: number): number => candle?.priceToCoordinate?.(p) ?? 0;
       if (sh.type === 'hline') { const y = priceToY((sh as any).y); return y >= top && y <= bottom; }
       const a: any = (sh as any).a, b: any = (sh as any).b;
       const x1 = timeToX(a.t), y1 = priceToY(a.p); const x2 = timeToX(b.t), y2 = priceToY(b.p);
@@ -369,9 +392,10 @@ export default function ChartPanel() {
     }
 
     function hitTest(clientX: number, clientY: number) {
+      if (!canvas) return;
       const rect = canvas.getBoundingClientRect(); const x = clientX - rect.left; const y = clientY - rect.top;
-      const timeToX = (t: number) => ts.timeToCoordinate(t as any) ?? 0;
-      const priceToY = (p: number) => candle.priceToCoordinate(p) ?? 0;
+      const timeToX = (t: number): number => ts?.timeToCoordinate?.(t as Time) ?? 0;
+      const priceToY = (p: number): number => candle?.priceToCoordinate?.(p) ?? 0;
 
       // Handles
       for (const sh of drawStore.get().shapes) {
@@ -435,16 +459,22 @@ export default function ChartPanel() {
     }
 
     // --- interaction ---
-    let drafting: any = null;
+    interface DraftingShape {
+      tool: string;
+      a: { t: number; p: number };
+      b?: { t: number; p: number };
+    }
+    
+    let drafting: DraftingShape | null = null;
     let dragMode: null | { kind: 'move' | 'move-group' | 'handle', id?: string, handle?: string, start: { t: number, p: number } } = null;
     let marquee: null | { x0: number, y0: number, x1: number, y1: number, add: boolean } = null;
 
-    const priceFromY = (y: number) => candle.coordinateToPrice(y) ?? 0;
+    const priceFromY = (y: number): number => candle?.coordinateToPrice?.(y) ?? 0;
     const timeFromX = (x: number) => ts.coordinateToTime(x) as any as number;
 
     function nearestSnap(t: number, p: number) {
-      if (!drawStore.get().snap) return { t, p };
-      const cs = data.candles; if (!cs?.length) return { t, p };
+      if (!drawStore.get().snap || !data?.candles?.length) return { t, p };
+      const cs = data.candles;
       let best = 0; let bestd = Infinity;
       for (let i = 0; i < cs.length; i++) { const d = Math.abs((cs[i].ts / 1000) - t); if (d < bestd) { bestd = d; best = i; } }
       const c = cs[best];
@@ -455,14 +485,19 @@ export default function ChartPanel() {
     }
 
     function onDown(e: PointerEvent) {
+      if (!canvas) return;
       if (pluginManager.hasActiveTool()) {
         const handled = pluginManager.pointerDown(e);
         if (handled) return;
       }
-      const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       const t0 = timeFromX(x); const p0 = priceFromY(y);
       if (drawStore.get().tool === 'cursor') {
-        const { id, handle } = hitTest(e.clientX, e.clientY);
+        const result = hitTest(e.clientX, e.clientY);
+        if (!result) return;
+        const { id, handle } = result;
         if (!id) {
           marquee = { x0: x, y0: y, x1: x, y1: y, add: e.shiftKey };
           return;
@@ -479,15 +514,20 @@ export default function ChartPanel() {
     }
 
     function onMove(e: PointerEvent) {
+      if (!canvas) return;
       if (pluginManager.hasActiveTool()) {
         const handled = pluginManager.pointerMove(e);
         if (handled) return;
       }
-      const rect = canvas.getBoundingClientRect(); const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
       const { t, p } = nearestSnap(timeFromX(x), priceFromY(y));
       if (marquee) { marquee.x1 = x; marquee.y1 = y; (window as any).__fynixMarquee = marquee; canvas.style.cursor = 'crosshair'; return; }
       if (dragMode) {
-        const start = dragMode.start; const dt = t - start.t; const dp = p - start.p;
+        const start = dragMode.start;
+        const dt = t - start.t;
+        const dp = p - start.p;
         if (dragMode.kind === 'handle' && dragMode.id) {
           const which = dragMode.handle!;
           drawStore.updateShape(dragMode.id, (s) => {
@@ -519,7 +559,9 @@ export default function ChartPanel() {
         const ids = drawStore.get().shapes.filter(s => shapeIntersectsRect(s, left, top, right, bottom)).map(s => s.id);
         if (marquee.add) drawStore.setSelection(Array.from(new Set([...drawStore.get().selectedIds, ...ids])));
         else drawStore.setSelection(ids);
-        marquee = null; (window as any).__fynixMarquee = null; canvas.style.cursor = 'default';
+        marquee = null;
+        (window as any).__fynixMarquee = null;
+        if (canvas) canvas.style.cursor = 'default';
         return;
       }
       if (dragMode) { dragMode = null; return; }

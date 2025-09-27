@@ -1,5 +1,5 @@
 import React from 'react';
-import { createChart, LineStyle, Time, ISeriesApi, IChartApi } from 'lightweight-charts'
+import { createChart, LineStyle, Time, ISeriesApi, IChartApi, ITimeScaleApi, type TimeRangeChangeEventHandler } from 'lightweight-charts'
 import { useChartStore } from '@/state/store'
 import { bollinger, vwap, vwma, stdDevChannels, Candle as IndCandle } from '@/lib/indicators'
 import useHotkeys from '@/lib/hotkeys'
@@ -25,8 +25,8 @@ type Candle = IndCandle;
 
 export default function PriceChart() {
   const ref = React.useRef<HTMLDivElement>(null)
-  const seriesRef = React.useRef<Series>(null)
-  const volRef = React.useRef<ISeriesApi<'Histogram'>>(null)
+  const seriesRef = React.useRef<Series | null>(null)
+  const volRef = React.useRef<ISeriesApi<'Histogram'> | null>(null)
   const chartRef = React.useRef<IChartApi | null>(null)
 
   const { indicators, indicatorSettings, theme, symbol, timeframe } = useChartStore()
@@ -53,21 +53,41 @@ if (!ref.current) return
     const vol = chart.addHistogramSeries({ priceScaleId: 'left' })
     volRef.current = vol
 
-    const publish = () => setChart({ chart, series, candles: (candles as any) })
+    const publish = () => setChart({ chart, series, candles })
     publish()
-    const resize = () => { chart.applyOptions({ width: ref.current!.clientWidth, height: ref.current!.clientHeight }); publish(); recomputeLOD(); bumpRangeTick() }
-    resize(); window.addEventListener('resize', resize)
+    const resize = React.useCallback(() => {
+      if (!ref.current || !chart) return;
+      chart.applyOptions({ width: ref.current.clientWidth, height: ref.current.clientHeight }); 
+      publish(); 
+      recomputeLOD(); 
+      bumpRangeTick();
+    }, [chart, ref, recomputeLOD])
+
+    resize();
+    window.addEventListener('resize', resize)
 
     // subscribe to visible range changes -> dynamic LOD + indicator refresh
-    const onRange = rafThrottle(() => { recomputeLOD(); bumpRangeTick() })
-    const unsubRange = chart.timeScale().subscribeVisibleTimeRangeChange(onRange)
+    const onRange = rafThrottle(() => {
+      recomputeLOD();
+      bumpRangeTick();
+    });
+
+    // Get timeScale and assert its type
+    const timeScale = chart.timeScale() as ITimeScaleApi<Time>;
+
+    // Subscribe to changes
+    timeScale.subscribeVisibleTimeRangeChange(onRange as TimeRangeChangeEventHandler<Time>);
 
     return () => {
-      window.removeEventListener('resize', resize)
-      chart.timeScale().unsubscribeVisibleTimeRangeChange(onRange as any)
-      chart.remove()
-      chartRef.current = null
-      setChart({ chart: null, series: null, candles: [] })
+      window.removeEventListener('resize', resize);
+      try {
+        timeScale.unsubscribeVisibleTimeRangeChange(onRange as TimeRangeChangeEventHandler<Time>);
+      } catch (e) {
+        console.error('Failed to unsubscribe from range changes:', e);
+      }
+      chart.remove();
+      chartRef.current = null;
+      setChart({ chart: null, series: null, candles: [] });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref])
@@ -146,9 +166,9 @@ const run = () => {
 
         // Map back to original candle times for just the visible window (not the padding)
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
-        const baseData = vTimes.map((t, i) => ({ time: t, value: bb[(i + (startIdx - paddedStart))]?.basis ?? NaN }))
-        const upData   = vTimes.map((t, i) => ({ time: t, value: bb[(i + (startIdx - paddedStart))]?.upper ?? NaN }))
-        const loData   = vTimes.map((t, i) => ({ time: t, value: bb[(i + (startIdx - paddedStart))]?.lower ?? NaN }))
+        const baseData = vTimes.map((t, i) => ({ time: t, value: bb.mid[i + (startIdx - paddedStart)] ?? NaN }))
+        const upData   = vTimes.map((t, i) => ({ time: t, value: bb.upper[i + (startIdx - paddedStart)] ?? NaN }))
+        const loData   = vTimes.map((t, i) => ({ time: t, value: bb.lower[i + (startIdx - paddedStart)] ?? NaN }))
 
         basis.setData(downsampleLineMinMax(baseData, target))
         upper.setData(downsampleLineMinMax(upData, target))
@@ -190,9 +210,9 @@ const run = () => {
         const up  = chart.addLineSeries({ lineWidth: 1 })
         const lo  = chart.addLineSeries({ lineWidth: 1 })
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
-        const midData = vTimes.map((t, i) => ({ time: t, value: ch[(i + (startIdx - paddedStart))]?.mid ?? NaN }))
-        const upData  = vTimes.map((t, i) => ({ time: t, value: ch[(i + (startIdx - paddedStart))]?.upper ?? NaN }))
-        const loData  = vTimes.map((t, i) => ({ time: t, value: ch[(i + (startIdx - paddedStart))]?.lower ?? NaN }))
+        const midData = vTimes.map((t, i) => ({ time: t, value: ch.mid[i + (startIdx - paddedStart)] ?? NaN }))
+        const upData  = vTimes.map((t, i) => ({ time: t, value: ch.upper[i + (startIdx - paddedStart)] ?? NaN }))
+        const loData  = vTimes.map((t, i) => ({ time: t, value: ch.lower[i + (startIdx - paddedStart)] ?? NaN }))
         const tgt = target
         mid.setData(downsampleLineMinMax(midData, tgt))
         up.setData(downsampleLineMinMax(upData, tgt))

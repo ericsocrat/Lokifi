@@ -3,47 +3,42 @@ services:
     build:
       context: ./backend
     working_dir: /app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
-      - ./backend/data:/app/data
     env_file:
       - ./backend/.env
-    environment:
-      - FYNIX_JWT_SECRET
-      - FYNIX_JWT_TTL_MIN
-      - FRONTEND_ORIGIN
-      - REDIS_URL
-      - OPENAI_API_KEY
-      - OPENAI_BASE
-      - OPENAI_MODEL
-      - ALPHAVANTAGE_API_KEY
-      - FINNHUB_API_KEY
-      - POLYGON_API_KEY
-      - COINGECKO_API_KEY
-      - COINMARKETCAP_API_KEY
-      - NEWSAPI_KEY
-      - MARKETAUX_API_KEY
-      - FMPREP_API_KEY
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     depends_on:
-      - redis
+      redis:
+        condition: service_started
 
   frontend:
     build:
       context: ./frontend
+      target: prod
     working_dir: /app
-    # dev-friendly command; uses volumes to live-reload
-    command: sh -c "corepack enable && pnpm i && pnpm dev --host 0.0.0.0"
+    user: node
+    command: ["npm", "run", "start"]
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend:/app
     environment:
-      - NEXT_PUBLIC_API_BASE=http://backend:8000/api
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:8000/api
+      - NODE_OPTIONS="--max_old_space_size=4096"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     depends_on:
-      - backend
+      backend:
+        condition: service_started
 
   redis:
     image: redis:7-alpine

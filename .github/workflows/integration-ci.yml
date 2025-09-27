@@ -1,0 +1,87 @@
+name: Integration CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+  NODE_ENV: production
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.19.0"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: frontend
+          file: frontend/Dockerfile
+          target: prod
+          load: true
+          tags: fynix-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/Dockerfile
+          load: true
+          tags: fynix-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Create env file
+        run: |
+          cat > backend/.env << 'EOL'
+          FYNIX_JWT_SECRET=${{ secrets.FYNIX_JWT_SECRET }}
+          FYNIX_JWT_TTL_MIN=1440
+          FRONTEND_ORIGIN=http://localhost:3000
+          REDIS_URL=redis://redis:6379/0
+          CMC_KEY=${{ secrets.CMC_KEY }}
+          POLYGON_API_KEY=${{ secrets.POLYGON_API_KEY }}
+          ALPHAVANTAGE_API_KEY=${{ secrets.ALPHAVANTAGE_API_KEY }}
+          FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}
+          COINGECKO_API_KEY=${{ secrets.COINGECKO_API_KEY }}
+          NEWSAPI_KEY=${{ secrets.NEWSAPI_KEY }}
+          MARKETAUX_API_KEY=${{ secrets.MARKETAUX_API_KEY }}
+          FMP_KEY=${{ secrets.FMP_KEY }}
+          EOL
+
+      - name: Start Services
+        run: docker compose up -d
+
+      - name: Wait for Services
+        run: |
+          echo "Waiting for backend..."
+          while ! curl -s http://localhost:8000/api/health > /dev/null; do sleep 1; done
+          echo "Backend is up!"
+          
+          echo "Waiting for frontend..."
+          while ! curl -s http://localhost:3000 > /dev/null; do sleep 1; done
+          echo "Frontend is up!"
+
+      - name: Run Tests
+        run: |
+          cd frontend
+          npm ci
+          npm run test:ci

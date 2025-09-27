@@ -99,7 +99,7 @@ export default function AlertsPage() {
               <span className="font-medium">{a.kind}</span>
               {a.note && <span className="ml-2 opacity-70">{a.note}</span>}
               {a.maxTriggers && <span className="ml-2 opacity-50">(max {a.maxTriggers})</span>}
-              {a.triggers > 0 && <span className="ml-2 opacity-50">({a.triggers}x)</span>}
+              {(a.triggers ?? 0) > 0 && <span className="ml-2 opacity-50">({a.triggers}x)</span>}
             </div>
             <div className="flex items-center gap-2">
               <button onClick={async ()=>{ await toggleAlert(a.id, !a.enabled); await refresh(); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-sm">

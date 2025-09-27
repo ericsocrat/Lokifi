@@ -2,6 +2,8 @@ from .base import _get
 from app.core.config import settings
 
 async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
+    if not settings.CMC_KEY:
+        return []
     data = await _get(
         "https://pro-api.coinmarketcap.com/v2/cryptocurrency/ohlcv/historical",
         {"symbol": symbol.replace("USD",""), "convert": "USD", "count": limit, "interval": timeframe, "CMC_PRO_API_KEY": settings.CMC_KEY},

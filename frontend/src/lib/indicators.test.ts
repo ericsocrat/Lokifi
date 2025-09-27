@@ -28,10 +28,10 @@ describe("indicators", () => {
   it("bollinger outputs bands after window", () => {
     const vals = [1, 2, 3, 4, 5, 6];
     const bands = bollinger(vals, 3, 2);
-    expect(bands[0]).toEqual({ basis: null, upper: null, lower: null });
-    expect(bands[2].basis).toBeCloseTo(2);
-    expect(typeof bands[5].upper).toBe("number");
-    expect(typeof bands[5].lower).toBe("number");
+    expect({ basis: bands.mid[0], upper: bands.upper[0], lower: bands.lower[0] }).toEqual({ basis: null, upper: null, lower: null });
+    expect(bands.mid[2]).toBeCloseTo(2);
+    expect(typeof bands.upper[5]).toBe("number");
+    expect(typeof bands.lower[5]).toBe("number");
   });
 
   it("vwma matches simple average when volume equal", () => {
@@ -54,9 +54,9 @@ describe("indicators", () => {
   it("stdDevChannels returns center/upper/lower after window", () => {
     const vals = [1, 2, 3, 4, 5];
     const ch = stdDevChannels(vals, 3, 2);
-    expect(ch[0]).toEqual({ center: null, upper: null, lower: null });
-    expect(ch[2].center).toBeCloseTo(2);
-    expect(typeof ch[4].upper).toBe("number");
-    expect(typeof ch[4].lower).toBe("number");
+    expect({ center: ch.mid[0], upper: ch.upper[0], lower: ch.lower[0] }).toEqual({ center: null, upper: null, lower: null });
+    expect(ch.mid[2]).toBeCloseTo(2);
+    expect(typeof ch.upper[4]).toBe("number");
+    expect(typeof ch.lower[4]).toBe("number");
   });
 });
