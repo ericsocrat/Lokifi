@@ -28,7 +28,7 @@ class IndicatorStore {
   private cache = new Map<string, Partial<IndicatorStateInternal>>();
 
   get(): IndicatorSnapshot { return flatten(this.internal); }
-  subscribe(fn: Subscriber){ this.subs.add(fn); try{ fn(this.get()); }catch{} return () => this.subs.delete(fn) }
+  subscribe(fn: Subscriber){ this.subs.add(fn); try{ fn(this.get()); }catch{} return () => { this.subs.delete(fn); } }
   private emit(){ const snap = this.get(); for(const fn of Array.from(this.subs)){ try{ fn(snap) }catch{} } }
   private commit(next: Partial<IndicatorStateInternal>){
     if(next.flags) this.internal.flags = { ...this.internal.flags, ...next.flags };

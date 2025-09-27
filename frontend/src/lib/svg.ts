@@ -170,3 +170,8 @@ const Svg = {
   pointsAttr,
 };
 export default Svg;
+
+export function drawingsToSVG(drawings: any[], width = 800, height = 400): string {
+  const payload = JSON.stringify({ drawings });
+  return serializeSvg([textEl({x:12,y:20}, payload)], width, height);
+}

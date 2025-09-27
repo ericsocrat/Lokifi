@@ -1,3 +1,4 @@
+export type Candle = { time:number; open:number; high:number; low:number; close:number; volume:number };
 /**
  * Indicator implementations (no external deps).
  * All series return arrays aligned to input `values.length`.
@@ -174,3 +175,6 @@ export function stddevChannels(values: number[], period = 20, mult = 2): { mid: 
   }
   return { mid, upper, lower };
 }
+
+export { sma };
+export const stdDevChannels = stddevChannels;

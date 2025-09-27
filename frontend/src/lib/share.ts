@@ -32,3 +32,5 @@ export function tryLoadFromURL(): ShareSnapshot | null {
     return null
   }
 }
+export function encodeShare(obj:any){ try{ return btoa(unescape(encodeURIComponent(JSON.stringify(obj)))) }catch{ return "" } }
+export function decodeShare(s:string){ try{ return JSON.parse(decodeURIComponent(escape(atob(s)))) }catch{ return null } }

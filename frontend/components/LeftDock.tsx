@@ -1,7 +1,7 @@
 
 "use client";
 import { useEffect, useState } from "react";
-import { Cursor, Slash, Ruler, LineChart, Waves, Boxes, Brackets, Landmark, Settings } from "lucide-react";
+import { MousePointer, Slash, Ruler, LineChart, Waves, Boxes, Brackets, Landmark, Settings } from "lucide-react";
 import { drawStore } from "@/lib/drawStore";
 import { pluginManager } from "@/plugins";
 import PluginSettingsDrawer from "@/components/PluginSettingsDrawer";
@@ -25,7 +25,7 @@ export default function LeftDock(){
   return (
     <div className="absolute left-2 top-16 z-20 flex flex-col gap-2 p-2 rounded-2xl bg-neutral-900/90 border border-neutral-800">
       <div className="text-[11px] uppercase tracking-wide opacity-70 mb-1">Tools</div>
-      <Btn title="Cursor (V)" active={activeTool==='cursor'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('cursor'); }}><Cursor size={16} /></Btn>
+      <Btn title="MousePointer (V)" active={activeTool==='MousePointer'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('MousePointer'); }}><MousePointer size={16} /></Btn>
       <Btn title="Trendline (T)" active={activeTool==='trendline'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('trendline'); }}><LineChart size={16} /></Btn>
       <Btn title="HLine (H)" active={activeTool==='hline'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('hline'); }}><Landmark size={16} /></Btn>
       <Btn title="Rectangle (M)" active={activeTool==='rect'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('rect'); }}><Boxes size={16} /></Btn>
@@ -46,3 +46,4 @@ export default function LeftDock(){
     </div>
   );
 }
+

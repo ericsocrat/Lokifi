@@ -29,7 +29,7 @@ export async function exportReportPDF(title = 'Fynix Chart Report') {
   page.drawImage(png, { x: margin, y: ph - margin*2 - imgH, width: imgW, height: imgH })
 
   const bytes = await pdf.save()
-  const blob = new Blob([bytes], { type: 'application/pdf' })
+  const blob = new Blob([ (bytes as any).buffer ?? bytes ], { type: 'application/pdf' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url; a.download = 'fynix-report.pdf'; a.click()

@@ -1,3 +1,4 @@
+export type Candle = { time:number; open:number; high:number; low:number; close:number; volume:number };
 export function sma(values: number[], period: number): (number | null)[] {
   const out: (number | null)[] = [];
   let sum = 0;
@@ -142,3 +143,6 @@ export function stddevChannels(values: number[], period = 20, mult = 2) {
   }
   return { mid, upper, lower };
 }
+
+export { sma };
+export const stdDevChannels = stddevChannels;

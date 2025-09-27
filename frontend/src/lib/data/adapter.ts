@@ -225,7 +225,7 @@ function genMock(tf: string, n: number): Candle[] {
     const low  = open - Math.abs(drift)*2 - Math.random()*1.5
     const close = Math.max(low, Math.min(high, open + drift))
     p = close
-    out.push({ time: t, open, high, low, close, volume: vol })
+    out.push({ time: (t as any), open, high, low, close, volume: vol })
     t += step
   }
   return out
@@ -244,7 +244,7 @@ function mockNext(prev: Candle[]): Candle[] {
     const high = open + Math.abs(drift)*2 + Math.random()
     const low  = open - Math.abs(drift)*2 - Math.random()
     const close = Math.max(low, Math.min(high, open + drift))
-    const next: Candle = { time: asSec(last.time)+step, open, high, low, close, volume: Math.max(1, Math.round(100*Math.random())) }
+    const next: Candle = { time: (asSec(last.time)+step as any), open, high, low, close, volume: Math.max(1, Math.round(100*Math.random())) }
     return [...prev, next].slice(-2000)
   } else {
     // update in-progress bar
