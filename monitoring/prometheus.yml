@@ -1,0 +1,20 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'fynix-backend'
+    static_configs:
+      - targets: ['backend:8000']
+    metrics_path: '/api/health'
+    scrape_interval: 30s
+
+  - job_name: 'fynix-frontend'
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: '/api/health'
+    scrape_interval: 30s
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s

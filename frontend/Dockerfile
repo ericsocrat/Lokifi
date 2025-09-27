@@ -26,10 +26,6 @@ RUN npm run build
 
 FROM node:20.19-alpine AS prod
 WORKDIR /app
-
-# Install curl for healthchecks
-RUN apk add --no-cache curl
-
 COPY --from=build /app ./
 EXPOSE 3000
 RUN chown -R node:node /app
