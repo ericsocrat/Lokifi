@@ -1,14 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import { indicatorStore, type IndicatorState } from "@/lib/indicatorStore";
+import { indicatorStore, type IndicatorFlags } from "@/lib/indicatorStore";
 
 export default function IndicatorPanel(){
-  const [s, setS] = useState<IndicatorState>(indicatorStore.get());
+  const [s, setS] = useState(indicatorStore.get());
   useEffect(()=> indicatorStore.subscribe(setS), []);
 
-  const toggle = (k: keyof IndicatorState) => () => indicatorStore.set({ [k]: !s[k] });
-
-  return (
+  const toggle = (k: keyof IndicatorFlags) => () => indicatorStore.toggle(k);  return (
     <div className="rounded-2xl border border-neutral-800 p-3">
       <div className="font-semibold mb-2">Indicators</div>
       <div className="grid grid-cols-2 gap-2 text-sm">

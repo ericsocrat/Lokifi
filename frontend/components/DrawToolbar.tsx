@@ -2,7 +2,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { drawStore, type Tool } from "@/lib/drawStore";
-import { pluginManager } from "@/plugins";
+import { pluginManager } from "@/plugins/registry";
 
 const TOOLS: { key: Tool; label: string }[] = [
   { key: "cursor", label: "Cursor" },
@@ -17,7 +17,10 @@ export default function DrawToolbar(){
   const [tool, setTool] = useState<Tool>(drawStore.get().tool);
   const [snap, setSnap] = useState<boolean>(drawStore.get().snap);
   const [selCount, setSelCount] = useState<number>(drawStore.get().selectedIds.length);
-  useEffect(()=> drawStore.subscribe(s => { setTool(s.tool); setSnap(s.snap); setSelCount(s.selectedIds.length); }), []);
+  useEffect(()=> {
+    const unsub = drawStore.subscribe(s => { setTool(s.tool); setSnap(s.snap); setSelCount(s.selectedIds.length); });
+    return () => { unsub(); };
+  }, []);
 
   return (
     <div className="flex items-center gap-2 px-2 py-1 rounded-xl bg-neutral-900/90 border border-neutral-800 backdrop-blur">

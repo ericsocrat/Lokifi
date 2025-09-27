@@ -1,22 +1,24 @@
 /**
- * Alerts API (typed, minimal, compile-safe).
+ * Alert API (typed, minimal, compile-safe).
  * Replace later with real HTTP calls to your backend.
  */
 
 export type Alert = {
   id: string;
-  symbol: string;
-  type: string;        // e.g. "price", "cross", etc.
-  timeframe: string;   // e.g. "1h"
-  active: boolean;
-  config?: Record<string, any>;
-  createdAt?: number;  // epoch seconds
+  kind: string;        // e.g. "price", "cross", etc.
+  enabled: boolean;
+  sound?: 'ping' | 'none';
+  snoozedUntil?: number;  // timestamp in ms
+  maxTriggers?: number;
+  triggers?: number;
+  note?: string;
 };
 
 export type AlertEvent = {
-  type: "alert";
-  data: { ts: number; payload: any };
-  alertId?: string;
+  id: string;
+  kind: string;
+  at: number;  // timestamp in ms
+  price?: number;
 };
 
 // --- CRUD-ish stubs ---
@@ -26,19 +28,16 @@ export async function listAlerts(): Promise<Alert[]> {
   return [];
 }
 
-export async function createAlert(payload: Partial<Alert> & { type: string; symbol: string; timeframe: string; config?: any }): Promise<Alert> {
+export async function createAlert(payload: Omit<Alert, 'id'|'enabled'|'triggers'>): Promise<Alert> {
   return {
     id: String(Date.now()),
-    symbol: payload.symbol!,
-    type: payload.type!,
-    timeframe: payload.timeframe!,
-    active: true,
-    config: payload.config,
-    createdAt: Math.floor(Date.now() / 1000),
+    enabled: true,
+    triggers: 0,
+    ...payload
   };
 }
 
-export async function toggleAlert(id: string, active: boolean): Promise<boolean> {
+export async function toggleAlert(id: string, enabled: boolean): Promise<boolean> {
   // TODO: wire to backend
   return true;
 }

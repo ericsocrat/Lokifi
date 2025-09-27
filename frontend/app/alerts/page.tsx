@@ -17,7 +17,7 @@ export default function AlertsPage() {
     { kind: "price_threshold", symbol: "BTCUSD", timeframe: "1h", direction: "above", number: "45000", window: "60" }
   );
   const [log, setLog] = useState<string[]>([]);
-  const subRef = useRef<() => void>();
+  const subRef = useRef<(() => void) | undefined>(undefined);
 
   useEffect(() => {
     (async () => {
@@ -30,10 +30,7 @@ export default function AlertsPage() {
       await refresh();
       // subscribe SSE
       subRef.current = subscribeAlerts((ev) => {
-        if (ev.type === "alert") {
-          const a = ev.data.alert as Alert;
-          setLog((l) => [`${new Date(ev.data.ts*1000).toLocaleTimeString()} ${a.symbol} ${JSON.stringify(ev.data.payload)}`, ...l].slice(0, 50));
-        }
+        setLog((l) => [`${new Date(ev.at).toLocaleTimeString()} ${ev.kind} ${ev.price ? `@ $${ev.price}` : ''}`, ...l].slice(0, 50));
       }, true);
     })();
     return () => { subRef.current?.(); };
@@ -45,12 +42,22 @@ export default function AlertsPage() {
   }
 
   async function create() {
-    const { kind, symbol, timeframe, direction, number, window } = form;
+    const { kind, symbol, direction, number, window } = form;
     if (kind === "price_threshold") {
-      await createAlert({ type: "price_threshold", symbol, timeframe, config: { direction, price: Number(number) } });
+      await createAlert({ 
+        kind: "price_threshold", 
+        note: `${symbol} ${direction} ${number}`,
+        sound: "ping",
+        maxTriggers: 1
+      });
     } else {
       const dir = (direction === "above" || direction === "up") ? "up" : (direction === "below" || direction === "down") ? "down" : "abs";
-      await createAlert({ type: "pct_change", symbol, timeframe, config: { direction: dir, threshold_pct: Number(number), window_minutes: Number(window) } });
+      await createAlert({ 
+        kind: "pct_change", 
+        note: `${symbol} ${dir} ${number}%`, 
+        sound: "ping",
+        maxTriggers: 1
+      });
     }
     await refresh();
   }
@@ -89,10 +96,15 @@ export default function AlertsPage() {
         {alerts.map(a => (
           <div key={a.id} className="rounded-xl border border-neutral-800 p-3 bg-neutral-900 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="text-sm">
-              <span className="font-medium">{a.symbol}</span> · {a.type} · {a.timeframe}
+              <span className="font-medium">{a.kind}</span>
+              {a.note && <span className="ml-2 opacity-70">{a.note}</span>}
+              {a.maxTriggers && <span className="ml-2 opacity-50">(max {a.maxTriggers})</span>}
+              {a.triggers > 0 && <span className="ml-2 opacity-50">({a.triggers}x)</span>}
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={async ()=>{ await toggleAlert(a.id, !a.active); await refresh(); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-sm">{a.active ? "Disable" : "Enable"}</button>
+              <button onClick={async ()=>{ await toggleAlert(a.id, !a.enabled); await refresh(); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-sm">
+                {a.enabled ? "Disable" : "Enable"}
+              </button>
               <button onClick={async ()=>{ await deleteAlert(a.id); await refresh(); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-sm">Delete</button>
             </div>
           </div>

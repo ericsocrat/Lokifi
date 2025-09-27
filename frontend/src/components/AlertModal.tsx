@@ -1,11 +1,11 @@
 import React from 'react'
 import { useChartStore } from '@/state/store'
-import type { AlertKind } from '@/lib/alerts'
+import type { Alert } from '@/lib/alerts'
 
 type Props = { open: boolean; onClose: () => void }
 export default function AlertModal({ open, onClose }: Props) {
   const s = useChartStore()
-  const [kind, setKind] = React.useState<AlertKind>('cross')
+  const [kind, setKind] = React.useState<string>('cross')
   const [note, setNote] = React.useState('Alert')
   const [sound, setSound] = React.useState<'ping'|'none'>('ping')
   const [cooldown, setCooldown] = React.useState(60_000)
@@ -45,7 +45,7 @@ export default function AlertModal({ open, onClose }: Props) {
         <div className="grid grid-cols-3 gap-2 text-sm">
           <label className="col-span-1 opacity-70">Type</label>
           <select className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                  value={kind} onChange={e=>setKind(e.target.value as AlertKind)}>
+                  value={kind} onChange={e=>setKind(e.target.value)}>
             <option value="cross" disabled={!canCross}>Line cross</option>
             <option value="fib-cross" disabled={!canFib}>Fib level cross</option>
             <option value="region-touch" disabled={!canRegion}>Region touch</option>

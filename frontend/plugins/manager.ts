@@ -6,6 +6,8 @@ import { drawStore, type Shape } from "@/lib/drawStore";
 import { symbolStore } from "@/lib/symbolStore";
 import { timeframeStore } from "@/lib/timeframeStore";
 
+export type { PluginManager };
+
 type Env = {
   chart: IChartApi;
   candle: ISeriesApi<"Candlestick">;

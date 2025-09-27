@@ -1,12 +1,13 @@
 import React from 'react'
 import { listPlugins } from '@/lib/plugins'
 import { saveJSON, loadJSON } from '@/lib/storage'
+import type { PluginMeta, Registered } from '@/lib/plugins'
 
-type Map = Record<string, any>
+type ConfigMap = Record<string, Record<string, any>>
 
 export default function PluginDrawer() {
   const plugins = listPlugins()
-  const [cfg, setCfg] = React.useState<Map>(() => loadJSON('fynix-plugin-cfg', {}))
+  const [cfg, setCfg] = React.useState<ConfigMap>(() => loadJSON('fynix-plugin-cfg', {}))
   const fileRef = React.useRef<HTMLInputElement>(null)
 
   function update(id: string, key: string, value: any) {
@@ -38,16 +39,16 @@ export default function PluginDrawer() {
       <h2 className="text-lg font-semibold mb-2">Plugins</h2>
       <div className="space-y-3">
         {plugins.map(p => (
-          <div key={p.id} className="p-3 rounded-xl border border-neutral-700">
-            <div className="font-medium">{p.name}</div>
-            <div className="text-xs text-neutral-400">{p.description || 'No description'}</div>
+          <div key={p.meta.id} className="p-3 rounded-xl border border-neutral-700">
+            <div className="font-medium">{p.meta.name}</div>
+            <div className="text-xs text-neutral-400">{p.meta.description || 'No description'}</div>
             <div className="mt-2 text-sm grid grid-cols-2 gap-2">
-              {Object.entries(p.defaults).map(([k,v]) => (
+              {p.defaults && Object.entries(p.defaults).map(([k,v]) => (
                 <label key={k} className="flex items-center justify-between">
                   <span>{k}</span>
                   <input className="ml-2 bg-transparent border px-2 py-1 rounded"
-                    value={String((cfg[p.id]?.[k] ?? v))}
-                    onChange={e => update(p.id, k, e.target.value)} />
+                    value={String((cfg[p.meta.id]?.[k] ?? v))}
+                    onChange={e => update(p.meta.id, k, e.target.value)} />
                 </label>
               ))}
             </div>

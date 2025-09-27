@@ -20,12 +20,13 @@ import {
 } from '@/lib/lod'
 
 type Series = ISeriesApi<'Candlestick'>
-type Candle = IndCandle
+type CandleLW = { time: Time; open: number; high: number; low: number; close: number; volume: number };
+type Candle = IndCandle;
 
 export default function PriceChart() {
   const ref = React.useRef<HTMLDivElement>(null)
   const seriesRef = React.useRef<Series>(null)
-  const volRef = React.useRef<ISeriesApi<'Histogram'>>()
+  const volRef = React.useRef<ISeriesApi<'Histogram'>>(null)
   const chartRef = React.useRef<IChartApi | null>(null)
 
   const { indicators, indicatorSettings, theme, symbol, timeframe } = useChartStore()
@@ -160,7 +161,9 @@ const run = () => {
       if (indicators.showVWAP) {
         const anchorAbs = indicatorSettings.vwapAnchorIndex ?? 0
         const anchorRel = Math.max(0, anchorAbs - paddedStart)
-        const v = vwap(slice as any, Math.min(anchorRel, slice.length-1))
+        const typical = slice.map(c => (c.high + c.low + c.close) / 3)
+        const volume = slice.map(c => c.volume)
+        const v = vwap(typical, volume)
         const vwapLine = chart.addLineSeries({ lineWidth: 2 })
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
         const data = vTimes.map((t, i) => ({ time: t, value: v[(i + (startIdx - paddedStart))] ?? NaN }))
@@ -170,7 +173,9 @@ const run = () => {
 
       // --- VWMA
       if (indicators.showVWMA) {
-        const vArr = vwma(slice as any, indicatorSettings.vwmaPeriod)
+        const prices = slice.map(c => c.close)
+        const volumes = slice.map(c => c.volume)
+        const vArr = vwma(prices, volumes, indicatorSettings.vwmaPeriod)
         const line = chart.addLineSeries({ lineWidth: 1 })
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
         const data = vTimes.map((t, i) => ({ time: t, value: vArr[(i + (startIdx - paddedStart))] ?? NaN }))
@@ -222,7 +227,15 @@ const run = () => {
     } else {
       const fromSec = timeToSec(vr.from as Time)
       const toSec = timeToSec(vr.to as Time)
-      view = sliceByTimeWindow(all as any, fromSec, toSec)
+      // Convert Time to number for indicator processing
+      const allWithNumTime = all.map(c => ({
+        ...c,
+        time: typeof c.time === 'number' ? c.time : 
+              typeof c.time === 'string' ? new Date(c.time).getTime() / 1000 :
+              typeof c.time === 'object' && c.time && 'timestamp' in (c.time as {timestamp?: number}) ? (c.time as {timestamp: number}).timestamp :
+              new Date(String(c.time)).getTime() / 1000
+      }))
+      view = sliceByTimeWindow(allWithNumTime as unknown as import('@/lib/lod').Candle[], fromSec, toSec) as unknown as Candle[]
       if (view.length < 2) view = all
     }
 

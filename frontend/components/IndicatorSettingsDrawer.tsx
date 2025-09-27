@@ -1,14 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
-import { indicatorStore, type IndicatorState } from "@/lib/indicatorStore";
+import { indicatorStore } from "@/lib/indicatorStore";
 import { symbolStore } from "@/lib/symbolStore";
 
-export default function IndicatorSettingsDrawer(){
-  const [s, setS] = useState<IndicatorState>(indicatorStore.get());
-  const [open, setOpen] = useState<boolean>(false);
-  useEffect(()=> indicatorStore.subscribe(setS), []);
+type State = ReturnType<typeof indicatorStore.get>;
 
-  const setParam = (key: keyof IndicatorState["params"]) => (e: React.ChangeEvent<HTMLInputElement>) => {
+export default function IndicatorSettingsDrawer(){
+  const [s, setS] = useState<State>(indicatorStore.get());
+  const [open, setOpen] = useState<boolean>(false);
+  useEffect(() => {
+    const unsub = indicatorStore.subscribe(setS);
+    return () => { unsub(); };
+  }, []);
+
+  const setParam = (key: keyof State["params"]) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = Number(e.target.value);
     if (Number.isFinite(v) && v > 0) indicatorStore.set({ params: { ...s.params, [key]: v } as any });
   };
@@ -47,11 +52,12 @@ export default function IndicatorSettingsDrawer(){
           </label>
           <div className="col-span-2 font-medium opacity-80 mt-2">Bollinger Band Fill</div>
 <label className="flex items-center gap-2">
-  Palette
-  <select value={s.style.palette ?? "Brand"} onChange={(e)=> indicatorStore.applyPalette(e.target.value)} className="px-2 py-1 bg-neutral-900 border border-neutral-800 rounded">
-    <option value="Brand">Brand</option>
-    <option value="Calm">Calm</option>
-    <option value="Heatmap">Heatmap</option>
+  Theme
+  <select value={s.style.bbFillColor} onChange={(e)=> indicatorStore.setStyle("bbFillColor", e.target.value)} className="px-2 py-1 bg-neutral-900 border border-neutral-800 rounded">
+    <option value="#22d3ee">Default</option>
+    <option value="#ef4444">Red</option>
+    <option value="#22c55e">Green</option>
+    <option value="#3b82f6">Blue</option>
   </select>
 </label>
           <label className="flex items-center gap-2">

@@ -1,10 +1,9 @@
 import React from "react"
-import { useChartStore } from "@/state/state"
-import { useChartStore as useStore } from "@/state/store"
+import { useChartStore } from "@/state/store"
 import { buildReportPDF, downloadPdf, ReportBlock } from "@/lib/report"
 
 export default function ReportComposer({ open, onClose }:{ open:boolean; onClose:()=>void }) {
-  const s = useStore()
+  const s = useChartStore()
   const [title, setTitle] = React.useState("Fynix Report")
   const [notes, setNotes] = React.useState("")
   const [includeRecent, setIncludeRecent] = React.useState(true)

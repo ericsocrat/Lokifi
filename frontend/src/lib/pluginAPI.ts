@@ -17,7 +17,7 @@ export function listContextActions(): ContextAction[] {
 
 export function runAction(id: string) {
   const s = (useChartStore as any).getState()
-  const sel = Array.from(s.selection || [])
+  const sel = Array.from(s.selection || []) as string[]
   const a = registry.actions.get(id)
   if (a) a.run(sel)
 }

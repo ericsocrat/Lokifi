@@ -35,24 +35,17 @@ describe("indicators", () => {
   });
 
   it("vwma matches simple average when volume equal", () => {
-    const candles: Candle[] = [
-      { time: 0, open: 1, high: 1, low: 1, close: 1, volume: 10 },
-      { time: 1, open: 2, high: 2, low: 2, close: 2, volume: 10 },
-      { time: 2, open: 3, high: 3, low: 3, close: 3, volume: 10 },
-      { time: 3, open: 4, high: 4, low: 4, close: 4, volume: 10 },
-    ];
-    const out = vwma(candles, 3);
+    const close = [1, 2, 3, 4];
+    const volume = [10, 10, 10, 10];
+    const out = vwma(close, volume, 3);
     expect(out[2]).toBeCloseTo(2);
     expect(out[3]).toBeCloseTo(3);
   });
 
   it("vwap increases with price when anchored", () => {
-    const candles: Candle[] = [
-      { time: 0, open: 1, high: 2, low: 0.5, close: 1.5, volume: 100 },
-      { time: 1, open: 2, high: 3, low: 1.5, close: 2.5, volume: 100 },
-      { time: 2, open: 3, high: 4, low: 2.5, close: 3.5, volume: 100 },
-    ];
-    const out = vwap(candles, 0);
+    const typicalPrice = [1.16666667, 2.16666667, 3.16666667];
+    const volume = [100, 100, 100];
+    const out = vwap(typicalPrice, volume);
     expect(out[0]).not.toBeNull();
     expect(out[1]! > (out[0] as number)).toBe(true);
     expect(out[2]! > (out[1] as number)).toBe(true);

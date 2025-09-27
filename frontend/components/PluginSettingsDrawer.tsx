@@ -8,7 +8,10 @@ type Settings = ReturnType<typeof pluginSettingsStore.get>;
 
 export default function PluginSettingsDrawer({ open, onClose }:{ open:boolean, onClose:()=>void }){
   const [s, setS] = useState<Settings>(pluginSettingsStore.get());
-  useEffect(()=> pluginSettingsStore.subscribe(setS), []);
+  useEffect(() => {
+    const unsub = pluginSettingsStore.subscribe(setS);
+    return () => { unsub(); };
+  }, []);
   if (!EXPERIMENTAL_PLUGINS || !open) return null;
   return (
     <div className="fixed right-4 top-16 z-40 w-80 rounded-2xl border border-neutral-800 bg-neutral-900/95 backdrop-blur p-3 shadow-xl">

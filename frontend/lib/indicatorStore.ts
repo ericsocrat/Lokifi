@@ -4,7 +4,7 @@
  * .toggle(key), .setParam(k,v), .setStyle(k,v), .loadForSymbol(sym), .reset().
  */
 
-export type IndicatorFlags = {
+interface IndicatorFlags {
   ema20: boolean;
   ema50: boolean;
   bband: boolean;
@@ -14,29 +14,32 @@ export type IndicatorFlags = {
   rsi: boolean;
   macd: boolean;
   stddev: boolean;
-};
+}
 
-export type IndicatorParams = {
+interface IndicatorParams {
   bbPeriod: number;     // Bollinger period
   bbMult: number;       // Bollinger deviation multiplier
   vwmaPeriod: number;   // VWMA period
+  vwapAnchorIndex: number; // VWAP anchor point
   stddevPeriod: number; // StdDev channel period
   stddevMult: number;   // StdDev channel multiplier
-};
+}
 
-export type IndicatorStyle = {
+interface IndicatorStyle {
   bbFillColor: string;   // hex or css color
   bbFillOpacity: number; // 0..1
-};
+}
 
-export type IndicatorState = {
+interface IndicatorState {
   /** enabled/disabled indicators */
   flags: IndicatorFlags;
   /** parameters */
   params: IndicatorParams;
   /** visual styles */
   style: IndicatorStyle;
-};
+}
+
+export type { IndicatorState, IndicatorFlags, IndicatorParams, IndicatorStyle };
 
 const DEFAULT_FLAGS: IndicatorFlags = {
   ema20: true,
@@ -54,6 +57,7 @@ const DEFAULT_PARAMS: IndicatorParams = {
   bbPeriod: 20,
   bbMult: 2,
   vwmaPeriod: 20,
+  vwapAnchorIndex: 0,
   stddevPeriod: 20,
   stddevMult: 2,
 };

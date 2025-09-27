@@ -11,7 +11,7 @@ import { drawStore, type Shape } from "@/lib/drawStore";
 import DrawToolbar from "@/components/DrawToolbar";
 import PluginSideToolbar from "@/components/PluginSideToolbar";
 import LeftDock from "@/components/LeftDock";
-import { pluginManager } from "@/plugins";
+import { pluginManager } from "@/plugins/registry";
 import type { OHLCResponse } from "@/lib/types";
 
 // Helpers that were missing
@@ -51,13 +51,22 @@ export default function ChartPanel() {
 
   const [inds, setInds] = useState(indicatorStore.get());
   const params = inds.params; const style = inds.style;
-  useEffect(() => indicatorStore.subscribe(st => setInds(st)), []);
+  useEffect(() => {
+    const unsub = indicatorStore.subscribe(st => setInds(st));
+    return () => { unsub(); };
+  }, []);
 
   const [sym, setSym] = useState(symbolStore.get());
-  useEffect(() => symbolStore.subscribe(s => { setSym(s); indicatorStore.loadForSymbol(s); drawStore.loadCurrent(); }), []);
+  useEffect(() => {
+    const unsub = symbolStore.subscribe(s => { setSym(s); indicatorStore.loadForSymbol(s); drawStore.loadCurrent(); });
+    return () => { unsub(); };
+  }, []);
 
   const [tf, setTf] = useState(timeframeStore.get());
-  useEffect(() => timeframeStore.subscribe(t => { setTf(t); drawStore.loadCurrent(); }), []);
+  useEffect(() => {
+    const unsub = timeframeStore.subscribe(t => { setTf(t); drawStore.loadCurrent(); });
+    return () => { unsub(); };
+  }, []);
 
   const { data } = useSWR<OHLCResponse>(`${API}/ohlc?symbol=${sym}&timeframe=${tf}&limit=500`);
 
@@ -378,7 +387,7 @@ export default function ChartPanel() {
           if (Math.abs(x - cx) <= 6 && Math.abs(y - cy) <= 6) return { id: sh.id, handle: 'c' };
           if (Math.abs(x - x1) <= 6 && Math.abs(y - y1) <= 6) return { id: sh.id, handle: 'a' };
           if (Math.abs(x - x2) <= 6 && Math.abs(y - y2) <= 6) return { id: sh.id, handle: 'b' };
-        } else if (sh.type === 'rect' || sh.type === 'fib') {
+        } else if (sh.type === 'rect' || (sh.type as string) === 'fib') {
           const x1 = timeToX((sh as any).a.t), y1 = priceToY((sh as any).a.p); const x2 = timeToX((sh as any).b.t), y2 = priceToY((sh as any).b.p);
           const left = Math.min(x1, x2), right = Math.max(x1, x2), top = Math.min(y1, y2), bottom = Math.max(y1, y2);
           if (Math.abs(x - left) <= 6 && Math.abs(y - top) <= 6) return { id: sh.id, handle: 'tl' };

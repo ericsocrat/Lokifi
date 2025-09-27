@@ -16,17 +16,17 @@ export default function ChatPage() {
 
   async function send() {
     if (!input.trim() || busy) return;
-    const next = [...messages, { role: "user", content: input }];
+    const next: ChatMessage[] = [...messages, { role: "user" as const, content: input }];
     setMessages(next);
     setInput("");
     setBusy(true);
     try {
       const res = await chat(next);
-      setMessages([...next, { role: "assistant", content: res.answer || "(no answer)" }]);
+      setMessages([...next, { role: "assistant" as const, content: res.answer || "(no answer)" }]);
       // scroll to bottom
       setTimeout(() => boxRef.current?.scrollTo(0, boxRef.current.scrollHeight), 0);
     } catch (e: any) {
-      setMessages([...next, { role: "assistant", content: e?.message || "Failed" }]);
+      setMessages([...next, { role: "assistant" as const, content: e?.message || "Failed" }]);
     } finally {
       setBusy(false);
     }

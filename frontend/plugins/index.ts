@@ -1,20 +1,21 @@
 
 "use client";
-import { pluginManager } from "./manager";
+
+// Import manager type
+import type { PluginManager } from "./manager";
+
+// Import all plugins
 import { trendlinePlus } from "./trendlinePlus";
-
-// Register built-in plugins here
-pluginManager.register(trendlinePlus);
-
-export { pluginManager };
-
 import { rulerMeasure } from "./rulerMeasure";
 import { parallelChannel } from "./parallelChannel";
 import { fibExtended } from "./fibExtended";
-
-pluginManager.register(rulerMeasure);
-pluginManager.register(parallelChannel);
-pluginManager.register(fibExtended);
-
 import { parallelChannel3 } from "./parallelChannel3";
-pluginManager.register(parallelChannel3);
+
+// Create namespace for plugin registration
+export const plugins = {
+  trendlinePlus,
+  rulerMeasure,
+  parallelChannel,
+  fibExtended,
+  parallelChannel3
+};

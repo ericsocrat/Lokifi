@@ -1,5 +1,11 @@
 /**
- * Indicator store v2 (structured internal + flattened snapshot).
+ * Indicator store v2 (struc  private commit(next: Partial<IndicatorStateInternal>){
+    const flags = next.flags ? { ...this.internal.flags, ...next.flags } : this.internal.flags;
+    const params = next.params ? { ...this.internal.params, ...next.params } : this.internal.params;
+    const style = next.style ? { ...this.internal.style, ...next.style } : this.internal.style;
+    this.internal = { flags, params, style };
+    this.emit();
+  }internal + flattened snapshot).
  */
 export type IndicatorFlags = {
   ema20: boolean; ema50: boolean; bband: boolean; bbFill: boolean;
@@ -40,10 +46,17 @@ class IndicatorStore {
   toggle<K extends keyof IndicatorFlags>(key: K, value?: boolean){
     const cur = !!this.internal.flags[key];
     const next = typeof value === "boolean" ? value : !cur;
-    this.commit({ flags: { [key]: next } as Partial<IndicatorFlags> });
+    const flags = { ...this.internal.flags, [key]: next };
+    this.commit({ flags });
   }
-  setParam<K extends keyof IndicatorParams>(key: K, value: IndicatorParams[K]){ this.commit({ params: { [key]: value } as Partial<IndicatorParams> }) }
-  setStyle<K extends keyof IndicatorStyle>(key: K, value: IndicatorStyle[K]){ this.commit({ style: { [key]: value } as Partial<IndicatorStyle> }) }
+  setParam<K extends keyof IndicatorParams>(key: K, value: IndicatorParams[K]){
+    const params = { ...this.internal.params, [key]: value };
+    this.commit({ params });
+  }
+  setStyle<K extends keyof IndicatorStyle>(key: K, value: IndicatorStyle[K]){
+    const style = { ...this.internal.style, [key]: value };
+    this.commit({ style });
+  }
   set(partial: Partial<IndicatorStateInternal>){ this.commit(partial) }
   reset(){ this.internal = { flags: { ...DEFAULT_FLAGS }, params: { ...DEFAULT_PARAMS }, style: { ...DEFAULT_STYLE } }; this.emit() }
 

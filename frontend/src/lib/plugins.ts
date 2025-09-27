@@ -13,7 +13,7 @@ export type PluginHooks = Partial<{
   onContextMenu?(payload: { selection: string[]; add(menu: { label:string; action:()=>void }[]): void }): void
 }>
 
-type Registered = { meta: PluginMeta; hooks: PluginHooks; enabled: boolean }
+export type Registered = { meta: PluginMeta; hooks: PluginHooks; enabled: boolean; defaults?: Record<string, any> }
 
 const registry = new Map<string, Registered>()
 

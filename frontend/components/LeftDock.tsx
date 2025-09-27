@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { MousePointer, Slash, Ruler, LineChart, Waves, Boxes, Brackets, Landmark, Settings } from "lucide-react";
 import { drawStore } from "@/lib/drawStore";
-import { pluginManager } from "@/plugins";
+import { pluginManager } from "@/plugins/registry";
 import PluginSettingsDrawer from "@/components/PluginSettingsDrawer";
 import { EXPERIMENTAL_PLUGINS } from "@/lib/flags";
 
@@ -12,7 +12,10 @@ export default function LeftDock(){
   const [activePlugin, setActivePlugin] = useState<string | null>(pluginManager.activeToolId);
   const [open, setOpen] = useState(false);
 
-  useEffect(()=> drawStore.subscribe(s => setActiveTool(s.tool)), []);
+  useEffect(()=> {
+    const unsub = drawStore.subscribe(s => setActiveTool(s.tool));
+    return () => { unsub(); };
+  }, []);
   useEffect(()=> {
     const i = setInterval(()=> setActivePlugin(pluginManager.activeToolId), 300);
     return ()=> clearInterval(i);
@@ -25,7 +28,7 @@ export default function LeftDock(){
   return (
     <div className="absolute left-2 top-16 z-20 flex flex-col gap-2 p-2 rounded-2xl bg-neutral-900/90 border border-neutral-800">
       <div className="text-[11px] uppercase tracking-wide opacity-70 mb-1">Tools</div>
-      <Btn title="MousePointer (V)" active={activeTool==='MousePointer'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('MousePointer'); }}><MousePointer size={16} /></Btn>
+      <Btn title="Cursor (V)" active={activeTool==='cursor'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('cursor'); }}><MousePointer size={16} /></Btn>
       <Btn title="Trendline (T)" active={activeTool==='trendline'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('trendline'); }}><LineChart size={16} /></Btn>
       <Btn title="HLine (H)" active={activeTool==='hline'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('hline'); }}><Landmark size={16} /></Btn>
       <Btn title="Rectangle (M)" active={activeTool==='rect'} onClick={()=> { pluginManager.setActiveTool(null); drawStore.setTool('rect'); }}><Boxes size={16} /></Btn>
