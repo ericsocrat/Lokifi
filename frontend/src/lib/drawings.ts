@@ -89,3 +89,5 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
   }
 }
 
+export function drawParallelChannel(...args:any[]){ /* stub */ }
+export function drawPitchfork(...args:any[]){ /* stub */ }

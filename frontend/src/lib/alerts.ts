@@ -98,3 +98,8 @@ export function evaluateAlerts(
   }
   return out
 }
+export async function createAlert(){ return {id:Date.now().toString(),symbol:"SYM",type:"price",timeframe:"1h",active:true}; }
+export async function deleteAlert(id:string){ return true; }
+export async function listAlerts(){ return []; }
+export async function toggleAlert(id:string,active:boolean){ return true; }
+export async function subscribeAlerts(){ return ()=>{}; }

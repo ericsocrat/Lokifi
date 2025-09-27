@@ -1,69 +1,176 @@
-export type Candle = { time: number; open: number; high: number; low: number; close: number; volume: number }
+/**
+ * Indicator implementations (no external deps).
+ * All series return arrays aligned to input `values.length`.
+ * Insufficient warmup points are `null`.
+ */
 
-export function sma(values: number[], period: number): (number | null)[] {
-  const out: (number|null)[] = new Array(values.length).fill(null)
-  let sum = 0
-  for (let i=0;i<values.length;i++){
-    sum += values[i]
-    if (i>=period) sum -= values[i-period]
-    if (i>=period-1) out[i] = sum/period
+export type NumOrNull = number | null;
+
+/** Simple moving average */
+function sma(values: number[], period: number): NumOrNull[] {
+  const out: NumOrNull[] = Array(values.length).fill(null);
+  if (period <= 1) return values.map(v => (Number.isFinite(v) ? v : null));
+  let sum = 0;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    sum += v;
+    if (i >= period) sum -= values[i - period];
+    if (i >= period - 1) out[i] = sum / period;
   }
-  return out
+  return out;
 }
 
-export function vwma(candles: Candle[], period: number): (number | null)[] {
-  const out: (number|null)[] = new Array(candles.length).fill(null)
-  let pvSum = 0
-  let vSum = 0
-  for (let i=0;i<candles.length;i++){
-    const p = candles[i].close
-    const v = candles[i].volume
-    pvSum += p*v
-    vSum += v
-    if (i>=period){
-      pvSum -= candles[i-period].close * candles[i-period].volume
-      vSum  -= candles[i-period].volume
+/** Exponential moving average (Wilder-style smoothing disabled; standard EMA) */
+export function ema(values: number[], period: number): NumOrNull[] {
+  const out: NumOrNull[] = Array(values.length).fill(null);
+  if (period <= 1) return values.map(v => (Number.isFinite(v) ? v : null));
+  const k = 2 / (period + 1);
+  let prev: number | null = null;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    if (i < period - 1) {
+      // warmup
+      if (i === period - 2) {
+        // do nothing yet; next i will compute first EMA using SMA
+      }
+      continue;
     }
-    if (i>=period-1) out[i] = vSum ? pvSum / vSum : null
+    if (i === period - 1) {
+      // first EMA = SMA of first period
+      let s = 0;
+      for (let j = i - period + 1; j <= i; j++) s += values[j];
+      prev = s / period;
+      out[i] = prev;
+      continue;
+    }
+    prev = v * k + (prev as number) * (1 - k);
+    out[i] = prev;
   }
-  return out
+  return out;
 }
 
-export function bollinger(close: number[], period: number, mult: number) {
-  const mean = sma(close, period)
-  return close.map((_, i) => {
-    if (mean[i] == null) return { basis: null, upper: null, lower: null, dev: null }
-    const start = i - period + 1
-    const slice = close.slice(start, i+1)
-    const m = mean[i] as number
-    const variance = slice.reduce((acc, v) => acc + (v - m) ** 2, 0) / period
-    const dev = Math.sqrt(variance)
-    return { basis: m, upper: m + mult * dev, lower: m - mult * dev, dev }
-  })
-}
+/** Wilder's RSI */
+export function rsi(values: number[], period = 14): NumOrNull[] {
+  const out: NumOrNull[] = Array(values.length).fill(null);
+  if (period < 1 || values.length === 0) return out;
+  let avgGain = 0, avgLoss = 0;
 
-export function vwap(candles: Candle[], anchorIndex = 0) {
-  const out: (number|null)[] = new Array(candles.length).fill(null)
-  let pv = 0, vv = 0
-  for (let i=anchorIndex;i<candles.length;i++){
-    const p = (candles[i].high + candles[i].low + candles[i].close)/3
-    const v = candles[i].volume
-    pv += p*v
-    vv += v
-    out[i] = vv ? pv/vv : null
+  // seed with first period
+  for (let i = 1; i <= period; i++) {
+    const ch = values[i] - values[i - 1];
+    if (ch >= 0) avgGain += ch; else avgLoss -= ch;
   }
-  return out
+  avgGain /= period; avgLoss /= period;
+  out[period] = avgLoss === 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
+
+  for (let i = period + 1; i < values.length; i++) {
+    const ch = values[i] - values[i - 1];
+    const gain = ch > 0 ? ch : 0;
+    const loss = ch < 0 ? -ch : 0;
+    avgGain = (avgGain * (period - 1) + gain) / period;
+    avgLoss = (avgLoss * (period - 1) + loss) / period;
+    out[i] = avgLoss === 0 ? 100 : 100 - (100 / (1 + (avgGain / avgLoss)));
+  }
+  return out;
 }
 
-export function stdDevChannels(close: number[], period: number, mult: number) {
-  const basis = sma(close, period)
-  return close.map((_, i) => {
-    if (basis[i] == null) return { mid: null, upper: null, lower: null, dev: null }
-    const start = i - period + 1
-    const slice = close.slice(start, i+1)
-    const m = basis[i] as number
-    const variance = slice.reduce((acc, v) => acc + (v - m) ** 2, 0) / period
-    const dev = Math.sqrt(variance)
-    return { mid: m, upper: m + mult * dev, lower: m - mult * dev, dev }
-  })
+export interface MACDResult {
+  macd: NumOrNull[];
+  signalLine: NumOrNull[];
+  hist: NumOrNull[];
+}
+
+/** MACD (EMA fast - EMA slow) + signal EMA + histogram (macd - signal) */
+export function macd(values: number[], fast = 12, slow = 26, signal = 9): MACDResult {
+  const fastE = ema(values, fast);
+  const slowE = ema(values, slow);
+  const macdLine: NumOrNull[] = values.map((_, i) =>
+    fastE[i] != null && slowE[i] != null ? (fastE[i]! - slowE[i]!) : null
+  );
+  // signal on macdLine (treat nulls as no output)
+  const sig: NumOrNull[] = Array(values.length).fill(null);
+  const k = 2 / (signal + 1);
+  let prev: number | null = null;
+  for (let i = 0; i < macdLine.length; i++) {
+    const v = macdLine[i];
+    if (v == null) continue;
+    if (prev == null) { prev = v; sig[i] = v; continue; }
+    prev = v * k + prev * (1 - k);
+    sig[i] = prev;
+  }
+  const hist: NumOrNull[] = values.map((_, i) =>
+    macdLine[i] != null && sig[i] != null ? (macdLine[i]! - sig[i]!) : null
+  );
+  return { macd: macdLine, signalLine: sig, hist };
+}
+
+/** Bollinger Bands (SMA +/- mult * stddev) */
+export function bollinger(values: number[], period = 20, mult = 2): { mid: NumOrNull[]; upper: NumOrNull[]; lower: NumOrNull[] } {
+  const mid = sma(values, period);
+  const upper: NumOrNull[] = Array(values.length).fill(null);
+  const lower: NumOrNull[] = Array(values.length).fill(null);
+
+  let sum = 0, sumSq = 0;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    sum += v; sumSq += v * v;
+    if (i >= period) { const old = values[i - period]; sum -= old; sumSq -= old * old; }
+    if (i >= period - 1) {
+      const n = period;
+      const mean = sum / n;
+      const variance = Math.max(0, sumSq / n - mean * mean);
+      const sd = Math.sqrt(variance);
+      upper[i] = mean + mult * sd;
+      lower[i] = mean - mult * sd;
+    }
+  }
+  return { mid, upper, lower };
+}
+
+/** VWAP over the whole session (cumulative TP*Vol / cumulative Vol) */
+export function vwap(typicalPrice: number[], volume: number[]): NumOrNull[] {
+  const out: NumOrNull[] = Array(typicalPrice.length).fill(null);
+  let cumPV = 0, cumV = 0;
+  for (let i = 0; i < typicalPrice.length; i++) {
+    const tp = typicalPrice[i]; const v = volume[i] ?? 0;
+    cumPV += tp * v; cumV += v;
+    out[i] = cumV > 0 ? (cumPV / cumV) : null;
+  }
+  return out;
+}
+
+/** Volume-weighted moving average (rolling window) */
+export function vwma(close: number[], volume: number[], period = 20): NumOrNull[] {
+  const out: NumOrNull[] = Array(close.length).fill(null);
+  let sumPV = 0, sumV = 0;
+  for (let i = 0; i < close.length; i++) {
+    const pv = close[i] * (volume[i] ?? 0);
+    sumPV += pv; sumV += (volume[i] ?? 0);
+    if (i >= period) { sumPV -= close[i - period] * (volume[i - period] ?? 0); sumV -= (volume[i - period] ?? 0); }
+    if (i >= period - 1) out[i] = sumV > 0 ? (sumPV / sumV) : null;
+  }
+  return out;
+}
+
+/** Standard deviation channels around SMA(mid) */
+export function stddevChannels(values: number[], period = 20, mult = 2): { mid: NumOrNull[]; upper: NumOrNull[]; lower: NumOrNull[] } {
+  const mid = sma(values, period);
+  const upper: NumOrNull[] = Array(values.length).fill(null);
+  const lower: NumOrNull[] = Array(values.length).fill(null);
+
+  let sum = 0, sumSq = 0;
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i];
+    sum += v; sumSq += v * v;
+    if (i >= period) { const old = values[i - period]; sum -= old; sumSq -= old * old; }
+    if (i >= period - 1) {
+      const n = period;
+      const mean = sum / n;
+      const variance = Math.max(0, sumSq / n - mean * mean);
+      const sd = Math.sqrt(variance);
+      upper[i] = mean + mult * sd;
+      lower[i] = mean - mult * sd;
+    }
+  }
+  return { mid, upper, lower };
 }

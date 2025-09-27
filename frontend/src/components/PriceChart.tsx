@@ -1,3 +1,4 @@
+import React from 'react';
 import { createChart, LineStyle, Time, ISeriesApi, IChartApi } from 'lightweight-charts'
 import { useChartStore } from '@/state/store'
 import { bollinger, vwap, vwma, stdDevChannels, Candle as IndCandle } from '@/lib/indicators'
@@ -23,7 +24,7 @@ type Candle = IndCandle
 
 export default function PriceChart() {
   const ref = React.useRef<HTMLDivElement>(null)
-  const seriesRef = React.useRef<Series>()
+  const seriesRef = React.useRef<Series>(null)
   const volRef = React.useRef<ISeriesApi<'Histogram'>>()
   const chartRef = React.useRef<IChartApi | null>(null)
 
@@ -238,5 +239,7 @@ const run = () => {
     </div>
   )
 }
+
+
 
 
