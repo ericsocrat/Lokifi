@@ -1,0 +1,45 @@
+# Optional Monitoring Stack
+# Use: docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+    depends_on:
+      - backend
+      - frontend
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    depends_on:
+      - prometheus
+
+  # Simple HTTP health check monitor
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    ports:
+      - "3002:3001"
+    volumes:
+      - uptime_data:/app/data
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  grafana_data:
+  uptime_data:

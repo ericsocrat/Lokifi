@@ -51,7 +51,7 @@ export class MarketDataAdapter {
     if (this.ws) { try { this.ws.close() } catch {} ; this.ws = null }
   }
 
-  async start() {
+  async start(): Promise<void> {
     this.stop()
     if (this.provider === 'mock') {
       this.candles = genMock(this.timeframe, 600)
