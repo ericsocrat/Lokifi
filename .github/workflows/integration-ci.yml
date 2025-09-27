@@ -53,7 +53,7 @@ jobs:
       - name: Create env file
         run: |
           cat > backend/.env << 'EOL'
-          FYNIX_JWT_SECRET=${{ secrets.FYNIX_JWT_SECRET }}
+          FYNIX_JWT_SECRET=${{ secrets.FYNIX_JWT_SECRET || 'test-secret-for-ci' }}
           FYNIX_JWT_TTL_MIN=1440
           FRONTEND_ORIGIN=http://localhost:3000
           REDIS_URL=redis://redis:6379/0
@@ -70,18 +70,43 @@ jobs:
       - name: Start Services
         run: docker compose up -d
 
-      - name: Wait for Services
+      - name: Wait for Services with Health Checks
         run: |
-          echo "Waiting for backend..."
-          while ! curl -s http://localhost:8000/api/health > /dev/null; do sleep 1; done
-          echo "Backend is up!"
+          echo "Waiting for backend health check..."
+          timeout 60 bash -c 'until docker compose ps backend | grep -q "healthy"; do sleep 2; done'
+          echo "Backend is healthy!"
           
-          echo "Waiting for frontend..."
-          while ! curl -s http://localhost:3000 > /dev/null; do sleep 1; done
-          echo "Frontend is up!"
+          echo "Waiting for frontend health check..."
+          timeout 60 bash -c 'until docker compose ps frontend | grep -q "healthy"; do sleep 2; done'
+          echo "Frontend is healthy!"
 
-      - name: Run Tests
+      - name: Test Health Endpoints
+        run: |
+          echo "Testing backend health endpoint..."
+          curl -f http://localhost:8000/api/health
+          curl -f http://localhost:8000/health
+          
+          echo "Testing frontend health endpoint..."
+          curl -f http://localhost:3000/api/health
+          
+          echo "Testing main frontend page..."
+          curl -f http://localhost:3000/ > /dev/null
+          
+          echo "All health endpoints working!"
+
+      - name: Run Frontend Tests
         run: |
           cd frontend
-          npm ci
+          npm ci --legacy-peer-deps
+          npm run typecheck
           npm run test:ci
+
+      - name: Show service logs on failure
+        if: failure()
+        run: |
+          echo "=== Backend logs ==="
+          docker compose logs backend
+          echo "=== Frontend logs ==="
+          docker compose logs frontend
+          echo "=== Redis logs ==="
+          docker compose logs redis

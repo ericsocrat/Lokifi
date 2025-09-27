@@ -20,7 +20,14 @@ export const parallelChannel: ToolPlugin = {
     let width = Math.abs(a.p) * (s.channelDefaultWidthPct/100);
     let shape: any = { id: uuid(), type: "channel", a, b, width };
     if (s.channelWidthMode === 'pixels'){
-      const ts = ctx.chart.timeScale(); const x1 = ts.timeToCoordinate(a.t as any) || 0; const x2 = ts.timeToCoordinate(b.t as any) || 0; const dx=x2-x1; const candle = ctx.candle; const yMid = candle.priceToCoordinate((a.p+b.p)/2) || 0; const yP = candle.priceToCoordinate(((a.p+b.p)/2) + width) || 0; const pix = Math.abs(yP - yMid);
+      const ts = ctx.chart.timeScale(); 
+      const x1 = ts.timeToCoordinate(a.t as any) || 0; 
+      const x2 = ts.timeToCoordinate(b.t as any) || 0; 
+      const dx=x2-x1; 
+      const candle = ctx.candle; 
+      const yMid = candle.priceToCoordinate?.((a.p+b.p)/2) || 0; 
+      const yP = candle.priceToCoordinate?.(((a.p+b.p)/2) + width) || 0; 
+      const pix = Math.abs(yP - yMid);
       shape.widthMode = 'pixels'; shape.widthPx = pix; // render uses pixels
     }
     ctx.draw.add(shape as any);

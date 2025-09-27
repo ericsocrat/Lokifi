@@ -12,7 +12,10 @@ export default function ExportImportPanel() {
   React.useEffect(() => {
     if (!rootRef.current) {
       const el = document.querySelector('main.relative') as HTMLDivElement | null
-      if (el) rootRef.current = el
+      if (el) {
+        // Use object spread to avoid read-only property assignment error
+        Object.assign(rootRef, { current: el })
+      }
     }
   }, [])
 
