@@ -1,0 +1,282 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-without-flags:
+    runs-on: ubuntu-latest
+    name: Test (Feature Flags OFF)
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: TypeScript Type Check
+        working-directory: ./frontend
+        run: npm run typecheck
+        
+      - name: ESLint
+        working-directory: ./frontend
+        run: npm run lint
+        
+      - name: Unit Tests (Flags OFF)
+        working-directory: ./frontend
+        run: npm run test:ci
+        env:
+          # All flags explicitly OFF for baseline testing
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 0
+          NEXT_PUBLIC_FLAG_WATCHLIST: 0
+          NEXT_PUBLIC_FLAG_CORPORATE_ACTIONS: 0
+          NEXT_PUBLIC_FLAG_TEMPLATES: 0
+          NEXT_PUBLIC_FLAG_ALERTS_V2: 0
+          NEXT_PUBLIC_FLAG_BACKTESTER: 0
+          NEXT_PUBLIC_FLAG_SOCIAL: 0
+          NEXT_PUBLIC_FLAG_PAPER_TRADING: 0
+          NEXT_PUBLIC_FLAG_OBSERVABILITY: 0
+          NEXT_PUBLIC_FLAG_MOBILE_RESPONSIVE: 0
+          NEXT_PUBLIC_FLAG_ACCESSIBILITY: 0
+          NEXT_PUBLIC_FLAG_VISUAL_REGRESSION: 0
+          NEXT_PUBLIC_FLAG_PERFORMANCE: 0
+          NEXT_PUBLIC_FLAG_REALTIME_ANALYTICS: 0
+
+      - name: Build (Flags OFF)
+        working-directory: ./frontend  
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 0
+          NEXT_PUBLIC_FLAG_WATCHLIST: 0
+          NEXT_PUBLIC_FLAG_CORPORATE_ACTIONS: 0
+          NEXT_PUBLIC_FLAG_TEMPLATES: 0
+          NEXT_PUBLIC_FLAG_ALERTS_V2: 0
+          NEXT_PUBLIC_FLAG_BACKTESTER: 0
+          NEXT_PUBLIC_FLAG_SOCIAL: 0
+          NEXT_PUBLIC_FLAG_PAPER_TRADING: 0
+          NEXT_PUBLIC_FLAG_OBSERVABILITY: 0
+          NEXT_PUBLIC_FLAG_MOBILE_RESPONSIVE: 0
+          NEXT_PUBLIC_FLAG_ACCESSIBILITY: 0
+          NEXT_PUBLIC_FLAG_VISUAL_REGRESSION: 0
+          NEXT_PUBLIC_FLAG_PERFORMANCE: 0
+          NEXT_PUBLIC_FLAG_REALTIME_ANALYTICS: 0
+
+  test-with-flags:
+    runs-on: ubuntu-latest
+    name: Test (Feature Flags ON)
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Unit Tests (Flags ON)
+        working-directory: ./frontend
+        run: npm run test:ci
+        env:
+          # All flags ON for enhanced feature testing
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 1
+          NEXT_PUBLIC_FLAG_WATCHLIST: 1
+          NEXT_PUBLIC_FLAG_CORPORATE_ACTIONS: 1
+          NEXT_PUBLIC_FLAG_TEMPLATES: 1
+          NEXT_PUBLIC_FLAG_ALERTS_V2: 1
+          NEXT_PUBLIC_FLAG_BACKTESTER: 1
+          NEXT_PUBLIC_FLAG_SOCIAL: 1
+          NEXT_PUBLIC_FLAG_PAPER_TRADING: 1
+          NEXT_PUBLIC_FLAG_OBSERVABILITY: 1
+          NEXT_PUBLIC_FLAG_MOBILE_RESPONSIVE: 1
+          NEXT_PUBLIC_FLAG_ACCESSIBILITY: 1
+          NEXT_PUBLIC_FLAG_VISUAL_REGRESSION: 1
+          NEXT_PUBLIC_FLAG_PERFORMANCE: 1
+          NEXT_PUBLIC_FLAG_REALTIME_ANALYTICS: 1
+
+      - name: Contract Tests
+        working-directory: ./frontend
+        run: npm run test:contracts
+        env:
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 1
+          NEXT_PUBLIC_FLAG_WATCHLIST: 1
+          NEXT_PUBLIC_FLAG_CORPORATE_ACTIONS: 1
+          NEXT_PUBLIC_FLAG_TEMPLATES: 1
+          NEXT_PUBLIC_FLAG_ALERTS_V2: 1
+
+      - name: Build (Flags ON)
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 1
+          NEXT_PUBLIC_FLAG_WATCHLIST: 1
+          NEXT_PUBLIC_FLAG_CORPORATE_ACTIONS: 1
+          NEXT_PUBLIC_FLAG_TEMPLATES: 1
+          NEXT_PUBLIC_FLAG_ALERTS_V2: 1
+          NEXT_PUBLIC_FLAG_BACKTESTER: 1
+          NEXT_PUBLIC_FLAG_SOCIAL: 1
+          NEXT_PUBLIC_FLAG_PAPER_TRADING: 1
+          NEXT_PUBLIC_FLAG_OBSERVABILITY: 1
+          NEXT_PUBLIC_FLAG_MOBILE_RESPONSIVE: 1
+          NEXT_PUBLIC_FLAG_ACCESSIBILITY: 1
+          NEXT_PUBLIC_FLAG_VISUAL_REGRESSION: 1
+          NEXT_PUBLIC_FLAG_PERFORMANCE: 1
+          NEXT_PUBLIC_FLAG_REALTIME_ANALYTICS: 1
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    name: E2E Tests
+    needs: [test-without-flags]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Install Playwright Browsers
+        working-directory: ./frontend
+        run: npx playwright install --with-deps
+        
+      - name: Build Application
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          # Enable key features for E2E testing
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 1
+          NEXT_PUBLIC_FLAG_WATCHLIST: 1
+          NEXT_PUBLIC_FLAG_TEMPLATES: 1
+          
+      - name: Run E2E Tests
+        working-directory: ./frontend
+        run: npm run test:e2e
+        env:
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 1
+          NEXT_PUBLIC_FLAG_WATCHLIST: 1
+          NEXT_PUBLIC_FLAG_TEMPLATES: 1
+          
+      - name: Upload Playwright Report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report/
+          retention-days: 30
+
+  backend-tests:
+    runs-on: ubuntu-latest
+    name: Backend Tests
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: |
+          pip install -e .
+          pip install pytest pytest-asyncio httpx
+          
+      - name: Run Backend Tests
+        working-directory: ./backend
+        run: pytest tests/ -v
+        
+      - name: API Contract Validation
+        working-directory: ./backend
+        run: |
+          # Start backend server
+          python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          SERVER_PID=$!
+          
+          # Wait for server to start
+          sleep 5
+          
+          # Validate OpenAPI schema
+          curl -f http://localhost:8000/openapi.json > /tmp/openapi.json
+          
+          # Kill server
+          kill $SERVER_PID
+
+  docker-build:
+    runs-on: ubuntu-latest
+    name: Docker Build Test
+    needs: [test-without-flags, test-with-flags]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build Frontend Image
+        run: |
+          docker build -f frontend/Dockerfile.prod \
+            --build-arg NEXT_PUBLIC_FLAG_MULTI_CHART=1 \
+            --tag fynix-frontend:test \
+            frontend/
+            
+      - name: Build Backend Image
+        run: |
+          docker build -f backend/Dockerfile.prod \
+            --tag fynix-backend:test \
+            backend/
+
+  performance-budget:
+    runs-on: ubuntu-latest
+    name: Performance Budget
+    needs: [test-without-flags]
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+          
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+        
+      - name: Lighthouse CI
+        working-directory: ./frontend
+        run: |
+          npm install -g @lhci/cli@0.13.x
+          npm run build
+          npm run start &
+          SERVER_PID=$!
+          sleep 10
+          lhci autorun
+          kill $SERVER_PID
+        env:
+          # Test performance with flags OFF (baseline)
+          NEXT_PUBLIC_FLAG_MULTI_CHART: 0
+          NEXT_PUBLIC_FLAG_WATCHLIST: 0
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}

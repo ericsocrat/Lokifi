@@ -19,8 +19,8 @@ Market + Social + AI Super-App
 
 2. **Set up environment variables:**
    ```bash
-   cp .env.example .env
-   # Edit .env with your configuration (see Environment Variables section)
+   cp frontend/.env.example frontend/.env
+   # Edit .env with your configuration (see Feature Flags section)
    ```
 
 3. **Run with Docker Compose:**
@@ -40,14 +40,82 @@ Market + Social + AI Super-App
 **Backend:**
 ```bash
 cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload
+make setup  # Creates venv and installs dependencies
+make dev    # Starts development server
 ```
 
 **Frontend:**
 ```bash
 cd frontend
-npm install --legacy-peer-deps
+npm install
+npm run dev
+```
+
+## Feature Flags
+
+Fynix uses a comprehensive feature flag system for safe rollouts. All Part G enhancements are **OFF by default**.
+
+### Available Flags
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `NEXT_PUBLIC_FLAG_MULTI_CHART` | Multi-chart layouts with linking | OFF |
+| `NEXT_PUBLIC_FLAG_WATCHLIST` | Watchlists and screener | OFF |
+| `NEXT_PUBLIC_FLAG_SCREENER` | Basic stock screener | OFF |
+| `NEXT_PUBLIC_FLAG_CORP_ACTIONS` | Corporate actions & sessions | OFF |
+| `NEXT_PUBLIC_FLAG_TEMPLATES` | Chart templates & export | OFF |
+| `NEXT_PUBLIC_FLAG_IMG_EXPORT` | Image export functionality | OFF |
+| `NEXT_PUBLIC_FLAG_ALERTS_V2` | Enhanced alerts system | OFF |
+| `NEXT_PUBLIC_FLAG_BACKTESTER` | Strategy backtesting | OFF |
+| `NEXT_PUBLIC_FLAG_PROVIDER_RELIABILITY` | Enhanced provider resilience | OFF |
+| `NEXT_PUBLIC_FLAG_SOCIAL` | Social features | OFF |
+| `NEXT_PUBLIC_FLAG_PAPER_TRADING` | Paper trading & portfolio | OFF |
+| `NEXT_PUBLIC_FLAG_OTEL` | OpenTelemetry observability | OFF |
+| `NEXT_PUBLIC_FLAG_VISUAL_REGRESSION` | Visual regression testing | OFF |
+| `NEXT_PUBLIC_FLAG_FIRST_RUN_TOUR` | Onboarding tour | OFF |
+
+### Enabling Features
+
+**Environment Variables (.env):**
+```bash
+NEXT_PUBLIC_FLAG_MULTI_CHART=1
+NEXT_PUBLIC_FLAG_WATCHLIST=1
+```
+
+**Development Debug Page:**
+Visit `/dev/flags` (development only) to toggle flags live.
+
+### Multi-Chart Example
+
+Enable multi-chart layouts:
+```bash
+NEXT_PUBLIC_FLAG_MULTI_CHART=1
+```
+
+Features:
+- 1×1, 1×2, 2×2 grid layouts
+- Symbol/timeframe/cursor linking
+- Per-user persistence with schema versioning
+
+## Architecture
+
+### Backend (FastAPI)
+- **Versioned APIs** with OpenAPI contracts
+- **Provider abstraction** with failover and rate limiting
+- **Plugin SDK** for indicators and drawing tools
+- **Observability** with OpenTelemetry (when enabled)
+
+### Frontend (Next.js)
+- **Typed API clients** with zod validation
+- **Feature-flagged components** with graceful degradation  
+- **Versioned state migrations** for client persistence
+- **Web Workers** for heavy computations
+- **Comprehensive testing** (unit/integration/e2e/visual)
+
+### Infrastructure
+- **Redis** for caching and remote config
+- **Docker** containerization with health checks
+- **CI/CD** with contract testing and feature flag gates
 npm run dev
 ```
 

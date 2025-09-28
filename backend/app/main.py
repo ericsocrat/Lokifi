@@ -1,10 +1,19 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc
+from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data
+from app.services.data_service import startup_data_services, shutdown_data_services
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
+# Startup and shutdown events
+@app.on_event("startup")
+async def startup_event():
+    await startup_data_services()
+
+@app.on_event("shutdown") 
+async def shutdown_event():
+    await shutdown_data_services()
 
 import os
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
@@ -23,7 +32,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include routers
 app.include_router(health.router, prefix=settings.API_PREFIX)
+app.include_router(market_data.router)  # New market data API
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)  # Mock data for testing
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(news.router, prefix=settings.API_PREFIX)
@@ -34,7 +45,7 @@ app.include_router(chat.router, prefix=settings.API_PREFIX)
 
 
 @__import__('fastapi').FastAPI.get if False else app.get('/api/health')
-def health():
+def health_status():
     return {'ok': True}
 
 # Quick mock endpoint for testing

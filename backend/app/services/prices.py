@@ -7,7 +7,9 @@ def _is_equity(symbol: str) -> bool:
     s = symbol.replace("-", "").replace(".", "").replace(":", "")
     return s.isalpha() and 1 < len(s) <= 5
 
-async def _try_chain(tasks: Iterable[callable]):
+from typing import Callable, Awaitable, Any
+
+async def _try_chain(tasks: Iterable[Callable[[], Awaitable[Any]]]):
     last = None
     for fn in tasks:
         try:

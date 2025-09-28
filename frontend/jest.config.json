@@ -1,0 +1,30 @@
+{
+  "testEnvironment": "jsdom",
+  "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+  "testMatch": [
+    "<rootDir>/tests/**/*.test.{js,jsx,ts,tsx}",
+    "<rootDir>/components/**/*.test.{js,jsx,ts,tsx}"
+  ],
+  "moduleNameMapping": {
+    "^@/(.*)$": "<rootDir>/$1",
+    "^../lib/(.*)$": "<rootDir>/lib/$1",
+    "^../components/(.*)$": "<rootDir>/components/$1"
+  },
+  "transform": {
+    "^.+\\.(js|jsx|ts|tsx)$": ["babel-jest", { "presets": ["next/babel"] }]
+  },
+  "collectCoverageFrom": [
+    "components/**/*.{js,jsx,ts,tsx}",
+    "lib/**/*.{js,jsx,ts,tsx}",
+    "!**/*.d.ts",
+    "!**/node_modules/**"
+  ],
+  "coverageThreshold": {
+    "global": {
+      "branches": 70,
+      "functions": 70,
+      "lines": 70,
+      "statements": 70
+    }
+  }
+}
