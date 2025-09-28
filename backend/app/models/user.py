@@ -85,7 +85,7 @@ class User(Base):
     )
     conversations = relationship("ConversationParticipant", back_populates="user")
     sent_messages = relationship("Message", foreign_keys="Message.sender_id", back_populates="sender")
-    ai_threads = relationship("AiThread", back_populates="user")
+    ai_threads = relationship("AIThread", back_populates="user")
     notifications = relationship(
         "Notification",
         foreign_keys="Notification.user_id",
