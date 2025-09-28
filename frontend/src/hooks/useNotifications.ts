@@ -378,6 +378,9 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         }
       };
     }
+    
+    // Return cleanup function for consistency, even if not needed
+    return () => {};
   }, [autoRefresh, refreshInterval, refreshNotifications]);
 
   // Initial load and WebSocket connection

@@ -31,31 +31,22 @@ class ConnectionManager:
         self.active_connections: Dict[uuid.UUID, Set[WebSocket]] = {}
         # Redis pub/sub connection
         self.pubsub = None
+        # Reference to global Redis client
+        self.redis_client = redis_client
         
     async def initialize_redis(self):
         """Initialize Redis connection for pub/sub using enhanced Redis client."""
         try:
             # Use the enhanced Redis client
-            await redis_client.initialize()
-            if await redis_client.is_available():
-                # Subscribe to messaging channels
-                await redis_client.subscribe_to_channel(
-                    "dm_messages",
-                    self._handle_redis_message
-                )
-                await redis_client.subscribe_to_channel(
-                    "dm_typing",
-                    self._handle_redis_typing
-                )
-                await redis_client.subscribe_to_channel(
-                    "dm_read_receipts", 
-                    self._handle_redis_read_receipt
-                )
-                logger.info("Redis pub/sub initialized successfully with enhanced client")
+            await self.redis_client.initialize()
+            if await self.redis_client.is_available():
+                logger.info("✅ Redis WebSocket integration ready")
+                # Advanced pub/sub features will be implemented in Phase K Track 3
             else:
-                logger.warning("Redis not available. WebSocket will work without Redis pub/sub.")
+                logger.warning("⚠️ Redis not available - WebSocket running in standalone mode")
         except Exception as e:
-            logger.warning(f"Redis initialization failed: {e}. WebSocket will work without Redis pub/sub.")
+            logger.error(f"❌ Redis initialization failed: {e}")
+            # Continue without Redis - standalone mode
     
     async def _handle_redis_message(self, channel: str, message: str):
         """Handle Redis pub/sub message"""
@@ -359,11 +350,12 @@ class ConnectionManager:
     
     async def close(self):
         """Close Redis connections."""
-        if self.pubsub:
-            await self.pubsub.unsubscribe()
-            await self.pubsub.close()
-        if self.redis_client:
-            await self.redis_client.close()
+        try:
+            if hasattr(self, 'redis_client') and self.redis_client and hasattr(self.redis_client, 'close'):
+                await self.redis_client.close()
+            logger.info("WebSocket manager connections closed successfully")
+        except Exception as e:
+            logger.warning(f"Error closing WebSocket manager connections: {e}")
 
 
 # Global connection manager
