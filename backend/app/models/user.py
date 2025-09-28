@@ -29,9 +29,14 @@ class User(Base):
     # Authentication fields
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)  # Nullable for OAuth-only users
+    full_name: Mapped[str] = mapped_column(String(100))
     
     # OAuth fields
     google_id: Mapped[Optional[str]] = mapped_column(String(255), unique=True, nullable=True, index=True)
+    
+    # User preferences
+    timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
+    language: Mapped[Optional[str]] = mapped_column(String(10), nullable=True, default="en")
     
     # Account status
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -46,6 +51,10 @@ class User(Base):
         DateTime(timezone=True), 
         server_default=func.now(), 
         onupdate=func.now()
+    )
+    last_login: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), 
+        nullable=True
     )
     
     # Verification
