@@ -1,5 +1,6 @@
 """
 API endpoints for direct messaging conversations (J4).
+J6.1 Enhanced with notification integration.
 """
 
 import uuid
@@ -24,6 +25,9 @@ from app.schemas.conversation import (
     MessageResponse, MessagesListResponse, MarkReadRequest
 )
 from app.services.message_search_service import SearchResult
+
+# J6.1 Notification Integration
+from setup_j6_integration import trigger_dm_notification, process_mentions_in_content
 
 logger = logging.getLogger(__name__)
 
@@ -197,6 +201,56 @@ async def send_message(
             message_response,
             participant_ids
         )
+        
+        # J6.1 Notification Integration: Trigger DM notifications
+        try:
+            # Get recipient users (participants except sender)
+            from sqlalchemy import select
+            recipient_ids = participant_ids - {current_user.id}
+            
+            for recipient_id in recipient_ids:
+                # Get recipient user details
+                recipient_stmt = select(User).where(User.id == recipient_id)
+                recipient_result = await db.execute(recipient_stmt)
+                recipient_user = recipient_result.scalar_one_or_none()
+                
+                if recipient_user:
+                    await trigger_dm_notification(
+                        sender_user_data={
+                            'id': str(current_user.id),
+                            'username': current_user.handle,
+                            'display_name': current_user.handle,
+                            'avatar_url': current_user.avatar_url
+                        },
+                        recipient_user_data={
+                            'id': str(recipient_user.id),
+                            'username': recipient_user.handle,
+                            'display_name': recipient_user.handle,
+                            'avatar_url': recipient_user.avatar_url
+                        },
+                        message_data={
+                            'id': str(message_response.id),
+                            'content': message_data.content,
+                            'thread_id': str(conversation_id)
+                        }
+                    )
+            
+            # Process mentions in the message content
+            await process_mentions_in_content(
+                message_data.content,
+                mentioning_user_data={
+                    'id': str(current_user.id),
+                    'username': current_user.handle,
+                    'display_name': current_user.handle,
+                    'avatar_url': current_user.avatar_url
+                },
+                context_type="dm_message",
+                context_id=str(message_response.id)
+            )
+            
+        except Exception as e:
+            # Don't fail the message send if notification fails
+            logger.warning(f"DM notification failed: {e}")
         
         return message_response
         

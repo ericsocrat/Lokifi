@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import asyncio
 import logging
 import uuid
+from uuid import UUID
 import json
 from dataclasses import dataclass, asdict
 from enum import Enum
@@ -18,14 +19,14 @@ from app.models.notification_models import (
     NotificationType, 
     NotificationPriority
 )
-from app.models.auth_models import User
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
 @dataclass
 class NotificationData:
     """Data structure for creating notifications"""
-    user_id: str
+    user_id: Union[str, UUID]
     type: NotificationType
     title: str
     message: Optional[str] = None
@@ -184,7 +185,7 @@ class NotificationService:
     
     async def get_user_notifications(
         self,
-        user_id: str,
+        user_id: Union[str, UUID],
         limit: int = 50,
         offset: int = 0,
         unread_only: bool = False,
@@ -193,10 +194,11 @@ class NotificationService:
         include_dismissed: bool = False
     ) -> List[Notification]:
         """Get notifications for a user with filtering"""
+        user_id_str = str(user_id)  # Convert UUID to string
         try:
             async for session in db_manager.get_session(read_only=True):
                 query = select(Notification).where(
-                    Notification.user_id == user_id
+                    Notification.user_id == user_id_str
                 )
                 
                 # Apply filters
@@ -235,14 +237,15 @@ class NotificationService:
             logger.error(f"Failed to get user notifications: {e}")
             return []
     
-    async def get_unread_count(self, user_id: str) -> int:
+    async def get_unread_count(self, user_id: Union[str, UUID]) -> int:
         """Get count of unread notifications for a user"""
+        user_id_str = str(user_id)  # Convert UUID to string
         try:
             async for session in db_manager.get_session(read_only=True):
                 result = await session.execute(
                     select(func.count(Notification.id)).where(
                         and_(
-                            Notification.user_id == user_id,
+                            Notification.user_id == user_id_str,
                             Notification.is_read == False,
                             Notification.is_dismissed == False,
                             or_(
@@ -262,15 +265,16 @@ class NotificationService:
     async def mark_as_read(
         self, 
         notification_id: str, 
-        user_id: Optional[str] = None
+        user_id: Optional[Union[str, UUID]] = None
     ) -> bool:
         """Mark a notification as read"""
+        user_id_str = str(user_id) if user_id else None  # Convert UUID to string
         try:
             async for session in db_manager.get_session():
                 query = select(Notification).where(Notification.id == notification_id)
                 
-                if user_id:
-                    query = query.where(Notification.user_id == user_id)
+                if user_id_str:
+                    query = query.where(Notification.user_id == user_id_str)
                 
                 result = await session.execute(query)
                 notification = result.scalar_one_or_none()
@@ -291,15 +295,16 @@ class NotificationService:
             logger.error(f"Failed to mark notification as read: {e}")
             return False
     
-    async def mark_all_as_read(self, user_id: str) -> int:
+    async def mark_all_as_read(self, user_id: Union[str, UUID]) -> int:
         """Mark all notifications as read for a user"""
+        user_id_str = str(user_id)  # Convert UUID to string
         try:
             async for session in db_manager.get_session():
                 # Get unread notifications
                 result = await session.execute(
                     select(Notification).where(
                         and_(
-                            Notification.user_id == user_id,
+                            Notification.user_id == user_id_str,
                             Notification.is_read == False
                         )
                     )
@@ -331,15 +336,16 @@ class NotificationService:
     async def dismiss_notification(
         self, 
         notification_id: str, 
-        user_id: Optional[str] = None
+        user_id: Optional[Union[str, UUID]] = None
     ) -> bool:
         """Dismiss a notification"""
+        user_id_str = str(user_id) if user_id else None  # Convert UUID to string
         try:
             async for session in db_manager.get_session():
                 query = select(Notification).where(Notification.id == notification_id)
                 
-                if user_id:
-                    query = query.where(Notification.user_id == user_id)
+                if user_id_str:
+                    query = query.where(Notification.user_id == user_id_str)
                 
                 result = await session.execute(query)
                 notification = result.scalar_one_or_none()
@@ -363,15 +369,16 @@ class NotificationService:
     async def click_notification(
         self, 
         notification_id: str, 
-        user_id: Optional[str] = None
+        user_id: Optional[Union[str, UUID]] = None
     ) -> bool:
         """Record a notification click"""
+        user_id_str = str(user_id) if user_id else None  # Convert UUID to string
         try:
             async for session in db_manager.get_session():
                 query = select(Notification).where(Notification.id == notification_id)
                 
-                if user_id:
-                    query = query.where(Notification.user_id == user_id)
+                if user_id_str:
+                    query = query.where(Notification.user_id == user_id_str)
                 
                 result = await session.execute(query)
                 notification = result.scalar_one_or_none()
@@ -391,23 +398,24 @@ class NotificationService:
             logger.error(f"Failed to record notification click: {e}")
             return False
     
-    async def get_notification_stats(self, user_id: str) -> NotificationStats:
+    async def get_notification_stats(self, user_id: Union[str, UUID]) -> NotificationStats:
         """Get comprehensive notification statistics for a user"""
+        user_id_str = str(user_id)  # Convert UUID to string
         try:
             async for session in db_manager.get_session(read_only=True):
                 # Base query for user's notifications
-                base_query = select(Notification).where(Notification.user_id == user_id)
+                base_query = select(Notification).where(Notification.user_id == user_id_str)
                 
                 # Total count
                 total_result = await session.execute(
-                    select(func.count(Notification.id)).where(Notification.user_id == user_id)
+                    select(func.count(Notification.id)).where(Notification.user_id == user_id_str)
                 )
                 total_count = total_result.scalar() or 0
                 
                 # Status counts
                 unread_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id, Notification.is_read == False)
+                        and_(Notification.user_id == user_id_str, Notification.is_read == False)
                     )
                 )
                 unread_count = unread_result.scalar() or 0
@@ -416,21 +424,21 @@ class NotificationService:
                 
                 dismissed_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id, Notification.is_dismissed == True)
+                        and_(Notification.user_id == user_id_str, Notification.is_dismissed == True)
                     )
                 )
                 dismissed_count = dismissed_result.scalar() or 0
                 
                 delivered_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id, Notification.is_delivered == True)
+                        and_(Notification.user_id == user_id_str, Notification.is_delivered == True)
                     )
                 )
                 delivered_count = delivered_result.scalar() or 0
                 
                 clicked_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id, Notification.clicked_at.isnot(None))
+                        and_(Notification.user_id == user_id_str, Notification.clicked_at.isnot(None))
                     )
                 )
                 clicked_count = clicked_result.scalar() or 0

@@ -1,5 +1,6 @@
 """
 Follow router for managing follow relationships and social graph.
+J6.1 Enhanced with notification integration.
 """
 
 from typing import Optional
@@ -25,6 +26,9 @@ from app.schemas.follow import (
     FollowActionResponse
 )
 from app.schemas.auth import MessageResponse
+
+# J6.1 Notification Integration
+from setup_j6_integration import trigger_follow_notification
 
 router = APIRouter(prefix="/follow", tags=["follow"])
 
@@ -57,6 +61,33 @@ async def follow_user(
     if not pre:
         await service.follow_user(current_user.id, user_id)
         action = "follow"
+        
+        # J6.1 Notification Integration: Trigger follow notification
+        try:
+            # Get target user details for notification
+            from sqlalchemy import select
+            target_user_result = await db.execute(select(User).where(User.id == user_id))
+            target_user = target_user_result.scalar_one_or_none()
+            
+            if target_user:
+                await trigger_follow_notification(
+                    follower_user_data={
+                        'id': str(current_user.id),
+                        'username': current_user.handle,
+                        'display_name': current_user.handle,
+                        'avatar_url': current_user.avatar_url
+                    },
+                    followed_user_data={
+                        'id': str(target_user.id),
+                        'username': target_user.handle,
+                        'display_name': target_user.handle,
+                        'avatar_url': target_user.avatar_url
+                    }
+                )
+        except Exception as e:
+            # Don't fail the follow action if notification fails
+            print(f"Follow notification failed: {e}")
+            
     else:
         action = "noop"
     # Profile counters already updated in service; refresh not required here.

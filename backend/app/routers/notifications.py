@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field
 from datetime import datetime, timedelta, timezone
 import logging
 
-from app.core.auth import get_current_user
-from app.models.auth_models import User
+from app.core.auth_deps import get_current_user
+from app.models.user import User
 from app.services.notification_service import notification_service, NotificationStats
 from app.services.notification_emitter import notification_emitter
 from app.models.notification_models import Notification, NotificationPreference
@@ -67,12 +67,12 @@ class NotificationPreferencesRequest(BaseModel):
     email_enabled: Optional[bool] = None
     push_enabled: Optional[bool] = None
     in_app_enabled: Optional[bool] = None
-    quiet_hours_start: Optional[str] = Field(None, regex=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
-    quiet_hours_end: Optional[str] = Field(None, regex=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    quiet_hours_start: Optional[str] = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    quiet_hours_end: Optional[str] = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
     timezone: Optional[str] = None
     daily_digest_enabled: Optional[bool] = None
     weekly_digest_enabled: Optional[bool] = None
-    digest_time: Optional[str] = Field(None, regex=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    digest_time: Optional[str] = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
     type_preferences: Optional[Dict[str, bool]] = None
 
 class NotificationPreferencesResponse(BaseModel):

@@ -8,7 +8,7 @@ from enum import Enum
 import uuid
 
 from app.core.database import Base
-from app.models.auth_models import User
+from app.models.user import User
 
 class NotificationType(str, Enum):
     """Notification types for different system events"""

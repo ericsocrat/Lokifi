@@ -1,7 +1,7 @@
 """J6 Enterprise Notifications - Create notifications tables
 
 Revision ID: j6_notifications_001
-Revises: j53_enhanced_complete
+Revises: 8fbb9c633bbf
 Create Date: 2025-09-29 12:00:00.000000
 
 """
@@ -11,7 +11,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers
 revision = 'j6_notifications_001'
-down_revision = 'j53_enhanced_complete'  # Replace with actual previous revision
+down_revision = '8fbb9c633bbf'  # Latest merge revision
 branch_labels = None
 depends_on = None
 

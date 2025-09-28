@@ -26,6 +26,7 @@
         "@types/react": "18.3.17",
         "@types/react-dom": "18.3.5",
         "classnames": "2.5.1",
+        "date-fns": "^4.1.0",
         "immer": "10.1.1",
         "jotai": "2.10.3",
         "lightweight-charts": "4.2.1",

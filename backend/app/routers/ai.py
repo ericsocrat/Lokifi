@@ -1,5 +1,6 @@
 """
 API endpoints for Fynix AI Chatbot (J5).
+J6.1 Enhanced with notification integration.
 
 Handles AI thread creation, messaging, and provider management.
 """
@@ -30,6 +31,9 @@ from app.services.conversation_export import conversation_exporter, conversation
 from app.services.ai_analytics import ai_analytics_service
 from app.services.ai_context_manager import ai_context_manager
 from app.services.multimodal_ai_service import multimodal_ai_service, FileProcessingError, UnsupportedFileTypeError
+
+# J6.1 Notification Integration
+from setup_j6_integration import trigger_ai_response_notification
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +122,9 @@ async def send_message(
     """Send a message and stream the AI response."""
     
     async def stream_response():
+        start_time = datetime.now()
+        ai_message = None
+        
         try:
             async for chunk in ai_service.send_message(
                 user_id=current_user.id,
@@ -135,10 +142,35 @@ async def send_message(
                     })}\n\n"
                 elif isinstance(chunk, AIMessage):
                     # Final message
+                    ai_message = chunk
                     yield f"data: {json.dumps({
                         'type': 'complete',
                         'message': AIMessageResponse.from_orm(chunk).dict()
                     })}\n\n"
+                    
+                    # J6.1 Notification Integration: Trigger AI response notification
+                    try:
+                        processing_time = (datetime.now() - start_time).total_seconds() * 1000
+                        
+                        await trigger_ai_response_notification(
+                            user_data={
+                                'id': str(current_user.id),
+                                'username': current_user.handle,
+                                'display_name': current_user.handle,
+                                'avatar_url': current_user.avatar_url
+                            },
+                            ai_response_data={
+                                'provider': chat_request.provider or 'default',
+                                'message_id': str(chunk.id),
+                                'thread_id': str(thread_id),
+                                'content': chunk.content[:100] + '...' if len(chunk.content) > 100 else chunk.content,
+                                'processing_time_ms': processing_time
+                            }
+                        )
+                    except Exception as e:
+                        # Don't fail the AI response if notification fails
+                        logger.warning(f"AI response notification failed: {e}")
+                        
         except RateLimitError as e:
             yield f"data: {json.dumps({
                 'type': 'error',

@@ -9,7 +9,7 @@ from app.services.notification_service import (
     NotificationType, 
     NotificationPriority
 )
-from app.models.auth_models import User
+from app.models.user import User
 
 logger = logging.getLogger(__name__)
 
