@@ -1,5 +1,5 @@
 """
-WebSocket endpoints for real-time direct messaging (J4).
+WebSocket endpoints for real-time direct messaging (J4) and notifications (J6).
 """
 
 import uuid
@@ -18,10 +18,14 @@ from app.services.rate_limit_service import RateLimitService
 from app.schemas.conversation import WebSocketMessage, TypingIndicatorMessage, MarkReadRequest
 from app.db.database import AsyncSessionLocal
 from app.models.conversation import ConversationParticipant
+from app.websockets.notifications import NotificationWebSocketManager
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+# Initialize notification WebSocket manager
+notification_websocket_manager = NotificationWebSocketManager()
 
 
 @router.websocket("/ws")
@@ -177,3 +181,73 @@ async def websocket_health():
         "online_users": online_users,
         "redis_connected": connection_manager.redis_client is not None
     }
+
+# J6 Notification WebSocket endpoint
+@router.websocket("/ws/notifications")
+async def notification_websocket_endpoint(websocket: WebSocket):
+    """WebSocket endpoint for real-time notifications (J6)."""
+    user_id = await authenticate_websocket(websocket)
+    if not user_id:
+        return
+    
+    # Convert UUID to string for consistency
+    user_id_str = str(user_id)
+    
+    # Create mock user object for authentication
+    from unittest.mock import Mock
+    
+    user = Mock()
+    user.id = user_id_str
+    user.username = f"user_{user_id_str[:8]}"  # Shortened ID for display
+    
+    # Connect user to notification manager
+    connected = await notification_websocket_manager.connect(websocket, user)
+    if not connected:
+        return
+    
+    try:
+        while True:
+            # Keep connection alive and handle incoming messages
+            try:
+                data = await websocket.receive_text()
+                message = json.loads(data)
+                
+                # Handle notification-specific messages
+                if message.get("type") == "ping":
+                    await websocket.send_text(json.dumps({
+                        "type": "pong",
+                        "timestamp": message.get("timestamp")
+                    }))
+                elif message.get("type") == "mark_read":
+                    # Handle mark notification as read
+                    notification_id = message.get("notification_id")
+                    if notification_id:
+                        from app.services.notification_service import notification_service
+                        await notification_service.mark_as_read(notification_id, user_id_str)
+                        
+                        # Send updated unread count
+                        unread_count = await notification_service.get_unread_count(user_id_str)
+                        await websocket.send_text(json.dumps({
+                            "type": "unread_count_update",
+                            "data": {"unread_count": unread_count}
+                        }))
+                
+            except asyncio.TimeoutError:
+                # Send keepalive ping
+                await websocket.send_text(json.dumps({
+                    "type": "keepalive",
+                    "timestamp": asyncio.get_event_loop().time()
+                }))
+    
+    except WebSocketDisconnect:
+        logger.info(f"User {user_id_str} disconnected from notification WebSocket")
+    except Exception as e:
+        logger.error(f"Notification WebSocket error for user {user_id_str}: {e}")
+    finally:
+        await notification_websocket_manager.disconnect(websocket, user_id_str)
+
+# Notification WebSocket stats endpoint
+@router.get("/ws/notifications/stats")
+async def notification_websocket_stats():
+    """Get notification WebSocket connection statistics."""
+    return notification_websocket_manager.get_connection_stats()
