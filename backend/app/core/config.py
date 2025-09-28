@@ -11,11 +11,29 @@ class Settings(BaseSettings):
     fynix_jwt_secret: str = Field(default="dev-secret", alias="FYNIX_JWT_SECRET")
     fynix_jwt_ttl_min: int = Field(default=1440, alias="FYNIX_JWT_TTL_MIN")
     
-    # Phase J: Database
+    # Phase J: Database Configuration
     DATABASE_URL: str = Field(
-        default="postgresql+asyncpg://fynix:fynix@localhost:5432/fynix",
+        default="sqlite+aiosqlite:///./data/fynix.sqlite",
         alias="DATABASE_URL"
     )
+    
+    # Production Database Settings
+    DATABASE_REPLICA_URL: str | None = Field(default=None, alias="DATABASE_REPLICA_URL")
+    DATABASE_POOL_SIZE: int = Field(default=5, alias="DATABASE_POOL_SIZE")
+    DATABASE_MAX_OVERFLOW: int = Field(default=10, alias="DATABASE_MAX_OVERFLOW")
+    DATABASE_POOL_TIMEOUT: int = Field(default=30, alias="DATABASE_POOL_TIMEOUT")
+    DATABASE_POOL_RECYCLE: int = Field(default=3600, alias="DATABASE_POOL_RECYCLE")
+    
+    # Storage and Archival Settings
+    ENABLE_DATA_ARCHIVAL: bool = Field(default=False, alias="ENABLE_DATA_ARCHIVAL")
+    ARCHIVE_THRESHOLD_DAYS: int = Field(default=365, alias="ARCHIVE_THRESHOLD_DAYS")
+    DELETE_THRESHOLD_DAYS: int = Field(default=2555, alias="DELETE_THRESHOLD_DAYS")  # 7 years
+    
+    # Cloud Storage Settings (Optional)
+    AWS_S3_BUCKET: str | None = Field(default=None, alias="AWS_S3_BUCKET")
+    AWS_CLOUDFRONT_URL: str | None = Field(default=None, alias="AWS_CLOUDFRONT_URL")
+    AWS_ACCESS_KEY_ID: str | None = Field(default=None, alias="AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: str | None = Field(default=None, alias="AWS_SECRET_ACCESS_KEY")
     
     # Phase J: Authentication
     JWT_SECRET_KEY: str = Field(default="your-secret-key-change-in-production", alias="JWT_SECRET_KEY")
