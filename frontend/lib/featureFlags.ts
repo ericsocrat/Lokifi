@@ -21,6 +21,10 @@ export interface FeatureFlags {
   performance: boolean;
   monitoring: boolean;
   rollback: boolean;
+  progressiveDeployment: boolean;
+  environmentManagement: boolean;
+  configurationSync: boolean;
+  integrationTesting: boolean;
   otel: boolean;
   visualRegression: boolean;
   firstRunTour: boolean;
@@ -44,6 +48,10 @@ const ENV_FLAGS = {
   performance: process.env.NEXT_PUBLIC_FLAG_PERFORMANCE === '1',
   monitoring: process.env.NEXT_PUBLIC_FLAG_MONITORING === '1',
   rollback: process.env.NEXT_PUBLIC_FLAG_ROLLBACK === '1',
+  progressiveDeployment: process.env.NEXT_PUBLIC_FLAG_PROGRESSIVE_DEPLOYMENT === '1',
+  environmentManagement: process.env.NEXT_PUBLIC_FLAG_ENVIRONMENT_MANAGEMENT === '1',
+  configurationSync: process.env.NEXT_PUBLIC_FLAG_CONFIGURATION_SYNC === '1',
+  integrationTesting: process.env.NEXT_PUBLIC_FLAG_INTEGRATION_TESTING === '1',
   otel: process.env.NEXT_PUBLIC_FLAG_OTEL === '1',
   visualRegression: process.env.NEXT_PUBLIC_FLAG_VISUAL_REGRESSION === '1',
   firstRunTour: process.env.NEXT_PUBLIC_FLAG_FIRST_RUN_TOUR === '1',
@@ -67,6 +75,10 @@ const DEFAULT_FLAGS: FeatureFlags = {
   performance: false,
   monitoring: false,
   rollback: false,
+  progressiveDeployment: false,
+  environmentManagement: false,
+  configurationSync: false,
+  integrationTesting: false,
   otel: false,
   visualRegression: false,
   firstRunTour: false,

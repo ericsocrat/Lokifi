@@ -1,0 +1,18 @@
+services:
+  frontend:
+    profiles: ["dev"]
+    build:
+      context: ./frontend
+      target: dev
+    command: ["npm", "run", "dev"]
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://backend:8000/api
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+  backend:
+    profiles: ["dev"]
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload --reload-exclude .pytest_cache
