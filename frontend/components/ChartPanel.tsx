@@ -12,6 +12,7 @@ import { drawStore, type Shape } from "@/lib/drawStore";
 import DrawToolbar from "@/components/DrawToolbar";
 import PluginSideToolbar from "@/components/PluginSideToolbar";
 import LeftDock from "@/components/LeftDock";
+import ChartSidebar from "@/components/ChartSidebar";
 import { pluginManager } from "@/plugins/registry";
 import type { OHLCResponse } from "@/lib/types";
 
@@ -71,6 +72,24 @@ export default function ChartPanel() {
 
   const { data } = useSWR<OHLCResponse>(`${API}/ohlc?symbol=${sym}&timeframe=${tf}&limit=500`);
 
+  // Always use mock data for testing until backend API is fixed
+  const mockData = {
+    symbol: sym,
+    timeframe: tf,
+    candles: Array.from({ length: 100 }, (_, i) => {
+      const time = Date.now() - (100 - i) * 3600 * 1000;
+      const price = 50000 + Math.sin(i / 10) * 2000 + Math.random() * 1000;
+      return {
+        ts: time,
+        o: price,
+        h: price + Math.random() * 500,
+        l: price - Math.random() * 500,
+        c: price + (Math.random() - 0.5) * 400,
+        v: Math.random() * 1000
+      };
+    })
+  };
+
   // Bind per-symbol apply/clear functions for the settings drawer (guarded)
   useEffect(() => {
     const pss: any = (globalThis as any).pluginSettingsStore;
@@ -95,7 +114,10 @@ export default function ChartPanel() {
 
   // Build chart
   useEffect(() => {
-    const el = ref.current; if (!el || !data) return;
+    const el = ref.current;
+    const chartData = mockData; // Always use mock data for now
+    if (!el || !chartData) return;
+    
     const mainHeight = (inds.rsi || inds.macd) ? 360 : 520;
     const chart = createChart(el, {
       height: mainHeight,
@@ -105,13 +127,13 @@ export default function ChartPanel() {
       timeScale: { timeVisible: true }
     });
     const candle = chart.addCandlestickSeries();
-    const candles = (data?.candles || []).map(c => ({ time: Math.floor(c.ts / 1000) as Time, open: c.o, high: c.h, low: c.l, close: c.c }));
+    const candles = (chartData?.candles || []).map(c => ({ time: Math.floor(c.ts / 1000) as Time, open: c.o, high: c.h, low: c.l, close: c.c }));
     candle.setData(candles);
 
-    const closes = (data?.candles || []).map(c => c.c);
-    const highs = (data?.candles || []).map(c => c.h);
-    const lows = (data?.candles || []).map(c => c.l);
-    const vols = (data?.candles || []).map(c => c.v ?? 0);
+    const closes = (chartData?.candles || []).map(c => c.c);
+    const highs = (chartData?.candles || []).map(c => c.h);
+    const lows = (chartData?.candles || []).map(c => c.l);
+    const vols = (chartData?.candles || []).map(c => c.v ?? 0);
 
     const overlayLine = (vals: (number | null)[] | null, width = 2) => {
       if (!vals) return null;
@@ -224,7 +246,7 @@ export default function ChartPanel() {
       window.removeEventListener("resize", resize);
       chart.remove(); if (subChart) subChart.remove();
     };
-  }, [data, inds]);
+  }, [data, mockData, inds]);
 
   // Overlay draw: shapes + selection handles + labels + marquee box
   useEffect(() => {
@@ -610,9 +632,7 @@ export default function ChartPanel() {
 
   return (
     <div className="w-full rounded-2xl border border-neutral-800 relative">
-      <div className="absolute left-2 top-2 z-20"><DrawToolbar /></div>
-      <PluginSideToolbar />
-      <LeftDock />
+      <ChartSidebar />
       <div ref={ref} />
       <canvas ref={overlayRef} className="absolute inset-0 z-10" style={{ pointerEvents: (drawStore.get().tool === "cursor" && !pluginManager.hasActiveTool()) ? "none" : "auto" }} />
       {(inds.rsi || inds.macd) && <div ref={subRef} className="border-t border-neutral-800" />}

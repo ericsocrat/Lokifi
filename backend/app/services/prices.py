@@ -16,7 +16,9 @@ async def _try_chain(tasks: Iterable[callable]):
                 return data
         except Exception as e:
             last = e
-    if last: raise last
+            continue  # Continue to next provider instead of raising
+    
+    # Don't raise exception, return empty list so fallback can be used
     return []
 
 async def get_ohlc(symbol: str, timeframe: str, limit: int):
