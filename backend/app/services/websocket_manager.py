@@ -1,5 +1,5 @@
 """
-WebSocket manager for real-time direct messaging (J4).
+WebSocket manager for real-time direct messaging (J4) with J6.2 Redis integration.
 """
 
 import uuid
@@ -8,12 +8,12 @@ import logging
 from typing import Dict, Set, Optional, Any
 from datetime import datetime, timezone
 
-import redis.asyncio as redis
 from fastapi import WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from app.core.config import settings
 from app.core.security import verify_jwt_token
+from app.core.redis_client import redis_client  # Use enhanced Redis client
 from app.schemas.conversation import (
     TypingIndicatorMessage, NewMessageNotification, 
     MessageReadNotification, WebSocketMessage, MessageResponse
@@ -24,33 +24,63 @@ logger = logging.getLogger(__name__)
 
 
 class ConnectionManager:
-    """Manages WebSocket connections for real-time messaging."""
+    """Manages WebSocket connections for real-time messaging with J6.2 Redis integration."""
     
     def __init__(self):
         # Active connections: user_id -> set of WebSocket connections
         self.active_connections: Dict[uuid.UUID, Set[WebSocket]] = {}
         
-        # Redis for pub/sub across instances
-        self.redis_client: Optional[redis.Redis] = None
-        self.pubsub: Optional[Any] = None
-        
     async def initialize_redis(self):
-        """Initialize Redis connection for pub/sub."""
-        if settings.redis_url:
-            try:
-                self.redis_client = redis.from_url(
-                    settings.redis_url,
-                    decode_responses=True,
-                    socket_connect_timeout=5,  # 5 second timeout
-                    socket_timeout=5
+        """Initialize Redis connection for pub/sub using enhanced Redis client."""
+        try:
+            # Use the enhanced Redis client
+            await redis_client.initialize()
+            if await redis_client.is_available():
+                # Subscribe to messaging channels
+                await redis_client.subscribe_to_channel(
+                    "dm_messages",
+                    self._handle_redis_message
                 )
-                self.pubsub = self.redis_client.pubsub()
-                await self.pubsub.subscribe("dm_messages", "dm_typing", "dm_read_receipts")
-                logger.info(f"Redis initialized successfully at {settings.redis_url}")
-            except Exception as e:
-                logger.warning(f"Redis connection failed: {e}. WebSocket will work without Redis pub/sub.")
-                self.redis_client = None
-                self.pubsub = None
+                await redis_client.subscribe_to_channel(
+                    "dm_typing",
+                    self._handle_redis_typing
+                )
+                await redis_client.subscribe_to_channel(
+                    "dm_read_receipts", 
+                    self._handle_redis_read_receipt
+                )
+                logger.info("Redis pub/sub initialized successfully with enhanced client")
+            else:
+                logger.warning("Redis not available. WebSocket will work without Redis pub/sub.")
+        except Exception as e:
+            logger.warning(f"Redis initialization failed: {e}. WebSocket will work without Redis pub/sub.")
+    
+    async def _handle_redis_message(self, channel: str, message: str):
+        """Handle Redis pub/sub message"""
+        try:
+            data = json.loads(message)
+            user_id = uuid.UUID(data.get("user_id"))
+            await self.send_personal_message(message, user_id)
+        except Exception as e:
+            logger.error(f"Failed to handle Redis message: {e}")
+    
+    async def _handle_redis_typing(self, channel: str, message: str):
+        """Handle Redis typing indicator"""
+        try:
+            data = json.loads(message)
+            user_id = uuid.UUID(data.get("user_id"))
+            await self.send_personal_message(message, user_id)
+        except Exception as e:
+            logger.error(f"Failed to handle Redis typing: {e}")
+    
+    async def _handle_redis_read_receipt(self, channel: str, message: str):
+        """Handle Redis read receipt"""
+        try:
+            data = json.loads(message)
+            user_id = uuid.UUID(data.get("user_id"))
+            await self.send_personal_message(message, user_id)
+        except Exception as e:
+            logger.error(f"Failed to handle Redis read receipt: {e}")
     
     async def connect(self, websocket: WebSocket, user_id: uuid.UUID):
         """Accept WebSocket connection and register user."""
@@ -61,6 +91,9 @@ class ConnectionManager:
         
         self.active_connections[user_id].add(websocket)
         logger.info(f"User {user_id} connected via WebSocket")
+        
+        # Add to Redis session tracking
+        await redis_client.add_websocket_session(str(user_id), str(websocket))
         
         # Record performance metrics
         performance_monitor.record_websocket_connection(user_id)
@@ -76,6 +109,9 @@ class ConnectionManager:
                 del self.active_connections[user_id]
         
         logger.info(f"User {user_id} disconnected from WebSocket")
+        
+        # Remove from Redis session tracking
+        await redis_client.remove_websocket_session(str(user_id), str(websocket))
         
         # Record performance metrics
         performance_monitor.record_websocket_disconnection(user_id)

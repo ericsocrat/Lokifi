@@ -1,0 +1,396 @@
+# J6.2 Notification Analytics Dashboard
+"""
+Advanced analytics and performance monitoring for J6.2 notification system.
+Provides insights into notification delivery, user engagement, and system performance.
+"""
+
+import asyncio
+import logging
+from typing import Dict, List, Any, Optional, Tuple
+from datetime import datetime, timezone, timedelta
+from dataclasses import dataclass, asdict
+from collections import defaultdict, deque
+import json
+
+from sqlalchemy import select, func, and_, or_, desc, text
+from sqlalchemy.orm import selectinload
+
+from app.core.database import db_manager
+from app.core.redis_client import redis_client
+from app.models.notification_models import (
+    Notification, 
+    NotificationPreference, 
+    NotificationType, 
+    NotificationPriority
+)
+from app.models.user import User
+
+logger = logging.getLogger(__name__)
+
+@dataclass
+class NotificationMetrics:
+    """Comprehensive notification metrics"""
+    total_sent: int = 0
+    total_delivered: int = 0
+    total_read: int = 0
+    total_dismissed: int = 0
+    total_clicked: int = 0
+    delivery_rate: float = 0.0
+    read_rate: float = 0.0
+    engagement_rate: float = 0.0
+    average_time_to_read: float = 0.0
+    peak_hour: int = 0
+    top_notification_types: List[Dict[str, Any]] = None
+
+@dataclass
+class UserEngagementMetrics:
+    """User engagement metrics"""
+    active_users: int = 0
+    highly_engaged_users: int = 0
+    unresponsive_users: int = 0
+    average_notifications_per_user: float = 0.0
+    user_preference_adoption: float = 0.0
+
+@dataclass
+class SystemPerformanceMetrics:
+    """System performance metrics"""
+    websocket_connections: int = 0
+    average_delivery_time_ms: float = 0.0
+    database_query_time_ms: float = 0.0
+    cache_hit_rate: float = 0.0
+    error_rate: float = 0.0
+    memory_usage_mb: float = 0.0
+
+class NotificationAnalytics:
+    """Advanced analytics for notification system"""
+    
+    def __init__(self):
+        self.metrics_history = deque(maxlen=1000)  # Store last 1000 data points
+        self.performance_counters = defaultdict(int)
+        self.timing_data = defaultdict(list)
+        
+    async def get_comprehensive_metrics(
+        self, 
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> Dict[str, Any]:
+        """Get comprehensive notification metrics"""
+        if not start_date:
+            start_date = datetime.now(timezone.utc) - timedelta(days=7)
+        if not end_date:
+            end_date = datetime.now(timezone.utc)
+            
+        try:
+            async for session in db_manager.get_session(read_only=True):
+                # Base query with date filtering
+                base_query = select(Notification).where(
+                    and_(
+                        Notification.created_at >= start_date,
+                        Notification.created_at <= end_date
+                    )
+                )
+                
+                # Get basic counts
+                total_result = await session.execute(
+                    select(func.count(Notification.id)).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date
+                        )
+                    )
+                )
+                total_sent = total_result.scalar() or 0
+                
+                # Delivery metrics
+                delivered_result = await session.execute(
+                    select(func.count(Notification.id)).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date,
+                            Notification.is_delivered == True
+                        )
+                    )
+                )
+                total_delivered = delivered_result.scalar() or 0
+                
+                # Engagement metrics
+                read_result = await session.execute(
+                    select(func.count(Notification.id)).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date,
+                            Notification.is_read == True
+                        )
+                    )
+                )
+                total_read = read_result.scalar() or 0
+                
+                clicked_result = await session.execute(
+                    select(func.count(Notification.id)).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date,
+                            Notification.clicked_at.isnot(None)
+                        )
+                    )
+                )
+                total_clicked = clicked_result.scalar() or 0
+                
+                # Calculate rates
+                delivery_rate = (total_delivered / total_sent * 100) if total_sent > 0 else 0
+                read_rate = (total_read / total_delivered * 100) if total_delivered > 0 else 0
+                engagement_rate = (total_clicked / total_read * 100) if total_read > 0 else 0
+                
+                # Top notification types
+                type_stats = await session.execute(
+                    select(
+                        Notification.type,
+                        func.count(Notification.id).label('count'),
+                        func.avg(
+                            func.extract(
+                                'epoch',
+                                Notification.read_at - Notification.created_at
+                            )
+                        ).label('avg_time_to_read')
+                    ).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date
+                        )
+                    ).group_by(Notification.type).order_by(desc('count'))
+                )
+                
+                top_types = []
+                for row in type_stats:
+                    top_types.append({
+                        "type": row.type,
+                        "count": row.count,
+                        "avg_time_to_read": row.avg_time_to_read or 0
+                    })
+                
+                # Peak hour analysis
+                hourly_stats = await session.execute(
+                    select(
+                        func.extract('hour', Notification.created_at).label('hour'),
+                        func.count(Notification.id).label('count')
+                    ).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date
+                        )
+                    ).group_by('hour').order_by(desc('count'))
+                )
+                
+                peak_hour = 0
+                max_count = 0
+                for row in hourly_stats:
+                    if row.count > max_count:
+                        max_count = row.count
+                        peak_hour = int(row.hour)
+                
+                return NotificationMetrics(
+                    total_sent=total_sent,
+                    total_delivered=total_delivered,
+                    total_read=total_read,
+                    total_clicked=total_clicked,
+                    delivery_rate=round(delivery_rate, 2),
+                    read_rate=round(read_rate, 2),
+                    engagement_rate=round(engagement_rate, 2),
+                    peak_hour=peak_hour,
+                    top_notification_types=top_types[:10]  # Top 10
+                )
+                
+        except Exception as e:
+            logger.error(f"Failed to get comprehensive metrics: {e}")
+            return NotificationMetrics()
+    
+    async def get_user_engagement_metrics(
+        self,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> UserEngagementMetrics:
+        """Get user engagement metrics"""
+        if not start_date:
+            start_date = datetime.now(timezone.utc) - timedelta(days=7)
+        if not end_date:
+            end_date = datetime.now(timezone.utc)
+            
+        try:
+            async for session in db_manager.get_session(read_only=True):
+                # Active users (received notifications)
+                active_users_result = await session.execute(
+                    select(func.count(func.distinct(Notification.user_id))).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date
+                        )
+                    )
+                )
+                active_users = active_users_result.scalar() or 0
+                
+                # Highly engaged users (read > 70% of notifications)
+                user_engagement = await session.execute(
+                    select(
+                        Notification.user_id,
+                        func.count(Notification.id).label('total'),
+                        func.sum(func.cast(Notification.is_read, db_manager.get_engine().dialect.BOOLEAN)).label('read_count')
+                    ).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date
+                        )
+                    ).group_by(Notification.user_id)
+                )
+                
+                highly_engaged = 0
+                unresponsive = 0
+                total_notifications = 0
+                
+                for row in user_engagement:
+                    total_notifications += row.total
+                    read_percentage = (row.read_count / row.total) * 100 if row.total > 0 else 0
+                    
+                    if read_percentage > 70:
+                        highly_engaged += 1
+                    elif read_percentage < 10:
+                        unresponsive += 1
+                
+                # User preference adoption
+                total_users_result = await session.execute(
+                    select(func.count(func.distinct(User.id)))
+                )
+                total_users = total_users_result.scalar() or 1
+                
+                preferences_result = await session.execute(
+                    select(func.count(func.distinct(NotificationPreference.user_id)))
+                )
+                users_with_preferences = preferences_result.scalar() or 0
+                
+                preference_adoption = (users_with_preferences / total_users) * 100
+                
+                avg_notifications_per_user = total_notifications / active_users if active_users > 0 else 0
+                
+                return UserEngagementMetrics(
+                    active_users=active_users,
+                    highly_engaged_users=highly_engaged,
+                    unresponsive_users=unresponsive,
+                    average_notifications_per_user=round(avg_notifications_per_user, 2),
+                    user_preference_adoption=round(preference_adoption, 2)
+                )
+                
+        except Exception as e:
+            logger.error(f"Failed to get user engagement metrics: {e}")
+            return UserEngagementMetrics()
+    
+    async def get_system_performance_metrics(self) -> SystemPerformanceMetrics:
+        """Get system performance metrics"""
+        try:
+            # Redis metrics
+            cache_hit_rate = 0.0
+            if await redis_client.is_available():
+                # Simplified cache hit rate calculation
+                cache_hit_rate = 85.0  # Placeholder - would implement proper tracking
+            
+            # WebSocket connections from performance monitor
+            websocket_connections = len(self.performance_counters.get('websocket_connections', {}))
+            
+            # Database timing
+            db_times = self.timing_data.get('db_queries', [])
+            avg_db_time = sum(db_times) / len(db_times) if db_times else 0
+            
+            # Delivery timing
+            delivery_times = self.timing_data.get('notification_delivery', [])
+            avg_delivery_time = sum(delivery_times) / len(delivery_times) if delivery_times else 0
+            
+            return SystemPerformanceMetrics(
+                websocket_connections=websocket_connections,
+                average_delivery_time_ms=round(avg_delivery_time, 2),
+                database_query_time_ms=round(avg_db_time, 2),
+                cache_hit_rate=cache_hit_rate,
+                error_rate=self.performance_counters.get('errors', 0) / max(self.performance_counters.get('total_requests', 1), 1) * 100
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to get system performance metrics: {e}")
+            return SystemPerformanceMetrics()
+    
+    async def get_dashboard_data(self) -> Dict[str, Any]:
+        """Get complete dashboard data"""
+        try:
+            # Run all metrics collection concurrently
+            notification_metrics, user_metrics, system_metrics = await asyncio.gather(
+                self.get_comprehensive_metrics(),
+                self.get_user_engagement_metrics(),
+                self.get_system_performance_metrics()
+            )
+            
+            return {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "notification_metrics": asdict(notification_metrics),
+                "user_engagement": asdict(user_metrics),
+                "system_performance": asdict(system_metrics),
+                "redis_status": await redis_client.is_available(),
+                "health_score": self._calculate_health_score(
+                    notification_metrics, user_metrics, system_metrics
+                )
+            }
+            
+        except Exception as e:
+            logger.error(f"Failed to get dashboard data: {e}")
+            return {"error": str(e), "timestamp": datetime.now(timezone.utc).isoformat()}
+    
+    def _calculate_health_score(
+        self,
+        notification_metrics: NotificationMetrics,
+        user_metrics: UserEngagementMetrics,
+        system_metrics: SystemPerformanceMetrics
+    ) -> Dict[str, Any]:
+        """Calculate overall system health score"""
+        scores = []
+        
+        # Delivery score (0-100)
+        delivery_score = min(notification_metrics.delivery_rate, 100)
+        scores.append(delivery_score)
+        
+        # Engagement score (0-100)
+        engagement_score = min(notification_metrics.read_rate, 100)
+        scores.append(engagement_score)
+        
+        # Performance score (0-100)
+        performance_score = 100 - min(system_metrics.error_rate, 100)
+        scores.append(performance_score)
+        
+        # Cache score (0-100)
+        cache_score = system_metrics.cache_hit_rate
+        scores.append(cache_score)
+        
+        overall_score = sum(scores) / len(scores)
+        
+        status = "excellent" if overall_score >= 90 else \
+                "good" if overall_score >= 75 else \
+                "fair" if overall_score >= 50 else "poor"
+        
+        return {
+            "overall_score": round(overall_score, 1),
+            "status": status,
+            "breakdown": {
+                "delivery": round(delivery_score, 1),
+                "engagement": round(engagement_score, 1),
+                "performance": round(performance_score, 1),
+                "caching": round(cache_score, 1)
+            }
+        }
+    
+    def record_performance_metric(self, metric_name: str, value: float):
+        """Record a performance metric"""
+        self.timing_data[metric_name].append(value)
+        # Keep only last 100 measurements
+        if len(self.timing_data[metric_name]) > 100:
+            self.timing_data[metric_name] = self.timing_data[metric_name][-100:]
+    
+    def increment_counter(self, counter_name: str):
+        """Increment a performance counter"""
+        self.performance_counters[counter_name] += 1
+
+# Global analytics instance
+notification_analytics = NotificationAnalytics()

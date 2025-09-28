@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow, conversations, websocket, admin_messaging, ai, ai_websocket, notifications
+from app.api.j6_2_endpoints import j6_2_router
 from app.services.data_service import startup_data_services, shutdown_data_services
 from app.services.j53_scheduler import j53_router, j53_lifespan_manager
 
@@ -54,6 +55,7 @@ app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase 
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
 app.include_router(notifications.router, prefix=settings.API_PREFIX)  # Phase J6 Enterprise Notifications
+app.include_router(j6_2_router)  # Phase J6.2 Advanced Notification Features
 app.include_router(j53_router)  # Phase J5.3 Performance Monitoring
 app.include_router(market_data.router)  # New market data API
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)  # Mock data for testing

@@ -13,6 +13,7 @@ from sqlalchemy import select, func, and_, or_, desc
 from sqlalchemy.orm import selectinload
 
 from app.core.database import db_manager
+from app.core.redis_client import redis_client
 from app.models.notification_models import (
     Notification, 
     NotificationPreference, 
@@ -240,6 +241,12 @@ class NotificationService:
     async def get_unread_count(self, user_id: Union[str, UUID]) -> int:
         """Get count of unread notifications for a user"""
         user_id_str = str(user_id)  # Convert UUID to string
+        
+        # Try to get from cache first
+        cached_count = await redis_client.get_cached_unread_count(user_id_str)
+        if cached_count is not None:
+            return cached_count
+            
         try:
             async for session in db_manager.get_session(read_only=True):
                 result = await session.execute(
@@ -256,6 +263,10 @@ class NotificationService:
                     )
                 )
                 count = result.scalar() or 0
+                
+                # Cache the count for 5 minutes
+                await redis_client.cache_unread_count(user_id_str, count, ttl=300)
+                
                 return count
                 
         except Exception as e:
