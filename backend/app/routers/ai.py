@@ -5,6 +5,7 @@ Handles AI thread creation, messaging, and provider management.
 """
 
 import logging
+import base64
 from typing import List, Dict, Any, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, File, UploadFile
 from fastapi.responses import StreamingResponse, Response
@@ -26,6 +27,9 @@ from app.schemas.ai_schemas import (
 from app.services.ai_service import ai_service, RateLimitError, SafetyFilterError
 from app.services.ai_provider import StreamChunk, ProviderError
 from app.services.conversation_export import conversation_exporter, conversation_importer, ExportOptions
+from app.services.ai_analytics import ai_analytics_service
+from app.services.ai_context_manager import ai_context_manager
+from app.services.multimodal_ai_service import multimodal_ai_service, FileProcessingError, UnsupportedFileTypeError
 
 logger = logging.getLogger(__name__)
 
@@ -375,5 +379,236 @@ async def get_user_moderation_status(current_user: User = Depends(get_current_us
         logger.error(f"Failed to get moderation status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to retrieve moderation status"
+            detail=str(e)
+        )
+
+
+# ===== J5.2 ADVANCED FEATURES =====
+
+@router.get("/analytics/conversation-metrics")
+async def get_conversation_metrics(
+    days_back: int = 30,
+    current_user: User = Depends(get_current_user)
+):
+    """Get AI conversation analytics and metrics."""
+    try:
+        metrics = await ai_analytics_service.get_conversation_metrics(
+            user_id=current_user.id,
+            days_back=days_back
+        )
+        
+        return {
+            "metrics": {
+                "total_conversations": metrics.total_conversations,
+                "total_messages": metrics.total_messages,
+                "avg_messages_per_conversation": metrics.avg_messages_per_conversation,
+                "avg_response_time": metrics.avg_response_time,
+                "user_satisfaction_score": metrics.user_satisfaction_score,
+                "top_topics": metrics.top_topics,
+                "provider_usage": metrics.provider_usage,
+                "model_usage": metrics.model_usage
+            },
+            "period_days": days_back
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get conversation metrics: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.get("/analytics/user-insights")
+async def get_user_insights(
+    days_back: int = 90,
+    current_user: User = Depends(get_current_user)
+):
+    """Get detailed user AI usage insights."""
+    try:
+        insights = await ai_analytics_service.get_user_insights(
+            user_id=current_user.id,
+            days_back=days_back
+        )
+        
+        return {
+            "insights": {
+                "total_threads": insights.total_threads,
+                "total_messages": insights.total_messages,
+                "favorite_topics": insights.favorite_topics,
+                "preferred_providers": insights.preferred_providers,
+                "avg_session_length": insights.avg_session_length,
+                "most_active_hours": insights.most_active_hours,
+                "satisfaction_trend": insights.satisfaction_trend
+            },
+            "period_days": days_back
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get user insights: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.get("/analytics/provider-performance")
+async def get_provider_performance(
+    days_back: int = 30,
+    current_user: User = Depends(get_current_user)  # Could be admin-only
+):
+    """Get AI provider performance metrics."""
+    try:
+        performance_data = await ai_analytics_service.get_provider_performance(days_back)
+        
+        return {
+            "performance": performance_data,
+            "period_days": days_back
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get provider performance: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.get("/context/user-profile")
+async def get_user_ai_profile(current_user: User = Depends(get_current_user)):
+    """Get user's AI interaction profile and preferences."""
+    try:
+        context_data = await ai_context_manager.get_user_context_across_threads(
+            user_id=current_user.id
+        )
+        
+        return {
+            "profile": context_data,
+            "generated_at": datetime.utcnow().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get user AI profile: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
+        )
+
+
+@router.post("/threads/{thread_id}/file-upload")
+async def upload_file_to_thread(
+    thread_id: int,
+    file: UploadFile = File(...),
+    prompt: Optional[str] = None,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Upload and analyze a file within an AI conversation thread."""
+    try:
+        # Process the uploaded file
+        file_result = await multimodal_ai_service.process_file_upload(
+            file=file,
+            user_id=current_user.id,
+            thread_id=thread_id
+        )
+        
+        # If prompt provided, analyze the file with AI
+        if prompt:
+            analysis_prompt = prompt or "Please analyze this file and tell me about it."
+            
+            # Store user message with file reference
+            user_message = AIMessage(
+                thread_id=thread_id,
+                role="user",
+                content=f"[File uploaded: {file.filename}] {analysis_prompt}",
+                created_at=datetime.utcnow()
+            )
+            
+            db.add(user_message)
+            db.commit()
+            
+            # Determine file type and analyze accordingly
+            file_data = file_result["processed_content"]
+            
+            if file_data["type"] == "image":
+                # Analyze image
+                image_bytes = base64.b64decode(file_data["content"])
+                
+                async def stream_image_analysis():
+                    async for chunk in multimodal_ai_service.analyze_image_with_ai(
+                        image_data=image_bytes,
+                        user_prompt=analysis_prompt,
+                        user_id=current_user.id,
+                        thread_id=thread_id
+                    ):
+                        if isinstance(chunk, StreamChunk):
+                            yield f"data: {json.dumps({
+                                'type': 'chunk',
+                                'content': chunk.content,
+                                'is_complete': chunk.is_complete
+                            })}\\n\\n"
+                        else:
+                            yield f"data: {json.dumps({
+                                'type': 'chunk',
+                                'content': str(chunk),
+                                'is_complete': False
+                            })}\\n\\n"
+                
+                return StreamingResponse(
+                    stream_image_analysis(),
+                    media_type="text/event-stream",
+                    headers={"Cache-Control": "no-cache", "Connection": "keep-alive"}
+                )
+            
+            elif file_data["type"] == "document":
+                # Analyze document
+                async def stream_document_analysis():
+                    async for chunk in multimodal_ai_service.analyze_document_with_ai(
+                        document_text=file_data["content"],
+                        user_prompt=analysis_prompt,
+                        filename=file.filename or "document.txt",
+                        user_id=current_user.id,
+                        thread_id=thread_id
+                    ):
+                        if isinstance(chunk, StreamChunk):
+                            yield f"data: {json.dumps({
+                                'type': 'chunk',
+                                'content': chunk.content,
+                                'is_complete': chunk.is_complete
+                            })}\\n\\n"
+                        else:
+                            yield f"data: {json.dumps({
+                                'type': 'chunk',
+                                'content': str(chunk),
+                                'is_complete': False
+                            })}\\n\\n"
+                
+                return StreamingResponse(
+                    stream_document_analysis(),
+                    media_type="text/event-stream",
+                    headers={"Cache-Control": "no-cache", "Connection": "keep-alive"}
+                )
+        
+        return {
+            "success": True,
+            "file_processed": file_result["file_metadata"],
+            "content_summary": file_result["processed_content"]["text_content"],
+            "message": f"File '{file.filename}' uploaded and processed successfully"
+        }
+        
+    except UnsupportedFileTypeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except FileProcessingError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+    except Exception as e:
+        logger.error(f"File upload failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=str(e)
         )
