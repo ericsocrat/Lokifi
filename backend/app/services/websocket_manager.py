@@ -37,12 +37,20 @@ class ConnectionManager:
     async def initialize_redis(self):
         """Initialize Redis connection for pub/sub."""
         if settings.redis_url:
-            self.redis_client = redis.from_url(
-                settings.redis_url,
-                decode_responses=True
-            )
-            self.pubsub = self.redis_client.pubsub()
-            await self.pubsub.subscribe("dm_messages", "dm_typing", "dm_read_receipts")
+            try:
+                self.redis_client = redis.from_url(
+                    settings.redis_url,
+                    decode_responses=True,
+                    socket_connect_timeout=5,  # 5 second timeout
+                    socket_timeout=5
+                )
+                self.pubsub = self.redis_client.pubsub()
+                await self.pubsub.subscribe("dm_messages", "dm_typing", "dm_read_receipts")
+                logger.info(f"Redis initialized successfully at {settings.redis_url}")
+            except Exception as e:
+                logger.warning(f"Redis connection failed: {e}. WebSocket will work without Redis pub/sub.")
+                self.redis_client = None
+                self.pubsub = None
     
     async def connect(self, websocket: WebSocket, user_id: uuid.UUID):
         """Accept WebSocket connection and register user."""
