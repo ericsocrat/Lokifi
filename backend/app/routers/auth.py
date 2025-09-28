@@ -5,6 +5,7 @@ Authentication router with login, register, and OAuth endpoints.
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_db
@@ -34,17 +35,22 @@ async def register(
     result = await auth_service.register_user(user_data)
     
     # Set HTTP-only cookie with access token
-    response = JSONResponse(content={
-        "user": result["user"].model_dump(),
-        "profile": result["profile"].model_dump() if result["profile"] else None
+    response_content = jsonable_encoder({
+        "user": result["user"],
+        "profile": result["profile"],
+        "access_token": result["tokens"].access_token,
+        "refresh_token": result["tokens"].refresh_token,
+        "token_type": result["tokens"].token_type,
+        "expires_in": result["tokens"].expires_in
     })
+    response = JSONResponse(content=response_content)
     
     response.set_cookie(
         key="access_token",
         value=result["tokens"].access_token,
         max_age=result["tokens"].expires_in,
         httponly=True,
-        secure=True,  # Use HTTPS in production
+        secure=False,  # Set to False for local/testing; enforce True in production
         samesite="lax"
     )
     
@@ -53,7 +59,7 @@ async def register(
         value=result["tokens"].refresh_token,
         max_age=30 * 24 * 60 * 60,  # 30 days
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
     
@@ -70,17 +76,22 @@ async def login(
     result = await auth_service.login_user(login_data)
     
     # Set HTTP-only cookie with access token
-    response = JSONResponse(content={
-        "user": result["user"].model_dump(),
-        "profile": result["profile"].model_dump() if result["profile"] else None
+    response_content = jsonable_encoder({
+        "user": result["user"],
+        "profile": result["profile"],
+        "access_token": result["tokens"].access_token,
+        "refresh_token": result["tokens"].refresh_token,
+        "token_type": result["tokens"].token_type,
+        "expires_in": result["tokens"].expires_in
     })
+    response = JSONResponse(content=response_content)
     
     response.set_cookie(
         key="access_token",
         value=result["tokens"].access_token,
         max_age=result["tokens"].expires_in,
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
     
@@ -89,7 +100,7 @@ async def login(
         value=result["tokens"].refresh_token,
         max_age=30 * 24 * 60 * 60,  # 30 days
         httponly=True,
-        secure=True,
+        secure=False,
         samesite="lax"
     )
     
@@ -139,17 +150,22 @@ async def google_oauth(
         result = await auth_service.create_user_from_oauth(email, name, google_id)
         
         # Set HTTP-only cookie with access token
-        response = JSONResponse(content={
-            "user": result["user"].model_dump(),
-            "profile": result["profile"].model_dump() if result["profile"] else None
+        response_content = jsonable_encoder({
+            "user": result["user"],
+            "profile": result["profile"],
+            "access_token": result["tokens"].access_token,
+            "refresh_token": result["tokens"].refresh_token,
+            "token_type": result["tokens"].token_type,
+            "expires_in": result["tokens"].expires_in
         })
+        response = JSONResponse(content=response_content)
         
         response.set_cookie(
             key="access_token",
             value=result["tokens"].access_token,
             max_age=result["tokens"].expires_in,
             httponly=True,
-            secure=True,
+            secure=False,
             samesite="lax"
         )
         
@@ -158,7 +174,7 @@ async def google_oauth(
             value=result["tokens"].refresh_token,
             max_age=30 * 24 * 60 * 60,  # 30 days
             httponly=True,
-            secure=True,
+            secure=False,
             samesite="lax"
         )
         

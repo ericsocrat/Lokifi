@@ -4,7 +4,7 @@ Profile service for user profile and settings management.
 
 import uuid
 from typing import Optional, List, Tuple
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import select, update, func, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -82,7 +82,7 @@ class ProfileService:
             update_data["is_public"] = profile_data.is_public
         
         if update_data:
-            update_data["updated_at"] = datetime.utcnow()
+            update_data["updated_at"] = datetime.now(timezone.utc)
             
             stmt = (
                 update(Profile)
@@ -148,7 +148,7 @@ class ProfileService:
             update_data["is_verified"] = False  # Require re-verification
         
         if update_data:
-            update_data["updated_at"] = datetime.utcnow()
+            update_data["updated_at"] = datetime.now(timezone.utc)
             
             stmt = (
                 update(User)
@@ -187,7 +187,7 @@ class ProfileService:
                 update_data[field] = value
         
         if update_data:
-            update_data["updated_at"] = datetime.utcnow()
+            update_data["updated_at"] = datetime.now(timezone.utc)
             
             stmt = (
                 update(NotificationPreference)
@@ -222,15 +222,12 @@ class ProfileService:
         # Check if current user follows this profile
         is_following = None
         if current_user_id:
-            stmt = select(Follow).where(
-                and_(
-                    Follow.follower_id == current_user_id,
-                    Follow.followee_id == profile.user_id
-                )
+            from app.services.follow_service import FollowService
+            follow_service = FollowService(self.db)
+            is_following = await follow_service.is_following(
+                follower_id=current_user_id,
+                followee_id=profile.user_id
             )
-            result = await self.db.execute(stmt)
-            follow_relationship = result.scalar_one_or_none()
-            is_following = follow_relationship is not None
         
         # Create response
         response_data = profile.__dict__.copy()
@@ -273,24 +270,32 @@ class ProfileService:
         result = await self.db.execute(count_stmt)
         total = result.scalar()
         
-        # Check follow status for each profile if user is logged in
         public_profiles = []
-        for profile in profiles:
-            is_following = None
+        if profiles:
+            follow_map = {}
             if current_user_id:
-                stmt = select(Follow).where(
-                    and_(
-                        Follow.follower_id == current_user_id,
-                        Follow.followee_id == profile.user_id
-                    )
+                from app.services.follow_service import FollowService
+                follow_service = FollowService(self.db)
+                follow_map = await follow_service.batch_follow_status(
+                    current_user_id=current_user_id,
+                    target_user_ids=[p.user_id for p in profiles]
                 )
-                result = await self.db.execute(stmt)
-                follow_relationship = result.scalar_one_or_none()
-                is_following = follow_relationship is not None
-            
-            response_data = profile.__dict__.copy()
-            response_data["is_following"] = is_following
-            public_profiles.append(PublicProfileResponse.model_validate(response_data))
+            for profile in profiles:
+                status_info = follow_map.get(profile.user_id)
+                is_following = status_info["is_following"] if status_info else None
+                response_data = {
+                    "id": profile.id,
+                    "username": profile.username,
+                    "display_name": profile.display_name or "",
+                    "bio": profile.bio,
+                    "avatar_url": profile.avatar_url,
+                    "is_public": getattr(profile, "is_public", True),
+                    "follower_count": getattr(profile, "follower_count", 0),
+                    "following_count": getattr(profile, "following_count", 0),
+                    "created_at": profile.created_at,
+                    "is_following": is_following
+                }
+                public_profiles.append(PublicProfileResponse.model_validate(response_data))
         
         return ProfileSearchResponse(
             profiles=public_profiles,

@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 import os
 
 from passlib.hash import bcrypt
@@ -39,7 +39,7 @@ def _user_by_handle(db: Session, handle: str) -> Optional[User]:
     return db.execute(select(User).where(User.handle == handle)).scalar_one_or_none()
 
 def _issue_token(handle: str) -> TokenOut:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     exp = now + timedelta(minutes=JWT_TTL_MIN)
     payload = {"sub": handle, "iat": int(now.timestamp()), "exp": int(exp.timestamp())}
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)

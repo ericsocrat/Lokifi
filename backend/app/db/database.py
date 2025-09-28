@@ -3,8 +3,9 @@ Database configuration and connection management.
 """
 
 import os
-from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+import sys
+from contextlib import contextmanager
+from typing import AsyncGenerator, Generator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -13,10 +14,15 @@ from sqlalchemy.pool import NullPool
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fynix:fynix@localhost:5432/fynix")
 
 # Create async engine
+USE_NULL_POOL = (
+    os.getenv("SQL_DISABLE_POOL", "").lower() in {"1", "true", "yes"}
+    or "pytest" in sys.modules  # running inside pytest test process
+)
+
 engine = create_async_engine(
     DATABASE_URL,
     echo=os.getenv("SQL_ECHO", "false").lower() == "true",
-    poolclass=NullPool if "sqlite" in DATABASE_URL else None,
+    poolclass=NullPool if ("sqlite" in DATABASE_URL or USE_NULL_POOL) else None,
     future=True,
 )
 
@@ -31,20 +37,17 @@ AsyncSessionLocal = async_sessionmaker(
 Base = declarative_base()
 
 
-@asynccontextmanager
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """Get database session."""
+    """FastAPI dependency yielding an AsyncSession with proper rollback/close semantics."""
     async with AsyncSessionLocal() as session:
         try:
             yield session
         except Exception:
             await session.rollback()
             raise
-        finally:
-            await session.close()
 
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
-    """Dependency to get database session."""
-    async with get_db() as session:
-        yield session
+    """Alias dependency maintained for backward compatibility."""
+    async for sess in get_db():
+        yield sess

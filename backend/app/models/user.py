@@ -86,19 +86,18 @@ class User(Base):
     conversations = relationship("ConversationParticipant", back_populates="user")
     sent_messages = relationship("Message", foreign_keys="Message.sender_id", back_populates="sender")
     ai_threads = relationship("AiThread", back_populates="user")
-    notifications = relationship("Notification", foreign_keys="Notification.user_id", back_populates="user")
-    notification_preferences = relationship("NotificationPreference", back_populates="user", uselist=False)
-    conversations = relationship(
-        "ConversationParticipant", 
+    notifications = relationship(
+        "Notification",
+        foreign_keys="Notification.user_id",
         back_populates="user"
     )
-    sent_messages = relationship(
-        "Message", 
-        foreign_keys="Message.sender_id", 
-        back_populates="sender"
+    notification_preferences = relationship("NotificationPreference", back_populates="user", uselist=False)
+    # Optional: notifications where this user is the related_user (no back_populates to avoid cycles)
+    related_notifications = relationship(
+        "Notification",
+        foreign_keys="Notification.related_user_id",
+        viewonly=True
     )
-    ai_threads = relationship("AiThread", back_populates="user")
-    notifications = relationship("Notification", back_populates="user")
     
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email='{self.email}')>"

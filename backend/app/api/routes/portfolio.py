@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from datetime import datetime
+from datetime import datetime, timezone
 import csv
 import io
 
@@ -148,7 +148,7 @@ async def add_or_update_position(
         existing = db.execute(
             select(PortfolioPosition).where(PortfolioPosition.user_id == u.id, PortfolioPosition.symbol == payload.symbol)
         ).scalar_one_or_none()
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         if existing:
             existing.qty = payload.qty
             existing.cost_basis = payload.cost_basis

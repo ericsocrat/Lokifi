@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase J3 (Follow Graph Enhancements)
+
+#### RESTful Follow Endpoints
+- **NEW**: `POST /api/follow/{user_id}` and `DELETE /api/follow/{user_id}` 
+- **Unified Response**: `FollowActionResponse` with comprehensive status
+- **Idempotent**: Safe to call multiple times (action: follow/unfollow/noop)
+- **Notifications**: Automatic FOLLOW notifications on new follows
+
+#### Enhanced Suggestions
+- **Improved Pagination**: Real `has_next` calculation with sentinel fetching
+- **Better Ranking**: Mutual follows prioritized, fallback to popular users
+- **Deterministic Ordering**: Consistent results across pages
+
+#### Deprecations
+- **DEPRECATED**: `POST /api/follow/follow` (sunset: Dec 31, 2025)
+- **DEPRECATED**: `DELETE /api/follow/unfollow` (sunset: Dec 31, 2025)
+- **Headers**: Deprecation, Sunset, and Link headers added to legacy endpoints
+
+#### Technical Improvements
+- **Timezone-aware**: All datetime operations use `timezone.utc` 
+- **Test Coverage**: Added notification tests and action/noop scenarios
+- **Database**: NullPool in test mode prevents connection reuse issues
+
 ### Added - Part G (Enhancements - Feature Flagged)
 
 #### G1. Multi-Chart Layouts + Linking

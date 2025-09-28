@@ -3,7 +3,7 @@ Authentication service for user management.
 """
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict, Any
 
 from sqlalchemy import select
@@ -138,7 +138,7 @@ class AuthService:
             )
         
         # Update last login
-        user.last_login = datetime.utcnow()
+        user.last_login = datetime.now(timezone.utc)
         await self.db.commit()
         
         # Get user profile

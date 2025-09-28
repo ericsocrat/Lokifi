@@ -5,7 +5,7 @@ Profile model for user profiles and public information.
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, ForeignKey, String, Text, Integer, Boolean, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -45,6 +45,10 @@ class Profile(Base):
     avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     location: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     website: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    # Privacy & social counters
+    is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
+    follower_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
+    following_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

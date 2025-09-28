@@ -3,7 +3,7 @@ OpenAPI contract generation and validation for Fynix API
 """
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # Base response models
@@ -97,7 +97,7 @@ class IndicatorResponse(APIResponse):
 class WSMessage(BaseModel):
     """WebSocket message base"""
     type: str = Field(..., description="Message type")
-    timestamp: int = Field(default_factory=lambda: int(datetime.utcnow().timestamp() * 1000))
+    timestamp: int = Field(default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000))
 
 
 class WSTickerMessage(WSMessage):
