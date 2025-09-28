@@ -1,7 +1,7 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow
+from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow, conversations, websocket, admin_messaging
 from app.services.data_service import startup_data_services, shutdown_data_services
 
 app = FastAPI(title=settings.PROJECT_NAME)
@@ -37,6 +37,9 @@ app.include_router(health.router, prefix=settings.API_PREFIX)
 app.include_router(auth.router, prefix=settings.API_PREFIX)  # Phase J Authentication
 app.include_router(profile.router, prefix=settings.API_PREFIX)  # Phase J Profiles & Settings
 app.include_router(follow.router, prefix=settings.API_PREFIX)  # Phase J Follow Graph
+app.include_router(conversations.router, prefix=settings.API_PREFIX)  # Phase J4 Direct Messages
+app.include_router(websocket.router, prefix=settings.API_PREFIX)  # Phase J4 WebSocket
+app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase J4 Admin
 app.include_router(market_data.router)  # New market data API
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)  # Mock data for testing
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)

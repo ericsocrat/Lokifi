@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added - Phase J4 (Direct Messages)
+
+#### Real-time Messaging System
+- **NEW**: Complete direct messaging infrastructure with WebSocket support
+- **Database Models**: Conversations, participants, messages, and read receipts
+- **API Endpoints**: Full CRUD operations for conversations and messages
+- **WebSocket Manager**: Real-time message broadcasting with Redis pub/sub
+- **Rate Limiting**: Redis-based sliding window (30 messages/60 seconds)
+
+#### Core Features
+- **Direct Conversations**: Create/retrieve DM conversations with any user
+- **Message Operations**: Send, receive, mark as read, and soft delete messages
+- **Real-time Updates**: Typing indicators, message delivery, and read receipts
+- **Multi-instance Support**: Redis pub/sub for horizontal scaling
+- **Authentication**: JWT-based WebSocket and API authentication
+
+#### API Endpoints Added
+- `POST /api/conversations/dm/{user_id}` - Create/get DM conversation
+- `GET /api/conversations` - List user conversations (paginated)
+- `GET /api/conversations/{id}/messages` - Get conversation messages
+- `POST /api/conversations/{id}/messages` - Send message (rate limited)
+- `PATCH /api/conversations/{id}/read` - Mark messages as read
+- `DELETE /api/conversations/{id}/messages/{message_id}` - Delete message
+- `WS /api/ws` - WebSocket endpoint for real-time messaging
+
+#### Technical Infrastructure
+- **WebSocket Manager**: Connection pooling, broadcasting, Redis integration
+- **Rate Limiter**: Efficient sliding window with automatic cleanup
+- **Database Schema**: Optimized with indexes and composite primary keys
+- **Comprehensive Testing**: Unit, integration, and load testing suite
+- **Security**: Input validation, authorization checks, and rate limiting
+
 ### Added - Phase J3 (Follow Graph Enhancements)
 
 #### RESTful Follow Endpoints
