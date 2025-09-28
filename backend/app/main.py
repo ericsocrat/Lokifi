@@ -1,19 +1,30 @@
-﻿from fastapi import FastAPI
+﻿from contextlib import asynccontextmanager
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow, conversations, websocket, admin_messaging, ai, ai_websocket
 from app.services.data_service import startup_data_services, shutdown_data_services
+from app.services.j53_scheduler import j53_router, j53_lifespan_manager
 
-app = FastAPI(title=settings.PROJECT_NAME)
-
-# Startup and shutdown events
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan manager combining data services and J5.3"""
+    # Startup
     await startup_data_services()
-
-@app.on_event("shutdown") 
-async def shutdown_event():
+    
+    # J5.3 lifespan manager handles scheduler startup/shutdown
+    async with j53_lifespan_manager(app):
+        yield
+    
+    # Shutdown
     await shutdown_data_services()
+
+app = FastAPI(
+    title=f"{settings.PROJECT_NAME} - J5.3 Enhanced",
+    description="Fynix with J5.3 Advanced Performance Monitoring and Optimization",
+    version="5.3.0",
+    lifespan=lifespan
+)
 
 import os
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
@@ -42,6 +53,7 @@ app.include_router(websocket.router, prefix=settings.API_PREFIX)  # Phase J4 Web
 app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase J4 Admin
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
+app.include_router(j53_router)  # Phase J5.3 Performance Monitoring
 app.include_router(market_data.router)  # New market data API
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)  # Mock data for testing
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
