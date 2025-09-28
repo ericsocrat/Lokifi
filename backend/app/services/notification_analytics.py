@@ -41,6 +41,12 @@ class NotificationMetrics:
     average_time_to_read: float = 0.0
     peak_hour: int = 0
     top_notification_types: List[Dict[str, Any]] = None
+    
+    # Performance attributes for monitoring
+    average_response_time: float = 0.0
+    system_uptime: float = 100.0
+    error_count: int = 0
+    successful_deliveries: int = 0
 
 @dataclass
 class UserEngagementMetrics:
@@ -101,25 +107,25 @@ class NotificationAnalytics:
                 )
                 total_sent = total_result.scalar() or 0
                 
-                # Delivery metrics
+                # Delivery metrics (SQLite compatible)
                 delivered_result = await session.execute(
                     select(func.count(Notification.id)).where(
                         and_(
                             Notification.created_at >= start_date,
                             Notification.created_at <= end_date,
-                            Notification.is_delivered == True
+                            Notification.is_delivered == 1
                         )
                     )
                 )
                 total_delivered = delivered_result.scalar() or 0
                 
-                # Engagement metrics
+                # Engagement metrics (SQLite compatible)
                 read_result = await session.execute(
                     select(func.count(Notification.id)).where(
                         and_(
                             Notification.created_at >= start_date,
                             Notification.created_at <= end_date,
-                            Notification.is_read == True
+                            Notification.is_read == 1
                         )
                     )
                 )
@@ -206,18 +212,51 @@ class NotificationAnalytics:
     
     async def get_user_engagement_metrics(
         self,
+        user_id: str = None,
+        days: int = 30,
         start_date: Optional[datetime] = None,
         end_date: Optional[datetime] = None
     ) -> UserEngagementMetrics:
         """Get user engagement metrics"""
         if not start_date:
-            start_date = datetime.now(timezone.utc) - timedelta(days=7)
+            start_date = datetime.now(timezone.utc) - timedelta(days=days)
         if not end_date:
             end_date = datetime.now(timezone.utc)
             
         try:
             async for session in db_manager.get_session(read_only=True):
-                # Active users (received notifications)
+                # If specific user_id provided, get their metrics
+                if user_id and user_id != "system":
+                    total_notifications = await session.scalar(
+                        select(func.count(Notification.id)).where(
+                            and_(
+                                Notification.user_id == user_id,
+                                Notification.created_at >= start_date,
+                                Notification.created_at <= end_date
+                            )
+                        )
+                    )
+                    
+                    read_notifications = await session.scalar(
+                        select(func.count(Notification.id)).where(
+                            and_(
+                                Notification.user_id == user_id,
+                                Notification.created_at >= start_date,
+                                Notification.created_at <= end_date,
+                                Notification.is_read == True
+                            )
+                        )
+                    )
+                    
+                    return UserEngagementMetrics(
+                        active_users=1 if total_notifications > 0 else 0,
+                        avg_notifications_per_user=total_notifications or 0,
+                        engagement_rate=(read_notifications / total_notifications * 100) if total_notifications > 0 else 0,
+                        most_active_times=[],
+                        user_retention_7d=100.0
+                    )
+                
+                # System-wide metrics
                 active_users_result = await session.execute(
                     select(func.count(func.distinct(Notification.user_id))).where(
                         and_(
@@ -314,13 +353,16 @@ class NotificationAnalytics:
             logger.error(f"Failed to get system performance metrics: {e}")
             return SystemPerformanceMetrics()
     
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self, days: int = 7) -> Dict[str, Any]:
         """Get complete dashboard data"""
         try:
-            # Run all metrics collection concurrently
+            # Run all metrics collection concurrently with date range
+            start_date = datetime.now(timezone.utc) - timedelta(days=days)
+            end_date = datetime.now(timezone.utc)
+            
             notification_metrics, user_metrics, system_metrics = await asyncio.gather(
-                self.get_comprehensive_metrics(),
-                self.get_user_engagement_metrics(),
+                self.get_comprehensive_metrics(start_date, end_date),
+                self.get_user_engagement_metrics("system", days),  # System-wide metrics
                 self.get_system_performance_metrics()
             )
             
@@ -330,9 +372,8 @@ class NotificationAnalytics:
                 "user_engagement": asdict(user_metrics),
                 "system_performance": asdict(system_metrics),
                 "redis_status": await redis_client.is_available(),
-                "health_score": self._calculate_health_score(
-                    notification_metrics, user_metrics, system_metrics
-                )
+                "health_score": await self.calculate_system_health_score(),
+                "period_days": days
             }
             
         except Exception as e:
@@ -391,6 +432,41 @@ class NotificationAnalytics:
     def increment_counter(self, counter_name: str):
         """Increment a performance counter"""
         self.performance_counters[counter_name] += 1
+    
+    async def calculate_system_health_score(self) -> float:
+        """Calculate overall system health score"""
+        try:
+            # Get metrics
+            notification_metrics = await self.get_comprehensive_metrics()
+            user_metrics = await self.get_user_engagement_metrics("system", 7)
+            system_metrics = await self.get_system_performance_metrics()
+            
+            scores = []
+            
+            # Delivery success rate (0-100)
+            delivery_score = min(notification_metrics.delivery_rate, 100)
+            scores.append(delivery_score)
+            
+            # Engagement score (0-100) 
+            engagement_score = min(notification_metrics.read_rate, 100)
+            scores.append(engagement_score)
+            
+            # System performance (0-100)
+            performance_score = 100 - min(system_metrics.error_rate, 100)
+            scores.append(performance_score)
+            
+            # Redis availability (0-100)
+            redis_available = await redis_client.is_available()
+            redis_score = 100 if redis_available else 50  # 50 for graceful degradation
+            scores.append(redis_score)
+            
+            # Calculate weighted average
+            health_score = sum(scores) / len(scores) if scores else 0
+            return round(health_score, 1)
+            
+        except Exception as e:
+            logger.error(f"Failed to calculate health score: {e}")
+            return 0.0
 
 # Global analytics instance
 notification_analytics = NotificationAnalytics()

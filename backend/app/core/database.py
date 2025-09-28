@@ -160,6 +160,17 @@ class DatabaseManager:
         async for session in self.get_session(read_only=False):
             yield session
     
+    def get_engine(self, read_only: bool = False):
+        """Get database engine - uses replica for read-only when available"""
+        if not self._initialized:
+            return self.primary_engine
+        
+        # Use replica for read-only queries when available
+        if read_only and self.replica_engine:
+            return self.replica_engine
+        else:
+            return self.primary_engine
+    
     async def get_replica_session(self) -> AsyncGenerator[AsyncSession, None]:
         """Get replica database session (read-only)"""
         async for session in self.get_session(read_only=True):

@@ -73,13 +73,14 @@ class Notification(Base):
     # Reference to related entities
     related_entity_type = Column(String(50), nullable=True)  # e.g., "message", "thread", "user"
     related_entity_id = Column(String(36), nullable=True)
+    related_user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=True)  # For user-specific notifications
     
     # Batching and grouping
     batch_id = Column(String(36), nullable=True, index=True)  # For batch operations
     parent_notification_id = Column(String(36), ForeignKey("notifications.id"), nullable=True)
     
     # Relationships
-    user = relationship("User", back_populates="notifications")
+    user = relationship(User, back_populates="notifications", foreign_keys=[user_id])
     children = relationship("Notification", backref="parent", remote_side=[id])
     
     # Indexes for performance

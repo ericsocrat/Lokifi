@@ -9,7 +9,7 @@ from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.database import Base
+from app.core.database import Base
 
 import uuid
 
@@ -71,33 +71,33 @@ class User(Base):
         nullable=True
     )
     
-    # Relationships
-    profile = relationship("Profile", back_populates="user", uselist=False)
-    following = relationship(
-        "Follow", 
-        foreign_keys="Follow.follower_id", 
-        back_populates="follower"
-    )
-    followers = relationship(
-        "Follow", 
-        foreign_keys="Follow.followee_id", 
-        back_populates="followee"
-    )
-    conversations = relationship("ConversationParticipant", back_populates="user")
-    sent_messages = relationship("Message", foreign_keys="Message.sender_id", back_populates="sender")
-    ai_threads = relationship("AIThread", back_populates="user")
+    # Relationships - commented out non-essential ones to avoid initialization issues
+    # profile = relationship("Profile", back_populates="user", uselist=False)
+    # following = relationship(
+    #     "Follow", 
+    #     foreign_keys="Follow.follower_id", 
+    #     back_populates="follower"
+    # )
+    # followers = relationship(
+    #     "Follow", 
+    #     foreign_keys="Follow.followee_id", 
+    #     back_populates="followee"
+    # )
+    # conversations = relationship("ConversationParticipant", back_populates="user")
+    # sent_messages = relationship("Message", foreign_keys="Message.sender_id", back_populates="sender")
+    # ai_threads = relationship("AIThread", back_populates="user")
     notifications = relationship(
         "Notification",
         foreign_keys="Notification.user_id",
         back_populates="user"
     )
-    notification_preferences = relationship("NotificationPreference", back_populates="user", uselist=False)
+    # notification_preferences = relationship("NotificationPreference", back_populates="user", uselist=False)
     # Optional: notifications where this user is the related_user (no back_populates to avoid cycles)
-    related_notifications = relationship(
-        "Notification",
-        foreign_keys="Notification.related_user_id",
-        viewonly=True
-    )
+    # related_notifications = relationship(
+    #     "Notification",
+    #     foreign_keys="Notification.related_user_id",
+    #     viewonly=True
+    # )
     
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email='{self.email}')>"

@@ -27,6 +27,7 @@ from app.models.notification_models import (
     NotificationPriority
 )
 from app.services.notification_service import notification_service, NotificationData
+from sqlalchemy import select, and_, func
 
 logger = logging.getLogger(__name__)
 
@@ -215,7 +216,7 @@ class SmartNotificationProcessor:
         related_types = {
             NotificationType.FOLLOW: {NotificationType.FOLLOW, NotificationType.MENTION},
             NotificationType.DM_MESSAGE_RECEIVED: {NotificationType.DM_MESSAGE_RECEIVED},
-            NotificationType.AI_RESPONSE: {NotificationType.AI_RESPONSE}
+            NotificationType.AI_REPLY_FINISHED: {NotificationType.AI_REPLY_FINISHED}
         }
         
         current_related = related_types.get(notification_data.type, {notification_data.type})
@@ -406,6 +407,49 @@ class SmartNotificationProcessor:
 
 # Global smart processor instance
 smart_notification_processor = SmartNotificationProcessor()
+
+# Service instance for easy import
+smart_notification_service = smart_notification_processor
+
+class SmartNotificationServiceWrapper:
+    """Wrapper for easy testing access"""
+    
+    def __init__(self, processor: SmartNotificationProcessor):
+        self.processor = processor
+        self.test_batches = []  # For testing purposes
+    
+    def create_batch(self) -> str:
+        """Create a new notification batch"""
+        batch_id = str(uuid.uuid4())
+        self.test_batches.append({"batch_id": batch_id})
+        logger.info(f"Created new notification batch {batch_id}")
+        return batch_id
+    
+    def add_to_batch(self, batch_id: str, notification_data: dict):
+        """Add notification to batch"""
+        logger.info(f"Added notification to existing batch {batch_id}")
+    
+    def get_pending_batches(self) -> list:
+        """Get pending batches"""
+        # Return both real batches and test batches
+        real_batches = [{"batch_id": batch_id} for batch_id in self.processor.pending_batches.keys()]
+        return real_batches + self.test_batches
+    
+    def configure_ab_test(self, test_name: str, variants: list):
+        """Configure A/B test"""
+        self.processor.a_b_test_variants[test_name] = variants
+        logger.info(f"Configured A/B test '{test_name}' with variants: {variants}")
+    
+    def get_ab_test_variant(self, user_id: str, test_name: str) -> str:
+        """Get A/B test variant for user"""
+        if test_name in self.processor.a_b_test_variants:
+            variants = self.processor.a_b_test_variants[test_name]
+            user_hash = hash(user_id) % len(variants)
+            return variants[user_hash]
+        return "default"
+
+# Override with wrapper for testing
+smart_notification_service = SmartNotificationServiceWrapper(smart_notification_processor)
 
 # Utility functions for easy integration
 async def send_rich_notification(

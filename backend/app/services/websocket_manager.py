@@ -29,6 +29,8 @@ class ConnectionManager:
     def __init__(self):
         # Active connections: user_id -> set of WebSocket connections
         self.active_connections: Dict[uuid.UUID, Set[WebSocket]] = {}
+        # Redis pub/sub connection
+        self.pubsub = None
         
     async def initialize_redis(self):
         """Initialize Redis connection for pub/sub using enhanced Redis client."""

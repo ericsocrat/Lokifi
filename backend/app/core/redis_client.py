@@ -82,6 +82,34 @@ class RedisClient:
             self.connected = False
             return False
     
+    # Basic Redis Operations
+    async def set(self, key: str, value: str, ttl: int = None) -> bool:
+        """Set a key-value pair with optional TTL"""
+        if not await self.is_available():
+            return False
+        
+        try:
+            if ttl:
+                await self.client.setex(key, ttl, value)
+            else:
+                await self.client.set(key, value)
+            return True
+        except Exception as e:
+            logger.error(f"Redis SET failed: {e}")
+            return False
+    
+    async def get(self, key: str) -> Optional[str]:
+        """Get value by key"""
+        if not await self.is_available():
+            return None
+        
+        try:
+            result = await self.client.get(key)
+            return result
+        except Exception as e:
+            logger.error(f"Redis GET failed: {e}")
+            return None
+    
     # Notification Caching Methods
     async def cache_notification(self, notification_id: str, notification_data: Dict[str, Any], ttl: int = 3600):
         """Cache notification data"""
@@ -223,6 +251,35 @@ class RedisClient:
                 for session_data in sessions.values()
             ]
         except (RedisError, json.JSONDecodeError) as e:
+            logger.warning(f"Failed to get WebSocket sessions for {user_id}: {e}")
+            return []
+    
+    async def add_websocket_session(self, user_id: str, session_id: str, metadata: Dict[str, Any] = None):
+        """Add WebSocket session tracking"""
+        if metadata is None:
+            metadata = {"connected_at": datetime.now().isoformat()}
+        
+        if not await self.is_available():
+            return
+            
+        try:
+            await self.client.hset(
+                f"websocket_sessions:{user_id}",
+                session_id,
+                json.dumps(metadata, default=str)
+            )
+        except RedisError as e:
+            logger.warning(f"Failed to add WebSocket session for {user_id}: {e}")
+    
+    async def get_websocket_sessions(self, user_id: str) -> List[str]:
+        """Get WebSocket session IDs for user"""
+        if not await self.is_available():
+            return []
+            
+        try:
+            sessions = await self.client.hgetall(f"websocket_sessions:{user_id}")
+            return list(sessions.keys())
+        except RedisError as e:
             logger.warning(f"Failed to get WebSocket sessions for {user_id}: {e}")
             return []
 
