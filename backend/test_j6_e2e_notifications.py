@@ -26,7 +26,7 @@ from app.services.notification_emitter import notification_emitter
 from app.integrations.notification_hooks import notification_integration
 from app.websockets.notifications import NotificationWebSocketManager
 from app.routers.notifications import router as notifications_router
-from app.models.auth_models import User
+from app.models.user import User
 
 # Mock FastAPI app for testing
 @asynccontextmanager

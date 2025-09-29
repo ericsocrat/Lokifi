@@ -9,6 +9,7 @@ import logging
 from app.core.auth_deps import get_current_user
 from app.models.user import User
 from app.services.notification_service import notification_service, NotificationStats
+from app.models.notification_models import NotificationPriority
 from app.services.notification_emitter import notification_emitter
 from app.models.notification_models import Notification, NotificationPreference
 
@@ -370,13 +371,12 @@ async def create_test_notification(
         # Create test notification in background
         async def create_test():
             await notification_emitter.emit_system_alert_notification(
-                user_id=current_user.id,
+                user_id=str(current_user.id),
                 alert_type="test_notification",
                 title=request.title,
                 message=request.message or "This is a test notification.",
                 alert_data={"test": True, "created_by": current_user.username},
-                priority=getattr(notification_service.NotificationPriority, request.priority.upper(), 
-                                notification_service.NotificationPriority.NORMAL)
+                priority=NotificationPriority.NORMAL
             )
         
         background_tasks.add_task(create_test)

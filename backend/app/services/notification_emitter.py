@@ -54,7 +54,7 @@ class NotificationEventEmitter:
                     "action_text": "View Profile"
                 },
                 related_entity_type="user",
-                related_entity_id=follower_user.id,
+                related_entity_id=str(follower_user.id),
                 expires_at=datetime.now(timezone.utc) + timedelta(days=30)  # Expire after 30 days
             )
             
@@ -373,7 +373,7 @@ class NotificationEventEmitter:
                         "bulk_follow": True
                     },
                     related_entity_type="user",
-                    related_entity_id=follower_user.id,
+                    related_entity_id=str(follower_user.id),
                     expires_at=datetime.now(timezone.utc) + timedelta(days=30)
                 )
                 notifications_data.append(notification_data)
@@ -383,7 +383,7 @@ class NotificationEventEmitter:
                 notifications_data
             )
             
-            notification_ids = [n.id for n in created_notifications]
+            notification_ids = [str(n.id) for n in created_notifications]
             
             logger.info(f"Created {len(created_notifications)} bulk follow notifications from {follower_user.username}")
             return notification_ids

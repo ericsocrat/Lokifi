@@ -449,7 +449,7 @@ class NotificationService:
                 
                 clicked_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id_str, Notification.clicked_at.isnot(None))
+                        and_(Notification.user_id == user_id_str, Notification.clicked_at.is_not(None))
                     )
                 )
                 clicked_count = clicked_result.scalar() or 0
@@ -478,12 +478,14 @@ class NotificationService:
                         read_times.append(read_time)
                     
                     # Most recent notification
-                    if not most_recent or (notification.created_at and notification.created_at > most_recent):
-                        most_recent = notification.created_at
+                    if notification.created_at:
+                        if not most_recent or notification.created_at > most_recent:
+                            most_recent = notification.created_at
                     
                     # Oldest unread notification
-                    if not notification.is_read and (not oldest_unread or (notification.created_at and notification.created_at < oldest_unread)):
-                        oldest_unread = notification.created_at
+                    if not notification.is_read and notification.created_at:
+                        if not oldest_unread or notification.created_at < oldest_unread:
+                            oldest_unread = notification.created_at
                 
                 # Calculate average read time
                 avg_read_time = sum(read_times) / len(read_times) if read_times else 0.0

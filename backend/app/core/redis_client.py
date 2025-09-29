@@ -72,7 +72,7 @@ class RedisClient:
         
     async def is_available(self) -> bool:
         """Check if Redis is available"""
-        if not self.connected:
+        if not self.connected or not self.client:
             return False
             
         try:
@@ -85,7 +85,7 @@ class RedisClient:
     # Basic Redis Operations
     async def set(self, key: str, value: str, ttl: int = None) -> bool:
         """Set a key-value pair with optional TTL"""
-        if not await self.is_available():
+        if not await self.is_available() or not self.client:
             return False
         
         try:

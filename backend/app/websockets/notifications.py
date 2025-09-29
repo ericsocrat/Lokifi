@@ -233,10 +233,10 @@ class NotificationWebSocketManager:
                 "data": notification.to_dict()
             }
             
-            sent_count = await self.send_to_user(notification.user_id, message)
+            sent_count = await self.send_to_user(str(notification.user_id), message)
             
             # Also send updated unread count
-            unread_count = await notification_service.get_unread_count(notification.user_id)
+            unread_count = await notification_service.get_unread_count(str(notification.user_id))
             unread_message = {
                 "type": "unread_count",
                 "data": {
@@ -246,7 +246,7 @@ class NotificationWebSocketManager:
                 }
             }
             
-            await self.send_to_user(notification.user_id, unread_message)
+            await self.send_to_user(str(notification.user_id), unread_message)
             
             if sent_count > 0:
                 logger.debug(f"Sent real-time notification to {sent_count} connections for user {notification.user_id}")
@@ -312,7 +312,7 @@ class NotificationWebSocketManager:
                 }
             }
             
-            await self.send_to_user(notification.user_id, message)
+            await self.send_to_user(str(notification.user_id), message)
             
         except Exception as e:
             logger.error(f"Failed to handle notification dismissed event: {e}")
