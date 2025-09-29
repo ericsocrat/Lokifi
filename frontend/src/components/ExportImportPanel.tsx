@@ -82,7 +82,7 @@ export default function ExportImportPanel() {
       timeframe: s.timeframe
     }
     const hash = encodeShare(payload)
-    const url = `${location.origin}#`
+    const url = `${window.location.origin}#`
     try {
       await navigator.clipboard.writeText(url)
       alert('Sharable URL copied to clipboard.')
