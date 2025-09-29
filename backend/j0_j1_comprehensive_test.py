@@ -35,7 +35,7 @@ except ImportError as e:
 # Test Configuration
 BASE_URL = "http://localhost:8002"
 TEST_EMAIL = "test_j0j1@example.com"
-TEST_PASSWORD = "testpassword123"
+TEST_PASSWORD = os.getenv("TEST_PASSWORD", "testpassword123")
 TEST_USERNAME = "testuser_j0j1"
 TEST_FULL_NAME = "Test User J0J1"
 
@@ -101,7 +101,7 @@ async def test_security_functions():
     
     try:
         # Test password hashing
-        password = "testpassword123"
+        password = os.getenv("TEST_PASSWORD", "testpassword123")
         hashed = hash_password(password)
         print_info(f"Password hashed successfully (length: {len(hashed)})")
         

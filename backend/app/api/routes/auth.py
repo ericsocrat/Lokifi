@@ -12,13 +12,16 @@ from jose import jwt, JWTError
 
 from app.db.db import get_session, init_db
 from app.db.models import User
+from app.core.config import get_settings
 
 router = APIRouter()
 init_db()
 
-JWT_SECRET = os.getenv("FYNIX_JWT_SECRET", "dev-insecure-secret")  # set in .env for prod
+# Get JWT configuration from settings
+settings = get_settings()
+JWT_SECRET = settings.get_jwt_secret()  # Will raise error if not set
 JWT_ALG = "HS256"
-JWT_TTL_MIN = int(os.getenv("FYNIX_JWT_TTL_MIN", "1440"))  # 24h
+JWT_TTL_MIN = settings.fynix_jwt_ttl_min
 
 class RegisterPayload(BaseModel):
     handle: str = Field(..., min_length=2, max_length=32)

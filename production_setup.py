@@ -181,7 +181,8 @@ class ProductionSetupManager:
                 "DEBUG": "false",
                 "DATABASE_URL": "sqlite:///./fynix_production.db",
                 "REDIS_URL": "redis://redis:6379/0",
-                "SECRET_KEY": "your-production-secret-key-change-this",
+                "SECRET_KEY": "${SECRET_KEY}",
+                "FYNIX_JWT_SECRET": "${FYNIX_JWT_SECRET}",
                 "ALLOWED_HOSTS": "localhost,127.0.0.1,fynix.example.com",
                 "CORS_ORIGINS": "https://fynix.example.com",
                 "LOG_LEVEL": "INFO",
@@ -190,8 +191,8 @@ class ProductionSetupManager:
             },
             ".env.monitoring": {
                 "PROMETHEUS_PORT": "9090",
-                "GRAFANA_PORT": "3001",
-                "GRAFANA_ADMIN_PASSWORD": "admin123!@#",
+                "GRAFANA_PORT": "3001", 
+                "GRAFANA_ADMIN_PASSWORD": "${GRAFANA_ADMIN_PASSWORD}",
                 "ALERT_MANAGER_PORT": "9093"
             }
         }

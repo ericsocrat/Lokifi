@@ -7,8 +7,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = Field(default="Fynix", alias="PROJECT_NAME")
     API_PREFIX: str = Field(default="/api", alias="API_PREFIX")
     
-    # Auth / JWT
-    fynix_jwt_secret: str = Field(default="dev-secret", alias="FYNIX_JWT_SECRET")
+    # Auth / JWT - Must be set via environment variable
+    fynix_jwt_secret: str | None = Field(default=None, alias="FYNIX_JWT_SECRET")
     fynix_jwt_ttl_min: int = Field(default=1440, alias="FYNIX_JWT_TTL_MIN")
     
     # Phase J: Database Configuration
@@ -35,8 +35,8 @@ class Settings(BaseSettings):
     AWS_ACCESS_KEY_ID: str | None = Field(default=None, alias="AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY: str | None = Field(default=None, alias="AWS_SECRET_ACCESS_KEY")
     
-    # Phase J: Authentication
-    JWT_SECRET_KEY: str = Field(default="your-secret-key-change-in-production", alias="JWT_SECRET_KEY")
+    # Phase J: Authentication - Must be set via environment variable
+    JWT_SECRET_KEY: str | None = Field(default=None, alias="JWT_SECRET_KEY")
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = Field(default=30, alias="JWT_EXPIRE_MINUTES")
     
@@ -87,6 +87,25 @@ class Settings(BaseSettings):
         env_file=".env",
         extra="ignore"  # allow harmless extra vars
     )
+    
+    def validate_required_secrets(self) -> None:
+        """Validate that required secrets are set"""
+        missing = []
+        if not self.fynix_jwt_secret:
+            missing.append("FYNIX_JWT_SECRET")
+        if not self.JWT_SECRET_KEY:
+            missing.append("JWT_SECRET_KEY")
+        
+        if missing:
+            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+    
+    def get_jwt_secret(self) -> str:
+        """Get JWT secret with fallback validation"""
+        if self.fynix_jwt_secret:
+            return self.fynix_jwt_secret
+        if self.JWT_SECRET_KEY:
+            return self.JWT_SECRET_KEY
+        raise ValueError("No JWT secret configured. Set FYNIX_JWT_SECRET or JWT_SECRET_KEY environment variable.")
 
 settings = Settings()
 

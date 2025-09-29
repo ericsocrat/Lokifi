@@ -18,7 +18,8 @@ async def get_current_user(token=Depends(reusable_oauth2)):
     if token is None:
         return {"id": 0, "email": "anon@local", "handle": "anon"}
     try:
-        payload = jwt.decode(token.credentials, settings.fynix_jwt_secret, algorithms=["HS256"], options={"verify_aud": False})
+        jwt_secret = settings.get_jwt_secret()
+        payload = jwt.decode(token.credentials, jwt_secret, algorithms=["HS256"], options={"verify_aud": False})
         return {"id": payload.get("sub"), "email": payload.get("email"), "handle": payload.get("handle")}
     except Exception:
         raise HTTPException(401, "Invalid token")
@@ -50,14 +51,16 @@ def create_jwt_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = 
         expire = now + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
 
     to_encode.update({"exp": expire, "iat": now})
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    jwt_secret = settings.get_jwt_secret()
+    encoded_jwt = jwt.encode(to_encode, jwt_secret, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
 
 def verify_jwt_token(token: str) -> Dict[str, Any]:
     """Verify and decode a JWT token."""
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+        jwt_secret = settings.get_jwt_secret()
+        payload = jwt.decode(token, jwt_secret, algorithms=[settings.JWT_ALGORITHM])
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(

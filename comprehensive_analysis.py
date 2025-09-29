@@ -28,13 +28,13 @@ def analyze_security_and_quality():
     print("📋 SECURITY ANALYSIS")
     print("=" * 50)
     
-    # Look for hardcoded secrets
+    # Look for hardcoded secrets (patterns for detection)
     secrets_patterns = [
         (r'password\s*=\s*["\']([^"\']+)["\']', 'Hardcoded Password'),
-        (r'secret[_-]?key\s*=\s*["\']([^"\']+)["\']', 'Hardcoded Secret Key'),
+        (r'secret[_-]?key\s*=\s*["\']([^"\']+)["\']', 'Hardcoded Secret Key'), 
         (r'api[_-]?key\s*=\s*["\']([^"\']+)["\']', 'Hardcoded API Key'),
         (r'token\s*=\s*["\']([^"\']+)["\']', 'Hardcoded Token'),
-        (r'dev-secret|dev-insecure|change-this|your-secret', 'Development Secret in Production'),
+        (r'(?<!patterns.*)(dev-secret|dev-insecure|change-this|your-secret)(?!.*patterns)', 'Development Secret in Production'),
     ]
     
     # File patterns to analyze

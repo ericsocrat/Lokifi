@@ -1,8 +1,8 @@
-import React from 'react'
-import { useChartStore } from '@/state/store'
 import { downloadText, exportPngFromRoot } from '@/lib/io'
-import { encodeShare, decodeShare } from '@/lib/share'
-import { saveCurrent, loadCurrent } from '@/lib/persist'
+import { saveCurrent } from '@/lib/persist'
+import { encodeShare } from '@/lib/share'
+import { useChartStore } from '@/state/store'
+import React from 'react'
 
 export default function ExportImportPanel() {
   const s = useChartStore()
@@ -54,7 +54,7 @@ export default function ExportImportPanel() {
         symbol,
         timeframe
       })
-      try { saveCurrent(drawings, new Set()) } catch {}
+      try { saveCurrent(drawings, new Set()) } catch { }
       e.target.value = '' // reset file input
       alert('Imported scene.')
     } catch (err) {

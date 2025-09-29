@@ -111,7 +111,8 @@ ENVIRONMENT=production
 DEBUG=false
 DATABASE_URL=sqlite:///./fynix_production.db
 REDIS_URL=redis://redis:6379/0
-SECRET_KEY=change-this-in-production
+SECRET_KEY=${SECRET_KEY}
+FYNIX_JWT_SECRET=${FYNIX_JWT_SECRET}
 ALLOWED_HOSTS=localhost,127.0.0.1
 LOG_LEVEL=INFO
 MAX_WORKERS=4
@@ -196,7 +197,7 @@ services:
     ports:
       - "3001:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-defaultpassword123}
     volumes:
       - grafana-storage:/var/lib/grafana
 

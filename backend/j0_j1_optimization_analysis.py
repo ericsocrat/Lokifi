@@ -157,8 +157,9 @@ async def analyze_core_features():
     # Security Analysis
     try:
         from app.core.security import hash_password, verify_password
+        import os
         
-        test_password = "test123456"
+        test_password = os.getenv("TEST_PASSWORD", "test123456")
         hashed = hash_password(test_password)
         verified = verify_password(test_password, hashed)
         

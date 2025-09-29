@@ -2,6 +2,7 @@
 Tests for direct messaging functionality (J4).
 """
 
+import os
 import uuid
 import pytest
 import asyncio
@@ -33,13 +34,13 @@ def mock_users():
             id=uuid.UUID("12345678-1234-5678-9012-123456789001"),
             username="user1",
             email="user1@test.com",
-            hashed_password="hashed"
+            hashed_password=os.getenv("TEST_HASHED_PASSWORD", "hashed")
         ),
         User(
             id=uuid.UUID("12345678-1234-5678-9012-123456789002"),
             username="user2", 
             email="user2@test.com",
-            hashed_password="hashed"
+            hashed_password=os.getenv("TEST_HASHED_PASSWORD", "hashed")
         )
     ]
 

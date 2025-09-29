@@ -3,8 +3,11 @@ from typing import Optional
 import os
 from fastapi import HTTPException, Header
 from jose import jwt, JWTError
+from app.core.config import get_settings
 
-JWT_SECRET = os.getenv("FYNIX_JWT_SECRET", "dev-insecure-secret")
+# Get JWT configuration from settings
+settings = get_settings()
+JWT_SECRET = settings.get_jwt_secret()  # Will raise error if not set
 JWT_ALG = "HS256"
 
 def auth_handle_from_header(authorization: Optional[str]) -> Optional[str]:

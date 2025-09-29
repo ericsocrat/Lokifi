@@ -10,9 +10,11 @@ import os
 
 from app.db.db import get_session
 from app.db.models import User
+from app.core.config import get_settings
 
-# JWT Configuration
-JWT_SECRET = os.getenv("FYNIX_JWT_SECRET", "dev-insecure-secret")
+# JWT Configuration from settings
+settings = get_settings()
+JWT_SECRET = settings.get_jwt_secret()  # Will raise error if not set
 JWT_ALG = "HS256"
 
 

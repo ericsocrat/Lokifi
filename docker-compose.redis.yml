@@ -78,7 +78,7 @@ services:
     environment:
       - REDIS_HOSTS=primary:redis-primary:6379,replica:redis-replica:6379
       - HTTP_USER=admin
-      - HTTP_PASSWORD=fynix-redis-admin
+      - HTTP_PASSWORD=${REDIS_WEB_PASSWORD:-defaultpassword}
     depends_on:
       - redis-primary
       - redis-replica

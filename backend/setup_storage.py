@@ -198,13 +198,14 @@ class DatabaseSetup:
                 import asyncpg
                 # Parse connection URL
                 if "localhost:5432" in database_url:
-                    if "fynix:fynix_dev_password" in database_url:
+                    if "fynix:" in database_url:
                         # Docker setup
+                        db_password = os.getenv("POSTGRES_PASSWORD", "fynix_dev_password")
                         conn = await asyncpg.connect(
                             host="localhost",
                             port=5432,
                             user="fynix", 
-                            password="fynix_dev_password",
+                            password=db_password,
                             database="fynix"
                         )
                     else:

@@ -3,6 +3,7 @@ Symbol directory and OHLC data provider for Fynix trading platform.
 Supports multiple data sources with failover capabilities.
 """
 
+import os
 from typing import List, Dict, Optional
 from datetime import datetime, timedelta
 import aiohttp
@@ -180,11 +181,11 @@ class OHLCAggregator:
             timeout=aiohttp.ClientTimeout(total=30)
         )
         
-        # Configure default providers (would be loaded from environment)
+        # Configure default providers (loaded from environment)
         self.providers = [
             DataProviderConfig(
                 provider=DataProvider.ALPHA_VANTAGE,
-                api_key="demo",  # Would be from env
+                api_key=os.getenv("ALPHAVANTAGE_KEY", "demo"),
                 base_url="https://www.alphavantage.co/query",
                 rate_limit=5,
                 priority=1,
@@ -192,7 +193,7 @@ class OHLCAggregator:
             ),
             DataProviderConfig(
                 provider=DataProvider.FINNHUB,
-                api_key="demo",
+                api_key=os.getenv("FINNHUB_KEY", "demo"),
                 base_url="https://finnhub.io/api/v1",
                 rate_limit=60,
                 priority=2,

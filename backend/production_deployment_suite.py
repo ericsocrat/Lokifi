@@ -273,7 +273,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                         'image': 'grafana/grafana:latest',
                         'ports': ['3000:3000'],
                         'environment': [
-                            'GF_SECURITY_ADMIN_PASSWORD=admin123'
+                            'GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-defaultpassword123}'
                         ],
                         'volumes': [
                             'grafana_data:/var/lib/grafana',
@@ -611,7 +611,7 @@ print_success "🎉 Fynix production deployment completed successfully!"
 print_status "Services are running at:"
 echo "  - API: http://localhost"
 echo "  - Prometheus: http://localhost:9090"
-echo "  - Grafana: http://localhost:3000 (admin/admin123)"
+echo "  - Grafana: http://localhost:3000 (admin/[check GRAFANA_ADMIN_PASSWORD])"
 echo ""
 print_status "To view logs: docker-compose -f docker-compose.production.yml logs -f"
 print_status "To stop services: docker-compose -f docker-compose.production.yml down"
