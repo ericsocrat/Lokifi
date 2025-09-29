@@ -234,4 +234,5 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
         yield session
 
 # Global database manager instance
-database_manager = DatabaseManager()
+from app.core.config import settings
+database_manager = DatabaseManager(settings)
