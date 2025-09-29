@@ -2,7 +2,7 @@
 
 from typing import Optional
 
-from .chat_completion_message_function_tool_call import Function, ChatCompletionMessageFunctionToolCall
+from .chat_completion_message_tool_call import Function, ChatCompletionMessageToolCall
 
 __all__ = ["ParsedFunctionToolCall", "ParsedFunction"]
 
@@ -24,6 +24,6 @@ class ParsedFunction(Function):
     """
 
 
-class ParsedFunctionToolCall(ChatCompletionMessageFunctionToolCall):
+class ParsedFunctionToolCall(ChatCompletionMessageToolCall):
     function: ParsedFunction
     """The function that the model called."""

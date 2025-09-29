@@ -6,9 +6,7 @@
                 "non_aggregate_keys": [
                     "responseScope",
                     "blockedPhrases",
-                    "creatorModeConfiguration",
-                    "orchestrationConfiguration",
-                    "hallucinationReductionConfiguration"
+                    "creatorModeConfiguration"
                 ]
             }
         }

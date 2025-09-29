@@ -123,7 +123,7 @@ def load_extensions(
     return result
 
 
-def _environment_config_check(environment: _env_bound) -> _env_bound:
+def _environment_config_check(environment: "Environment") -> "Environment":
     """Perform a sanity check on the environment."""
     assert issubclass(
         environment.undefined, Undefined
@@ -406,8 +406,8 @@ class Environment:
         cache_size: int = missing,
         auto_reload: bool = missing,
         bytecode_cache: t.Optional["BytecodeCache"] = missing,
-        enable_async: bool = missing,
-    ) -> "te.Self":
+        enable_async: bool = False,
+    ) -> "Environment":
         """Create a new overlay environment that shares all the data with the
         current environment except for cache and the overridden attributes.
         Extensions cannot be removed for an overlayed environment.  An overlayed
@@ -419,11 +419,8 @@ class Environment:
         copied over so modifications on the original environment may not shine
         through.
 
-        .. versionchanged:: 3.1.5
-            ``enable_async`` is applied correctly.
-
         .. versionchanged:: 3.1.2
-            Added the ``newline_sequence``, ``keep_trailing_newline``,
+            Added the ``newline_sequence``,, ``keep_trailing_newline``,
             and ``enable_async`` parameters to match ``__init__``.
         """
         args = dict(locals())
@@ -709,7 +706,7 @@ class Environment:
         return compile(source, filename, "exec")
 
     @typing.overload
-    def compile(
+    def compile(  # type: ignore
         self,
         source: t.Union[str, nodes.Template],
         name: t.Optional[str] = None,
@@ -1251,7 +1248,7 @@ class Template:
         namespace: t.MutableMapping[str, t.Any],
         globals: t.MutableMapping[str, t.Any],
     ) -> "Template":
-        t: Template = object.__new__(cls)
+        t: "Template" = object.__new__(cls)
         t.environment = environment
         t.globals = globals
         t.name = namespace["name"]
@@ -1285,7 +1282,19 @@ class Template:
         if self.environment.is_async:
             import asyncio
 
-            return asyncio.run(self.render_async(*args, **kwargs))
+            close = False
+
+            try:
+                loop = asyncio.get_running_loop()
+            except RuntimeError:
+                loop = asyncio.new_event_loop()
+                close = True
+
+            try:
+                return loop.run_until_complete(self.render_async(*args, **kwargs))
+            finally:
+                if close:
+                    loop.close()
 
         ctx = self.new_context(dict(*args, **kwargs))
 
@@ -1349,7 +1358,7 @@ class Template:
 
     async def generate_async(
         self, *args: t.Any, **kwargs: t.Any
-    ) -> t.AsyncGenerator[str, object]:
+    ) -> t.AsyncIterator[str]:
         """An async version of :meth:`generate`.  Works very similarly but
         returns an async iterator instead.
         """
@@ -1361,14 +1370,8 @@ class Template:
         ctx = self.new_context(dict(*args, **kwargs))
 
         try:
-            agen = self.root_render_func(ctx)
-            try:
-                async for event in agen:  # type: ignore
-                    yield event
-            finally:
-                # we can't use async with aclosing(...) because that's only
-                # in 3.10+
-                await agen.aclose()  # type: ignore
+            async for event in self.root_render_func(ctx):  # type: ignore
+                yield event
         except Exception:
             yield self.environment.handle_exception()
 

@@ -14,14 +14,11 @@
 import base64
 import json
 import logging
-from functools import partial
 from itertools import tee
 
 import jmespath
 
-from botocore.context import with_current_context
 from botocore.exceptions import PaginationError
-from botocore.useragent import register_feature_id
 from botocore.utils import merge_dicts, set_value_from_jmespath
 
 log = logging.getLogger(__name__)
@@ -324,7 +321,8 @@ class PageIterator:
                     and previous_next_token == next_token
                 ):
                     message = (
-                        f"The same next token was received twice: {next_token}"
+                        f"The same next token was received "
+                        f"twice: {next_token}"
                     )
                     raise PaginationError(message=message)
                 self._inject_token_into_kwargs(current_kwargs, next_token)
@@ -355,7 +353,6 @@ class PageIterator:
                 # Yield result directly if it is not a list.
                 yield results
 
-    @with_current_context(partial(register_feature_id, 'PAGINATOR'))
     def _make_request(self, current_kwargs):
         return self._method(**current_kwargs)
 
@@ -415,12 +412,7 @@ class PageIterator:
             elif isinstance(sample, str):
                 empty_value = ''
             elif isinstance(sample, (int, float)):
-                # Even though we may be resuming from a truncated page, we
-                # still start from the actual numeric secondary result. For
-                # DynamoDB's Count/ScannedCount, this will still show how many
-                # items the server evaluated, even if the client is truncating
-                # due to a StartingToken.
-                empty_value = sample
+                empty_value = 0
             else:
                 empty_value = None
             set_value_from_jmespath(parsed, token.expression, empty_value)
@@ -553,8 +545,8 @@ class PageIterator:
         coerce them into the new style.
         """
         log.debug(
-            "Attempting to fall back to old starting token parser. For token: %s",
-            self._starting_token,
+            "Attempting to fall back to old starting token parser. For "
+            f"token: {self._starting_token}"
         )
         if self._starting_token is None:
             return None
