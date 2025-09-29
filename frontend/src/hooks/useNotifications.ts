@@ -3,7 +3,7 @@
  * Custom hook for managing notifications state and API calls
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface NotificationData {
   id: string;
@@ -59,7 +59,7 @@ export interface UseNotificationsReturn {
   hasMore: boolean;
   error: string | null;
   stats: NotificationStats | null;
-  
+
   // Actions
   refreshNotifications: () => Promise<void>;
   loadMore: () => Promise<void>;
@@ -68,7 +68,7 @@ export interface UseNotificationsReturn {
   dismissNotification: (notificationId: string) => Promise<void>;
   clearAllNotifications: () => Promise<void>;
   getStats: () => Promise<NotificationStats | null>;
-  
+
   // Real-time
   connectWebSocket: () => void;
   disconnectWebSocket: () => void;
@@ -76,7 +76,10 @@ export interface UseNotificationsReturn {
 }
 
 const API_BASE = '/api/notifications';
-const WS_URL = `${location.protocol === 'https:' ? 'wss:' : 'ws:'}//${location.host}/api/ws/notifications`;
+const getWsUrl = () => {
+  if (typeof window === 'undefined') return '';
+  return `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/api/ws/notifications`;
+};
 
 export const useNotifications = (options: UseNotificationsOptions = {}): UseNotificationsReturn => {
   const {
@@ -142,7 +145,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       const data = await apiCall(`/?limit=${limit}&offset=${currentOffset}&include_dismissed=false`);
 
       const newNotifications = data.notifications || [];
-      
+
       if (reset) {
         setNotifications(newNotifications);
         offset.current = newNotifications.length;
@@ -178,17 +181,17 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
       await apiCall(`/${notificationId}/read`, { method: 'POST' });
-      
-      setNotifications(prev => 
-        prev.map(n => 
-          n.id === notificationId 
+
+      setNotifications(prev =>
+        prev.map(n =>
+          n.id === notificationId
             ? { ...n, is_read: true, read_at: new Date().toISOString() }
             : n
         )
       );
-      
+
       setUnreadCount(prev => Math.max(0, prev - 1));
-      
+
     } catch (err) {
       console.error('Failed to mark notification as read:', err);
       setError(err instanceof Error ? err.message : 'Failed to mark as read');
@@ -198,18 +201,18 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     try {
-      await apiCall('/mark-read', { 
+      await apiCall('/mark-read', {
         method: 'POST',
         body: JSON.stringify({})
       });
-      
+
       const now = new Date().toISOString();
-      setNotifications(prev => 
+      setNotifications(prev =>
         prev.map(n => ({ ...n, is_read: true, read_at: n.read_at || now }))
       );
-      
+
       setUnreadCount(0);
-      
+
     } catch (err) {
       console.error('Failed to mark all notifications as read:', err);
       setError(err instanceof Error ? err.message : 'Failed to mark all as read');
@@ -220,19 +223,19 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   const dismissNotification = useCallback(async (notificationId: string) => {
     try {
       await apiCall(`/${notificationId}/dismiss`, { method: 'POST' });
-      
-      setNotifications(prev => 
+
+      setNotifications(prev =>
         prev.filter(n => n.id !== notificationId)
       );
-      
+
       // Update unread count if the dismissed notification was unread
       const notification = notifications.find(n => n.id === notificationId);
       if (notification && !notification.is_read) {
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
-      
+
       setTotalCount(prev => Math.max(0, prev - 1));
-      
+
     } catch (err) {
       console.error('Failed to dismiss notification:', err);
       setError(err instanceof Error ? err.message : 'Failed to dismiss notification');
@@ -243,13 +246,13 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   const clearAllNotifications = useCallback(async () => {
     try {
       await apiCall('/clear-all', { method: 'DELETE' });
-      
+
       setNotifications([]);
       setUnreadCount(0);
       setTotalCount(0);
       setHasMore(false);
       offset.current = 0;
-      
+
     } catch (err) {
       console.error('Failed to clear all notifications:', err);
       setError(err instanceof Error ? err.message : 'Failed to clear notifications');
@@ -276,7 +279,10 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       const token = getAuthToken();
       if (!token) return;
 
-      const ws = new WebSocket(`${WS_URL}?token=${encodeURIComponent(token)}`);
+      const wsUrl = getWsUrl();
+      if (!wsUrl) return;
+
+      const ws = new WebSocket(`${wsUrl}?token=${encodeURIComponent(token)}`);
       wsRef.current = ws;
 
       ws.onopen = () => {
@@ -288,14 +294,14 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
-          
+
           switch (data.type) {
             case 'new_notification':
               const newNotification = data.data;
               setNotifications(prev => [newNotification, ...prev.slice(0, maxNotifications - 1)]);
               setUnreadCount(data.unread_count || (prev => prev + 1));
               setTotalCount(prev => prev + 1);
-              
+
               // Browser notification
               if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification(newNotification.title, {
@@ -312,9 +318,9 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
             case 'notification_read':
               const readId = data.data.notification_id;
-              setNotifications(prev => 
-                prev.map(n => 
-                  n.id === readId 
+              setNotifications(prev =>
+                prev.map(n =>
+                  n.id === readId
                     ? { ...n, is_read: true, read_at: new Date().toISOString() }
                     : n
                 )
@@ -371,22 +377,22 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   useEffect(() => {
     if (autoRefresh && refreshInterval > 0) {
       refreshIntervalRef.current = setInterval(refreshNotifications, refreshInterval);
-      
+
       return () => {
         if (refreshIntervalRef.current) {
           clearInterval(refreshIntervalRef.current);
         }
       };
     }
-    
+
     // Return cleanup function for consistency, even if not needed
-    return () => {};
+    return () => { };
   }, [autoRefresh, refreshInterval, refreshNotifications]);
 
   // Initial load and WebSocket connection
   useEffect(() => {
     refreshNotifications();
-    
+
     if (realTimeEnabled) {
       connectWebSocket();
     }

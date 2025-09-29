@@ -3,23 +3,25 @@
  * Full-featured notification management interface
  */
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Bell, 
-  Check, 
-  CheckCheck, 
-  Trash2, 
-  Filter, 
-  Settings, 
-  RefreshCw,
+"use client";
+
+import { format, formatDistanceToNow } from 'date-fns';
+import {
+  AlertCircle,
+  Bell,
+  Check,
+  CheckCheck,
   ChevronDown,
   ChevronUp,
-  ExternalLink,
   Clock,
-  AlertCircle
+  ExternalLink,
+  Filter,
+  RefreshCw,
+  Settings,
+  Trash2
 } from 'lucide-react';
-import { useNotifications, NotificationData } from '../src/hooks/useNotifications';
-import { formatDistanceToNow, format } from 'date-fns';
+import React, { useState } from 'react';
+import { NotificationData, useNotifications } from '../src/hooks/useNotifications';
 
 type FilterType = 'all' | 'unread' | 'read' | 'dismissed';
 type NotificationType = 'all' | 'follow' | 'dm_message_received' | 'ai_reply_finished' | 'mention' | 'system_alert';
@@ -118,7 +120,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     for (const id of unreadSelected) {
       await markAsRead(id);
     }
-    
+
     setSelectedNotifications(new Set());
   };
 
@@ -126,7 +128,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     for (const id of selectedNotifications) {
       await dismissNotification(id);
     }
-    
+
     setSelectedNotifications(new Set());
   };
 
@@ -150,7 +152,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   const getNotificationColor = (type: string, priority: string) => {
     if (priority === 'urgent') return 'border-l-red-600 bg-red-500/5';
     if (priority === 'high') return 'border-l-red-500 bg-red-500/5';
-    
+
     switch (type) {
       case 'follow':
         return 'border-l-blue-500 bg-blue-500/5';
@@ -191,7 +193,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                 </span>
               )}
             </div>
-            
+
             <div className="flex items-center gap-2">
               {showFilters && (
                 <button
@@ -202,7 +204,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <Filter className="w-4 h-4" />
                 </button>
               )}
-              
+
               <button
                 onClick={refreshNotifications}
                 className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg"
@@ -211,7 +213,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               >
                 <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
               </button>
-              
+
               {showPreferences && (
                 <button
                   onClick={() => {
@@ -289,7 +291,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             <span className="text-sm text-white">
               {selectedNotifications.size} notification{selectedNotifications.size > 1 ? 's' : ''} selected
             </span>
-            
+
             <div className="flex gap-2">
               <button
                 onClick={handleBulkMarkRead}
@@ -320,7 +322,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
             >
               {selectedNotifications.size === filteredNotifications.length ? 'Deselect All' : 'Select All'}
             </button>
-            
+
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
@@ -371,11 +373,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         {filteredNotifications.map((notification: NotificationData) => (
           <div
             key={notification.id}
-            className={`border-l-4 hover:bg-neutral-800/50 transition-colors ${
-              getNotificationColor(notification.type, notification.priority)
-            } ${notification.is_read ? 'opacity-75' : ''} ${
-              selectedNotifications.has(notification.id) ? 'bg-blue-500/10' : ''
-            }`}
+            className={`border-l-4 hover:bg-neutral-800/50 transition-colors ${getNotificationColor(notification.type, notification.priority)
+              } ${notification.is_read ? 'opacity-75' : ''} ${selectedNotifications.has(notification.id) ? 'bg-blue-500/10' : ''
+              }`}
           >
             <div className="p-4">
               <div className="flex gap-3">
@@ -407,23 +407,21 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className={`font-medium text-sm ${
-                          notification.is_read ? 'text-neutral-300' : 'text-white'
-                        }`}>
+                        <h4 className={`font-medium text-sm ${notification.is_read ? 'text-neutral-300' : 'text-white'
+                          }`}>
                           {notification.title}
                         </h4>
-                        
+
                         {getPriorityIcon(notification.priority)}
-                        
+
                         {!notification.is_read && (
                           <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                         )}
                       </div>
 
                       {notification.message && (
-                        <p className={`text-sm mb-2 ${
-                          notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
-                        }`}>
+                        <p className={`text-sm mb-2 ${notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
+                          }`}>
                           {notification.message}
                         </p>
                       )}
@@ -434,17 +432,16 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           <Clock className="w-3 h-3" />
                           {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
                         </span>
-                        
+
                         <span className="capitalize">
                           {notification.type.replace('_', ' ')}
                         </span>
-                        
+
                         {notification.priority !== 'normal' && (
-                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
-                            notification.priority === 'urgent' ? 'bg-red-600 text-white' :
-                            notification.priority === 'high' ? 'bg-red-500 text-white' :
-                            'bg-neutral-600 text-neutral-300'
-                          }`}>
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${notification.priority === 'urgent' ? 'bg-red-600 text-white' :
+                              notification.priority === 'high' ? 'bg-red-500 text-white' :
+                                'bg-neutral-600 text-neutral-300'
+                            }`}>
                             {notification.priority}
                           </span>
                         )}
@@ -484,7 +481,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           <Check className="w-3 h-3" />
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => dismissNotification(notification.id)}
                         className="p-1.5 text-neutral-400 hover:text-red-400 hover:bg-red-400/10 rounded"
@@ -520,12 +517,12 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                           </pre>
                         </div>
                       )}
-                      
+
                       <div className="flex justify-between items-center mt-2 text-xs text-neutral-500">
                         <span>
                           Created: {format(new Date(notification.created_at), 'MMM d, yyyy h:mm a')}
                         </span>
-                        
+
                         {notification.read_at && (
                           <span>
                             Read: {format(new Date(notification.read_at), 'MMM d, yyyy h:mm a')}
@@ -565,7 +562,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <div className="text-xs text-neutral-400">
             Last updated: {format(new Date(), 'h:mm a')}
           </div>
-          
+
           <button
             onClick={clearAllNotifications}
             className="text-xs text-red-400 hover:text-red-300"

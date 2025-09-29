@@ -3,10 +3,12 @@
  * Displays notification bell with unread badge and dropdown
  */
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Bell, X, Check, CheckCheck, Trash2 } from 'lucide-react';
-import { useNotifications } from '../src/hooks/useNotifications';
+"use client";
+
 import { formatDistanceToNow } from 'date-fns';
+import { Bell, Check, CheckCheck, Trash2, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNotifications } from '../src/hooks/useNotifications';
 
 interface NotificationBellProps {
   className?: string;
@@ -21,7 +23,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
+
   const {
     notifications,
     unreadCount,
@@ -85,7 +87,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
   const getNotificationColor = (type: string, priority: string) => {
     if (priority === 'high') return 'border-l-red-500';
     if (priority === 'urgent') return 'border-l-red-600';
-    
+
     switch (type) {
       case 'follow':
         return 'border-l-blue-500';
@@ -111,7 +113,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
         aria-label={`Notifications ${unreadCount > 0 ? `(${unreadCount} unread)` : ''}`}
       >
         <Bell className="w-5 h-5" />
-        
+
         {/* Unread Badge */}
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium">
@@ -177,9 +179,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
             {!isLoading && !error && recentNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`p-4 border-l-2 hover:bg-neutral-800 cursor-pointer transition-colors ${
-                  getNotificationColor(notification.type, notification.priority)
-                } ${notification.is_read ? 'opacity-75' : ''}`}
+                className={`p-4 border-l-2 hover:bg-neutral-800 cursor-pointer transition-colors ${getNotificationColor(notification.type, notification.priority)
+                  } ${notification.is_read ? 'opacity-75' : ''}`}
                 onClick={() => handleNotificationClick(notification.id)}
               >
                 <div className="flex gap-3">
@@ -191,12 +192,11 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <h4 className={`font-medium text-sm ${
-                        notification.is_read ? 'text-neutral-300' : 'text-white'
-                      }`}>
+                      <h4 className={`font-medium text-sm ${notification.is_read ? 'text-neutral-300' : 'text-white'
+                        }`}>
                         {notification.title}
                       </h4>
-                      
+
                       {/* Actions */}
                       <div className="flex gap-1">
                         {!notification.is_read && (
@@ -225,9 +225,8 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                     </div>
 
                     {notification.message && (
-                      <p className={`text-sm mt-1 ${
-                        notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
-                      }`}>
+                      <p className={`text-sm mt-1 ${notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
+                        }`}>
                         {notification.message}
                       </p>
                     )}

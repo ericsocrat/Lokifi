@@ -3,16 +3,16 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   reactStrictMode: true,
-  swcMinify: false,
   experimental: {
     forceSwcTransforms: false
   },
+  outputFileTracingRoot: process.cwd(),
   webpack: (config, { dev, isServer }) => {
     // Enable source maps in development
     if (dev) {
       config.devtool = 'eval-source-map';
     }
-    
+
     // Configure hot reloading
     config.watchOptions = {
       poll: 1000,
