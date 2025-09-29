@@ -1,0 +1,64 @@
+{
+  "timestamp": "20250929_155720",
+  "overall_health": "Excellent",
+  "analysis": {
+    "server": {
+      "health": true,
+      "endpoints": {
+        "/docs": {
+          "status_code": 200,
+          "response_time": 2051.7640113830566,
+          "working": true
+        },
+        "/api/auth/check": {
+          "status_code": 200,
+          "response_time": 2030.7493209838867,
+          "working": true
+        },
+        "/openapi.json": {
+          "status_code": 200,
+          "response_time": 2126.7120838165283,
+          "working": true
+        }
+      },
+      "performance": {
+        "health_response_time": 2040.9996509552002
+      }
+    },
+    "core_features": {
+      "authentication": {
+        "jwt_working": true,
+        "token_length": 209,
+        "payload_valid": true
+      },
+      "security": {
+        "password_hashing": true,
+        "hash_length": 97,
+        "verification_working": true
+      },
+      "database": {},
+      "configuration": {
+        "project_name": "Fynix",
+        "database_url": "sqlite+aiosqlite:///./data/fynix.sqlite",
+        "jwt_algorithm": "HS256",
+        "jwt_expire_minutes": 30
+      }
+    },
+    "advanced_features": {
+      "monitoring": true,
+      "websockets": true,
+      "ai_integration": true,
+      "social_features": true,
+      "portfolio_management": false
+    }
+  },
+  "recommendations": [
+    {
+      "category": "Performance",
+      "priority": "Medium",
+      "issue": "Health endpoint response time is 2041.0ms",
+      "recommendation": "Consider optimizing server startup and health check logic"
+    }
+  ],
+  "next_steps": "See console output for detailed next steps"
+}

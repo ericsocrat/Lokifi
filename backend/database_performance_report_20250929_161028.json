@@ -1,0 +1,85 @@
+{
+  "timestamp": "2025-09-29T16:10:28.728781",
+  "database_url": "local",
+  "health": {
+    "connection": true,
+    "tables": {
+      "count": 11,
+      "names": [
+        "alembic_version",
+        "ai_threads",
+        "ai_messages",
+        "conversations",
+        "users",
+        "notifications",
+        "notification_preferences",
+        "portfolio_positions",
+        "messages",
+        "conversation_participants",
+        "message_receipts"
+      ]
+    },
+    "indexes": {
+      "count": 46,
+      "names": [
+        "ix_ai_threads_id",
+        "ix_ai_threads_user_id",
+        "ix_ai_threads_user_updated",
+        "ix_ai_threads_user_created",
+        "ix_ai_messages_id",
+        "ix_ai_messages_thread_id",
+        "ix_ai_messages_role",
+        "ix_ai_messages_thread_created",
+        "ix_ai_messages_role_created",
+        "ix_users_email",
+        "ix_users_google_id",
+        "idx_notifications_user_unread",
+        "idx_notifications_user_type",
+        "idx_notifications_type",
+        "idx_notifications_category",
+        "idx_notifications_created_at",
+        "idx_notifications_expires_at",
+        "idx_notifications_batch_id",
+        "idx_notifications_related_entity",
+        "idx_notifications_is_read",
+        "idx_notifications_priority",
+        "idx_notifications_user_created",
+        "idx_users_email",
+        "idx_notifications_batch",
+        "idx_messages_conversation_created",
+        "idx_messages_sender_created",
+        "idx_messages_type",
+        "idx_conversation_participants_user",
+        "idx_conversation_participants_conversation",
+        "idx_ai_messages_thread_created",
+        "idx_ai_messages_role",
+        "idx_ai_threads_user_created",
+        "idx_ai_threads_user_updated",
+        "idx_conversations_created",
+        "idx_conversations_updated",
+        "idx_users_google_id",
+        "idx_users_active",
+        "idx_portfolio_positions_user",
+        "idx_portfolio_positions_symbol",
+        "idx_portfolio_positions_user_symbol",
+        "idx_message_receipts_message",
+        "idx_message_receipts_user",
+        "idx_notification_prefs_user",
+        "idx_notification_prefs_digest",
+        "idx_users_email_active",
+        "idx_ai_messages_thread"
+      ]
+    },
+    "performance": {
+      "size_mb": 0.29
+    },
+    "recommendations": []
+  },
+  "optimizations": [
+    "Database optimization completed",
+    "Performance indexes created"
+  ],
+  "recommendations": [
+    "Database structure looks healthy"
+  ]
+}

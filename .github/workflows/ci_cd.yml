@@ -1,0 +1,68 @@
+name: Fynix CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        cd backend
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run tests
+      run: |
+        cd backend
+        python -m pytest --verbose
+    
+    - name: Run database management test
+      run: |
+        cd backend
+        python database_management_suite.py
+    
+    - name: Security scan
+      run: |
+        cd backend
+        pip install safety bandit
+        safety check
+        bandit -r app/
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build Docker images
+      run: |
+        docker build -f backend/Dockerfile.prod -t fynix/backend:latest .
+        echo "Docker images built successfully"
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to production
+      run: |
+        echo "Deployment would happen here"
+        echo "Example: docker-compose -f docker-compose.production.yml up -d"
