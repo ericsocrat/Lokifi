@@ -313,6 +313,31 @@ class AdvancedWebSocketManager:
         task3 = asyncio.create_task(self._performance_monitor())
         self._background_tasks.add(task3)
         task3.add_done_callback(self._background_tasks.discard)
+        
+        logger.info(f"✅ Started {len(self._background_tasks)} background tasks for advanced WebSocket management")
+    
+    async def stop_background_tasks(self):
+        """Stop all background monitoring tasks"""
+        if not self._background_tasks_started:
+            return
+        
+        logger.info("🛑 Stopping advanced WebSocket background tasks...")
+        
+        # Cancel all background tasks
+        for task in list(self._background_tasks):
+            try:
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+            except Exception as e:
+                logger.error(f"Error canceling background task: {e}")
+        
+        self._background_tasks.clear()
+        self._background_tasks_started = False
+        
+        logger.info("✅ All advanced WebSocket background tasks stopped")
     
     async def connect(
         self, 

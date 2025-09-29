@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
     await advanced_redis_client.initialize()
     
     logger.info("🔌 Starting WebSocket manager...")
-    await advanced_websocket_manager.start_background_tasks()
+    advanced_websocket_manager.start_background_tasks()
     
     logger.info("📊 Starting monitoring system...")
     await monitoring_system.start_monitoring()

@@ -5,6 +5,8 @@ Handles file uploads, image processing, and document analysis.
 """
 
 import logging
+import uuid
+import aiofiles
 import base64
 import io
 import mimetypes
@@ -71,14 +73,14 @@ class MultiModalAIService:
         file_hash = hashlib.sha256(content).hexdigest()
         
         # Get file info
-        file_extension = Path(file.filename).suffix.lower()
-        mime_type = mimetypes.guess_type(file.filename)[0]
+        file_extension = Path(file.filename or 'unknown').suffix.lower()
+        mime_type = mimetypes.guess_type(file.filename or 'unknown')[0]
         
         # Process based on file type
         if file_extension in self.supported_image_types:
-            processed_data = await self._process_image(content, file.filename)
+            processed_data = await self._process_image(content, file.filename or 'unknown')
         elif file_extension in self.supported_document_types:
-            processed_data = await self._process_document(content, file.filename, file_extension)
+            processed_data = await self._process_document(content, file.filename or 'unknown', file_extension)
         else:
             raise UnsupportedFileTypeError(f"File type {file_extension} is not supported")
         
@@ -140,6 +142,7 @@ class MultiModalAIService:
             async for chunk in provider.stream_chat(messages):
                 if chunk.content:
                     yield StreamChunk(
+                        id=str(uuid.uuid4()),
                         content=chunk.content,
                         is_complete=chunk.is_complete
                     )
@@ -186,6 +189,7 @@ class MultiModalAIService:
             async for chunk in provider.stream_chat(messages):
                 if chunk.content:
                     yield StreamChunk(
+                        id=str(uuid.uuid4()),
                         content=chunk.content,
                         is_complete=chunk.is_complete
                     )
@@ -209,7 +213,7 @@ class MultiModalAIService:
         if not file.filename:
             raise FileProcessingError("Filename is required")
             
-        file_extension = Path(file.filename).suffix.lower()
+        file_extension = Path(file.filename or 'unknown').suffix.lower()
         supported_types = self.supported_image_types | self.supported_document_types
         
         if file_extension not in supported_types:

@@ -232,3 +232,6 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Legacy database dependency"""
     async for session in get_db_session():
         yield session
+
+# Global database manager instance
+database_manager = DatabaseManager()
