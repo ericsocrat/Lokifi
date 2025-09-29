@@ -22,6 +22,7 @@ itsdangerous==2.2.0
 PyJWT==2.10.1
 
 # Email
+email-validator==2.3.0
 aiosmtplib==3.0.2
 jinja2==3.1.4
 
