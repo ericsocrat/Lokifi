@@ -4,26 +4,58 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow, conversations, websocket, admin_messaging, ai, ai_websocket, notifications
 from app.api.j6_2_endpoints import j6_2_router
+from app.api.routes.monitoring import router as monitoring_router
 from app.services.data_service import startup_data_services, shutdown_data_services
 from app.services.j53_scheduler import j53_router, j53_lifespan_manager
+from app.core.advanced_redis_client import advanced_redis_client
+from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from app.services.advanced_monitoring import monitoring_system
+import logging
+
+logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan manager combining data services and J5.3"""
-    # Startup
+    """Enhanced application lifespan manager for Phase K Track 3 Infrastructure"""
+    logger.info("🚀 Starting Fynix Phase K Track 3 Infrastructure Enhancement")
+    
+    # Startup sequence
+    logger.info("📡 Initializing advanced Redis client...")
+    await advanced_redis_client.initialize()
+    
+    logger.info("🔌 Starting WebSocket manager...")
+    await advanced_websocket_manager.start_background_tasks()
+    
+    logger.info("📊 Starting monitoring system...")
+    await monitoring_system.start_monitoring()
+    
+    logger.info("🗄️ Starting data services...")
     await startup_data_services()
     
+    logger.info("⏰ Initializing J5.3 scheduler...")
     # J5.3 lifespan manager handles scheduler startup/shutdown
     async with j53_lifespan_manager(app):
+        logger.info("✅ All Phase K Track 3 systems initialized successfully")
         yield
+        
+        logger.info("🛑 Shutting down Phase K Track 3 systems...")
     
-    # Shutdown
+    # Shutdown sequence
+    logger.info("📊 Stopping monitoring system...")
+    await monitoring_system.stop_monitoring()
+    
+    logger.info("� Stopping WebSocket manager...")
+    await advanced_websocket_manager.stop_background_tasks()
+    
+    logger.info("�🗄️ Shutting down data services...")
     await shutdown_data_services()
+    
+    logger.info("✅ Phase K Track 3 shutdown complete")
 
 app = FastAPI(
-    title=f"{settings.PROJECT_NAME} - J6 Enterprise Notifications",
-    description="Fynix with J6 Enterprise-Grade Notification System",
-    version="6.0.0",
+    title=f"{settings.PROJECT_NAME} - Phase K Track 3: Infrastructure Enhancement",
+    description="Fynix with Production-Ready Infrastructure: Advanced Redis, WebSocket Manager, Monitoring System",
+    version="K3.0.0",
     lifespan=lifespan
 )
 
@@ -56,6 +88,7 @@ app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
 app.include_router(notifications.router, prefix=settings.API_PREFIX)  # Phase J6 Enterprise Notifications
 app.include_router(j6_2_router)  # Phase J6.2 Advanced Notification Features
+app.include_router(monitoring_router)  # Phase K Track 3: Advanced Monitoring
 app.include_router(j53_router)  # Phase J5.3 Performance Monitoring
 app.include_router(market_data.router)  # New market data API
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)  # Mock data for testing

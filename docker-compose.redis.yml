@@ -1,0 +1,95 @@
+# Redis Production Configuration
+# Advanced Redis setup for Phase K Track 3 Infrastructure Enhancement
+
+version: '3.8'
+
+services:
+  redis-primary:
+    image: redis:7.2-alpine
+    container_name: fynix-redis-primary
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+      - ./redis/redis-primary.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks:
+      - fynix-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  redis-replica:
+    image: redis:7.2-alpine
+    container_name: fynix-redis-replica
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-replica-data:/data
+      - ./redis/redis-replica.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    depends_on:
+      - redis-primary
+    environment:
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis-primary
+      - REDIS_MASTER_PORT=6379
+    networks:
+      - fynix-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  redis-sentinel:
+    image: redis:7.2-alpine
+    container_name: fynix-redis-sentinel
+    ports:
+      - "26379:26379"
+    volumes:
+      - ./redis/sentinel.conf:/usr/local/etc/redis/sentinel.conf
+    command: redis-sentinel /usr/local/etc/redis/sentinel.conf
+    depends_on:
+      - redis-primary
+      - redis-replica
+    networks:
+      - fynix-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "26379", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: fynix-redis-web
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=primary:redis-primary:6379,replica:redis-replica:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=fynix-redis-admin
+    depends_on:
+      - redis-primary
+      - redis-replica
+    networks:
+      - fynix-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  redis-replica-data:
+
+networks:
+  fynix-network:
+    driver: bridge
