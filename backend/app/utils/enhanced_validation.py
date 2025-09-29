@@ -8,7 +8,7 @@ import html
 import unicodedata
 from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urlparse
-# import bleach  # Will be installed separately
+import bleach
 from pydantic import BaseModel, validator
 
 from app.core.security_config import security_config
@@ -26,10 +26,10 @@ class InputSanitizer:
         r"(?i)(union|select|insert|delete|drop|create|alter|exec|execute)\s+",
         # XSS patterns
         r"(?i)<script|javascript:|on\w+\s*=|vbscript:|data:text/html",
-        # LDAP injection
-        r"[()&|!]",
+        # LDAP injection (more specific patterns)
+        r"(?i)(\(\s*\w+\s*=|\|\s*\(|\&\s*\()",
         # Command injection  
-        r"[;&|`$]",
+        r"[;&|`$]\s*[a-zA-Z]",
         # Path traversal
         r"\.\./|\.\.\\",
     ]
@@ -63,15 +63,19 @@ class InputSanitizer:
     
     @classmethod
     def sanitize_html(cls, html_content: str) -> str:
-        """Sanitize HTML content using basic escaping (bleach alternative)"""
+        """Sanitize HTML content using bleach"""
         if not isinstance(html_content, str):
             raise ValueError("HTML content must be a string")
         
-        # For now, just escape all HTML content
-        # TODO: Install bleach for more sophisticated HTML cleaning
-        cleaned = html.escape(html_content)
+        # Clean HTML with bleach
+        cleaned = bleach.clean(
+            html_content,
+            tags=cls.ALLOWED_HTML_TAGS,
+            attributes=cls.ALLOWED_HTML_ATTRIBUTES,
+            strip=True
+        )
         
-        # Remove dangerous patterns
+        # Check for dangerous patterns after cleaning
         for pattern in cls.DANGEROUS_PATTERNS:
             if re.search(pattern, cleaned):
                 raise ValueError("HTML content contains potentially dangerous content")

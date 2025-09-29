@@ -9,6 +9,7 @@ from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta, timezone
 
 from app.utils.security_logger import security_monitor, SecurityEventType, SecuritySeverity
+from app.utils.security_alerts import security_alert_manager
 from app.core.security import get_current_user
 from app.core.config import get_settings
 
@@ -67,7 +68,7 @@ async def block_ip_address(ip_address: str, current_user=Depends(get_current_use
     
     # Log the manual blocking action
     from app.utils.security_logger import log_unauthorized_access
-    log_unauthorized_access(
+    await log_unauthorized_access(
         client_ip=ip_address,
         endpoint="/security/manual-block",
         user_id=str(current_user.get("sub", "unknown"))
@@ -208,4 +209,87 @@ async def get_security_config(current_user=Depends(get_current_user)):
             "min_criteria": security_config.PASSWORD_MIN_CRITERIA
         },
         "environment": "production" if security_config.is_production() else "development"
+    }
+
+@router.get("/security/alerts/config")
+async def get_alert_configuration(current_user=Depends(get_current_user)):
+    """Get current alert configuration (admin only)"""
+    
+    stats = security_alert_manager.get_alert_statistics()
+    
+    return {
+        "alert_statistics": stats,
+        "configuration": {
+            "enabled": security_alert_manager.config.enabled,
+            "priority_threshold": security_alert_manager.config.priority_threshold.value,
+            "rate_limit_minutes": security_alert_manager.config.rate_limit_minutes,
+            "channels": [c.value for c in (security_alert_manager.config.channels or [])]
+        },
+        "channel_status": {
+            "email_configured": bool(security_alert_manager.smtp_username),
+            "webhook_configured": bool(security_alert_manager.webhook_url),
+            "slack_configured": bool(security_alert_manager.slack_webhook),
+            "discord_configured": bool(security_alert_manager.discord_webhook)
+        }
+    }
+
+@router.post("/security/alerts/test")
+async def test_security_alerts(current_user=Depends(get_current_user)):
+    """Send a test security alert (admin only)"""
+    
+    from app.utils.security_alerts import send_medium_alert
+    
+    try:
+        success = await send_medium_alert(
+            title="Test Security Alert",
+            message="This is a test alert from the Fynix security monitoring system.",
+            event_type=SecurityEventType.CONFIGURATION_CHANGE,
+            source_ip="127.0.0.1",
+            additional_data={"test": True, "user": str(current_user.get("sub", "unknown"))}
+        )
+        
+        return {
+            "success": success,
+            "message": "Test alert sent successfully" if success else "Failed to send test alert",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "message": "Failed to send test alert",
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+
+@router.get("/security/alerts/history")
+async def get_alert_history(
+    hours: int = 24,
+    severity: Optional[str] = None,
+    current_user=Depends(get_current_user)
+):
+    """Get recent alert history (admin only)"""
+    
+    cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+    recent_alerts = [
+        {
+            "title": alert.title,
+            "message": alert.message,
+            "severity": alert.severity.value,
+            "priority": alert.priority.value,
+            "event_type": alert.event_type.value,
+            "source_ip": alert.source_ip,
+            "timestamp": alert.timestamp.isoformat() if alert.timestamp else None
+        }
+        for alert in security_alert_manager.alert_history
+        if alert.timestamp and alert.timestamp > cutoff_time
+        and (not severity or alert.severity.value == severity.lower())
+    ]
+    
+    return {
+        "alerts": recent_alerts,
+        "total": len(recent_alerts),
+        "timeframe_hours": hours,
+        "severity_filter": severity,
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
