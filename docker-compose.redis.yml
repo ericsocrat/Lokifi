@@ -1,7 +1,7 @@
 # Redis Production Configuration
 # Advanced Redis setup for Phase K Track 3 Infrastructure Enhancement
 
-version: '3.8'
+version: "3.8"
 
 services:
   redis-primary:

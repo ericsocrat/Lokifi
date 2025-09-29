@@ -117,9 +117,13 @@ class DatabaseManager:
         
         # Test primary connection
         try:
-            async with self.primary_engine.begin() as conn:
-                await conn.execute(text("SELECT 1"))
-            logger.info("✅ Primary database connection successful")
+            if self.primary_engine is not None:
+                async with self.primary_engine.begin() as conn:
+                    await conn.execute(text("SELECT 1"))
+                logger.info("✅ Primary database connection successful")
+            else:
+                logger.error("❌ Primary engine is not initialized")
+                raise RuntimeError("Primary database engine not initialized")
         except Exception as e:
             logger.error(f"❌ Primary database connection failed: {e}")
             raise
@@ -145,6 +149,9 @@ class DatabaseManager:
         else:
             session_factory = self.primary_session_factory
         
+        if session_factory is None:
+            raise RuntimeError("Database session factory not initialized")
+            
         async with session_factory() as session:
             try:
                 yield session

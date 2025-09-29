@@ -916,15 +916,10 @@ jobs:
             }
         }
         
-        stage('Install Dependencies') {
-            steps {
-                sh '''
-                    cd backend
-                    python -m pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
-            }
-        }
+        # Install Dependencies Stage
+        def install_dependencies():
+            subprocess.run(["python", "-m", "pip", "install", "--upgrade", "pip"], cwd="backend", check=True)
+            subprocess.run(["pip", "install", "-r", "requirements.txt"], cwd="backend", check=True)
         
         stage('Run Tests') {
             parallel {
@@ -946,15 +941,10 @@ jobs:
             }
         }
         
-        stage('Security Scan') {
-            steps {
-                sh '''
-                    cd backend
-                    pip install safety
-                    safety check
-                '''
-            }
-        }
+        # Security Scan Stage
+        def security_scan():
+            subprocess.run(["pip", "install", "safety"], cwd="backend", check=True)
+            subprocess.run(["safety", "check"], cwd="backend", check=True)
         
         stage('Build Images') {
             when {
@@ -975,17 +965,10 @@ jobs:
             }
         }
         
-        stage('Deploy') {
-            when {
-                branch 'main'
-            }
-            steps {
-                sh '''
-                    docker-compose -f docker-compose.production.yml down
-                    docker-compose -f docker-compose.production.yml up -d
-                '''
-            }
-        }
+        # Deploy Stage
+        def deploy():
+            subprocess.run(["docker-compose", "-f", "docker-compose.production.yml", "down"], check=True)
+            subprocess.run(["docker-compose", "-f", "docker-compose.production.yml", "up", "-d"], check=True)
     }
     
     post {

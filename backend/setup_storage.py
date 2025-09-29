@@ -235,6 +235,9 @@ class DatabaseSetup:
         except Exception as e:
             logger.error(f"❌ Database connection failed: {e}")
             return False
+        
+        # If no condition matched, return False
+        return False
     
     async def run_database_migration(self):
         """Run Alembic database migration"""
