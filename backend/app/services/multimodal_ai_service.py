@@ -19,10 +19,7 @@ from datetime import datetime
 from fastapi import UploadFile
 
 try:
-    try:
     from PIL import Image
-except ImportError:
-    Image = None
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
@@ -245,7 +242,8 @@ class MultiModalAIService:
             # Resize if too large
             if width > self.max_image_size[0] or height > self.max_image_size[1]:
                 if Image is not None:
-                image.thumbnail(self.max_image_size, Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
+                    # Use a simple resize instead of thumbnail to avoid PIL version issues
+                    image = image.resize(self.max_image_size, resample=1)
                 
                 # Convert back to bytes
                 output_buffer = io.BytesIO()

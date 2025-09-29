@@ -1,6 +1,7 @@
 # J5.3 Advanced Storage Analytics and Optimization Service
 from sqlalchemy import text, select, func, and_, or_, desc, asc
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List, Tuple, Any
 import logging
@@ -12,7 +13,7 @@ import statistics
 from enum import Enum
 
 from app.db.models import AIThread, AIMessage, User
-from app.core.database import db_manager
+from app.core.database import get_db_session
 from app.core.config import Settings
 
 logger = logging.getLogger(__name__)
@@ -60,8 +61,8 @@ class AdvancedStorageMetrics:
     model_usage: Dict[str, int] = None
     
     # Time-based analytics
-    peak_hours: List[int] = None
-    peak_days: List[str] = None
+    peak_hours: Optional[List[int]] = None
+    peak_days: Optional[List[str]] = None
     
     # Storage prediction
     predicted_size_30_days: float = 0.0
@@ -117,8 +118,8 @@ class AdvancedStorageAnalytics:
         metrics = AdvancedStorageMetrics()
         
         try:
-            async for session in db_manager.get_session(read_only=True):
-                # Basic counts
+            async for session in get_db_session():
+                # Basic counts with separate optimized queries to avoid N+1
                 metrics.total_threads = await session.scalar(select(func.count(AIThread.id))) or 0
                 metrics.total_messages = await session.scalar(select(func.count(AIMessage.id))) or 0
                 metrics.total_users = await session.scalar(select(func.count(User.id))) or 0
@@ -280,7 +281,7 @@ class AdvancedStorageAnalytics:
         if metrics.total_messages > 10000:
             old_threshold = datetime.now() - timedelta(days=self.settings.ARCHIVE_THRESHOLD_DAYS)
             
-            async for session in db_manager.get_session(read_only=True):
+            async for session in get_db_session():
                 old_messages_count = await session.scalar(
                     select(func.count(AIMessage.id))
                     .where(AIMessage.created_at < old_threshold)
@@ -403,7 +404,7 @@ class AdvancedStorageAnalytics:
                 for _ in range(5):
                     start_time = datetime.now()
                     
-                    async for session in db_manager.get_session(read_only=(op_name != "message_insert")):
+                    async for session in get_db_session():
                         if op_name == "message_insert":
                             # Don't actually insert, just prepare
                             await session.execute(text("SELECT 1"))
@@ -441,7 +442,7 @@ class AdvancedStorageAnalytics:
         }
         
         try:
-            async for session in db_manager.get_session(read_only=True):
+            async for session in get_db_session():
                 # Temporal distribution
                 temporal_query = text("""
                     SELECT 
