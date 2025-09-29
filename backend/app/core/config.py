@@ -63,6 +63,10 @@ class Settings(BaseSettings):
 
     # Redis (for caching, pub/sub, etc.)
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
+    redis_host: str = Field(default="localhost", alias="REDIS_HOST")
+    redis_port: int = Field(default=6379, alias="REDIS_PORT")
+    redis_sentinel_hosts: list[str] = Field(default=[], alias="REDIS_SENTINEL_HOSTS")
+    redis_sentinel_service: str = Field(default="mymaster", alias="REDIS_SENTINEL_SERVICE")
 
     # OpenAI / LLM integration
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")

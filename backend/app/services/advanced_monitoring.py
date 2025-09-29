@@ -249,6 +249,23 @@ class PerformanceAnalyzer:
             return 'decreasing'
         else:
             return 'stable'
+    
+    async def analyze_metrics(self, metrics: Dict[str, Any]):
+        """Analyze metrics data"""
+        # Convert dict to SystemMetrics if needed
+        if isinstance(metrics, dict):
+            # Create a simple SystemMetrics object from the dict
+            class SimpleMetrics:
+                def __init__(self, data):
+                    self.timestamp = data.get('timestamp', datetime.now(timezone.utc))
+                    self.cpu_usage = data.get('cpu_usage', 0)
+                    self.memory_usage = data.get('memory_usage', 0)
+                    self.response_times = data.get('response_times', {})
+            
+            metrics_obj = SimpleMetrics(metrics)
+            self.add_metrics(metrics_obj)
+        else:
+            self.add_metrics(metrics)
 
 class AdvancedMonitoringSystem:
     """
@@ -287,7 +304,7 @@ class AdvancedMonitoringSystem:
         while self.monitoring_active:
             try:
                 # Collect system metrics
-                metrics = await self.collect_system_metrics()
+                metrics = await self._collect_system_metrics()
                 self.last_metrics = metrics
                 
                 # Analyze performance
@@ -477,6 +494,10 @@ class AdvancedMonitoringSystem:
             'response_times': response_times,
             'error_rates': await self._get_error_rates()
         }
+    
+    async def collect_system_metrics(self) -> Dict[str, Any]:
+        """Public method to collect system metrics"""
+        return await self._collect_system_metrics()
     
     async def _run_all_health_checks(self) -> Dict[str, HealthStatus]:
         """Run all health checks"""
