@@ -19,7 +19,10 @@ from datetime import datetime
 from fastapi import UploadFile
 
 try:
+    try:
     from PIL import Image
+except ImportError:
+    Image = None
     PIL_AVAILABLE = True
 except ImportError:
     PIL_AVAILABLE = False
@@ -114,7 +117,7 @@ class MultiModalAIService:
             image_base64 = base64.b64encode(image_data).decode('utf-8')
             
             # Get AI provider that supports vision
-            provider = await ai_provider_manager.get_available_provider()
+            provider = await ai_provider_manager.get_primary_provider()
             if not provider:
                 yield "No AI provider available for image analysis"
                 return
@@ -162,7 +165,7 @@ class MultiModalAIService:
         """Analyze document content using AI."""
         
         try:
-            provider = await ai_provider_manager.get_available_provider()
+            provider = await ai_provider_manager.get_primary_provider()
             if not provider:
                 yield "No AI provider available for document analysis"
                 return
@@ -230,6 +233,8 @@ class MultiModalAIService:
         
         try:
             # Open and process image
+            if Image is None:
+                raise ImportError('PIL not available')
             image = Image.open(io.BytesIO(content))
             
             # Get image info
@@ -239,7 +244,8 @@ class MultiModalAIService:
             
             # Resize if too large
             if width > self.max_image_size[0] or height > self.max_image_size[1]:
-                image.thumbnail(self.max_image_size, Image.Resampling.LANCZOS)
+                if Image is not None:
+                image.thumbnail(self.max_image_size, Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
                 
                 # Convert back to bytes
                 output_buffer = io.BytesIO()

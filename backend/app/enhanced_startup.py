@@ -129,10 +129,18 @@ async def verify_database_connectivity():
         # Test database connection
         await database_manager.initialize()
         
-        # Simple connectivity test
-        async with database_manager.get_session() as session:
-            result = await session.execute("SELECT 1")
-            await result.fetchone()
+        # Simple connectivity test using proper async iterator
+        from sqlalchemy import text
+        session_generator = database_manager.get_session()
+        session = await session_generator.__anext__()
+        
+        try:
+            result = await session.execute(text("SELECT 1"))
+            test_value = result.scalar()
+            if test_value != 1:
+                raise ValueError("Database test query failed")
+        finally:
+            await session.close()
         
         logger.info("✅ Database connectivity verified")
         health_status.add_check("database", True, {"url": enhanced_settings.DATABASE_URL.split("@")[-1]})  # Hide credentials
@@ -157,7 +165,7 @@ async def verify_redis_connectivity():
         await redis_client.initialize()
         
         # Test Redis connection
-        await redis_client.set("health_check", "ok", expire=10)
+        await redis_client.set("health_check", "ok", ttl=10)  # Use 'ttl' parameter for expiry
         value = await redis_client.get("health_check")
         
         if value == "ok":

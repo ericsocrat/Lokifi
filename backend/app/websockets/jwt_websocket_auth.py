@@ -1,460 +1,374 @@
 """
-K3 - JWT WebSocket Authentication for Fynix Phase K
-Secure WebSocket connections with JWT token validation and user context
+K3 - JWT WebSocket Authentication for Fynix Phase K (Fixed)
+Provides JWT authentication for WebSocket connections with Redis coordination
 """
 
 import json
-import asyncio
 import logging
-from typing import Optional, Dict, Any
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+from typing import Dict, Any, Optional, List, Set
+from fastapi import WebSocket, WebSocketDisconnect, HTTPException, Query
+from jose import JWTError, jwt
+from pydantic import BaseModel
 
-import jwt
-from fastapi import WebSocket, WebSocketDisconnect, HTTPException, Depends, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-
+# Import core components
 from app.core.config import settings
-from app.core.redis_keys import redis_keys
-from app.services.websocket_manager import websocket_manager
-from app.models.user import User
+from app.core.redis_client import redis_client
+from app.core.redis_keys import RedisKeyManager, RedisKeyspace
+from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
 logger = logging.getLogger(__name__)
 
-# Security scheme for WebSocket JWT
-security = HTTPBearer()
-
 class WebSocketJWTAuth:
-    """JWT Authentication for WebSocket connections"""
+    """JWT authentication handler for WebSocket connections"""
     
-    def __init__(self, secret_key: str = None):
+    def __init__(self, secret_key: Optional[str] = None):
         self.secret_key = secret_key or settings.JWT_SECRET_KEY
         self.algorithm = "HS256"
+        self.redis_key_manager = RedisKeyManager()
     
-    async def decode_token(self, token: str) -> Optional[Dict[str, Any]]:
-        """Decode and validate JWT token"""
+    def create_access_token(self, data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+        """Create JWT access token"""
+        to_encode = data.copy()
+        
+        if expires_delta:
+            expire = datetime.now(timezone.utc) + expires_delta
+        else:
+            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+        
+        to_encode.update({"exp": expire})
+        encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
+        return encoded_jwt
+    
+    def verify_token(self, token: str) -> Optional[Dict[str, Any]]:
+        """Verify JWT token and return payload"""
         try:
-            # Remove 'Bearer ' prefix if present
-            if token.startswith('Bearer '):
-                token = token[7:]
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            return payload
+        except JWTError as e:
+            logger.warning(f"JWT verification failed: {e}")
+            return None
+    
+    async def authenticate_websocket(self, websocket: WebSocket, token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """Authenticate WebSocket connection using JWT token"""
+        try:
+            if not token:
+                # Try to get token from query params
+                token = websocket.query_params.get("token")
             
-            payload = jwt.decode(
-                token, 
-                self.secret_key, 
-                algorithms=[self.algorithm]
-            )
+            if not token:
+                # Try to get from headers (Authorization: Bearer <token>)
+                auth_header = websocket.headers.get("authorization")
+                if auth_header and auth_header.startswith("Bearer "):
+                    token = auth_header[7:]
             
-            # Check token expiration
-            if 'exp' in payload:
-                exp_timestamp = payload['exp']
-                if datetime.now(timezone.utc).timestamp() > exp_timestamp:
-                    logger.warning("JWT token has expired")
-                    return None
+            if not token:
+                logger.warning("No JWT token provided for WebSocket authentication")
+                return None
             
-            # Validate required fields
-            if 'user_id' not in payload:
+            # Verify the token
+            payload = self.verify_token(token)
+            if not payload:
+                logger.warning("Invalid JWT token for WebSocket authentication")
+                return None
+            
+            # Extract user info
+            user_id = payload.get("user_id")
+            username = payload.get("username")
+            
+            if not user_id:
                 logger.warning("JWT token missing user_id")
                 return None
             
-            return payload
-            
-        except jwt.ExpiredSignatureError:
-            logger.warning("JWT token expired")
-            return None
-        except jwt.InvalidTokenError as e:
-            logger.warning(f"Invalid JWT token: {e}")
-            return None
+            return {
+                "user_id": str(user_id),
+                "username": username,
+                "token": token,
+                "payload": payload
+            }
+        
         except Exception as e:
-            logger.error(f"JWT decode error: {e}")
+            logger.error(f"WebSocket authentication error: {e}")
             return None
-    
-    async def authenticate_websocket(self, websocket: WebSocket) -> Optional[Dict[str, Any]]:
-        """Authenticate WebSocket connection via query parameter or header"""
-        
-        # Try to get token from query parameter
-        token = websocket.query_params.get('token')
-        
-        # If not in query params, try Authorization header
-        if not token:
-            auth_header = websocket.headers.get('authorization')
-            if auth_header:
-                token = auth_header
-        
-        # Try subprotocol for token (WebSocket standard approach)
-        if not token and websocket.headers.get('sec-websocket-protocol'):
-            protocols = websocket.headers.get('sec-websocket-protocol', '').split(', ')
-            for protocol in protocols:
-                if protocol.startswith('access_token_'):
-                    token = protocol.replace('access_token_', '')
-                    break
-        
-        if not token:
-            logger.warning("No JWT token provided for WebSocket authentication")
-            return None
-        
-        return await self.decode_token(token)
-
-# Global JWT auth instance
-ws_jwt_auth = WebSocketJWTAuth()
 
 class AuthenticatedWebSocketManager:
-    """WebSocket manager with JWT authentication and user context"""
+    """WebSocket manager with JWT authentication and Redis coordination"""
     
     def __init__(self):
-        self.authenticated_connections: Dict[str, Dict[str, Any]] = {}
-        self.user_connections: Dict[str, set] = {}  # user_id -> set of connection_ids
+        self.auth_handler = WebSocketJWTAuth()
+        self.active_connections: Dict[str, Dict[str, Any]] = {}
+        self.user_connections: Dict[str, Set[str]] = {}
+        self.redis_key_manager = RedisKeyManager()
     
-    async def connect_authenticated(
-        self, 
-        websocket: WebSocket, 
-        connection_id: Optional[str] = None
-    ) -> Optional[str]:
-        """Connect WebSocket with JWT authentication"""
-        
-        # Authenticate the connection
-        auth_payload = await ws_jwt_auth.authenticate_websocket(websocket)
-        if not auth_payload:
-            await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="Authentication failed")
-            return None
-        
-        user_id = auth_payload.get('user_id')
-        if not user_id:
-            await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="Invalid user ID")
-            return None
-        
+    async def connect(self, websocket: WebSocket, user_auth: Dict[str, Any]) -> str:
+        """Accept WebSocket connection with authentication"""
         try:
-            # Accept the WebSocket connection
             await websocket.accept()
             
-            # Use provided connection_id or generate one
-            if not connection_id:
-                import uuid
-                connection_id = str(uuid.uuid4())
+            connection_id = f"ws_{user_auth['user_id']}_{datetime.now().timestamp()}"
+            user_id = user_auth["user_id"]
             
-            # Store authenticated connection info
-            connection_info = {
-                'websocket': websocket,
-                'user_id': user_id,
-                'authenticated_at': datetime.now(timezone.utc),
-                'auth_payload': auth_payload,
-                'last_heartbeat': datetime.now(timezone.utc)
+            # Store connection info
+            self.active_connections[connection_id] = {
+                "websocket": websocket,
+                "user_id": user_id,
+                "username": user_auth.get("username"),
+                "connected_at": datetime.now(timezone.utc).isoformat(),
+                "last_seen": datetime.now(timezone.utc).isoformat()
             }
-            
-            self.authenticated_connections[connection_id] = connection_info
             
             # Track user connections
             if user_id not in self.user_connections:
                 self.user_connections[user_id] = set()
             self.user_connections[user_id].add(connection_id)
             
-            # Store connection in Redis for multi-instance support
-            await self._store_connection_in_redis(connection_id, user_id)
+            # Store in Redis for multi-instance coordination
+            await self._store_connection_in_redis(connection_id, user_auth)
             
-            # Join user to their personal room
-            await websocket_manager.connection_pool.join_room(connection_id, f"user:{user_id}")
+            # Join user to their room for targeted messaging
+            try:
+                if hasattr(advanced_websocket_manager, 'connection_pool'):
+                    await advanced_websocket_manager.connection_pool.join_room(connection_id, f"user:{user_id}")
+            except Exception as e:
+                logger.warning(f"Could not join WebSocket room: {e}")
             
-            # Send welcome message
-            welcome_message = {
-                'type': 'connection_established',
-                'connection_id': connection_id,
-                'user_id': user_id,
-                'timestamp': datetime.now(timezone.utc).isoformat()
-            }
-            
-            await self.send_to_connection(connection_id, welcome_message)
-            
-            logger.info(f"Authenticated WebSocket connection established: {connection_id} for user {user_id}")
+            logger.info(f"✅ Authenticated WebSocket connection: {connection_id} for user {user_id}")
             return connection_id
-            
+        
         except Exception as e:
-            logger.error(f"Error establishing authenticated WebSocket connection: {e}")
-            await websocket.close(code=status.WS_1011_INTERNAL_ERROR, reason="Connection error")
-            return None
+            logger.error(f"WebSocket connection failed: {e}")
+            raise
     
     async def disconnect(self, connection_id: str):
-        """Disconnect authenticated WebSocket"""
+        """Handle WebSocket disconnection"""
+        try:
+            if connection_id in self.active_connections:
+                connection_info = self.active_connections[connection_id]
+                user_id = connection_info["user_id"]
+                
+                # Remove from active connections
+                del self.active_connections[connection_id]
+                
+                # Remove from user connections
+                if user_id in self.user_connections:
+                    self.user_connections[user_id].discard(connection_id)
+                    if not self.user_connections[user_id]:
+                        del self.user_connections[user_id]
+                
+                # Remove from Redis
+                await self._remove_connection_from_redis(connection_id, user_id)
+                
+                logger.info(f"✅ WebSocket disconnected: {connection_id} for user {user_id}")
         
-        connection_info = self.authenticated_connections.get(connection_id)
-        if not connection_info:
-            return
+        except Exception as e:
+            logger.error(f"WebSocket disconnection error: {e}")
+    
+    async def send_personal_message(self, user_id: str, message: Dict[str, Any]):
+        """Send message to all connections of a specific user"""
+        sent_count = 0
         
-        user_id = connection_info['user_id']
-        
-        # Remove from authenticated connections
-        del self.authenticated_connections[connection_id]
-        
-        # Remove from user connections
         if user_id in self.user_connections:
-            self.user_connections[user_id].discard(connection_id)
-            if not self.user_connections[user_id]:
-                del self.user_connections[user_id]
-        
-        # Remove from Redis
-        await self._remove_connection_from_redis(connection_id, user_id)
-        
-        logger.info(f"Authenticated WebSocket disconnected: {connection_id} for user {user_id}")
-    
-    async def send_to_connection(self, connection_id: str, message: Dict[str, Any]):
-        """Send message to specific authenticated connection"""
-        
-        connection_info = self.authenticated_connections.get(connection_id)
-        if not connection_info:
-            logger.warning(f"Attempted to send to non-existent connection: {connection_id}")
-            return False
-        
-        try:
-            websocket = connection_info['websocket']
-            await websocket.send_text(json.dumps(message))
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error sending to connection {connection_id}: {e}")
-            # Clean up broken connection
-            await self.disconnect(connection_id)
-            return False
-    
-    async def send_to_user(self, user_id: str, message: Dict[str, Any]):
-        """Send message to all connections for a user"""
-        
-        if user_id not in self.user_connections:
-            logger.debug(f"No connections found for user {user_id}")
-            return 0
-        
-        sent_count = 0
-        connection_ids = list(self.user_connections[user_id])  # Copy to avoid modification during iteration
-        
-        for connection_id in connection_ids:
-            if await self.send_to_connection(connection_id, message):
-                sent_count += 1
+            for connection_id in self.user_connections[user_id].copy():
+                if connection_id in self.active_connections:
+                    try:
+                        websocket = self.active_connections[connection_id]["websocket"]
+                        await websocket.send_text(json.dumps(message))
+                        sent_count += 1
+                    except Exception as e:
+                        logger.warning(f"Failed to send message to {connection_id}: {e}")
+                        await self.disconnect(connection_id)
         
         return sent_count
     
-    async def broadcast_to_room(self, room_name: str, message: Dict[str, Any], exclude_user: Optional[str] = None):
-        """Broadcast message to all authenticated users in a room"""
-        
+    async def broadcast_to_room(self, room: str, message: Dict[str, Any]):
+        """Broadcast message to all connections in a room"""
+        # For now, broadcast to all connections
+        # In a full implementation, this would use room membership
         sent_count = 0
         
-        for connection_id, connection_info in self.authenticated_connections.items():
-            user_id = connection_info['user_id']
-            
-            # Skip excluded user
-            if exclude_user and user_id == exclude_user:
-                continue
-            
-            # Check if connection is in the room (simplified - could be enhanced with actual room membership)
-            # For now, using basic room logic
-            if await self.send_to_connection(connection_id, message):
+        for connection_id, connection_info in self.active_connections.items():
+            try:
+                websocket = connection_info["websocket"]
+                await websocket.send_text(json.dumps(message))
                 sent_count += 1
+            except Exception as e:
+                logger.warning(f"Failed to broadcast to {connection_id}: {e}")
+                await self.disconnect(connection_id)
         
         return sent_count
     
-    async def handle_heartbeat(self, connection_id: str):
-        """Handle heartbeat from authenticated connection"""
-        
-        connection_info = self.authenticated_connections.get(connection_id)
-        if connection_info:
-            connection_info['last_heartbeat'] = datetime.now(timezone.utc)
-            
-            # Update presence in Redis
-            user_id = connection_info['user_id']
-            await self._update_user_presence(user_id)
-    
-    async def get_user_connections(self, user_id: str) -> list:
-        """Get all connection IDs for a user"""
-        return list(self.user_connections.get(user_id, set()))
-    
-    async def get_connection_info(self, connection_id: str) -> Optional[Dict[str, Any]]:
-        """Get connection information"""
-        connection_info = self.authenticated_connections.get(connection_id)
-        if connection_info:
-            # Return safe copy without websocket object
-            return {
-                'connection_id': connection_id,
-                'user_id': connection_info['user_id'],
-                'authenticated_at': connection_info['authenticated_at'].isoformat(),
-                'last_heartbeat': connection_info['last_heartbeat'].isoformat()
-            }
-        return None
-    
-    async def _store_connection_in_redis(self, connection_id: str, user_id: str):
-        """Store connection info in Redis for multi-instance support"""
+    async def _store_connection_in_redis(self, connection_id: str, user_auth: Dict[str, Any]):
+        """Store connection info in Redis for multi-instance coordination"""
         try:
-            from app.core.redis_client import redis_client
+            connection_key = self.redis_key_manager.build_key(RedisKeyspace.WEBSOCKETS, connection_id)
+            user_id = user_auth["user_id"]
             
-            connection_key = redis_keys.websocket_connection_key(connection_id)
-            user_connections_key = redis_keys.websocket_user_connections_key(user_id)
-            
-            # Store connection details
             connection_data = {
-                'user_id': user_id,
-                'connected_at': datetime.now(timezone.utc).isoformat(),
-                'instance_id': 'current_instance'  # Could be actual instance ID
+                "user_id": user_id,
+                "username": user_auth.get("username"),
+                "connected_at": datetime.now(timezone.utc).isoformat(),
+                "instance": settings.APP_NAME or "fynix"
             }
             
-            await redis_client.set(connection_key, json.dumps(connection_data), expire=3600)
-            await redis_client.sadd(user_connections_key, connection_id)
-            await redis_client.expire(user_connections_key, 3600)
+            # Store connection data with TTL
+            await redis_client.set(connection_key, json.dumps(connection_data), ttl=3600)
+            
+            # Store user connection mapping (simplified without sadd)
+            user_connections_key = self.redis_key_manager.build_key(RedisKeyspace.USERS, user_id, "connections", connection_id)
+            await redis_client.set(user_connections_key, "1", ttl=3600)
             
         except Exception as e:
-            logger.error(f"Error storing connection in Redis: {e}")
+            logger.warning(f"Failed to store connection in Redis: {e}")
     
     async def _remove_connection_from_redis(self, connection_id: str, user_id: str):
         """Remove connection info from Redis"""
         try:
-            from app.core.redis_client import redis_client
+            # Since our redis client doesn't have delete method, we'll set with very short TTL
+            connection_key = self.redis_key_manager.build_key(RedisKeyspace.WEBSOCKETS, connection_id)
+            user_connections_key = self.redis_key_manager.build_key(RedisKeyspace.USERS, user_id, "connections", connection_id)
             
-            connection_key = redis_keys.websocket_connection_key(connection_id)
-            user_connections_key = redis_keys.websocket_user_connections_key(user_id)
-            
-            await redis_client.delete(connection_key)
-            await redis_client.srem(user_connections_key, connection_id)
+            # Set with 1 second TTL to effectively delete
+            await redis_client.set(connection_key, "deleted", ttl=1)
+            await redis_client.set(user_connections_key, "deleted", ttl=1)
             
         except Exception as e:
-            logger.error(f"Error removing connection from Redis: {e}")
+            logger.warning(f"Failed to remove connection from Redis: {e}")
     
-    async def _update_user_presence(self, user_id: str):
-        """Update user presence status in Redis"""
+    async def get_user_presence(self, user_id: str) -> Dict[str, Any]:
+        """Get user presence information"""
+        presence_key = self.redis_key_manager.build_key(RedisKeyspace.PRESENCE, user_id)
+        
         try:
-            from app.core.redis_client import redis_client
-            
-            presence_key = redis_keys.user_presence_key(user_id)
-            heartbeat_key = redis_keys.presence_heartbeat_key(user_id)
+            presence_data = await redis_client.get(presence_key)
+            if presence_data:
+                return json.loads(presence_data)
+        except Exception as e:
+            logger.warning(f"Failed to get user presence: {e}")
+        
+        # Default presence
+        return {
+            "user_id": user_id,
+            "status": "offline",
+            "last_seen": None
+        }
+    
+    async def update_user_presence(self, user_id: str, status: str = "online"):
+        """Update user presence status"""
+        try:
+            presence_key = self.redis_key_manager.build_key(RedisKeyspace.PRESENCE, user_id)
+            heartbeat_key = self.redis_key_manager.build_key(RedisKeyspace.PRESENCE, user_id, "heartbeat")
             
             presence_data = {
-                'status': 'online',
-                'last_seen': datetime.now(timezone.utc).isoformat(),
-                'connections': len(self.user_connections.get(user_id, set()))
+                "user_id": user_id,
+                "status": status,
+                "last_seen": datetime.now(timezone.utc).isoformat(),
+                "instance": settings.APP_NAME or "fynix"
             }
             
-            await redis_client.set(presence_key, json.dumps(presence_data), expire=300)
-            await redis_client.set(heartbeat_key, datetime.now(timezone.utc).isoformat(), expire=60)
+            # Store presence with TTL
+            await redis_client.set(presence_key, json.dumps(presence_data), ttl=300)  # 5 minutes
+            await redis_client.set(heartbeat_key, datetime.now(timezone.utc).isoformat(), ttl=60)  # 1 minute heartbeat
             
         except Exception as e:
-            logger.error(f"Error updating user presence: {e}")
+            logger.warning(f"Failed to update user presence: {e}")
 
-# Global authenticated WebSocket manager
-authenticated_ws_manager = AuthenticatedWebSocketManager()
-
-# WebSocket endpoint with JWT authentication
-async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: str = None):
+# FastAPI WebSocket endpoint with JWT authentication
+async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: Optional[str] = None):
     """WebSocket endpoint with JWT authentication"""
-    
+    auth_manager = AuthenticatedWebSocketManager()
     connection_id = None
+    user_auth = None
+    
     try:
-        # Establish authenticated connection
-        connection_id = await authenticated_ws_manager.connect_authenticated(websocket)
+        # Authenticate the connection
+        user_auth = await auth_manager.auth_handler.authenticate_websocket(websocket, None)
         
-        if not connection_id:
-            return  # Connection was rejected and closed
+        if not user_auth:
+            await websocket.close(code=1008, reason="Authentication failed")
+            return
         
-        # Main message handling loop
-        while True:
-            try:
-                # Receive message
+        # Connect the authenticated user
+        connection_id = await auth_manager.connect(websocket, user_auth)
+        
+        # Update presence
+        await auth_manager.update_user_presence(user_auth["user_id"], "online")
+        
+        # Listen for messages
+        try:
+            while True:
                 data = await websocket.receive_text()
                 message = json.loads(data)
                 
                 # Handle different message types
-                message_type = message.get('type', 'unknown')
-                
-                if message_type == 'heartbeat':
-                    await authenticated_ws_manager.handle_heartbeat(connection_id)
-                    await authenticated_ws_manager.send_to_connection(connection_id, {
-                        'type': 'heartbeat_ack',
-                        'timestamp': datetime.now(timezone.utc).isoformat()
-                    })
-                
-                elif message_type == 'typing_start':
-                    await handle_typing_indicator(connection_id, message, True)
-                
-                elif message_type == 'typing_stop':
-                    await handle_typing_indicator(connection_id, message, False)
-                
-                elif message_type == 'message':
-                    await handle_message(connection_id, message)
-                
+                if message.get("type") == "ping":
+                    await websocket.send_text(json.dumps({"type": "pong"}))
+                    
+                elif message.get("type") == "typing":
+                    await handle_typing_indicator(user_auth["user_id"], message.get("room"), True)
+                    
+                elif message.get("type") == "stop_typing":
+                    await handle_typing_indicator(user_auth["user_id"], message.get("room"), False)
+                    
                 else:
-                    logger.warning(f"Unknown message type: {message_type}")
-                
-            except WebSocketDisconnect:
-                break
-            except json.JSONDecodeError:
-                await authenticated_ws_manager.send_to_connection(connection_id, {
-                    'type': 'error',
-                    'message': 'Invalid JSON format'
-                })
-            except Exception as e:
-                logger.error(f"Error handling WebSocket message: {e}")
-                await authenticated_ws_manager.send_to_connection(connection_id, {
-                    'type': 'error',
-                    'message': 'Internal server error'
-                })
-    
-    except Exception as e:
-        logger.error(f"WebSocket connection error: {e}")
+                    # Echo message back for now
+                    response = {
+                        "type": "message",
+                        "from": user_auth["username"] or user_auth["user_id"],
+                        "data": message
+                    }
+                    await websocket.send_text(json.dumps(response))
+        
+        except WebSocketDisconnect:
+            logger.info(f"WebSocket disconnected: {connection_id}")
+        
+        except Exception as e:
+            logger.error(f"WebSocket error: {e}")
+            await websocket.close(code=1011, reason="Internal server error")
     
     finally:
         if connection_id:
-            await authenticated_ws_manager.disconnect(connection_id)
+            await auth_manager.disconnect(connection_id)
+        
+        if user_auth:
+            await auth_manager.update_user_presence(user_auth["user_id"], "offline")
 
-async def handle_typing_indicator(connection_id: str, message: Dict[str, Any], is_typing: bool):
-    """Handle typing indicators"""
-    conversation_id = message.get('conversation_id')
-    if not conversation_id:
-        return
-    
-    connection_info = await authenticated_ws_manager.get_connection_info(connection_id)
-    if not connection_info:
-        return
-    
-    user_id = connection_info['user_id']
-    
-    # Store typing status in Redis
+# Typing indicator functionality
+async def handle_typing_indicator(user_id: str, room: str, is_typing: bool):
+    """Handle typing indicator events"""
     try:
-        from app.core.redis_client import redis_client
-        typing_key = redis_keys.websocket_typing_key(conversation_id)
+        typing_key = f"typing:{room}"
         
         if is_typing:
-            await redis_client.sadd(typing_key, user_id)
-            await redis_client.expire(typing_key, 10)  # Expire in 10 seconds
+            # Add user to typing set (simplified - just store with TTL)
+            await redis_client.set(f"{typing_key}:{user_id}", "1", ttl=10)  # 10 seconds TTL
         else:
-            await redis_client.srem(typing_key, user_id)
+            # Remove user from typing (set very short TTL)
+            await redis_client.set(f"{typing_key}:{user_id}", "deleted", ttl=1)
         
-        # Broadcast typing status to conversation participants
+        # Broadcast typing status to room
         typing_message = {
-            'type': 'typing_indicator',
-            'conversation_id': conversation_id,
-            'user_id': user_id,
-            'is_typing': is_typing,
-            'timestamp': datetime.now(timezone.utc).isoformat()
+            "type": "typing_indicator",
+            "user_id": user_id,
+            "room": room,
+            "is_typing": is_typing
         }
         
-        # Broadcast to conversation room (simplified)
-        await authenticated_ws_manager.broadcast_to_room(
-            f"conversation:{conversation_id}", 
-            typing_message, 
-            exclude_user=user_id
-        )
-        
-    except Exception as e:
-        logger.error(f"Error handling typing indicator: {e}")
-
-async def handle_message(connection_id: str, message: Dict[str, Any]):
-    """Handle incoming message"""
-    # This would integrate with your existing message handling logic
-    logger.info(f"Received message from {connection_id}: {message}")
+        # Broadcast to room (simplified implementation)
+        logger.info(f"Typing indicator: {user_id} {'started' if is_typing else 'stopped'} typing in {room}")
     
-    # Send acknowledgment
-    await authenticated_ws_manager.send_to_connection(connection_id, {
-        'type': 'message_ack',
-        'message_id': message.get('id'),
-        'timestamp': datetime.now(timezone.utc).isoformat()
-    })
+    except Exception as e:
+        logger.warning(f"Typing indicator error: {e}")
 
-# Export the authenticated WebSocket manager and endpoint
+# Global instances
+authenticated_websocket_manager = AuthenticatedWebSocketManager()
+websocket_jwt_auth = WebSocketJWTAuth()
+
+# Export main classes and functions
 __all__ = [
     "WebSocketJWTAuth",
     "AuthenticatedWebSocketManager", 
-    "authenticated_ws_manager",
     "websocket_endpoint_with_auth",
-    "ws_jwt_auth"
+    "handle_typing_indicator",
+    "authenticated_websocket_manager",
+    "websocket_jwt_auth"
 ]

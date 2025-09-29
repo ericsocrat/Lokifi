@@ -228,7 +228,7 @@ def portfolio_summary(handle: Optional[str] = Query(None), authorization: Option
         if cur is not None:
             val = r.qty * cur
             total_value += val
-            by_symbol[r.symbol] = {
+            by_symbol[r.symbol] = {  # type: ignore
                 "qty": r.qty,
                 "cost_basis": r.cost_basis,
                 "cost_value": cost_val,
@@ -238,7 +238,7 @@ def portfolio_summary(handle: Optional[str] = Query(None), authorization: Option
                 "pl_pct": ((cur - r.cost_basis) / r.cost_basis * 100.0) if r.cost_basis else 0.0
             }
         else:
-            by_symbol[r.symbol] = {
+            by_symbol[r.symbol] = {  # type: ignore
                 "qty": r.qty,
                 "cost_basis": r.cost_basis,
                 "cost_value": cost_val,

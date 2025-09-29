@@ -140,7 +140,7 @@ class AIContextManager:
                 style_scores[style] = score
             
             # Determine dominant style
-            dominant_style = max(style_scores, key=style_scores.get) if style_scores else "neutral"
+            dominant_style = max(style_scores.keys(), key=lambda k: style_scores.get(k, 0)) if style_scores else "neutral"
             
             # Extract preferences
             preferences = {
@@ -180,7 +180,7 @@ class AIContextManager:
         
         try:
             # Use AI to create summary
-            provider = await ai_provider_manager.get_available_provider()
+            provider = await ai_provider_manager.get_primary_provider()  # Use available method
             if provider:
                 summary_prompt = f"""
                 Please create a concise summary of this AI conversation. Focus on:
