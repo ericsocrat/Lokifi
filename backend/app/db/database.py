@@ -11,6 +11,9 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.pool import NullPool
 
+# Import Base from core database for consistency
+from app.core.database import Base
+
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fynix:fynix@localhost:5432/fynix")
 
 # Create async engine
@@ -33,8 +36,8 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False,
 )
 
-# Create declarative base
-Base = declarative_base()
+# Create declarative base - use the one from core database
+# Base = declarative_base()  # Commented out - using app.core.database.Base
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:

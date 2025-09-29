@@ -14,7 +14,7 @@ from fastapi import HTTPException, status
 from app.models.user import User
 from app.models.profile import Profile
 from app.models.follow import Follow
-from app.models.notification import Notification, NotificationType
+from app.models.notification_models import Notification, NotificationType
 from app.schemas.follow import (
     FollowResponse,
     UserFollowStatus,

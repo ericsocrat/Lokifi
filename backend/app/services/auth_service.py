@@ -12,7 +12,7 @@ from fastapi import HTTPException, status
 
 from app.models.user import User
 from app.models.profile import Profile
-from app.models.notification import NotificationPreference
+from app.models.notification_models import NotificationPreference
 from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, validate_email, validate_password_strength
 from app.schemas.auth import UserRegisterRequest, UserLoginRequest, UserResponse, ProfileResponse, TokenResponse
 

@@ -8,7 +8,7 @@ from .profile import Profile
 from .follow import Follow
 from .conversation import Conversation, ConversationParticipant, Message, MessageReceipt
 from .ai_thread import AiThread, AiMessage, AiUsage
-from .notification import Notification, NotificationPreference
+from .notification_models import Notification, NotificationPreference
 
 __all__ = [
     "User",

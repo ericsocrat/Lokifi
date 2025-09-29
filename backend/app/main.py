@@ -44,10 +44,10 @@ async def lifespan(app: FastAPI):
     logger.info("📊 Stopping monitoring system...")
     await monitoring_system.stop_monitoring()
     
-    logger.info("� Stopping WebSocket manager...")
+    logger.info("🔌 Stopping WebSocket manager...")
     await advanced_websocket_manager.stop_background_tasks()
     
-    logger.info("�🗄️ Shutting down data services...")
+    logger.info("🗄️ Shutting down data services...")
     await shutdown_data_services()
     
     logger.info("✅ Phase K Track 3 shutdown complete")
@@ -61,16 +61,12 @@ app = FastAPI(
 
 import os
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
+
+# Configure CORS with combined origins
+all_origins = settings.CORS_ORIGINS + [_frontend_origin]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[_frontend_origin],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=all_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -100,7 +96,7 @@ app.include_router(alerts.router, prefix=settings.API_PREFIX)
 app.include_router(chat.router, prefix=settings.API_PREFIX)
 
 
-@__import__('fastapi').FastAPI.get if False else app.get('/api/health')
+@app.get('/api/health')
 def health_status():
     return {'ok': True}
 

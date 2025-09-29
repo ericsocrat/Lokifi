@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool, QueuePool
 from sqlalchemy import event
-from app.core.config import Settings
+from app.core.config import Settings, settings
 import logging
 import asyncio
 from typing import AsyncGenerator, Optional
@@ -208,7 +208,6 @@ class DatabaseManager:
         return re.sub(r'://([^:]+):([^@]+)@', r'://\1:***@', url)
 
 # Global database manager instance
-settings = Settings()
 db_manager = DatabaseManager(settings)
 
 # Dependency for FastAPI
@@ -232,7 +231,3 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
     """Legacy database dependency"""
     async for session in get_db_session():
         yield session
-
-# Global database manager instance
-from app.core.config import settings
-database_manager = DatabaseManager(settings)
