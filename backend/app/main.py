@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow, conversations, websocket, admin_messaging, ai, ai_websocket, notifications
+from app.api.routes import security
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.routes.monitoring import router as monitoring_router
 from app.services.data_service import startup_data_services, shutdown_data_services
@@ -10,6 +11,13 @@ from app.services.j53_scheduler import j53_router, j53_lifespan_manager
 from app.core.advanced_redis_client import advanced_redis_client
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 from app.services.advanced_monitoring import monitoring_system
+# Security middleware imports
+from app.middleware.security import SecurityHeadersMiddleware, RequestLoggingMiddleware
+from app.middleware.rate_limiting import (
+    RateLimitingMiddleware, 
+    RequestSizeLimitMiddleware, 
+    SecurityMonitoringMiddleware
+)
 import logging
 
 logger = logging.getLogger(__name__)
@@ -68,9 +76,16 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=all_origins,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # More restrictive
     allow_headers=["*"],
 )
+
+# Add security middleware (order matters - most restrictive first)
+app.add_middleware(SecurityMonitoringMiddleware)  # Monitor for threats
+app.add_middleware(RateLimitingMiddleware)        # Rate limiting
+app.add_middleware(RequestSizeLimitMiddleware)    # Request size limits
+app.add_middleware(SecurityHeadersMiddleware)     # Security headers
+app.add_middleware(RequestLoggingMiddleware)      # Request logging
 
 # Include routers
 app.include_router(health.router, prefix=settings.API_PREFIX)
@@ -84,6 +99,7 @@ app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
 app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
 app.include_router(notifications.router, prefix=settings.API_PREFIX)  # Phase J6 Enterprise Notifications
 app.include_router(j6_2_router)  # Phase J6.2 Advanced Notification Features
+app.include_router(security.router, prefix=settings.API_PREFIX)  # Security monitoring and dashboard
 app.include_router(monitoring_router)  # Phase K Track 3: Advanced Monitoring
 app.include_router(j53_router)  # Phase J5.3 Performance Monitoring
 app.include_router(market_data.router)  # New market data API

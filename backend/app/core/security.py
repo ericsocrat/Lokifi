@@ -97,5 +97,17 @@ def validate_email(email: str) -> bool:
 
 
 def validate_password_strength(password: str) -> bool:
-    """Validate password strength (minimum 8 characters)."""
-    return len(password) >= 8
+    """Enhanced password strength validation."""
+    if len(password) < 8:
+        return False
+    
+    # Check for at least one uppercase, lowercase, digit, and special character
+    import re
+    has_upper = bool(re.search(r'[A-Z]', password))
+    has_lower = bool(re.search(r'[a-z]', password))
+    has_digit = bool(re.search(r'\d', password))
+    has_special = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', password))
+    
+    # Require at least 3 of the 4 criteria for flexibility
+    criteria_met = sum([has_upper, has_lower, has_digit, has_special])
+    return criteria_met >= 3
