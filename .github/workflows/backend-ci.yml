@@ -41,8 +41,9 @@ jobs:
 
       - name: Import smoke
         working-directory: backend
-        run: python - << 'PY'
-from importlib import import_module
-import_module("app.main")
-print("Import OK")
-PY
+        run: |
+          python -c "
+          from importlib import import_module
+          import_module('app.main')
+          print('Import OK')
+          "

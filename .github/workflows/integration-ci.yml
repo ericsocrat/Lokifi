@@ -23,7 +23,7 @@ jobs:
           driver-opts: network=host
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: "20.19.0"
           cache: npm
@@ -53,18 +53,19 @@ jobs:
       - name: Create env file
         run: |
           cat > backend/.env << 'EOL'
-          FYNIX_JWT_SECRET=${{ secrets.FYNIX_JWT_SECRET || 'test-secret-for-ci' }}
+          FYNIX_JWT_SECRET=test-secret-for-ci
           FYNIX_JWT_TTL_MIN=1440
           FRONTEND_ORIGIN=http://localhost:3000
           REDIS_URL=redis://redis:6379/0
-          CMC_KEY=${{ secrets.CMC_KEY }}
-          POLYGON_API_KEY=${{ secrets.POLYGON_API_KEY }}
-          ALPHAVANTAGE_API_KEY=${{ secrets.ALPHAVANTAGE_API_KEY }}
-          FINNHUB_API_KEY=${{ secrets.FINNHUB_API_KEY }}
-          COINGECKO_API_KEY=${{ secrets.COINGECKO_API_KEY }}
-          NEWSAPI_KEY=${{ secrets.NEWSAPI_KEY }}
-          MARKETAUX_API_KEY=${{ secrets.MARKETAUX_API_KEY }}
-          FMP_KEY=${{ secrets.FMP_KEY }}
+          # API keys use demo values for CI - configure secrets for production
+          CMC_KEY=demo-key
+          POLYGON_API_KEY=demo-key
+          ALPHAVANTAGE_API_KEY=demo-key
+          FINNHUB_API_KEY=demo-key
+          COINGECKO_API_KEY=demo-key
+          NEWSAPI_KEY=demo-key
+          MARKETAUX_API_KEY=demo-key
+          FMP_KEY=demo-key
           EOL
 
       - name: Start Services
