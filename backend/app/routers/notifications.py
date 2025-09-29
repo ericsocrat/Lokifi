@@ -1,5 +1,5 @@
 # J6 Enterprise Notifications - REST API Router
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, Request
 from fastapi.responses import JSONResponse
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
@@ -12,6 +12,7 @@ from app.services.notification_service import notification_service, Notification
 from app.models.notification_models import NotificationPriority
 from app.services.notification_emitter import notification_emitter
 from app.models.notification_models import Notification, NotificationPreference
+from app.core.redis_cache import cache_notifications, cache_user_data
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +109,9 @@ class TestNotificationRequest(BaseModel):
 router = APIRouter(prefix="/notifications", tags=["J6 Notifications"])
 
 @router.get("/", response_model=NotificationListResponse)
+@cache_notifications(ttl=120)  # Cache for 2 minutes
 async def get_notifications(
+    request: Request,
     limit: int = Query(50, ge=1, le=100, description="Number of notifications to retrieve"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
     unread_only: bool = Query(False, description="Only return unread notifications"),
@@ -159,7 +162,8 @@ async def get_notifications(
         raise HTTPException(status_code=500, detail="Failed to retrieve notifications")
 
 @router.get("/unread-count")
-async def get_unread_count(current_user: User = Depends(get_current_user)):
+@cache_notifications(ttl=60)  # Cache for 1 minute (frequently updated)
+async def get_unread_count(request: Request, current_user: User = Depends(get_current_user)):
     """Get the count of unread notifications for the current user"""
     try:
         unread_count = await notification_service.get_unread_count(current_user.id)

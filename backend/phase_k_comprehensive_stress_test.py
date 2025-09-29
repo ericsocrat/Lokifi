@@ -556,7 +556,7 @@ async def main():
     
     # Generate and save report
     report = tester.generate_stress_test_report(summary)
-    with open("phase_k_stress_test_report.md", "w") as f:
+    with open("phase_k_stress_test_report.md", "w", encoding="utf-8") as f:
         f.write(report)
     
     print(f"\n📊 Comprehensive stress test report saved to: phase_k_stress_test_report.md")

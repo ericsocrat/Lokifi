@@ -99,7 +99,7 @@ class Notification(Base):
     @property
     def is_expired(self) -> bool:
         """Check if notification has expired"""
-        if not self.expires_at:
+        if self.expires_at is None:
             return False
         return datetime.now(timezone.utc) > self.expires_at
     
@@ -212,16 +212,16 @@ class NotificationPreference(Base):
     
     def set_type_preference(self, notification_type: str, channel: str, enabled: bool) -> None:
         """Set preference for specific notification type and channel"""
-        if not self.type_preferences:
+        if self.type_preferences is None:
             self.type_preferences = {}
         self.type_preferences[f"{notification_type}_{channel}"] = enabled
     
     def is_in_quiet_hours(self, check_time: Optional[datetime] = None) -> bool:
         """Check if current time (or given time) is in quiet hours"""
-        if not self.quiet_hours_start or not self.quiet_hours_end:
+        if self.quiet_hours_start is None or self.quiet_hours_end is None:
             return False
         
-        if not check_time:
+        if check_time is None:
             check_time = datetime.now(timezone.utc)
         
         # Convert to user's timezone if specified

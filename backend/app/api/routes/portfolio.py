@@ -1,5 +1,5 @@
 ﻿from __future__ import annotations
-from fastapi import APIRouter, HTTPException, Query, Body, Path, Header
+from fastapi import APIRouter, HTTPException, Query, Body, Path, Header, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from app.db.db import get_session, init_db
 from app.db.models import User, PortfolioPosition
 from app.services.prices import get_ohlc
 from app.services.auth import require_handle
+from app.core.redis_cache import cache_portfolio_data, cache_user_data, cache_public_data
 
 # Optional alerts integration
 try:
@@ -121,7 +122,8 @@ async def _maybe_create_alerts(owner: str, symbol: str, cost_basis: float):
         pass
 
 @router.get("/portfolio", response_model=List[PositionOut])
-def list_positions(handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
+@cache_portfolio_data(ttl=300)  # Cache for 5 minutes
+def list_positions(request: Request, handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
     me = require_handle(authorization, handle)
     with get_session() as db:
         u = _user_by_handle(db, me)
@@ -211,7 +213,8 @@ async def import_text(payload: ImportTextPayload, create_alerts: bool = Query(Fa
     return {"ok": True, "added": added}
 
 @router.get("/portfolio/summary", response_model=SummaryOut)
-def portfolio_summary(handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
+@cache_portfolio_data(ttl=300)  # Cache for 5 minutes
+def portfolio_summary(request: Request, handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
     me = require_handle(authorization, handle)
     with get_session() as db:
         u = _user_by_handle(db, me)
