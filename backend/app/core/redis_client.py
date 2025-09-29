@@ -83,7 +83,7 @@ class RedisClient:
             return False
     
     # Basic Redis Operations
-    async def set(self, key: str, value: str, ttl: int = None) -> bool:
+    async def set(self, key: str, value: str, ttl: Optional[int] = None) -> bool:
         """Set a key-value pair with optional TTL"""
         if not await self.is_available() or not self.client:
             return False

@@ -113,7 +113,7 @@ class NotificationAnalytics:
                         and_(
                             Notification.created_at >= start_date,
                             Notification.created_at <= end_date,
-                            Notification.is_delivered == 1
+                            Notification.is_delivered.is_(True)
                         )
                     )
                 )
@@ -125,7 +125,7 @@ class NotificationAnalytics:
                         and_(
                             Notification.created_at >= start_date,
                             Notification.created_at <= end_date,
-                            Notification.is_read == 1
+                            Notification.is_read.is_(True)
                         )
                     )
                 )
@@ -136,7 +136,7 @@ class NotificationAnalytics:
                         and_(
                             Notification.created_at >= start_date,
                             Notification.created_at <= end_date,
-                            Notification.clicked_at.isnot(None)
+                            Notification.clicked_at.is_not(None)
                         )
                     )
                 )
@@ -194,7 +194,7 @@ class NotificationAnalytics:
                         max_count = row.count
                         peak_hour = int(row.hour)
                 
-                return NotificationMetrics(
+                metrics = NotificationMetrics(
                     total_sent=total_sent,
                     total_delivered=total_delivered,
                     total_read=total_read,
@@ -206,9 +206,11 @@ class NotificationAnalytics:
                     top_notification_types=top_types[:10]  # Top 10
                 )
                 
+                return asdict(metrics)
+                
         except Exception as e:
             logger.error(f"Failed to get comprehensive metrics: {e}")
-            return NotificationMetrics()
+            return {}
     
     async def get_user_engagement_metrics(
         self,
@@ -243,7 +245,7 @@ class NotificationAnalytics:
                                 Notification.user_id == user_id,
                                 Notification.created_at >= start_date,
                                 Notification.created_at <= end_date,
-                                Notification.is_read == True
+                                Notification.is_read.is_(True)
                             )
                         )
                     )

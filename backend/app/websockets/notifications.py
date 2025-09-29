@@ -259,7 +259,7 @@ class NotificationWebSocketManager:
         try:
             if isinstance(data, Notification):
                 # Single notification read
-                user_id = data.user_id
+                user_id = str(data.user_id)
                 message = {
                     "type": "notification_read",
                     "data": {
@@ -270,7 +270,7 @@ class NotificationWebSocketManager:
                 }
             elif isinstance(data, dict) and data.get("batch"):
                 # Batch read
-                user_id = data["user_id"]
+                user_id = str(data["user_id"])
                 message = {
                     "type": "notifications_read_batch",
                     "data": {

@@ -204,7 +204,7 @@ class NotificationService:
                 
                 # Apply filters
                 if unread_only:
-                    query = query.where(Notification.is_read == False)
+                    query = query.where(Notification.is_read.is_(False))
                 
                 if notification_type:
                     query = query.where(Notification.type == notification_type)
@@ -213,7 +213,7 @@ class NotificationService:
                     query = query.where(Notification.category == category)
                 
                 if not include_dismissed:
-                    query = query.where(Notification.is_dismissed == False)
+                    query = query.where(Notification.is_dismissed.is_(False))
                 
                 # Exclude expired notifications
                 query = query.where(
@@ -253,8 +253,8 @@ class NotificationService:
                     select(func.count(Notification.id)).where(
                         and_(
                             Notification.user_id == user_id_str,
-                            Notification.is_read == False,
-                            Notification.is_dismissed == False,
+                            Notification.is_read.is_(False),
+                            Notification.is_dismissed.is_(False),
                             or_(
                                 Notification.expires_at.is_(None),
                                 Notification.expires_at > datetime.now(timezone.utc)
@@ -293,7 +293,7 @@ class NotificationService:
                 if not notification:
                     return False
                 
-                if not notification.is_read:
+                if notification and not notification.is_read:
                     notification.mark_as_read()
                     await session.commit()
                     
@@ -316,7 +316,7 @@ class NotificationService:
                     select(Notification).where(
                         and_(
                             Notification.user_id == user_id_str,
-                            Notification.is_read == False
+                            Notification.is_read.is_(False)
                         )
                     )
                 )
@@ -364,7 +364,7 @@ class NotificationService:
                 if not notification:
                     return False
                 
-                if not notification.is_dismissed:
+                if notification and not notification.is_dismissed:
                     notification.dismiss()
                     await session.commit()
                     
@@ -426,7 +426,7 @@ class NotificationService:
                 # Status counts
                 unread_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id_str, Notification.is_read == False)
+                        and_(Notification.user_id == user_id_str, Notification.is_read.is_(False))
                     )
                 )
                 unread_count = unread_result.scalar() or 0
@@ -435,14 +435,14 @@ class NotificationService:
                 
                 dismissed_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id_str, Notification.is_dismissed == True)
+                        and_(Notification.user_id == user_id_str, Notification.is_dismissed.is_(True))
                     )
                 )
                 dismissed_count = dismissed_result.scalar() or 0
                 
                 delivered_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id_str, Notification.is_delivered == True)
+                        and_(Notification.user_id == user_id_str, Notification.is_delivered.is_(True))
                     )
                 )
                 delivered_count = delivered_result.scalar() or 0
