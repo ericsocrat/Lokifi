@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import platform
+import sys
+
 from dataclasses import dataclass
 from typing import Any
 
-from .exceptions import InvalidHashError
+from .exceptions import InvalidHashError, UnsupportedParametersError
 from .low_level import Type
 
 
@@ -35,6 +38,13 @@ def _check_types(**kw: Any) -> str | None:
     return None
 
 
+def _is_wasm() -> bool:
+    return sys.platform == "emscripten" or platform.machine() in [
+        "wasm32",
+        "wasm64",
+    ]
+
+
 def _decoded_str_len(length: int) -> int:
     """
     Compute how long an encoded string of length *l* becomes.
@@ -58,13 +68,20 @@ class Parameters:
 
     See :doc:`parameters` on how to pick them.
 
-    :ivar Type type: Hash type.
-    :ivar int version: Argon2 version.
-    :ivar int salt_len: Length of the salt in bytes.
-    :ivar int hash_len: Length of the hash in bytes.
-    :ivar int time_cost: Time cost in iterations.
-    :ivar int memory_cost: Memory cost in kibibytes.
-    :ivar int parallelism: Number of parallel threads.
+    Attributes:
+        type: Hash type.
+
+        version: Argon2 version.
+
+        salt_len: Length of the salt in bytes.
+
+        hash_len: Length of the hash in bytes.
+
+        time_cost: Time cost in iterations.
+
+        memory_cost: Memory cost in kibibytes.
+
+        parallelism: Number of parallel threads.
 
     .. versionadded:: 18.2.0
     """
@@ -78,13 +95,13 @@ class Parameters:
     parallelism: int
 
     __slots__ = (
-        "type",
-        "version",
-        "salt_len",
         "hash_len",
-        "time_cost",
         "memory_cost",
         "parallelism",
+        "salt_len",
+        "time_cost",
+        "type",
+        "version",
     )
 
 
@@ -96,9 +113,11 @@ def extract_parameters(hash: str) -> Parameters:
     """
     Extract parameters from an encoded *hash*.
 
-    :param str params: An encoded Argon2 hash string.
+    Args:
+        hash: An encoded Argon2 hash string.
 
-    :rtype: Parameters
+    Returns:
+        The parameters used to create the hash.
 
     .. versionadded:: 18.2.0
     """
@@ -138,3 +157,18 @@ def extract_parameters(hash: str) -> Parameters:
         memory_cost=kvs["m"],
         parallelism=kvs["p"],
     )
+
+
+def validate_params_for_platform(params: Parameters) -> None:
+    """
+    Validate *params* against current platform.
+
+    Args:
+        params: Parameters to be validated
+
+    Returns:
+       None
+    """
+    if _is_wasm() and params.parallelism != 1:
+        msg = "In WebAssembly environments `parallelism` must be 1."
+        raise UnsupportedParametersError(msg)

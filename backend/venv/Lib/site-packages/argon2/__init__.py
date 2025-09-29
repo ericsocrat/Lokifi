@@ -56,18 +56,14 @@ def __getattr__(name: str) -> str:
         msg = f"module {__name__} has no attribute {name}"
         raise AttributeError(msg)
 
-    import sys
     import warnings
 
-    if sys.version_info < (3, 8):
-        from importlib_metadata import metadata
-    else:
-        from importlib.metadata import metadata
+    from importlib.metadata import metadata
 
     warnings.warn(
         f"Accessing argon2.{name} is deprecated and will be "
         "removed in a future release. Use importlib.metadata directly "
-        "to query for structlog's packaging metadata.",
+        "to query for argon2-cffi's packaging metadata.",
         DeprecationWarning,
         stacklevel=2,
     )
@@ -81,12 +77,3 @@ def __getattr__(name: str) -> str:
         return meta["Author-email"].split("<", 1)[1].rstrip(">")
 
     return meta[dunder_to_metadata[name]]
-
-
-# Make nicer public names.
-__locals = locals()
-for __name in __all__:
-    if not __name.startswith(("__", "DEFAULT_")) and not __name.islower():
-        __locals[__name].__module__ = "argon2"
-del __locals
-del __name  # pyright: ignore[reportUnboundVariable]

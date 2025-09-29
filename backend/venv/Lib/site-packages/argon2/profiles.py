@@ -11,8 +11,27 @@ concrete values and :doc:`parameters` for more information.
 
 from __future__ import annotations
 
-from ._utils import Parameters
+import dataclasses
+
+from ._utils import Parameters, _is_wasm
 from .low_level import Type
+
+
+def get_default_parameters() -> Parameters:
+    """
+    Create default parameters for current platform.
+
+    Returns:
+        Default, compatible, parameters for current platform.
+
+    .. versionadded:: 25.1.0
+    """
+    params = RFC_9106_LOW_MEMORY
+
+    if _is_wasm():
+        params = dataclasses.replace(params, parallelism=1)
+
+    return params
 
 
 # FIRST RECOMMENDED option per RFC 9106.

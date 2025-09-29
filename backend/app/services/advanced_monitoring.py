@@ -311,7 +311,7 @@ class AdvancedMonitoringSystem:
                 await self.performance_analyzer.analyze_metrics(metrics)
                 
                 # Check alerts
-                await self.alert_manager.check_alerts(metrics)
+                await self.alert_manager.evaluate_rules(metrics)
                 
                 await asyncio.sleep(self.monitoring_interval)
                 
