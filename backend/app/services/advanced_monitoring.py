@@ -18,6 +18,7 @@ from dataclasses import dataclass, asdict
 from collections import defaultdict, deque
 import json
 import httpx
+from sqlalchemy import text
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.database import db_manager
@@ -33,7 +34,7 @@ class HealthStatus:
     response_time: float
     last_check: datetime
     error_message: Optional[str] = None
-    details: Dict[str, Any] = None
+    details: Optional[Dict[str, Any]] = None
     
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -254,15 +255,19 @@ class PerformanceAnalyzer:
         """Analyze metrics data"""
         # Convert dict to SystemMetrics if needed
         if isinstance(metrics, dict):
-            # Create a simple SystemMetrics object from the dict
-            class SimpleMetrics:
-                def __init__(self, data):
-                    self.timestamp = data.get('timestamp', datetime.now(timezone.utc))
-                    self.cpu_usage = data.get('cpu_usage', 0)
-                    self.memory_usage = data.get('memory_usage', 0)
-                    self.response_times = data.get('response_times', {})
-            
-            metrics_obj = SimpleMetrics(metrics)
+            # Create a SystemMetrics object from the dict
+            metrics_obj = SystemMetrics(
+                timestamp=metrics.get('timestamp', datetime.now(timezone.utc)),
+                cpu_usage=metrics.get('cpu_usage', 0.0),
+                memory_usage=metrics.get('memory_usage', 0.0),
+                disk_usage=metrics.get('disk_usage', 0.0),
+                network_io=metrics.get('network_io', {}),
+                active_connections=metrics.get('active_connections', 0),
+                database_connections=metrics.get('database_connections', 0),
+                cache_hit_rate=metrics.get('cache_hit_rate', 0.0),
+                response_times=metrics.get('response_times', {}),
+                error_rates=metrics.get('error_rates', {})
+            )
             self.add_metrics(metrics_obj)
         else:
             self.add_metrics(metrics)
@@ -515,7 +520,7 @@ class AdvancedMonitoringSystem:
                     response_time=response_time,
                     last_check=datetime.now(timezone.utc),
                     error_message=status.get('error'),
-                    details=status.get('details')
+                    details=status.get('details') or {}
                 )
                 
             except Exception as e:
@@ -534,11 +539,12 @@ class AdvancedMonitoringSystem:
         try:
             # Test database connection
             async for session in db_manager.get_session(read_only=True):
-                result = await session.execute("SELECT 1")
+                result = await session.execute(text("SELECT 1"))
                 if result.scalar() == 1:
                     return {'status': 'healthy'}
                 else:
                     return {'status': 'unhealthy', 'error': 'Database query failed'}
+            return {'status': 'unhealthy', 'error': 'No database session available'}
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
@@ -702,7 +708,7 @@ class AdvancedMonitoringSystem:
             'timestamp': datetime.now(timezone.utc).isoformat(),
             'system_status': system_status,
             'health_checks': {k: v.to_dict() for k, v in health_status.items()},
-            'current_metrics': self.last_metrics.to_dict() if self.last_metrics else {},
+            'current_metrics': self.last_metrics if self.last_metrics else {},
             'performance_insights': performance_insights,
             'recent_alerts': recent_alerts,
             'websocket_analytics': advanced_websocket_manager.get_analytics(),
