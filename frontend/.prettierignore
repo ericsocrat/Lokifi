@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build output
+.next
+out
+dist
+build
+
+# Testing
+coverage
+.nyc_output
+
+# Misc
+.DS_Store
+*.log
+.env
+.env.*
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+
+# Generated files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
