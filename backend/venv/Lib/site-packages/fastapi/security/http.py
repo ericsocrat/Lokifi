@@ -413,11 +413,8 @@ class HTTPDigest(HTTPBase):
             else:
                 return None
         if scheme.lower() != "digest":
-            if self.auto_error:
-                raise HTTPException(
-                    status_code=HTTP_403_FORBIDDEN,
-                    detail="Invalid authentication credentials",
-                )
-            else:
-                return None
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN,
+                detail="Invalid authentication credentials",
+            )
         return HTTPAuthorizationCredentials(scheme=scheme, credentials=credentials)

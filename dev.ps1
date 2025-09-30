@@ -3,19 +3,30 @@
 # Examples: .\dev.ps1 start, .\dev.ps1 be, .\dev.ps1 test
 
 param(
-    [Parameter(Position=0)]
-    [string]$Command = "help"
+    [Parameter(Position = 0)]
+    [string]$Command = "help",
+    [Parameter(Position = 1)]
+    [string]$Package = "",
+    [Parameter(Position = 2)]
+    [string]$Version = "",
+    [switch]$Force
 )
+
+# Load dependency protection module
+$protectionScript = Join-Path $PSScriptRoot "dependency_protection.ps1"
+if (Test-Path $protectionScript) {
+    . $protectionScript
+}
 
 # Colors for output
 $Colors = @{
-    Red = "Red"
-    Green = "Green" 
-    Yellow = "Yellow"
-    Blue = "Blue"
-    Cyan = "Cyan"
+    Red     = "Red"
+    Green   = "Green" 
+    Yellow  = "Yellow"
+    Blue    = "Blue"
+    Cyan    = "Cyan"
     Magenta = "Magenta"
-    White = "White"
+    White   = "White"
 }
 
 function Write-ColoredText {
@@ -46,6 +57,20 @@ function Show-Help {
     Write-ColoredText "📦 Setup:" "Green"
     Write-ColoredText "  .\dev.ps1 setup        - Initial environment setup" "Yellow"
     Write-ColoredText "  .\dev.ps1 install      - Install/update dependencies" "Yellow"
+    Write-ColoredText "  .\dev.ps1 verify       - Verify all dependencies" "Yellow"
+    Write-ColoredText "  .\dev.ps1 upgrade      - Upgrade all dependencies" "Yellow"
+    Write-Host ""
+    Write-ColoredText "🛡️  Dependency Protection:" "Green"
+    Write-ColoredText "  .\dev.ps1 protect           - Initialize protection system" "Yellow"
+    Write-ColoredText "  .\dev.ps1 protection-status - Show protection status" "Yellow"
+    Write-ColoredText "  .\dev.ps1 snapshot          - Create version snapshot" "Yellow"
+    Write-ColoredText "  .\dev.ps1 safe-install pip package [version] - Protected pip install" "Yellow"
+    Write-ColoredText "  .\dev.ps1 safe-install npm package [version] - Protected npm install" "Yellow"
+    Write-Host ""
+    Write-ColoredText "🔍 Utilities:" "Green"
+    Write-ColoredText "  .\dev.ps1 clean        - Clean caches" "Yellow"
+    Write-ColoredText "  .\dev.ps1 status       - System health check" "Yellow"
+    Write-ColoredText "  .\dev.ps1 upgrade      - Upgrade all dependencies" "Yellow"
     Write-ColoredText "  .\dev.ps1 clean        - Clean cache files" "Yellow"
     Write-ColoredText "  .\dev.ps1 reset        - Reset environments" "Yellow"
     Write-Host ""
@@ -188,6 +213,34 @@ function Clean-Cache {
     Write-ColoredText "✅ Cache cleaned!" "Green"
 }
 
+function Verify-Dependencies {
+    Write-ColoredText "🔍 Verifying all dependencies..." "Cyan"
+    
+    Set-Location backend
+    $env:PYTHONPATH = $PWD.Path
+    & .\venv\Scripts\python.exe dependency_verifier.py
+    Set-Location ..
+}
+
+function Upgrade-Dependencies {
+    Write-ColoredText "⬆️ Upgrading all dependencies..." "Cyan"
+    
+    # Backend upgrade
+    Write-ColoredText "Upgrading backend dependencies..." "Yellow"
+    Set-Location backend
+    & .\venv\Scripts\pip.exe install --upgrade -r requirements.txt
+    Set-Location ..
+    
+    # Frontend upgrade
+    Write-ColoredText "Upgrading frontend dependencies..." "Yellow"
+    Set-Location frontend
+    npm update
+    npm audit fix --force 2>$null
+    Set-Location ..
+    
+    Write-ColoredText "✅ All dependencies upgraded!" "Green"
+}
+
 function Show-Status {
     Write-ColoredText "📊 Checking system status..." "Cyan"
     
@@ -215,7 +268,7 @@ asyncio.run(health_check())
     
     Write-ColoredText "Frontend Status:" "Yellow"
     Write-ColoredText "Node.js: $(node --version)" "White"
-    Write-ColoredText "npm: $(npm --version)" "White"
+    Write-ColoredText "npm: $(npm --version 2>$null)" "White"
 }
 
 # Main command dispatcher
@@ -232,12 +285,58 @@ switch ($Command.ToLower()) {
     "frontend" { Start-Frontend }
     "setup" { Setup-Environment }
     "install" { Setup-Environment }
+    "verify" { Verify-Dependencies }
+    "upgrade" { Upgrade-Dependencies }
     "test" { Run-Tests }
     "test-be" { Run-Tests "backend" }
     "test-fe" { Run-Tests "frontend" }
     "format" { Format-Code }
     "clean" { Clean-Cache }
     "status" { Show-Status }
+    
+    # Dependency Protection Commands
+    "protect" { 
+        if (Get-Command Start-DependencyProtection -ErrorAction SilentlyContinue) {
+            Start-DependencyProtection
+        }
+        else {
+            Write-ColoredText "Dependency protection module not loaded" "Red"
+        }
+    }
+    "protection-status" { 
+        if (Get-Command Show-ProtectionStatus -ErrorAction SilentlyContinue) {
+            Show-ProtectionStatus
+        }
+        else {
+            Write-ColoredText "Dependency protection module not loaded" "Red"
+        }
+    }
+    "snapshot" { 
+        if (Get-Command Start-DependencySnapshot -ErrorAction SilentlyContinue) {
+            Start-DependencySnapshot
+        }
+        else {
+            Write-ColoredText "Dependency protection module not loaded" "Red"
+        }
+    }
+    "safe-install" { 
+        if (!$Package) {
+            Write-ColoredText "Usage: .\dev.ps1 safe-install <pip|npm> <package> [version] [-Force]" "Yellow"
+            return
+        }
+        
+        $manager = $Package
+        $packageName = $Version
+        $packageVersion = $args[0]
+        
+        if (Get-Command Install-ProtectedPackage -ErrorAction SilentlyContinue) {
+            Install-ProtectedPackage -PackageManager $manager -Package $packageName -Version $packageVersion -Force:$Force
+        }
+        else {
+            Write-ColoredText "Dependency protection module not loaded" "Red"
+        }
+    }
+    
     default { 
         Write-ColoredText "Unknown command: $Command" "Red"
         Show-Help 

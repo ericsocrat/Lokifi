@@ -55,6 +55,12 @@ cd C:\Users\USER\Desktop\fynix\frontend; npm install
 
 # Check system health
 .\dev.ps1 status
+
+# Verify all dependencies
+.\dev.ps1 verify
+
+# Upgrade all dependencies
+.\dev.ps1 upgrade
 ```
 
 ### Method 2: Batch Script (Simple)

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     import numpy as numpy
 
 
-NUMPY_INSTRUCTIONS = format_instructions(library="numpy", extra="voice_helpers")
+NUMPY_INSTRUCTIONS = format_instructions(library="numpy", extra="datalib")
 
 
 class NumpyProxy(LazyProxy[Any]):

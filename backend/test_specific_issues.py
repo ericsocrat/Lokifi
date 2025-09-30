@@ -49,10 +49,14 @@ async def test_redis_connection():
         print("✅ Redis client initialized successfully")
         
         # Test basic Redis operation
-        if hasattr(advanced_redis_client, 'redis_client') and advanced_redis_client.redis_client:
-            print("✅ Redis client connection established")
+        if hasattr(advanced_redis_client, "is_connected"):
+            connected = await advanced_redis_client.is_connected()
+            if connected:
+                print("✅ Redis client connection established")
+            else:
+                print("⚠️ Redis client not connected (expected in development)")
         else:
-            print("⚠️ Redis client not connected (expected in development)")
+            print("⚠️ Cannot determine Redis connection status (no 'is_connected' method)")
         
         print("✅ REDIS: No critical configuration issues")
         return True

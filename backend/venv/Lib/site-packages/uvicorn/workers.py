@@ -10,9 +10,8 @@ from typing import Any
 from gunicorn.arbiter import Arbiter
 from gunicorn.workers.base import Worker
 
-from uvicorn._compat import asyncio_run
 from uvicorn.config import Config
-from uvicorn.server import Server
+from uvicorn.main import Server
 
 warnings.warn(
     "The `uvicorn.workers` module is deprecated. Please use `uvicorn-worker` package instead.\n"
@@ -71,10 +70,14 @@ class UvicornWorker(Worker):
 
         self.config = Config(**config_kwargs)
 
+    def init_process(self) -> None:
+        self.config.setup_event_loop()
+        super().init_process()
+
     def init_signals(self) -> None:
         # Reset signals so Gunicorn doesn't swallow subprocess return codes
         # other signals are set up by Server.install_signal_handlers()
-        # See: https://github.com/Kludex/uvicorn/issues/894
+        # See: https://github.com/encode/uvicorn/issues/894
         for s in self.SIGNALS:
             signal.signal(s, signal.SIG_DFL)
 
@@ -85,7 +88,7 @@ class UvicornWorker(Worker):
     def _install_sigquit_handler(self) -> None:
         """Install a SIGQUIT handler on workers.
 
-        - https://github.com/Kludex/uvicorn/issues/1116
+        - https://github.com/encode/uvicorn/issues/1116
         - https://github.com/benoitc/gunicorn/issues/2604
         """
 
@@ -101,7 +104,7 @@ class UvicornWorker(Worker):
             sys.exit(Arbiter.WORKER_BOOT_ERROR)
 
     def run(self) -> None:
-        return asyncio_run(self._serve(), loop_factory=self.config.get_loop_factory())
+        return asyncio.run(self._serve())
 
     async def callback_notify(self) -> None:
         self.notify()

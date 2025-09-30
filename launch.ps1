@@ -2,7 +2,7 @@
 # Just double-click this file or run: .\launch.ps1
 
 param(
-    [Parameter(Position=0)]
+    [Parameter(Position = 0)]
     [ValidateSet("backend", "frontend", "both", "test", "help")]
     [string]$Mode = "help"
 )
