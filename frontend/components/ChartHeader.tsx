@@ -2,7 +2,6 @@
 import { BarChart3, Layers, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { indicatorStore } from '../lib/indicatorStore';
-import { symbolStore } from '../lib/symbolStore';
 import { timeframeStore } from '../lib/timeframeStore';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
@@ -12,7 +11,6 @@ interface ChartHeaderProps {
 }
 
 export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
-  const [symbol] = useState(symbolStore.get());
   const [timeframe] = useState(timeframeStore.get());
   const [isIndicatorModalOpen, setIsIndicatorModalOpen] = useState(false);
   const [indicators] = useState(indicatorStore.get());

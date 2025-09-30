@@ -18,9 +18,7 @@ import { usePaneStore } from '../lib/paneStore';
 import { symbolStore } from '../lib/symbolStore';
 import { timeframeStore } from '../lib/timeframeStore';
 
-interface TradingWorkspaceProps { }
-
-export const TradingWorkspace: React.FC<TradingWorkspaceProps> = () => {
+export const TradingWorkspace: React.FC = () => {
   const [isDrawingToolbarCollapsed, setIsDrawingToolbarCollapsed] = useState(false);
   const [isObjectTreeCollapsed, setIsObjectTreeCollapsed] = useState(false);
   const [showGrid, setShowGrid] = useState(true);

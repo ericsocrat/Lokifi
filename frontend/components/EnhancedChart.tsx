@@ -2,10 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { 
   createChart, 
-  IChartApi, 
-  ISeriesApi, 
-  CandlestickData,
-  LineData,
+  IChartApi,
+  ISeriesApi,
   ColorType 
 } from 'lightweight-charts';
 import { useDrawingStore } from '../lib/drawingStore';

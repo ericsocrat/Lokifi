@@ -366,7 +366,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
           <div className="p-8 text-center text-neutral-400">
             <Bell className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p className="text-lg mb-2">No notifications</p>
-            <p className="text-sm">You're all caught up!</p>
+            <p className="text-sm">You&apos;re all caught up!</p>
           </div>
         )}
 

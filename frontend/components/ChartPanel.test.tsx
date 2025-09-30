@@ -1,7 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
-import { fireEvent, screen } from '@testing-library/dom';
 import ChartPanel from './ChartPanel';
 
 // Mock the dependencies

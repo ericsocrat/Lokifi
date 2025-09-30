@@ -44,7 +44,6 @@ interface ProfileStats {
 }
 
 export default function ProfilePage() {
-    const { user } = useAuth();
     const [profile, setProfile] = useState<Profile | null>(null);
     const [stats, setStats] = useState<ProfileStats | null>(null);
     const [activeTab, setActiveTab] = useState('overview');
@@ -74,7 +73,7 @@ export default function ProfilePage() {
             } else {
                 setError('Failed to load profile');
             }
-        } catch (err) {
+        } catch {
             setError('Network error loading profile');
         } finally {
             setLoading(false);

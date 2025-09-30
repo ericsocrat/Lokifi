@@ -8,7 +8,7 @@ import { symbolStore } from "@/lib/symbolStore";
 import { timeframeStore } from "@/lib/timeframeStore";
 import { indicatorStore } from "@/lib/indicatorStore";
 import { ema, rsi, macd, bollinger, vwap, vwma, stddevChannels } from "@/lib/indicators";
-import { drawStore, type Shape } from "@/lib/drawStore";
+import { drawStore } from "@/lib/drawStore";
 import { ChartErrorBoundary } from "@/components/ChartErrorBoundary";
 import { ChartLoadingState } from "@/components/ChartLoadingState";
 import ChartSidebar from "@/components/ChartSidebar";
@@ -21,10 +21,6 @@ const SUB_CHART_HEIGHT = 180;
 const MIN_CHART_WIDTH = 400;
 
 // Helper functions
-function angleDeg(x1: number, y1: number, x2: number, y2: number) {
-  return (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
-}
-
 function tfToSeconds(tf: string): number {
   const n = parseInt(tf, 10);
   if (Number.isFinite(n)) {
@@ -34,12 +30,6 @@ function tfToSeconds(tf: string): number {
     if (tf.endsWith("w")) return n * 604800;
   }
   return (Number.isFinite(n) ? n : 1) * 60;
-}
-
-function barsFromTimes(aSec: number, bSec: number, tf: string) {
-  const dt = Math.abs(bSec - aSec);
-  const spb = tfToSeconds(tf) || 60;
-  return dt / spb;
 }
 
 function hexToRGBA(hex: string, a: number) {

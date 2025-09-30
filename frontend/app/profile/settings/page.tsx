@@ -9,10 +9,6 @@ import {
     Save, 
     ArrowLeft, 
     User, 
-    Mail, 
-    MapPin, 
-    Globe,
-    Clock,
     Shield,
     Bell,
     Trash2,
@@ -40,7 +36,6 @@ interface NotificationPreferences {
 }
 
 export default function SettingsPage() {
-    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState('general');
     const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
     const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences | null>(null);

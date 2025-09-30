@@ -30,9 +30,7 @@ interface Profile {
 }
 
 export default function EditProfilePage() {
-    const { user } = useAuth();
     const router = useRouter();
-    const [profile, setProfile] = useState<Profile | null>(null);
     const [formData, setFormData] = useState({
         display_name: '',
         bio: '',
@@ -64,7 +62,6 @@ export default function EditProfilePage() {
 
             if (response.ok) {
                 const profileData = await response.json();
-                setProfile(profileData);
                 setFormData({
                     display_name: profileData.display_name || '',
                     bio: profileData.bio || '',
@@ -75,7 +72,7 @@ export default function EditProfilePage() {
             } else {
                 setError('Failed to load profile');
             }
-        } catch (err) {
+        } catch {
             setError('Network error loading profile');
         } finally {
             setLoading(false);

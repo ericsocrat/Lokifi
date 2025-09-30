@@ -18,8 +18,6 @@ export default function CopilotChat(){
   const [useChartCtx, setUseChartCtx] = useState<boolean>(true);
   const esRef = useRef<EventSource | null>(null);
 
-  const chosenModel = preset === "__custom__" && customModel.trim() ? customModel.trim() : preset;
-
   const ask = () => {
     esRef.current?.close();
     setLog("");

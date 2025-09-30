@@ -61,13 +61,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     activeTool,
     isDrawing,
     currentDrawing,
-    objects,
     selectedObjectId,
     startDrawing,
     addPoint,
     finishDrawing,
-    cancelDrawing,
-    selectObject,
     getObjectsByPane
   } = useDrawingStore();
 
@@ -184,10 +181,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isMouseDown || !isDrawing) return;
 
-    const point = getMousePosition(e);
+    // const point = getMousePosition(e);
     // For tools that need continuous updates (like rectangles), update the current drawing
     // This would typically update a preview of the shape being drawn
-  }, [isMouseDown, isDrawing, getMousePosition]);
+  }, [isMouseDown, isDrawing]);
 
   const handleMouseUp = useCallback(() => {
     setIsMouseDown(false);
@@ -391,14 +388,12 @@ const MIN_CHART_WIDTH = 400;
 
 export const DrawingChart: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(MIN_CHART_WIDTH);
   const { panes, updatePaneHeight } = usePaneStore();
 
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
-        const width = Math.max(MIN_CHART_WIDTH, containerRef.current.clientWidth);
-        setContainerWidth(width);
+        // Dimension tracking could be added here if needed
       }
     };
 

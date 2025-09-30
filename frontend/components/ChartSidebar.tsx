@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { drawStore, type Tool } from "@/lib/drawStore";
 import { pluginManager } from "@/plugins/registry";
 import { EXPERIMENTAL_PLUGINS } from "@/lib/flags";
-import { ChevronLeft, ChevronRight, MousePointer, ChartLine, Landmark, Boxes, Ruler, Waves, Brackets, Settings } from "lucide-react";
+import { ChevronLeft, ChevronRight, MousePointer, ChartLine, Landmark, Boxes, Ruler, Waves, Brackets } from "lucide-react";
 
 const TOOLS: { key: Tool; label: string; icon: React.ReactNode; shortcut?: string }[] = [
   { key: "cursor", label: "Cursor", icon: <MousePointer size={16} />, shortcut: "V" },
