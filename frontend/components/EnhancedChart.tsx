@@ -1,11 +1,11 @@
 "use client";
-import React, { useEffect, useRef, useState } from 'react';
-import { 
-  createChart, 
+import {
+  ColorType,
+  createChart,
   IChartApi,
-  ISeriesApi,
-  ColorType 
+  ISeriesApi
 } from 'lightweight-charts';
+import { useEffect, useRef, useState } from 'react';
 import { useDrawingStore } from '../lib/drawingStore';
 import { useMarketDataStore } from '../lib/marketDataStore';
 import { usePaneStore } from '../lib/paneStore';
@@ -122,7 +122,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
     const loadData = async () => {
       try {
         const data = await fetchOHLCData(selectedSymbol, selectedTimeframe);
-        
+
         if (seriesRef.current && data.length > 0) {
           // Convert to chart format
           const chartData = data.map(item => ({
@@ -134,7 +134,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
           }));
 
           seriesRef.current.setData(chartData);
-          
+
           // Chart data loaded successfully
           console.log(`Loaded ${chartData.length} data points for ${selectedSymbol}`);
         }
@@ -152,13 +152,13 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
 
     const handleClick = (param: any) => {
       if (!param.point || !param.time) return;
-      
+
       console.log('Chart clicked in drawing mode:', {
         tool: activeTool,
         point: param.point,
         time: param.time
       });
-      
+
       // Drawing logic would be implemented here
       // For now, just log the interaction
     };
@@ -177,7 +177,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
     if (!chartRef.current) return;
 
     const paneObjects = objects.filter(obj => obj.paneId === paneId);
-    
+
     // This is a simplified example - real implementation would need
     // to create chart primitives or overlays for each drawing object
     paneObjects.forEach(obj => {
@@ -235,8 +235,8 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
       )}
 
       {/* Chart container */}
-      <div 
-        ref={chartContainerRef} 
+      <div
+        ref={chartContainerRef}
         style={{ height }}
         className="w-full cursor-crosshair"
       />
@@ -246,7 +246,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
 
 // Helper function to create drawing objects
 function createDrawingObject(
-  tool: string, 
+  tool: string,
   start: { x: number; y: number; time: number; price: number },
   end: { x: number; y: number; time: number; price: number },
   paneId: string

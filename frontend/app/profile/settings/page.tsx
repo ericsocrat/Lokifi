@@ -1,20 +1,19 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../src/components/AuthProvider';
-import { authToken } from '../../../src/lib/auth';
-import { Navbar } from '../../../src/components/Navbar';
-import Link from 'next/link';
-import { 
-    Save, 
-    ArrowLeft, 
-    User, 
-    Shield,
+import {
+    AlertTriangle,
+    ArrowLeft,
     Bell,
-    Trash2,
     Download,
-    AlertTriangle
+    Save,
+    Shield,
+    Trash2,
+    User
 } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { Navbar } from '../../../src/components/Navbar';
+import { authToken } from '../../../src/lib/auth';
 
 interface UserSettings {
     full_name: string;
@@ -196,7 +195,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Account Information</h3>
-                
+
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -205,7 +204,7 @@ export default function SettingsPage() {
                         <input
                             type="text"
                             value={userSettings?.full_name || ''}
-                            onChange={(e) => setUserSettings(prev => prev ? {...prev, full_name: e.target.value} : null)}
+                            onChange={(e) => setUserSettings(prev => prev ? { ...prev, full_name: e.target.value } : null)}
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Your full name"
                         />
@@ -236,7 +235,7 @@ export default function SettingsPage() {
                         </label>
                         <select
                             value={userSettings?.timezone || ''}
-                            onChange={(e) => setUserSettings(prev => prev ? {...prev, timezone: e.target.value} : null)}
+                            onChange={(e) => setUserSettings(prev => prev ? { ...prev, timezone: e.target.value } : null)}
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Select timezone</option>
@@ -257,7 +256,7 @@ export default function SettingsPage() {
                         </label>
                         <select
                             value={userSettings?.language || 'en'}
-                            onChange={(e) => setUserSettings(prev => prev ? {...prev, language: e.target.value} : null)}
+                            onChange={(e) => setUserSettings(prev => prev ? { ...prev, language: e.target.value } : null)}
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="en">English</option>
@@ -288,7 +287,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Email Notifications</h3>
-                
+
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
@@ -299,7 +298,7 @@ export default function SettingsPage() {
                             <input
                                 type="checkbox"
                                 checked={notificationPrefs?.email_enabled || false}
-                                onChange={(e) => setNotificationPrefs(prev => prev ? {...prev, email_enabled: e.target.checked} : null)}
+                                onChange={(e) => setNotificationPrefs(prev => prev ? { ...prev, email_enabled: e.target.checked } : null)}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -315,7 +314,7 @@ export default function SettingsPage() {
                             <input
                                 type="checkbox"
                                 checked={notificationPrefs?.email_follows || false}
-                                onChange={(e) => setNotificationPrefs(prev => prev ? {...prev, email_follows: e.target.checked} : null)}
+                                onChange={(e) => setNotificationPrefs(prev => prev ? { ...prev, email_follows: e.target.checked } : null)}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -331,7 +330,7 @@ export default function SettingsPage() {
                             <input
                                 type="checkbox"
                                 checked={notificationPrefs?.email_messages || false}
-                                onChange={(e) => setNotificationPrefs(prev => prev ? {...prev, email_messages: e.target.checked} : null)}
+                                onChange={(e) => setNotificationPrefs(prev => prev ? { ...prev, email_messages: e.target.checked } : null)}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -342,7 +341,7 @@ export default function SettingsPage() {
 
             <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Push Notifications</h3>
-                
+
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div>
@@ -353,7 +352,7 @@ export default function SettingsPage() {
                             <input
                                 type="checkbox"
                                 checked={notificationPrefs?.push_enabled || false}
-                                onChange={(e) => setNotificationPrefs(prev => prev ? {...prev, push_enabled: e.target.checked} : null)}
+                                onChange={(e) => setNotificationPrefs(prev => prev ? { ...prev, push_enabled: e.target.checked } : null)}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -369,7 +368,7 @@ export default function SettingsPage() {
                             <input
                                 type="checkbox"
                                 checked={notificationPrefs?.push_messages || false}
-                                onChange={(e) => setNotificationPrefs(prev => prev ? {...prev, push_messages: e.target.checked} : null)}
+                                onChange={(e) => setNotificationPrefs(prev => prev ? { ...prev, push_messages: e.target.checked } : null)}
                                 className="sr-only peer"
                             />
                             <div className="w-11 h-6 bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -395,7 +394,7 @@ export default function SettingsPage() {
         <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Data & Privacy</h3>
-                
+
                 <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                         <div className="flex items-center space-x-3">
@@ -405,7 +404,7 @@ export default function SettingsPage() {
                                 <p className="text-gray-400 text-sm">Download all your profile data (GDPR compliant)</p>
                             </div>
                         </div>
-                        <button 
+                        <button
                             onClick={exportData}
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                         >
@@ -424,7 +423,7 @@ export default function SettingsPage() {
                     <AlertTriangle className="w-6 h-6 text-red-500" />
                     <h3 className="text-lg font-semibold text-red-400">Danger Zone</h3>
                 </div>
-                
+
                 <div className="space-y-4">
                     <div className="p-4 bg-gray-800 rounded-lg">
                         <h4 className="text-white font-medium mb-2">Delete Account</h4>
@@ -444,12 +443,12 @@ export default function SettingsPage() {
     return (
         <div className="min-h-screen bg-gray-900">
             <Navbar />
-            
+
             <div className="container mx-auto px-4 py-8 max-w-4xl">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center space-x-4">
-                        <Link 
+                        <Link
                             href="/profile"
                             className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
                         >
@@ -485,11 +484,10 @@ export default function SettingsPage() {
                                 <button
                                     key={id}
                                     onClick={() => setActiveTab(id)}
-                                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${
-                                        activeTab === id
+                                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-colors ${activeTab === id
                                             ? 'bg-blue-600 text-white'
                                             : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                                    }`}
+                                        }`}
                                 >
                                     <Icon className="w-5 h-5" />
                                     <span>{label}</span>

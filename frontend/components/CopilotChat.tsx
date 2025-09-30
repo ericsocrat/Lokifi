@@ -1,8 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
 import { API } from "@/lib/api";
 import { symbolStore } from "@/lib/symbolStore";
 import { timeframeStore } from "@/lib/timeframeStore";
+import { useRef, useState } from "react";
 
 const PRESETS = [
   { label: "llama3.1 (Ollama)", value: "llama3.1" },
@@ -10,7 +10,7 @@ const PRESETS = [
   { label: "Custom…", value: "__custom__" },
 ] as const;
 
-export default function CopilotChat(){
+export default function CopilotChat() {
   const [q, setQ] = useState("");
   const [log, setLog] = useState("");
   const [preset, setPreset] = useState<string>(PRESETS[0].value);
@@ -37,7 +37,7 @@ export default function CopilotChat(){
         <div className="flex gap-2 items-center">
           <select
             value={preset}
-            onChange={(e)=> setPreset(e.target.value)}
+            onChange={(e) => setPreset(e.target.value)}
             className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
             aria-label="Model preset"
           >
@@ -48,20 +48,20 @@ export default function CopilotChat(){
           {preset === "__custom__" && (
             <input
               value={customModel}
-              onChange={(e)=> setCustomModel(e.target.value)}
+              onChange={(e) => setCustomModel(e.target.value)}
               placeholder="ollama model id (e.g., llama3.1:8b)"
               className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             />
           )}
         </div>
         <label className="flex items-center gap-2 text-sm opacity-90">
-          <input type="checkbox" checked={useChartCtx} onChange={e=>setUseChartCtx(e.target.checked)} />
+          <input type="checkbox" checked={useChartCtx} onChange={e => setUseChartCtx(e.target.checked)} />
           Use chart as context (send active symbol)
         </label>
         <div className="flex gap-2">
           <input
             value={q}
-            onChange={e=>setQ(e.target.value)}
+            onChange={e => setQ(e.target.value)}
             className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             placeholder="Ask about BTC, AAPL, RSI, news..."
           />

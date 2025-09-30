@@ -1,9 +1,9 @@
 "use client";
-import { useEffect, useState } from "react";
 import { drawStore, type Tool } from "@/lib/drawStore";
-import { pluginManager } from "@/plugins/registry";
 import { EXPERIMENTAL_PLUGINS } from "@/lib/flags";
-import { ChevronLeft, ChevronRight, MousePointer, ChartLine, Landmark, Boxes, Ruler, Waves, Brackets } from "lucide-react";
+import { pluginManager } from "@/plugins/registry";
+import { Boxes, Brackets, ChartLine, ChevronLeft, ChevronRight, Landmark, MousePointer, Ruler, Waves } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const TOOLS: { key: Tool; label: string; icon: React.ReactNode; shortcut?: string }[] = [
   { key: "cursor", label: "Cursor", icon: <MousePointer size={16} />, shortcut: "V" },
@@ -27,10 +27,10 @@ export default function ChartSidebar() {
   const [, setTick] = useState(0);
 
   useEffect(() => {
-    const unsub = drawStore.subscribe(s => { 
-      setTool(s.tool); 
-      setSnap(s.snap); 
-      setSelCount(s.selectedIds.length); 
+    const unsub = drawStore.subscribe(s => {
+      setTool(s.tool);
+      setSnap(s.snap);
+      setSelCount(s.selectedIds.length);
     });
     return () => { unsub(); };
   }, []);
@@ -54,10 +54,9 @@ export default function ChartSidebar() {
       </button>
 
       {/* Sliding Sidebar */}
-      <div 
-        className={`absolute left-0 top-0 z-20 h-full bg-neutral-900/95 border-r border-neutral-800 backdrop-blur transition-transform duration-300 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+      <div
+        className={`absolute left-0 top-0 z-20 h-full bg-neutral-900/95 border-r border-neutral-800 backdrop-blur transition-transform duration-300 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
         style={{ width: "280px" }}
       >
         <div className="p-4 pt-16 flex flex-col gap-4 h-full">
@@ -69,11 +68,10 @@ export default function ChartSidebar() {
                 <button
                   key={t.key}
                   onClick={() => drawStore.setTool(t.key)}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-colors ${
-                    tool === t.key
+                  className={`p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-colors ${tool === t.key
                       ? "bg-electric/30 border-electric"
                       : "border-neutral-700 hover:bg-neutral-800"
-                  }`}
+                    }`}
                   title={`${t.label} ${t.shortcut ? `(${t.shortcut})` : ""}`}
                 >
                   {t.icon}
@@ -91,8 +89,8 @@ export default function ChartSidebar() {
           {/* Settings */}
           <div className="flex items-center gap-3 p-2 rounded-xl border border-neutral-700">
             <label className="flex items-center gap-2 text-sm">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 checked={snap}
                 onChange={(e) => drawStore.setSnap(e.target.checked)}
               />
@@ -102,13 +100,13 @@ export default function ChartSidebar() {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button 
+            <button
               onClick={() => drawStore.undo()}
               className="flex-1 px-3 py-2 text-sm border border-neutral-700 rounded-xl hover:bg-neutral-800"
             >
               Undo
             </button>
-            <button 
+            <button
               onClick={() => drawStore.redo()}
               className="flex-1 px-3 py-2 text-sm border border-neutral-700 rounded-xl hover:bg-neutral-800"
             >
@@ -125,11 +123,10 @@ export default function ChartSidebar() {
                   <button
                     key={p.id}
                     onClick={() => pluginManager.setActiveTool(p.id)}
-                    className={`w-full p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-colors ${
-                      activePlugin === p.id
+                    className={`w-full p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-colors ${activePlugin === p.id
                         ? "bg-electric/30 border-electric"
                         : "border-neutral-700 hover:bg-neutral-800"
-                    }`}
+                      }`}
                     title={`${p.label} ${p.shortcut ? `(${p.shortcut})` : ""}`}
                   >
                     {p.icon}
@@ -174,7 +171,7 @@ export default function ChartSidebar() {
 
       {/* Overlay to close sidebar when clicking outside */}
       {isOpen && (
-        <div 
+        <div
           className="absolute inset-0 z-10 bg-black/20"
           onClick={() => setIsOpen(false)}
         />

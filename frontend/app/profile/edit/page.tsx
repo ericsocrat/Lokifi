@@ -12,7 +12,6 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '../../../src/components/AuthProvider';
 import { Navbar } from '../../../src/components/Navbar';
 import { authToken } from '../../../src/lib/auth';
 

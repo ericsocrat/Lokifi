@@ -1,6 +1,6 @@
-import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
+import React from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import ChartPanel from './ChartPanel';
 
 // Mock the dependencies
@@ -85,7 +85,7 @@ describe('ChartPanel', () => {
       rightPriceScale: { borderColor: "#374151" },
       timeScale: { timeVisible: true }
     };
-    
+
     // Verify createChart was called with correct options
     const lw = await import('lightweight-charts');
     expect(lw.createChart).toHaveBeenCalledWith(

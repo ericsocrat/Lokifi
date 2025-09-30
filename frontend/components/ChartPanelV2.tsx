@@ -1,19 +1,19 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { createChart, Time, IChartApi, ISeriesApi, ColorType } from "lightweight-charts";
-import useSWR from "swr";
-import dynamic from "next/dynamic";
-import { API } from "@/lib/api";
-import { symbolStore } from "@/lib/symbolStore";
-import { timeframeStore } from "@/lib/timeframeStore";
-import { indicatorStore } from "@/lib/indicatorStore";
-import { ema, rsi, macd, bollinger, vwap, vwma, stddevChannels } from "@/lib/indicators";
-import { drawStore } from "@/lib/drawStore";
 import { ChartErrorBoundary } from "@/components/ChartErrorBoundary";
 import { ChartLoadingState } from "@/components/ChartLoadingState";
 import ChartSidebar from "@/components/ChartSidebar";
-import { pluginManager } from "@/plugins/registry";
+import { API } from "@/lib/api";
+import { drawStore } from "@/lib/drawStore";
+import { indicatorStore } from "@/lib/indicatorStore";
+import { bollinger, ema, macd, rsi, stddevChannels, vwap, vwma } from "@/lib/indicators";
+import { symbolStore } from "@/lib/symbolStore";
+import { timeframeStore } from "@/lib/timeframeStore";
 import type { OHLCResponse } from "@/lib/types";
+import { pluginManager } from "@/plugins/registry";
+import { ColorType, createChart, IChartApi, Time } from "lightweight-charts";
+import dynamic from "next/dynamic";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 
 // Constants
 const CHART_HEIGHT = 520;
@@ -160,7 +160,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
     resizeObserverRef.current = new ResizeObserver(handleResize);
     resizeObserverRef.current.observe(chartContainerRef.current);
-    
+
     // Initial resize
     handleResize();
 
@@ -342,7 +342,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       // MACD
       if (inds.macd) {
         const macdData = macd(closes, 12, 26, 9);
-        
+
         // MACD histogram
         const macdHistSeries = subChart.addHistogramSeries({
           color: "#4ecdc4",
@@ -405,7 +405,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
   useEffect(() => {
     const pss: any = (globalThis as any).pluginSettingsStore;
     const pssym: any = (globalThis as any).pluginSymbolSettings;
-    
+
     (window as any).__fynixApplySymbolSettings = () => {
       try {
         const s = pss?.get?.();
@@ -463,10 +463,10 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
   return (
     <div className="w-full rounded-2xl border border-neutral-800 relative" data-testid="chart-container">
       <ChartSidebar />
-      <div 
+      <div
         ref={chartContainerRef}
         data-testid="chart-main"
-        style={{ 
+        style={{
           height: `${(inds.rsi || inds.macd) ? CHART_HEIGHT - SUB_CHART_HEIGHT : CHART_HEIGHT}px`,
           minWidth: `${MIN_CHART_WIDTH}px`
         }}

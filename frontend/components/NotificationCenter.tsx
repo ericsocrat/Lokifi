@@ -439,8 +439,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
                         {notification.priority !== 'normal' && (
                           <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${notification.priority === 'urgent' ? 'bg-red-600 text-white' :
-                              notification.priority === 'high' ? 'bg-red-500 text-white' :
-                                'bg-neutral-600 text-neutral-300'
+                            notification.priority === 'high' ? 'bg-red-500 text-white' :
+                              'bg-neutral-600 text-neutral-300'
                             }`}>
                             {notification.priority}
                           </span>

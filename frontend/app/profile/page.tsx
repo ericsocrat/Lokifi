@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../src/components/AuthProvider';
 import { Navbar } from '../../src/components/Navbar';
 import { authToken } from '../../src/lib/auth';
 
@@ -382,8 +381,8 @@ export default function ProfilePage() {
                                     key={id}
                                     onClick={() => setActiveTab(id)}
                                     className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === id
-                                            ? 'border-blue-500 text-blue-400'
-                                            : 'border-transparent text-gray-400 hover:text-gray-300'
+                                        ? 'border-blue-500 text-blue-400'
+                                        : 'border-transparent text-gray-400 hover:text-gray-300'
                                         }`}
                                 >
                                     <Icon className="w-4 h-4" />
