@@ -3,12 +3,13 @@
 Simple FastAPI Test Server for Stress Testing
 """
 
-from fastapi import FastAPI
 import asyncio
-import time
 import random
-from typing import Dict, Any
+import time
+from typing import Any
+
 import uvicorn
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 # Simple test application
 app = FastAPI(title="Fynix Stress Test Server", version="1.0.0")
@@ -112,7 +113,7 @@ async def get_ai_threads():
     return {"threads": threads, "total": len(threads)}
 
 @app.post("/api/v1/portfolio/position")
-async def add_portfolio_position(position_data: Dict[str, Any]):
+async def add_portfolio_position(position_data: dict[str, Any]):
     """Add portfolio position"""
     # Simulate database insert
     await asyncio.sleep(random.uniform(0.02, 0.06))
@@ -169,7 +170,7 @@ async def memory_intensive_task():
     }
 
 # WebSocket endpoint for stress testing
-from fastapi import WebSocket, WebSocketDisconnect
+
 
 @app.websocket("/ws/test")
 async def websocket_endpoint(websocket: WebSocket):

@@ -3,31 +3,25 @@ API routes for symbol directory and OHLC data.
 Provides endpoints for symbol search and market data retrieval.
 """
 
-from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, HTTPException, Query, Path
+
+from fastapi import APIRouter, HTTPException, Path, Query
 from pydantic import BaseModel
 
-from ..services.data_service import (
-    symbol_directory, 
-    ohlc_aggregator,
-    Symbol,
-    OHLCData,
-    AssetType
-)
+from ..services.data_service import AssetType, OHLCData, Symbol, ohlc_aggregator, symbol_directory
 
 router = APIRouter(prefix="/api/v1", tags=["market-data"])
 
 # Response models
 class SymbolSearchResponse(BaseModel):
-    symbols: List[Symbol]
+    symbols: list[Symbol]
     total: int
     query: str
 
 class OHLCResponse(BaseModel):
     symbol: str
     timeframe: str
-    data: List[OHLCData]
+    data: list[OHLCData]
     count: int
     provider: str
 
@@ -37,13 +31,13 @@ class AssetTypeStats(BaseModel):
 
 class MarketOverview(BaseModel):
     total_symbols: int
-    asset_types: List[AssetTypeStats]
+    asset_types: list[AssetTypeStats]
     last_updated: datetime
 
 @router.get("/symbols/search", response_model=SymbolSearchResponse)
 async def search_symbols(
     q: str = Query(..., min_length=1, max_length=50, description="Search query"),
-    asset_type: Optional[AssetType] = Query(None, description="Filter by asset type"),
+    asset_type: AssetType | None = Query(None, description="Filter by asset type"),
     limit: int = Query(50, ge=1, le=200, description="Maximum results to return")
 ):
     """
@@ -85,9 +79,9 @@ async def get_symbol_info(
     
     return symbol_info
 
-@router.get("/symbols", response_model=List[Symbol])
+@router.get("/symbols", response_model=list[Symbol])
 async def list_symbols(
-    asset_type: Optional[AssetType] = Query(None, description="Filter by asset type"),
+    asset_type: AssetType | None = Query(None, description="Filter by asset type"),
     limit: int = Query(100, ge=1, le=500, description="Maximum results to return")
 ):
     """
@@ -111,8 +105,8 @@ async def get_ohlc_data(
     symbol: str = Path(..., description="Symbol ticker"),
     timeframe: str = Query("1D", description="Timeframe (1m, 5m, 15m, 30m, 1h, 1D, 1W, 1M)"),
     limit: int = Query(100, ge=1, le=1000, description="Number of bars to return"),
-    start_date: Optional[datetime] = Query(None, description="Start date (ISO format)"),
-    end_date: Optional[datetime] = Query(None, description="End date (ISO format)")
+    start_date: datetime | None = Query(None, description="Start date (ISO format)"),
+    end_date: datetime | None = Query(None, description="End date (ISO format)")
 ):
     """
     Get OHLC (Open, High, Low, Close) data for a symbol.
@@ -184,7 +178,7 @@ async def get_market_overview():
         last_updated=datetime.now()
     )
 
-@router.get("/symbols/popular", response_model=List[Symbol])
+@router.get("/symbols/popular", response_model=list[Symbol])
 async def get_popular_symbols(
     limit: int = Query(20, ge=1, le=100, description="Number of popular symbols to return")
 ):
@@ -208,7 +202,7 @@ async def get_popular_symbols(
     
     return popular_symbols
 
-@router.get("/symbols/{symbol}/similar", response_model=List[Symbol])
+@router.get("/symbols/{symbol}/similar", response_model=list[Symbol])
 async def get_similar_symbols(
     symbol: str = Path(..., description="Base symbol to find similar symbols for"),
     limit: int = Query(10, ge=1, le=50, description="Number of similar symbols to return")

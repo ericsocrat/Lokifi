@@ -8,24 +8,25 @@ Advanced API endpoints for J6.2 notification system including:
 - Batch management
 """
 
+from datetime import UTC, datetime
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 
 from app.core.security import get_current_user
+from app.models.notification_models import NotificationPriority, NotificationType
 from app.models.user import User
-from app.models.notification_models import NotificationType, NotificationPriority
 from app.services.notification_analytics import NotificationAnalytics
 from app.services.smart_notifications import (
-    smart_notification_processor,
-    send_rich_notification,
-    send_batched_notification,
-    schedule_notification,
-    NotificationTemplate,
     BatchingStrategy,
-    DeliveryChannel
+    DeliveryChannel,
+    NotificationTemplate,
+    schedule_notification,
+    send_batched_notification,
+    send_rich_notification,
+    smart_notification_processor,
 )
 
 router = APIRouter(prefix="/api/v1/notifications", tags=["notifications-j6.2"])
@@ -41,15 +42,15 @@ class RichNotificationRequest(BaseModel):
     message: str
     template: NotificationTemplate = NotificationTemplate.SIMPLE
     priority: NotificationPriority = NotificationPriority.NORMAL
-    channels: List[DeliveryChannel] = [DeliveryChannel.IN_APP]
-    scheduled_for: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
-    payload: Dict[str, Any] = {}
-    media: Optional[Dict[str, str]] = None
-    actions: List[Dict[str, str]] = []
-    grouping_key: Optional[str] = None
+    channels: list[DeliveryChannel] = [DeliveryChannel.IN_APP]
+    scheduled_for: datetime | None = None
+    expires_at: datetime | None = None
+    payload: dict[str, Any] = {}
+    media: dict[str, str] | None = None
+    actions: list[dict[str, str]] = []
+    grouping_key: str | None = None
     batch_strategy: BatchingStrategy = BatchingStrategy.IMMEDIATE
-    a_b_test_group: Optional[str] = None
+    a_b_test_group: str | None = None
 
 class ScheduledNotificationRequest(BaseModel):
     """Request model for scheduled notifications"""
@@ -60,22 +61,22 @@ class ScheduledNotificationRequest(BaseModel):
     scheduled_for: datetime
     template: NotificationTemplate = NotificationTemplate.SIMPLE
     priority: NotificationPriority = NotificationPriority.NORMAL
-    payload: Dict[str, Any] = {}
+    payload: dict[str, Any] = {}
 
 class ABTestConfiguration(BaseModel):
     """A/B test configuration model"""
     test_name: str
-    variants: List[str] = Field(..., min_items=2)
-    description: Optional[str] = None
+    variants: list[str] = Field(..., min_length=2)
+    description: str | None = None
 
 class NotificationPreferencesUpdate(BaseModel):
     """User notification preferences update"""
-    batching_enabled: Optional[bool] = None
-    preferred_batching_strategy: Optional[str] = None
-    quiet_hours_start: Optional[str] = None
-    quiet_hours_end: Optional[str] = None
-    preferred_channels: Optional[List[str]] = None
-    template_preference: Optional[str] = None
+    batching_enabled: bool | None = None
+    preferred_batching_strategy: str | None = None
+    quiet_hours_start: str | None = None
+    quiet_hours_end: str | None = None
+    preferred_channels: list[str] | None = None
+    template_preference: str | None = None
 
 # Analytics Endpoints
 
@@ -122,7 +123,7 @@ async def get_notification_trends(
 ):
     """Get notification trends and patterns"""
     try:
-        trends = await analytics_service.get_notification_trends(days=days)
+        trends = await analytics_service.get_dashboard_data(days=days)
         return JSONResponse(content=trends)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get trends: {str(e)}")
@@ -206,7 +207,7 @@ async def schedule_notification_endpoint(
 ):
     """Schedule a notification for future delivery"""
     try:
-        if request.scheduled_for <= datetime.now(timezone.utc):
+        if request.scheduled_for <= datetime.now(UTC):
             raise HTTPException(status_code=400, detail="Scheduled time must be in the future")
         
         schedule_id = await schedule_notification(
@@ -251,12 +252,13 @@ async def force_deliver_batch(
     try:
         if batch_id in smart_notification_processor.pending_batches:
             batch = smart_notification_processor.pending_batches[batch_id]
-            result = await smart_notification_processor._deliver_batch(batch)
+            delivery_result = await smart_notification_processor._deliver_batch(batch)
             del smart_notification_processor.pending_batches[batch_id]
             
             return JSONResponse(content={
                 "success": True,
                 "batch_id": batch_id,
+                "delivered": delivery_result,
                 "notification_count": len(batch.notifications),
                 "message": "Batch delivered successfully"
             })

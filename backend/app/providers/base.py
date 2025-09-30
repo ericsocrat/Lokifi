@@ -4,9 +4,9 @@ Provider abstraction layer with resilience patterns
 import asyncio
 import time
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any
 
 
 class ProviderErrorCode(Enum):
@@ -28,8 +28,8 @@ class ProviderError(Exception):
     message: str
     code: ProviderErrorCode
     provider: str
-    retry_after: Optional[int] = None
-    details: Optional[Dict[str, Any]] = None
+    retry_after: int | None = None
+    details: dict[str, Any] | None = None
 
 
 @dataclass
@@ -42,7 +42,7 @@ class Symbol:
     exchange: str
     type: str = "spot"
     active: bool = True
-    logo_url: Optional[str] = None
+    logo_url: str | None = None
 
 
 @dataclass
@@ -59,14 +59,14 @@ class OHLCBar:
 class DataProvider(ABC):
     """Abstract base class for market data providers"""
     
-    def __init__(self, name: str, api_key: Optional[str] = None):
+    def __init__(self, name: str, api_key: str | None = None):
         self.name = name
         self.api_key = api_key
         self._rate_limiter = RateLimiter()
         self._circuit_breaker = CircuitBreaker()
     
     @abstractmethod
-    async def get_symbols(self) -> List[Symbol]:
+    async def get_symbols(self) -> list[Symbol]:
         """Get list of available symbols"""
         pass
     
@@ -76,18 +76,18 @@ class DataProvider(ABC):
         symbol: str,
         timeframe: str,
         limit: int = 500,
-        from_timestamp: Optional[int] = None,
-        to_timestamp: Optional[int] = None
-    ) -> List[OHLCBar]:
+        from_timestamp: int | None = None,
+        to_timestamp: int | None = None
+    ) -> list[OHLCBar]:
         """Get OHLC data for a symbol"""
         pass
     
     @abstractmethod
-    async def get_logo(self, symbol: str) -> Optional[str]:
+    async def get_logo(self, symbol: str) -> str | None:
         """Get logo URL for a symbol"""
         pass
     
-    async def validate_ohlc_quality(self, bars: List[OHLCBar]) -> List[OHLCBar]:
+    async def validate_ohlc_quality(self, bars: list[OHLCBar]) -> list[OHLCBar]:
         """Validate and clean OHLC data"""
         if not bars:
             return bars
@@ -118,8 +118,8 @@ class RateLimiter:
     """Rate limiter with exponential backoff"""
     
     def __init__(self):
-        self._requests: Dict[str, List[float]] = {}
-        self._backoff_until: Dict[str, float] = {}
+        self._requests: dict[str, list[float]] = {}
+        self._backoff_until: dict[str, float] = {}
     
     async def acquire(self, key: str, max_requests: int = 100, window: int = 60):
         """Acquire rate limit token"""
@@ -195,9 +195,9 @@ class SingleFlightCache:
     """Prevents duplicate requests (stampede protection)"""
     
     def __init__(self):
-        self._inflight: Dict[str, asyncio.Future] = {}
-        self._cache: Dict[str, Tuple[Any, float]] = {}
-        self._etags: Dict[str, str] = {}
+        self._inflight: dict[str, asyncio.Future] = {}
+        self._cache: dict[str, tuple[Any, float]] = {}
+        self._etags: dict[str, str] = {}
     
     async def get_or_fetch(
         self,
@@ -233,7 +233,7 @@ class SingleFlightCache:
             # Remove from inflight
             self._inflight.pop(key, None)
     
-    def get_etag(self, key: str) -> Optional[str]:
+    def get_etag(self, key: str) -> str | None:
         """Get ETag for conditional requests"""
         return self._etags.get(key)
     
@@ -246,14 +246,14 @@ class ProviderManager:
     """Manages multiple data providers with failover"""
     
     def __init__(self):
-        self._providers: List[DataProvider] = []
+        self._providers: list[DataProvider] = []
         self._cache = SingleFlightCache()
     
     def add_provider(self, provider: DataProvider):
         """Add a data provider"""
         self._providers.append(provider)
     
-    async def get_symbols(self) -> List[Symbol]:
+    async def get_symbols(self) -> list[Symbol]:
         """Get symbols with failover"""
         cache_key = "symbols"
         
@@ -268,9 +268,9 @@ class ProviderManager:
         symbol: str,
         timeframe: str,
         limit: int = 500,
-        from_timestamp: Optional[int] = None,
-        to_timestamp: Optional[int] = None
-    ) -> List[OHLCBar]:
+        from_timestamp: int | None = None,
+        to_timestamp: int | None = None
+    ) -> list[OHLCBar]:
         """Get OHLC data with failover"""
         cache_key = f"ohlc:{symbol}:{timeframe}:{limit}:{from_timestamp}:{to_timestamp}"
         
@@ -285,7 +285,7 @@ class ProviderManager:
             to_timestamp=to_timestamp
         )
     
-    async def _get_symbols_with_failover(self) -> List[Symbol]:
+    async def _get_symbols_with_failover(self) -> list[Symbol]:
         """Get symbols with provider failover"""
         last_error = None
         
@@ -312,9 +312,9 @@ class ProviderManager:
         symbol: str,
         timeframe: str,
         limit: int,
-        from_timestamp: Optional[int],
-        to_timestamp: Optional[int]
-    ) -> List[OHLCBar]:
+        from_timestamp: int | None,
+        to_timestamp: int | None
+    ) -> list[OHLCBar]:
         """Get OHLC data with provider failover"""
         last_error = None
         

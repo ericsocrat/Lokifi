@@ -4,26 +4,28 @@ End-to-end integration tests for J6 Notification System
 Tests the complete workflow from event → notification → UI → clearing
 """
 
-import pytest
-from datetime import datetime, timezone
-from unittest.mock import Mock, AsyncMock, patch
 import json
 import uuid
-from fastapi.testclient import TestClient
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime
+from unittest.mock import AsyncMock, Mock, patch
 
-from app.models.notification_models import (
-    Notification, 
-    NotificationPreference,
-    NotificationType,
-    NotificationPriority
-)
-from app.services.notification_service import notification_service, NotificationData
+import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from app.integrations.notification_hooks import notification_integration
-from app.websockets.notifications import NotificationWebSocketManager
-from app.routers.notifications import router as notifications_router
+from app.models.notification_models import (
+    Notification,
+    NotificationPreference,
+    NotificationPriority,
+    NotificationType,
+)
 from app.models.user import User
+from app.routers.notifications import router as notifications_router
+from app.services.notification_service import NotificationData, notification_service
+from app.websockets.notifications import NotificationWebSocketManager
+
 
 # Mock FastAPI app for testing
 @asynccontextmanager
@@ -119,7 +121,7 @@ class TestE2ENotificationFlow:
             created_notification.type = NotificationType.FOLLOW.value
             created_notification.title = f"{mock_sender_user.username} started following you"
             created_notification.is_read = False
-            created_notification.created_at = datetime.now(timezone.utc)
+            created_notification.created_at = datetime.now(UTC)
             created_notification.to_dict.return_value = {
                 "id": created_notification.id,
                 "type": "follow",
@@ -243,7 +245,7 @@ class TestE2ENotificationFlow:
             dm_notification.message = message_content
             dm_notification.is_read = False
             dm_notification.thread_id = thread_id
-            dm_notification.created_at = datetime.now(timezone.utc)
+            dm_notification.created_at = datetime.now(UTC)
             dm_notification.payload = {
                 "message_id": message_id,
                 "thread_id": thread_id,

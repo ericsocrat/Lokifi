@@ -3,15 +3,16 @@ Enhanced Input Validation Utilities
 Comprehensive security-focused validation for all user inputs
 """
 
-import re
 import html
+import re
 import unicodedata
-from typing import Optional
 from urllib.parse import urlparse
+
 import bleach
 from pydantic import BaseModel, validator
 
 from app.core.security_config import security_config
+
 
 class InputSanitizer:
     """Utility class for sanitizing and validating user inputs"""
@@ -35,7 +36,7 @@ class InputSanitizer:
     ]
     
     @classmethod
-    def sanitize_string(cls, text: str, max_length: Optional[int] = None) -> str:
+    def sanitize_string(cls, text: str, max_length: int | None = None) -> str:
         """Sanitize a string input"""
         if not isinstance(text, str):
             raise ValueError("Input must be a string")

@@ -1,13 +1,15 @@
 # J6 Enterprise Notifications - Database Models
-from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON, Index
-from sqlalchemy.orm import relationship
-from datetime import datetime, timezone
-from typing import Dict, Any, Optional
-from enum import Enum
 import uuid
+from datetime import UTC, datetime
+from enum import Enum
+from typing import Any
+
+from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Index, String, Text
+from sqlalchemy.orm import relationship
 
 from app.core.database import Base
 from app.models.user import User
+
 
 class NotificationType(str, Enum):
     """Notification types for different system events"""
@@ -49,7 +51,7 @@ class Notification(Base):
     payload = Column(JSON, nullable=True)  # Rich structured data
     
     # Delivery and interaction tracking
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
     read_at = Column(DateTime(timezone=True), nullable=True)
     delivered_at = Column(DateTime(timezone=True), nullable=True)
     clicked_at = Column(DateTime(timezone=True), nullable=True)
@@ -100,39 +102,39 @@ class Notification(Base):
         """Check if notification has expired"""
         if self.expires_at is None:
             return False
-        return datetime.now(timezone.utc) > self.expires_at
+        return datetime.now(UTC) > self.expires_at
     
     @property
     def age_seconds(self) -> int:
         """Get notification age in seconds"""
-        return int((datetime.now(timezone.utc) - self.created_at).total_seconds())
+        return int((datetime.now(UTC) - self.created_at).total_seconds())
     
     def mark_as_read(self) -> None:
         """Mark notification as read with timestamp"""
         if not self.is_read:
             self.is_read = True
-            self.read_at = datetime.now(timezone.utc)
+            self.read_at = datetime.now(UTC)
     
     def mark_as_delivered(self) -> None:
         """Mark notification as delivered with timestamp"""
         if not self.is_delivered:
             self.is_delivered = True
-            self.delivered_at = datetime.now(timezone.utc)
+            self.delivered_at = datetime.now(UTC)
     
     def mark_as_clicked(self) -> None:
         """Mark notification as clicked with timestamp"""
-        self.clicked_at = datetime.now(timezone.utc)
+        self.clicked_at = datetime.now(UTC)
         if not self.is_read:
             self.mark_as_read()
     
     def dismiss(self) -> None:
         """Dismiss notification with timestamp"""
         self.is_dismissed = True
-        self.dismissed_at = datetime.now(timezone.utc)
+        self.dismissed_at = datetime.now(UTC)
         if not self.is_read:
             self.mark_as_read()
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert notification to dictionary for API responses"""
         return {
             "id": self.id,
@@ -195,8 +197,8 @@ class NotificationPreference(Base):
     digest_time = Column(String(5), nullable=False, default="09:00")
     
     # Metadata
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
     
     # Relationships
     user = relationship("User", back_populates="notification_preferences")
@@ -215,13 +217,13 @@ class NotificationPreference(Base):
             self.type_preferences = {}
         self.type_preferences[f"{notification_type}_{channel}"] = enabled
     
-    def is_in_quiet_hours(self, check_time: Optional[datetime] = None) -> bool:
+    def is_in_quiet_hours(self, check_time: datetime | None = None) -> bool:
         """Check if current time (or given time) is in quiet hours"""
         if self.quiet_hours_start is None or self.quiet_hours_end is None:
             return False
         
         if check_time is None:
-            check_time = datetime.now(timezone.utc)
+            check_time = datetime.now(UTC)
         
         # Convert to user's timezone if specified
         # For now, assume UTC (can be enhanced with timezone conversion)
@@ -233,7 +235,7 @@ class NotificationPreference(Base):
         else:
             return self.quiet_hours_start <= time_str <= self.quiet_hours_end
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert preferences to dictionary"""
         return {
             "id": self.id,

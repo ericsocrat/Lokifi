@@ -4,11 +4,13 @@ Create missing database tables with direct SQL
 """
 
 import sqlite3
-from pathlib import Path
 import sys
+from pathlib import Path
+
 sys.path.append('.')
-from app.core.config import Settings
 import logging
+
+from app.core.config import Settings
 
 logger = logging.getLogger(__name__)
 

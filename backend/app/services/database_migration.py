@@ -4,8 +4,10 @@ Handles database schema migrations and updates
 """
 
 import logging
-from typing import Dict, Any, List
+from typing import Any
+
 from sqlalchemy import text
+
 from app.core.database import get_db_session
 
 logger = logging.getLogger(__name__)
@@ -16,7 +18,7 @@ class DatabaseMigrationService:
     def __init__(self):
         self.migrations_applied = []
     
-    async def check_migration_status(self) -> Dict[str, Any]:
+    async def check_migration_status(self) -> dict[str, Any]:
         """Check current migration status"""
         
         try:
@@ -95,7 +97,7 @@ class DatabaseMigrationService:
             logger.error(f"Failed to apply migration {migration_name}: {e}")
             return False
     
-    async def run_migrations(self) -> Dict[str, Any]:
+    async def run_migrations(self) -> dict[str, Any]:
         """Run all pending migrations"""
         
         # Define migrations
@@ -146,6 +148,6 @@ class DatabaseMigrationService:
         logger.warning(f"Rollback requested for {migration_name} - not implemented")
         return False
     
-    def get_applied_migrations(self) -> List[str]:
+    def get_applied_migrations(self) -> list[str]:
         """Get list of applied migrations in this session"""
         return self.migrations_applied.copy()

@@ -1,5 +1,7 @@
-from .base import _get
 from app.core.config import settings
+
+from .base import _get
+
 
 async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
     if not settings.CMC_KEY:

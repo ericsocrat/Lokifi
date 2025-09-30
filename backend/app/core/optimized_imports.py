@@ -2,9 +2,9 @@
 Optimized import management for Phase K components
 """
 
-from typing import Dict, Any, Optional
 import importlib
 import logging
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -12,9 +12,9 @@ class LazyImporter:
     """Lazy import manager for optional dependencies"""
     
     def __init__(self):
-        self._cache: Dict[str, Any] = {}
+        self._cache: dict[str, Any] = {}
     
-    def import_optional(self, module_name: str, package: Optional[str] = None):
+    def import_optional(self, module_name: str, package: str | None = None):
         """Import module with fallback handling"""
         
         if module_name in self._cache:
@@ -29,7 +29,7 @@ class LazyImporter:
             self._cache[module_name] = None
             return None
     
-    def ensure_available(self, module_name: str, install_name: Optional[str] = None):
+    def ensure_available(self, module_name: str, install_name: str | None = None):
         """Ensure module is available or provide installation hint"""
         
         module = self.import_optional(module_name)

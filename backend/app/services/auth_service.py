@@ -3,18 +3,31 @@ Authentication service for user management.
 """
 
 import uuid
-from datetime import datetime, timezone
-from typing import Optional, Dict, Any
+from datetime import UTC, datetime
+from typing import Any
 
+from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
-from app.models.user import User
-from app.models.profile import Profile
+from app.core.security import (
+    create_access_token,
+    create_refresh_token,
+    hash_password,
+    validate_email,
+    validate_password_strength,
+    verify_password,
+)
 from app.models.notification_models import NotificationPreference
-from app.core.security import hash_password, verify_password, create_access_token, create_refresh_token, validate_email, validate_password_strength
-from app.schemas.auth import UserRegisterRequest, UserLoginRequest, UserResponse, ProfileResponse, TokenResponse
+from app.models.profile import Profile
+from app.models.user import User
+from app.schemas.auth import (
+    ProfileResponse,
+    TokenResponse,
+    UserLoginRequest,
+    UserRegisterRequest,
+    UserResponse,
+)
 
 
 class AuthService:
@@ -23,7 +36,7 @@ class AuthService:
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def register_user(self, user_data: UserRegisterRequest) -> Dict[str, Any]:
+    async def register_user(self, user_data: UserRegisterRequest) -> dict[str, Any]:
         """Register a new user."""
         # Validate input
         if not validate_email(user_data.email):
@@ -110,7 +123,7 @@ class AuthService:
             )
         }
     
-    async def login_user(self, login_data: UserLoginRequest) -> Dict[str, Any]:
+    async def login_user(self, login_data: UserLoginRequest) -> dict[str, Any]:
         """Login a user."""
         # Find user by email
         stmt = select(User).where(User.email == login_data.email)
@@ -138,7 +151,7 @@ class AuthService:
             )
         
         # Update last login
-        user.last_login = datetime.now(timezone.utc)
+        user.last_login = datetime.now(UTC)
         await self.db.commit()
         
         # Get user profile
@@ -160,19 +173,19 @@ class AuthService:
             )
         }
     
-    async def get_user_by_id(self, user_id: uuid.UUID) -> Optional[User]:
+    async def get_user_by_id(self, user_id: uuid.UUID) -> User | None:
         """Get user by ID."""
         stmt = select(User).where(User.id == user_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
     
-    async def get_user_by_email(self, email: str) -> Optional[User]:
+    async def get_user_by_email(self, email: str) -> User | None:
         """Get user by email."""
         stmt = select(User).where(User.email == email)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
     
-    async def create_user_from_oauth(self, email: str, full_name: str, google_id: str) -> Dict[str, Any]:
+    async def create_user_from_oauth(self, email: str, full_name: str, google_id: str) -> dict[str, Any]:
         """Create user from OAuth provider."""
         # Check if user already exists with this email
         existing_user = await self.get_user_by_email(email)

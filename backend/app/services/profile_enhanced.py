@@ -3,26 +3,26 @@ Enhanced profile service with additional features.
 """
 
 import uuid
-from typing import Optional, Dict, Any
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
-from sqlalchemy import select, update, func, or_, and_, delete
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
+from sqlalchemy import and_, delete, func, or_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User
-from app.models.profile import Profile
 from app.models.follow import Follow
 from app.models.notification_models import NotificationPreference
+from app.models.profile import Profile
+from app.models.user import User
 from app.schemas.profile import (
-    ProfileUpdateRequest,
-    UserSettingsUpdateRequest,
+    NotificationPreferencesResponse,
     NotificationPreferencesUpdateRequest,
     ProfileResponse,
-    UserSettingsResponse,
-    NotificationPreferencesResponse,
+    ProfileSearchResponse,
+    ProfileUpdateRequest,
     PublicProfileResponse,
-    ProfileSearchResponse
+    UserSettingsResponse,
+    UserSettingsUpdateRequest,
 )
 
 
@@ -32,13 +32,13 @@ class EnhancedProfileService:
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def get_profile_by_user_id(self, user_id: uuid.UUID) -> Optional[Profile]:
+    async def get_profile_by_user_id(self, user_id: uuid.UUID) -> Profile | None:
         """Get profile by user ID."""
         stmt = select(Profile).where(Profile.user_id == user_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
     
-    async def get_profile_by_username(self, username: str) -> Optional[Profile]:
+    async def get_profile_by_username(self, username: str) -> Profile | None:
         """Get profile by username."""
         stmt = select(Profile).where(Profile.username == username)
         result = await self.db.execute(stmt)
@@ -74,7 +74,7 @@ class EnhancedProfileService:
                 update_data[field] = value
         
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now(UTC)
             
             stmt = (
                 update(Profile)
@@ -122,7 +122,7 @@ class EnhancedProfileService:
             update_data["email"] = settings_data.email
         
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now(UTC)
             
             stmt = (
                 update(User)
@@ -184,7 +184,7 @@ class EnhancedProfileService:
                 update_data[field] = value
         
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now(UTC)
             
             stmt = (
                 update(NotificationPreference)
@@ -202,7 +202,7 @@ class EnhancedProfileService:
     async def get_public_profile(
         self, 
         profile_id: uuid.UUID, 
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> PublicProfileResponse:
         """Get public profile information."""
         stmt = select(Profile).where(Profile.id == profile_id)
@@ -253,7 +253,7 @@ class EnhancedProfileService:
         query: str,
         page: int = 1,
         page_size: int = 20,
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> ProfileSearchResponse:
         """Search profiles by username or display name."""
         offset = (page - 1) * page_size
@@ -267,7 +267,7 @@ class EnhancedProfileService:
         # Get profiles with pagination
         stmt = (
             select(Profile)
-            .where(and_(Profile.is_public == True, search_filter))
+            .where(and_(Profile.is_public, search_filter))
             .offset(offset)
             .limit(page_size)
             .order_by(Profile.follower_count.desc(), Profile.username)
@@ -278,7 +278,7 @@ class EnhancedProfileService:
         
         # Get total count
         count_stmt = select(func.count()).select_from(Profile).where(
-            and_(Profile.is_public == True, search_filter)
+            and_(Profile.is_public, search_filter)
         )
         result = await self.db.execute(count_stmt)
         total = result.scalar()
@@ -351,7 +351,7 @@ class EnhancedProfileService:
             await self.db.rollback()
             raise e
     
-    async def export_user_data(self, user_id: uuid.UUID) -> Dict[str, Any]:
+    async def export_user_data(self, user_id: uuid.UUID) -> dict[str, Any]:
         """Export user data for GDPR compliance."""
         # Get user data
         user_stmt = select(User).where(User.id == user_id)
@@ -426,7 +426,7 @@ class EnhancedProfileService:
             }
         }
     
-    async def get_profile_activity_stats(self, user_id: uuid.UUID) -> Dict[str, Any]:
+    async def get_profile_activity_stats(self, user_id: uuid.UUID) -> dict[str, Any]:
         """Get profile activity statistics."""
         # Get basic profile stats
         profile_stmt = select(Profile).where(Profile.user_id == user_id)
@@ -454,7 +454,7 @@ class EnhancedProfileService:
             "following_count": following_count or 0,
             "profile_completeness": self._calculate_profile_completeness(profile),
             "last_updated": profile.updated_at.isoformat(),
-            "account_age_days": (datetime.now(timezone.utc) - profile.created_at).days
+            "account_age_days": (datetime.now(UTC) - profile.created_at).days
         }
     
     def _calculate_profile_completeness(self, profile: Profile) -> float:

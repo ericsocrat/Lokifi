@@ -13,16 +13,17 @@ This module provides:
 """
 
 import asyncio
-import aiohttp
-import websockets
-import time
-import statistics
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
 import json
 import logging
 import random
+import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from typing import Any
+
+import aiohttp
+import websockets
 
 logger = logging.getLogger(__name__)
 
@@ -34,12 +35,12 @@ class LoadTestResult:
     end_time: float
     duration_ms: float
     success: bool
-    status_code: Optional[int] = None
-    error: Optional[str] = None
-    response_size: Optional[int] = None
-    metadata: Dict[str, Any] = None
+    status_code: int | None = None
+    error: str | None = None
+    response_size: int | None = None
+    metadata: dict[str, Any] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 @dataclass
@@ -69,10 +70,10 @@ class LoadTestReport:
     p95_response_time_ms: float
     p99_response_time_ms: float
     error_rate_percent: float
-    results: List[LoadTestResult]
-    resource_usage: Dict[str, Any]
+    results: list[LoadTestResult]
+    resource_usage: dict[str, Any]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'start_time': self.start_time.isoformat(),
@@ -90,10 +91,10 @@ class WebSocketLoadTester:
 
     def __init__(self, base_url: str = "ws://localhost:8000"):
         self.base_url = base_url
-        self.connections: List[websockets.WebSocketServerProtocol] = []
-        self.results: List[LoadTestResult] = []
+        self.connections: list[websockets.WebSocketServerProtocol] = []
+        self.results: list[LoadTestResult] = []
 
-    async def simulate_user_connection(self, user_id: str, duration_seconds: int) -> List[LoadTestResult]:
+    async def simulate_user_connection(self, user_id: str, duration_seconds: int) -> list[LoadTestResult]:
         """Simulate a single user's WebSocket connection and interactions"""
         results = []
         
@@ -144,7 +145,7 @@ class WebSocketLoadTester:
                                     response_size=len(response),
                                     metadata={"message_count": message_count, "user_id": user_id}
                                 ))
-                            except asyncio.TimeoutError:
+                            except TimeoutError:
                                 results.append(LoadTestResult(
                                     operation="websocket_message",
                                     start_time=msg_start,
@@ -185,7 +186,7 @@ class WebSocketLoadTester:
     async def run_load_test(self, scenario: LoadTestScenario) -> LoadTestReport:
         """Run WebSocket load test scenario"""
         logger.info(f"Starting WebSocket load test: {scenario.name}")
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         
         all_results = []
         tasks = []
@@ -217,13 +218,13 @@ class WebSocketLoadTester:
             elif isinstance(result, Exception):
                 logger.error(f"Task failed: {result}")
 
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         
         # Generate report
         return self._generate_report(scenario, start_time, end_time, all_results)
 
     def _generate_report(self, scenario: LoadTestScenario, start_time: datetime, 
-                        end_time: datetime, results: List[LoadTestResult]) -> LoadTestReport:
+                        end_time: datetime, results: list[LoadTestResult]) -> LoadTestReport:
         """Generate comprehensive load test report"""
         
         if not results:
@@ -284,7 +285,7 @@ class APILoadTester:
 
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: aiohttp.ClientSession | None = None
 
     async def __aenter__(self):
         self.session = aiohttp.ClientSession()
@@ -294,7 +295,7 @@ class APILoadTester:
         if self.session:
             await self.session.close()
 
-    async def simulate_api_user(self, user_id: str, scenario: LoadTestScenario) -> List[LoadTestResult]:
+    async def simulate_api_user(self, user_id: str, scenario: LoadTestScenario) -> list[LoadTestResult]:
         """Simulate API user with realistic usage patterns"""
         results = []
         
@@ -371,7 +372,7 @@ class APILoadTester:
     async def run_load_test(self, scenario: LoadTestScenario) -> LoadTestReport:
         """Run API load test scenario"""
         logger.info(f"Starting API load test: {scenario.name}")
-        start_time = datetime.now(timezone.utc)
+        start_time = datetime.now(UTC)
         
         all_results = []
         tasks = []
@@ -390,7 +391,7 @@ class APILoadTester:
             if isinstance(result, list):
                 all_results.extend(result)
 
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         
         # Generate report using WebSocket tester's method (reusable)
         ws_tester = WebSocketLoadTester()
@@ -407,7 +408,7 @@ class ComprehensiveLoadTester:
     def __init__(self):
         self.websocket_tester = WebSocketLoadTester()
         self.api_tester = APILoadTester()
-        self.results: Dict[str, LoadTestReport] = {}
+        self.results: dict[str, LoadTestReport] = {}
 
     async def run_websocket_load_test(self, concurrent_connections: int = 1000, 
                                     duration_minutes: int = 5) -> LoadTestReport:
@@ -444,7 +445,7 @@ class ComprehensiveLoadTester:
             self.results[scenario.name] = report
             return report
 
-    async def run_comprehensive_load_test(self) -> Dict[str, LoadTestReport]:
+    async def run_comprehensive_load_test(self) -> dict[str, LoadTestReport]:
         """Run comprehensive system load test across all components"""
         logger.info("Starting comprehensive system load test")
         
@@ -458,7 +459,7 @@ class ComprehensiveLoadTester:
         logger.info("Comprehensive load test completed")
         return self.results
 
-    def generate_summary_report(self) -> Dict[str, Any]:
+    def generate_summary_report(self) -> dict[str, Any]:
         """Generate summary report across all load tests"""
         if not self.results:
             return {"error": "No load test results available"}

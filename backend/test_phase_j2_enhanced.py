@@ -3,10 +3,11 @@ Integration tests for Enhanced Profile Features (Phase J2)
 Tests avatar upload, data export, and advanced profile functionality
 """
 
-from PIL import Image
-import requests
 import io
 import time
+
+import requests
+from PIL import Image
 
 BASE_URL = "http://localhost:8000"
 

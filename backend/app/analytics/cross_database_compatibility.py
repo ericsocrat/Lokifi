@@ -4,12 +4,13 @@ Provides cross-database compatibility for analytics queries with fallback strate
 """
 
 import logging
-from typing import Any, Dict, List, Optional
-from sqlalchemy import text, func, String
+from datetime import datetime, timedelta
+from typing import Any
+
+from sqlalchemy import String, func, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ClauseElement
-from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ class AnalyticsQueryBuilder:
         self.query_builder = CrossDatabaseQuery(self.dialect)
         logger.info(f"Analytics initialized for dialect: {self.dialect}")
     
-    def user_activity_by_hour(self, session: Session, days_back: int = 7) -> List[Dict[str, Any]]:
+    def user_activity_by_hour(self, session: Session, days_back: int = 7) -> list[dict[str, Any]]:
         """Get user activity grouped by hour with cross-database compatibility"""
         
         try:
@@ -200,7 +201,7 @@ class AnalyticsQueryBuilder:
             logger.error(f"Error in user_activity_by_hour: {e}")
             return self._fallback_user_activity(session, days_back)
     
-    def notification_analytics(self, session: Session, days_back: int = 30) -> Dict[str, Any]:
+    def notification_analytics(self, session: Session, days_back: int = 30) -> dict[str, Any]:
         """Get notification analytics with cross-database compatibility"""
         
         try:
@@ -282,7 +283,7 @@ class AnalyticsQueryBuilder:
             logger.error(f"Error in notification_analytics: {e}")
             return self._fallback_notification_analytics(session, days_back)
     
-    def user_engagement_metrics(self, session: Session, days_back: int = 30) -> Dict[str, Any]:
+    def user_engagement_metrics(self, session: Session, days_back: int = 30) -> dict[str, Any]:
         """Get user engagement metrics with cross-database compatibility"""
         
         try:
@@ -337,7 +338,7 @@ class AnalyticsQueryBuilder:
             logger.error(f"Error in user_engagement_metrics: {e}")
             return self._fallback_user_engagement(session, days_back)
     
-    def message_analytics(self, session: Session, days_back: int = 7) -> Dict[str, Any]:
+    def message_analytics(self, session: Session, days_back: int = 7) -> dict[str, Any]:
         """Get message analytics with cross-database compatibility"""
         
         try:
@@ -396,7 +397,7 @@ class AnalyticsQueryBuilder:
     
     # Fallback methods for when complex queries fail
     
-    def _fallback_user_activity(self, session: Session, days_back: int) -> List[Dict[str, Any]]:
+    def _fallback_user_activity(self, session: Session, days_back: int) -> list[dict[str, Any]]:
         """Simplified fallback for user activity"""
         logger.info("Using fallback user activity query")
         
@@ -428,7 +429,7 @@ class AnalyticsQueryBuilder:
             logger.error(f"Fallback user activity failed: {e}")
             return []
     
-    def _fallback_notification_analytics(self, session: Session, days_back: int) -> Dict[str, Any]:
+    def _fallback_notification_analytics(self, session: Session, days_back: int) -> dict[str, Any]:
         """Simplified fallback for notification analytics"""
         logger.info("Using fallback notification analytics")
         
@@ -458,7 +459,7 @@ class AnalyticsQueryBuilder:
             logger.error(f"Fallback notification analytics failed: {e}")
             return {"error": "All analytics queries failed", "fallback": True}
     
-    def _fallback_user_engagement(self, session: Session, days_back: int) -> Dict[str, Any]:
+    def _fallback_user_engagement(self, session: Session, days_back: int) -> dict[str, Any]:
         """Simplified fallback for user engagement"""
         logger.info("Using fallback user engagement query")
         
@@ -472,7 +473,7 @@ class AnalyticsQueryBuilder:
             "fallback": True
         }
     
-    def _fallback_message_analytics(self, session: Session, days_back: int) -> Dict[str, Any]:
+    def _fallback_message_analytics(self, session: Session, days_back: int) -> dict[str, Any]:
         """Simplified fallback for message analytics"""
         logger.info("Using fallback message analytics")
         
@@ -491,7 +492,7 @@ class CompatibilityTester:
         self.engine = engine
         self.dialect = DatabaseDialect.detect_dialect(engine)
     
-    def test_basic_queries(self, session: Session) -> Dict[str, bool]:
+    def test_basic_queries(self, session: Session) -> dict[str, bool]:
         """Test basic query compatibility"""
         
         tests = {}
@@ -536,7 +537,7 @@ class CompatibilityTester:
         
         return tests
     
-    def get_compatibility_report(self, session: Session) -> Dict[str, Any]:
+    def get_compatibility_report(self, session: Session) -> dict[str, Any]:
         """Get comprehensive compatibility report"""
         
         test_results = self.test_basic_queries(session)
@@ -565,7 +566,7 @@ class CompatibilityTester:
         }
 
 # Global analytics instance (to be initialized with engine)
-analytics_query_builder: Optional[AnalyticsQueryBuilder] = None
+analytics_query_builder: AnalyticsQueryBuilder | None = None
 
 def initialize_analytics(engine: Engine):
     """Initialize analytics with database engine"""

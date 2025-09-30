@@ -3,8 +3,9 @@
 Quick server startup test without problematic components
 """
 
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 async def test_minimal_server():

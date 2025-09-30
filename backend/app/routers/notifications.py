@@ -1,17 +1,18 @@
 # J6 Enterprise Notifications - REST API Router
-from fastapi import APIRouter, HTTPException, Depends, Query, BackgroundTasks, Request
-from fastapi.responses import JSONResponse
-from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field
-from datetime import datetime, timezone
 import logging
+from datetime import UTC, datetime
+from typing import Any
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from app.core.auth_deps import get_current_user
-from app.models.user import User
-from app.services.notification_service import notification_service
-from app.models.notification_models import NotificationPriority
-from app.services.notification_emitter import notification_emitter
 from app.core.redis_cache import cache_notifications
+from app.models.notification_models import NotificationPriority
+from app.models.user import User
+from app.services.notification_emitter import notification_emitter
+from app.services.notification_service import notification_service
 
 logger = logging.getLogger(__name__)
 
@@ -22,32 +23,32 @@ class NotificationResponse(BaseModel):
     user_id: str
     type: str
     priority: str
-    category: Optional[str]
+    category: str | None
     title: str
-    message: Optional[str]
-    payload: Optional[Dict[str, Any]]
+    message: str | None
+    payload: dict[str, Any] | None
     created_at: str
-    read_at: Optional[str]
-    delivered_at: Optional[str]
-    clicked_at: Optional[str]
-    dismissed_at: Optional[str]
+    read_at: str | None
+    delivered_at: str | None
+    clicked_at: str | None
+    dismissed_at: str | None
     is_read: bool
     is_delivered: bool
     is_dismissed: bool
     is_archived: bool
-    expires_at: Optional[str]
-    related_entity_type: Optional[str]
-    related_entity_id: Optional[str]
+    expires_at: str | None
+    related_entity_type: str | None
+    related_entity_id: str | None
     age_seconds: int
     is_expired: bool
 
 class NotificationListResponse(BaseModel):
     """Response model for notification lists"""
-    notifications: List[NotificationResponse]
+    notifications: list[NotificationResponse]
     total_count: int
     unread_count: int
     has_more: bool
-    next_offset: Optional[int]
+    next_offset: int | None
 
 class NotificationStatsResponse(BaseModel):
     """Response model for notification statistics"""
@@ -57,24 +58,24 @@ class NotificationStatsResponse(BaseModel):
     dismissed_count: int
     delivered_count: int
     clicked_count: int
-    by_type: Dict[str, int]
-    by_priority: Dict[str, int]
+    by_type: dict[str, int]
+    by_priority: dict[str, int]
     avg_read_time_seconds: float
-    most_recent: Optional[str]
-    oldest_unread: Optional[str]
+    most_recent: str | None
+    oldest_unread: str | None
 
 class NotificationPreferencesRequest(BaseModel):
     """Request model for updating notification preferences"""
-    email_enabled: Optional[bool] = None
-    push_enabled: Optional[bool] = None
-    in_app_enabled: Optional[bool] = None
-    quiet_hours_start: Optional[str] = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
-    quiet_hours_end: Optional[str] = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
-    timezone: Optional[str] = None
-    daily_digest_enabled: Optional[bool] = None
-    weekly_digest_enabled: Optional[bool] = None
-    digest_time: Optional[str] = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
-    type_preferences: Optional[Dict[str, bool]] = None
+    email_enabled: bool | None = None
+    push_enabled: bool | None = None
+    in_app_enabled: bool | None = None
+    quiet_hours_start: str | None = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    quiet_hours_end: str | None = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    timezone: str | None = None
+    daily_digest_enabled: bool | None = None
+    weekly_digest_enabled: bool | None = None
+    digest_time: str | None = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    type_preferences: dict[str, bool] | None = None
 
 class NotificationPreferencesResponse(BaseModel):
     """Response model for notification preferences"""
@@ -83,9 +84,9 @@ class NotificationPreferencesResponse(BaseModel):
     email_enabled: bool
     push_enabled: bool
     in_app_enabled: bool
-    type_preferences: Dict[str, Any]
-    quiet_hours_start: Optional[str]
-    quiet_hours_end: Optional[str]
+    type_preferences: dict[str, Any]
+    quiet_hours_start: str | None
+    quiet_hours_end: str | None
     timezone: str
     daily_digest_enabled: bool
     weekly_digest_enabled: bool
@@ -95,13 +96,13 @@ class NotificationPreferencesResponse(BaseModel):
 
 class MarkAsReadRequest(BaseModel):
     """Request model for marking notifications as read"""
-    notification_ids: Optional[List[str]] = None  # If None, marks all as read
+    notification_ids: list[str] | None = None  # If None, marks all as read
 
 class TestNotificationRequest(BaseModel):
     """Request model for creating test notifications"""
     type: str = "system_alert"
     title: str = "Test Notification"
-    message: Optional[str] = "This is a test notification from the system."
+    message: str | None = "This is a test notification from the system."
     priority: str = "normal"
 
 # Create router
@@ -114,8 +115,8 @@ async def get_notifications(
     limit: int = Query(50, ge=1, le=100, description="Number of notifications to retrieve"),
     offset: int = Query(0, ge=0, description="Pagination offset"),
     unread_only: bool = Query(False, description="Only return unread notifications"),
-    type_filter: Optional[str] = Query(None, description="Filter by notification type"),
-    category_filter: Optional[str] = Query(None, description="Filter by category"),
+    type_filter: str | None = Query(None, description="Filter by notification type"),
+    category_filter: str | None = Query(None, description="Filter by category"),
     include_dismissed: bool = Query(False, description="Include dismissed notifications"),
     current_user: User = Depends(get_current_user)
 ):
@@ -170,7 +171,7 @@ async def get_unread_count(request: Request, current_user: User = Depends(get_cu
         return JSONResponse(content={
             "unread_count": unread_count,
             "user_id": current_user.id,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         })
         
     except Exception as e:
@@ -334,8 +335,8 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
             "daily_digest_enabled": False,
             "weekly_digest_enabled": False,
             "digest_time": "09:00",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "created_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat()
         }
         
         return NotificationPreferencesResponse(**default_preferences)

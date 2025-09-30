@@ -1,15 +1,16 @@
 # J5.3 Advanced Storage Analytics and Optimization Service
-from sqlalchemy import text, select, func
-from datetime import datetime, timedelta
-from typing import Dict, Optional, List, Any
 import logging
-from dataclasses import dataclass, asdict
 import statistics
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any
 
-from app.db.models import AIThread, AIMessage, User
-from app.core.database import get_db_session
+from sqlalchemy import func, select, text
+
 from app.core.config import Settings
+from app.core.database import get_db_session
+from app.db.models import AIMessage, AIThread, User
 
 logger = logging.getLogger(__name__)
 
@@ -52,12 +53,12 @@ class AdvancedStorageMetrics:
     largest_thread_size_mb: float = 0.0
     
     # AI provider analytics
-    provider_usage: Dict[str, int] = None
-    model_usage: Dict[str, int] = None
+    provider_usage: dict[str, int] | None = None
+    model_usage: dict[str, int] | None = None
     
     # Time-based analytics
-    peak_hours: Optional[List[int]] = None
-    peak_days: Optional[List[str]] = None
+    peak_hours: list[int] | None = None
+    peak_days: list[str] | None = None
     
     # Storage prediction
     predicted_size_30_days: float = 0.0
@@ -87,7 +88,7 @@ class OptimizationRecommendation:
     description: str
     potential_savings_mb: float
     effort_level: str  # EASY, MEDIUM, HARD
-    implementation_steps: List[str]
+    implementation_steps: list[str]
     estimated_time_minutes: int
 
 @dataclass
@@ -234,7 +235,7 @@ class AdvancedStorageAnalytics:
                     ) or 0
                     archive_ratio = archived_count / (metrics.total_messages + archived_count + 1)
                     score_factors.append(min(archive_ratio * 100, 30))  # Max 30 points
-                except:
+                except (ZeroDivisionError, AttributeError, TypeError):
                     score_factors.append(0)
                 
                 # Distribution balance (lower variance is better)
@@ -268,7 +269,7 @@ class AdvancedStorageAnalytics:
     async def generate_optimization_recommendations(
         self, 
         metrics: AdvancedStorageMetrics
-    ) -> List[OptimizationRecommendation]:
+    ) -> list[OptimizationRecommendation]:
         """Generate storage optimization recommendations"""
         recommendations = []
         
@@ -349,7 +350,7 @@ class AdvancedStorageAnalytics:
             ))
         
         # Provider optimization recommendation
-        if len(metrics.provider_usage) > 1:
+        if metrics.provider_usage and len(metrics.provider_usage) > 1:
             inefficient_providers = []
             total_messages = sum(metrics.provider_usage.values())
             
@@ -380,7 +381,7 @@ class AdvancedStorageAnalytics:
         
         return recommendations
     
-    async def benchmark_database_performance(self) -> List[PerformanceBenchmark]:
+    async def benchmark_database_performance(self) -> list[PerformanceBenchmark]:
         """Benchmark key database operations"""
         benchmarks = []
         
@@ -427,7 +428,7 @@ class AdvancedStorageAnalytics:
                 
         return benchmarks
     
-    async def analyze_data_patterns(self) -> Dict[str, Any]:
+    async def analyze_data_patterns(self) -> dict[str, Any]:
         """Analyze data usage patterns for optimization"""
         patterns = {
             "temporal_distribution": {},
@@ -519,7 +520,7 @@ class AdvancedStorageAnalytics:
             
         return patterns
     
-    async def generate_storage_report(self) -> Dict[str, Any]:
+    async def generate_storage_report(self) -> dict[str, Any]:
         """Generate comprehensive storage analysis report"""
         logger.info("🔍 Generating J5.3 advanced storage analytics report...")
         

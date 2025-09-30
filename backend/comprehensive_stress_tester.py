@@ -5,17 +5,18 @@ Implements comprehensive load testing scenarios with detailed metrics
 """
 
 import asyncio
-import aiohttp
-import time
-import random
-import json
-import statistics
-import psutil
 import gc
-from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, asdict
+import json
 import logging
+import random
+import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import datetime
+from typing import Any
+
+import aiohttp
+import psutil
 import websockets
 
 # Configure logging
@@ -41,7 +42,7 @@ class StressTestResult:
     memory_end_mb: float
     memory_peak_mb: float
     cpu_avg_percent: float
-    errors: List[str]
+    errors: list[str]
 
 @dataclass 
 class LoadTestConfig:
@@ -52,8 +53,8 @@ class LoadTestConfig:
     duration_seconds: int
     endpoint: str
     method: str = "GET"
-    payload: Optional[Dict] = None
-    headers: Optional[Dict] = None
+    payload: dict | None = None
+    headers: dict | None = None
     ramp_up_seconds: int = 0
 
 class AdvancedStressTester:
@@ -61,8 +62,8 @@ class AdvancedStressTester:
     
     def __init__(self, base_url: str = "http://localhost:8001"):
         self.base_url = base_url
-        self.results: List[StressTestResult] = []
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.results: list[StressTestResult] = []
+        self.session: aiohttp.ClientSession | None = None
         
     async def initialize(self):
         """Initialize the stress tester"""
@@ -110,7 +111,7 @@ class AdvancedStressTester:
         start_time = time.time()
         end_time = start_time + config.duration_seconds
         
-        async def make_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaphore) -> Tuple[bool, float, Optional[str]]:
+        async def make_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaphore) -> tuple[bool, float, str | None]:
             """Make a single HTTP request"""
             async with semaphore:
                 request_start = time.time()
@@ -168,7 +169,7 @@ class AdvancedStressTester:
                 current_memory = process.memory_info().rss / 1024 / 1024
                 memory_peak = max(memory_peak, current_memory)
                 cpu_samples.append(process.cpu_percent())
-            except:
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
                 pass  # Skip if monitoring fails
             
             # Small delay to prevent overwhelming
@@ -307,7 +308,7 @@ class AdvancedStressTester:
                                 recv_time = time.time()
                                 response_times.append((recv_time - send_time) * 1000)
                                 messages_received += 1
-                            except asyncio.TimeoutError:
+                            except TimeoutError:
                                 errors.append("WebSocket receive timeout")
                             
                             await asyncio.sleep(random.uniform(0.5, 2.0))  # Variable delay
@@ -332,7 +333,7 @@ class AdvancedStressTester:
                 current_memory = process.memory_info().rss / 1024 / 1024
                 memory_peak = max(memory_peak, current_memory)
                 cpu_samples.append(process.cpu_percent())
-            except:
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
                 pass
             
             print(f"   📊 Connections: {successful_connections}/{concurrent_connections}, Messages: {messages_sent}→{messages_received}")
@@ -385,7 +386,7 @@ class AdvancedStressTester:
         
         return result
     
-    async def run_comprehensive_stress_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_stress_tests(self) -> dict[str, Any]:
         """Run all comprehensive stress test scenarios"""
         
         print("🚀 STARTING COMPREHENSIVE STRESS TESTS")
@@ -498,7 +499,7 @@ class AdvancedStressTester:
         
         return self.generate_comprehensive_report()
     
-    def generate_comprehensive_report(self) -> Dict[str, Any]:
+    def generate_comprehensive_report(self) -> dict[str, Any]:
         """Generate comprehensive test report"""
         
         if not self.results:
@@ -555,7 +556,7 @@ class AdvancedStressTester:
         
         return report
     
-    def _generate_recommendations(self, success_rate: float, avg_rps: float, avg_response_time: float, memory_growth: float) -> List[str]:
+    def _generate_recommendations(self, success_rate: float, avg_rps: float, avg_response_time: float, memory_growth: float) -> list[str]:
         """Generate performance recommendations"""
         recommendations = []
         

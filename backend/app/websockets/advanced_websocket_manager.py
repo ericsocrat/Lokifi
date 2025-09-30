@@ -12,11 +12,11 @@ import asyncio
 import json
 import logging
 import time
-from typing import Dict, List, Set, Optional, Any
-from datetime import datetime, timezone
-from dataclasses import dataclass
-from collections import defaultdict, deque
 import uuid
+from collections import defaultdict, deque
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
@@ -40,7 +40,7 @@ class ConnectionMetrics:
     avg_response_time: float = 0.0
     
     def update_activity(self):
-        self.last_activity = datetime.now(timezone.utc)
+        self.last_activity = datetime.now(UTC)
     
     def record_sent(self, bytes_count: int):
         self.messages_sent += 1
@@ -59,12 +59,12 @@ class ConnectionInfo:
     user_id: str
     connection_id: str
     metrics: ConnectionMetrics
-    rooms: Set[str]
-    subscriptions: Set[str]
-    client_info: Dict[str, Any]
+    rooms: set[str]
+    subscriptions: set[str]
+    client_info: dict[str, Any]
     priority: int = 0  # For load balancing
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'connection_id': self.connection_id,
             'user_id': self.user_id,
@@ -82,9 +82,9 @@ class ConnectionPool:
     
     def __init__(self, max_connections: int = 10000):
         self.max_connections = max_connections
-        self.connections: Dict[str, ConnectionInfo] = {}
-        self.user_connections: Dict[str, Set[str]] = defaultdict(set)
-        self.room_connections: Dict[str, Set[str]] = defaultdict(set)
+        self.connections: dict[str, ConnectionInfo] = {}
+        self.user_connections: dict[str, set[str]] = defaultdict(set)
+        self.room_connections: dict[str, set[str]] = defaultdict(set)
         self.connection_queue = deque()
         self.stats = {
             'total_connections': 0,
@@ -97,8 +97,8 @@ class ConnectionPool:
         self, 
         websocket: WebSocket, 
         user_id: str, 
-        client_info: Optional[Dict[str, Any]] = None
-    ) -> Optional[str]:
+        client_info: dict[str, Any] | None = None
+    ) -> str | None:
         """Add new WebSocket connection with enhanced tracking"""
         
         if len(self.connections) >= self.max_connections:
@@ -108,8 +108,8 @@ class ConnectionPool:
         connection_id = str(uuid.uuid4())
         
         metrics = ConnectionMetrics(
-            connected_at=datetime.now(timezone.utc),
-            last_activity=datetime.now(timezone.utc)
+            connected_at=datetime.now(UTC),
+            last_activity=datetime.now(UTC)
         )
         
         connection_info = ConnectionInfo(
@@ -194,12 +194,12 @@ class ConnectionPool:
         await self._update_connection_rooms(connection_id, self.connections[connection_id].rooms)
         return True
     
-    def get_user_connections(self, user_id: str) -> List[ConnectionInfo]:
+    def get_user_connections(self, user_id: str) -> list[ConnectionInfo]:
         """Get all connections for a user"""
         connection_ids = self.user_connections.get(user_id, set())
         return [self.connections[cid] for cid in connection_ids if cid in self.connections]
     
-    def get_room_connections(self, room: str) -> List[ConnectionInfo]:
+    def get_room_connections(self, room: str) -> list[ConnectionInfo]:
         """Get all connections in a room"""
         connection_ids = self.room_connections.get(room, set())
         return [self.connections[cid] for cid in connection_ids if cid in self.connections]
@@ -224,7 +224,7 @@ class ConnectionPool:
         except Exception as e:
             logger.error(f"Failed to remove connection info from Redis: {e}")
     
-    async def _update_connection_rooms(self, connection_id: str, rooms: Set[str]):
+    async def _update_connection_rooms(self, connection_id: str, rooms: set[str]):
         """Update connection room membership in Redis"""
         try:
             await advanced_redis_client.set_with_layer(
@@ -236,7 +236,7 @@ class ConnectionPool:
         except Exception as e:
             logger.error(f"Failed to update connection rooms in Redis: {e}")
     
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get connection pool statistics"""
         active_users = len(self.user_connections)
         active_rooms = len(self.room_connections)
@@ -341,8 +341,8 @@ class AdvancedWebSocketManager:
         self, 
         websocket: WebSocket, 
         user_id: str, 
-        client_info: Optional[Dict[str, Any]] = None
-    ) -> Optional[str]:
+        client_info: dict[str, Any] | None = None
+    ) -> str | None:
         """Connect a new WebSocket with enhanced tracking"""
         
         try:
@@ -365,7 +365,7 @@ class AdvancedWebSocketManager:
                 "data": {
                     "connection_id": connection_id,
                     "user_id": user_id,
-                    "server_time": datetime.now(timezone.utc).isoformat(),
+                    "server_time": datetime.now(UTC).isoformat(),
                     "features": ["notifications", "real_time_updates", "analytics"]
                 }
             }
@@ -377,7 +377,7 @@ class AdvancedWebSocketManager:
                 'type': 'connect',
                 'user_id': user_id,
                 'connection_id': connection_id,
-                'timestamp': datetime.now(timezone.utc).isoformat()
+                'timestamp': datetime.now(UTC).isoformat()
             })
             
             return connection_id
@@ -411,9 +411,9 @@ class AdvancedWebSocketManager:
                     'user_id': connection_info.user_id,
                     'connection_id': connection_id,
                     'session_duration': (
-                        datetime.now(timezone.utc) - connection_info.metrics.connected_at
+                        datetime.now(UTC) - connection_info.metrics.connected_at
                     ).total_seconds(),
-                    'timestamp': datetime.now(timezone.utc).isoformat()
+                    'timestamp': datetime.now(UTC).isoformat()
                 })
             
             await self.connection_pool.remove_connection(connection_id)
@@ -424,7 +424,7 @@ class AdvancedWebSocketManager:
     async def send_to_user(
         self, 
         user_id: str, 
-        message: Dict[str, Any], 
+        message: dict[str, Any], 
         priority: int = 0
     ) -> int:
         """Send message to all connections of a user with priority support"""
@@ -447,8 +447,8 @@ class AdvancedWebSocketManager:
     async def broadcast_to_room(
         self, 
         room: str, 
-        message: Dict[str, Any], 
-        exclude_user_id: Optional[str] = None
+        message: dict[str, Any], 
+        exclude_user_id: str | None = None
     ) -> int:
         """Broadcast message to all connections in a room"""
         
@@ -480,12 +480,12 @@ class AdvancedWebSocketManager:
             'connections': len(connections),
             'sent': sent_count,
             'duration': duration,
-            'timestamp': datetime.now(timezone.utc).isoformat()
+            'timestamp': datetime.now(UTC).isoformat()
         })
         
         return sent_count
     
-    async def _send_to_connection(self, connection_id: str, message: Dict[str, Any]):
+    async def _send_to_connection(self, connection_id: str, message: dict[str, Any]):
         """Send message to specific connection"""
         
         connection_info = self.connection_pool.connections.get(connection_id)
@@ -548,12 +548,12 @@ class AdvancedWebSocketManager:
         pong_message = {
             "type": "pong",
             "data": {
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(UTC).isoformat()
             }
         }
         await self._send_to_connection(connection_id, pong_message)
     
-    async def _handle_subscribe(self, connection_id: str, data: Dict[str, Any]):
+    async def _handle_subscribe(self, connection_id: str, data: dict[str, Any]):
         """Handle subscription request"""
         subscription = data.get('subscription')
         if subscription:
@@ -567,7 +567,7 @@ class AdvancedWebSocketManager:
                 }
                 await self._send_to_connection(connection_id, response)
     
-    async def _handle_unsubscribe(self, connection_id: str, data: Dict[str, Any]):
+    async def _handle_unsubscribe(self, connection_id: str, data: dict[str, Any]):
         """Handle unsubscription request"""
         subscription = data.get('subscription')
         if subscription:
@@ -581,7 +581,7 @@ class AdvancedWebSocketManager:
                 }
                 await self._send_to_connection(connection_id, response)
     
-    async def _handle_join_room(self, connection_id: str, data: Dict[str, Any]):
+    async def _handle_join_room(self, connection_id: str, data: dict[str, Any]):
         """Handle room join request"""
         room = data.get('room')
         if room:
@@ -593,7 +593,7 @@ class AdvancedWebSocketManager:
             }
             await self._send_to_connection(connection_id, response)
     
-    async def _handle_leave_room(self, connection_id: str, data: Dict[str, Any]):
+    async def _handle_leave_room(self, connection_id: str, data: dict[str, Any]):
         """Handle room leave request"""
         room = data.get('room')
         if room:
@@ -605,7 +605,7 @@ class AdvancedWebSocketManager:
             }
             await self._send_to_connection(connection_id, response)
     
-    async def _handle_subscribe(self, connection_id: str, data: Dict[str, Any]):
+    async def _handle_subscribe(self, connection_id: str, data: dict[str, Any]):
         """Handle subscription request"""
         subscription = data.get('subscription')
         if subscription:
@@ -619,7 +619,7 @@ class AdvancedWebSocketManager:
                 }
                 await self._send_to_connection(connection_id, response)
     
-    async def _handle_join_room(self, connection_id: str, data: Dict[str, Any]):
+    async def _handle_join_room(self, connection_id: str, data: dict[str, Any]):
         """Handle room join request"""
         room = data.get('room')
         if room:
@@ -666,7 +666,7 @@ class AdvancedWebSocketManager:
                 await asyncio.sleep(60)  # Every minute
                 
                 stale_connections = []
-                current_time = datetime.now(timezone.utc)
+                current_time = datetime.now(UTC)
                 
                 for connection_id, connection_info in self.connection_pool.connections.items():
                     # Check for stale connections (no activity for 10 minutes)
@@ -700,7 +700,7 @@ class AdvancedWebSocketManager:
             except Exception as e:
                 logger.error(f"Performance monitoring error: {e}")
     
-    def get_analytics(self) -> Dict[str, Any]:
+    def get_analytics(self) -> dict[str, Any]:
         """Get comprehensive WebSocket analytics"""
         
         stats = self.connection_pool.get_stats()

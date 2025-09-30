@@ -19,7 +19,8 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
+
 import yaml
 
 # Add the backend directory to the Python path
@@ -27,11 +28,11 @@ backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
 try:
-    import docker
-    import psutil
     import aiofiles
+    import docker
     import httpx
-    from prometheus_client import CollectorRegistry, Gauge, Counter, Histogram, generate_latest
+    import psutil
+    from prometheus_client import CollectorRegistry, Counter, Gauge, Histogram, generate_latest
 except ImportError as e:
     print(f"❌ Import Error: {e}")
     print("Install missing dependencies: pip install docker psutil aiofiles httpx prometheus_client")
@@ -698,7 +699,7 @@ print_success "✅ Backup process completed"
             self.print_error(f"Deployment scripts creation failed: {e}")
             return False
     
-    async def collect_system_metrics(self) -> Dict[str, Any]:
+    async def collect_system_metrics(self) -> dict[str, Any]:
         """Collect current system metrics"""
         self.print_section("System Metrics Collection")
         
@@ -746,7 +747,7 @@ print_success "✅ Backup process completed"
                             metrics_response = await client.get("http://localhost:8002/metrics", timeout=5)
                             if metrics_response.status_code == 200:
                                 metrics["application"]["prometheus_metrics"] = True
-                        except:
+                        except (httpx.RequestError, httpx.TimeoutException):
                             metrics["application"]["prometheus_metrics"] = False
                     else:
                         metrics["application"]["status"] = "unhealthy"
@@ -786,7 +787,7 @@ print_success "✅ Backup process completed"
             self.print_error(f"Metrics collection failed: {e}")
             return metrics
     
-    async def health_check_all_services(self) -> Dict[str, Any]:
+    async def health_check_all_services(self) -> dict[str, Any]:
         """Comprehensive health check of all services"""
         self.print_section("Comprehensive Health Check")
         
@@ -856,7 +857,7 @@ print_success "✅ Backup process completed"
         
         return health_status
     
-    async def generate_monitoring_report(self) -> Dict[str, Any]:
+    async def generate_monitoring_report(self) -> dict[str, Any]:
         """Generate comprehensive monitoring report"""
         self.print_section("Monitoring Report Generation")
         

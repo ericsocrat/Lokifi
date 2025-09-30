@@ -5,32 +5,40 @@ J6.1 Enhanced with notification integration.
 Handles AI thread creation, messaging, and provider management.
 """
 
-import logging
 import base64
-from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
-from fastapi.responses import StreamingResponse, Response
-from sqlalchemy.orm import Session
 import json
+import logging
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import Response, StreamingResponse
+from sqlalchemy.orm import Session
+
 from app.api.deps import get_current_user, get_db
-from app.db.models import User, AIMessage
+from app.db.models import AIMessage, User
 from app.schemas.ai_schemas import (
+    AIChatRequest,
+    AIMessageResponse,
+    AIProviderStatusResponse,
     AIThreadCreate,
     AIThreadResponse,
-    AIMessageResponse,
-    AIChatRequest,
-    AIProviderStatusResponse,
+    AIThreadUpdate,
     RateLimitResponse,
-    AIThreadUpdate
 )
-from app.services.ai_service import ai_service, RateLimitError, SafetyFilterError
-from app.services.ai_provider import StreamChunk, ProviderError
-from app.services.conversation_export import conversation_exporter, conversation_importer, ExportOptions
 from app.services.ai_analytics import ai_analytics_service
 from app.services.ai_context_manager import ai_context_manager
-from app.services.multimodal_ai_service import multimodal_ai_service, FileProcessingError, UnsupportedFileTypeError
+from app.services.ai_provider import ProviderError, StreamChunk
+from app.services.ai_service import RateLimitError, SafetyFilterError, ai_service
+from app.services.conversation_export import (
+    ExportOptions,
+    conversation_exporter,
+    conversation_importer,
+)
+from app.services.multimodal_ai_service import (
+    FileProcessingError,
+    UnsupportedFileTypeError,
+    multimodal_ai_service,
+)
 
 # J6.1 Notification Integration
 from setup_j6_integration import trigger_ai_response_notification
@@ -61,7 +69,7 @@ async def create_thread(
         )
 
 
-@router.get("/threads", response_model=List[AIThreadResponse])
+@router.get("/threads", response_model=list[AIThreadResponse])
 async def get_threads(
     limit: int = 50,
     offset: int = 0,
@@ -84,7 +92,7 @@ async def get_threads(
         )
 
 
-@router.get("/threads/{thread_id}/messages", response_model=List[AIMessageResponse])
+@router.get("/threads/{thread_id}/messages", response_model=list[AIMessageResponse])
 async def get_thread_messages(
     thread_id: int,
     limit: int = 50,
@@ -123,7 +131,6 @@ async def send_message(
     
     async def stream_response():
         start_time = datetime.now()
-        ai_message = None
         
         try:
             async for chunk in ai_service.send_message(
@@ -142,7 +149,6 @@ async def send_message(
                     })}\n\n"
                 elif isinstance(chunk, AIMessage):
                     # Final message
-                    ai_message = chunk
                     yield f"data: {json.dumps({
                         'type': 'complete',
                         'message': AIMessageResponse.from_orm(chunk).dict()
@@ -296,7 +302,7 @@ async def export_conversations(
     format: str = "json",
     include_metadata: bool = True,
     compress: bool = False,
-    thread_ids: Optional[str] = None,  # Comma-separated IDs
+    thread_ids: str | None = None,  # Comma-separated IDs
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -531,7 +537,7 @@ async def get_user_ai_profile(current_user: User = Depends(get_current_user)):
 async def upload_file_to_thread(
     thread_id: int,
     file: UploadFile = File(...),
-    prompt: Optional[str] = None,
+    prompt: str | None = None,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):

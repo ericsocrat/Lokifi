@@ -14,34 +14,34 @@ Advanced performance monitoring, optimization, and analytics including:
 """
 
 import asyncio
+import cProfile
+import io
 import json
 import os
+import pstats
+import statistics
 import sys
 import time
-import cProfile
-import pstats
-import io
+from collections import defaultdict, deque
+from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
-from dataclasses import dataclass
-from collections import defaultdict, deque
-import statistics
+from typing import Any
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
 try:
-    import psutil
+    import aiofiles
+    import aioredis
     import httpx
-    import numpy as np
     import matplotlib.pyplot as plt
+    import numpy as np
+    import psutil
     import seaborn as sns
     from sqlalchemy import create_engine, text
     from sqlalchemy.ext.asyncio import create_async_engine
-    import aiofiles
-    import aioredis
 except ImportError as e:
     print(f"❌ Import Error: {e}")
     print("Install missing dependencies: pip install psutil httpx numpy matplotlib seaborn aioredis")
@@ -53,7 +53,7 @@ class PerformanceMetric:
     timestamp: datetime
     metric_name: str
     value: float
-    tags: Dict[str, str] = None
+    tags: dict[str, str] | None = None
     
     def __post_init__(self):
         if self.tags is None:
@@ -127,7 +127,7 @@ class PerformanceOptimizer:
             "tags": metric.tags
         })
     
-    async def profile_application_performance(self) -> Dict[str, Any]:
+    async def profile_application_performance(self) -> dict[str, Any]:
         """Profile application performance using cProfile"""
         self.print_section("Application Performance Profiling")
         
@@ -179,7 +179,7 @@ class PerformanceOptimizer:
                     "response_time": response_time,
                     "status_code": status_code,
                     "profile_stats": s.getvalue(),
-                    "function_calls": ps.total_calls
+                    "function_calls": getattr(ps, 'total_calls', 0)
                 }
                 
                 profiling_results["profiles"][f"{method}_{endpoint.replace('/', '_')}"] = profile_data
@@ -219,7 +219,7 @@ class PerformanceOptimizer:
             self.print_error(f"Performance profiling failed: {e}")
             return profiling_results
     
-    async def analyze_system_resources(self) -> Dict[str, Any]:
+    async def analyze_system_resources(self) -> dict[str, Any]:
         """Analyze system resource utilization"""
         self.print_section("System Resource Analysis")
         
@@ -326,7 +326,7 @@ class PerformanceOptimizer:
             self.print_error(f"System resource analysis failed: {e}")
             return analysis
     
-    async def analyze_database_performance(self) -> Dict[str, Any]:
+    async def analyze_database_performance(self) -> dict[str, Any]:
         """Analyze database performance"""
         self.print_section("Database Performance Analysis")
         
@@ -401,7 +401,7 @@ class PerformanceOptimizer:
                         try:
                             count = result.fetchone()
                             result_value = count[0] if count else 0
-                        except:
+                        except (AttributeError, IndexError):
                             result_value = "N/A"
                         
                         query_results[query_name] = {
@@ -484,7 +484,7 @@ class PerformanceOptimizer:
             }
             return db_analysis
     
-    async def run_load_test(self, duration_seconds: int = 30, concurrent_requests: int = 10) -> Dict[str, Any]:
+    async def run_load_test(self, duration_seconds: int = 30, concurrent_requests: int = 10) -> dict[str, Any]:
         """Run load testing on the API"""
         self.print_section(f"Load Testing ({concurrent_requests} concurrent requests for {duration_seconds}s)")
         
@@ -621,7 +621,7 @@ class PerformanceOptimizer:
             load_test_results["error"] = str(e)
             return load_test_results
     
-    async def generate_performance_charts(self, metrics_data: Dict[str, Any]) -> bool:
+    async def generate_performance_charts(self, metrics_data: dict[str, Any]) -> bool:
         """Generate performance visualization charts"""
         self.print_section("Performance Visualization")
         
@@ -756,7 +756,7 @@ class PerformanceOptimizer:
         except Exception as e:
             self.print_warning(f"Individual chart creation failed: {e}")
     
-    async def generate_optimization_report(self) -> Dict[str, Any]:
+    async def generate_optimization_report(self) -> dict[str, Any]:
         """Generate comprehensive optimization report"""
         self.print_section("Optimization Report Generation")
         

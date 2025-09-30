@@ -4,19 +4,20 @@ AI Context Management Service for Fynix AI Chatbot (J5.2).
 Handles conversation context, memory, and intelligent summarization.
 """
 
-import logging
 import json
-from typing import Dict, List, Optional, Any, Tuple
-from datetime import datetime, timedelta
+import logging
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any
 
-from sqlalchemy.orm import Session
 from sqlalchemy import desc
+from sqlalchemy.orm import Session
 
-from app.db.db import get_session  
-from app.db.models import AIThread, AIMessage
+from app.db.db import get_session
+from app.db.models import AIMessage, AIThread
+from app.services.ai_provider import AIMessage as AIProviderMessage
+from app.services.ai_provider import MessageRole
 from app.services.ai_provider_manager import ai_provider_manager
-from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +26,10 @@ logger = logging.getLogger(__name__)
 class ContextSummary:
     """Summarized conversation context."""
     summary: str
-    key_points: List[str]
-    user_preferences: Dict[str, Any]
+    key_points: list[str]
+    user_preferences: dict[str, Any]
     conversation_tone: str
-    topic_tags: List[str]
+    topic_tags: list[str]
     created_at: datetime
 
 
@@ -38,8 +39,8 @@ class ConversationMemory:
     thread_id: int
     user_id: int
     context_summary: ContextSummary
-    important_facts: List[str]
-    user_style_notes: List[str]
+    important_facts: list[str]
+    user_style_notes: list[str]
     preferred_response_style: str
     last_updated: datetime
 
@@ -49,7 +50,7 @@ class AIContextManager:
     
     def __init__(self):
         self.session_factory = get_session
-        self.context_cache: Dict[int, ConversationMemory] = {}
+        self.context_cache: dict[int, ConversationMemory] = {}
         self.max_context_length = 4000  # Max tokens for context
         self.summary_threshold = 20  # Summarize after 20 messages
         
@@ -58,7 +59,7 @@ class AIContextManager:
         thread_id: int, 
         user_id: int,
         max_messages: int = 50
-    ) -> Tuple[List[AIProviderMessage], Optional[ContextSummary]]:
+    ) -> tuple[list[AIProviderMessage], ContextSummary | None]:
         """
         Get conversation context with intelligent summarization.
         Returns recent messages and optional summary of older context.
@@ -97,19 +98,19 @@ class AIContextManager:
     async def update_user_preferences(
         self, 
         user_id: int, 
-        preferences: Dict[str, Any]
+        preferences: dict[str, Any]
     ) -> None:
         """Update user preferences for AI interactions."""
         
         # Store in cache (in production, store in database)
-        cache_key = f"user_prefs_{user_id}"
+        # TODO: Implement actual caching with key f"user_prefs_{user_id}"
         # In a real implementation, store in database or Redis
         logger.info(f"Updated preferences for user {user_id}: {preferences}")
     
     async def analyze_conversation_style(
         self, 
         thread_id: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Analyze conversation style and user preferences."""
         
         with self.session_factory() as db:
@@ -158,7 +159,7 @@ class AIContextManager:
     async def create_context_summary(
         self, 
         thread_id: int, 
-        messages: List[AIMessage]
+        messages: list[AIMessage]
     ) -> ContextSummary:
         """Create an intelligent summary of conversation context."""
         
@@ -231,7 +232,7 @@ class AIContextManager:
         # Fallback: simple rule-based summary
         return self._create_fallback_summary(messages)
     
-    def _create_fallback_summary(self, messages: List[AIMessage]) -> ContextSummary:
+    def _create_fallback_summary(self, messages: list[AIMessage]) -> ContextSummary:
         """Create a simple rule-based summary as fallback."""
         
         user_messages = [msg for msg in messages if msg.role == "user"]
@@ -270,7 +271,7 @@ class AIContextManager:
         thread_id: int,
         user_id: int,
         recent_message_limit: int
-    ) -> Optional[ContextSummary]:
+    ) -> ContextSummary | None:
         """Get existing context summary or create a new one."""
         
         # Check cache first
@@ -307,7 +308,7 @@ class AIContextManager:
         self, 
         user_id: int, 
         limit: int = 5
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get context about user across all their conversations."""
         
         with self.session_factory() as db:

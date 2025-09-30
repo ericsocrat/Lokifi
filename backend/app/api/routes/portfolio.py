@@ -1,21 +1,24 @@
 ﻿from __future__ import annotations
-from fastapi import APIRouter, HTTPException, Query, Header, Request
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-from sqlalchemy.orm import Session
-from sqlalchemy import select
-from datetime import datetime, timezone
+
 import csv
 import io
+from datetime import UTC, datetime
+from typing import Any
 
-from app.db.db import get_session, init_db
-from app.db.models import User, PortfolioPosition
-from app.services.auth import require_handle
+from fastapi import APIRouter, Header, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from app.core.redis_cache import cache_portfolio_data
+from app.db.db import get_session, init_db
+from app.db.models import PortfolioPosition, User
+from app.services.auth import require_handle
 
 # Optional alerts integration
 try:
-    from app.services.alerts import store as alerts_store, Alert as AlertModel
+    from app.services.alerts import Alert as AlertModel
+    from app.services.alerts import store as alerts_store
     ALERTS_AVAILABLE = True
 except Exception:
     ALERTS_AVAILABLE = False
@@ -24,25 +27,25 @@ router = APIRouter()
 init_db()
 
 class PositionIn(BaseModel):
-    handle: Optional[str] = None  # optional legacy; must match token if provided
+    handle: str | None = None  # optional legacy; must match token if provided
     symbol: str
     qty: float = Field(..., gt=0)
     cost_basis: float = Field(..., gt=0)
-    tags: Optional[list[str]] = None
+    tags: list[str] | None = None
 
 class PositionOut(BaseModel):
     id: int
     symbol: str
     qty: float
     cost_basis: float
-    tags: Optional[list[str]] = None
+    tags: list[str] | None = None
     created_at: str
     updated_at: str
-    current_price: Optional[float] = None
-    market_value: Optional[float] = None
-    cost_value: Optional[float] = None
-    unrealized_pl: Optional[float] = None
-    pl_pct: Optional[float] = None
+    current_price: float | None = None
+    market_value: float | None = None
+    cost_value: float | None = None
+    unrealized_pl: float | None = None
+    pl_pct: float | None = None
 
 class SummaryOut(BaseModel):
     handle: str
@@ -50,10 +53,10 @@ class SummaryOut(BaseModel):
     total_value: float
     total_pl: float
     total_pl_pct: float
-    by_symbol: Dict[str, Dict[str, float]]
+    by_symbol: dict[str, dict[str, float]]
 
 class ImportTextPayload(BaseModel):
-    handle: Optional[str] = None  # optional legacy
+    handle: str | None = None  # optional legacy
     csv_text: str = Field(..., description="CSV headers: symbol,qty,cost_basis,tags")
 
 def _user_by_handle(db: Session, handle: str) -> User:
@@ -62,23 +65,25 @@ def _user_by_handle(db: Session, handle: str) -> User:
         raise HTTPException(status_code=404, detail="User not found")
     return u
 
-def _tags_to_str(tags: Optional[list[str]]) -> str | None:
-    if not tags: return None
+def _tags_to_str(tags: list[str] | None) -> str | None:
+    if not tags:
+        return None
     clean = [t.strip() for t in tags if t and t.strip()]
     return ",".join(sorted(set(clean))) if clean else None
 
 def _tags_to_list(s: str | None) -> list[str] | None:
-    if not s: return None
+    if not s:
+        return None
     return [t for t in s.split(",") if t]
 
-def _latest_price(symbol: str, timeframe: str = "1h") -> Optional[float]:
+def _latest_price(symbol: str, timeframe: str = "1h") -> float | None:
     try:
         # Simplified pricing - return None for now to avoid async complexity
         return None
     except Exception:
         return None
 
-def _compute_fields(p: PortfolioPosition) -> Dict[str, Any]:
+def _compute_fields(p: PortfolioPosition) -> dict[str, Any]:
     cur = _latest_price(p.symbol)
     market_value = cur * p.qty if cur is not None else None
     cost_value = p.qty * p.cost_basis
@@ -120,9 +125,9 @@ async def _maybe_create_alerts(owner: str, symbol: str, cost_basis: float):
     except Exception:
         pass
 
-@router.get("/portfolio", response_model=List[PositionOut])
+@router.get("/portfolio", response_model=list[PositionOut])
 @cache_portfolio_data(ttl=300)  # Cache for 5 minutes
-def list_positions(request: Request, handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
+def list_positions(request: Request, handle: str | None = Query(None), authorization: str | None = Header(None)):
     me = require_handle(authorization, handle)
     with get_session() as db:
         u = _user_by_handle(db, me)
@@ -141,7 +146,7 @@ def list_positions(request: Request, handle: Optional[str] = Query(None), author
 async def add_or_update_position(
     payload: PositionIn,
     create_alerts: bool = Query(False),
-    authorization: Optional[str] = Header(None),
+    authorization: str | None = Header(None),
 ):
     me = require_handle(authorization, payload.handle)
     with get_session() as db:
@@ -149,7 +154,7 @@ async def add_or_update_position(
         existing = db.execute(
             select(PortfolioPosition).where(PortfolioPosition.user_id == u.id, PortfolioPosition.symbol == payload.symbol)
         ).scalar_one_or_none()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if existing:
             existing.qty = payload.qty
             existing.cost_basis = payload.cost_basis
@@ -174,7 +179,7 @@ async def add_or_update_position(
     )
 
 @router.delete("/portfolio/{position_id}")
-def delete_position(position_id: int, handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
+def delete_position(position_id: int, handle: str | None = Query(None), authorization: str | None = Header(None)):
     me = require_handle(authorization, handle)
     with get_session() as db:
         u = _user_by_handle(db, me)
@@ -187,7 +192,7 @@ def delete_position(position_id: int, handle: Optional[str] = Query(None), autho
         return {"deleted": True, "id": position_id}
 
 @router.post("/portfolio/import_text")
-async def import_text(payload: ImportTextPayload, create_alerts: bool = Query(False), authorization: Optional[str] = Header(None)):
+async def import_text(payload: ImportTextPayload, create_alerts: bool = Query(False), authorization: str | None = Header(None)):
     me = require_handle(authorization, payload.handle)
     f = io.StringIO(payload.csv_text)
     reader = csv.DictReader(f)
@@ -213,7 +218,7 @@ async def import_text(payload: ImportTextPayload, create_alerts: bool = Query(Fa
 
 @router.get("/portfolio/summary", response_model=SummaryOut)
 @cache_portfolio_data(ttl=300)  # Cache for 5 minutes
-def portfolio_summary(request: Request, handle: Optional[str] = Query(None), authorization: Optional[str] = Header(None)):
+def portfolio_summary(request: Request, handle: str | None = Query(None), authorization: str | None = Header(None)):
     me = require_handle(authorization, handle)
     with get_session() as db:
         u = _user_by_handle(db, me)

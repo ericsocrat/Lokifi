@@ -6,11 +6,11 @@ batching, scheduling, A/B testing, and performance monitoring.
 """
 
 import asyncio
-import sys
-import os
-import uuid
 import logging
-from datetime import datetime, timezone, timedelta
+import os
+import sys
+import uuid
+from datetime import UTC, datetime, timedelta
 
 import httpx
 
@@ -18,17 +18,17 @@ import httpx
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 # Ensure proper model import order
-from app.services.smart_notifications import (
-    smart_notification_processor,
-    send_rich_notification,
-    send_batched_notification,
-    schedule_notification,
-    NotificationTemplate,
-    DeliveryChannel
-)
-from app.services.notification_analytics import NotificationAnalytics
 from app.core.redis_client import redis_client
-from app.models.notification_models import NotificationType, NotificationPriority
+from app.models.notification_models import NotificationPriority, NotificationType
+from app.services.notification_analytics import NotificationAnalytics
+from app.services.smart_notifications import (
+    DeliveryChannel,
+    NotificationTemplate,
+    schedule_notification,
+    send_batched_notification,
+    send_rich_notification,
+    smart_notification_processor,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -290,7 +290,7 @@ class J62TestSuite:
         
         try:
             # Schedule a notification for 1 minute in the future
-            future_time = datetime.now(timezone.utc) + timedelta(minutes=1)
+            future_time = datetime.now(UTC) + timedelta(minutes=1)
             
             schedule_id = await schedule_notification(
                 user_id=self.test_user_id,
@@ -378,7 +378,7 @@ class J62TestSuite:
             # Use enhanced performance monitor
             from app.services.enhanced_performance_monitor import (
                 get_current_metrics,
-                get_system_health_score
+                get_system_health_score,
             )
             
             # Test performance metrics collection

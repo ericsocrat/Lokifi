@@ -6,17 +6,16 @@ Provides WebSocket endpoint for real-time bidirectional AI chat.
 
 import json
 import logging
-from typing import Dict, Optional
 from datetime import datetime
 
-from fastapi import WebSocket, WebSocketDisconnect, Depends, status
+from fastapi import Depends, WebSocket, WebSocketDisconnect, status
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.db.models import User, AIMessage
-from app.services.ai_service import ai_service, RateLimitError, SafetyFilterError
-from app.services.ai_provider import StreamChunk, ProviderError
+from app.db.models import AIMessage, User
+from app.services.ai_provider import ProviderError, StreamChunk
+from app.services.ai_service import RateLimitError, SafetyFilterError, ai_service
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ class ConnectionManager:
     
     def __init__(self):
         # user_id -> websocket connection
-        self.active_connections: Dict[int, WebSocket] = {}
+        self.active_connections: dict[int, WebSocket] = {}
     
     async def connect(self, websocket: WebSocket, user_id: int):
         """Accept WebSocket connection and store it."""
@@ -59,7 +58,7 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-def get_user_from_token(token: Optional[str], db: Session) -> Optional[User]:
+def get_user_from_token(token: str | None, db: Session) -> User | None:
     """Extract user from WebSocket token parameter."""
     if not token:
         return None
@@ -85,7 +84,7 @@ def get_user_from_token(token: Optional[str], db: Session) -> Optional[User]:
 
 
 @router.websocket("/ai/ws")
-async def websocket_ai_chat(websocket: WebSocket, token: Optional[str] = None, db: Session = Depends(get_db)):
+async def websocket_ai_chat(websocket: WebSocket, token: str | None = None, db: Session = Depends(get_db)):
     """
     WebSocket endpoint for real-time AI chat.
     

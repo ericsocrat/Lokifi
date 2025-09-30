@@ -3,10 +3,10 @@ Phase K Implementation Verification Script
 Checks that all K1-K4 components are properly implemented without trying to import them
 """
 
-import time
 import logging
+import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class PhaseKVerifier:
         self.backend_path = Path(".")
         self.results = {}
     
-    def verify_all_components(self) -> Dict[str, Any]:
+    def verify_all_components(self) -> dict[str, Any]:
         """Verify all Phase K components K1-K4"""
         
         print("🔍 Phase K Implementation Verification")
@@ -92,7 +92,7 @@ class PhaseKVerifier:
         self.generate_verification_report(verification_results)
         return verification_results
     
-    def verify_k1_startup(self) -> Dict[str, Any]:
+    def verify_k1_startup(self) -> dict[str, Any]:
         """Verify K1 - Enhanced startup sequence"""
         
         result = {
@@ -113,7 +113,7 @@ class PhaseKVerifier:
                 # Try with different encoding
                 try:
                     content = startup_file.read_text(encoding='latin-1')
-                except:
+                except (UnicodeDecodeError, OSError):
                     content = ""
             
             # Check for key features
@@ -168,7 +168,7 @@ class PhaseKVerifier:
         
         return result
     
-    def verify_k2_redis(self) -> Dict[str, Any]:
+    def verify_k2_redis(self) -> dict[str, Any]:
         """Verify K2 - Redis integration"""
         
         result = {
@@ -233,7 +233,7 @@ class PhaseKVerifier:
         
         return result
     
-    def verify_k3_websocket(self) -> Dict[str, Any]:
+    def verify_k3_websocket(self) -> dict[str, Any]:
         """Verify K3 - WebSocket JWT authentication"""
         
         result = {
@@ -288,7 +288,7 @@ class PhaseKVerifier:
         
         return result
     
-    def verify_k4_analytics(self) -> Dict[str, Any]:
+    def verify_k4_analytics(self) -> dict[str, Any]:
         """Verify K4 - Analytics SQLite/Postgres compatibility"""
         
         result = {
@@ -344,7 +344,7 @@ class PhaseKVerifier:
         
         return result
     
-    def generate_verification_report(self, results: Dict[str, Any]):
+    def generate_verification_report(self, results: dict[str, Any]):
         """Generate verification report"""
         
         report_content = f"""# Phase K Implementation Verification Report

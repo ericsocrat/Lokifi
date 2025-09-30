@@ -1,7 +1,20 @@
 ﻿from __future__ import annotations
+
 from datetime import datetime
+
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-from sqlalchemy import String, Integer, Float, Text, ForeignKey, UniqueConstraint, Index, Boolean, DateTime
+
 
 class Base(DeclarativeBase):
     pass
@@ -16,22 +29,22 @@ class User(Base):
     bio: Mapped[str | None] = mapped_column(String(280), nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-    posts: Mapped[list["Post"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    following: Mapped[list["Follow"]] = relationship(
+    posts: Mapped[list[Post]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    following: Mapped[list[Follow]] = relationship(
         foreign_keys="Follow.follower_id",
         cascade="all, delete-orphan",
         back_populates="follower"
     )
-    followers: Mapped[list["Follow"]] = relationship(
+    followers: Mapped[list[Follow]] = relationship(
         foreign_keys="Follow.followee_id",
         cascade="all, delete-orphan",
         back_populates="followee"
     )
-    positions: Mapped[list["PortfolioPosition"]] = relationship(
+    positions: Mapped[list[PortfolioPosition]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
     )
-    ai_threads: Mapped[list["AIThread"]] = relationship(
+    ai_threads: Mapped[list[AIThread]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan"
     )
@@ -43,8 +56,8 @@ class Follow(Base):
     followee_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-    follower: Mapped["User"] = relationship(foreign_keys=[follower_id], back_populates="following")
-    followee: Mapped["User"] = relationship(foreign_keys=[followee_id], back_populates="followers")
+    follower: Mapped[User] = relationship(foreign_keys=[follower_id], back_populates="following")
+    followee: Mapped[User] = relationship(foreign_keys=[followee_id], back_populates="followers")
 
     __table_args__ = (UniqueConstraint("follower_id", "followee_id", name="uq_follow_pair"),)
 
@@ -56,7 +69,7 @@ class Post(Base):
     symbol: Mapped[str | None] = mapped_column(String(24), index=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, index=True)
 
-    user: Mapped["User"] = relationship(back_populates="posts")
+    user: Mapped[User] = relationship(back_populates="posts")
 
 Index("ix_posts_symbol_created", Post.symbol, Post.created_at.desc())
 
@@ -71,7 +84,7 @@ class PortfolioPosition(Base):
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-    user: Mapped["User"] = relationship(back_populates="positions")
+    user: Mapped[User] = relationship(back_populates="positions")
 
     __table_args__ = (Index("ix_user_symbol_unique", "user_id", "symbol", unique=True),)
 
@@ -89,8 +102,8 @@ class AIThread(Base):
     is_archived: Mapped[bool] = mapped_column(Boolean, default=False)
     
     # Relationships
-    user: Mapped["User"] = relationship(back_populates="ai_threads")
-    messages: Mapped[list["AIMessage"]] = relationship(back_populates="thread", cascade="all, delete-orphan")
+    user: Mapped[User] = relationship(back_populates="ai_threads")
+    messages: Mapped[list[AIMessage]] = relationship(back_populates="thread", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<AIThread(id={self.id}, user_id={self.user_id}, title='{self.title[:30]}...')>"
@@ -113,7 +126,7 @@ class AIMessage(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)  # Error message if generation failed
     
     # Relationships
-    thread: Mapped["AIThread"] = relationship(back_populates="messages")
+    thread: Mapped[AIThread] = relationship(back_populates="messages")
     
     def __repr__(self):
         return f"<AIMessage(id={self.id}, thread_id={self.thread_id}, role='{self.role}', content='{self.content[:50]}...')>"

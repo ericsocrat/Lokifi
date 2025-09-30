@@ -4,15 +4,16 @@ Multi-modal AI Service for Fynix AI Chatbot (J5.2).
 Handles file uploads, image processing, and document analysis.
 """
 
-import logging
-import uuid
 import base64
-import io
-import mimetypes
-from typing import Dict, Any, AsyncGenerator, Union
-from pathlib import Path
 import hashlib
+import io
+import logging
+import mimetypes
+import uuid
+from collections.abc import AsyncGenerator
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 from fastapi import UploadFile
 
@@ -25,7 +26,8 @@ except ImportError:
 
 
 from app.db.db import get_session
-from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole
+from app.services.ai_provider import AIMessage as AIProviderMessage
+from app.services.ai_provider import MessageRole
 from app.services.ai_provider_manager import ai_provider_manager
 from app.services.ai_service import StreamChunk
 
@@ -57,7 +59,7 @@ class MultiModalAIService:
         file: UploadFile, 
         user_id: int, 
         thread_id: int
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Process uploaded file and extract content."""
         
         # Validate file
@@ -101,7 +103,7 @@ class MultiModalAIService:
         user_prompt: str,
         user_id: int,
         thread_id: int
-    ) -> AsyncGenerator[Union[StreamChunk, str], None]:
+    ) -> AsyncGenerator[StreamChunk | str, None]:
         """Analyze image using AI with user prompt."""
         
         try:
@@ -153,7 +155,7 @@ class MultiModalAIService:
         filename: str,
         user_id: int,
         thread_id: int
-    ) -> AsyncGenerator[Union[StreamChunk, str], None]:
+    ) -> AsyncGenerator[StreamChunk | str, None]:
         """Analyze document content using AI."""
         
         try:
@@ -217,7 +219,7 @@ class MultiModalAIService:
                 f"Supported types: {', '.join(supported_types)}"
             )
     
-    async def _process_image(self, content: bytes, filename: str) -> Dict[str, Any]:
+    async def _process_image(self, content: bytes, filename: str) -> dict[str, Any]:
         """Process image file."""
         
         if not PIL_AVAILABLE:
@@ -264,7 +266,7 @@ class MultiModalAIService:
         except Exception as e:
             raise FileProcessingError(f"Failed to process image: {str(e)}")
     
-    async def _process_document(self, content: bytes, filename: str, extension: str) -> Dict[str, Any]:
+    async def _process_document(self, content: bytes, filename: str, extension: str) -> dict[str, Any]:
         """Process document file."""
         
         try:
@@ -319,7 +321,7 @@ class MultiModalAIService:
         except Exception as e:
             raise FileProcessingError(f"Failed to extract DOCX text: {str(e)}")
     
-    async def get_file_processing_stats(self, user_id: int, days_back: int = 30) -> Dict[str, Any]:
+    async def get_file_processing_stats(self, user_id: int, days_back: int = 30) -> dict[str, Any]:
         """Get file processing statistics for a user."""
         
         # This would typically query a file_uploads table

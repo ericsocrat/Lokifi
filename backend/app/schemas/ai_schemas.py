@@ -5,13 +5,13 @@ Request/response models for AI API endpoints.
 """
 
 from datetime import datetime
-from typing import Optional, Dict, List
+
 from pydantic import BaseModel, Field, validator
 
 
 class AIThreadCreate(BaseModel):
     """Schema for creating a new AI thread."""
-    title: Optional[str] = Field(None, max_length=255, description="Thread title")
+    title: str | None = Field(None, max_length=255, description="Thread title")
 
 
 class AIThreadUpdate(BaseModel):
@@ -38,12 +38,12 @@ class AIMessageResponse(BaseModel):
     thread_id: int
     role: str
     content: str
-    model: Optional[str] = None
-    provider: Optional[str] = None
-    token_count: Optional[int] = None
+    model: str | None = None
+    provider: str | None = None
+    token_count: int | None = None
     created_at: datetime
-    completed_at: Optional[datetime] = None
-    error: Optional[str] = None
+    completed_at: datetime | None = None
+    error: str | None = None
     
     class Config:
         from_attributes = True
@@ -57,30 +57,30 @@ class AIMessageResponse(BaseModel):
 class AIChatRequest(BaseModel):
     """Schema for sending a chat message."""
     message: str = Field(..., min_length=1, max_length=10000, description="User message")
-    provider: Optional[str] = Field(None, description="Preferred AI provider")
-    model: Optional[str] = Field(None, description="Specific model to use")
+    provider: str | None = Field(None, description="Preferred AI provider")
+    model: str | None = Field(None, description="Specific model to use")
 
 
 class AIProviderInfo(BaseModel):
     """Schema for AI provider information."""
     available: bool
-    models: List[str]
-    default_model: Optional[str]
+    models: list[str]
+    default_model: str | None
     name: str
     type: str
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class AIProviderStatusResponse(BaseModel):
     """Schema for AI provider status response."""
-    providers: Dict[str, AIProviderInfo]
+    providers: dict[str, AIProviderInfo]
 
 
 class RateLimitResponse(BaseModel):
     """Schema for rate limit status response."""
     requests_made: int
     requests_remaining: int
-    reset_time: Optional[datetime] = None
+    reset_time: datetime | None = None
     window_seconds: int
 
 
@@ -88,7 +88,7 @@ class StreamChunkResponse(BaseModel):
     """Schema for streaming response chunks."""
     type: str = "chunk"
     content: str
-    finish_reason: Optional[str] = None
+    finish_reason: str | None = None
 
 
 class CompleteResponse(BaseModel):
@@ -109,8 +109,8 @@ class ExportRequest(BaseModel):
     format: str = Field("json", description="Export format")
     include_metadata: bool = True
     compress: bool = False
-    thread_ids: Optional[List[int]] = None
-    date_range: Optional[List[str]] = None  # [start_date, end_date] in ISO format
+    thread_ids: list[int] | None = None
+    date_range: list[str] | None = None  # [start_date, end_date] in ISO format
     
     @validator('format')
     def validate_format(cls, v):
@@ -125,7 +125,7 @@ class ImportResponse(BaseModel):
     success: bool
     imported_conversations: int
     imported_messages: int
-    errors: List[str]
+    errors: list[str]
     message: str
 
 
@@ -133,5 +133,5 @@ class ModerationStatusResponse(BaseModel):
     """Schema for user moderation status."""
     warning_count: int
     recent_violations: int
-    violation_categories: List[str]
+    violation_categories: list[str]
     risk_level: str

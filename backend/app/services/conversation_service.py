@@ -3,22 +3,24 @@ Conversation service for direct messaging (J4).
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import select, func, desc, update
+from fastapi import HTTPException, status
+from sqlalchemy import desc, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
-from fastapi import HTTPException, status
 
-from app.models.user import User
+from app.models.conversation import Conversation, ConversationParticipant, Message, MessageReceipt
 from app.models.profile import Profile
-from app.models.conversation import (
-    Conversation, ConversationParticipant, Message, MessageReceipt
-)
+from app.models.user import User
 from app.schemas.conversation import (
-    ConversationResponse, ConversationListResponse, MessageResponse, 
-    MessagesListResponse, ConversationParticipantResponse, MessageCreate,
-    MarkReadRequest
+    ConversationListResponse,
+    ConversationParticipantResponse,
+    ConversationResponse,
+    MarkReadRequest,
+    MessageCreate,
+    MessageResponse,
+    MessagesListResponse,
 )
 
 
@@ -43,7 +45,7 @@ class ConversationService:
         # Ensure both users exist and are active
         users_stmt = select(User).where(
             User.id.in_([user1_id, user2_id]),
-            User.is_active == True
+            User.is_active
         )
         result = await self.db.execute(users_stmt)
         users = result.scalars().all()
@@ -59,7 +61,7 @@ class ConversationService:
             select(Conversation)
             .join(ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id)
             .where(
-                Conversation.is_group == False,
+                ~Conversation.is_group,
                 ConversationParticipant.user_id.in_([user1_id, user2_id])
             )
             .group_by(Conversation.id)
@@ -116,7 +118,7 @@ class ConversationService:
             .join(ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id)
             .where(
                 ConversationParticipant.user_id == user_id,
-                ConversationParticipant.is_active == True
+                ConversationParticipant.is_active
             )
             .order_by(desc(Conversation.last_message_at), desc(Conversation.updated_at))
             .offset(offset)
@@ -134,7 +136,7 @@ class ConversationService:
             .join(ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id)
             .where(
                 ConversationParticipant.user_id == user_id,
-                ConversationParticipant.is_active == True
+                ConversationParticipant.is_active
             )
         )
         result = await self.db.execute(count_stmt)
@@ -165,7 +167,7 @@ class ConversationService:
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
             ConversationParticipant.user_id == sender_id,
-            ConversationParticipant.is_active == True
+            ConversationParticipant.is_active
         )
         result = await self.db.execute(participant_stmt)
         participant = result.scalar_one_or_none()
@@ -191,8 +193,8 @@ class ConversationService:
             update(Conversation)
             .where(Conversation.id == conversation_id)
             .values(
-                last_message_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc)
+                last_message_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC)
             )
         )
         await self.db.execute(update_conv_stmt)
@@ -221,7 +223,7 @@ class ConversationService:
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
             ConversationParticipant.user_id == user_id,
-            ConversationParticipant.is_active == True
+            ConversationParticipant.is_active
         )
         result = await self.db.execute(participant_stmt)
         participant = result.scalar_one_or_none()
@@ -239,7 +241,7 @@ class ConversationService:
             select(Message)
             .where(
                 Message.conversation_id == conversation_id,
-                Message.is_deleted == False
+                ~Message.is_deleted
             )
             .order_by(desc(Message.created_at))
             .offset(offset)
@@ -253,7 +255,7 @@ class ConversationService:
         # Get total count
         count_stmt = select(func.count()).select_from(Message).where(
             Message.conversation_id == conversation_id,
-            Message.is_deleted == False
+            ~Message.is_deleted
         )
         result = await self.db.execute(count_stmt)
         total = result.scalar() or 0
@@ -284,7 +286,7 @@ class ConversationService:
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
             ConversationParticipant.user_id == user_id,
-            ConversationParticipant.is_active == True
+            ConversationParticipant.is_active
         )
         result = await self.db.execute(participant_stmt)
         participant = result.scalar_one_or_none()
@@ -313,7 +315,7 @@ class ConversationService:
         messages_stmt = select(Message.id).where(
             Message.conversation_id == conversation_id,
             Message.created_at <= target_message.created_at,
-            Message.is_deleted == False
+            ~Message.is_deleted
         )
         result = await self.db.execute(messages_stmt)
         message_ids = [row[0] for row in result.all()]
@@ -384,7 +386,7 @@ class ConversationService:
             select(Message)
             .where(
                 Message.conversation_id == conversation.id,
-                Message.is_deleted == False
+                ~Message.is_deleted
             )
             .order_by(desc(Message.created_at))
             .limit(1)
@@ -413,7 +415,7 @@ class ConversationService:
                     Message.created_at > select(Message.created_at).where(
                         Message.id == current_participant[0].last_read_message_id
                     ),
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             result = await self.db.execute(unread_stmt)
@@ -426,7 +428,7 @@ class ConversationService:
                 .where(
                     Message.conversation_id == conversation.id,
                     Message.sender_id != current_user_id,  # Don't count own messages
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             result = await self.db.execute(unread_stmt)

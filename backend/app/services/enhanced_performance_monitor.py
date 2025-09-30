@@ -2,14 +2,14 @@
 Enhanced Performance Monitoring System for J6.4 Quality Improvements
 """
 
-import time
-import psutil
 import asyncio
 import logging
-from typing import Dict
-from datetime import datetime, timezone
+import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
+from datetime import UTC, datetime
+
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ class PerformanceMetrics:
     
     # Additional quality metrics
     availability_percent: float = 100.0
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 class EnhancedPerformanceMonitor:
     """Enhanced performance monitoring for system quality tracking"""
@@ -185,7 +185,7 @@ class EnhancedPerformanceMonitor:
             logger.error(f"Failed to collect performance metrics: {e}")
             return PerformanceMetrics()  # Return default metrics
     
-    def get_endpoint_metrics(self, endpoint: str) -> Dict[str, float]:
+    def get_endpoint_metrics(self, endpoint: str) -> dict[str, float]:
         """Get metrics for a specific endpoint"""
         endpoint_times = self.endpoint_metrics.get(endpoint, [])
         if not endpoint_times:

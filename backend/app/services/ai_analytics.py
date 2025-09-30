@@ -5,16 +5,16 @@ Provides comprehensive analytics and insights for AI conversations.
 """
 
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta
 from collections import Counter
 from dataclasses import dataclass
+from datetime import datetime, timedelta
+from typing import Any
 
+from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
 
 from app.db.db import get_session
-from app.db.models import AIThread, AIMessage
+from app.db.models import AIMessage, AIThread
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +27,9 @@ class ConversationMetrics:
     avg_messages_per_conversation: float
     avg_response_time: float
     user_satisfaction_score: float
-    top_topics: List[Dict[str, Any]]
-    provider_usage: Dict[str, int]
-    model_usage: Dict[str, int]
+    top_topics: list[dict[str, Any]]
+    provider_usage: dict[str, int]
+    model_usage: dict[str, int]
 
 
 @dataclass
@@ -38,11 +38,11 @@ class UserInsights:
     user_id: int
     total_threads: int
     total_messages: int
-    favorite_topics: List[str]
-    preferred_providers: List[str]
+    favorite_topics: list[str]
+    preferred_providers: list[str]
     avg_session_length: float
-    most_active_hours: List[int]
-    satisfaction_trend: List[float]
+    most_active_hours: list[int]
+    satisfaction_trend: list[float]
 
 
 class AIAnalyticsService:
@@ -53,7 +53,7 @@ class AIAnalyticsService:
         
     async def get_conversation_metrics(
         self, 
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         days_back: int = 30
     ) -> ConversationMetrics:
         """Get comprehensive conversation metrics."""
@@ -193,7 +193,7 @@ class AIAnalyticsService:
                 satisfaction_trend=satisfaction_trend
             )
     
-    async def get_provider_performance(self, days_back: int = 30) -> Dict[str, Any]:
+    async def get_provider_performance(self, days_back: int = 30) -> dict[str, Any]:
         """Get performance metrics for each AI provider."""
         
         with self.session_factory() as db:
@@ -251,8 +251,8 @@ class AIAnalyticsService:
         self, 
         db: Session, 
         start_date: datetime, 
-        user_id: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+        user_id: int | None = None
+    ) -> list[dict[str, Any]]:
         """Extract top conversation topics using keyword analysis."""
         
         # Get user messages for topic analysis
@@ -291,7 +291,7 @@ class AIAnalyticsService:
         db: Session, 
         user_id: int, 
         start_date: datetime
-    ) -> List[str]:
+    ) -> list[str]:
         """Extract favorite topics for a specific user."""
         
         topics_data = await self._extract_conversation_topics(db, start_date, user_id)

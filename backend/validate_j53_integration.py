@@ -109,8 +109,8 @@ async def validate_j53_integration():
         print("8️⃣  Testing import compatibility...")
         
         # Test that existing imports still work
-        from app.core.database import db_manager
         from app.core.config import get_settings
+        from app.core.database import db_manager
         
         print("   ✅ Existing imports remain compatible")
         

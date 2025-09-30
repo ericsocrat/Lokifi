@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class PostCreate(BaseModel):
     body: str
     symbols: list[str] | None = None

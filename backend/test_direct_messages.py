@@ -4,22 +4,22 @@ Tests for direct messaging functionality (J4).
 
 import os
 import uuid
-import pytest
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import pytest
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.models.conversation import ContentType, Conversation
 from app.models.user import User
-from app.models.conversation import Conversation, ContentType
+from app.schemas.conversation import MarkReadRequest, MessageCreate
 from app.services.conversation_service import ConversationService
+from app.services.message_analytics_service import MessageAnalyticsService
+from app.services.message_moderation_service import MessageModerationService, ModerationAction
+from app.services.message_search_service import MessageSearchService, SearchFilter
 from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import ConnectionManager
-from app.services.message_search_service import MessageSearchService, SearchFilter
-from app.services.message_moderation_service import MessageModerationService, ModerationAction
-from app.services.message_analytics_service import MessageAnalyticsService
-from app.schemas.conversation import MessageCreate, MarkReadRequest
 
 
 @pytest.fixture
@@ -47,8 +47,8 @@ def mock_conversation():
     return Conversation(
         id=uuid.UUID("12345678-1234-5678-9012-123456789003"),
         is_group=False,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc)
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC)
     )
 
 
@@ -111,7 +111,7 @@ class TestConversationService:
         # Mock participant and message verification
         mock_participant = MagicMock()
         mock_message = MagicMock()
-        mock_message.created_at = datetime.now(timezone.utc)
+        mock_message.created_at = datetime.now(UTC)
         
         mock_db.execute.return_value.scalar_one_or_none.side_effect = [
             mock_participant,  # Participant check
@@ -351,8 +351,8 @@ class TestMessageSearch:
     async def test_search_messages_by_date_range(self):
         """Test searching messages by date range."""
         # Placeholder for future date range search
-        start_date = datetime.now(timezone.utc).replace(day=1)
-        end_date = datetime.now(timezone.utc)
+        start_date = datetime.now(UTC).replace(day=1)
+        end_date = datetime.now(UTC)
         
         # Structure for date range queries
         assert start_date < end_date

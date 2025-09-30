@@ -1,11 +1,14 @@
-from .base import _get
 from app.core.config import settings
+
+from .base import _get
+
 
 async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
     func = "TIME_SERIES_INTRADAY" if timeframe in ("15m","30m","1h","4h") else "TIME_SERIES_DAILY_ADJUSTED"
     interval = {"15m":"15min","30m":"30min","1h":"60min","4h":"60min"}.get(timeframe)
     params = {"function": func, "symbol": symbol, "apikey": settings.ALPHAVANTAGE_KEY}
-    if interval: params["interval"] = interval
+    if interval:
+        params["interval"] = interval
     data = await _get("https://www.alphavantage.co/query", params)
     series = next((v for k,v in data.items() if "Time Series" in k), {})
     items = []

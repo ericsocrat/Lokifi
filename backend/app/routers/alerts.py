@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.db.schemas.alert import AlertCreate
 
 router = APIRouter(prefix="/alerts", tags=["alerts"])

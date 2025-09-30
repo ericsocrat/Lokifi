@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from app.db.schemas.portfolio import PortfolioCreate, HoldingIn
+
+from app.db.schemas.portfolio import HoldingIn, PortfolioCreate
 
 router = APIRouter(prefix="/portfolio", tags=["portfolio"])
 

@@ -5,8 +5,8 @@ Simplified test suite for J5.2 Advanced AI Features.
 Tests imports and basic functionality without database dependencies.
 """
 import asyncio
-import sys
 import os
+import sys
 
 # Add the backend directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

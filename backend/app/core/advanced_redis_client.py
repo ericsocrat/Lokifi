@@ -11,15 +11,16 @@ Production-ready Redis client with advanced features:
 import asyncio
 import logging
 import time
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timezone
 from collections import defaultdict, deque
+from datetime import UTC, datetime
+from typing import Any
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool, Sentinel
-from redis.exceptions import RedisError, ConnectionError as RedisConnectionError
-from redis.retry import Retry
 from redis.backoff import ExponentialBackoff
+from redis.exceptions import ConnectionError as RedisConnectionError
+from redis.exceptions import RedisError
+from redis.retry import Retry
 
 from app.core.config import settings
 
@@ -41,7 +42,7 @@ class CacheMetrics:
         self.writes = 0
         self.errors = 0
         self.response_times = deque(maxlen=1000)
-        self.last_reset = datetime.now(timezone.utc)
+        self.last_reset = datetime.now(UTC)
     
     @property
     def hit_rate(self) -> float:
@@ -79,8 +80,8 @@ class AdvancedRedisClient:
     """
     
     def __init__(self):
-        self.client: Optional[redis.Redis] = None
-        self.sentinel: Optional[Sentinel] = None
+        self.client: redis.Redis | None = None
+        self.sentinel: Sentinel | None = None
         self.connected = False
         self.connection_pool = None
         self.metrics = CacheMetrics()
@@ -180,7 +181,7 @@ class AdvancedRedisClient:
         """Enhanced availability check with circuit breaker"""
         if self.circuit_breaker['state'] == 'open':
             # Check if recovery timeout has passed
-            if (datetime.now(timezone.utc) - 
+            if (datetime.now(UTC) - 
                 self.circuit_breaker['last_failure']).seconds >= self.circuit_breaker['recovery_timeout']:
                 self.circuit_breaker['state'] = 'half_open'
                 logger.info("Circuit breaker moving to half-open state")
@@ -214,7 +215,7 @@ class AdvancedRedisClient:
     def _handle_circuit_breaker_failure(self):
         """Handle circuit breaker failure logic"""
         self.circuit_breaker['failure_count'] += 1
-        self.circuit_breaker['last_failure'] = datetime.now(timezone.utc)
+        self.circuit_breaker['last_failure'] = datetime.now(UTC)
         self.metrics.record_error()
         
         if (self.circuit_breaker['failure_count'] >= self.circuit_breaker['failure_threshold'] 
@@ -222,7 +223,7 @@ class AdvancedRedisClient:
             self.circuit_breaker['state'] = 'open'
             logger.warning("Circuit breaker opened due to repeated failures")
     
-    async def get_with_layers(self, key: str, layer: str = 'warm') -> Optional[str]:
+    async def get_with_layers(self, key: str, layer: str = 'warm') -> str | None:
         """Get value with multi-layer cache support"""
         start_time = time.time()
         
@@ -263,7 +264,7 @@ class AdvancedRedisClient:
         key: str, 
         value: str, 
         layer: str = 'warm', 
-        custom_ttl: Optional[int] = None
+        custom_ttl: int | None = None
     ) -> bool:
         """Set value in specific cache layer"""
         try:
@@ -287,7 +288,7 @@ class AdvancedRedisClient:
             self.metrics.record_error()
             return False
     
-    async def cache_warm_batch(self, keys: List[str], layer: str = 'warm') -> Dict[str, Any]:
+    async def cache_warm_batch(self, keys: list[str], layer: str = 'warm') -> dict[str, Any]:
         """Warm cache with batch operation"""
         if not await self.is_available():
             return {}
@@ -314,7 +315,7 @@ class AdvancedRedisClient:
             logger.error(f"Failed to warm cache batch: {e}")
             return {}
     
-    async def invalidate_pattern(self, pattern: str, layer: Optional[str] = None) -> int:
+    async def invalidate_pattern(self, pattern: str, layer: str | None = None) -> int:
         """Invalidate cache keys matching pattern"""
         try:
             if not await self.is_available():
@@ -337,7 +338,7 @@ class AdvancedRedisClient:
             logger.error(f"Failed to invalidate pattern {pattern}: {e}")
             return 0
     
-    async def get_metrics(self) -> Dict[str, Any]:
+    async def get_metrics(self) -> dict[str, Any]:
         """Get comprehensive cache metrics"""
         return {
             'hit_rate': self.metrics.hit_rate,

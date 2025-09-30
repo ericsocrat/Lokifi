@@ -2,10 +2,11 @@
 AI Provider abstraction layer for Fynix AI Chatbot (J5).
 """
 
-from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, AsyncGenerator, Any
-from enum import Enum
 import uuid
+from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
+from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -22,7 +23,7 @@ class AIMessage(BaseModel):
     """AI message model for provider interactions."""
     role: MessageRole
     content: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class StreamOptions(BaseModel):
@@ -30,9 +31,9 @@ class StreamOptions(BaseModel):
     max_tokens: int = Field(default=4096, ge=1, le=32000)
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     top_p: float = Field(default=0.9, ge=0.0, le=1.0)
-    stop_sequences: List[str] = Field(default_factory=list)
+    stop_sequences: list[str] = Field(default_factory=list)
     stream: bool = Field(default=True)
-    model: Optional[str] = Field(default=None)
+    model: str | None = Field(default=None)
 
 
 class TokenUsage(BaseModel):
@@ -47,15 +48,15 @@ class StreamChunk(BaseModel):
     id: str
     content: str
     is_complete: bool = False
-    token_usage: Optional[TokenUsage] = None
-    model: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    token_usage: TokenUsage | None = None
+    model: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class AIProvider(ABC):
     """Abstract base class for AI providers."""
     
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
+    def __init__(self, api_key: str | None = None, base_url: str | None = None):
         self.api_key = api_key
         self.base_url = base_url
         self.name = self.__class__.__name__.lower().replace('provider', '')
@@ -63,7 +64,7 @@ class AIProvider(ABC):
     @abstractmethod
     async def stream_chat(
         self,
-        messages: List[AIMessage],
+        messages: list[AIMessage],
         options: StreamOptions = StreamOptions()
     ) -> AsyncGenerator[StreamChunk, None]:
         """
@@ -84,7 +85,7 @@ class AIProvider(ABC):
         pass
     
     @abstractmethod
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported models for this provider."""
         pass
     
@@ -97,7 +98,7 @@ class AIProvider(ABC):
         """Rough token estimation (4 chars = 1 token)."""
         return max(1, len(text) // 4)
     
-    def validate_messages(self, messages: List[AIMessage]) -> bool:
+    def validate_messages(self, messages: list[AIMessage]) -> bool:
         """Validate message format and content."""
         if not messages:
             return False
@@ -124,7 +125,7 @@ class MockProvider(AIProvider):
     
     async def stream_chat(
         self,
-        messages: List[AIMessage], 
+        messages: list[AIMessage], 
         options: StreamOptions = StreamOptions()
     ) -> AsyncGenerator[StreamChunk, None]:
         """Generate mock streaming response."""
@@ -164,7 +165,7 @@ class MockProvider(AIProvider):
         """Mock provider is always available as fallback."""
         return True
     
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Mock provider models."""
         return ["mock-model", "demo-assistant"]
 

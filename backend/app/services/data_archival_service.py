@@ -1,13 +1,13 @@
 # Simple data archival service
-from sqlalchemy import text, select, func
-from datetime import datetime, timedelta
-from typing import Dict, Optional
 import logging
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 
-from app.db.models import AIThread, AIMessage
-from app.core.database import db_manager
+from sqlalchemy import func, select, text
+
 from app.core.config import Settings
+from app.core.database import db_manager
+from app.db.models import AIMessage, AIThread
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +26,8 @@ class StorageMetrics:
     ai_threads_size_mb: float = 0.0
     ai_messages_size_mb: float = 0.0
     ai_messages_archive_size_mb: float = 0.0
-    oldest_message_date: Optional[datetime] = None
-    newest_message_date: Optional[datetime] = None
+    oldest_message_date: datetime | None = None
+    newest_message_date: datetime | None = None
     total_threads: int = 0
     total_messages: int = 0
     archived_messages: int = 0
@@ -140,7 +140,7 @@ class DataArchivalService:
             logger.error(f"Error during vacuum: {e}")
             raise
     
-    async def run_full_maintenance(self) -> Dict[str, ArchivalStats]:
+    async def run_full_maintenance(self) -> dict[str, ArchivalStats]:
         logger.info("🧹 Starting maintenance cycle")
         results = {}
         

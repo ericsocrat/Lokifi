@@ -2,15 +2,14 @@
 Enhanced message moderation service for J4 Direct Messages.
 """
 
-import uuid
-import re
 import logging
-from typing import List, Dict, Optional
+import re
+import uuid
 from enum import Enum
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
 from pydantic import BaseModel
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.conversation import Message
 
@@ -30,9 +29,9 @@ class ModerationResult(BaseModel):
     """Result of content moderation."""
     action: ModerationAction
     confidence: float = 0.0
-    reasons: List[str] = []
-    flagged_content: List[str] = []
-    sanitized_content: Optional[str] = None
+    reasons: list[str] = []
+    flagged_content: list[str] = []
+    sanitized_content: str | None = None
 
 
 class MessageModerationService:
@@ -57,7 +56,7 @@ class MessageModerationService:
         ]
         
         # Rate limiting for moderation flags per user
-        self.user_warning_counts: Dict[uuid.UUID, int] = {}
+        self.user_warning_counts: dict[uuid.UUID, int] = {}
     
     async def moderate_message(
         self, 
@@ -128,7 +127,7 @@ class MessageModerationService:
             sanitized_content=sanitized_content
         )
     
-    def _sanitize_content(self, content: str, flagged_items: List[str]) -> str:
+    def _sanitize_content(self, content: str, flagged_items: list[str]) -> str:
         """Sanitize content by removing or replacing flagged items."""
         sanitized = content
         
@@ -183,7 +182,7 @@ class MessageModerationService:
             logger.error(f"Error reporting message {message_id}: {e}")
             return False
     
-    async def get_moderation_stats(self, user_id: uuid.UUID) -> Dict[str, int]:
+    async def get_moderation_stats(self, user_id: uuid.UUID) -> dict[str, int]:
         """Get moderation statistics for a user."""
         # In a real implementation, this would query moderation history
         return {
@@ -198,15 +197,15 @@ class MessageModerationService:
         # In a real implementation, this would check a user moderation status table
         return self.user_warning_counts.get(user_id, 0) > 5
     
-    def add_blocked_words(self, words: List[str]) -> None:
+    def add_blocked_words(self, words: list[str]) -> None:
         """Add words to the blocked list (admin function)."""
         self.blocked_words.update(word.lower() for word in words)
     
-    def remove_blocked_words(self, words: List[str]) -> None:
+    def remove_blocked_words(self, words: list[str]) -> None:
         """Remove words from the blocked list (admin function)."""
         for word in words:
             self.blocked_words.discard(word.lower())
     
-    def get_blocked_words(self) -> List[str]:
+    def get_blocked_words(self) -> list[str]:
         """Get current blocked words list (admin function)."""
         return sorted(list(self.blocked_words))

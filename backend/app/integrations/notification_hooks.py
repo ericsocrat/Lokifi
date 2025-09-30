@@ -5,7 +5,7 @@ These hooks integrate notification events into the existing codebase.
 """
 
 import logging
-from typing import Dict, Any
+from typing import Any
 
 from app.services.notification_emitter import notification_emitter
 
@@ -22,7 +22,7 @@ class NotificationIntegration:
         logger.info("Setting up follow system integration for notifications")
     
     @staticmethod
-    async def on_user_followed(follower_user_data: Dict[str, Any], followed_user_data: Dict[str, Any]):
+    async def on_user_followed(follower_user_data: dict[str, Any], followed_user_data: dict[str, Any]):
         """
         Hook called when a user follows another user
         
@@ -52,9 +52,9 @@ class NotificationIntegration:
     
     @staticmethod
     async def on_dm_message_sent(
-        sender_data: Dict[str, Any], 
-        recipient_data: Dict[str, Any],
-        message_data: Dict[str, Any]
+        sender_data: dict[str, Any], 
+        recipient_data: dict[str, Any],
+        message_data: dict[str, Any]
     ):
         """
         Hook called when a direct message is sent
@@ -92,8 +92,8 @@ class NotificationIntegration:
     
     @staticmethod
     async def on_ai_response_completed(
-        user_data: Dict[str, Any],
-        ai_response_data: Dict[str, Any]
+        user_data: dict[str, Any],
+        ai_response_data: dict[str, Any]
     ):
         """
         Hook called when AI finishes responding to a user

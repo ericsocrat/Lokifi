@@ -3,10 +3,9 @@ Admin and monitoring endpoints for J4 Direct Messages.
 """
 
 import logging
-from typing import List
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_current_user  # Would need admin role check
@@ -43,7 +42,7 @@ async def get_platform_messaging_stats(
         return {
             **stats,
             "requested_by": admin_user.username,
-            "request_time": datetime.now(timezone.utc).isoformat()
+            "request_time": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:
@@ -68,7 +67,7 @@ async def get_performance_metrics(
         alerts = performance_monitor.check_system_alerts()
         
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "period_minutes": minutes_back,
             "metrics": metrics_summary,
             "health_checks": [
@@ -107,7 +106,7 @@ async def get_moderation_stats(
             "blocked_words": moderation_service.get_blocked_words()[:20],  # First 20 for preview
             "user_warning_counts": len(moderation_service.user_warning_counts),
             "total_warnings_issued": sum(moderation_service.user_warning_counts.values()),
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:
@@ -120,7 +119,7 @@ async def get_moderation_stats(
 
 @router.post("/admin/messaging/moderation/blocked-words")
 async def add_blocked_words(
-    words: List[str],
+    words: list[str],
     admin_user: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -134,7 +133,7 @@ async def add_blocked_words(
         return {
             "added_words": words,
             "total_blocked_words": len(moderation_service.get_blocked_words()),
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:
@@ -147,7 +146,7 @@ async def add_blocked_words(
 
 @router.delete("/admin/messaging/moderation/blocked-words")
 async def remove_blocked_words(
-    words: List[str],
+    words: list[str],
     admin_user: User = Depends(get_admin_user),
     db: AsyncSession = Depends(get_db)
 ):
@@ -161,7 +160,7 @@ async def remove_blocked_words(
         return {
             "removed_words": words,
             "total_blocked_words": len(moderation_service.get_blocked_words()),
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:
@@ -186,7 +185,7 @@ async def get_active_connections(
             "online_user_ids": [str(uid) for uid in online_users],
             "connection_stats": websocket_stats,
             "redis_connected": connection_manager.redis_client is not None,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:
@@ -210,7 +209,7 @@ async def admin_broadcast_message(
             "type": "admin_broadcast",
             "message": message,
             "sender": "System Administrator",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
         
         # Send to all connected users
@@ -247,7 +246,7 @@ async def comprehensive_health_check(
         
         # Additional service-specific checks
         analytics_service = MessageAnalyticsService(db)
-        moderation_service = MessageModerationService(db)
+        # Note: Moderation service will be used for future content moderation features
         
         # Test basic functionality
         try:
@@ -285,7 +284,7 @@ async def comprehensive_health_check(
                 "moderation_service": "healthy",  # Basic instantiation test
                 "websocket_manager": "healthy"
             },
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:

@@ -1,27 +1,51 @@
+import logging
+import os
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.core.config import settings
-from app.routers import health, ohlc, news, social, portfolio, alerts, chat, mock_ohlc, market_data, auth, profile, follow, conversations, websocket, admin_messaging, ai, ai_websocket, notifications
-from app.routers.profile_enhanced import router as profile_enhanced_router
-from app.api.routes import security
+
 from app.api.j6_2_endpoints import j6_2_router
+from app.api.routes import security
 from app.api.routes.monitoring import router as monitoring_router
-from app.services.data_service import startup_data_services, shutdown_data_services
+
 # Temporarily disable J53 scheduler due to async issues
 # from app.services.j53_scheduler import j53_router, j53_lifespan_manager
 from app.core.advanced_redis_client import advanced_redis_client
-from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from app.services.advanced_monitoring import monitoring_system
+from app.core.config import settings
 from app.core.database import db_manager
-# Security middleware imports
-from app.middleware.security import SecurityHeadersMiddleware, RequestLoggingMiddleware
 from app.middleware.rate_limiting import (
-    RateLimitingMiddleware, 
-    RequestSizeLimitMiddleware, 
-    SecurityMonitoringMiddleware
+    RateLimitingMiddleware,
+    RequestSizeLimitMiddleware,
+    SecurityMonitoringMiddleware,
 )
-import logging
+
+# Security middleware imports
+from app.middleware.security import RequestLoggingMiddleware, SecurityHeadersMiddleware
+from app.routers import (
+    admin_messaging,
+    ai,
+    ai_websocket,
+    alerts,
+    auth,
+    chat,
+    conversations,
+    follow,
+    health,
+    market_data,
+    mock_ohlc,
+    news,
+    notifications,
+    ohlc,
+    portfolio,
+    profile,
+    social,
+    websocket,
+)
+from app.routers.profile_enhanced import router as profile_enhanced_router
+from app.services.advanced_monitoring import monitoring_system
+from app.services.data_service import shutdown_data_services, startup_data_services
+from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
 logger = logging.getLogger(__name__)
 
@@ -78,20 +102,20 @@ async def lifespan(app: FastAPI):
         # Continue with graceful shutdown even if there are errors
         try:
             await monitoring_system.stop_monitoring()
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Error stopping monitoring: {e}")
         try:
             await advanced_websocket_manager.stop_background_tasks()
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Error stopping websocket manager: {e}")
         try:
             await shutdown_data_services()
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Error shutting down data services: {e}")
         try:
             await db_manager.close()
-        except:
-            pass
+        except Exception as e:
+            logger.error(f"Error closing database: {e}")
 
 app = FastAPI(
     title=f"{settings.PROJECT_NAME} - Phase K Track 3: Infrastructure Enhancement",
@@ -100,7 +124,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-import os
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
 
 # Configure CORS with combined origins

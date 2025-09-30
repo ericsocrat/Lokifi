@@ -6,19 +6,16 @@ Provides insights into notification delivery, user engagement, and system perfor
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, asdict
 from collections import defaultdict, deque
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
-from sqlalchemy import select, func, and_, desc
+from sqlalchemy import and_, desc, func, select
 
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
-from app.models.notification_models import (
-    Notification, 
-    NotificationPreference
-)
+from app.models.notification_models import Notification, NotificationPreference
 from app.models.user import User
 
 logger = logging.getLogger(__name__)
@@ -36,7 +33,7 @@ class NotificationMetrics:
     engagement_rate: float = 0.0
     average_time_to_read: float = 0.0
     peak_hour: int = 0
-    top_notification_types: List[Dict[str, Any]] = None
+    top_notification_types: list[dict[str, Any]] = None
     
     # Performance attributes for monitoring
     average_response_time: float = 0.0
@@ -73,22 +70,24 @@ class NotificationAnalytics:
         
     async def get_comprehensive_metrics(
         self, 
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
-    ) -> Dict[str, Any]:
+        start_date: datetime | None = None,
+        end_date: datetime | None = None
+    ) -> dict[str, Any]:
         """Get comprehensive notification metrics"""
         if not start_date:
-            start_date = datetime.now(timezone.utc) - timedelta(days=7)
+            start_date = datetime.now(UTC) - timedelta(days=7)
         if not end_date:
-            end_date = datetime.now(timezone.utc)
+            end_date = datetime.now(UTC)
             
         try:
             async for session in db_manager.get_session(read_only=True):
-                # Base query with date filtering
-                base_query = select(Notification).where(
-                    and_(
-                        Notification.created_at >= start_date,
-                        Notification.created_at <= end_date
+                # Query notifications within date range
+                notifications = await session.execute(
+                    select(Notification).where(
+                        and_(
+                            Notification.created_at >= start_date,
+                            Notification.created_at <= end_date
+                        )
                     )
                 )
                 
@@ -212,14 +211,14 @@ class NotificationAnalytics:
         self,
         user_id: str = None,
         days: int = 30,
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None
+        start_date: datetime | None = None,
+        end_date: datetime | None = None
     ) -> UserEngagementMetrics:
         """Get user engagement metrics"""
         if not start_date:
-            start_date = datetime.now(timezone.utc) - timedelta(days=days)
+            start_date = datetime.now(UTC) - timedelta(days=days)
         if not end_date:
-            end_date = datetime.now(timezone.utc)
+            end_date = datetime.now(UTC)
             
         try:
             async for session in db_manager.get_session(read_only=True):
@@ -351,12 +350,12 @@ class NotificationAnalytics:
             logger.error(f"Failed to get system performance metrics: {e}")
             return SystemPerformanceMetrics()
     
-    async def get_dashboard_data(self, days: int = 7) -> Dict[str, Any]:
+    async def get_dashboard_data(self, days: int = 7) -> dict[str, Any]:
         """Get complete dashboard data"""
         try:
             # Run all metrics collection concurrently with date range
-            start_date = datetime.now(timezone.utc) - timedelta(days=days)
-            end_date = datetime.now(timezone.utc)
+            start_date = datetime.now(UTC) - timedelta(days=days)
+            end_date = datetime.now(UTC)
             
             notification_metrics, user_metrics, system_metrics = await asyncio.gather(
                 self.get_comprehensive_metrics(start_date, end_date),
@@ -365,7 +364,7 @@ class NotificationAnalytics:
             )
             
             return {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "notification_metrics": asdict(notification_metrics),
                 "user_engagement": asdict(user_metrics),
                 "system_performance": asdict(system_metrics),
@@ -376,14 +375,14 @@ class NotificationAnalytics:
             
         except Exception as e:
             logger.error(f"Failed to get dashboard data: {e}")
-            return {"error": str(e), "timestamp": datetime.now(timezone.utc).isoformat()}
+            return {"error": str(e), "timestamp": datetime.now(UTC).isoformat()}
     
     def _calculate_health_score(
         self,
         notification_metrics: NotificationMetrics,
         user_metrics: UserEngagementMetrics,
         system_metrics: SystemPerformanceMetrics
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Calculate overall system health score"""
         scores = []
         
@@ -436,7 +435,7 @@ class NotificationAnalytics:
         try:
             # Get metrics
             notification_metrics = await self.get_comprehensive_metrics()
-            user_metrics = await self.get_user_engagement_metrics("system", 7)
+            # user_metrics = await self.get_user_engagement_metrics("system", 7)  # Reserved for future use
             system_metrics = await self.get_system_performance_metrics()
             
             scores = []

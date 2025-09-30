@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class HoldingIn(BaseModel):
     symbol: str
     quantity: float

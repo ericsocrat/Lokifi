@@ -1,13 +1,16 @@
 from __future__ import annotations
-from typing import Iterable
+
+from collections.abc import Awaitable, Callable, Iterable
+from typing import Any
+
+from app.services.providers import alphavantage, cmc, coingecko, finnhub, polygon
 from app.utils.redis import redis_json_get, redis_json_set
-from app.services.providers import polygon, finnhub, alphavantage, coingecko, cmc
+
 
 def _is_equity(symbol: str) -> bool:
     s = symbol.replace("-", "").replace(".", "").replace(":", "")
     return s.isalpha() and 1 < len(s) <= 5
 
-from typing import Callable, Awaitable, Any
 
 async def _try_chain(tasks: Iterable[Callable[[], Awaitable[Any]]]):
     last = None

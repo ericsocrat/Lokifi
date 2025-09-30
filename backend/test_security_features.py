@@ -4,8 +4,10 @@ Comprehensive Security Features Test Suite
 Tests all enhanced security features including bleach integration
 """
 
-import sys
 import os
+import sys
+from datetime import UTC
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def test_bleach_integration():
@@ -39,8 +41,8 @@ def test_security_alerts():
     """Test security alert system"""
     print("\n=== SECURITY ALERTS TEST ===")
     try:
-        from app.utils.security_alerts import SecurityAlertManager, Alert, AlertPriority
-        from app.utils.security_logger import SecuritySeverity, SecurityEventType
+        from app.utils.security_alerts import Alert, AlertPriority, SecurityAlertManager
+        from app.utils.security_logger import SecurityEventType, SecuritySeverity
         
         # Create alert manager
         alert_manager = SecurityAlertManager()
@@ -129,8 +131,14 @@ def test_security_logger():
     """Test security logging functionality"""
     print("\n=== SECURITY LOGGER TEST ===")
     try:
-        from app.utils.security_logger import security_logger, SecurityEvent, SecurityEventType, SecuritySeverity
-        from datetime import datetime, timezone
+        from datetime import datetime
+
+        from app.utils.security_logger import (
+            SecurityEvent,
+            SecurityEventType,
+            SecuritySeverity,
+            security_logger,
+        )
         
         # Test security event creation
         test_event = SecurityEvent(
@@ -139,7 +147,7 @@ def test_security_logger():
             severity=SecuritySeverity.MEDIUM,
             client_ip="192.168.1.100",
             user_agent="Test Agent",
-            timestamp=datetime.now(timezone.utc)
+            timestamp=datetime.now(UTC)
         )
         
         assert test_event.event_type == SecurityEventType.AUTHENTICATION_FAILURE

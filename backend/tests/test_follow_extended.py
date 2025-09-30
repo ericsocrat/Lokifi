@@ -1,8 +1,11 @@
 """Extended tests for follow graph (mutual follows, suggestions pagination, counters integrity)."""
 import uuid
+
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
+
 from app.main import app
+
 
 @pytest.fixture
 def anyio_backend():

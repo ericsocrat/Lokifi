@@ -4,17 +4,18 @@ Advanced testing for all Phase K components with performance monitoring
 """
 
 import asyncio
-import aiohttp
 import json
-import time
 import logging
-import psutil
 import statistics
-from typing import Dict, Any, List
+import time
+from dataclasses import asdict, dataclass
 from datetime import datetime
-import websockets
+from typing import Any
+
+import aiohttp
+import psutil
 import redis.asyncio as redis
-from dataclasses import dataclass, asdict
+import websockets
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +41,7 @@ class PhaseKStressTester:
         self.base_url = base_url
         self.ws_url = base_url.replace("http://", "ws://").replace("https://", "wss://")
         self.redis_url = "redis://localhost:6379"
-        self.metrics: List[StressTestMetrics] = []
+        self.metrics: list[StressTestMetrics] = []
         
     async def stress_test_api_endpoints(self, concurrent_users: int = 50, duration_seconds: int = 30) -> StressTestMetrics:
         """Stress test API endpoints with concurrent users"""
@@ -76,7 +77,7 @@ class PhaseKStressTester:
                             else:
                                 failed_requests += 1
                     
-                    except Exception as e:
+                    except Exception:
                         failed_requests += 1
                         response_time = (time.time() - request_start) * 1000
                         results.append(response_time)
@@ -150,7 +151,7 @@ class PhaseKStressTester:
                             response_times.append(response_time)
                             successful_requests += 1
                             
-                        except asyncio.TimeoutError:
+                        except TimeoutError:
                             failed_requests += 1
                         except Exception:
                             failed_requests += 1
@@ -278,7 +279,7 @@ class PhaseKStressTester:
         self.metrics.append(metrics)
         return metrics
     
-    async def memory_leak_test(self, duration_seconds: int = 60) -> Dict[str, Any]:
+    async def memory_leak_test(self, duration_seconds: int = 60) -> dict[str, Any]:
         """Test for memory leaks during sustained operation"""
         
         print(f"🧠 Memory Leak Test: {duration_seconds}s sustained operation")
@@ -296,7 +297,7 @@ class PhaseKStressTester:
                     try:
                         async with session.get(f"{self.base_url}/health") as response:
                             await response.text()
-                    except:
+                    except (TimeoutError, aiohttp.ClientError):
                         pass
                     await asyncio.sleep(0.1)
         
@@ -341,7 +342,7 @@ class PhaseKStressTester:
             "memory_samples": memory_samples[-10:]  # Last 10 samples for review
         }
     
-    async def run_comprehensive_stress_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_stress_tests(self) -> dict[str, Any]:
         """Run comprehensive stress tests for all Phase K components"""
         
         print("🚀 Starting Phase K Comprehensive Stress Tests")
@@ -431,7 +432,7 @@ class PhaseKStressTester:
         
         return summary
     
-    def _assess_system_performance(self, performance_score: float, test_results: Dict[str, Any]) -> Dict[str, Any]:
+    def _assess_system_performance(self, performance_score: float, test_results: dict[str, Any]) -> dict[str, Any]:
         """Assess overall system performance"""
         
         issues = []
@@ -471,7 +472,7 @@ class PhaseKStressTester:
             "recommendations": recommendations
         }
     
-    def generate_stress_test_report(self, summary: Dict[str, Any]) -> str:
+    def generate_stress_test_report(self, summary: dict[str, Any]) -> str:
         """Generate comprehensive stress test report"""
         
         report = f"""# Phase K Comprehensive Stress Test Report

@@ -3,15 +3,22 @@ Hugging Face Inference API provider for Fynix AI Chatbot (J5).
 """
 
 import json
-import uuid
 import logging
-from typing import List, AsyncGenerator, Optional
+import uuid
+from collections.abc import AsyncGenerator
 
 import httpx
+
 from app.services.ai_provider import (
-    AIProvider, AIMessage, StreamOptions, StreamChunk, TokenUsage,
-    ProviderError, ProviderUnavailableError, ProviderRateLimitError,
-    ProviderAuthenticationError
+    AIMessage,
+    AIProvider,
+    ProviderAuthenticationError,
+    ProviderError,
+    ProviderRateLimitError,
+    ProviderUnavailableError,
+    StreamChunk,
+    StreamOptions,
+    TokenUsage,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,7 +27,7 @@ logger = logging.getLogger(__name__)
 class HuggingFaceProvider(AIProvider):
     """Hugging Face Inference API provider implementation."""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         super().__init__(api_key)
         self.name = "huggingface"
         self.base_url = "https://api-inference.huggingface.co/models"
@@ -34,7 +41,7 @@ class HuggingFaceProvider(AIProvider):
     
     async def stream_chat(
         self,
-        messages: List[AIMessage],
+        messages: list[AIMessage],
         options: StreamOptions = StreamOptions()
     ) -> AsyncGenerator[StreamChunk, None]:
         """Stream chat completion from Hugging Face."""
@@ -142,7 +149,7 @@ class HuggingFaceProvider(AIProvider):
         full_text: str, 
         chunk_id: str, 
         model: str, 
-        messages: List[AIMessage]
+        messages: list[AIMessage]
     ) -> AsyncGenerator[StreamChunk, None]:
         """Simulate streaming by chunking the response."""
         words = full_text.split()
@@ -171,7 +178,7 @@ class HuggingFaceProvider(AIProvider):
         self, 
         model: str, 
         payload: dict, 
-        messages: List[AIMessage]
+        messages: list[AIMessage]
     ) -> AsyncGenerator[StreamChunk, None]:
         """Fallback to non-streaming request when model is loading."""
         try:
@@ -211,7 +218,7 @@ class HuggingFaceProvider(AIProvider):
                 metadata={"provider": "huggingface", "error": str(e)}
             )
     
-    def _messages_to_prompt(self, messages: List[AIMessage]) -> str:
+    def _messages_to_prompt(self, messages: list[AIMessage]) -> str:
         """Convert chat messages to a single prompt for HF models."""
         prompt_parts = []
         
@@ -238,10 +245,10 @@ class HuggingFaceProvider(AIProvider):
                 headers={"Authorization": f"Bearer {self.api_key}"}
             )
             return response.status_code in [200, 404]  # 404 is also fine, means auth works
-        except:
+        except (httpx.RequestError, httpx.HTTPStatusError):
             return False
     
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported Hugging Face models."""
         return [
             "microsoft/DialoGPT-medium",

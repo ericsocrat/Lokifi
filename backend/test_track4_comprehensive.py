@@ -11,11 +11,11 @@ This script coordinates:
 """
 
 import asyncio
+import json
+import logging
 import sys
 import time
 from datetime import datetime
-import json
-import logging
 
 # Configure logging
 logging.basicConfig(
@@ -153,8 +153,8 @@ async def run_track4_comprehensive_validation():
     try:
         # Validate integration with Track 3 infrastructure
         from app.core.advanced_redis_client import advanced_redis_client
-        from app.websockets.advanced_websocket_manager import get_websocket_manager
         from app.services.advanced_monitoring import get_monitoring_system
+        from app.websockets.advanced_websocket_manager import get_websocket_manager
         
         print("🔍 Validating Track 3 infrastructure integration...")
         

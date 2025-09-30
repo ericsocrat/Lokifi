@@ -3,15 +3,18 @@ Redis Cache Decorators for Frequently Accessed API Endpoints
 High-performance caching with intelligent TTL management
 """
 
+import hashlib
 import json
 import logging
-import hashlib
+import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Dict, Optional, Callable
+from typing import Any
+
 import redis.asyncio as redis
 from fastapi import Request
+
 from app.core.config import Settings
-import time
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +24,7 @@ class RedisCache:
     def __init__(self, redis_url: str = None):
         settings = Settings()
         self.redis_url = redis_url or getattr(settings, 'REDIS_URL', 'redis://localhost:6379/0')
-        self._client: Optional[redis.Redis] = None
+        self._client: redis.Redis | None = None
         self.default_ttl = 300  # 5 minutes default
         
     async def get_client(self) -> redis.Redis:
@@ -45,7 +48,7 @@ class RedisCache:
         
         return f"cache:{prefix}:{key_hash}"
     
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get cached value"""
         try:
             client = await self.get_client()
@@ -73,7 +76,7 @@ class RedisCache:
         
         return None
     
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set cached value with TTL"""
         try:
             client = await self.get_client()
@@ -126,8 +129,8 @@ def redis_cache(
     ttl: int = 300,
     prefix: str = "api",
     vary_on_user: bool = True,
-    vary_on_headers: Optional[list] = None,
-    skip_cache_if: Optional[Callable] = None,
+    vary_on_headers: list | None = None,
+    skip_cache_if: Callable | None = None,
     invalidate_on_mutation: bool = True
 ):
     """
@@ -295,7 +298,7 @@ async def warm_cache():
     except Exception as e:
         logger.error(f"❌ Cache warming failed: {e}")
 
-async def get_cache_stats() -> Dict[str, Any]:
+async def get_cache_stats() -> dict[str, Any]:
     """Get cache statistics"""
     
     try:

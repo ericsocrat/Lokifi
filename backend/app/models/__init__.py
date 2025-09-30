@@ -3,12 +3,12 @@ Database models package.
 """
 
 # Import all models to ensure they are registered with SQLAlchemy
-from .user import User
-from .profile import Profile
-from .follow import Follow
+from .ai_thread import AiMessage, AiThread, AiUsage
 from .conversation import Conversation, ConversationParticipant, Message, MessageReceipt
-from .ai_thread import AiThread, AiMessage, AiUsage
+from .follow import Follow
 from .notification_models import Notification, NotificationPreference
+from .profile import Profile
+from .user import User
 
 __all__ = [
     "User",

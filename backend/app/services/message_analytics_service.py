@@ -3,14 +3,14 @@ Message analytics service for J4 Direct Messages.
 """
 
 import uuid
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
+from sqlalchemy import and_, desc, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, desc
 
-from app.models.conversation import Message, Conversation, ConversationParticipant
+from app.models.conversation import Conversation, ConversationParticipant, Message
 from app.models.user import User
 
 
@@ -22,9 +22,9 @@ class UserMessageStats:
     total_messages: int
     total_conversations: int
     avg_messages_per_conversation: float
-    most_active_day: Optional[str] = None
-    most_active_hour: Optional[int] = None
-    response_time_avg_minutes: Optional[float] = None
+    most_active_day: str | None = None
+    most_active_hour: int | None = None
+    response_time_avg_minutes: float | None = None
 
 
 @dataclass
@@ -33,8 +33,8 @@ class ConversationAnalytics:
     conversation_id: uuid.UUID
     total_messages: int
     total_participants: int
-    messages_by_day: Dict[str, int]
-    messages_by_user: Dict[str, int]
+    messages_by_day: dict[str, int]
+    messages_by_user: dict[str, int]
     avg_response_time_minutes: float
     most_active_period: str
 
@@ -52,14 +52,14 @@ class MessageAnalyticsService:
     ) -> UserMessageStats:
         """Get comprehensive messaging statistics for a user."""
         
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
         
         # Total messages sent
         messages_count_stmt = select(func.count(Message.id)).where(
             and_(
                 Message.sender_id == user_id,
                 Message.created_at >= cutoff_date,
-                Message.is_deleted == False
+                ~Message.is_deleted
             )
         )
         result = await self.db.execute(messages_count_stmt)
@@ -72,7 +72,7 @@ class MessageAnalyticsService:
                 and_(
                     Message.sender_id == user_id,
                     Message.created_at >= cutoff_date,
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
         )
@@ -92,7 +92,7 @@ class MessageAnalyticsService:
                 and_(
                     Message.sender_id == user_id,
                     Message.created_at >= cutoff_date,
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             .group_by(func.to_char(Message.created_at, 'Day'))
@@ -113,7 +113,7 @@ class MessageAnalyticsService:
                 and_(
                     Message.sender_id == user_id,
                     Message.created_at >= cutoff_date,
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             .group_by(func.extract('hour', Message.created_at))
@@ -144,7 +144,7 @@ class MessageAnalyticsService:
         conversation_id: uuid.UUID,
         user_id: uuid.UUID,
         days_back: int = 30
-    ) -> Optional[ConversationAnalytics]:
+    ) -> ConversationAnalytics | None:
         """Get analytics for a specific conversation."""
         
         # Verify user is participant
@@ -152,21 +152,21 @@ class MessageAnalyticsService:
             and_(
                 ConversationParticipant.conversation_id == conversation_id,
                 ConversationParticipant.user_id == user_id,
-                ConversationParticipant.is_active == True
+                ConversationParticipant.is_active
             )
         )
         result = await self.db.execute(participant_stmt)
         if not result.scalar_one_or_none():
             return None
         
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
         
         # Total messages in conversation
         total_messages_stmt = select(func.count(Message.id)).where(
             and_(
                 Message.conversation_id == conversation_id,
                 Message.created_at >= cutoff_date,
-                Message.is_deleted == False
+                ~Message.is_deleted
             )
         )
         result = await self.db.execute(total_messages_stmt)
@@ -176,7 +176,7 @@ class MessageAnalyticsService:
         participants_stmt = select(func.count(ConversationParticipant.user_id)).where(
             and_(
                 ConversationParticipant.conversation_id == conversation_id,
-                ConversationParticipant.is_active == True
+                ConversationParticipant.is_active
             )
         )
         result = await self.db.execute(participants_stmt)
@@ -192,7 +192,7 @@ class MessageAnalyticsService:
                 and_(
                     Message.conversation_id == conversation_id,
                     Message.created_at >= cutoff_date,
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             .group_by(func.date(Message.created_at))
@@ -212,7 +212,7 @@ class MessageAnalyticsService:
                 and_(
                     Message.conversation_id == conversation_id,
                     Message.created_at >= cutoff_date,
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             .group_by(User.username)
@@ -231,16 +231,16 @@ class MessageAnalyticsService:
             most_active_period="unknown"  # Would need more analysis
         )
     
-    async def get_platform_statistics(self) -> Dict[str, Any]:
+    async def get_platform_statistics(self) -> dict[str, Any]:
         """Get overall platform messaging statistics."""
         
         # Total messages (last 30 days)
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff_date = datetime.now(UTC) - timedelta(days=30)
         
         total_messages_stmt = select(func.count(Message.id)).where(
             and_(
                 Message.created_at >= cutoff_date,
-                Message.is_deleted == False
+                ~Message.is_deleted
             )
         )
         result = await self.db.execute(total_messages_stmt)
@@ -250,7 +250,7 @@ class MessageAnalyticsService:
         active_users_stmt = select(func.count(func.distinct(Message.sender_id))).where(
             and_(
                 Message.created_at >= cutoff_date,
-                Message.is_deleted == False
+                ~Message.is_deleted
             )
         )
         result = await self.db.execute(active_users_stmt)
@@ -270,7 +270,7 @@ class MessageAnalyticsService:
             .where(
                 and_(
                     Message.created_at >= cutoff_date,
-                    Message.is_deleted == False
+                    ~Message.is_deleted
                 )
             )
             .group_by(Message.content_type)
@@ -286,14 +286,14 @@ class MessageAnalyticsService:
             "avg_messages_per_user": total_messages / max(active_users, 1),
             "avg_messages_per_conversation": total_messages / max(total_conversations, 1),
             "messages_by_type": messages_by_type,
-            "generated_at": datetime.now(timezone.utc).isoformat()
+            "generated_at": datetime.now(UTC).isoformat()
         }
     
     async def get_trending_conversations(
         self, 
         user_id: uuid.UUID,
         limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Get trending conversations based on recent activity."""
         
         # Get conversations with recent high activity
@@ -307,12 +307,12 @@ class MessageAnalyticsService:
                   and_(
                       ConversationParticipant.conversation_id == Message.conversation_id,
                       ConversationParticipant.user_id == user_id,
-                      ConversationParticipant.is_active == True
+                      ConversationParticipant.is_active
                   ))
             .where(
                 and_(
-                    Message.created_at >= datetime.now(timezone.utc) - timedelta(hours=24),
-                    Message.is_deleted == False
+                    Message.created_at >= datetime.now(UTC) - timedelta(hours=24),
+                    ~Message.is_deleted
                 )
             )
             .group_by(Message.conversation_id)

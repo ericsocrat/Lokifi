@@ -3,8 +3,9 @@ Simple Phase J2 functionality test without full test suite
 Tests core profile features to validate implementation
 """
 
-import requests
 import time
+
+import requests
 
 BASE_URL = "http://localhost:8000"
 

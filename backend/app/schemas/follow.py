@@ -3,7 +3,6 @@ Pydantic schemas for follow graph functionality.
 """
 
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -35,9 +34,9 @@ class FollowResponse(BaseModel):
 class UserFollowStatus(BaseModel):
     """User follow status response schema."""
     user_id: UUID
-    username: Optional[str]
+    username: str | None
     display_name: str
-    avatar_url: Optional[str]
+    avatar_url: str | None
     is_following: bool
     follows_you: bool
     mutual_follow: bool
@@ -68,11 +67,11 @@ class FollowingListResponse(BaseModel):
 class FollowStatsResponse(BaseModel):
     """Follow statistics response schema."""
     user_id: UUID
-    username: Optional[str]
+    username: str | None
     display_name: str
     follower_count: int
     following_count: int
-    mutual_followers_count: Optional[int] = None  # Only shown to authenticated users
+    mutual_followers_count: int | None = None  # Only shown to authenticated users
 
 
 class MutualFollowsResponse(BaseModel):

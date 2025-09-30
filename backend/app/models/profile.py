@@ -2,16 +2,14 @@
 Profile model for user profiles and public information.
 """
 
+import uuid
 from datetime import datetime
-from typing import Optional
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, Integer, Boolean, func
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
-
-import uuid
 
 
 class Profile(Base):
@@ -34,17 +32,17 @@ class Profile(Base):
     )
     
     # Profile fields
-    username: Mapped[Optional[str]] = mapped_column(
+    username: Mapped[str | None] = mapped_column(
         String(30), 
         unique=True, 
         nullable=True, 
         index=True
     )
-    display_name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    bio: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    avatar_url: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
-    location: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    website: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    display_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    bio: Mapped[str | None] = mapped_column(Text, nullable=True)
+    avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    location: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    website: Mapped[str | None] = mapped_column(String(200), nullable=True)
     # Privacy & social counters
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default="true")
     follower_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0, server_default="0")

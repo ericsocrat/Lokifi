@@ -19,7 +19,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Any
+from typing import Any
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
@@ -101,7 +101,7 @@ class MasterEnhancementSuite:
         print(f"{Colors.CYAN}{Colors.BOLD}└{'─'*60}┘{Colors.END}")
         print(f"{Colors.WHITE}{description}{Colors.END}")
     
-    async def run_suite(self, suite_key: str) -> Dict[str, Any]:
+    async def run_suite(self, suite_key: str) -> dict[str, Any]:
         """Run a specific enhancement suite"""
         suite = self.suites[suite_key]
         suite_script = backend_dir / suite["script"]
@@ -211,7 +211,7 @@ class MasterEnhancementSuite:
             self.print_warning(f"Prerequisites check: {success_rate:.0f}% passed - some issues detected")
             return success_rate >= 60
     
-    async def run_all_suites(self) -> Dict[str, Any]:
+    async def run_all_suites(self) -> dict[str, Any]:
         """Run all enhancement suites"""
         self.print_header("Running All Enhancement Suites")
         
@@ -240,7 +240,7 @@ class MasterEnhancementSuite:
         
         return self.enhancement_results
     
-    async def run_selected_suites(self, selected_suites: List[str]) -> Dict[str, Any]:
+    async def run_selected_suites(self, selected_suites: list[str]) -> dict[str, Any]:
         """Run only selected enhancement suites"""
         self.print_header(f"Running Selected Enhancement Suites: {', '.join(selected_suites)}")
         
@@ -274,7 +274,7 @@ class MasterEnhancementSuite:
         
         return self.enhancement_results
     
-    def generate_summary_report(self) -> Dict[str, Any]:
+    def generate_summary_report(self) -> dict[str, Any]:
         """Generate comprehensive summary report"""
         self.print_section("Generating Summary Report")
         

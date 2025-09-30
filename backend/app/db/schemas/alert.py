@@ -1,5 +1,6 @@
-from pydantic import BaseModel
 from typing import Any, Literal
+
+from pydantic import BaseModel
 
 AlertType = Literal["price","percent","indicator","news","btcdom"]
 

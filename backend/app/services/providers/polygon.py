@@ -1,5 +1,7 @@
-from .base import _get
 from app.core.config import settings
+
+from .base import _get
+
 
 def _tf(timeframe: str):
     return {"15m": (15, "minute"), "30m": (30, "minute"), "1h": (1, "hour"), "4h": (4, "hour"), "1d": (1, "day"), "1w": (1, "week")}[timeframe]

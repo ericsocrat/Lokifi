@@ -8,13 +8,14 @@ for the entire Fynix project. Ensures all dependencies are correctly installed
 and at the latest compatible versions.
 """
 
-import sys
-import subprocess
 import importlib
 import json
-from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Any
 import platform
+import subprocess
+import sys
+from pathlib import Path
+from typing import Any
+
 
 # Colors for output
 class Colors:
@@ -86,7 +87,7 @@ class DependencyVerifier:
     def print_info(self, message: str):
         print(f"{Colors.WHITE}ℹ️  {message}{Colors.END}")
     
-    def get_package_version(self, package_name: str) -> Optional[str]:
+    def get_package_version(self, package_name: str) -> str | None:
         """Get installed package version"""
         try:
             if package_name == 'jose':
@@ -106,7 +107,7 @@ class DependencyVerifier:
         except Exception:
             return 'unknown'
     
-    def verify_python_packages(self) -> Tuple[int, int]:
+    def verify_python_packages(self) -> tuple[int, int]:
         """Verify all required Python packages are installed"""
         self.print_section("Python Package Verification")
         
@@ -125,7 +126,7 @@ class DependencyVerifier:
         
         return installed_count, total_count
     
-    def verify_app_imports(self) -> Tuple[int, int]:
+    def verify_app_imports(self) -> tuple[int, int]:
         """Verify application imports work correctly"""
         self.print_section("Application Import Verification")
         
@@ -169,7 +170,7 @@ class DependencyVerifier:
             return False
         
         try:
-            with open(package_json_path, 'r') as f:
+            with open(package_json_path) as f:
                 package_data = json.load(f)
             
             dependencies = package_data.get('dependencies', {})
@@ -199,7 +200,7 @@ class DependencyVerifier:
             self.print_error(f"Failed to verify Node modules: {e}")
             return False
     
-    def check_system_dependencies(self) -> Dict[str, bool]:
+    def check_system_dependencies(self) -> dict[str, bool]:
         """Check system-level dependencies"""
         self.print_section("System Dependencies Check")
         
@@ -273,7 +274,7 @@ class DependencyVerifier:
             self.print_error(f"Backend health check failed: {e}")
             return False
     
-    def generate_upgrade_commands(self) -> List[str]:
+    def generate_upgrade_commands(self) -> list[str]:
         """Generate commands to upgrade dependencies"""
         self.print_section("Upgrade Commands")
         
@@ -301,7 +302,7 @@ class DependencyVerifier:
         
         return commands
     
-    def run_comprehensive_verification(self) -> Dict[str, Any]:
+    def run_comprehensive_verification(self) -> dict[str, Any]:
         """Run complete verification suite"""
         self.print_header("🔧 Fynix Comprehensive Dependency Verification")
         

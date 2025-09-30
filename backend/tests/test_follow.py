@@ -2,9 +2,11 @@
 
 Uses AsyncClient to avoid Windows event loop reuse issues with async DB sessions.
 """
-import pytest
 import uuid
-from httpx import AsyncClient, ASGITransport
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+
 from app.main import app
 
 

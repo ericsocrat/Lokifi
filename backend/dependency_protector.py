@@ -11,13 +11,14 @@ Comprehensive protection against accidental dependency downgrades including:
 - Integration with existing dependency management
 """
 
+import importlib.metadata
 import json
-import sys
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Tuple, Any
-import importlib.metadata
+from typing import Any
+
 try:
     import pkg_resources
 except ImportError:
@@ -46,7 +47,7 @@ class DependencyProtector:
             if sys.platform == "win32":
                 import os
                 os.system('chcp 65001 >nul 2>&1')  # Set console to UTF-8
-        except:
+        except (ImportError, OSError):
             pass  # Fall back to default encoding
             
         self.project_root = backend_dir.parent
@@ -94,7 +95,7 @@ class DependencyProtector:
         print(f"\n{Colors.BLUE}{Colors.BOLD}PROTECTION: {title}{Colors.END}")
         print(f"{Colors.BLUE}{'─'*60}{Colors.END}")
     
-    def parse_version(self, version_str: str) -> Tuple[int, ...]:
+    def parse_version(self, version_str: str) -> tuple[int, ...]:
         """Parse version string into comparable tuple"""
         try:
             # Handle version strings like "1.2.3", "1.2.3.dev1", "1.2.3rc1"
@@ -141,7 +142,7 @@ class DependencyProtector:
         else:
             return "same"
     
-    def get_current_python_versions(self) -> Dict[str, str]:
+    def get_current_python_versions(self) -> dict[str, str]:
         """Get current versions of all installed Python packages"""
         self.log_message("Scanning current Python package versions...")
         versions = {}
@@ -168,7 +169,7 @@ class DependencyProtector:
             self.log_message(f"Error getting Python versions: {e}", "ERROR")
             return {}
     
-    def get_current_nodejs_versions(self) -> Dict[str, str]:
+    def get_current_nodejs_versions(self) -> dict[str, str]:
         """Get current versions of all installed Node.js packages"""
         self.log_message("Scanning current Node.js package versions...")
         versions = {}
@@ -186,7 +187,7 @@ class DependencyProtector:
             # Get versions from package-lock.json if available
             package_lock_path = self.frontend_dir / "package-lock.json"
             if package_lock_path.exists():
-                with open(package_lock_path, 'r', encoding='utf-8', errors='ignore') as f:
+                with open(package_lock_path, encoding='utf-8', errors='ignore') as f:
                     lock_data = json.load(f)
                     
                 if 'packages' in lock_data:
@@ -272,7 +273,7 @@ class DependencyProtector:
         try:
             result = subprocess.run(['node', '--version'], capture_output=True, text=True)
             return result.stdout.strip() if result.returncode == 0 else "unknown"
-        except:
+        except (subprocess.SubprocessError, FileNotFoundError):
             return "unknown"
     
     def get_npm_version(self) -> str:
@@ -280,31 +281,31 @@ class DependencyProtector:
         try:
             result = subprocess.run(['npm', '--version'], capture_output=True, text=True)
             return result.stdout.strip() if result.returncode == 0 else "unknown"
-        except:
+        except (subprocess.SubprocessError, FileNotFoundError):
             return "unknown"
     
-    def load_protected_versions(self) -> Tuple[Dict[str, str], Dict[str, str]]:
+    def load_protected_versions(self) -> tuple[dict[str, str], dict[str, str]]:
         """Load the protected version baselines"""
         python_versions = {}
         nodejs_versions = {}
         
         try:
             if self.python_versions_file.exists():
-                with open(self.python_versions_file, 'r') as f:
+                with open(self.python_versions_file) as f:
                     python_versions = json.load(f)
         except Exception as e:
             self.log_message(f"Error loading Python versions: {e}", "WARNING")
         
         try:
             if self.nodejs_versions_file.exists():
-                with open(self.nodejs_versions_file, 'r') as f:
+                with open(self.nodejs_versions_file) as f:
                     nodejs_versions = json.load(f)
         except Exception as e:
             self.log_message(f"Error loading Node.js versions: {e}", "WARNING")
         
         return python_versions, nodejs_versions
     
-    def check_python_downgrade_risk(self, package_name: str, target_version: Optional[str] = None) -> Dict[str, Any]:
+    def check_python_downgrade_risk(self, package_name: str, target_version: str | None = None) -> dict[str, Any]:
         """Check if Python package installation would cause downgrades"""
         self.log_message(f"Checking downgrade risk for Python package: {package_name}")
         
@@ -356,7 +357,7 @@ class DependencyProtector:
             result["warnings"].append(f"Error during check: {e}")
             return result
     
-    def check_nodejs_downgrade_risk(self, package_name: str, target_version: Optional[str] = None) -> Dict[str, Any]:
+    def check_nodejs_downgrade_risk(self, package_name: str, target_version: str | None = None) -> dict[str, Any]:
         """Check if Node.js package installation would cause downgrades"""
         self.log_message(f"Checking downgrade risk for Node.js package: {package_name}")
         
@@ -500,7 +501,7 @@ sys.exit(subprocess.call(["npm"] + sys.argv[1:]))
             self.log_message(f"Failed to create wrapper scripts: {e}", "ERROR")
             return False
     
-    def generate_protection_report(self) -> Dict[str, Any]:
+    def generate_protection_report(self) -> dict[str, Any]:
         """Generate comprehensive protection status report"""
         self.log_message("Generating protection status report...")
         

@@ -9,24 +9,25 @@ Advanced notification features for J6.2 including:
 """
 
 import asyncio
-import logging
-from typing import Dict, List, Any, Optional, Union
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, asdict, field
-from enum import Enum
 import json
+import logging
 import uuid
+from dataclasses import asdict, dataclass, field
+from datetime import UTC, datetime, timedelta
+from enum import Enum
+from typing import Any
 from uuid import UUID
+
+from sqlalchemy import select
 
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
 from app.models.notification_models import (
-    NotificationPreference, 
-    NotificationType, 
-    NotificationPriority
+    NotificationPreference,
+    NotificationPriority,
+    NotificationType,
 )
-from app.services.notification_service import notification_service, NotificationData
-from sqlalchemy import select
+from app.services.notification_service import NotificationData, notification_service
 
 logger = logging.getLogger(__name__)
 
@@ -58,28 +59,28 @@ class DeliveryChannel(Enum):
 @dataclass
 class RichNotificationData:
     """Rich notification with advanced features"""
-    user_id: Union[str, UUID]
+    user_id: str | UUID
     type: NotificationType
     title: str
     message: str
     template: NotificationTemplate = NotificationTemplate.SIMPLE
     priority: NotificationPriority = NotificationPriority.NORMAL
-    channels: List[DeliveryChannel] = field(default_factory=lambda: [DeliveryChannel.IN_APP])
-    scheduled_for: Optional[datetime] = None
-    expires_at: Optional[datetime] = None
-    payload: Dict[str, Any] = field(default_factory=dict)
-    media: Optional[Dict[str, str]] = None
-    actions: List[Dict[str, str]] = field(default_factory=list)
-    grouping_key: Optional[str] = None
+    channels: list[DeliveryChannel] = field(default_factory=lambda: [DeliveryChannel.IN_APP])
+    scheduled_for: datetime | None = None
+    expires_at: datetime | None = None
+    payload: dict[str, Any] = field(default_factory=dict)
+    media: dict[str, str] | None = None
+    actions: list[dict[str, str]] = field(default_factory=list)
+    grouping_key: str | None = None
     batch_strategy: BatchingStrategy = BatchingStrategy.IMMEDIATE
-    a_b_test_group: Optional[str] = None
+    a_b_test_group: str | None = None
 
 @dataclass
 class NotificationBatch:
     """Batch of grouped notifications"""
     batch_id: str
     user_id: str
-    notifications: List[RichNotificationData]
+    notifications: list[RichNotificationData]
     created_at: datetime
     strategy: BatchingStrategy
     delivery_time: datetime
@@ -90,14 +91,14 @@ class SmartNotificationProcessor:
     """Advanced notification processor with smart features"""
     
     def __init__(self):
-        self.pending_batches: Dict[str, NotificationBatch] = {}
-        self.user_batching_preferences: Dict[str, Dict[str, Any]] = {}
-        self.a_b_test_variants: Dict[str, List[str]] = {}
+        self.pending_batches: dict[str, NotificationBatch] = {}
+        self.user_batching_preferences: dict[str, dict[str, Any]] = {}
+        self.a_b_test_variants: dict[str, list[str]] = {}
         
     async def process_rich_notification(
         self, 
         notification_data: RichNotificationData
-    ) -> Union[bool, str]:
+    ) -> bool | str:
         """Process a rich notification with advanced features"""
         try:
             user_id_str = str(notification_data.user_id)
@@ -133,7 +134,7 @@ class SmartNotificationProcessor:
         await redis_client.client.set(
             schedule_key,
             json.dumps(asdict(notification_data), default=str),
-            ex=int((notification_data.scheduled_for - datetime.now(timezone.utc)).total_seconds()) + 3600
+            ex=int((notification_data.scheduled_for - datetime.now(UTC)).total_seconds()) + 3600
         )
         
         logger.info(f"Scheduled notification {schedule_id} for {notification_data.scheduled_for}")
@@ -142,7 +143,7 @@ class SmartNotificationProcessor:
     async def _apply_batching_strategy(
         self, 
         notification_data: RichNotificationData
-    ) -> Union[bool, str]:
+    ) -> bool | str:
         """Apply batching strategy to notification"""
         user_id_str = str(notification_data.user_id)
         
@@ -181,13 +182,13 @@ class SmartNotificationProcessor:
         else:
             # Create new batch
             batch_id = str(uuid.uuid4())
-            delivery_time = datetime.now(timezone.utc) + timedelta(minutes=5)  # 5-minute grouping window
+            delivery_time = datetime.now(UTC) + timedelta(minutes=5)  # 5-minute grouping window
             
             new_batch = NotificationBatch(
                 batch_id=batch_id,
                 user_id=user_id_str,
                 notifications=[notification_data],
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
                 strategy=BatchingStrategy.SMART_GROUPING,
                 delivery_time=delivery_time,
                 title_template="You have {count} new notifications",
@@ -326,7 +327,7 @@ class SmartNotificationProcessor:
         
         if await redis_client.is_available():
             analytics_data = {
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
                 "template": notification_data.template.value,
                 "channels": [c.value for c in notification_data.channels],
                 "priority": notification_data.priority.value,
@@ -340,7 +341,7 @@ class SmartNotificationProcessor:
             )
             await redis_client.client.ltrim(analytics_key, 0, 999)  # Keep last 1000 records
     
-    async def get_user_notification_preferences(self, user_id: str) -> Dict[str, Any]:
+    async def get_user_notification_preferences(self, user_id: str) -> dict[str, Any]:
         """Get advanced notification preferences for user"""
         try:
             async for session in db_manager.get_session(read_only=True):
@@ -367,7 +368,7 @@ class SmartNotificationProcessor:
             logger.error(f"Failed to get user preferences for {user_id}: {e}")
             return self._get_default_preferences()
     
-    def _get_default_preferences(self) -> Dict[str, Any]:
+    def _get_default_preferences(self) -> dict[str, Any]:
         """Get default notification preferences"""
         return {
             "batching_enabled": False,
@@ -381,13 +382,13 @@ class SmartNotificationProcessor:
     async def configure_ab_test(
         self, 
         test_name: str, 
-        variants: List[str]
+        variants: list[str]
     ):
         """Configure A/B test variants"""
         self.a_b_test_variants[test_name] = variants
         logger.info(f"Configured A/B test '{test_name}' with variants: {variants}")
     
-    async def get_pending_batches_summary(self) -> Dict[str, Any]:
+    async def get_pending_batches_summary(self) -> dict[str, Any]:
         """Get summary of pending notification batches"""
         return {
             "total_batches": len(self.pending_batches),
@@ -452,14 +453,14 @@ smart_notification_service = SmartNotificationServiceWrapper(smart_notification_
 
 # Utility functions for easy integration
 async def send_rich_notification(
-    user_id: Union[str, UUID],
+    user_id: str | UUID,
     notification_type: NotificationType,
     title: str,
     message: str,
     template: NotificationTemplate = NotificationTemplate.SIMPLE,
     priority: NotificationPriority = NotificationPriority.NORMAL,
     **kwargs
-) -> Union[bool, str]:
+) -> bool | str:
     """Send a rich notification with advanced features"""
     rich_notification = RichNotificationData(
         user_id=user_id,
@@ -474,11 +475,11 @@ async def send_rich_notification(
     return await smart_notification_processor.process_rich_notification(rich_notification)
 
 async def send_batched_notification(
-    user_id: Union[str, UUID],
+    user_id: str | UUID,
     notification_type: NotificationType,
     title: str,
     message: str,
-    grouping_key: Optional[str] = None,
+    grouping_key: str | None = None,
     **kwargs
 ) -> str:
     """Send a notification that will be batched with similar notifications"""
@@ -495,7 +496,7 @@ async def send_batched_notification(
     return await smart_notification_processor.process_rich_notification(rich_notification)
 
 async def schedule_notification(
-    user_id: Union[str, UUID],
+    user_id: str | UUID,
     notification_type: NotificationType,
     title: str,
     message: str,

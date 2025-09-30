@@ -1,31 +1,33 @@
 ﻿from __future__ import annotations
-from fastapi import APIRouter, HTTPException, Header
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-import os
-import json
-import httpx
 
+import json
+import os
+from typing import Any
+
+import httpx
+from fastapi import APIRouter, Header, HTTPException
+from pydantic import BaseModel, Field
+
+from app.api.routes.alerts import CreateAlert as CreateAlertModel
+from app.api.routes.alerts import create_alert as _create_alert  # reuse Pydantic validation
+from app.api.routes.portfolio import portfolio_summary as _portfolio_summary  # reuse
 from app.services.auth import auth_handle_from_header
 from app.services.prices import fetch_ohlc
-from app.api.routes.portfolio import portfolio_summary as _portfolio_summary  # reuse
-from app.api.routes.alerts import create_alert as _create_alert              # reuse Pydantic validation
-from app.api.routes.alerts import CreateAlert as CreateAlertModel
 
 router = APIRouter()
 
 # ---- Tools that the assistant can call ----
-async def tool_get_price(symbol: str, timeframe: str = "1h") -> Dict[str, Any]:
+async def tool_get_price(symbol: str, timeframe: str = "1h") -> dict[str, Any]:
     bars = fetch_ohlc(symbol=symbol, timeframe=timeframe, limit=1)
     last = bars[-1]
     return {"symbol": symbol, "timeframe": timeframe, "price": float(last["close"]), "bar": last}
 
-async def tool_portfolio_summary(authorization: Optional[str]) -> Dict[str, Any]:
+async def tool_portfolio_summary(authorization: str | None) -> dict[str, Any]:
     # Reuse the route function; it expects (handle optional, authorization header)
     # Here we call its logic by using FastAPI callable directly.
     return _portfolio_summary(handle=None, authorization=authorization)  # type: ignore
 
-async def tool_create_price_alert(symbol: str, direction: str, price: float, authorization: Optional[str]) -> Dict[str, Any]:
+async def tool_create_price_alert(symbol: str, direction: str, price: float, authorization: str | None) -> dict[str, Any]:
     payload = CreateAlertModel(type="price_threshold", symbol=symbol, timeframe="1h",
                                min_interval_sec=300, config={"direction": direction, "price": float(price)})
     res = await _create_alert(payload, authorization=authorization)  # type: ignore
@@ -63,13 +65,13 @@ async def openai_chat(messages: list[dict], tools: list[dict]) -> dict:
 class ChatMessage(BaseModel):
     role: str
     content: str
-    name: Optional[str] = None
+    name: str | None = None
 
 class ChatRequest(BaseModel):
-    messages: List[ChatMessage] = Field(..., description="chat history, user-then-assistant, etc.")
+    messages: list[ChatMessage] = Field(..., description="chat history, user-then-assistant, etc.")
 
 @router.post("/chat")
-async def chat(req: ChatRequest, authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
+async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> dict[str, Any]:
     # Identify user (optional); some tools require auth
     me = auth_handle_from_header(authorization)
 
@@ -155,7 +157,7 @@ async def chat(req: ChatRequest, authorization: Optional[str] = Header(None)) ->
         msgs = [{"role":"system","content": SYSTEM_PROMPT}] + [m.dict() for m in req.messages]
         try:
             first = await openai_chat(msgs, tools)
-        except Exception as e:
+        except Exception:
             # fall back to offline
             first = None
 

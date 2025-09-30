@@ -1,5 +1,6 @@
-﻿from fastapi.testclient import TestClient
-import importlib
+﻿import importlib
+
+from fastapi.testclient import TestClient
 
 app = importlib.import_module("app.main").app
 client = TestClient(app)

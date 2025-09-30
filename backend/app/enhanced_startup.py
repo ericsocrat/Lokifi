@@ -3,15 +3,16 @@ K1 - Enhanced Startup Sequence for Fynix Phase K
 Robust FastAPI startup with proper configuration, health checks, and migrations
 """
 
-import sys
 import logging
+import sys
 from contextlib import asynccontextmanager
-from typing import Dict, Any, Optional
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import Field
+
 try:
     from pydantic_settings import BaseSettings
 except ImportError:
@@ -20,10 +21,10 @@ except ImportError:
 import uvicorn
 
 # Import existing components
-from app.core.database import database_manager
+from app.core.database import db_manager
 from app.core.redis_client import redis_client
-from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 from app.services.advanced_monitoring import monitoring_system
+from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class EnhancedSettings(BaseSettings):
     
     # Redis
     REDIS_URL: str = Field(default="redis://localhost:6379", description="Redis connection URL")
-    REDIS_PASSWORD: Optional[str] = Field(default=None, description="Redis password")
+    REDIS_PASSWORD: str | None = Field(default=None, description="Redis password")
     
     # Security
     JWT_SECRET_KEY: str = Field(..., description="JWT secret key")
@@ -67,8 +68,8 @@ class HealthStatus:
     """Health check status tracking"""
     
     def __init__(self):
-        self.checks: Dict[str, bool] = {}
-        self.details: Dict[str, Any] = {}
+        self.checks: dict[str, bool] = {}
+        self.details: dict[str, Any] = {}
     
     def add_check(self, name: str, status: bool, details: Any = None):
         """Add health check result"""
@@ -81,7 +82,7 @@ class HealthStatus:
         """Overall health status"""
         return all(self.checks.values())
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for API response"""
         return {
             "status": "healthy" if self.is_healthy else "unhealthy",
@@ -102,8 +103,9 @@ async def run_database_migrations():
         logger.info("🗄️ Running database migrations...")
         
         # Import Alembic components
-        from alembic import command
         from alembic.config import Config
+
+        from alembic import command
         
         # Configure Alembic
         alembic_cfg = Config("alembic.ini")
@@ -124,11 +126,11 @@ async def verify_database_connectivity():
         logger.info("🔍 Verifying database connectivity...")
         
         # Test database connection
-        await database_manager.initialize()
+        await db_manager.initialize()
         
         # Simple connectivity test using proper async iterator
         from sqlalchemy import text
-        session_generator = database_manager.get_session()
+        session_generator = db_manager.get_session()
         session = await session_generator.__anext__()
         
         try:
@@ -245,8 +247,6 @@ async def shutdown_sequence():
     """Clean shutdown sequence"""
     logger.info("🛑 Starting Fynix Phase K shutdown sequence...")
     
-    shutdown_tasks = []
-    
     # Stop monitoring
     if enhanced_settings.ENABLE_MONITORING:
         try:
@@ -265,7 +265,7 @@ async def shutdown_sequence():
     
     # Close database connections
     try:
-        await database_manager.close()
+        await db_manager.close()
         logger.info("✅ Database connections closed")
     except Exception as e:
         logger.error(f"Error closing database: {e}")
@@ -343,14 +343,28 @@ def create_app() -> FastAPI:
         }
     
     # Include existing routers
-    from app.routers import (
-        health, ohlc, news, social, portfolio, alerts, chat, 
-        mock_ohlc, market_data, auth, profile, follow, 
-        conversations, websocket, admin_messaging, ai, 
-        ai_websocket, notifications
-    )
     from app.api.j6_2_endpoints import j6_2_router
     from app.api.routes.monitoring import router as monitoring_router
+    from app.routers import (
+        admin_messaging,
+        ai,
+        ai_websocket,
+        alerts,
+        auth,
+        chat,
+        conversations,
+        follow,
+        health,
+        market_data,
+        mock_ohlc,
+        news,
+        notifications,
+        ohlc,
+        portfolio,
+        profile,
+        social,
+        websocket,
+    )
     from app.services.j53_scheduler import j53_router
     
     # Register routes

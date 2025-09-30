@@ -3,8 +3,9 @@ Master Test Runner for Phase J2 - User Profiles & Settings
 Runs comprehensive testing of all profile and settings functionality
 """
 
-import time
 import json
+import time
+
 import requests
 
 # Import our test suites

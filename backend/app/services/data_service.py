@@ -3,13 +3,13 @@ Symbol directory and OHLC data provider for Fynix trading platform.
 Supports multiple data sources with failover capabilities.
 """
 
-import os
-from typing import List, Dict, Optional
-from datetime import datetime, timedelta
-import aiohttp
-from enum import Enum
-from pydantic import BaseModel
 import logging
+import os
+from datetime import datetime, timedelta
+from enum import Enum
+
+import aiohttp
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -33,11 +33,11 @@ class Symbol(BaseModel):
     asset_type: AssetType
     exchange: str
     currency: str
-    country: Optional[str] = None
-    sector: Optional[str] = None
-    industry: Optional[str] = None
-    market_cap: Optional[float] = None
-    description: Optional[str] = None
+    country: str | None = None
+    sector: str | None = None
+    industry: str | None = None
+    market_cap: float | None = None
+    description: str | None = None
     is_active: bool = True
     last_updated: datetime
 
@@ -64,7 +64,7 @@ class SymbolDirectory:
     """Manages symbol discovery and metadata"""
     
     def __init__(self):
-        self.symbols: Dict[str, Symbol] = {}
+        self.symbols: dict[str, Symbol] = {}
         self._load_default_symbols()
     
     def _load_default_symbols(self):
@@ -122,9 +122,9 @@ class SymbolDirectory:
     async def search_symbols(
         self, 
         query: str, 
-        asset_type: Optional[AssetType] = None,
+        asset_type: AssetType | None = None,
         limit: int = 50
-    ) -> List[Symbol]:
+    ) -> list[Symbol]:
         """Search symbols by query string"""
         query = query.upper().strip()
         results = []
@@ -156,11 +156,11 @@ class SymbolDirectory:
         results.sort(key=sort_key)
         return results
     
-    def get_symbol(self, symbol: str) -> Optional[Symbol]:
+    def get_symbol(self, symbol: str) -> Symbol | None:
         """Get symbol metadata"""
         return self.symbols.get(symbol.upper())
     
-    def get_symbols_by_type(self, asset_type: AssetType) -> List[Symbol]:
+    def get_symbols_by_type(self, asset_type: AssetType) -> list[Symbol]:
         """Get all symbols of a specific type"""
         return [s for s in self.symbols.values() 
                 if s.asset_type == asset_type and s.is_active]
@@ -169,9 +169,9 @@ class OHLCAggregator:
     """Aggregates OHLC data from multiple providers with failover"""
     
     def __init__(self):
-        self.providers: List[DataProviderConfig] = []
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.cache: Dict[str, List[OHLCData]] = {}
+        self.providers: list[DataProviderConfig] = []
+        self.session: aiohttp.ClientSession | None = None
+        self.cache: dict[str, list[OHLCData]] = {}
         self.cache_ttl = timedelta(minutes=5)
         
     async def initialize(self):
@@ -216,10 +216,10 @@ class OHLCAggregator:
         self,
         symbol: str,
         timeframe: str = "1D",
-        start_date: Optional[datetime] = None,
-        end_date: Optional[datetime] = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
         limit: int = 100
-    ) -> List[OHLCData]:
+    ) -> list[OHLCData]:
         """Get OHLC data with provider failover"""
         
         cache_key = f"{symbol}_{timeframe}_{limit}"
@@ -259,10 +259,10 @@ class OHLCAggregator:
         config: DataProviderConfig,
         symbol: str,
         timeframe: str,
-        start_date: Optional[datetime],
-        end_date: Optional[datetime],
+        start_date: datetime | None,
+        end_date: datetime | None,
         limit: int
-    ) -> List[OHLCData]:
+    ) -> list[OHLCData]:
         """Fetch data from specific provider"""
         
         if config.provider == DataProvider.YAHOO_FINANCE:
@@ -280,7 +280,7 @@ class OHLCAggregator:
         symbol: str, 
         timeframe: str, 
         limit: int
-    ) -> List[OHLCData]:
+    ) -> list[OHLCData]:
         """Fetch from Yahoo Finance (free, no API key)"""
         
         # Convert timeframe
@@ -331,7 +331,7 @@ class OHLCAggregator:
         symbol: str, 
         timeframe: str, 
         limit: int
-    ) -> List[OHLCData]:
+    ) -> list[OHLCData]:
         """Fetch from Alpha Vantage"""
         
         function = "TIME_SERIES_DAILY" if timeframe == "1D" else "TIME_SERIES_INTRADAY"
@@ -389,7 +389,7 @@ class OHLCAggregator:
         symbol: str, 
         timeframe: str, 
         limit: int
-    ) -> List[OHLCData]:
+    ) -> list[OHLCData]:
         """Fetch from Finnhub"""
         
         # Finnhub requires different endpoints for different data
@@ -445,7 +445,7 @@ class OHLCAggregator:
         symbol: str, 
         timeframe: str, 
         limit: int
-    ) -> List[OHLCData]:
+    ) -> list[OHLCData]:
         """Generate mock OHLC data for testing"""
         
         import random

@@ -2,9 +2,8 @@
 Pydantic schemas for direct messaging (J4).
 """
 
-from datetime import datetime
-from typing import Optional, List
 import uuid
+from datetime import datetime
 
 from pydantic import BaseModel, Field
 
@@ -30,7 +29,7 @@ class MessageResponse(BaseModel):
     updated_at: datetime
     
     # Read receipt info
-    read_by: List[uuid.UUID] = Field(default_factory=list, description="User IDs who read this message")
+    read_by: list[uuid.UUID] = Field(default_factory=list, description="User IDs who read this message")
     
     model_config = {"from_attributes": True}
 
@@ -39,11 +38,11 @@ class ConversationParticipantResponse(BaseModel):
     """Schema for conversation participant."""
     user_id: uuid.UUID
     username: str
-    display_name: Optional[str]
-    avatar_url: Optional[str]
+    display_name: str | None
+    avatar_url: str | None
     joined_at: datetime
     is_active: bool
-    last_read_message_id: Optional[uuid.UUID]
+    last_read_message_id: uuid.UUID | None
     
     model_config = {"from_attributes": True}
 
@@ -52,17 +51,17 @@ class ConversationResponse(BaseModel):
     """Schema for conversation response."""
     id: uuid.UUID
     is_group: bool
-    name: Optional[str]
-    description: Optional[str]
+    name: str | None
+    description: str | None
     created_at: datetime
     updated_at: datetime
-    last_message_at: Optional[datetime]
+    last_message_at: datetime | None
     
     # Participants info
-    participants: List[ConversationParticipantResponse]
+    participants: list[ConversationParticipantResponse]
     
     # Latest message preview
-    last_message: Optional[MessageResponse]
+    last_message: MessageResponse | None
     
     # Unread count for current user
     unread_count: int = 0
@@ -72,7 +71,7 @@ class ConversationResponse(BaseModel):
 
 class ConversationListResponse(BaseModel):
     """Schema for conversation list."""
-    conversations: List[ConversationResponse]
+    conversations: list[ConversationResponse]
     total: int
     page: int
     page_size: int
@@ -81,7 +80,7 @@ class ConversationListResponse(BaseModel):
 
 class MessagesListResponse(BaseModel):
     """Schema for messages list."""
-    messages: List[MessageResponse]
+    messages: list[MessageResponse]
     total: int
     page: int
     page_size: int
@@ -140,6 +139,6 @@ class UserStatus(BaseModel):
     """Schema for user online status."""
     user_id: uuid.UUID
     is_online: bool
-    last_seen: Optional[datetime]
+    last_seen: datetime | None
     
     model_config = {"from_attributes": True}

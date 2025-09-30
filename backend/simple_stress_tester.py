@@ -5,20 +5,22 @@ Implements key stress test scenarios with baseline metrics
 """
 
 import asyncio
-import aiohttp
-import time
 import json
 import statistics
-from datetime import datetime
-from typing import Dict, List, Any, Tuple
+import time
 import traceback
+from datetime import datetime
+from typing import Any
+
+import aiohttp
+
 
 class SimpleStressTester:
     """Simplified stress tester for baseline metrics"""
     
     def __init__(self, base_url: str = "http://localhost:8001"):
         self.base_url = base_url
-        self.results: List[Dict] = []
+        self.results: list[dict] = []
         
     async def check_server_health(self) -> bool:
         """Check if server is running"""
@@ -30,7 +32,7 @@ class SimpleStressTester:
             print(f"❌ Server health check failed: {e}")
             return False
     
-    async def run_single_endpoint_test(self, endpoint: str, concurrent_users: int, total_requests: int, duration_seconds: int) -> Dict:
+    async def run_single_endpoint_test(self, endpoint: str, concurrent_users: int, total_requests: int, duration_seconds: int) -> dict:
         """Run stress test on single endpoint"""
         
         print(f"\n🔥 Testing: {endpoint}")
@@ -46,7 +48,7 @@ class SimpleStressTester:
         start_time = time.time()
         end_time = start_time + duration_seconds
         
-        async def make_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaphore) -> Tuple[bool, float]:
+        async def make_request(session: aiohttp.ClientSession, semaphore: asyncio.Semaphore) -> tuple[bool, float]:
             """Make single request"""
             async with semaphore:
                 request_start = time.time()
@@ -146,7 +148,7 @@ class SimpleStressTester:
         
         return result
     
-    async def run_all_stress_tests(self) -> Dict[str, Any]:
+    async def run_all_stress_tests(self) -> dict[str, Any]:
         """Run all stress test scenarios"""
         
         print("🚀 STARTING COMPREHENSIVE STRESS TESTS")
@@ -233,7 +235,7 @@ class SimpleStressTester:
         
         return self.generate_report()
     
-    def generate_report(self) -> Dict[str, Any]:
+    def generate_report(self) -> dict[str, Any]:
         """Generate comprehensive test report"""
         
         if not self.results:
@@ -307,7 +309,7 @@ class SimpleStressTester:
         
         return report
     
-    def _generate_recommendations(self, success_rate: float, avg_rps: float, avg_response_time: float) -> List[str]:
+    def _generate_recommendations(self, success_rate: float, avg_rps: float, avg_response_time: float) -> list[str]:
         """Generate performance recommendations"""
         recommendations = []
         

@@ -5,17 +5,18 @@ Tests system performance, reliability, and scalability under extreme conditions
 """
 
 import asyncio
-import aiohttp
-import websockets
 import json
-import time
-import psutil
+import logging
 import random
 import string
-from typing import Dict, List, Any, Optional
+import time
 from dataclasses import dataclass
-import logging
 from datetime import datetime
+from typing import Any
+
+import aiohttp
+import psutil
+import websockets
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -34,7 +35,7 @@ class StressTestResult:
     requests_per_second: float
     memory_usage_mb: float
     cpu_usage_percent: float
-    errors: List[str]
+    errors: list[str]
     duration_seconds: float
 
 class ComprehensiveStressTester:
@@ -43,8 +44,8 @@ class ComprehensiveStressTester:
     def __init__(self, base_url: str = "http://localhost:8000"):
         self.base_url = base_url
         self.websocket_url = base_url.replace("http", "ws")
-        self.results: List[StressTestResult] = []
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.results: list[StressTestResult] = []
+        self.session: aiohttp.ClientSession | None = None
         
     async def initialize(self):
         """Initialize the stress tester"""
@@ -63,7 +64,7 @@ class ComprehensiveStressTester:
             await self.session.close()
         logger.info("🧹 Stress tester cleanup complete")
     
-    def _get_system_metrics(self) -> Dict[str, float]:
+    def _get_system_metrics(self) -> dict[str, float]:
         """Get current system metrics"""
         return {
             "memory_mb": psutil.virtual_memory().used / (1024 * 1024),
@@ -77,9 +78,9 @@ class ComprehensiveStressTester:
         self, 
         method: str, 
         endpoint: str, 
-        data: Optional[Dict] = None,
-        headers: Optional[Dict] = None
-    ) -> Dict[str, Any]:
+        data: dict | None = None,
+        headers: dict | None = None
+    ) -> dict[str, Any]:
         """Make a single HTTP request"""
         start_time = time.time()
         try:
@@ -120,7 +121,7 @@ class ComprehensiveStressTester:
         concurrent_requests: int = 100,
         total_requests: int = 1000,
         method: str = "GET",
-        data: Optional[Dict] = None
+        data: dict | None = None
     ) -> StressTestResult:
         """Test API endpoint under heavy load"""
         
@@ -226,7 +227,7 @@ class ComprehensiveStressTester:
                             response_time = time.time() - send_start
                             response_times.append(response_time)
                             total_messages_received += 1
-                        except asyncio.TimeoutError:
+                        except TimeoutError:
                             errors.append(f"Timeout waiting for response from client {client_id}")
                         
                         # Small delay between messages

@@ -18,21 +18,22 @@ import asyncio
 import json
 import sys
 import time
-import httpx
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
+
+import httpx
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
 try:
-    from fastapi.testclient import TestClient
-    from sqlalchemy.ext.asyncio import create_async_engine
-    from sqlalchemy import text
-    import websockets
     import aiohttp
+    import websockets
+    from fastapi.testclient import TestClient
+    from sqlalchemy import text
+    from sqlalchemy.ext.asyncio import create_async_engine
 except ImportError as e:
     print(f"❌ Import Error: {e}")
     print("Install missing dependencies: pip install pytest httpx websockets aiohttp")
@@ -441,8 +442,9 @@ class AdvancedTestFramework:
         # Memory usage test (basic)
         total += 1
         try:
-            import psutil
             import os
+
+            import psutil
             
             # Get current process memory
             process = psutil.Process(os.getpid())
@@ -717,7 +719,7 @@ class AdvancedTestFramework:
         
         return success_rate >= 75
     
-    def generate_test_report(self) -> Dict[str, Any]:
+    def generate_test_report(self) -> dict[str, Any]:
         """Generate comprehensive test report"""
         total_tests = sum(len(category) for category in self.test_results.values())
         passed_tests = sum(

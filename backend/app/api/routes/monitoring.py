@@ -8,13 +8,13 @@ RESTful API endpoints for monitoring and observability:
 - Alert management
 """
 
-from fastapi import APIRouter, HTTPException, Query, Depends
-from typing import Optional, Dict
 
-from app.services.advanced_monitoring import monitoring_system
-from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.security import get_current_user
+from app.services.advanced_monitoring import monitoring_system
+from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["monitoring"])
 
@@ -87,7 +87,7 @@ async def get_websocket_analytics():
 
 @router.get("/websocket/connections")
 async def get_active_connections(
-    current_user: Dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """Get active WebSocket connections (admin only)"""
     try:
@@ -139,8 +139,8 @@ async def get_cache_metrics():
 @router.post("/cache/invalidate")
 async def invalidate_cache_pattern(
     pattern: str = Query(..., description="Cache key pattern to invalidate"),
-    layer: Optional[str] = Query(None, description="Specific cache layer"),
-    current_user: Dict = Depends(get_current_user)
+    layer: str | None = Query(None, description="Specific cache layer"),
+    current_user: dict = Depends(get_current_user)
 ):
     """Invalidate cache keys matching pattern (admin only)"""
     try:
@@ -167,7 +167,7 @@ async def invalidate_cache_pattern(
 async def get_alerts(
     active_only: bool = Query(False, description="Show only active alerts"),
     limit: int = Query(100, description="Maximum number of alerts", ge=1, le=1000),
-    current_user: Dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """Get system alerts"""
     try:
@@ -222,7 +222,7 @@ async def get_performance_insights():
         raise HTTPException(status_code=500, detail=f"Failed to get performance insights: {e}")
 
 @router.post("/monitoring/start")
-async def start_monitoring(current_user: Dict = Depends(get_current_user)):
+async def start_monitoring(current_user: dict = Depends(get_current_user)):
     """Start the monitoring system (admin only)"""
     try:
         # Check if user is admin
@@ -241,7 +241,7 @@ async def start_monitoring(current_user: Dict = Depends(get_current_user)):
         raise HTTPException(status_code=500, detail=f"Failed to start monitoring: {e}")
 
 @router.post("/monitoring/stop")
-async def stop_monitoring(current_user: Dict = Depends(get_current_user)):
+async def stop_monitoring(current_user: dict = Depends(get_current_user)):
     """Stop the monitoring system (admin only)"""
     try:
         # Check if user is admin
@@ -281,7 +281,7 @@ async def get_monitoring_status():
 async def websocket_load_test(
     connections: int = Query(100, description="Number of test connections", ge=1, le=1000),
     duration: int = Query(60, description="Test duration in seconds", ge=10, le=300),
-    current_user: Dict = Depends(get_current_user)
+    current_user: dict = Depends(get_current_user)
 ):
     """Run WebSocket load test (admin only)"""
     try:

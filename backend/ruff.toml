@@ -1,9 +1,11 @@
 ﻿line-length = 100
 target-version = "py311"
-select = ["E","F","I","UP"]
-ignore = ["E203","E266","E501"]
 exclude = [
   ".venv",
   "__pycache__",
   "data",
 ]
+
+[lint]
+select = ["E","F","I","UP"]
+ignore = ["E203","E266","E501"]

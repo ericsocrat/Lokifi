@@ -11,15 +11,16 @@ This module provides tools for:
 """
 
 import asyncio
-import time
-import psutil
-import statistics
-from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-from contextlib import asynccontextmanager
 import json
 import logging
+import statistics
+import time
+from contextlib import asynccontextmanager
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
+from typing import Any
+
+import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -31,9 +32,9 @@ class PerformanceMetric:
     unit: str
     timestamp: datetime
     category: str
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'timestamp': self.timestamp.isoformat(),
@@ -52,7 +53,7 @@ class ResourceUtilization:
     network_bytes_recv: int
     timestamp: datetime
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'timestamp': self.timestamp.isoformat()
@@ -65,11 +66,11 @@ class PerformanceBaseline:
     start_time: datetime
     end_time: datetime
     duration_seconds: float
-    metrics: List[PerformanceMetric]
-    resource_snapshots: List[ResourceUtilization]
-    summary: Dict[str, Any]
+    metrics: list[PerformanceMetric]
+    resource_snapshots: list[ResourceUtilization]
+    summary: dict[str, Any]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'test_name': self.test_name,
             'start_time': self.start_time.isoformat(),
@@ -89,9 +90,9 @@ class PerformanceProfiler:
     """
 
     def __init__(self):
-        self.metrics: List[PerformanceMetric] = []
-        self.resource_snapshots: List[ResourceUtilization] = []
-        self.start_time: Optional[datetime] = None
+        self.metrics: list[PerformanceMetric] = []
+        self.resource_snapshots: list[ResourceUtilization] = []
+        self.start_time: datetime | None = None
         self.monitoring_active = False
         self._monitoring_task = None
 
@@ -99,7 +100,7 @@ class PerformanceProfiler:
         """Start comprehensive performance profiling"""
         self.metrics = []
         self.resource_snapshots = []
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
         self.monitoring_active = True
         
         logger.info(f"Starting performance profiling: {test_name}")
@@ -111,7 +112,7 @@ class PerformanceProfiler:
 
     async def stop_profiling(self, test_name: str = "system_baseline") -> PerformanceBaseline:
         """Stop profiling and generate baseline report"""
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         self.monitoring_active = False
         
         if self._monitoring_task:
@@ -155,7 +156,7 @@ class PerformanceProfiler:
                     disk_usage_percent=disk.percent,
                     network_bytes_sent=network.bytes_sent,
                     network_bytes_recv=network.bytes_recv,
-                    timestamp=datetime.now(timezone.utc)
+                    timestamp=datetime.now(UTC)
                 )
 
                 self.resource_snapshots.append(snapshot)
@@ -168,13 +169,13 @@ class PerformanceProfiler:
                 await asyncio.sleep(1)
 
     def add_metric(self, name: str, value: float, unit: str, category: str = "general", 
-                   metadata: Dict[str, Any] = None):
+                   metadata: dict[str, Any] = None):
         """Add a custom performance metric"""
         metric = PerformanceMetric(
             name=name,
             value=value,
             unit=unit,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             category=category,
             metadata=metadata or {}
         )
@@ -196,7 +197,7 @@ class PerformanceProfiler:
                 metadata={"operation": operation_name}
             )
 
-    def _generate_summary(self) -> Dict[str, Any]:
+    def _generate_summary(self) -> dict[str, Any]:
         """Generate performance summary statistics"""
         if not self.metrics and not self.resource_snapshots:
             return {}
@@ -256,7 +257,7 @@ class SystemPerformanceAnalyzer:
     def __init__(self):
         self.profiler = PerformanceProfiler()
 
-    async def analyze_database_performance(self) -> Dict[str, Any]:
+    async def analyze_database_performance(self) -> dict[str, Any]:
         """Analyze database performance characteristics"""
         from app.core.database import db_manager
         
@@ -292,7 +293,7 @@ class SystemPerformanceAnalyzer:
 
         return results
 
-    async def analyze_redis_performance(self) -> Dict[str, Any]:
+    async def analyze_redis_performance(self) -> dict[str, Any]:
         """Analyze Redis cache performance"""
         from app.core.advanced_redis_client import advanced_redis_client
         
@@ -333,7 +334,7 @@ class SystemPerformanceAnalyzer:
 
         return results
 
-    async def analyze_websocket_performance(self) -> Dict[str, Any]:
+    async def analyze_websocket_performance(self) -> dict[str, Any]:
         """Analyze WebSocket manager performance"""
         from app.websockets.advanced_websocket_manager import get_websocket_manager
         

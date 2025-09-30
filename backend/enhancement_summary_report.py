@@ -12,6 +12,7 @@ upgrades, fixes, and tests that have been added to the Fynix system.
 import asyncio
 from datetime import datetime
 
+
 # Colors for output
 class Colors:
     GREEN = '\033[92m'

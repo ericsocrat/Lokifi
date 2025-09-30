@@ -3,31 +3,33 @@ API endpoints for direct messaging conversations (J4).
 J6.1 Enhanced with notification integration.
 """
 
-import uuid
 import logging
-from typing import Optional
-from datetime import datetime, timezone
+import uuid
+from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.security import get_current_user
 from app.db.database import get_db
 from app.models.user import User
+from app.schemas.conversation import (
+    ConversationListResponse,
+    ConversationResponse,
+    MarkReadRequest,
+    MessageCreate,
+    MessageResponse,
+    MessagesListResponse,
+)
 from app.services.conversation_service import ConversationService
+from app.services.message_analytics_service import MessageAnalyticsService
+from app.services.message_moderation_service import MessageModerationService, ModerationAction
+from app.services.message_search_service import MessageSearchService, SearchFilter, SearchResult
 from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import connection_manager
-from app.services.message_search_service import MessageSearchService, SearchFilter
-from app.services.message_moderation_service import MessageModerationService, ModerationAction
-from app.services.message_analytics_service import MessageAnalyticsService
-from app.schemas.conversation import (
-    ConversationResponse, ConversationListResponse, MessageCreate, 
-    MessageResponse, MessagesListResponse, MarkReadRequest
-)
-from app.services.message_search_service import SearchResult
 
 # J6.1 Notification Integration
-from setup_j6_integration import trigger_dm_notification, process_mentions_in_content
+from setup_j6_integration import process_mentions_in_content, trigger_dm_notification
 
 logger = logging.getLogger(__name__)
 
@@ -186,11 +188,12 @@ async def send_message(
         
         # Get conversation participants for real-time broadcast
         from sqlalchemy import select
+
         from app.models.conversation import ConversationParticipant
         
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
-            ConversationParticipant.is_active == True
+            ConversationParticipant.is_active
         )
         result = await db.execute(participant_stmt)
         participants = result.scalars().all()
@@ -288,11 +291,12 @@ async def mark_messages_read(
         
         # Get conversation participants for real-time broadcast
         from sqlalchemy import select
+
         from app.models.conversation import ConversationParticipant
         
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
-            ConversationParticipant.is_active == True
+            ConversationParticipant.is_active
         )
         result = await db.execute(participant_stmt)
         participants = result.scalars().all()
@@ -327,13 +331,14 @@ async def delete_message(
     try:
         # Verify user owns the message
         from sqlalchemy import select, update
+
         from app.models.conversation import Message
         
         message_stmt = select(Message).where(
             Message.id == message_id,
             Message.conversation_id == conversation_id,
             Message.sender_id == current_user.id,
-            Message.is_deleted == False
+            ~Message.is_deleted
         )
         result = await db.execute(message_stmt)
         message = result.scalar_one_or_none()
@@ -381,8 +386,8 @@ async def conversation_health():
 @router.get("/conversations/search", response_model=SearchResult)
 async def search_messages(
     q: str = Query(..., min_length=2, description="Search query"),
-    content_type: Optional[str] = Query(None, description="Filter by content type"),
-    conversation_id: Optional[uuid.UUID] = Query(None, description="Search within specific conversation"),
+    content_type: str | None = Query(None, description="Filter by content type"),
+    conversation_id: uuid.UUID | None = Query(None, description="Search within specific conversation"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Items per page"),
     current_user: User = Depends(get_current_user),
@@ -536,7 +541,7 @@ async def get_trending_conversations(
         
         return {
             "trending_conversations": trending,
-            "generated_at": datetime.now(timezone.utc).isoformat()
+            "generated_at": datetime.now(UTC).isoformat()
         }
     
     except Exception as e:

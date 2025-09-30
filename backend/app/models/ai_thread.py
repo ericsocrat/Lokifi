@@ -2,17 +2,16 @@
 AI thread and conversation models for chatbot interactions.
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, Integer, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID, JSON
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Enum as SqlEnum
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
-
-import uuid
 
 
 class AiProvider(str, Enum):
@@ -57,11 +56,11 @@ class AiThread(Base):
         default=AiProvider.OPENROUTER
     )
     model_name: Mapped[str] = mapped_column(String(100))
-    system_prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    system_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
     
     # Configuration parameters
-    max_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    temperature: Mapped[Optional[float]] = mapped_column(nullable=True)
+    max_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    temperature: Mapped[float | None] = mapped_column(nullable=True)
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -105,11 +104,11 @@ class AiMessage(Base):
     content: Mapped[str] = mapped_column(Text)
     
     # Optional metadata
-    extra_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    extra_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     
     # Token usage tracking
-    input_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    output_tokens: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    input_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    output_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
@@ -155,7 +154,7 @@ class AiUsage(Base):
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
     
     # Cost tracking (in USD cents)
-    cost_cents: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    cost_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

@@ -1,7 +1,8 @@
 ﻿from __future__ import annotations
-from typing import Optional
+
 from fastapi import HTTPException
-from jose import jwt, JWTError
+from jose import JWTError, jwt
+
 from app.core.config import get_settings
 
 # Get JWT configuration from settings
@@ -9,7 +10,7 @@ settings = get_settings()
 JWT_SECRET = settings.get_jwt_secret()  # Will raise error if not set
 JWT_ALG = "HS256"
 
-def auth_handle_from_header(authorization: Optional[str]) -> Optional[str]:
+def auth_handle_from_header(authorization: str | None) -> str | None:
     if not authorization or not authorization.lower().startswith("bearer "):
         return None
     token = authorization.split(" ", 1)[1].strip()
@@ -19,7 +20,7 @@ def auth_handle_from_header(authorization: Optional[str]) -> Optional[str]:
     except JWTError:
         return None
 
-def require_handle(authorization: Optional[str], supplied_handle: Optional[str] = None) -> str:
+def require_handle(authorization: str | None, supplied_handle: str | None = None) -> str:
     """
     Returns the handle from JWT. If supplied_handle is given, it must match the token handle.
     Raises 401/403 accordingly.

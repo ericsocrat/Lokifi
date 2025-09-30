@@ -2,9 +2,9 @@
 Rate limiting service for direct messaging (J4).
 """
 
-import uuid
 import time
-from typing import Optional, Tuple
+import uuid
+
 import redis.asyncio as redis
 
 from app.core.config import settings
@@ -13,7 +13,7 @@ from app.core.config import settings
 class RateLimitService:
     """Redis-based sliding window rate limiter for messaging."""
     
-    def __init__(self, redis_client: Optional[redis.Redis] = None):
+    def __init__(self, redis_client: redis.Redis | None = None):
         self.redis = redis_client or redis.from_url(
             settings.redis_url or "redis://localhost:6379",
             decode_responses=True
@@ -23,7 +23,7 @@ class RateLimitService:
         self.MESSAGE_LIMIT = 30  # messages per window
         self.WINDOW_SIZE = 60    # seconds
         
-    async def check_rate_limit(self, user_id: uuid.UUID) -> Tuple[bool, Optional[int]]:
+    async def check_rate_limit(self, user_id: uuid.UUID) -> tuple[bool, int | None]:
         """
         Check if user is within rate limits using sliding window.
         Returns (allowed, retry_after_seconds).
@@ -60,7 +60,7 @@ class RateLimitService:
         
         return True, None
     
-    async def get_current_usage(self, user_id: uuid.UUID) -> Tuple[int, int]:
+    async def get_current_usage(self, user_id: uuid.UUID) -> tuple[int, int]:
         """Get current usage count and remaining quota."""
         key = f"rate_limit:messages:{user_id}"
         now = time.time()

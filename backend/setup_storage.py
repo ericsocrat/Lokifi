@@ -2,10 +2,10 @@
 # Configures local PostgreSQL with cloud migration path
 
 import asyncio
-import os
-import sys
-import subprocess
 import logging
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 # Setup logging
@@ -112,7 +112,7 @@ class DatabaseSetup:
                             if test_result.returncode == 0:
                                 logger.info("✅ PostgreSQL is ready!")
                                 return True
-                        except:
+                        except (subprocess.SubprocessError, FileNotFoundError):
                             pass
                         time.sleep(1)
                     
@@ -131,7 +131,7 @@ class DatabaseSetup:
         
         # Read existing .env file
         if self.env_file.exists():
-            with open(self.env_file, 'r') as f:
+            with open(self.env_file) as f:
                 for line in f:
                     line = line.strip()
                     if line.startswith('DATABASE_URL='):

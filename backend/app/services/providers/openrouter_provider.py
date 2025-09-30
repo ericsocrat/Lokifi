@@ -3,15 +3,22 @@ OpenRouter AI provider for Fynix AI Chatbot (J5).
 """
 
 import json
-import uuid
 import logging
-from typing import List, AsyncGenerator, Optional
+import uuid
+from collections.abc import AsyncGenerator
 
 import httpx
+
 from app.services.ai_provider import (
-    AIProvider, AIMessage, StreamOptions, StreamChunk, TokenUsage,
-    ProviderError, ProviderUnavailableError, ProviderRateLimitError,
-    ProviderAuthenticationError
+    AIMessage,
+    AIProvider,
+    ProviderAuthenticationError,
+    ProviderError,
+    ProviderRateLimitError,
+    ProviderUnavailableError,
+    StreamChunk,
+    StreamOptions,
+    TokenUsage,
 )
 
 logger = logging.getLogger(__name__)
@@ -20,7 +27,7 @@ logger = logging.getLogger(__name__)
 class OpenRouterProvider(AIProvider):
     """OpenRouter AI provider implementation."""
     
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         super().__init__(api_key)
         self.name = "openrouter"
         self.base_url = "https://openrouter.ai/api/v1"
@@ -36,7 +43,7 @@ class OpenRouterProvider(AIProvider):
     
     async def stream_chat(
         self,
-        messages: List[AIMessage],
+        messages: list[AIMessage],
         options: StreamOptions = StreamOptions()
     ) -> AsyncGenerator[StreamChunk, None]:
         """Stream chat completion from OpenRouter."""
@@ -148,10 +155,10 @@ class OpenRouterProvider(AIProvider):
         try:
             response = await self.client.get(f"{self.base_url}/models")
             return response.status_code == 200
-        except:
+        except (httpx.RequestError, httpx.HTTPStatusError):
             return False
     
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported OpenRouter models."""
         return [
             "openai/gpt-4o-mini",

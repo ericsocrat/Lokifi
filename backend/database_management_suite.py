@@ -13,23 +13,24 @@ This script provides comprehensive database management tools including:
 
 import asyncio
 import json
-import sys
 import subprocess
+import sys
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, Optional, Any
+from typing import Any
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
 try:
-    import asyncpg
     import aiofiles
-    from sqlalchemy import create_engine, text, inspect
-    from sqlalchemy.ext.asyncio import create_async_engine
-    from alembic import command
+    import asyncpg
     from alembic.config import Config
+    from sqlalchemy import create_engine, inspect, text
+    from sqlalchemy.ext.asyncio import create_async_engine
+
+    from alembic import command
     from app.core.config import settings
     from app.db.database import get_db
 except ImportError as e:
@@ -76,7 +77,7 @@ class DatabaseManager:
     def print_info(self, message: str):
         print(f"{Colors.WHITE}ℹ️  {message}{Colors.END}")
 
-    async def analyze_database_health(self) -> Dict[str, Any]:
+    async def analyze_database_health(self) -> dict[str, Any]:
         """Comprehensive database health analysis"""
         self.print_section("Database Health Analysis")
         
@@ -101,7 +102,7 @@ class DatabaseManager:
             self.print_error(f"Health analysis failed: {e}")
             return health_data
     
-    async def _analyze_sqlite_health(self, health_data: Dict[str, Any]):
+    async def _analyze_sqlite_health(self, health_data: dict[str, Any]):
         """Analyze SQLite database health"""
         try:
             engine = create_async_engine(self.db_url)
@@ -160,7 +161,7 @@ class DatabaseManager:
         except Exception as e:
             self.print_error(f"SQLite analysis failed: {e}")
     
-    async def _analyze_postgres_health(self, health_data: Dict[str, Any]):
+    async def _analyze_postgres_health(self, health_data: dict[str, Any]):
         """Analyze PostgreSQL database health"""
         try:
             # Extract connection details from URL
@@ -312,7 +313,7 @@ class DatabaseManager:
             self.print_error(f"Index creation failed: {e}")
             return False
     
-    async def backup_database(self) -> Optional[str]:
+    async def backup_database(self) -> str | None:
         """Create database backup"""
         self.print_section("Database Backup")
         
@@ -327,7 +328,7 @@ class DatabaseManager:
             self.print_error(f"Backup failed: {e}")
             return None
     
-    async def _backup_sqlite(self, timestamp: str) -> Optional[str]:
+    async def _backup_sqlite(self, timestamp: str) -> str | None:
         """Backup SQLite database"""
         try:
             # Extract database file path from URL
@@ -365,7 +366,7 @@ class DatabaseManager:
             self.print_error(f"SQLite backup failed: {e}")
             return None
     
-    async def _backup_postgres(self, timestamp: str) -> Optional[str]:
+    async def _backup_postgres(self, timestamp: str) -> str | None:
         """Backup PostgreSQL database"""
         try:
             backup_file = self.backup_dir / f"fynix_backup_{timestamp}.sql.gz"
@@ -416,8 +417,9 @@ class DatabaseManager:
             
             # Check current revision
             try:
-                from alembic import command as alembic_command
                 from alembic.script import ScriptDirectory
+
+                from alembic import command as alembic_command
                 
                 script = ScriptDirectory.from_config(alembic_cfg)
                 current_rev = script.get_current_head()
@@ -438,7 +440,7 @@ class DatabaseManager:
             self.print_error(f"Migration setup failed: {e}")
             return False
     
-    async def generate_performance_report(self) -> Dict[str, Any]:
+    async def generate_performance_report(self) -> dict[str, Any]:
         """Generate comprehensive performance report"""
         self.print_section("Performance Report Generation")
         

@@ -1,11 +1,13 @@
 # Enhanced database configuration with connection pooling and read replicas
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import StaticPool, QueuePool
-from app.core.config import Settings, settings
 import logging
-from typing import AsyncGenerator
 import re
+from collections.abc import AsyncGenerator
+
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.orm import declarative_base
+from sqlalchemy.pool import QueuePool, StaticPool
+
+from app.core.config import Settings, settings
 
 logger = logging.getLogger(__name__)
 

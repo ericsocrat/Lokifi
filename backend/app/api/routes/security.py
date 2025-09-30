@@ -3,15 +3,16 @@ Security Dashboard API Routes
 Endpoints for monitoring security events and system health
 """
 
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timedelta, timezone
 
-from app.utils.security_logger import security_monitor, SecurityEventType
-from app.utils.security_alerts import security_alert_manager
-from app.core.security import get_current_user
 from app.core.config import get_settings
+from app.core.security import get_current_user
+from app.utils.security_alerts import security_alert_manager
+from app.utils.security_logger import SecurityEventType, security_monitor
 
 router = APIRouter()
 security = HTTPBearer()
@@ -77,7 +78,7 @@ async def block_ip_address(ip_address: str, current_user=Depends(get_current_use
     return {
         "message": f"IP address {ip_address} has been blocked",
         "blocked_ip": ip_address,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(UTC).isoformat()
     }
 
 @router.delete("/security/ip/{ip_address}/unblock")
@@ -100,7 +101,7 @@ async def unblock_ip_address(ip_address: str, current_user=Depends(get_current_u
     return {
         "message": f"IP address {ip_address} has been unblocked",
         "unblocked_ip": ip_address,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(UTC).isoformat()
     }
 
 @router.get("/security/events/summary")
@@ -120,7 +121,7 @@ async def get_security_events_summary(
         "recommendations": _get_security_recommendations(summary)
     }
 
-def _get_security_recommendations(summary: Dict[str, Any]) -> List[str]:
+def _get_security_recommendations(summary: dict[str, Any]) -> list[str]:
     """Generate security recommendations based on current status"""
     recommendations = []
     
@@ -164,7 +165,7 @@ async def security_health_check():
             "security_monitoring": "healthy",
             "log_system": "healthy" if log_accessible else "degraded",
             "suspicious_activity": "normal" if summary.get("suspicious_ips", 0) < 10 else "elevated",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
         
         overall_status = "healthy"
@@ -179,12 +180,12 @@ async def security_health_check():
             "monitoring_active": True
         }
         
-    except Exception as e:
+    except Exception:
         return {
             "status": "error",
             "error": "Security monitoring system error",
             "monitoring_active": False,
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
 
 # Additional security configuration endpoint
@@ -251,7 +252,7 @@ async def test_security_alerts(current_user=Depends(get_current_user)):
         return {
             "success": success,
             "message": "Test alert sent successfully" if success else "Failed to send test alert",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
         
     except Exception as e:
@@ -259,18 +260,18 @@ async def test_security_alerts(current_user=Depends(get_current_user)):
             "success": False,
             "error": str(e),
             "message": "Failed to send test alert",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
 
 @router.get("/security/alerts/history")
 async def get_alert_history(
     hours: int = 24,
-    severity: Optional[str] = None,
+    severity: str | None = None,
     current_user=Depends(get_current_user)
 ):
     """Get recent alert history (admin only)"""
     
-    cutoff_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+    cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
     recent_alerts = [
         {
             "title": alert.title,
@@ -291,5 +292,5 @@ async def get_alert_history(
         "total": len(recent_alerts),
         "timeframe_hours": hours,
         "severity_filter": severity,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(UTC).isoformat()
     }

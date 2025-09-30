@@ -4,11 +4,11 @@ Redis Setup Helper for J6.4 Advanced Features
 Automatically sets up Redis for maximum system performance
 """
 
+import asyncio
+import logging
 import subprocess
 import sys
 import time
-import asyncio
-import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

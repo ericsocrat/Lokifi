@@ -5,23 +5,33 @@ Tests startup sequence, Redis integration, WebSocket auth, and analytics compati
 
 import asyncio
 import json
-import time
 import logging
+import sys
+import time
+from pathlib import Path
+from typing import Any
+
 import aiohttp
 import websockets
-from typing import Dict, Any
-from pathlib import Path
-import sys
 
 # Add backend to path for imports
 backend_path = Path(__file__).parent
 sys.path.insert(0, str(backend_path))
 
 try:
-    from app.enhanced_startup import EnhancedSettings, startup_dependency_checks, health_check_live, health_check_ready
+    from app.analytics.cross_database_compatibility import (
+        AnalyticsQueryBuilder,
+        CompatibilityTester,
+        DatabaseDialect,
+    )
     from app.core.redis_keys import RedisKeyManager, RedisKeyspace
-    from app.websockets.jwt_websocket_auth import WebSocketJWTAuth, AuthenticatedWebSocketManager
-    from app.analytics.cross_database_compatibility import DatabaseDialect, AnalyticsQueryBuilder, CompatibilityTester
+    from app.enhanced_startup import (
+        EnhancedSettings,
+        health_check_live,
+        health_check_ready,
+        startup_dependency_checks,
+    )
+    from app.websockets.jwt_websocket_auth import AuthenticatedWebSocketManager, WebSocketJWTAuth
     from ci_smoke_tests import SmokeTestSuite
 except ImportError as e:
     print(f"Warning: Could not import Phase K components: {e}")
@@ -46,7 +56,7 @@ class PhaseKIntegrationTester:
             "analytics_timeout": 20
         }
     
-    async def run_all_tests(self) -> Dict[str, Any]:
+    async def run_all_tests(self) -> dict[str, Any]:
         """Run comprehensive Phase K integration tests"""
         
         print("🚀 Starting Phase K Integration Test Suite")
@@ -120,7 +130,7 @@ class PhaseKIntegrationTester:
         await self.generate_integration_report(overall_results)
         return overall_results
     
-    async def test_k1_startup_sequence(self) -> Dict[str, Any]:
+    async def test_k1_startup_sequence(self) -> dict[str, Any]:
         """Test K1 - Enhanced startup sequence with health checks"""
         
         results = {
@@ -162,16 +172,18 @@ class PhaseKIntegrationTester:
             async with aiohttp.ClientSession() as session:
                 # Test liveness endpoint
                 try:
-                    async with session.get(f"{self.base_url}/health/live", timeout=5) as response:
+                    timeout = aiohttp.ClientTimeout(total=5)
+                    async with session.get(f"{self.base_url}/health/live", timeout=timeout) as response:
                         live_status = response.status == 200
-                except:
+                except (TimeoutError, aiohttp.ClientError):
                     live_status = False
                 
                 # Test readiness endpoint  
                 try:
-                    async with session.get(f"{self.base_url}/health/ready", timeout=5) as response:
+                    timeout = aiohttp.ClientTimeout(total=5)
+                    async with session.get(f"{self.base_url}/health/ready", timeout=timeout) as response:
                         ready_status = response.status == 200
-                except:
+                except (TimeoutError, aiohttp.ClientError):
                     ready_status = False
                 
                 results["details"]["health_endpoints"] = {
@@ -216,7 +228,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def test_k2_redis_integration(self) -> Dict[str, Any]:
+    async def test_k2_redis_integration(self) -> dict[str, Any]:
         """Test K2 - Redis integration with centralized key management"""
         
         results = {
@@ -313,7 +325,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def test_k3_websocket_auth(self) -> Dict[str, Any]:
+    async def test_k3_websocket_auth(self) -> dict[str, Any]:
         """Test K3 - JWT WebSocket authentication and real-time features"""
         
         results = {
@@ -418,7 +430,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def test_k4_analytics_compatibility(self) -> Dict[str, Any]:
+    async def test_k4_analytics_compatibility(self) -> dict[str, Any]:
         """Test K4 - SQLite/Postgres analytics compatibility"""
         
         results = {
@@ -516,7 +528,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def test_cross_component_integration(self) -> Dict[str, Any]:
+    async def test_cross_component_integration(self) -> dict[str, Any]:
         """Test cross-component integration between K1-K4"""
         
         results = {
@@ -624,7 +636,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def test_performance_characteristics(self) -> Dict[str, Any]:
+    async def test_performance_characteristics(self) -> dict[str, Any]:
         """Test performance characteristics of Phase K components"""
         
         results = {
@@ -715,7 +727,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def test_ci_smoke_integration(self) -> Dict[str, Any]:
+    async def test_ci_smoke_integration(self) -> dict[str, Any]:
         """Test CI/CD smoke test integration"""
         
         results = {
@@ -758,7 +770,7 @@ class PhaseKIntegrationTester:
         
         return results
     
-    async def generate_integration_report(self, results: Dict[str, Any]):
+    async def generate_integration_report(self, results: dict[str, Any]):
         """Generate comprehensive integration test report"""
         
         report_content = f"""

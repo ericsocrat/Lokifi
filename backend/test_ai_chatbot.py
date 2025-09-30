@@ -2,16 +2,21 @@
 Comprehensive test suite for Fynix AI Chatbot (J5) functionality.
 """
 
-import pytest
 import json
 from datetime import datetime
 from unittest.mock import Mock, patch
+
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
 from app.services.ai_service import AIService
-from app.services.content_moderation import ContentModerator, ModerationLevel, ModerationCategory
-from app.services.conversation_export import ConversationExporter, ConversationImporter, ExportOptions
+from app.services.content_moderation import ContentModerator, ModerationCategory, ModerationLevel
+from app.services.conversation_export import (
+    ConversationExporter,
+    ConversationImporter,
+    ExportOptions,
+)
 
 
 class TestAIService:
@@ -317,7 +322,7 @@ class TestConversationExportImport:
         result = importer._import_json(1, json.dumps(import_data), "skip", mock_db)
         
         # Verify success
-        assert result["success"] == True
+        assert result["success"]
         assert result["imported_conversations"] == 1
         assert result["imported_messages"] == 1
 
@@ -327,12 +332,13 @@ class TestAIProviders:
 
     def test_mock_provider_stream(self):
         """Test mock provider streaming."""
-        from app.services.ai_provider import MockProvider, AIMessage as AIProviderMessage, MessageRole
+        from app.services.ai_provider import AIMessage as AIProviderMessage
+        from app.services.ai_provider import MessageRole, MockProvider
         
         provider = MockProvider()
         
         # Test availability
-        assert asyncio.run(provider.is_available()) == True
+        assert asyncio.run(provider.is_available())
         
         # Test streaming
         messages = [AIProviderMessage(role=MessageRole.USER, content="Hello")]
@@ -346,7 +352,7 @@ class TestAIProviders:
         
         # Verify streaming worked
         assert len(chunks) > 0
-        assert chunks[-1].is_complete == True
+        assert chunks[-1].is_complete
 
     @patch('httpx.AsyncClient')
     def test_openrouter_provider_initialization(self, mock_client):

@@ -3,8 +3,9 @@
 Simple health check test
 """
 
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 def test_endpoints():

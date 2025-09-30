@@ -5,8 +5,9 @@ Provides JWT authentication for WebSocket connections with Redis coordination
 
 import json
 import logging
-from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, Optional, Set
+from datetime import UTC, datetime, timedelta
+from typing import Any
+
 from fastapi import WebSocket, WebSocketDisconnect
 from jose import JWTError, jwt
 
@@ -21,25 +22,25 @@ logger = logging.getLogger(__name__)
 class WebSocketJWTAuth:
     """JWT authentication handler for WebSocket connections"""
     
-    def __init__(self, secret_key: Optional[str] = None):
+    def __init__(self, secret_key: str | None = None):
         self.secret_key = secret_key or settings.JWT_SECRET_KEY
         self.algorithm = "HS256"
         self.redis_key_manager = RedisKeyManager()
     
-    def create_access_token(self, data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+    def create_access_token(self, data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
         """Create JWT access token"""
         to_encode = data.copy()
         
         if expires_delta:
-            expire = datetime.now(timezone.utc) + expires_delta
+            expire = datetime.now(UTC) + expires_delta
         else:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+            expire = datetime.now(UTC) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
         
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
         return encoded_jwt
     
-    def verify_token(self, token: str) -> Optional[Dict[str, Any]]:
+    def verify_token(self, token: str) -> dict[str, Any] | None:
         """Verify JWT token and return payload"""
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
@@ -48,7 +49,7 @@ class WebSocketJWTAuth:
             logger.warning(f"JWT verification failed: {e}")
             return None
     
-    async def authenticate_websocket(self, websocket: WebSocket, token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    async def authenticate_websocket(self, websocket: WebSocket, token: str | None = None) -> dict[str, Any] | None:
         """Authenticate WebSocket connection using JWT token"""
         try:
             if not token:
@@ -95,11 +96,11 @@ class AuthenticatedWebSocketManager:
     
     def __init__(self):
         self.auth_handler = WebSocketJWTAuth()
-        self.active_connections: Dict[str, Dict[str, Any]] = {}
-        self.user_connections: Dict[str, Set[str]] = {}
+        self.active_connections: dict[str, dict[str, Any]] = {}
+        self.user_connections: dict[str, set[str]] = {}
         self.redis_key_manager = RedisKeyManager()
     
-    async def connect(self, websocket: WebSocket, user_auth: Dict[str, Any]) -> str:
+    async def connect(self, websocket: WebSocket, user_auth: dict[str, Any]) -> str:
         """Accept WebSocket connection with authentication"""
         try:
             await websocket.accept()
@@ -112,8 +113,8 @@ class AuthenticatedWebSocketManager:
                 "websocket": websocket,
                 "user_id": user_id,
                 "username": user_auth.get("username"),
-                "connected_at": datetime.now(timezone.utc).isoformat(),
-                "last_seen": datetime.now(timezone.utc).isoformat()
+                "connected_at": datetime.now(UTC).isoformat(),
+                "last_seen": datetime.now(UTC).isoformat()
             }
             
             # Track user connections
@@ -162,7 +163,7 @@ class AuthenticatedWebSocketManager:
         except Exception as e:
             logger.error(f"WebSocket disconnection error: {e}")
     
-    async def send_personal_message(self, user_id: str, message: Dict[str, Any]):
+    async def send_personal_message(self, user_id: str, message: dict[str, Any]):
         """Send message to all connections of a specific user"""
         sent_count = 0
         
@@ -179,7 +180,7 @@ class AuthenticatedWebSocketManager:
         
         return sent_count
     
-    async def broadcast_to_room(self, room: str, message: Dict[str, Any]):
+    async def broadcast_to_room(self, room: str, message: dict[str, Any]):
         """Broadcast message to all connections in a room"""
         # For now, broadcast to all connections
         # In a full implementation, this would use room membership
@@ -196,7 +197,7 @@ class AuthenticatedWebSocketManager:
         
         return sent_count
     
-    async def _store_connection_in_redis(self, connection_id: str, user_auth: Dict[str, Any]):
+    async def _store_connection_in_redis(self, connection_id: str, user_auth: dict[str, Any]):
         """Store connection info in Redis for multi-instance coordination"""
         try:
             connection_key = self.redis_key_manager.build_key(RedisKeyspace.WEBSOCKETS, connection_id)
@@ -205,7 +206,7 @@ class AuthenticatedWebSocketManager:
             connection_data = {
                 "user_id": user_id,
                 "username": user_auth.get("username"),
-                "connected_at": datetime.now(timezone.utc).isoformat(),
+                "connected_at": datetime.now(UTC).isoformat(),
                 "instance": settings.APP_NAME or "fynix"
             }
             
@@ -233,7 +234,7 @@ class AuthenticatedWebSocketManager:
         except Exception as e:
             logger.warning(f"Failed to remove connection from Redis: {e}")
     
-    async def get_user_presence(self, user_id: str) -> Dict[str, Any]:
+    async def get_user_presence(self, user_id: str) -> dict[str, Any]:
         """Get user presence information"""
         presence_key = self.redis_key_manager.build_key(RedisKeyspace.PRESENCE, user_id)
         
@@ -260,19 +261,19 @@ class AuthenticatedWebSocketManager:
             presence_data = {
                 "user_id": user_id,
                 "status": status,
-                "last_seen": datetime.now(timezone.utc).isoformat(),
+                "last_seen": datetime.now(UTC).isoformat(),
                 "instance": settings.APP_NAME or "fynix"
             }
             
             # Store presence with TTL
             await redis_client.set(presence_key, json.dumps(presence_data), ttl=300)  # 5 minutes
-            await redis_client.set(heartbeat_key, datetime.now(timezone.utc).isoformat(), ttl=60)  # 1 minute heartbeat
+            await redis_client.set(heartbeat_key, datetime.now(UTC).isoformat(), ttl=60)  # 1 minute heartbeat
             
         except Exception as e:
             logger.warning(f"Failed to update user presence: {e}")
 
 # FastAPI WebSocket endpoint with JWT authentication
-async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: Optional[str] = None):
+async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: str | None = None):
     """WebSocket endpoint with JWT authentication"""
     auth_manager = AuthenticatedWebSocketManager()
     connection_id = None

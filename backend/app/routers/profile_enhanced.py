@@ -2,24 +2,22 @@
 Enhanced profile router with additional features for Phase J2.
 """
 
-from uuid import UUID
-from pathlib import Path
-
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
-from fastapi.responses import FileResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-import aiofiles
-from PIL import Image
 import uuid
+from pathlib import Path
+from uuid import UUID
 
-from app.db.database import get_db
+import aiofiles
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
+from PIL import Image
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.auth_deps import get_current_user
+from app.db.database import get_db
 from app.models.user import User
-from app.services.profile_enhanced import EnhancedProfileService
-from app.schemas.profile import (
-    ProfileUpdateRequest
-)
 from app.schemas.auth import MessageResponse
+from app.schemas.profile import ProfileUpdateRequest
+from app.services.profile_enhanced import EnhancedProfileService
 
 router = APIRouter(prefix="/profile", tags=["profile-enhanced"])
 
@@ -89,7 +87,7 @@ async def process_avatar_image(file: UploadFile, user_id: UUID) -> str:
         # Return relative URL
         return f"/uploads/avatars/{filename}"
     
-    except Exception as e:
+    except Exception:
         # Clean up file if processing failed
         if file_path.exists():
             file_path.unlink()
@@ -127,13 +125,13 @@ async def upload_avatar(
         )
         
         # Update profile
-        updated_profile = await enhanced_service.update_profile(current_user.id, profile_data)
+        await enhanced_service.update_profile(current_user.id, profile_data)
         
         return {"avatar_url": avatar_url, "message": "Avatar uploaded successfully"}
     
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to upload avatar"
@@ -179,7 +177,7 @@ async def validate_profile_data(
     
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Validation failed"
@@ -202,7 +200,7 @@ async def delete_account(
             message="Account deleted successfully"
         )
     
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete account"
@@ -221,7 +219,7 @@ async def export_user_data(
         data = await enhanced_service.export_user_data(current_user.id)
         return data
     
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to export data"
@@ -240,7 +238,7 @@ async def get_profile_stats(
         stats = await enhanced_service.get_profile_activity_stats(current_user.id)
         return stats
     
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get profile statistics"
@@ -256,17 +254,20 @@ async def get_activity_summary(
     enhanced_service = EnhancedProfileService(db)
     
     try:
+        # Get activity data from the enhanced service  
+        user_profile = await enhanced_service.get_profile_by_user_id(current_user.id)
+        
         # Return a basic activity summary for now
         activity = {
-            "last_login": None,
-            "login_count": 0,
+            "last_login": user_profile.last_login if user_profile else None,
+            "login_count": user_profile.login_count if user_profile else 0,
             "profile_updates": 0,
             "settings_changes": 0,
             "created_at": None
         }
         return activity
     
-    except Exception as e:
+    except Exception:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get activity summary"

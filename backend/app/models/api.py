@@ -1,9 +1,10 @@
 """
 OpenAPI contract generation and validation for Fynix API
 """
-from typing import List, Dict, Any, Optional
+from datetime import UTC, datetime
+from typing import Any
+
 from pydantic import BaseModel, Field
-from datetime import datetime, timezone
 
 
 # Base response models
@@ -19,7 +20,7 @@ class ErrorResponse(APIResponse):
     success: bool = False
     error: str
     code: str
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 # Symbol models
@@ -32,12 +33,12 @@ class Symbol(BaseModel):
     exchange: str = Field(..., description="Exchange name")
     type: str = Field(..., description="Symbol type (spot, futures, etc.)")
     active: bool = Field(True, description="Whether symbol is actively traded")
-    logo_url: Optional[str] = Field(None, description="Logo URL if available")
+    logo_url: str | None = Field(None, description="Logo URL if available")
 
 
 class SymbolsResponse(APIResponse):
     """Response for /api/symbols endpoint"""
-    data: List[Symbol]
+    data: list[Symbol]
     total: int = Field(..., description="Total number of symbols")
 
 
@@ -54,11 +55,11 @@ class OHLCBar(BaseModel):
 
 class OHLCResponse(APIResponse):
     """Response for /api/ohlc endpoint"""
-    data: List[OHLCBar]
+    data: list[OHLCBar]
     symbol: str = Field(..., description="Requested symbol")
     timeframe: str = Field(..., description="Requested timeframe")
-    from_timestamp: Optional[int] = Field(None, description="Data range start")
-    to_timestamp: Optional[int] = Field(None, description="Data range end")
+    from_timestamp: int | None = Field(None, description="Data range start")
+    to_timestamp: int | None = Field(None, description="Data range end")
 
 
 # Market data models
@@ -83,21 +84,21 @@ class IndicatorValue(BaseModel):
     """Indicator calculation result"""
     timestamp: int
     value: float
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class IndicatorResponse(APIResponse):
     """Response for indicator calculations"""
-    data: List[IndicatorValue]
+    data: list[IndicatorValue]
     indicator: str = Field(..., description="Indicator name")
-    parameters: Dict[str, Any] = Field(..., description="Calculation parameters")
+    parameters: dict[str, Any] = Field(..., description="Calculation parameters")
 
 
 # WebSocket models
 class WSMessage(BaseModel):
     """WebSocket message base"""
     type: str = Field(..., description="Message type")
-    timestamp: int = Field(default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000))
+    timestamp: int = Field(default_factory=lambda: int(datetime.now(UTC).timestamp() * 1000))
 
 
 class WSTickerMessage(WSMessage):
@@ -126,19 +127,19 @@ class OHLCRequest(BaseModel):
     """Request for OHLC data"""
     symbol: str = Field(..., description="Trading symbol")
     timeframe: str = Field(..., description="Timeframe (1m, 5m, 1h, 1d, etc.)")
-    from_timestamp: Optional[int] = Field(None, description="Start timestamp (ms)")
-    to_timestamp: Optional[int] = Field(None, description="End timestamp (ms)")
-    limit: Optional[int] = Field(500, description="Maximum number of bars", le=1000)
+    from_timestamp: int | None = Field(None, description="Start timestamp (ms)")
+    to_timestamp: int | None = Field(None, description="End timestamp (ms)")
+    limit: int | None = Field(500, description="Maximum number of bars", le=1000)
 
 
 class SymbolSearchRequest(BaseModel):
     """Request for symbol search"""
-    query: Optional[str] = Field(None, description="Search query")
-    exchange: Optional[str] = Field(None, description="Filter by exchange")
-    type: Optional[str] = Field(None, description="Filter by symbol type")
+    query: str | None = Field(None, description="Search query")
+    exchange: str | None = Field(None, description="Filter by exchange")
+    type: str | None = Field(None, description="Filter by symbol type")
     active_only: bool = Field(True, description="Only return active symbols")
-    limit: Optional[int] = Field(100, description="Maximum results", le=500)
-    offset: Optional[int] = Field(0, description="Pagination offset")
+    limit: int | None = Field(100, description="Maximum results", le=500)
+    offset: int | None = Field(0, description="Pagination offset")
 
 
 # Health check model
@@ -147,4 +148,4 @@ class HealthResponse(APIResponse):
     status: str = Field("healthy", description="Service status")
     uptime: float = Field(..., description="Uptime in seconds")
     api_version: str = Field(..., description="API version")
-    dependencies: Dict[str, str] = Field(..., description="Dependency status")
+    dependencies: dict[str, str] = Field(..., description="Dependency status")

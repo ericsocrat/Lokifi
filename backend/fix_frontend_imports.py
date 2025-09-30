@@ -6,6 +6,7 @@ Fixes import issues in the newly created profile components
 import re
 from pathlib import Path
 
+
 def fix_import_paths():
     """Fix import paths in the new profile components."""
     
@@ -50,7 +51,7 @@ def fix_import_paths():
         
         try:
             # Read file content
-            with open(full_path, 'r', encoding='utf-8') as f:
+            with open(full_path, encoding='utf-8') as f:
                 content = f.read()
             
             original_content = content

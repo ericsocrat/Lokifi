@@ -7,9 +7,9 @@ import asyncio
 import json
 import logging
 import time
-from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any
 
 import aiohttp
 import websockets
@@ -22,17 +22,17 @@ class SmokeTestResult:
     test_name: str
     passed: bool
     response_time_ms: float
-    status_code: Optional[int] = None
-    response_data: Optional[Dict[str, Any]] = None
-    error_message: Optional[str] = None
+    status_code: int | None = None
+    response_data: dict[str, Any] | None = None
+    error_message: str | None = None
 
 class SmokeTestSuite:
     """Comprehensive smoke testing suite for CI/CD"""
     
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: str | None = None):
         self.base_url = base_url or "http://localhost:8000"
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.results: List[SmokeTestResult] = []
+        self.session: aiohttp.ClientSession | None = None
+        self.results: list[SmokeTestResult] = []
         
     async def __aenter__(self):
         """Async context manager entry"""
@@ -49,8 +49,8 @@ class SmokeTestSuite:
         method: str, 
         endpoint: str, 
         expected_status: int = 200,
-        data: Optional[Dict[str, Any]] = None,
-        headers: Optional[Dict[str, str]] = None
+        data: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None
     ) -> SmokeTestResult:
         """Run HTTP test and return result"""
         
@@ -72,7 +72,7 @@ class SmokeTestSuite:
                     
                     try:
                         response_data = await response.json()
-                    except:
+                    except (ValueError, aiohttp.ContentTypeError):
                         response_data = await response.text()
                     
                     return SmokeTestResult(
@@ -89,7 +89,7 @@ class SmokeTestSuite:
                     
                     try:
                         response_data = await response.json()
-                    except:
+                    except (ValueError, aiohttp.ContentTypeError):
                         response_data = await response.text()
                     
                     return SmokeTestResult(
@@ -108,7 +108,7 @@ class SmokeTestSuite:
                     error_message=f"Unsupported HTTP method: {method}"
                 )
         
-        except asyncio.TimeoutError:
+        except TimeoutError:
             return SmokeTestResult(
                 test_name=f"{method} {endpoint}",
                 passed=False,
@@ -124,7 +124,7 @@ class SmokeTestSuite:
                 error_message=str(e)
             )
     
-    async def test_health_endpoints(self) -> List[SmokeTestResult]:
+    async def test_health_endpoints(self) -> list[SmokeTestResult]:
         """Test health check endpoints"""
         tests = []
         
@@ -145,7 +145,7 @@ class SmokeTestSuite:
         
         return tests
     
-    async def test_api_endpoints(self) -> List[SmokeTestResult]:
+    async def test_api_endpoints(self) -> list[SmokeTestResult]:
         """Test core API endpoints"""
         tests = []
         
@@ -230,7 +230,7 @@ class SmokeTestSuite:
         self.results.append(result)
         return result
     
-    async def run_comprehensive_tests(self) -> Dict[str, Any]:
+    async def run_comprehensive_tests(self) -> dict[str, Any]:
         """Run comprehensive smoke test suite"""
         
         print("🧪 Starting comprehensive smoke tests...")
@@ -321,7 +321,7 @@ class SmokeTestSuite:
         
         return summary
     
-    def generate_report(self, summary: Dict[str, Any]) -> str:
+    def generate_report(self, summary: dict[str, Any]) -> str:
         """Generate smoke test report"""
         
         report = f"""# Smoke Test Report

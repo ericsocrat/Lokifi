@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Query
-from app.db.schemas.market import OHLCResponse, Timeframe
 import random
 import time
+
+from fastapi import APIRouter, Query
+
+from app.db.schemas.market import OHLCResponse, Timeframe
 
 router = APIRouter(prefix="/ohlc", tags=["market"])
 

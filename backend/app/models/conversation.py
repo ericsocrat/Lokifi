@@ -2,17 +2,16 @@
 Conversation and message models for direct messaging (J4).
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, String, Text, func, Index
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, func
+from sqlalchemy import Enum as SqlEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
-
-import uuid
 
 
 class ContentType(str, Enum):
@@ -39,11 +38,11 @@ class Conversation(Base):
     is_group: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
     
     # Optional group fields (for future use)
-    name: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    name: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
     
     # Last message tracking
-    last_message_at: Mapped[Optional[datetime]] = mapped_column(
+    last_message_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True,
         index=True
@@ -87,7 +86,7 @@ class ConversationParticipant(Base):
     )
     
     # Read tracking
-    last_read_message_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+    last_read_message_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), 
         ForeignKey("messages.id", ondelete="SET NULL"),
         nullable=True

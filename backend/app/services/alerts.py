@@ -1,11 +1,13 @@
 ﻿from __future__ import annotations
+
 import asyncio
+import builtins
 import json
 import os
 import time
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Set
+from typing import Any, Literal
 
 from app.services.prices import fetch_ohlc
 
@@ -21,15 +23,15 @@ class Alert:
     created_at: float
     # debouncing
     min_interval_sec: int
-    last_triggered_at: Optional[float]
+    last_triggered_at: float | None
     # free-form config per type
-    config: Dict[str, Any]
-    owner_handle: Optional[str] = None  # e.g., { "direction":"above","price":42000 } or { "window_minutes":60,"direction":"down","threshold_pct":-3 }
+    config: dict[str, Any]
+    owner_handle: str | None = None  # e.g., { "direction":"above","price":42000 } or { "window_minutes":60,"direction":"down","threshold_pct":-3 }
 
 class AlertStore:
     def __init__(self, path: str):
         self.path = Path(path)
-        self._alerts: Dict[str, Alert] = {}
+        self._alerts: dict[str, Alert] = {}
         self._lock = asyncio.Lock()
 
     async def load(self) -> None:
@@ -44,7 +46,7 @@ class AlertStore:
             self._alerts = {}
             self._save_sync({})
 
-    def _save_sync(self, obj: Dict[str, Any]) -> None:
+    def _save_sync(self, obj: dict[str, Any]) -> None:
         tmp = self.path.with_suffix(".tmp")
         tmp.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
         tmp.replace(self.path)
@@ -54,7 +56,7 @@ class AlertStore:
             obj = {k: asdict(v) for k, v in self._alerts.items()}
             await asyncio.to_thread(self._save_sync, obj)
 
-    async def list(self) -> List[Alert]:
+    async def list(self) -> builtins.list[Alert]:
         return list(self._alerts.values())
 
     async def add(self, alert: Alert) -> Alert:
@@ -70,10 +72,10 @@ class AlertStore:
         await self.save()
         return existed
 
-    async def get(self, alert_id: str) -> Optional[Alert]:
+    async def get(self, alert_id: str) -> Alert | None:
         return self._alerts.get(alert_id)
 
-    async def set_active(self, alert_id: str, active: bool) -> Optional[Alert]:
+    async def set_active(self, alert_id: str, active: bool) -> Alert | None:
         async with self._lock:
             a = self._alerts.get(alert_id)
             if not a:
@@ -85,7 +87,7 @@ class AlertStore:
 # Simple SSE hub
 class SSEHub:
     def __init__(self):
-        self._clients: Set[asyncio.Queue] = set()
+        self._clients: set[asyncio.Queue] = set()
         self._lock = asyncio.Lock()
 
     async def register(self) -> asyncio.Queue:
@@ -98,7 +100,7 @@ class SSEHub:
         async with self._lock:
             self._clients.discard(q)
 
-    async def broadcast(self, event: Dict[str, Any]) -> None:
+    async def broadcast(self, event: dict[str, Any]) -> None:
         async with self._lock:
             for q in list(self._clients):
                 try:
@@ -112,7 +114,7 @@ class AlertEvaluator:
         self.store = store
         self.hub = hub
         self.interval_sec = interval_sec
-        self._task: Optional[asyncio.Task] = None
+        self._task: asyncio.Task | None = None
         self._stop = asyncio.Event()
 
     def start(self):
@@ -126,14 +128,14 @@ class AlertEvaluator:
         if self._task:
             try:
                 await asyncio.wait_for(self._task, timeout=3)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self._task.cancel()
 
     async def _run(self):
         while not self._stop.is_set():
             try:
                 await self._tick()
-            except Exception as e:
+            except Exception:
                 # swallow to keep loop alive
                 pass
             await asyncio.wait([self._stop.wait()], timeout=self.interval_sec)
@@ -162,7 +164,7 @@ class AlertEvaluator:
                 "ts": now,
             })
 
-    async def _evaluate(self, a: Alert) -> tuple[bool, Dict[str, Any]]:
+    async def _evaluate(self, a: Alert) -> tuple[bool, dict[str, Any]]:
         # Reuse OHLC endpoint logic via services.prices
         # Fetch minimal data for evaluation
         tf = a.timeframe

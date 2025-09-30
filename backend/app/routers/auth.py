@@ -4,22 +4,22 @@ Authentication router with login, register, and OAuth endpoints.
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.database import get_db
-from app.core.config import settings
 from app.core.auth_deps import get_current_user, get_current_user_optional
+from app.core.config import settings
+from app.db.database import get_db
 from app.models.user import User
-from app.services.auth_service import AuthService
 from app.schemas.auth import (
-    UserRegisterRequest, 
-    UserLoginRequest, 
-    GoogleOAuthRequest,
     AuthUserResponse,
-    MessageResponse
+    GoogleOAuthRequest,
+    MessageResponse,
+    UserLoginRequest,
+    UserRegisterRequest,
 )
+from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -206,6 +206,7 @@ async def get_current_user_info(
     """Get current user information."""
     # Get user's profile
     from sqlalchemy import select
+
     from app.models.profile import Profile
     
     stmt = select(Profile).where(Profile.user_id == current_user.id)

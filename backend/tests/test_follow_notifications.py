@@ -1,10 +1,13 @@
 import uuid
+
 import pytest
-from httpx import AsyncClient, ASGITransport
-from app.main import app
-from sqlalchemy import select
 from app.models.notification import Notification, NotificationType
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import select
+
 from app.db.database import get_db_session
+from app.main import app
+
 
 @pytest.fixture
 def anyio_backend():

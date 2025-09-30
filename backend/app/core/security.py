@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
-from fastapi.security import HTTPBearer
-from fastapi import Depends, HTTPException, status
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
+from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPBearer
 
 from .config import settings
 
@@ -41,10 +41,10 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 
-def create_jwt_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def create_jwt_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """Create a JWT token."""
     to_encode = data.copy()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if expires_delta:
         expire = now + expires_delta
     else:
@@ -56,7 +56,7 @@ def create_jwt_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = 
     return encoded_jwt
 
 
-def verify_jwt_token(token: str) -> Dict[str, Any]:
+def verify_jwt_token(token: str) -> dict[str, Any]:
     """Verify and decode a JWT token."""
     try:
         jwt_secret = settings.get_jwt_secret()

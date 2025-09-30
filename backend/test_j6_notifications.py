@@ -1,23 +1,21 @@
 # J6 Enterprise Notifications - Comprehensive Test Suite
-import pytest
-from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, AsyncMock, patch
 import uuid
+from datetime import UTC, datetime, timedelta
+from unittest.mock import AsyncMock, Mock, patch
 
-from app.models.notification_models import (
-    Notification, 
-    NotificationType, 
-    NotificationPriority
-)
-from app.services.notification_service import (
-    notification_service, 
-    NotificationData, 
-    NotificationStats
-)
-from app.services.notification_emitter import notification_emitter
+import pytest
+
 from app.integrations.notification_hooks import notification_integration
-from app.websockets.notifications import NotificationWebSocketManager
+from app.models.notification_models import Notification, NotificationPriority, NotificationType
 from app.models.user import User
+from app.services.notification_emitter import notification_emitter
+from app.services.notification_service import (
+    NotificationData,
+    NotificationStats,
+    notification_service,
+)
+from app.websockets.notifications import NotificationWebSocketManager
+
 
 @pytest.fixture
 def mock_user():
@@ -507,8 +505,8 @@ class TestNotificationWebSocket:
         manager.connection_metadata[mock_websocket] = {
             "user_id": mock_user.id,
             "username": mock_user.username,
-            "connected_at": datetime.now(timezone.utc),
-            "last_activity": datetime.now(timezone.utc)
+            "connected_at": datetime.now(UTC),
+            "last_activity": datetime.now(UTC)
         }
         
         # Test sending message
@@ -528,8 +526,8 @@ class TestNotificationWebSocket:
         manager.connection_metadata[mock_websocket] = {
             "user_id": mock_user.id,
             "username": mock_user.username,
-            "connected_at": datetime.now(timezone.utc),
-            "last_activity": datetime.now(timezone.utc)
+            "connected_at": datetime.now(UTC),
+            "last_activity": datetime.now(UTC)
         }
         
         # Get stats
@@ -586,7 +584,7 @@ class TestNotificationModels:
             user_id=str(uuid.uuid4()),
             type="follow",
             title="Test",
-            created_at=datetime.now(timezone.utc)
+            created_at=datetime.now(UTC)
         )
         
         data = notification.to_dict()
@@ -607,13 +605,13 @@ class TestNotificationModels:
             user_id=str(uuid.uuid4()),
             type="follow",
             title="Test",
-            expires_at=datetime.now(timezone.utc) + timedelta(days=1)
+            expires_at=datetime.now(UTC) + timedelta(days=1)
         )
         
         assert notification.is_expired is False
         
         # Expired notification
-        notification.expires_at = datetime.now(timezone.utc) - timedelta(days=1)
+        notification.expires_at = datetime.now(UTC) - timedelta(days=1)
         assert notification.is_expired is True
 
 class TestNotificationIntegrationE2E:

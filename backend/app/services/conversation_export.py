@@ -4,19 +4,21 @@ Conversation Export/Import System for Fynix AI Chatbot (J5.1).
 Allows users to export/import their AI conversations in various formats.
 """
 
-import json
 import csv
+import json
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any, Optional, Union
-from datetime import datetime
-from io import BytesIO, StringIO
 import zipfile
+
 # import markdown  # Optional - install with: pip install markdown
 from dataclasses import dataclass
+from datetime import datetime
+from io import BytesIO, StringIO
+from typing import Any
 
 from sqlalchemy.orm import Session
+
 from app.db.db import get_session
-from app.db.models import AIThread, AIMessage
+from app.db.models import AIMessage, AIThread
 
 
 @dataclass
@@ -25,8 +27,8 @@ class ExportOptions:
     format: str = "json"  # json, csv, markdown, html, xml
     include_metadata: bool = True
     include_system_messages: bool = False
-    date_range: Optional[tuple] = None  # (start_date, end_date)
-    thread_ids: Optional[List[int]] = None
+    date_range: tuple | None = None  # (start_date, end_date)
+    thread_ids: list[int] | None = None
     compress: bool = False
 
 
@@ -40,8 +42,8 @@ class ConversationExporter:
         self, 
         user_id: int, 
         options: ExportOptions,
-        db: Optional[Session] = None
-    ) -> Union[str, bytes]:
+        db: Session | None = None
+    ) -> str | bytes:
         """Export user's conversations based on options."""
         
         if db is None:
@@ -50,7 +52,7 @@ class ConversationExporter:
         else:
             return self._do_export(user_id, options, db)
     
-    def _do_export(self, user_id: int, options: ExportOptions, db: Session) -> Union[str, bytes]:
+    def _do_export(self, user_id: int, options: ExportOptions, db: Session) -> str | bytes:
         """Internal export implementation."""
         
         # Get conversations data
@@ -78,7 +80,7 @@ class ConversationExporter:
         
         return content
     
-    def _get_conversations_data(self, user_id: int, options: ExportOptions, db: Session) -> List[Dict[str, Any]]:
+    def _get_conversations_data(self, user_id: int, options: ExportOptions, db: Session) -> list[dict[str, Any]]:
         """Fetch conversation data from database."""
         
         # Base query for threads
@@ -147,7 +149,7 @@ class ConversationExporter:
         
         return conversations
     
-    def _export_json(self, conversations: List[Dict[str, Any]], options: ExportOptions) -> str:
+    def _export_json(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as JSON."""
         export_data = {
             "exported_at": datetime.utcnow().isoformat(),
@@ -158,7 +160,7 @@ class ConversationExporter:
         
         return json.dumps(export_data, indent=2, ensure_ascii=False)
     
-    def _export_csv(self, conversations: List[Dict[str, Any]], options: ExportOptions) -> str:
+    def _export_csv(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as CSV."""
         output = StringIO()
         
@@ -195,7 +197,7 @@ class ConversationExporter:
         
         return output.getvalue()
     
-    def _export_markdown(self, conversations: List[Dict[str, Any]], options: ExportOptions) -> str:
+    def _export_markdown(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as Markdown."""
         output = []
         output.append("# AI Conversations Export")
@@ -221,7 +223,7 @@ class ConversationExporter:
         
         return "\n".join(output)
     
-    def _export_html(self, conversations: List[Dict[str, Any]], options: ExportOptions) -> str:
+    def _export_html(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as HTML."""
         # Simple HTML conversion without markdown dependency
         output = []
@@ -266,7 +268,7 @@ class ConversationExporter:
         output.append("</body></html>")
         return "\n".join(output)
     
-    def _export_xml(self, conversations: List[Dict[str, Any]], options: ExportOptions) -> str:
+    def _export_xml(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as XML."""
         root = ET.Element("conversations")
         root.set("exported_at", datetime.utcnow().isoformat())
@@ -299,7 +301,7 @@ class ConversationExporter:
         
         return ET.tostring(root, encoding='unicode', method='xml')
     
-    def _export_txt(self, conversations: List[Dict[str, Any]], options: ExportOptions) -> str:
+    def _export_txt(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as plain text."""
         output = []
         output.append("AI CONVERSATIONS EXPORT")
@@ -328,7 +330,7 @@ class ConversationExporter:
         
         return "\n".join(output)
     
-    def _compress_content(self, content: Union[str, bytes], filename: str) -> bytes:
+    def _compress_content(self, content: str | bytes, filename: str) -> bytes:
         """Compress content into ZIP file."""
         zip_buffer = BytesIO()
         
@@ -350,11 +352,11 @@ class ConversationImporter:
     def import_conversations(
         self, 
         user_id: int, 
-        content: Union[str, bytes], 
+        content: str | bytes, 
         format: str = "json",
         merge_strategy: str = "skip",  # skip, overwrite, merge
-        db: Optional[Session] = None
-    ) -> Dict[str, Any]:
+        db: Session | None = None
+    ) -> dict[str, Any]:
         """
         Import conversations for a user.
         
@@ -377,11 +379,11 @@ class ConversationImporter:
     def _do_import(
         self, 
         user_id: int, 
-        content: Union[str, bytes], 
+        content: str | bytes, 
         format: str, 
         merge_strategy: str, 
         db: Session
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Internal import implementation."""
         
         if format == "json":
@@ -389,7 +391,7 @@ class ConversationImporter:
         
         raise ValueError(f"Import format {format} not implemented")
     
-    def _import_json(self, user_id: int, content: Union[str, bytes], merge_strategy: str, db: Session) -> Dict[str, Any]:
+    def _import_json(self, user_id: int, content: str | bytes, merge_strategy: str, db: Session) -> dict[str, Any]:
         """Import from JSON format."""
         
         if isinstance(content, bytes):

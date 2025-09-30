@@ -7,13 +7,14 @@ Fixes the most pressing issues identified in the analysis
 import os
 from pathlib import Path
 
+
 def fix_blocking_io_in_multimodal():
     """Fix blocking I/O in multimodal AI service"""
     file_path = Path("app/services/multimodal_ai_service.py")
     
     if file_path.exists():
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
             
             # Add aiofiles import
@@ -55,7 +56,7 @@ def fix_auth_service_none_handling():
     
     if file_path.exists():
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
             
             # Fix password hash None check
@@ -79,7 +80,7 @@ def fix_database_manager_export():
     
     if file_path.exists():
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
             
             # Add database_manager instance if not present

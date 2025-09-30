@@ -1,9 +1,11 @@
 from collections import deque
 
+
 def sma(values: list[float], period: int) -> list[float | None]:
     out, q, s = [], deque(), 0.0
     for v in values:
-        q.append(v); s += v
+        q.append(v)
+        s += v
         if len(q) > period:
             s -= q.popleft()
         out.append(s/period if len(q) == period else None)
@@ -29,8 +31,8 @@ def rsi(values: list[float], period: int = 14) -> list[float | None]:
         gains.append(max(diff, 0.0))
         losses.append(max(-diff, 0.0))
     # Wilder's smoothing
-    avg_gain = None
-    avg_loss = None
+    avg_gain = 0.0
+    avg_loss = 0.0
     out = []
     for i in range(len(values)):
         if i < period:

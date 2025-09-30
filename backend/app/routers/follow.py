@@ -3,29 +3,28 @@ Follow router for managing follow relationships and social graph.
 J6.1 Enhanced with notification integration.
 """
 
-from typing import Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.database import get_db
 from app.core.auth_deps import get_current_user, get_current_user_optional
+from app.db.database import get_db
 from app.models.user import User
-from app.services.follow_service import FollowService
+from app.schemas.auth import MessageResponse
 from app.schemas.follow import (
-    FollowRequest,
-    UnfollowRequest,
-    FollowResponse,
+    FollowActionResponse,
+    FollowActivityResponse,
     FollowersListResponse,
     FollowingListResponse,
+    FollowRequest,
+    FollowResponse,
     FollowStatsResponse,
     MutualFollowsResponse,
     SuggestedUsersResponse,
-    FollowActivityResponse,
-    FollowActionResponse
+    UnfollowRequest,
 )
-from app.schemas.auth import MessageResponse
+from app.services.follow_service import FollowService
 
 # J6.1 Notification Integration
 from setup_j6_integration import trigger_follow_notification
@@ -158,7 +157,7 @@ async def get_user_followers(
     user_id: UUID,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    current_user: Optional[User] = Depends(get_current_user_optional),
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db)
 ):
     """Get a user's followers list."""
@@ -178,7 +177,7 @@ async def get_user_following(
     user_id: UUID,
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    current_user: Optional[User] = Depends(get_current_user_optional),
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db)
 ):
     """Get a user's following list."""
@@ -372,7 +371,7 @@ async def bulk_unfollow_users(
 @router.get("/stats/{user_id}", response_model=FollowStatsResponse)
 async def get_user_follow_stats(
     user_id: UUID,
-    current_user: Optional[User] = Depends(get_current_user_optional),
+    current_user: User | None = Depends(get_current_user_optional),
     db: AsyncSession = Depends(get_db)
 ):
     """Get follow statistics for a user."""

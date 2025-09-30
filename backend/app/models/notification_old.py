@@ -2,17 +2,16 @@
 Notification models for user notifications.
 """
 
+import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID, JSON
+from sqlalchemy import Boolean, DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Enum as SqlEnum
+from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
-
-import uuid
 
 
 class NotificationType(str, Enum):
@@ -50,7 +49,7 @@ class Notification(Base):
     )
     
     # Optional related user (e.g., who followed you)
-    related_user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+    related_user_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), 
         ForeignKey("users.id", ondelete="SET NULL"),
         nullable=True
@@ -66,7 +65,7 @@ class Notification(Base):
     message: Mapped[str] = mapped_column(Text)
     
     # Optional metadata
-    extra_data: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    extra_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     
     # Status
     is_read: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -77,17 +76,17 @@ class Notification(Base):
         DateTime(timezone=True), 
         server_default=func.now()
     )
-    read_at: Mapped[Optional[datetime]] = mapped_column(
+    read_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True
     )
-    delivered_at: Mapped[Optional[datetime]] = mapped_column(
+    delivered_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True
     )
     
     # Expiration
-    expires_at: Mapped[Optional[datetime]] = mapped_column(
+    expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True
     )

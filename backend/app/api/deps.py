@@ -2,14 +2,14 @@
 Dependencies for Fynix API endpoints.
 """
 
-from typing import Optional
-from fastapi import HTTPException, Depends, Header
-from sqlalchemy.orm import Session
-from jose import jwt, JWTError
 
+from fastapi import Depends, Header, HTTPException
+from jose import JWTError, jwt
+from sqlalchemy.orm import Session
+
+from app.core.config import get_settings
 from app.db.db import get_session
 from app.db.models import User
-from app.core.config import get_settings
 
 # JWT Configuration from settings
 settings = get_settings()
@@ -23,7 +23,7 @@ def get_db():
         yield db
 
 
-def _auth_handle(authorization: Optional[str]) -> Optional[str]:
+def _auth_handle(authorization: str | None) -> str | None:
     """Extract user handle from authorization header."""
     if not authorization or not authorization.startswith("Bearer "):
         return None
@@ -35,13 +35,13 @@ def _auth_handle(authorization: Optional[str]) -> Optional[str]:
         return None
 
 
-def _user_by_handle(db: Session, handle: str) -> Optional[User]:
+def _user_by_handle(db: Session, handle: str) -> User | None:
     """Get user by handle."""
     return db.query(User).filter(User.handle == handle).first()
 
 
 def get_current_user(
-    authorization: Optional[str] = Header(None),
+    authorization: str | None = Header(None),
     db: Session = Depends(get_db)
 ) -> User:
     """Get current authenticated user."""
@@ -57,9 +57,9 @@ def get_current_user(
 
 
 def get_current_user_optional(
-    authorization: Optional[str] = Header(None),
+    authorization: str | None = Header(None),
     db: Session = Depends(get_db)
-) -> Optional[User]:
+) -> User | None:
     """Get current user if authenticated, otherwise None."""
     handle = _auth_handle(authorization)
     if not handle:

@@ -2,11 +2,12 @@
 Performance monitoring utilities for Phase K
 """
 
-import time
 import logging
+import time
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Dict, Any
 from functools import wraps
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +15,7 @@ class PerformanceMetrics:
     """Performance metrics collector"""
     
     def __init__(self):
-        self.metrics: Dict[str, Dict[str, float]] = {}
+        self.metrics: dict[str, dict[str, float]] = {}
     
     def record(self, operation: str, duration: float, success: bool = True):
         """Record operation metrics"""
@@ -42,7 +43,7 @@ class PerformanceMetrics:
         else:
             stats['error_count'] += 1
     
-    def get_summary(self) -> Dict[str, Any]:
+    def get_summary(self) -> dict[str, Any]:
         """Get performance summary"""
         return {
             'operations': len(self.metrics),

@@ -3,14 +3,20 @@ Ollama local AI provider for Fynix AI Chatbot (J5).
 """
 
 import json
-import uuid
 import logging
-from typing import List, AsyncGenerator, Optional
+import uuid
+from collections.abc import AsyncGenerator
 
 import httpx
+
 from app.services.ai_provider import (
-    AIProvider, AIMessage, StreamOptions, StreamChunk, TokenUsage,
-    ProviderError, ProviderUnavailableError
+    AIMessage,
+    AIProvider,
+    ProviderError,
+    ProviderUnavailableError,
+    StreamChunk,
+    StreamOptions,
+    TokenUsage,
 )
 
 logger = logging.getLogger(__name__)
@@ -19,7 +25,7 @@ logger = logging.getLogger(__name__)
 class OllamaProvider(AIProvider):
     """Ollama local AI provider implementation."""
     
-    def __init__(self, base_url: Optional[str] = None):
+    def __init__(self, base_url: str | None = None):
         super().__init__(api_key=None, base_url=base_url or "http://localhost:11434")
         self.name = "ollama"
         self.client = httpx.AsyncClient(
@@ -29,7 +35,7 @@ class OllamaProvider(AIProvider):
     
     async def stream_chat(
         self,
-        messages: List[AIMessage],
+        messages: list[AIMessage],
         options: StreamOptions = StreamOptions()
     ) -> AsyncGenerator[StreamChunk, None]:
         """Stream chat completion from Ollama."""
@@ -80,7 +86,7 @@ class OllamaProvider(AIProvider):
                             async for chunk in self._process_stream(retry_response, model, messages):
                                 yield chunk
                         return
-                    except:
+                    except (httpx.RequestError, httpx.HTTPStatusError, Exception):
                         raise ProviderError(f"Model {model} not available and could not be pulled")
                 
                 elif response.status_code != 200:
@@ -108,7 +114,7 @@ class OllamaProvider(AIProvider):
         self, 
         response: httpx.Response, 
         model: str, 
-        messages: List[AIMessage]
+        messages: list[AIMessage]
     ) -> AsyncGenerator[StreamChunk, None]:
         """Process Ollama streaming response."""
         chunk_id = str(uuid.uuid4())
@@ -192,10 +198,10 @@ class OllamaProvider(AIProvider):
         try:
             response = await self.client.get(f"{self.base_url}/api/tags")
             return response.status_code == 200
-        except:
+        except (httpx.RequestError, httpx.HTTPStatusError, ConnectionError):
             return False
     
-    def get_supported_models(self) -> List[str]:
+    def get_supported_models(self) -> list[str]:
         """Get list of supported Ollama models."""
         return [
             "llama3.1:8b",
@@ -216,7 +222,7 @@ class OllamaProvider(AIProvider):
         """Get default model for Ollama."""
         return "llama3.1:8b"
     
-    async def get_available_models(self) -> List[str]:
+    async def get_available_models(self) -> list[str]:
         """Get models that are actually available locally."""
         try:
             response = await self.client.get(f"{self.base_url}/api/tags")
@@ -225,5 +231,5 @@ class OllamaProvider(AIProvider):
                 models = data.get("models", [])
                 return [model.get("name", "") for model in models if model.get("name")]
             return []
-        except:
+        except (httpx.RequestError, httpx.HTTPStatusError, ValueError):
             return []

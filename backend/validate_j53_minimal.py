@@ -22,13 +22,8 @@ async def validate_j53_core():
         # Test 1: Core imports
         print("1️⃣  Testing core imports...")
         
-        from app.services.j53_performance_monitor import (
-            J53PerformanceMonitor, 
-            AlertSeverity
-        )
-        from app.services.advanced_storage_analytics import (
-            AdvancedStorageAnalytics
-        )
+        from app.services.advanced_storage_analytics import AdvancedStorageAnalytics
+        from app.services.j53_performance_monitor import AlertSeverity, J53PerformanceMonitor
         
         print("   ✅ Core components imported successfully")
         

@@ -3,25 +3,24 @@ Authentication dependencies for FastAPI.
 """
 
 import uuid
-from typing import Optional
 
 from fastapi import Cookie, Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.security import verify_jwt_token
 from app.db.database import get_db
 from app.models.user import User
-from app.core.security import verify_jwt_token
 from app.services.auth_service import AuthService
 
 security = HTTPBearer(auto_error=False)
 
 
 async def get_current_user_optional(
-    token: Optional[HTTPAuthorizationCredentials] = Depends(security),
-    access_token: Optional[str] = Cookie(None),
+    token: HTTPAuthorizationCredentials | None = Depends(security),
+    access_token: str | None = Cookie(None),
     db: AsyncSession = Depends(get_db)
-) -> Optional[User]:
+) -> User | None:
     """Get current user from token (optional - doesn't raise if no token)."""
     # Try to get token from Authorization header or cookie
     token_str = None
@@ -55,8 +54,8 @@ async def get_current_user_optional(
 
 
 async def get_current_user(
-    token: Optional[HTTPAuthorizationCredentials] = Depends(security),
-    access_token: Optional[str] = Cookie(None),
+    token: HTTPAuthorizationCredentials | None = Depends(security),
+    access_token: str | None = Cookie(None),
     db: AsyncSession = Depends(get_db)
 ) -> User:
     """Get current user from token (required - raises if no valid token)."""

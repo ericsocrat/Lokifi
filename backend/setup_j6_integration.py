@@ -5,8 +5,8 @@ This script provides integration patches for existing routers to trigger notific
 """
 
 import logging
-from typing import Dict, Any, Optional
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
 from app.integrations.notification_hooks import notification_integration
 from app.services.notification_emitter import notification_emitter
@@ -29,7 +29,7 @@ class J6NotificationIntegrator:
             "errors": 0
         }
     
-    async def on_user_followed(self, follower_user_data: Dict[str, Any], followed_user_data: Dict[str, Any]):
+    async def on_user_followed(self, follower_user_data: dict[str, Any], followed_user_data: dict[str, Any]):
         """
         Integration hook for follow events.
         
@@ -54,9 +54,9 @@ class J6NotificationIntegrator:
     
     async def on_dm_message_received(
         self, 
-        sender_user_data: Dict[str, Any], 
-        recipient_user_data: Dict[str, Any], 
-        message_data: Dict[str, Any]
+        sender_user_data: dict[str, Any], 
+        recipient_user_data: dict[str, Any], 
+        message_data: dict[str, Any]
     ):
         """
         Integration hook for direct message events.
@@ -81,7 +81,7 @@ class J6NotificationIntegrator:
             logger.error(f"Error triggering DM notification: {e}")
             self._integration_stats["errors"] += 1
     
-    async def on_ai_response_completed(self, user_data: Dict[str, Any], ai_response_data: Dict[str, Any]):
+    async def on_ai_response_completed(self, user_data: dict[str, Any], ai_response_data: dict[str, Any]):
         """
         Integration hook for AI response completion events.
         
@@ -106,11 +106,11 @@ class J6NotificationIntegrator:
     
     async def on_user_mentioned(
         self, 
-        mentioned_user_data: Dict[str, Any], 
-        mentioning_user_data: Dict[str, Any], 
+        mentioned_user_data: dict[str, Any], 
+        mentioning_user_data: dict[str, Any], 
         content: str,
         context_type: str = "message",
-        context_id: Optional[str] = None
+        context_id: str | None = None
     ):
         """
         Integration hook for user mention events.
@@ -148,7 +148,7 @@ class J6NotificationIntegrator:
                 mentioning_user=mentioning_user,
                 content=content,
                 context_type=context_type,
-                context_id=context_id or f"{context_type}_{datetime.now(timezone.utc).timestamp()}"
+                context_id=context_id or f"{context_type}_{datetime.now(UTC).timestamp()}"
             )
             
             self._integration_stats["mention_notifications"] += 1
@@ -159,7 +159,7 @@ class J6NotificationIntegrator:
             logger.error(f"Error triggering mention notification: {e}")
             self._integration_stats["errors"] += 1
     
-    def get_integration_stats(self) -> Dict[str, Any]:
+    def get_integration_stats(self) -> dict[str, Any]:
         """Get integration statistics."""
         return {
             **self._integration_stats,
@@ -186,28 +186,28 @@ class J6NotificationIntegrator:
 j6_integrator = J6NotificationIntegrator()
 
 # Helper functions for easy integration
-async def trigger_follow_notification(follower_user_data: Dict[str, Any], followed_user_data: Dict[str, Any]):
+async def trigger_follow_notification(follower_user_data: dict[str, Any], followed_user_data: dict[str, Any]):
     """Helper to trigger follow notification."""
     await j6_integrator.on_user_followed(follower_user_data, followed_user_data)
 
 async def trigger_dm_notification(
-    sender_user_data: Dict[str, Any], 
-    recipient_user_data: Dict[str, Any], 
-    message_data: Dict[str, Any]
+    sender_user_data: dict[str, Any], 
+    recipient_user_data: dict[str, Any], 
+    message_data: dict[str, Any]
 ):
     """Helper to trigger DM notification."""
     await j6_integrator.on_dm_message_received(sender_user_data, recipient_user_data, message_data)
 
-async def trigger_ai_response_notification(user_data: Dict[str, Any], ai_response_data: Dict[str, Any]):
+async def trigger_ai_response_notification(user_data: dict[str, Any], ai_response_data: dict[str, Any]):
     """Helper to trigger AI response notification."""
     await j6_integrator.on_ai_response_completed(user_data, ai_response_data)
 
 async def trigger_mention_notification(
-    mentioned_user_data: Dict[str, Any], 
-    mentioning_user_data: Dict[str, Any], 
+    mentioned_user_data: dict[str, Any], 
+    mentioning_user_data: dict[str, Any], 
     content: str,
     context_type: str = "message",
-    context_id: Optional[str] = None
+    context_id: str | None = None
 ):
     """Helper to trigger mention notification."""
     await j6_integrator.on_user_mentioned(
@@ -236,9 +236,9 @@ def extract_mentions_from_content(content: str) -> list[str]:
 
 async def process_mentions_in_content(
     content: str,
-    mentioning_user_data: Dict[str, Any],
+    mentioning_user_data: dict[str, Any],
     context_type: str = "message",
-    context_id: Optional[str] = None
+    context_id: str | None = None
 ):
     """
     Process all mentions in content and trigger notifications.

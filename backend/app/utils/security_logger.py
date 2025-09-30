@@ -3,15 +3,15 @@ Security Event Logger and Alerting System
 Comprehensive security monitoring and incident response
 """
 
+import asyncio
 import json
 import logging
 import time
-import asyncio
-from datetime import datetime, timezone
-from typing import Dict, Optional, Any
-from enum import Enum
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from enum import Enum
 from pathlib import Path
+from typing import Any
 
 # Configure security logger
 security_logger = logging.getLogger("fynix.security")
@@ -30,7 +30,7 @@ file_handler.setLevel(logging.INFO)
 class SecurityJSONFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
-            "timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),
+            "timestamp": datetime.fromtimestamp(record.created, UTC).isoformat(),
             "level": record.levelname,
             "event_type": getattr(record, 'event_type', 'unknown'),
             "message": record.getMessage(),
@@ -78,17 +78,17 @@ class SecurityEvent:
     event_type: SecurityEventType
     severity: SecuritySeverity
     message: str
-    client_ip: Optional[str] = None
-    user_id: Optional[str] = None
-    user_agent: Optional[str] = None
-    endpoint: Optional[str] = None
-    request_method: Optional[str] = None
-    additional_data: Optional[Dict[str, Any]] = None
-    timestamp: Optional[datetime] = None
+    client_ip: str | None = None
+    user_id: str | None = None
+    user_agent: str | None = None
+    endpoint: str | None = None
+    request_method: str | None = None
+    additional_data: dict[str, Any] | None = None
+    timestamp: datetime | None = None
     
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
 
 class SecurityMonitor:
     """Security monitoring and alerting system"""
@@ -233,7 +233,7 @@ class SecurityMonitor:
             # Only send alerts for high and critical severity events
             if event.severity in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]:
                 # Import here to avoid circular imports
-                from app.utils.security_alerts import security_alert_manager, Alert, AlertPriority
+                from app.utils.security_alerts import Alert, AlertPriority, security_alert_manager
                 
                 # Map severity to alert priority
                 priority_map = {
@@ -256,7 +256,7 @@ class SecurityMonitor:
         except Exception as e:
             security_logger.error(f"Failed to send security alert: {e}")
     
-    def get_security_summary(self) -> Dict[str, Any]:
+    def get_security_summary(self) -> dict[str, Any]:
         """Get summary of current security status"""
         current_time = time.time()
         
@@ -276,14 +276,14 @@ class SecurityMonitor:
             "recent_failed_attempts": recent_failed_attempts,
             "recent_rate_violations": recent_rate_violations,
             "monitored_ips": len(self.failed_attempts),
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": datetime.now(UTC).isoformat()
         }
 
 # Global security monitor instance
 security_monitor = SecurityMonitor()
 
 # Convenience functions for common security events
-async def log_auth_failure(client_ip: str, user_id: Optional[str] = None, endpoint: Optional[str] = None):
+async def log_auth_failure(client_ip: str, user_id: str | None = None, endpoint: str | None = None):
     """Log authentication failure"""
     await security_monitor.log_security_event(SecurityEvent(
         event_type=SecurityEventType.AUTHENTICATION_FAILURE,
@@ -294,7 +294,7 @@ async def log_auth_failure(client_ip: str, user_id: Optional[str] = None, endpoi
         endpoint=endpoint
     ))
 
-async def log_auth_success(client_ip: str, user_id: str, endpoint: Optional[str] = None):
+async def log_auth_success(client_ip: str, user_id: str, endpoint: str | None = None):
     """Log successful authentication"""
     await security_monitor.log_security_event(SecurityEvent(
         event_type=SecurityEventType.AUTHENTICATION_SUCCESS,
@@ -305,7 +305,7 @@ async def log_auth_success(client_ip: str, user_id: str, endpoint: Optional[str]
         endpoint=endpoint
     ))
 
-async def log_rate_limit_exceeded(client_ip: str, endpoint: Optional[str] = None, limit_type: Optional[str] = None):
+async def log_rate_limit_exceeded(client_ip: str, endpoint: str | None = None, limit_type: str | None = None):
     """Log rate limit exceeded"""
     await security_monitor.log_security_event(SecurityEvent(
         event_type=SecurityEventType.RATE_LIMIT_EXCEEDED,
@@ -316,7 +316,7 @@ async def log_rate_limit_exceeded(client_ip: str, endpoint: Optional[str] = None
         additional_data={"limit_type": limit_type}
     ))
 
-async def log_suspicious_request(client_ip: str, endpoint: str, pattern: str, user_agent: Optional[str] = None):
+async def log_suspicious_request(client_ip: str, endpoint: str, pattern: str, user_agent: str | None = None):
     """Log suspicious request pattern"""
     await security_monitor.log_security_event(SecurityEvent(
         event_type=SecurityEventType.SUSPICIOUS_REQUEST,
@@ -328,7 +328,7 @@ async def log_suspicious_request(client_ip: str, endpoint: str, pattern: str, us
         additional_data={"detected_pattern": pattern}
     ))
 
-async def log_input_validation_failure(client_ip: str, field: str, value_type: str, endpoint: Optional[str] = None):
+async def log_input_validation_failure(client_ip: str, field: str, value_type: str, endpoint: str | None = None):
     """Log input validation failure"""
     await security_monitor.log_security_event(SecurityEvent(
         event_type=SecurityEventType.INPUT_VALIDATION_FAILURE,
@@ -339,7 +339,7 @@ async def log_input_validation_failure(client_ip: str, field: str, value_type: s
         additional_data={"field": field, "value_type": value_type}
     ))
 
-async def log_unauthorized_access(client_ip: str, endpoint: str, user_id: Optional[str] = None):
+async def log_unauthorized_access(client_ip: str, endpoint: str, user_id: str | None = None):
     """Log unauthorized access attempt"""
     await security_monitor.log_security_event(SecurityEvent(
         event_type=SecurityEventType.UNAUTHORIZED_ACCESS,

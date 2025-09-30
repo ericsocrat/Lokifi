@@ -2,14 +2,15 @@
 Comprehensive health check endpoint for Phase K components
 """
 
-from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any
 import time
+from typing import Any
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
-from app.core.redis_client import get_redis_client
 from app.core.performance_monitor import performance_metrics
+from app.core.redis_client import get_redis_client
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -17,7 +18,7 @@ router = APIRouter(prefix="/health", tags=["health"])
 async def comprehensive_health_check(
     db: AsyncSession = Depends(get_db_session),
     redis_client = Depends(get_redis_client)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Comprehensive health check for all Phase K components"""
     
     health_status = {
@@ -91,7 +92,7 @@ async def comprehensive_health_check(
     return health_status
 
 @router.get("/metrics")
-async def get_performance_metrics() -> Dict[str, Any]:
+async def get_performance_metrics() -> dict[str, Any]:
     """Get detailed performance metrics"""
     return performance_metrics.get_summary()
 
@@ -100,7 +101,7 @@ async def check_component_health(
     component_name: str,
     db: AsyncSession = Depends(get_db_session),
     redis_client = Depends(get_redis_client)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Check health of specific component"""
     
     if component_name == "database":

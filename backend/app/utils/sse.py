@@ -1,5 +1,6 @@
 from fastapi.responses import StreamingResponse
 
+
 class EventSourceResponse(StreamingResponse):
     def __init__(self, content, *args, **kwargs):
         super().__init__(self._wrap(content), media_type="text/event-stream", *args, **kwargs)

@@ -4,10 +4,11 @@ Apply database performance indexes
 """
 
 import asyncio
+import logging
 import sqlite3
 from pathlib import Path
+
 from app.core.config import Settings
-import logging
 
 logger = logging.getLogger(__name__)
 

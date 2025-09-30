@@ -5,8 +5,9 @@ Revises: 8fbb9c633bbf
 Create Date: 2025-09-29 12:00:00.000000
 
 """
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 # revision identifiers
 revision = 'j6_notifications_001'

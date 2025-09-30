@@ -3,8 +3,8 @@ Security Configuration for Fynix Application
 Centralized security settings and constants
 """
 
-from typing import List
 import os
+
 
 class SecurityConfig:
     """Security configuration constants and settings"""
@@ -91,7 +91,7 @@ class SecurityConfig:
     MAX_UPLOAD_SIZE = 1024 * 1024 * 5  # 5MB
     
     @classmethod
-    def get_cors_origins(cls) -> List[str]:
+    def get_cors_origins(cls) -> list[str]:
         """Get CORS origins based on environment"""
         if os.getenv("ENVIRONMENT", "development").lower() == "production":
             return cls.PRODUCTION_CORS_ORIGINS
@@ -103,7 +103,7 @@ class SecurityConfig:
         return os.getenv("ENVIRONMENT", "development").lower() == "production"
     
     @classmethod
-    def get_allowed_methods(cls) -> List[str]:
+    def get_allowed_methods(cls) -> list[str]:
         """Get allowed HTTP methods based on environment"""
         if cls.is_production():
             return ["GET", "POST", "PUT", "DELETE", "OPTIONS"]

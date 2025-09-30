@@ -7,6 +7,7 @@ Adds missing related_user_id column and fixes other schema issues
 import sqlite3
 from pathlib import Path
 
+
 def fix_database_schema():
     """Fix database schema issues"""
     

@@ -3,28 +3,27 @@ Follow service for managing follow relationships and social graph.
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
-from typing import Optional, List
+from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select, func, and_, desc, not_, exists, update
+from fastapi import HTTPException, status
+from sqlalchemy import and_, desc, exists, func, not_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import aliased
-from fastapi import HTTPException, status
 
-from app.models.user import User
-from app.models.profile import Profile
 from app.models.follow import Follow
 from app.models.notification_models import Notification, NotificationType
+from app.models.profile import Profile
+from app.models.user import User
 from app.schemas.follow import (
-    FollowResponse,
-    UserFollowStatus,
+    FollowActionResponse,
+    FollowActivityResponse,
     FollowersListResponse,
     FollowingListResponse,
+    FollowResponse,
     FollowStatsResponse,
     MutualFollowsResponse,
     SuggestedUsersResponse,
-    FollowActivityResponse,
-    FollowActionResponse
+    UserFollowStatus,
 )
 
 
@@ -40,7 +39,7 @@ class FollowService:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot follow yourself")
 
         # Ensure followee exists
-        result = await self.db.execute(select(User.id).where(and_(User.id == followee_id, User.is_active == True)))
+        result = await self.db.execute(select(User.id).where(and_(User.id == followee_id, User.is_active)))
         if result.scalar_one_or_none() is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
@@ -89,7 +88,7 @@ class FollowService:
         user_id: uuid.UUID,
         page: int = 1,
         page_size: int = 20,
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> FollowersListResponse:
         """Get followers list with follow status."""
         offset = (page - 1) * page_size
@@ -152,7 +151,7 @@ class FollowService:
         user_id: uuid.UUID,
         page: int = 1,
         page_size: int = 20,
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> FollowingListResponse:
         """Get following list with follow status."""
         offset = (page - 1) * page_size
@@ -361,7 +360,7 @@ class FollowService:
                 )
                 .where(
                     and_(
-                        Profile.is_public == True,
+                        Profile.is_public,
                         Profile.user_id != user_id,
                         not_(
                             exists().where(
@@ -398,7 +397,7 @@ class FollowService:
                 is_following=False,
                 follows_you=False,
                 mutual_follow=False,
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             ))
         has_next = False
         if reason == "mutual_follows":
@@ -419,7 +418,7 @@ class FollowService:
     async def get_follow_stats(
         self,
         user_id: uuid.UUID,
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> FollowStatsResponse:
         """Get follow statistics for a user."""
         # Get user profile
@@ -452,7 +451,7 @@ class FollowService:
         user_id: uuid.UUID
     ) -> FollowActivityResponse:
         """Get recent follow activity for a user."""
-        seven_days_ago = datetime.now(timezone.utc) - timedelta(days=7)
+        seven_days_ago = datetime.now(UTC) - timedelta(days=7)
         
         # Recent followers
         recent_followers_stmt = (
@@ -621,7 +620,7 @@ class FollowService:
             )
         )
 
-    async def batch_follow_status(self, current_user_id: Optional[uuid.UUID], target_user_ids: List[uuid.UUID]) -> dict:
+    async def batch_follow_status(self, current_user_id: uuid.UUID | None, target_user_ids: list[uuid.UUID]) -> dict:
         """Return mapping of target_user_id -> status dict for current user."""
         if not current_user_id or not target_user_ids:
             return {}
@@ -651,7 +650,7 @@ class FollowService:
     async def _get_user_follow_status(
         self,
         target_user_id: uuid.UUID,
-        current_user_id: Optional[uuid.UUID]
+        current_user_id: uuid.UUID | None
     ) -> dict:
         """Get follow status between current user and target user."""
         if not current_user_id:

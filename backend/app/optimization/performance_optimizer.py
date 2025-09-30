@@ -11,14 +11,18 @@ This module provides:
 - Performance regression detection and prevention
 """
 
-import time
-import statistics
-from datetime import datetime, timezone
-from typing import Dict, List, Any
-from dataclasses import dataclass, asdict
 import json
 import logging
+import statistics
+import time
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from enum import Enum
+from typing import Any
+
+logger = logging.getLogger(__name__)
+from enum import Enum
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -39,9 +43,9 @@ class QueryPerformanceMetric:
     index_used: bool
     full_table_scan: bool
     timestamp: datetime
-    optimization_suggestions: List[str]
+    optimization_suggestions: list[str]
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'timestamp': self.timestamp.isoformat()
@@ -56,9 +60,9 @@ class CachePerformanceMetric:
     execution_time_ms: float
     data_size_bytes: int
     timestamp: datetime
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'timestamp': self.timestamp.isoformat(),
@@ -76,9 +80,9 @@ class OptimizationRecommendation:
     implementation_effort: str  # "low", "medium", "high"
     risk_level: str  # "low", "medium", "high"
     code_changes_required: bool
-    metadata: Dict[str, Any] = None
+    metadata: dict[str, Any] | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'metadata': self.metadata or {}
@@ -93,13 +97,14 @@ class DatabaseOptimizer:
     """
 
     def __init__(self):
-        self.query_metrics: List[QueryPerformanceMetric] = []
+        self.query_metrics: list[QueryPerformanceMetric] = []
         self.optimization_cache = {}
         
-    async def analyze_query_performance(self, query: str, params: Dict[str, Any] = None) -> QueryPerformanceMetric:
+    async def analyze_query_performance(self, query: str, params: dict[str, Any] | None = None) -> QueryPerformanceMetric:
         """Analyze individual query performance with optimization suggestions"""
-        from app.core.database import db_manager
         import hashlib
+
+        from app.core.database import db_manager
         
         query_hash = hashlib.md5(query.encode()).hexdigest()
         start_time = time.time()
@@ -125,7 +130,7 @@ class DatabaseOptimizer:
                     rows_returned=len(rows),
                     index_used=self._estimate_index_usage(query),
                     full_table_scan=self._estimate_table_scan(query),
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     optimization_suggestions=suggestions
                 )
                 
@@ -143,11 +148,11 @@ class DatabaseOptimizer:
                 rows_returned=0,
                 index_used=False,
                 full_table_scan=True,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 optimization_suggestions=[f"Analysis failed: {str(e)}"]
             )
 
-    def _generate_basic_suggestions(self, query: str, execution_time_ms: float) -> List[str]:
+    def _generate_basic_suggestions(self, query: str, execution_time_ms: float) -> list[str]:
         """Generate basic optimization suggestions"""
         suggestions = []
         
@@ -184,12 +189,17 @@ class DatabaseOptimizer:
         # Simple heuristic - queries without WHERE likely do table scans
         return "where" not in query_lower
 
-    def _analyze_explain_output(self, explain_data: Dict[str, Any]) -> List[str]:
+    def _analyze_explain_output(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> list[str]:
         """Analyze EXPLAIN output to generate optimization suggestions"""
         suggestions = []
         
         try:
-            plan = explain_data[0]["Plan"]
+            if isinstance(explain_data, list) and len(explain_data) > 0:
+                plan = explain_data[0].get("Plan", {})
+            elif isinstance(explain_data, dict):
+                plan = explain_data.get("Plan", {})
+            else:
+                return suggestions
             
             # Check for sequential scans
             if "Seq Scan" in plan.get("Node Type", ""):
@@ -212,37 +222,55 @@ class DatabaseOptimizer:
             
         return suggestions
 
-    def _extract_rows_examined(self, explain_data: Dict[str, Any]) -> int:
+    def _extract_rows_examined(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> int:
         """Extract rows examined from explain output"""
         try:
-            return explain_data[0]["Plan"].get("Plan Rows", 0)
-        except:
+            if isinstance(explain_data, list) and len(explain_data) > 0:
+                return explain_data[0].get("Plan", {}).get("Plan Rows", 0)
+            elif isinstance(explain_data, dict):
+                return explain_data.get("Plan", {}).get("Plan Rows", 0)
+            return 0
+        except (KeyError, IndexError, TypeError):
             return 0
 
-    def _extract_rows_returned(self, explain_data: Dict[str, Any]) -> int:
+    def _extract_rows_returned(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> int:
         """Extract actual rows returned from explain output"""
         try:
-            return explain_data[0]["Plan"].get("Actual Rows", 0)
-        except:
+            if isinstance(explain_data, list) and len(explain_data) > 0:
+                return explain_data[0].get("Plan", {}).get("Actual Rows", 0)
+            elif isinstance(explain_data, dict):
+                return explain_data.get("Plan", {}).get("Actual Rows", 0)
+            return 0
+        except (KeyError, IndexError, TypeError):
             return 0
 
-    def _check_index_usage(self, explain_data: Dict[str, Any]) -> bool:
+    def _check_index_usage(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> bool:
         """Check if query uses indexes effectively"""
         try:
-            node_type = explain_data[0]["Plan"].get("Node Type", "")
+            if isinstance(explain_data, list) and len(explain_data) > 0:
+                node_type = explain_data[0].get("Plan", {}).get("Node Type", "")
+            elif isinstance(explain_data, dict):
+                node_type = explain_data.get("Plan", {}).get("Node Type", "")
+            else:
+                return False
             return "Index" in node_type or "Bitmap" in node_type
-        except:
+        except (KeyError, IndexError, TypeError):
             return False
 
-    def _check_full_table_scan(self, explain_data: Dict[str, Any]) -> bool:
+    def _check_full_table_scan(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> bool:
         """Check if query performs full table scan"""
         try:
-            node_type = explain_data[0]["Plan"].get("Node Type", "")
+            if isinstance(explain_data, list) and len(explain_data) > 0:
+                node_type = explain_data[0].get("Plan", {}).get("Node Type", "")
+            elif isinstance(explain_data, dict):
+                node_type = explain_data.get("Plan", {}).get("Node Type", "")
+            else:
+                return True
             return "Seq Scan" in node_type
-        except:
+        except (KeyError, IndexError, TypeError):
             return True
 
-    async def analyze_notification_queries(self) -> List[OptimizationRecommendation]:
+    async def analyze_notification_queries(self) -> list[OptimizationRecommendation]:
         """Analyze notification-related queries for optimization opportunities"""
         recommendations = []
         
@@ -294,7 +322,7 @@ class DatabaseOptimizer:
         
         return recommendations
 
-    def generate_index_recommendations(self) -> List[OptimizationRecommendation]:
+    def generate_index_recommendations(self) -> list[OptimizationRecommendation]:
         """Generate database index recommendations based on query analysis"""
         recommendations = []
         
@@ -343,10 +371,10 @@ class CacheOptimizer:
     """
 
     def __init__(self):
-        self.cache_metrics: List[CachePerformanceMetric] = []
-        self.hit_rate_history: Dict[str, List[float]] = {}
+        self.cache_metrics: list[CachePerformanceMetric] = []
+        self.hit_rate_history: dict[str, list[float]] = {}
 
-    async def analyze_cache_performance(self) -> Dict[str, Any]:
+    async def analyze_cache_performance(self) -> dict[str, Any]:
         """Analyze overall cache performance and identify optimization opportunities"""
         from app.core.advanced_redis_client import advanced_redis_client
         
@@ -376,7 +404,7 @@ class CacheOptimizer:
         
         return analysis
 
-    async def _analyze_layer_performance(self, layer: str) -> Dict[str, Any]:
+    async def _analyze_layer_performance(self, layer: str) -> dict[str, Any]:
         """Analyze performance of specific cache layer"""
         from app.core.advanced_redis_client import advanced_redis_client
         
@@ -430,7 +458,7 @@ class CacheOptimizer:
         
         return metrics
 
-    async def _generate_cache_recommendations(self, cache_metrics: Dict[str, Any]) -> List[OptimizationRecommendation]:
+    async def _generate_cache_recommendations(self, cache_metrics: dict[str, Any]) -> list[OptimizationRecommendation]:
         """Generate cache optimization recommendations"""
         recommendations = []
         
@@ -484,7 +512,7 @@ class CacheOptimizer:
         
         return recommendations
 
-    async def implement_cache_warming(self, warm_keys: List[str]) -> Dict[str, Any]:
+    async def implement_cache_warming(self, warm_keys: list[str]) -> dict[str, Any]:
         """Implement intelligent cache warming for frequently accessed keys"""
         from app.core.advanced_redis_client import advanced_redis_client
         
@@ -534,12 +562,12 @@ class PerformanceOptimizer:
         self.db_optimizer = DatabaseOptimizer()
         self.cache_optimizer = CacheOptimizer()
         
-    async def run_comprehensive_analysis(self) -> Dict[str, Any]:
+    async def run_comprehensive_analysis(self) -> dict[str, Any]:
         """Run comprehensive performance analysis across all components"""
         logger.info("Starting comprehensive performance analysis")
         
         analysis_results = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "optimization_level": self.optimization_level.value,
             "database_analysis": {},
             "cache_analysis": {},
@@ -595,7 +623,7 @@ class PerformanceOptimizer:
         logger.info("Comprehensive performance analysis completed")
         return analysis_results
 
-    async def implement_safe_optimizations(self) -> Dict[str, Any]:
+    async def implement_safe_optimizations(self) -> dict[str, Any]:
         """Implement safe, low-risk optimizations automatically"""
         logger.info("Implementing safe performance optimizations")
         

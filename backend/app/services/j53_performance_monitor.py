@@ -1,16 +1,18 @@
 # J5.3 Advanced Performance Monitoring and Alerting System
-from sqlalchemy import text, select, func
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Callable
 import logging
-from dataclasses import dataclass, asdict
-from enum import Enum
 import smtplib
-from email.mime.text import MIMEText
+from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from enum import Enum
+from typing import Any
 
-from app.core.database import db_manager
+from sqlalchemy import func, select, text
+
 from app.core.config import Settings
+from app.core.database import db_manager
 from app.services.advanced_storage_analytics import AdvancedStorageAnalytics
 
 logger = logging.getLogger(__name__)
@@ -47,7 +49,7 @@ class PerformanceAlert:
     resolved: bool = False
     acknowledged: bool = False
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
             'severity': self.severity.value,
@@ -72,14 +74,14 @@ class J53PerformanceMonitor:
     def __init__(self, settings: Settings):
         self.settings = settings
         self.analytics = AdvancedStorageAnalytics(settings)
-        self.active_alerts: Dict[str, PerformanceAlert] = {}
-        self.alert_history: List[PerformanceAlert] = []
+        self.active_alerts: dict[str, PerformanceAlert] = {}
+        self.alert_history: list[PerformanceAlert] = []
         self.monitoring_active = True
         
         # Alert callbacks
-        self.alert_callbacks: List[Callable[[PerformanceAlert], None]] = []
+        self.alert_callbacks: list[Callable[[PerformanceAlert], None]] = []
         
-    async def check_database_health(self) -> Dict[str, Any]:
+    async def check_database_health(self) -> dict[str, Any]:
         """Comprehensive database health check"""
         health_data = {}
         
@@ -168,7 +170,7 @@ class J53PerformanceMonitor:
             
         return health_data
     
-    async def check_performance_metrics(self) -> Dict[str, Any]:
+    async def check_performance_metrics(self) -> dict[str, Any]:
         """Check key performance metrics"""
         metrics = {}
         
@@ -247,7 +249,7 @@ class J53PerformanceMonitor:
         
         return alert
     
-    async def evaluate_alerts(self) -> List[PerformanceAlert]:
+    async def evaluate_alerts(self) -> list[PerformanceAlert]:
         """Evaluate system metrics and generate alerts"""
         new_alerts = []
         
@@ -483,7 +485,7 @@ class J53PerformanceMonitor:
         """Register callback function for alert notifications"""
         self.alert_callbacks.append(callback)
     
-    async def run_monitoring_cycle(self) -> Dict[str, Any]:
+    async def run_monitoring_cycle(self) -> dict[str, Any]:
         """Run complete monitoring cycle and return status report"""
         logger.info("🔍 Running J5.3 performance monitoring cycle...")
         
@@ -525,9 +527,9 @@ class J53AutoOptimizer:
     def __init__(self, settings: Settings, monitor: J53PerformanceMonitor):
         self.settings = settings
         self.monitor = monitor
-        self.optimization_history: List[Dict[str, Any]] = []
+        self.optimization_history: list[dict[str, Any]] = []
     
-    async def auto_optimize_database(self) -> Dict[str, Any]:
+    async def auto_optimize_database(self) -> dict[str, Any]:
         """Automatically optimize database performance"""
         optimizations = []
         
@@ -574,7 +576,7 @@ class J53AutoOptimizer:
         
         return optimization_record
     
-    async def recommend_scaling_actions(self) -> List[Dict[str, Any]]:
+    async def recommend_scaling_actions(self) -> list[dict[str, Any]]:
         """Recommend scaling actions based on current metrics"""
         recommendations = []
         

@@ -2,19 +2,20 @@
 WebSocket manager for real-time direct messaging (J4) with J6.2 Redis integration.
 """
 
-import uuid
 import json
 import logging
-from typing import Dict, Set, Optional
-from datetime import datetime, timezone
+import uuid
+from datetime import UTC, datetime
 
 from fastapi import WebSocket
 
-from app.core.security import verify_jwt_token
 from app.core.redis_client import redis_client  # Use enhanced Redis client
+from app.core.security import verify_jwt_token
 from app.schemas.conversation import (
-    TypingIndicatorMessage, NewMessageNotification, 
-    MessageReadNotification, MessageResponse
+    MessageReadNotification,
+    MessageResponse,
+    NewMessageNotification,
+    TypingIndicatorMessage,
 )
 from app.services.performance_monitor import performance_monitor
 
@@ -26,7 +27,7 @@ class ConnectionManager:
     
     def __init__(self):
         # Active connections: user_id -> set of WebSocket connections
-        self.active_connections: Dict[uuid.UUID, Set[WebSocket]] = {}
+        self.active_connections: dict[uuid.UUID, set[WebSocket]] = {}
         # Redis pub/sub connection
         self.pubsub = None
         # Reference to global Redis client
@@ -129,8 +130,8 @@ class ConnectionManager:
     async def send_to_conversation_participants(
         self, 
         message: str, 
-        participant_ids: Set[uuid.UUID],
-        exclude_user_id: Optional[uuid.UUID] = None
+        participant_ids: set[uuid.UUID],
+        exclude_user_id: uuid.UUID | None = None
     ):
         """Send message to all participants in a conversation."""
         for user_id in participant_ids:
@@ -141,7 +142,7 @@ class ConnectionManager:
     async def broadcast_new_message(
         self, 
         message_response: MessageResponse, 
-        participant_ids: Set[uuid.UUID]
+        participant_ids: set[uuid.UUID]
     ):
         """Broadcast new message to conversation participants."""
         try:
@@ -177,7 +178,7 @@ class ConnectionManager:
         conversation_id: uuid.UUID,
         user_id: uuid.UUID,
         is_typing: bool,
-        participant_ids: Set[uuid.UUID]
+        participant_ids: set[uuid.UUID]
     ):
         """Broadcast typing indicator to conversation participants."""
         try:
@@ -216,7 +217,7 @@ class ConnectionManager:
         conversation_id: uuid.UUID,
         user_id: uuid.UUID,
         message_id: uuid.UUID,
-        participant_ids: Set[uuid.UUID]
+        participant_ids: set[uuid.UUID]
     ):
         """Broadcast read receipt to conversation participants."""
         try:
@@ -225,7 +226,7 @@ class ConnectionManager:
                 conversation_id=conversation_id,
                 user_id=user_id,
                 message_id=message_id,
-                read_at=datetime.now(timezone.utc)
+                read_at=datetime.now(UTC)
             )
             message_json = read_msg.model_dump_json()
             
@@ -244,7 +245,7 @@ class ConnectionManager:
                         "conversation_id": str(conversation_id),
                         "user_id": str(user_id),
                         "message_id": str(message_id),
-                        "read_at": datetime.now(timezone.utc).isoformat(),
+                        "read_at": datetime.now(UTC).isoformat(),
                         "participant_ids": [str(uid) for uid in participant_ids]
                     })
                 )
@@ -260,7 +261,7 @@ class ConnectionManager:
             welcome_msg = {
                 "type": "connection_established",
                 "user_id": str(user_id),
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": datetime.now(UTC).isoformat()
             }
             await websocket.send_text(json.dumps(welcome_msg))
         
@@ -342,7 +343,7 @@ class ConnectionManager:
         except Exception as e:
             logger.error(f"Error processing Redis message: {e}")
     
-    def get_online_users(self) -> Set[uuid.UUID]:
+    def get_online_users(self) -> set[uuid.UUID]:
         """Get set of currently connected user IDs."""
         return set(self.active_connections.keys())
     
@@ -360,7 +361,7 @@ class ConnectionManager:
 connection_manager = ConnectionManager()
 
 
-async def authenticate_websocket(websocket: WebSocket) -> Optional[uuid.UUID]:
+async def authenticate_websocket(websocket: WebSocket) -> uuid.UUID | None:
     """Authenticate WebSocket connection using JWT token."""
     try:
         # Try to get token from query params or headers

@@ -6,6 +6,7 @@ Currently disabled due to async compatibility issues
 
 import logging
 from contextlib import asynccontextmanager
+
 from fastapi import APIRouter
 
 logger = logging.getLogger(__name__)

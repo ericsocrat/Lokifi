@@ -3,15 +3,15 @@ Message search service for J4 Direct Messages.
 """
 
 import uuid
-from typing import List, Optional, Dict, Any
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
 
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, or_, func
 from sqlalchemy.orm import selectinload
 
-from app.models.conversation import Message, Conversation, ConversationParticipant
+from app.models.conversation import Conversation, ConversationParticipant, Message
 from app.models.user import User
 from app.schemas.conversation import MessageResponse
 
@@ -19,18 +19,18 @@ from app.schemas.conversation import MessageResponse
 @dataclass
 class SearchFilter:
     """Search filter parameters."""
-    query: Optional[str] = None
-    content_type: Optional[str] = None
-    sender_username: Optional[str] = None
-    date_from: Optional[datetime] = None
-    date_to: Optional[datetime] = None
-    conversation_id: Optional[uuid.UUID] = None
+    query: str | None = None
+    content_type: str | None = None
+    sender_username: str | None = None
+    date_from: datetime | None = None
+    date_to: datetime | None = None
+    conversation_id: uuid.UUID | None = None
 
 
 @dataclass
 class SearchResult:
     """Search result with metadata."""
-    messages: List[MessageResponse]
+    messages: list[MessageResponse]
     total_count: int
     search_time_ms: int
     page: int
@@ -62,9 +62,9 @@ class MessageSearchService:
                   and_(
                       ConversationParticipant.conversation_id == Conversation.id,
                       ConversationParticipant.user_id == user_id,
-                      ConversationParticipant.is_active == True
+                      ConversationParticipant.is_active
                   ))
-            .where(Message.is_deleted == False)
+            .where(~Message.is_deleted)
             .options(selectinload(Message.sender))
         )
         
@@ -136,7 +136,7 @@ class MessageSearchService:
             has_next=(offset + page_size) < total_count
         )
     
-    async def get_popular_search_terms(self, user_id: uuid.UUID) -> List[str]:
+    async def get_popular_search_terms(self, user_id: uuid.UUID) -> list[str]:
         """Get popular search terms for this user (would need search history tracking)."""
         # Placeholder - would implement search history tracking
         return [
@@ -150,7 +150,7 @@ class MessageSearchService:
         query: str,
         page: int = 1,
         page_size: int = 10
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """Search conversations by participant names or group names."""
         # Search for conversations containing the query in participant usernames
         stmt = (

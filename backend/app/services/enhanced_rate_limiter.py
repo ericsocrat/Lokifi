@@ -2,10 +2,9 @@
 Enhanced Rate Limiting Service
 """
 
-import time
-from typing import Dict, Tuple, Optional
-from collections import defaultdict
 import logging
+import time
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +12,7 @@ class EnhancedRateLimiter:
     """Memory-based rate limiter with sliding window"""
     
     def __init__(self):
-        self.requests: Dict[str, list] = defaultdict(list)
+        self.requests: dict[str, list] = defaultdict(list)
         self.cleanup_interval = 300  # 5 minutes
         self.last_cleanup = time.time()
         
@@ -27,7 +26,7 @@ class EnhancedRateLimiter:
     
     async def check_rate_limit(self, 
                               identifier: str, 
-                              limit_type: str = "api") -> Tuple[bool, Optional[float]]:
+                              limit_type: str = "api") -> tuple[bool, float | None]:
         """Check if request is within rate limit"""
         current_time = time.time()
         

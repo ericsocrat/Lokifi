@@ -4,8 +4,8 @@ Provides consistent Redis key patterns and centralized management
 """
 
 import hashlib
-from typing import Optional, Union
 from enum import Enum
+
 
 class RedisKeyspace(str, Enum):
     """Redis keyspace prefixes for different domains"""
@@ -48,7 +48,7 @@ class RedisKeyManager:
         self.environment = environment
         self.base_prefix = f"{app_prefix}:{environment}"
     
-    def _build_key(self, keyspace: RedisKeyspace, *components: Union[str, int]) -> str:
+    def _build_key(self, keyspace: RedisKeyspace, *components: str | int) -> str:
         """Build a Redis key with consistent structure"""
         parts = [self.base_prefix, keyspace.value]
         
@@ -65,7 +65,7 @@ class RedisKeyManager:
         return hashlib.sha256(data.encode()).hexdigest()[:16]
     
     # User-related keys
-    def user_session_key(self, user_id: str, session_id: Optional[str] = None) -> str:
+    def user_session_key(self, user_id: str, session_id: str | None = None) -> str:
         """User session key: fynix:dev:sessions:user:{user_id}[:session_id]"""
         if session_id:
             return self._build_key(RedisKeyspace.SESSIONS, "user", user_id, session_id)

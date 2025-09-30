@@ -2,19 +2,19 @@
 WebSocket endpoints for real-time direct messaging (J4) and notifications (J6).
 """
 
-import uuid
+import asyncio
 import json
 import logging
-import asyncio
-from typing import Dict, Any
+import uuid
+from typing import Any
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.services.websocket_manager import connection_manager, authenticate_websocket
-from app.services.conversation_service import ConversationService
-from app.schemas.conversation import MarkReadRequest
 from app.db.database import AsyncSessionLocal
 from app.models.conversation import ConversationParticipant
+from app.schemas.conversation import MarkReadRequest
+from app.services.conversation_service import ConversationService
+from app.services.websocket_manager import authenticate_websocket, connection_manager
 from app.websockets.notifications import NotificationWebSocketManager
 
 logger = logging.getLogger(__name__)
@@ -75,7 +75,7 @@ async def handle_websocket_message(websocket: WebSocket, user_id: uuid.UUID, mes
         logger.error(f"Error handling WebSocket message from user {user_id}: {e}")
 
 
-async def handle_typing_indicator(user_id: uuid.UUID, data: Dict[str, Any]):
+async def handle_typing_indicator(user_id: uuid.UUID, data: dict[str, Any]):
     """Handle typing indicator message."""
     try:
         conversation_id = uuid.UUID(data["conversation_id"])
@@ -83,13 +83,11 @@ async def handle_typing_indicator(user_id: uuid.UUID, data: Dict[str, Any]):
         
         # Get database session
         async with AsyncSessionLocal() as db:
-            conv_service = ConversationService(db)
-            
             # Get conversation participants to verify user access
             from sqlalchemy import select
             participant_stmt = select(ConversationParticipant).where(
                 ConversationParticipant.conversation_id == conversation_id,
-                ConversationParticipant.is_active == True
+                ConversationParticipant.is_active
             )
             result = await db.execute(participant_stmt)
             participants = result.scalars().all()
@@ -111,7 +109,7 @@ async def handle_typing_indicator(user_id: uuid.UUID, data: Dict[str, Any]):
         logger.error(f"Error handling typing indicator: {e}")
 
 
-async def handle_mark_read(user_id: uuid.UUID, data: Dict[str, Any]):
+async def handle_mark_read(user_id: uuid.UUID, data: dict[str, Any]):
     """Handle mark message as read."""
     try:
         conversation_id = uuid.UUID(data["conversation_id"])
@@ -135,7 +133,7 @@ async def handle_mark_read(user_id: uuid.UUID, data: Dict[str, Any]):
                 from sqlalchemy import select
                 participant_stmt = select(ConversationParticipant).where(
                     ConversationParticipant.conversation_id == conversation_id,
-                    ConversationParticipant.is_active == True
+                    ConversationParticipant.is_active
                 )
                 result = await db.execute(participant_stmt)
                 participants = result.scalars().all()
@@ -229,7 +227,7 @@ async def notification_websocket_endpoint(websocket: WebSocket):
                             "data": {"unread_count": unread_count}
                         }))
                 
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 # Send keepalive ping
                 await websocket.send_text(json.dumps({
                     "type": "keepalive",

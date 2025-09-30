@@ -20,8 +20,9 @@ sys.path.insert(0, str(backend_dir))
 
 try:
     import requests
-    from app.core.security import create_access_token, verify_jwt_token
+
     from app.core.config import settings
+    from app.core.security import create_access_token, verify_jwt_token
 except ImportError as e:
     print(f"❌ Import Error: {e}")
     sys.exit(1)
@@ -155,8 +156,9 @@ async def analyze_core_features():
     
     # Security Analysis
     try:
-        from app.core.security import hash_password, verify_password
         import os
+
+        from app.core.security import hash_password, verify_password
         
         test_password = os.getenv("TEST_PASSWORD", "test123456")
         hashed = hash_password(test_password)

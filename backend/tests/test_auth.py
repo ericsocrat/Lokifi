@@ -43,7 +43,7 @@ def test_check_auth_status_without_token():
     
     if response.status_code == 200:
         data = response.json()
-        assert data["authenticated"] == False
+        assert not data["authenticated"]
         assert data["user_id"] is None
 
 
@@ -61,5 +61,5 @@ def test_logout():
     
     if response.status_code == 200:
         data = response.json()
-        assert data["success"] == True
+        assert data["success"]
         assert data["message"] == "Successfully logged out"

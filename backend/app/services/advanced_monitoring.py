@@ -9,14 +9,16 @@ Production-ready monitoring and observability system:
 """
 
 import asyncio
-import logging
-import psutil
-import time
-from typing import Dict, List, Any, Optional, Callable
-from datetime import datetime, timezone
-from dataclasses import dataclass
-from collections import deque
 import json
+import logging
+import time
+from collections import deque
+from collections.abc import Callable
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
+
+import psutil
 from sqlalchemy import text
 
 from app.core.advanced_redis_client import advanced_redis_client
@@ -32,10 +34,10 @@ class HealthStatus:
     status: str  # healthy, degraded, unhealthy
     response_time: float
     last_check: datetime
-    error_message: Optional[str] = None
-    details: Optional[Dict[str, Any]] = None
+    error_message: str | None = None
+    details: dict[str, Any] | None = None
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'service': self.service,
             'status': self.status,
@@ -52,14 +54,14 @@ class SystemMetrics:
     cpu_usage: float
     memory_usage: float
     disk_usage: float
-    network_io: Dict[str, int]
+    network_io: dict[str, int]
     active_connections: int
     database_connections: int
     cache_hit_rate: float
-    response_times: Dict[str, float]
-    error_rates: Dict[str, float]
+    response_times: dict[str, float]
+    error_rates: dict[str, float]
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             'timestamp': self.timestamp.isoformat(),
             'cpu_usage': self.cpu_usage,
@@ -85,7 +87,7 @@ class AlertManager:
     def add_rule(
         self, 
         name: str, 
-        condition: Callable[[Dict[str, Any]], bool],
+        condition: Callable[[dict[str, Any]], bool],
         severity: str = 'warning',
         cooldown_minutes: int = 5
     ):
@@ -99,9 +101,9 @@ class AlertManager:
         }
         self.alert_rules.append(rule)
     
-    async def evaluate_rules(self, metrics: Dict[str, Any]):
+    async def evaluate_rules(self, metrics: dict[str, Any]):
         """Evaluate alert rules against current metrics"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
         
         for rule in self.alert_rules:
             try:
@@ -125,7 +127,7 @@ class AlertManager:
             except Exception as e:
                 logger.error(f"Error evaluating alert rule {rule['name']}: {e}")
     
-    async def _trigger_alert(self, alert: Dict[str, Any]):
+    async def _trigger_alert(self, alert: dict[str, Any]):
         """Trigger alert and send notifications"""
         alert_id = f"{alert['name']}_{int(alert['timestamp'].timestamp())}"
         
@@ -199,7 +201,7 @@ class PerformanceAnalyzer:
         
         self.anomaly_detection[metrics.timestamp] = anomalies
     
-    def get_insights(self) -> Dict[str, Any]:
+    def get_insights(self) -> dict[str, Any]:
         """Get performance insights"""
         if not self.metrics_history:
             return {}
@@ -234,7 +236,7 @@ class PerformanceAnalyzer:
             'metrics_count': len(self.metrics_history)
         }
     
-    def _calculate_trend(self, values: List[float]) -> str:
+    def _calculate_trend(self, values: list[float]) -> str:
         """Calculate trend direction"""
         if len(values) < 2:
             return 'stable'
@@ -250,13 +252,13 @@ class PerformanceAnalyzer:
         else:
             return 'stable'
     
-    async def analyze_metrics(self, metrics: Dict[str, Any]):
+    async def analyze_metrics(self, metrics: dict[str, Any]):
         """Analyze metrics data"""
         # Convert dict to SystemMetrics if needed
         if isinstance(metrics, dict):
             # Create a SystemMetrics object from the dict
             metrics_obj = SystemMetrics(
-                timestamp=metrics.get('timestamp', datetime.now(timezone.utc)),
+                timestamp=metrics.get('timestamp', datetime.now(UTC)),
                 cpu_usage=metrics.get('cpu_usage', 0.0),
                 memory_usage=metrics.get('memory_usage', 0.0),
                 disk_usage=metrics.get('disk_usage', 0.0),
@@ -444,7 +446,7 @@ class AdvancedMonitoringSystem:
                 all_data = {
                     'system_metrics': metrics,
                     'health_status': await self._run_all_health_checks(),
-                    'timestamp': datetime.now(timezone.utc).isoformat()
+                    'timestamp': datetime.now(UTC).isoformat()
                 }
                 
                 await self.alert_manager.evaluate_rules(all_data)
@@ -476,7 +478,7 @@ class AdvancedMonitoringSystem:
                 logger.error(f"Error in metrics cleanup: {e}")
                 await asyncio.sleep(300)
     
-    async def _collect_system_metrics(self) -> Dict[str, Any]:
+    async def _collect_system_metrics(self) -> dict[str, Any]:
         """Collect comprehensive system metrics"""
         
         # System metrics
@@ -498,7 +500,7 @@ class AdvancedMonitoringSystem:
         response_times = await self._get_response_time_metrics()
         
         return {
-            'timestamp': datetime.now(timezone.utc),
+            'timestamp': datetime.now(UTC),
             'cpu_usage': cpu_usage,
             'memory_usage': memory.percent,
             'disk_usage': disk.percent,
@@ -515,11 +517,11 @@ class AdvancedMonitoringSystem:
             'error_rates': await self._get_error_rates()
         }
     
-    async def collect_system_metrics(self) -> Dict[str, Any]:
+    async def collect_system_metrics(self) -> dict[str, Any]:
         """Public method to collect system metrics"""
         return await self._collect_system_metrics()
     
-    async def _run_all_health_checks(self) -> Dict[str, HealthStatus]:
+    async def _run_all_health_checks(self) -> dict[str, HealthStatus]:
         """Run all health checks"""
         results = {}
         
@@ -533,7 +535,7 @@ class AdvancedMonitoringSystem:
                     service=service,
                     status=status['status'],
                     response_time=response_time,
-                    last_check=datetime.now(timezone.utc),
+                    last_check=datetime.now(UTC),
                     error_message=status.get('error'),
                     details=status.get('details') or {}
                 )
@@ -543,13 +545,13 @@ class AdvancedMonitoringSystem:
                     service=service,
                     status='unhealthy',
                     response_time=0,
-                    last_check=datetime.now(timezone.utc),
+                    last_check=datetime.now(UTC),
                     error_message=str(e)
                 )
         
         return results
     
-    async def _check_database_health(self) -> Dict[str, Any]:
+    async def _check_database_health(self) -> dict[str, Any]:
         """Check database health"""
         try:
             # Test database connection
@@ -563,7 +565,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
-    async def _check_redis_health(self) -> Dict[str, Any]:
+    async def _check_redis_health(self) -> dict[str, Any]:
         """Check Redis health"""
         try:
             if await advanced_redis_client.is_available():
@@ -580,7 +582,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
-    async def _check_websocket_health(self) -> Dict[str, Any]:
+    async def _check_websocket_health(self) -> dict[str, Any]:
         """Check WebSocket manager health"""
         try:
             analytics = advanced_websocket_manager.get_analytics()
@@ -599,7 +601,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
-    async def _check_api_health(self) -> Dict[str, Any]:
+    async def _check_api_health(self) -> dict[str, Any]:
         """Check API health"""
         try:
             # This would ping the API endpoints
@@ -607,7 +609,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
-    async def _check_disk_space(self) -> Dict[str, Any]:
+    async def _check_disk_space(self) -> dict[str, Any]:
         """Check disk space"""
         try:
             disk = psutil.disk_usage('/')
@@ -631,7 +633,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
-    async def _check_memory_health(self) -> Dict[str, Any]:
+    async def _check_memory_health(self) -> dict[str, Any]:
         """Check memory health"""
         try:
             memory = psutil.virtual_memory()
@@ -655,7 +657,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             return {'status': 'unhealthy', 'error': str(e)}
     
-    async def _get_database_metrics(self) -> Dict[str, Any]:
+    async def _get_database_metrics(self) -> dict[str, Any]:
         """Get database-specific metrics"""
         try:
             # This would query database for connection pool info, query stats, etc.
@@ -667,7 +669,7 @@ class AdvancedMonitoringSystem:
             logger.error(f"Failed to get database metrics: {e}")
             return {}
     
-    async def _get_response_time_metrics(self) -> Dict[str, float]:
+    async def _get_response_time_metrics(self) -> dict[str, float]:
         """Get API response time metrics"""
         # This would be populated by API middleware
         return {
@@ -676,7 +678,7 @@ class AdvancedMonitoringSystem:
             'database_avg': 0.08
         }
     
-    async def _get_error_rates(self) -> Dict[str, float]:
+    async def _get_error_rates(self) -> dict[str, float]:
         """Get error rate metrics"""
         # This would track error rates across services
         return {
@@ -685,7 +687,7 @@ class AdvancedMonitoringSystem:
             'websocket_error_rate': 0.005  # 0.5%
         }
     
-    async def _store_metrics(self, metrics: Dict[str, Any]):
+    async def _store_metrics(self, metrics: dict[str, Any]):
         """Store metrics in Redis for historical analysis"""
         try:
             timestamp = int(time.time())
@@ -706,7 +708,7 @@ class AdvancedMonitoringSystem:
         except Exception as e:
             logger.error(f"Failed to cleanup old metrics: {e}")
     
-    async def get_dashboard_data(self) -> Dict[str, Any]:
+    async def get_dashboard_data(self) -> dict[str, Any]:
         """Get data for monitoring dashboard"""
         
         health_status = await self._run_all_health_checks()
@@ -720,7 +722,7 @@ class AdvancedMonitoringSystem:
         recent_alerts = list(self.alert_manager.alert_history)[-10:]
         
         return {
-            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'timestamp': datetime.now(UTC).isoformat(),
             'system_status': system_status,
             'health_checks': {k: v.to_dict() for k, v in health_status.items()},
             'current_metrics': self.last_metrics if self.last_metrics else {},

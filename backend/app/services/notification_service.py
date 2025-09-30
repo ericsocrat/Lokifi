@@ -1,21 +1,22 @@
 # J6 Enterprise Notification Service - Core Implementation
-from typing import Dict, List, Optional, Any, Union, Callable
-from datetime import datetime, timezone
 import asyncio
 import logging
 import uuid
-from uuid import UUID
+from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
+from uuid import UUID
 
-from sqlalchemy import select, func, and_, or_, desc
+from sqlalchemy import and_, desc, func, or_, select
 
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
 from app.models.notification_models import (
-    Notification, 
-    NotificationPreference, 
-    NotificationType, 
-    NotificationPriority
+    Notification,
+    NotificationPreference,
+    NotificationPriority,
+    NotificationType,
 )
 
 logger = logging.getLogger(__name__)
@@ -23,16 +24,16 @@ logger = logging.getLogger(__name__)
 @dataclass
 class NotificationData:
     """Data structure for creating notifications"""
-    user_id: Union[str, UUID]
+    user_id: str | UUID
     type: NotificationType
     title: str
-    message: Optional[str] = None
-    payload: Optional[Dict[str, Any]] = None
+    message: str | None = None
+    payload: dict[str, Any] | None = None
     priority: NotificationPriority = NotificationPriority.NORMAL
-    category: Optional[str] = None
-    related_entity_type: Optional[str] = None
-    related_entity_id: Optional[str] = None
-    expires_at: Optional[datetime] = None
+    category: str | None = None
+    related_entity_type: str | None = None
+    related_entity_id: str | None = None
+    expires_at: datetime | None = None
     email_enabled: bool = False
     push_enabled: bool = False
 
@@ -45,11 +46,11 @@ class NotificationStats:
     dismissed_count: int
     delivered_count: int
     clicked_count: int
-    by_type: Dict[str, int]
-    by_priority: Dict[str, int]
+    by_type: dict[str, int]
+    by_priority: dict[str, int]
     avg_read_time_seconds: float
-    most_recent: Optional[datetime]
-    oldest_unread: Optional[datetime]
+    most_recent: datetime | None
+    oldest_unread: datetime | None
 
 class NotificationEvent:
     """Event types for notification system"""
@@ -72,7 +73,7 @@ class NotificationService:
     """
     
     def __init__(self):
-        self.event_handlers: Dict[str, List[Callable]] = {}
+        self.event_handlers: dict[str, list[Callable]] = {}
         self.batch_processing_enabled = True
         self.max_batch_size = 100
         self.delivery_retry_attempts = 3
@@ -81,9 +82,9 @@ class NotificationService:
     async def create_notification(
         self, 
         notification_data: NotificationData,
-        batch_id: Optional[str] = None,
+        batch_id: str | None = None,
         skip_preferences: bool = False
-    ) -> Optional[Notification]:
+    ) -> Notification | None:
         """
         Create a new notification with preference checking
         
@@ -142,9 +143,9 @@ class NotificationService:
     
     async def create_batch_notifications(
         self,
-        notifications_data: List[NotificationData],
-        batch_id: Optional[str] = None
-    ) -> List[Notification]:
+        notifications_data: list[NotificationData],
+        batch_id: str | None = None
+    ) -> list[Notification]:
         """Create multiple notifications in a batch"""
         if not batch_id:
             batch_id = str(uuid.uuid4())
@@ -182,14 +183,14 @@ class NotificationService:
     
     async def get_user_notifications(
         self,
-        user_id: Union[str, UUID],
+        user_id: str | UUID,
         limit: int = 50,
         offset: int = 0,
         unread_only: bool = False,
-        notification_type: Optional[str] = None,
-        category: Optional[str] = None,
+        notification_type: str | None = None,
+        category: str | None = None,
         include_dismissed: bool = False
-    ) -> List[Notification]:
+    ) -> list[Notification]:
         """Get notifications for a user with filtering"""
         user_id_str = str(user_id)  # Convert UUID to string
         try:
@@ -215,7 +216,7 @@ class NotificationService:
                 query = query.where(
                     or_(
                         Notification.expires_at.is_(None),
-                        Notification.expires_at > datetime.now(timezone.utc)
+                        Notification.expires_at > datetime.now(UTC)
                     )
                 )
                 
@@ -234,7 +235,7 @@ class NotificationService:
             logger.error(f"Failed to get user notifications: {e}")
             return []
     
-    async def get_unread_count(self, user_id: Union[str, UUID]) -> int:
+    async def get_unread_count(self, user_id: str | UUID) -> int:
         """Get count of unread notifications for a user"""
         user_id_str = str(user_id)  # Convert UUID to string
         
@@ -253,7 +254,7 @@ class NotificationService:
                             Notification.is_dismissed.is_(False),
                             or_(
                                 Notification.expires_at.is_(None),
-                                Notification.expires_at > datetime.now(timezone.utc)
+                                Notification.expires_at > datetime.now(UTC)
                             )
                         )
                     )
@@ -272,7 +273,7 @@ class NotificationService:
     async def mark_as_read(
         self, 
         notification_id: str, 
-        user_id: Optional[Union[str, UUID]] = None
+        user_id: str | UUID | None = None
     ) -> bool:
         """Mark a notification as read"""
         user_id_str = str(user_id) if user_id else None  # Convert UUID to string
@@ -302,7 +303,7 @@ class NotificationService:
             logger.error(f"Failed to mark notification as read: {e}")
             return False
     
-    async def mark_all_as_read(self, user_id: Union[str, UUID]) -> int:
+    async def mark_all_as_read(self, user_id: str | UUID) -> int:
         """Mark all notifications as read for a user"""
         user_id_str = str(user_id)  # Convert UUID to string
         try:
@@ -343,7 +344,7 @@ class NotificationService:
     async def dismiss_notification(
         self, 
         notification_id: str, 
-        user_id: Optional[Union[str, UUID]] = None
+        user_id: str | UUID | None = None
     ) -> bool:
         """Dismiss a notification"""
         user_id_str = str(user_id) if user_id else None  # Convert UUID to string
@@ -376,7 +377,7 @@ class NotificationService:
     async def click_notification(
         self, 
         notification_id: str, 
-        user_id: Optional[Union[str, UUID]] = None
+        user_id: str | UUID | None = None
     ) -> bool:
         """Record a notification click"""
         user_id_str = str(user_id) if user_id else None  # Convert UUID to string
@@ -405,7 +406,7 @@ class NotificationService:
             logger.error(f"Failed to record notification click: {e}")
             return False
     
-    async def get_notification_stats(self, user_id: Union[str, UUID]) -> NotificationStats:
+    async def get_notification_stats(self, user_id: str | UUID) -> NotificationStats:
         """Get comprehensive notification statistics for a user"""
         user_id_str = str(user_id)  # Convert UUID to string
         try:
@@ -525,7 +526,7 @@ class NotificationService:
                     select(Notification).where(
                         and_(
                             Notification.expires_at.isnot(None),
-                            Notification.expires_at <= datetime.now(timezone.utc)
+                            Notification.expires_at <= datetime.now(UTC)
                         )
                     )
                 )
@@ -552,7 +553,7 @@ class NotificationService:
         self, 
         session, 
         user_id: str
-    ) -> Optional[NotificationPreference]:
+    ) -> NotificationPreference | None:
         """Get user notification preferences"""
         try:
             result = await session.execute(
@@ -567,7 +568,7 @@ class NotificationService:
     
     async def _should_deliver_notification(
         self, 
-        preferences: Optional[NotificationPreference], 
+        preferences: NotificationPreference | None, 
         notification_data: NotificationData
     ) -> bool:
         """Check if notification should be delivered based on user preferences"""

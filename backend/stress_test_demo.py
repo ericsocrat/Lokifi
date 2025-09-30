@@ -6,8 +6,10 @@ Shows the capabilities of our comprehensive stress testing framework
 
 import asyncio
 import random
-import psutil
 from datetime import datetime
+
+import psutil
+
 
 async def simulate_stress_test_scenarios():
     """Simulate the stress test scenarios that were requested"""

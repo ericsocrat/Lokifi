@@ -4,13 +4,12 @@ Advanced Content Moderation Service for Fynix AI Chatbot (J5.1).
 Enhanced safety and moderation capabilities beyond basic filtering.
 """
 
-import re
 import logging
-from typing import Dict, List, Optional, Any
-from datetime import datetime, timedelta
+import re
 from dataclasses import dataclass, field
+from datetime import datetime, timedelta
 from enum import Enum
-
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +38,11 @@ class ModerationCategory(str, Enum):
 class ModerationResult:
     """Result of content moderation check."""
     level: ModerationLevel
-    categories: List[ModerationCategory]
+    categories: list[ModerationCategory]
     confidence: float  # 0.0 - 1.0
     reason: str
-    suggested_action: Optional[str] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    suggested_action: str | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ContentModerator:
@@ -101,7 +100,7 @@ class ContentModerator:
         self.user_warnings = {}  # user_id -> warning count
         self.user_violations = {}  # user_id -> [(timestamp, category), ...]
     
-    def moderate_content(self, content: str, user_id: Optional[int] = None, context: Optional[str] = None) -> ModerationResult:
+    def moderate_content(self, content: str, user_id: int | None = None, context: str | None = None) -> ModerationResult:
         """
         Perform comprehensive content moderation.
         
@@ -175,7 +174,7 @@ class ContentModerator:
         
         return min(1.0, toxic_count / len(words) * 5)  # Reduced scale
     
-    def _determine_moderation_level(self, categories: List[ModerationCategory], confidence: float, user_id: Optional[int]) -> ModerationLevel:
+    def _determine_moderation_level(self, categories: list[ModerationCategory], confidence: float, user_id: int | None) -> ModerationLevel:
         """Determine appropriate moderation level."""
         
         if not categories:
@@ -207,7 +206,7 @@ class ContentModerator:
         else:
             return ModerationLevel.WARNING
     
-    def _get_suggested_action(self, level: ModerationLevel, categories: List[ModerationCategory]) -> Optional[str]:
+    def _get_suggested_action(self, level: ModerationLevel, categories: list[ModerationCategory]) -> str | None:
         """Get suggested action for moderation result."""
         
         if level == ModerationLevel.BLOCKED:
@@ -219,7 +218,7 @@ class ContentModerator:
         
         return None
     
-    def _update_user_tracking(self, user_id: int, categories: List[ModerationCategory]):
+    def _update_user_tracking(self, user_id: int, categories: list[ModerationCategory]):
         """Update user behavior tracking."""
         
         # Initialize if needed
@@ -250,7 +249,7 @@ class ContentModerator:
             if ts > cutoff
         ]
     
-    def get_user_moderation_status(self, user_id: int) -> Dict[str, Any]:
+    def get_user_moderation_status(self, user_id: int) -> dict[str, Any]:
         """Get user's moderation status and history."""
         
         return {

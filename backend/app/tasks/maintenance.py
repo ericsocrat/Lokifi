@@ -1,9 +1,10 @@
 # Background tasks for data archival and maintenance
-from celery import Celery
-from celery.schedules import crontab
 import logging
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any
+
+from celery import Celery
+from celery.schedules import crontab
 
 from app.core.config import Settings
 from app.services.data_archival_service import DataArchivalService
@@ -58,10 +59,11 @@ celery_app.conf.beat_schedule = {
 }
 
 @celery_app.task(name="app.tasks.maintenance.daily_archival_task")
-def daily_archival_task() -> Dict[str, Any]:
+def daily_archival_task() -> dict[str, Any]:
     """Daily task to archive old conversations"""
     try:
         import asyncio
+
         from app.core.database import db_manager
         
         async def run_archival():
@@ -105,10 +107,11 @@ def daily_archival_task() -> Dict[str, Any]:
         }
 
 @celery_app.task(name="app.tasks.maintenance.weekly_compression_task")
-def weekly_compression_task() -> Dict[str, Any]:
+def weekly_compression_task() -> dict[str, Any]:
     """Weekly task to compress old archived messages"""
     try:
         import asyncio
+
         from app.core.database import db_manager
         
         async def run_compression():
@@ -148,10 +151,11 @@ def weekly_compression_task() -> Dict[str, Any]:
         }
 
 @celery_app.task(name="app.tasks.maintenance.monthly_maintenance_task")
-def monthly_maintenance_task() -> Dict[str, Any]:
+def monthly_maintenance_task() -> dict[str, Any]:
     """Monthly comprehensive maintenance task"""
     try:
         import asyncio
+
         from app.core.database import db_manager
         
         async def run_full_maintenance():
@@ -197,10 +201,11 @@ def monthly_maintenance_task() -> Dict[str, Any]:
         }
 
 @celery_app.task(name="app.tasks.maintenance.collect_storage_metrics_task")
-def collect_storage_metrics_task() -> Dict[str, Any]:
+def collect_storage_metrics_task() -> dict[str, Any]:
     """Task to collect and log storage metrics"""
     try:
         import asyncio
+
         from app.core.database import db_manager
         
         async def collect_metrics():
@@ -255,10 +260,11 @@ def collect_storage_metrics_task() -> Dict[str, Any]:
         }
 
 @celery_app.task(name="app.tasks.maintenance.emergency_cleanup_task")
-def emergency_cleanup_task(force_delete_days: int = None) -> Dict[str, Any]:
+def emergency_cleanup_task(force_delete_days: int = None) -> dict[str, Any]:
     """Emergency cleanup task for critical storage situations"""
     try:
         import asyncio
+
         from app.core.database import db_manager
         
         async def emergency_cleanup():

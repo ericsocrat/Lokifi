@@ -3,7 +3,6 @@ Pydantic schemas for authentication endpoints.
 """
 
 from datetime import datetime
-from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, Field
@@ -15,7 +14,7 @@ class UserRegisterRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=100)
     full_name: str = Field(min_length=1, max_length=100)
-    username: Optional[str] = Field(None, min_length=3, max_length=30)
+    username: str | None = Field(None, min_length=3, max_length=30)
 
 
 class UserLoginRequest(BaseModel):
@@ -60,10 +59,10 @@ class ProfileResponse(BaseModel):
     """Profile response schema."""
     id: UUID
     user_id: UUID
-    username: Optional[str]
+    username: str | None
     display_name: str
-    bio: Optional[str]
-    avatar_url: Optional[str]
+    bio: str | None
+    avatar_url: str | None
     is_public: bool
     follower_count: int
     following_count: int
@@ -77,7 +76,7 @@ class ProfileResponse(BaseModel):
 class AuthUserResponse(BaseModel):
     """Authenticated user response schema."""
     user: UserResponse
-    profile: Optional[ProfileResponse]
+    profile: ProfileResponse | None
 
 
 class MessageResponse(BaseModel):

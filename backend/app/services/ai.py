@@ -1,11 +1,13 @@
 import json
+from collections.abc import AsyncGenerator
+from typing import Any
+
 import httpx
-from typing import AsyncGenerator
+
 from app.core.config import settings
-
-
-from app.services import prices as prices_svc, news as news_svc
-from app.services.indicators import sma, ema, rsi
+from app.services import news as news_svc
+from app.services import prices as prices_svc
+from app.services.indicators import ema, rsi, sma
 
 DEFAULT_MODEL = "llama3.1"  # good default in Ollama
 
@@ -34,8 +36,10 @@ async def _compose_symbol_context(symbol: str, timeframe: str = "1h", limit: int
     if s20v is not None and s50v is not None:
         prev20 = next((x for x in reversed(s20[:-1]) if x is not None), s20v)
         prev50 = next((x for x in reversed(s50[:-1]) if x is not None), s50v)
-        if prev20 <= prev50 and s20v > s50v: cross = "bullish SMA20/50 crossover"
-        elif prev20 >= prev50 and s20v < s50v: cross = "bearish SMA20/50 crossover"
+        if prev20 <= prev50 and s20v > s50v:
+            cross = "bullish SMA20/50 crossover"
+        elif prev20 >= prev50 and s20v < s50v:
+            cross = "bearish SMA20/50 crossover"
 
     headlines = await news_svc.get_news(symbol, limit=3)
     news_lines = []
@@ -62,7 +66,7 @@ async def _build_context(ctx_symbols: str | None, timeframe: str = "1h") -> str:
 DEFAULT_MODEL = "llama3.1"  # good default in Ollama
 
 async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str, None]:
-    host = settings.OLLAMA_HOST or "http://localhost:11434"
+    host = settings.OLLAMA_BASE_URL or "http://localhost:11434"
     url = f"{host}/api/chat"
     payload = {
         "model": model or DEFAULT_MODEL,
@@ -119,14 +123,12 @@ async def _stream_openai_compatible(prompt: str, base_url: str, api_key: str | N
 async def stream_answer(q: str, user: dict, ctx_symbols: str | None, ctx_timeframe: str | None = None, model: str | None = None) -> AsyncGenerator[str, None]:
     prompt = q if not ctx_symbols else f"""Context symbols: {ctx_symbols}
 Question: {q}"""
-    # Provider chain: Ollama -> LM Studio (OpenAI-compatible) -> OPENAI_BASE_URL (if provided)
-    providers: list[tuple[str, callable]] = []
-    if settings.OLLAMA_HOST:
+    # Provider chain: Ollama -> OpenAI-compatible -> fallback
+    providers: list[tuple[str, Any]] = []
+    if settings.OLLAMA_BASE_URL:
         providers.append(("ollama", lambda: _stream_ollama(prompt, model)))
-    if settings.LMSTUDIO_HOST:
-        providers.append(("lmstudio", lambda: _stream_openai_compatible(prompt, settings.LMSTUDIO_HOST, None, model or "lmstudio")))
-    if settings.OPENAI_BASE_URL:
-        providers.append(("openai_compat", lambda: _stream_openai_compatible(prompt, settings.OPENAI_BASE_URL, settings.OPENAI_API_KEY, model)))
+    if settings.openai_base:
+        providers.append(("openai_compat", lambda: _stream_openai_compatible(prompt, settings.openai_base, settings.openai_api_key, model)))
 
     last_err: Exception | None = None
     for name, starter in providers:

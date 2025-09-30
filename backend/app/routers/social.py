@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.db.schemas.social import PostCreate
 
 router = APIRouter(prefix="/social", tags=["social"])

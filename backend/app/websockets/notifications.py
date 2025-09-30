@@ -1,16 +1,17 @@
 # J6 Enterprise Notifications - WebSocket Real-time Delivery
 import json
 import logging
-from typing import Dict, Set, Any
-from datetime import datetime, timezone
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import WebSocket
 from fastapi.routing import APIRouter
 
+from app.models.notification_models import Notification
+
 # We'll handle auth differently - remove the problematic import for now
 from app.models.user import User
-from app.services.notification_service import notification_service, NotificationEvent
-from app.models.notification_models import Notification
+from app.services.notification_service import NotificationEvent, notification_service
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +25,10 @@ class NotificationWebSocketManager:
     
     def __init__(self):
         # Active connections: user_id -> set of websockets
-        self.active_connections: Dict[str, Set[WebSocket]] = {}
+        self.active_connections: dict[str, set[WebSocket]] = {}
         
         # Connection metadata
-        self.connection_metadata: Dict[WebSocket, Dict[str, Any]] = {}
+        self.connection_metadata: dict[WebSocket, dict[str, Any]] = {}
         
         # Connection statistics
         self.connection_stats = {
@@ -82,8 +83,8 @@ class NotificationWebSocketManager:
             self.connection_metadata[websocket] = {
                 "user_id": user_id_str,
                 "username": user.username,
-                "connected_at": datetime.now(timezone.utc),
-                "last_activity": datetime.now(timezone.utc)
+                "connected_at": datetime.now(UTC),
+                "last_activity": datetime.now(UTC)
             }
             
             # Update stats
@@ -95,7 +96,7 @@ class NotificationWebSocketManager:
                 "type": "connection_established",
                 "data": {
                     "user_id": user.id,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                     "features": ["real_time_notifications", "unread_count_updates", "notification_actions"]
                 }
             })
@@ -107,7 +108,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "count": unread_count,
                     "user_id": user.id,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.now(UTC).isoformat()
                 }
             })
             
@@ -141,7 +142,7 @@ class NotificationWebSocketManager:
                 del self.connection_metadata[websocket]
                 
                 connection_duration = (
-                    datetime.now(timezone.utc) - metadata["connected_at"]
+                    datetime.now(UTC) - metadata["connected_at"]
                 ).total_seconds()
                 
                 logger.info(f"WebSocket disconnected for user {metadata['username']} "
@@ -153,7 +154,7 @@ class NotificationWebSocketManager:
         except Exception as e:
             logger.error(f"Error during WebSocket disconnect: {e}")
     
-    async def send_to_user(self, user_id: str, message: Dict[str, Any]) -> int:
+    async def send_to_user(self, user_id: str, message: dict[str, Any]) -> int:
         """
         Send message to all of a user's active WebSocket connections
         
@@ -178,7 +179,7 @@ class NotificationWebSocketManager:
                 
                 # Update last activity
                 if websocket in self.connection_metadata:
-                    self.connection_metadata[websocket]["last_activity"] = datetime.now(timezone.utc)
+                    self.connection_metadata[websocket]["last_activity"] = datetime.now(UTC)
                     
             except Exception as e:
                 logger.warning(f"Failed to send message to WebSocket for user {user_id}: {e}")
@@ -194,7 +195,7 @@ class NotificationWebSocketManager:
         
         return sent_count
     
-    async def broadcast_to_all(self, message: Dict[str, Any]) -> int:
+    async def broadcast_to_all(self, message: dict[str, Any]) -> int:
         """
         Broadcast message to all active connections
         
@@ -212,7 +213,7 @@ class NotificationWebSocketManager:
         
         return total_sent
     
-    async def _send_to_websocket(self, websocket: WebSocket, message: Dict[str, Any]):
+    async def _send_to_websocket(self, websocket: WebSocket, message: dict[str, Any]):
         """Send message to a specific WebSocket connection"""
         try:
             message_json = json.dumps(message, default=str)
@@ -239,7 +240,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "count": unread_count,
                     "user_id": notification.user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.now(UTC).isoformat()
                 }
             }
             
@@ -262,7 +263,7 @@ class NotificationWebSocketManager:
                     "data": {
                         "notification_id": data.id,
                         "user_id": user_id,
-                        "timestamp": datetime.now(timezone.utc).isoformat()
+                        "timestamp": datetime.now(UTC).isoformat()
                     }
                 }
             elif isinstance(data, dict) and data.get("batch"):
@@ -273,7 +274,7 @@ class NotificationWebSocketManager:
                     "data": {
                         "count": data["count"],
                         "user_id": user_id,
-                        "timestamp": datetime.now(timezone.utc).isoformat()
+                        "timestamp": datetime.now(UTC).isoformat()
                     }
                 }
             else:
@@ -288,7 +289,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "count": unread_count,
                     "user_id": user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.now(UTC).isoformat()
                 }
             }
             
@@ -305,7 +306,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "notification_id": notification.id,
                     "user_id": notification.user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat()
+                    "timestamp": datetime.now(UTC).isoformat()
                 }
             }
             
@@ -314,7 +315,7 @@ class NotificationWebSocketManager:
         except Exception as e:
             logger.error(f"Failed to handle notification dismissed event: {e}")
     
-    def get_connection_stats(self) -> Dict[str, Any]:
+    def get_connection_stats(self) -> dict[str, Any]:
         """Get WebSocket connection statistics"""
         return {
             **self.connection_stats,
@@ -327,7 +328,7 @@ class NotificationWebSocketManager:
                     "connected_at": metadata["connected_at"].isoformat(),
                     "last_activity": metadata["last_activity"].isoformat(),
                     "connection_duration_seconds": (
-                        datetime.now(timezone.utc) - metadata["connected_at"]
+                        datetime.now(UTC) - metadata["connected_at"]
                     ).total_seconds()
                 }
                 for metadata in self.connection_metadata.values()
@@ -336,7 +337,7 @@ class NotificationWebSocketManager:
     
     async def cleanup_stale_connections(self, timeout_seconds: int = 300):
         """Clean up stale WebSocket connections"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
         stale_connections = []
         
         for websocket, metadata in self.connection_metadata.items():

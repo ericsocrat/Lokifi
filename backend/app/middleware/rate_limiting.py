@@ -3,9 +3,9 @@ Rate Limiting Middleware for Fynix API
 Implements sliding window rate limiting with Redis backend
 """
 
-import time
 import logging
-from typing import Optional
+import time
+
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -142,7 +142,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
 class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
     """Middleware to limit request payload size"""
     
-    def __init__(self, app: ASGIApp, max_size: Optional[int] = None):
+    def __init__(self, app: ASGIApp, max_size: int | None = None):
         super().__init__(app)
         self.max_size = max_size or security_config.MAX_REQUEST_SIZE
     

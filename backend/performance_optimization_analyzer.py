@@ -5,11 +5,11 @@ Analyzes system performance and provides specific optimization recommendations
 """
 
 import ast
-import re
-from pathlib import Path
-from typing import List, Set
-from dataclasses import dataclass
 import json
+import re
+from dataclasses import dataclass
+from pathlib import Path
+
 
 @dataclass
 class PerformanceIssue:
@@ -30,23 +30,23 @@ class OptimizationOpportunity:
     impact: str  # "high", "medium", "low"
     implementation_effort: str  # "low", "medium", "high"
     recommendation: str
-    files_affected: List[str]
+    files_affected: list[str]
 
 class PerformanceOptimizationAnalyzer:
     """Analyzes Fynix codebase for performance optimization opportunities"""
     
     def __init__(self, backend_dir: str = "."):
         self.backend_dir = Path(backend_dir)
-        self.issues: List[PerformanceIssue] = []
-        self.opportunities: List[OptimizationOpportunity] = []
-        self.analyzed_files: Set[str] = set()
+        self.issues: list[PerformanceIssue] = []
+        self.opportunities: list[OptimizationOpportunity] = []
+        self.analyzed_files: set[str] = set()
     
-    def analyze_file(self, file_path: Path) -> List[PerformanceIssue]:
+    def analyze_file(self, file_path: Path) -> list[PerformanceIssue]:
         """Analyze a single Python file for performance issues"""
         issues = []
         
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
                 lines = content.splitlines()
             
@@ -71,7 +71,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def _check_database_n_plus_1(self, file_path: Path, content: str, lines: List[str]) -> List[PerformanceIssue]:
+    def _check_database_n_plus_1(self, file_path: Path, content: str, lines: list[str]) -> list[PerformanceIssue]:
         """Check for N+1 query problems"""
         issues = []
         
@@ -94,7 +94,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def _check_inefficient_loops(self, file_path: Path, content: str, lines: List[str]) -> List[PerformanceIssue]:
+    def _check_inefficient_loops(self, file_path: Path, content: str, lines: list[str]) -> list[PerformanceIssue]:
         """Check for inefficient loop patterns"""
         issues = []
         
@@ -128,7 +128,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def _check_blocking_io(self, file_path: Path, content: str, lines: List[str]) -> List[PerformanceIssue]:
+    def _check_blocking_io(self, file_path: Path, content: str, lines: list[str]) -> list[PerformanceIssue]:
         """Check for blocking I/O operations"""
         issues = []
         
@@ -164,7 +164,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def _check_memory_issues(self, file_path: Path, content: str, lines: List[str]) -> List[PerformanceIssue]:
+    def _check_memory_issues(self, file_path: Path, content: str, lines: list[str]) -> list[PerformanceIssue]:
         """Check for potential memory issues"""
         issues = []
         
@@ -195,7 +195,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def _check_caching_opportunities(self, file_path: Path, content: str, lines: List[str]) -> List[PerformanceIssue]:
+    def _check_caching_opportunities(self, file_path: Path, content: str, lines: list[str]) -> list[PerformanceIssue]:
         """Check for caching opportunities"""
         issues = []
         
@@ -224,7 +224,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def _check_async_await_patterns(self, file_path: Path, content: str, lines: List[str]) -> List[PerformanceIssue]:
+    def _check_async_await_patterns(self, file_path: Path, content: str, lines: list[str]) -> list[PerformanceIssue]:
         """Check for async/await optimization opportunities"""
         issues = []
         
@@ -245,7 +245,7 @@ class PerformanceOptimizationAnalyzer:
         
         return issues
     
-    def identify_optimization_opportunities(self) -> List[OptimizationOpportunity]:
+    def identify_optimization_opportunities(self) -> list[OptimizationOpportunity]:
         """Identify system-wide optimization opportunities"""
         opportunities = []
         

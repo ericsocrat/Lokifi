@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Query
-from app.utils.sse import EventSourceResponse
+
 from app.services.ai import stream_answer
+from app.utils.sse import EventSourceResponse
 
 router = APIRouter(prefix="/chat", tags=["ai"])
 

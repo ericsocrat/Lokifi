@@ -2,27 +2,26 @@
 Profile router for user profile and settings management.
 """
 
-from typing import Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.database import get_db
 from app.core.auth_deps import get_current_user, get_current_user_optional
+from app.db.database import get_db
 from app.models.user import User
-from app.services.profile_service import ProfileService
+from app.schemas.auth import MessageResponse
 from app.schemas.profile import (
-    ProfileUpdateRequest,
-    UserSettingsUpdateRequest,
+    NotificationPreferencesResponse,
     NotificationPreferencesUpdateRequest,
     ProfileResponse,
-    UserSettingsResponse,
-    NotificationPreferencesResponse,
+    ProfileSearchResponse,
+    ProfileUpdateRequest,
     PublicProfileResponse,
-    ProfileSearchResponse
+    UserSettingsResponse,
+    UserSettingsUpdateRequest,
 )
-from app.schemas.auth import MessageResponse
+from app.services.profile_service import ProfileService
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
@@ -60,7 +59,7 @@ async def update_my_profile(
 async def get_profile(
     profile_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional)
+    current_user: User | None = Depends(get_current_user_optional)
 ):
     """Get a user's public profile."""
     profile_service = ProfileService(db)
@@ -72,7 +71,7 @@ async def get_profile(
 async def get_profile_by_username(
     username: str,
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional)
+    current_user: User | None = Depends(get_current_user_optional)
 ):
     """Get a user's profile by username."""
     profile_service = ProfileService(db)
@@ -96,7 +95,7 @@ async def search_profiles(
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of results per page"),
     db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional)
+    current_user: User | None = Depends(get_current_user_optional)
 ):
     """Search public profiles by username or display name."""
     profile_service = ProfileService(db)
@@ -160,7 +159,8 @@ async def delete_account(
     """Delete current user's account (GDPR compliance)."""
     # This will be implemented in J8 GDPR Compliance
     # For now, just mark as inactive
-    from sqlalchemy import update, func
+    from sqlalchemy import func, update
+
     from app.models.user import User
     
     stmt = update(User).where(User.id == current_user.id).values(

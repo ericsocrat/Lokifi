@@ -3,8 +3,9 @@ Comprehensive test suite for Phase J2 - User Profiles & Settings
 Tests both backend API endpoints and frontend integration
 """
 
-import requests
 import time
+
+import requests
 
 BASE_URL = "http://localhost:8000"
 FRONTEND_URL = "http://localhost:3000"

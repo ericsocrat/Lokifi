@@ -2,14 +2,14 @@
 Performance monitoring service for J4 Direct Messages.
 """
 
+import asyncio
+import logging
 import time
 import uuid
-import asyncio
-from typing import Dict, List, Any, Optional
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, field
 from collections import defaultdict, deque
-import logging
+from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ class PerformanceMetric:
     value: float
     unit: str
     timestamp: datetime
-    tags: Dict[str, str] = field(default_factory=dict)
+    tags: dict[str, str] = field(default_factory=dict)
 
 
 @dataclass
@@ -30,26 +30,26 @@ class HealthCheck:
     service: str
     status: str  # "healthy", "degraded", "unhealthy"
     response_time_ms: float
-    details: Dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    details: dict[str, Any] = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class PerformanceMonitor:
     """Monitor performance metrics for the messaging system."""
     
     def __init__(self):
-        self.metrics: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
-        self.websocket_connections: Dict[uuid.UUID, datetime] = {}
+        self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
+        self.websocket_connections: dict[uuid.UUID, datetime] = {}
         self.message_latencies: deque = deque(maxlen=100)
-        self.api_response_times: Dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
+        self.api_response_times: dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
         
-    def record_metric(self, name: str, value: float, unit: str = "", tags: Optional[Dict[str, str]] = None):
+    def record_metric(self, name: str, value: float, unit: str = "", tags: dict[str, str] | None = None):
         """Record a performance metric."""
         metric = PerformanceMetric(
             name=name,
             value=value,
             unit=unit,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             tags=tags or {}
         )
         self.metrics[name].append(metric)
@@ -66,13 +66,13 @@ class PerformanceMonitor:
     
     def record_websocket_connection(self, user_id: uuid.UUID):
         """Record WebSocket connection."""
-        self.websocket_connections[user_id] = datetime.now(timezone.utc)
+        self.websocket_connections[user_id] = datetime.now(UTC)
         self.record_metric("websocket_connections", len(self.websocket_connections), "count")
     
     def record_websocket_disconnection(self, user_id: uuid.UUID):
         """Record WebSocket disconnection."""
         if user_id in self.websocket_connections:
-            connection_time = datetime.now(timezone.utc) - self.websocket_connections[user_id]
+            connection_time = datetime.now(UTC) - self.websocket_connections[user_id]
             self.record_metric("websocket_session_duration", connection_time.total_seconds(), "seconds")
             del self.websocket_connections[user_id]
         self.record_metric("websocket_connections", len(self.websocket_connections), "count")
@@ -82,9 +82,9 @@ class PerformanceMonitor:
         self.message_latencies.append(latency_ms)
         self.record_metric("message_latency", latency_ms, "ms")
     
-    def get_metrics_summary(self, minutes_back: int = 10) -> Dict[str, Any]:
+    def get_metrics_summary(self, minutes_back: int = 10) -> dict[str, Any]:
         """Get performance metrics summary for the last N minutes."""
-        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=minutes_back)
+        cutoff_time = datetime.now(UTC) - timedelta(minutes=minutes_back)
         
         summary = {
             "period_minutes": minutes_back,
@@ -116,7 +116,7 @@ class PerformanceMonitor:
         
         return summary
     
-    async def run_health_checks(self) -> List[HealthCheck]:
+    async def run_health_checks(self) -> list[HealthCheck]:
         """Run health checks for all services."""
         health_checks = []
         
@@ -169,7 +169,7 @@ class PerformanceMonitor:
         
         return health_checks
     
-    def get_api_performance(self) -> Dict[str, Dict[str, float]]:
+    def get_api_performance(self) -> dict[str, dict[str, float]]:
         """Get API endpoint performance statistics."""
         performance = {}
         
@@ -186,9 +186,9 @@ class PerformanceMonitor:
         
         return performance
     
-    def get_websocket_stats(self) -> Dict[str, Any]:
+    def get_websocket_stats(self) -> dict[str, Any]:
         """Get WebSocket connection statistics."""
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         connection_ages = [(now - conn_time).total_seconds() 
                           for conn_time in self.websocket_connections.values()]
         
@@ -199,7 +199,7 @@ class PerformanceMonitor:
             "newest_connection_seconds": min(connection_ages) if connection_ages else 0
         }
     
-    def check_system_alerts(self) -> List[Dict[str, Any]]:
+    def check_system_alerts(self) -> list[dict[str, Any]]:
         """Check for system performance alerts."""
         alerts = []
         

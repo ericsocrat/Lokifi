@@ -3,9 +3,10 @@
 Test the Security Alert System
 """
 
-import sys
-import os
 import asyncio
+import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 async def test_alert_system():
@@ -14,8 +15,8 @@ async def test_alert_system():
     print("=" * 40)
     
     try:
-        from app.utils.security_alerts import SecurityAlertManager, Alert, AlertPriority
-        from app.utils.security_logger import SecuritySeverity, SecurityEventType
+        from app.utils.security_alerts import Alert, AlertPriority, SecurityAlertManager
+        from app.utils.security_logger import SecurityEventType, SecuritySeverity
         
         # Create alert manager
         alert_manager = SecurityAlertManager()

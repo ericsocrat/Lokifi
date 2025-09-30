@@ -1,6 +1,8 @@
-from sqlalchemy import ForeignKey, String, TIMESTAMP, func, ARRAY
+from sqlalchemy import ARRAY, TIMESTAMP, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.db.base import Base
+
 
 class Post(Base):
     __tablename__ = "posts"

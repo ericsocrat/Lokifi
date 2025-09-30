@@ -4,14 +4,18 @@ Create missing database tables and run migrations
 """
 
 import sqlite3
-from pathlib import Path
 import sys
+from pathlib import Path
+
 sys.path.append('.')
-from app.core.config import Settings
-from sqlalchemy import create_engine
-from app.db.database import Base
-from app.models import *  # Import all models
 import logging
+
+from sqlalchemy import create_engine
+
+from app.core.config import Settings
+from app.core.database import Base
+
+# Import all models explicitly to ensure they're registered with SQLAlchemy
 
 logger = logging.getLogger(__name__)
 

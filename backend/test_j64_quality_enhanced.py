@@ -6,8 +6,8 @@ Enhanced testing with performance monitoring for maximum quality score
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 import time
 
 # Add the backend directory to Python path
@@ -28,9 +28,9 @@ async def test_enhanced_system():
     print("\n⚡ Testing Enhanced Performance Monitor...")
     try:
         from app.services.enhanced_performance_monitor import (
-            enhanced_performance_monitor, 
+            enhanced_performance_monitor,
             get_current_metrics,
-            get_system_health_score
+            get_system_health_score,
         )
         
         # Test performance tracking
@@ -153,7 +153,7 @@ async def test_enhanced_system():
     # Test 6: Analytics Service Structure
     print("\n📊 Testing Analytics Service...")
     try:
-        from app.services.notification_analytics import notification_analytics, NotificationMetrics
+        from app.services.notification_analytics import NotificationMetrics, notification_analytics
         
         # Test analytics methods
         assert hasattr(notification_analytics, 'get_dashboard_data'), "Missing dashboard method"
@@ -177,8 +177,8 @@ async def test_enhanced_system():
     # Test 7: Core System Integration
     print("\n🔄 Testing Core System Integration...")
     try:
-        from app.services.notification_service import notification_service
         from app.core.database import db_manager
+        from app.services.notification_service import notification_service
         
         # Test service initialization
         assert notification_service is not None, "Notification service not initialized"

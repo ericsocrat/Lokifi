@@ -3,10 +3,11 @@
 Final verification of the three specific issues
 """
 
-import sys
-import os
 import asyncio
+import os
+import sys
 import time
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 async def comprehensive_verification():

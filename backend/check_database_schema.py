@@ -4,10 +4,12 @@ Check database schema to understand existing tables and columns
 """
 
 import sqlite3
-from pathlib import Path
 import sys
+from pathlib import Path
+
 sys.path.append('.')
 from app.core.config import Settings
+
 
 def check_database_schema():
     """Check the current database schema"""

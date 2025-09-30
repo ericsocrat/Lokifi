@@ -3,25 +3,24 @@ Profile service for user profile and settings management.
 """
 
 import uuid
-from typing import Optional
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from sqlalchemy import select, update, func, or_, and_
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
+from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.user import User
-from app.models.profile import Profile
 from app.models.notification_models import NotificationPreference
+from app.models.profile import Profile
+from app.models.user import User
 from app.schemas.profile import (
-    ProfileUpdateRequest,
-    UserSettingsUpdateRequest,
+    NotificationPreferencesResponse,
     NotificationPreferencesUpdateRequest,
     ProfileResponse,
-    UserSettingsResponse,
-    NotificationPreferencesResponse,
+    ProfileSearchResponse,
+    ProfileUpdateRequest,
     PublicProfileResponse,
-    ProfileSearchResponse
+    UserSettingsResponse,
+    UserSettingsUpdateRequest,
 )
 
 
@@ -31,13 +30,13 @@ class ProfileService:
     def __init__(self, db: AsyncSession):
         self.db = db
     
-    async def get_profile_by_user_id(self, user_id: uuid.UUID) -> Optional[Profile]:
+    async def get_profile_by_user_id(self, user_id: uuid.UUID) -> Profile | None:
         """Get profile by user ID."""
         stmt = select(Profile).where(Profile.user_id == user_id)
         result = await self.db.execute(stmt)
         return result.scalar_one_or_none()
     
-    async def get_profile_by_username(self, username: str) -> Optional[Profile]:
+    async def get_profile_by_username(self, username: str) -> Profile | None:
         """Get profile by username."""
         stmt = select(Profile).where(Profile.username == username)
         result = await self.db.execute(stmt)
@@ -80,7 +79,7 @@ class ProfileService:
             update_data["is_public"] = profile_data.is_public
         
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now(UTC)
             
             stmt = (
                 update(Profile)
@@ -146,7 +145,7 @@ class ProfileService:
             update_data["is_verified"] = False  # Require re-verification
         
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now(UTC)
             
             stmt = (
                 update(User)
@@ -185,7 +184,7 @@ class ProfileService:
                 update_data[field] = value
         
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.utc)
+            update_data["updated_at"] = datetime.now(UTC)
             
             stmt = (
                 update(NotificationPreference)
@@ -203,7 +202,7 @@ class ProfileService:
     async def get_public_profile(
         self, 
         profile_id: uuid.UUID, 
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> PublicProfileResponse:
         """Get public profile information."""
         # Get profile
@@ -238,7 +237,7 @@ class ProfileService:
         query: str,
         page: int = 1,
         page_size: int = 20,
-        current_user_id: Optional[uuid.UUID] = None
+        current_user_id: uuid.UUID | None = None
     ) -> ProfileSearchResponse:
         """Search profiles by username or display name."""
         offset = (page - 1) * page_size
@@ -252,7 +251,7 @@ class ProfileService:
         # Get profiles with pagination
         stmt = (
             select(Profile)
-            .where(and_(Profile.is_public == True, search_filter))
+            .where(and_(Profile.is_public, search_filter))
             .offset(offset)
             .limit(page_size)
             .order_by(Profile.follower_count.desc(), Profile.username)
@@ -263,7 +262,7 @@ class ProfileService:
         
         # Get total count
         count_stmt = select(func.count()).select_from(Profile).where(
-            and_(Profile.is_public == True, search_filter)
+            and_(Profile.is_public, search_filter)
         )
         result = await self.db.execute(count_stmt)
         total = result.scalar()

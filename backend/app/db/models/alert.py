@@ -1,6 +1,8 @@
-from sqlalchemy import ForeignKey, String, TIMESTAMP, func
+from sqlalchemy import TIMESTAMP, ForeignKey, String, func
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.db.base import Base
+
 
 class Alert(Base):
     __tablename__ = "alerts"

@@ -3,14 +3,14 @@ AI Provider manager and factory for Fynix AI Chatbot (J5).
 """
 
 import logging
-from typing import List, Optional, Dict, Any
 from enum import Enum
+from typing import Any
 
 from app.core.config import settings
 from app.services.ai_provider import AIProvider, MockProvider
-from app.services.providers.openrouter_provider import OpenRouterProvider
 from app.services.providers.huggingface_provider import HuggingFaceProvider
 from app.services.providers.ollama_provider import OllamaProvider
+from app.services.providers.openrouter_provider import OpenRouterProvider
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,7 @@ class AIProviderManager:
     """Manages AI providers and selects the best available one."""
     
     def __init__(self):
-        self.providers: Dict[str, AIProvider] = {}
+        self.providers: dict[str, AIProvider] = {}
         self._initialize_providers()
     
     def _initialize_providers(self):
@@ -68,7 +68,7 @@ class AIProviderManager:
         self.providers["mock"] = MockProvider()
         logger.info("Mock provider initialized as fallback")
     
-    async def get_available_providers(self) -> List[str]:
+    async def get_available_providers(self) -> list[str]:
         """Get list of available and working providers."""
         available = []
         
@@ -81,7 +81,7 @@ class AIProviderManager:
         
         return available
     
-    async def get_best_provider(self, preferred_provider: Optional[str] = None) -> AIProvider:
+    async def get_best_provider(self, preferred_provider: str | None = None) -> AIProvider:
         """Get the best available provider, optionally preferring a specific one."""
         
         # If a specific provider is requested and available, use it
@@ -112,11 +112,11 @@ class AIProviderManager:
         logger.warning("All providers failed, falling back to mock provider")
         return self.providers["mock"]
     
-    def get_provider_by_name(self, name: str) -> Optional[AIProvider]:
+    def get_provider_by_name(self, name: str) -> AIProvider | None:
         """Get a specific provider by name."""
         return self.providers.get(name)
     
-    async def get_provider_status(self) -> Dict[str, Dict[str, Any]]:
+    async def get_provider_status(self) -> dict[str, dict[str, Any]]:
         """Get status of all providers."""
         status = {}
         
@@ -147,7 +147,7 @@ class AIProviderManager:
         """Check if any real (non-mock) providers are configured."""
         return any(name != "mock" for name in self.providers.keys())
     
-    def get_provider_info(self) -> Dict[str, str]:
+    def get_provider_info(self) -> dict[str, str]:
         """Get information about configured providers for the UI."""
         info = {}
         
@@ -167,6 +167,6 @@ class AIProviderManager:
 ai_provider_manager = AIProviderManager()
 
 
-async def get_ai_provider(preferred_provider: Optional[str] = None) -> AIProvider:
+async def get_ai_provider(preferred_provider: str | None = None) -> AIProvider:
     """Get the best available AI provider."""
     return await ai_provider_manager.get_best_provider(preferred_provider)

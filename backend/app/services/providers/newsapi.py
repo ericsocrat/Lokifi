@@ -1,5 +1,7 @@
-from .base import _get
 from app.core.config import settings
+
+from .base import _get
+
 
 async def fetch_news(symbol: str, limit: int=20):
     data = await _get("https://newsapi.org/v2/everything", {"q": symbol, "apiKey": settings.NEWSAPI_KEY, "pageSize": limit})

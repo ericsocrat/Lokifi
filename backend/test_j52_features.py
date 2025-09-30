@@ -5,8 +5,8 @@ Test suite for J5.2 Advanced AI Features.
 Tests analytics, context management, and multimodal capabilities.
 """
 import asyncio
-import sys
 import os
+import sys
 from datetime import datetime
 
 # Add the backend directory to Python path

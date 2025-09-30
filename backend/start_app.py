@@ -11,6 +11,7 @@ sys.path.insert(0, str(backend_dir))
 
 if __name__ == "__main__":
     import uvicorn
+
     from app.main import app
     
     print("🚀 Starting Fynix Backend Server...")

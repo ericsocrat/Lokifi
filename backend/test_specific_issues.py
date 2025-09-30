@@ -3,10 +3,11 @@
 Test the three specific issues that were reported
 """
 
-import sys
-import os
 import asyncio
+import os
+import sys
 import time
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 async def test_database_connection():
@@ -74,14 +75,14 @@ def test_scheduler_issues():
     try:
         # Check if the problematic J53 scheduler is disabled
         try:
-            from app.services.j53_scheduler import j53_router, j53_lifespan_manager
+            from app.services.j53_scheduler import j53_lifespan_manager, j53_router
             print("⚠️ J53 scheduler is still enabled - checking for async issues")
             
             # Try to import schedule to see if it causes issues
             import schedule
             print("✅ Schedule library imported without issues")
             
-        except ImportError as e:
+        except ImportError:
             print("✅ J53 scheduler properly disabled/isolated")
             
         # Test that the main app can be imported without scheduler issues

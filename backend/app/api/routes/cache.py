@@ -3,19 +3,25 @@ Cache Management API Endpoints
 Provides cache statistics, management, and debugging tools
 """
 
-from fastapi import APIRouter, HTTPException, Request
-from typing import Dict, Any
 import logging
+from typing import Any
 
-from app.core.redis_cache import get_cache_stats, clear_all_cache, cache, warm_cache
-from app.core.redis_cache import cache_public_data
+from fastapi import APIRouter, HTTPException, Request
+
+from app.core.redis_cache import (
+    cache,
+    cache_public_data,
+    clear_all_cache,
+    get_cache_stats,
+    warm_cache,
+)
 
 router = APIRouter(prefix="/cache", tags=["cache"])
 logger = logging.getLogger(__name__)
 
 @router.get("/stats")
 @cache_public_data(ttl=60)  # Cache stats for 1 minute
-async def cache_statistics(request: Request) -> Dict[str, Any]:
+async def cache_statistics(request: Request) -> dict[str, Any]:
     """Get Redis cache statistics"""
     
     try:
@@ -30,7 +36,7 @@ async def cache_statistics(request: Request) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail="Failed to retrieve cache statistics")
 
 @router.post("/clear")
-async def clear_cache() -> Dict[str, Any]:
+async def clear_cache() -> dict[str, Any]:
     """Clear all cached data"""
     
     try:
@@ -47,7 +53,7 @@ async def clear_cache() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/warm")
-async def warm_cache_endpoint() -> Dict[str, Any]:
+async def warm_cache_endpoint() -> dict[str, Any]:
     """Warm up the cache with frequently accessed data"""
     
     try:
@@ -61,7 +67,7 @@ async def warm_cache_endpoint() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/pattern/{pattern}")
-async def clear_cache_pattern(pattern: str) -> Dict[str, Any]:
+async def clear_cache_pattern(pattern: str) -> dict[str, Any]:
     """Clear cache keys matching a specific pattern"""
     
     try:
@@ -76,7 +82,7 @@ async def clear_cache_pattern(pattern: str) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/health")
-async def cache_health_check() -> Dict[str, Any]:
+async def cache_health_check() -> dict[str, Any]:
     """Check cache system health"""
     
     try:

@@ -1,6 +1,7 @@
-from fastapi import APIRouter
 import random
 import time
+
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/mock", tags=["mock"])
 

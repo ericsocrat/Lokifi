@@ -6,12 +6,13 @@ and notification caching capabilities.
 
 import json
 import logging
-from typing import Optional, Dict, Any, List
 from datetime import datetime
+from typing import Any
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool
-from redis.exceptions import RedisError, ConnectionError as RedisConnectionError
+from redis.exceptions import ConnectionError as RedisConnectionError
+from redis.exceptions import RedisError
 
 from app.core.config import settings
 
@@ -21,8 +22,8 @@ class RedisClient:
     """Enhanced Redis client with connection pooling and error handling"""
     
     def __init__(self):
-        self.pool: Optional[ConnectionPool] = None
-        self.client: Optional[redis.Redis] = None
+        self.pool: ConnectionPool | None = None
+        self.client: redis.Redis | None = None
         self.connected = False
         self.connection_attempts = 0
         self.max_attempts = 3
@@ -81,7 +82,7 @@ class RedisClient:
             return False
     
     # Basic Redis Operations
-    async def set(self, key: str, value: str, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: str, ttl: int | None = None) -> bool:
         """Set a key-value pair with optional TTL"""
         if not await self.is_available() or not self.client:
             return False
@@ -96,7 +97,7 @@ class RedisClient:
             logger.error(f"Redis SET failed: {e}")
             return False
     
-    async def get(self, key: str) -> Optional[str]:
+    async def get(self, key: str) -> str | None:
         """Get value by key"""
         if not await self.is_available():
             return None
@@ -109,7 +110,7 @@ class RedisClient:
             return None
     
     # Notification Caching Methods
-    async def cache_notification(self, notification_id: str, notification_data: Dict[str, Any], ttl: int = 3600):
+    async def cache_notification(self, notification_id: str, notification_data: dict[str, Any], ttl: int = 3600):
         """Cache notification data"""
         if not await self.is_available():
             return
@@ -123,7 +124,7 @@ class RedisClient:
         except RedisError as e:
             logger.warning(f"Failed to cache notification {notification_id}: {e}")
     
-    async def get_cached_notification(self, notification_id: str) -> Optional[Dict[str, Any]]:
+    async def get_cached_notification(self, notification_id: str) -> dict[str, Any] | None:
         """Get cached notification data"""
         if not await self.is_available():
             return None
@@ -145,7 +146,7 @@ class RedisClient:
         except RedisError as e:
             logger.warning(f"Failed to cache unread count for {user_id}: {e}")
     
-    async def get_cached_unread_count(self, user_id: str) -> Optional[int]:
+    async def get_cached_unread_count(self, user_id: str) -> int | None:
         """Get cached unread count"""
         if not await self.is_available():
             return None
@@ -171,7 +172,7 @@ class RedisClient:
             logger.warning(f"Failed to invalidate cache for {user_id}: {e}")
     
     # Pub/Sub Methods for Real-time Notifications
-    async def publish_notification(self, user_id: str, notification_data: Dict[str, Any]):
+    async def publish_notification(self, user_id: str, notification_data: dict[str, Any]):
         """Publish notification to user's channel"""
         if not await self.is_available():
             return
@@ -213,7 +214,7 @@ class RedisClient:
             return True  # Allow if error
     
     # Session Management
-    async def store_websocket_session(self, user_id: str, connection_id: str, metadata: Dict[str, Any]):
+    async def store_websocket_session(self, user_id: str, connection_id: str, metadata: dict[str, Any]):
         """Store WebSocket session data"""
         if not await self.is_available():
             return
@@ -237,7 +238,7 @@ class RedisClient:
         except RedisError as e:
             logger.warning(f"Failed to remove WebSocket session for {user_id}: {e}")
     
-    async def get_user_websocket_sessions(self, user_id: str) -> List[Dict[str, Any]]:
+    async def get_user_websocket_sessions(self, user_id: str) -> list[dict[str, Any]]:
         """Get all WebSocket sessions for a user"""
         if not await self.is_available():
             return []
@@ -252,7 +253,7 @@ class RedisClient:
             logger.warning(f"Failed to get WebSocket sessions for {user_id}: {e}")
             return []
     
-    async def add_websocket_session(self, user_id: str, session_id: str, metadata: Dict[str, Any] = None):
+    async def add_websocket_session(self, user_id: str, session_id: str, metadata: dict[str, Any] = None):
         """Add WebSocket session tracking"""
         if metadata is None:
             metadata = {"connected_at": datetime.now().isoformat()}
@@ -269,7 +270,7 @@ class RedisClient:
         except RedisError as e:
             logger.warning(f"Failed to add WebSocket session for {user_id}: {e}")
     
-    async def get_websocket_sessions(self, user_id: str) -> List[str]:
+    async def get_websocket_sessions(self, user_id: str) -> list[str]:
         """Get WebSocket session IDs for user"""
         if not await self.is_available():
             return []
@@ -294,7 +295,7 @@ async def close_redis():
     await redis_client.close()
 
 # Utility functions
-async def get_redis_info() -> Dict[str, Any]:
+async def get_redis_info() -> dict[str, Any]:
     """Get Redis connection info"""
     return {
         "connected": redis_client.connected,

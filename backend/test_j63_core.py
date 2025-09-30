@@ -6,8 +6,8 @@ Simplified test focusing on working features without complex database relationsh
 
 import asyncio
 import logging
-import sys
 import os
+import sys
 
 # Add the backend directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
@@ -93,7 +93,7 @@ async def test_core_features():
     # Test 4: Analytics Service Structure
     print("\n📊 Testing Analytics Service Structure...")
     try:
-        from app.services.notification_analytics import notification_analytics, NotificationMetrics
+        from app.services.notification_analytics import NotificationMetrics, notification_analytics
         
         # Test class initialization
         assert hasattr(notification_analytics, 'get_dashboard_data'), "Missing dashboard method"

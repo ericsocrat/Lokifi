@@ -5,19 +5,20 @@ Handles AI interactions with safety features, rate limiting, and provider manage
 """
 
 import logging
-import time
-from typing import Optional, List, Dict, Any, AsyncGenerator, Union
-from datetime import datetime
-from collections import defaultdict, deque
 import re
+import time
+from collections import defaultdict, deque
+from collections.abc import AsyncGenerator
+from datetime import datetime
+from typing import Any
 
 from sqlalchemy.exc import IntegrityError
 
 from app.db.db import get_session
-from app.db.models import AIThread, AIMessage
-from app.services.ai_provider import StreamChunk, ProviderError
-from app.services.ai_provider_manager import get_ai_provider, ai_provider_manager
-from app.services.content_moderation import moderate_ai_input, moderate_ai_output, ModerationLevel
+from app.db.models import AIMessage, AIThread
+from app.services.ai_provider import ProviderError, StreamChunk
+from app.services.ai_provider_manager import ai_provider_manager, get_ai_provider
+from app.services.content_moderation import ModerationLevel, moderate_ai_input, moderate_ai_output
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,7 @@ class RateLimiter:
     
     def __init__(self):
         # User ID -> deque of request timestamps
-        self.user_requests: Dict[int, deque] = defaultdict(lambda: deque(maxlen=100))
+        self.user_requests: dict[int, deque] = defaultdict(lambda: deque(maxlen=100))
         self.cleanup_interval = 3600  # Clean up old entries every hour
         self.last_cleanup = time.time()
     
@@ -81,7 +82,7 @@ class RateLimiter:
             if not requests:
                 del self.user_requests[user_id]
     
-    def get_user_usage(self, user_id: int, window_seconds: int = 3600) -> Dict[str, Any]:
+    def get_user_usage(self, user_id: int, window_seconds: int = 3600) -> dict[str, Any]:
         """Get current usage stats for a user."""
         now = time.time()
         cutoff_time = now - window_seconds
@@ -177,7 +178,7 @@ class AIService:
         self.max_tokens_per_request = 2000
         self.max_messages_per_thread = 100
     
-    async def create_thread(self, user_id: int, title: Optional[str] = None) -> AIThread:
+    async def create_thread(self, user_id: int, title: str | None = None) -> AIThread:
         """Create a new AI chat thread."""
         with get_session() as db:
             # Generate title if not provided
@@ -202,7 +203,7 @@ class AIService:
                 logger.error(f"Failed to create AI thread: {e}")
                 raise
     
-    async def get_user_threads(self, user_id: int, limit: int = 50, offset: int = 0) -> List[AIThread]:
+    async def get_user_threads(self, user_id: int, limit: int = 50, offset: int = 0) -> list[AIThread]:
         """Get AI threads for a user."""
         with get_session() as db:
             threads = db.query(AIThread)\
@@ -214,7 +215,7 @@ class AIService:
             
             return threads
     
-    async def get_thread_messages(self, thread_id: int, user_id: int, limit: int = 50) -> List[AIMessage]:
+    async def get_thread_messages(self, thread_id: int, user_id: int, limit: int = 50) -> list[AIMessage]:
         """Get messages for a thread."""
         with get_session() as db:
             # Verify user owns the thread
@@ -239,9 +240,9 @@ class AIService:
         user_id: int, 
         thread_id: int, 
         message: str, 
-        provider_name: Optional[str] = None,
-        model: Optional[str] = None
-    ) -> AsyncGenerator[Union[StreamChunk, AIMessage], None]:
+        provider_name: str | None = None,
+        model: str | None = None
+    ) -> AsyncGenerator[StreamChunk | AIMessage, None]:
         """
         Send a message and stream the AI response.
         
@@ -301,7 +302,8 @@ class AIService:
                 .all()
             
             # Convert to AI provider format
-            from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole, StreamOptions
+            from app.services.ai_provider import AIMessage as AIProviderMessage
+            from app.services.ai_provider import MessageRole, StreamOptions
             
             conversation_history = []
             for msg in reversed(recent_messages):
@@ -410,7 +412,7 @@ class AIService:
             logger.info(f"Deleted AI thread {thread_id} for user {user_id}")
             return True
     
-    async def update_thread_title(self, user_id: int, thread_id: int, title: str) -> Optional[AIThread]:
+    async def update_thread_title(self, user_id: int, thread_id: int, title: str) -> AIThread | None:
         """Update thread title."""
         with get_session() as db:
             thread = db.query(AIThread).filter(
@@ -429,11 +431,11 @@ class AIService:
             
             return thread
     
-    def get_rate_limit_status(self, user_id: int) -> Dict[str, Any]:
+    def get_rate_limit_status(self, user_id: int) -> dict[str, Any]:
         """Get rate limit status for a user."""
         return self.rate_limiter.get_user_usage(user_id)
     
-    async def get_provider_status(self) -> Dict[str, Any]:
+    async def get_provider_status(self) -> dict[str, Any]:
         """Get status of all AI providers."""
         return await ai_provider_manager.get_provider_status()
 

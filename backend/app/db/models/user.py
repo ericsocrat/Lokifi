@@ -1,6 +1,8 @@
+from sqlalchemy import TIMESTAMP, String, func
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, TIMESTAMP, func
+
 from app.db.base import Base
+
 
 class User(Base):
     __tablename__ = "users"

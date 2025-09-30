@@ -2,16 +2,14 @@
 User model for authentication and basic user data.
 """
 
+import uuid
 from datetime import datetime
-from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, String, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
-
-import uuid
 
 
 class User(Base):
@@ -28,15 +26,15 @@ class User(Base):
     
     # Authentication fields
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)  # Nullable for OAuth-only users
+    password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)  # Nullable for OAuth-only users
     full_name: Mapped[str] = mapped_column(String(100))
     
     # OAuth fields
-    google_id: Mapped[Optional[str]] = mapped_column(String(255), unique=True, nullable=True, index=True)
+    google_id: Mapped[str | None] = mapped_column(String(255), unique=True, nullable=True, index=True)
     
     # User preferences
-    timezone: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
-    language: Mapped[Optional[str]] = mapped_column(String(10), nullable=True, default="en")
+    timezone: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    language: Mapped[str | None] = mapped_column(String(10), nullable=True, default="en")
     
     # Account status
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -52,21 +50,21 @@ class User(Base):
         server_default=func.now(), 
         onupdate=func.now()
     )
-    last_login: Mapped[Optional[datetime]] = mapped_column(
+    last_login: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True
     )
     
     # Verification
-    verification_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    verification_expires: Mapped[Optional[datetime]] = mapped_column(
+    verification_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    verification_expires: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True
     )
     
     # Password reset
-    reset_token: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    reset_expires: Mapped[Optional[datetime]] = mapped_column(
+    reset_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    reset_expires: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), 
         nullable=True
     )

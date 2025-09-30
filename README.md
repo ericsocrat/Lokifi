@@ -1,13 +1,50 @@
-# Fynix
+# 🚀 Fynix
 
-Market + Social + AI Super-App
+**Market + Social + AI Super-App**
 
-- Lightweight/advanced charts + indicators  
-- Social feed, follows, per-asset discussions  
-- Alerts (price/news/BTC dominance), portfolios  
-- Deep Research integration for analysis & summaries
+A comprehensive financial platform combining advanced market analysis with social features and AI-powered insights.
 
-## Quick Start
+---
+
+## ✨ **Core Features**
+
+- 📈 **Advanced Charts & Indicators**: Lightweight yet powerful trading tools
+- 🌐 **Social Integration**: Community feeds, follows, and asset discussions
+- 🔔 **Smart Alerts**: Price, news, and market dominance notifications
+- 💼 **Portfolio Management**: Comprehensive investment tracking
+- 🤖 **AI Research**: Deep analysis integration with automated summaries
+
+---
+
+## 📂 **Project Structure**
+
+This project follows a well-organized, enterprise-ready structure:
+
+```
+fynix/
+├── 📚 docs/              # Comprehensive documentation
+├── 🔧 scripts/           # Automation and utility scripts
+├── 🏗️ infrastructure/    # Docker, nginx, monitoring configs
+├── 📊 reports/           # Analysis, testing, and performance reports
+├── 🔒 security/          # Security configs, audit tools, certificates
+├── 🚀 frontend/          # Next.js React application
+├── ⚙️ backend/           # FastAPI Python backend
+├── 📊 monitoring/        # System monitoring and observability
+├── 🗄️ backups/           # Backup configurations and data
+├── 🧪 test-results/      # Testing outcomes and coverage
+└── 📦 redis/             # Redis configuration and data
+```
+
+### 📖 **Navigation Guide**
+- **👩‍💻 Developers**: Start with [`docs/development/`](docs/development/) and [`scripts/development/`](scripts/development/)
+- **🔧 DevOps Engineers**: See [`infrastructure/`](infrastructure/) and [`scripts/deployment/`](scripts/deployment/)
+- **🔒 Security Teams**: Review [`security/`](security/) and [`scripts/security/`](scripts/security/)
+- **📊 Project Managers**: Check [`docs/project-management/`](docs/project-management/) and [`reports/`](reports/)
+- **🔍 QA Teams**: Explore [`scripts/testing/`](scripts/testing/) and [`reports/testing/`](reports/testing/)
+
+---
+
+## 🚀 **Quick Start**
 
 ### Running Locally
 
@@ -19,13 +56,13 @@ Market + Social + AI Super-App
 
 2. **Set up environment variables:**
    ```bash
-   cp frontend/.env.example frontend/.env
+   cp security/configs/.env.example security/configs/.env
    # Edit .env with your configuration (see Feature Flags section)
    ```
 
 3. **Run with Docker Compose:**
    ```bash
-   docker compose up
+   docker-compose -f infrastructure/docker/docker-compose.yml up
    ```
    
    This will start:

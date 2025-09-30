@@ -1,4 +1,5 @@
-from app.services.providers import marketaux, newsapi, fmp
+from app.services.providers import fmp, marketaux, newsapi
+
 
 async def get_news(symbol: str, limit: int = 20):
     for fn in (

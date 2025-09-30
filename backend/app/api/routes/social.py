@@ -1,13 +1,12 @@
 ﻿from __future__ import annotations
-from fastapi import APIRouter, HTTPException, Header
+
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
-from typing import Optional
+from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func, desc
 
-from app.db.db import get_session
-from app.db.models import User, Follow, Post
-
+from app.db.db import get_session, init_db
+from app.db.models import Follow, Post, User
 from app.services.auth import require_handle
 
 router = APIRouter()
@@ -18,13 +17,13 @@ init_db()
 # ===== Schemas =====
 class UserCreate(BaseModel):
     handle: str = Field(..., min_length=2, max_length=32)
-    avatar_url: Optional[str] = Field(None, max_length=512)
-    bio: Optional[str] = Field(None, max_length=280)
+    avatar_url: str | None = Field(None, max_length=512)
+    bio: str | None = Field(None, max_length=280)
 
 class UserOut(BaseModel):
     handle: str
-    avatar_url: Optional[str]
-    bio: Optional[str]
+    avatar_url: str | None
+    bio: str | None
     created_at: str
     following_count: int
     followers_count: int
@@ -33,15 +32,15 @@ class UserOut(BaseModel):
 class PostCreate(BaseModel):
     handle: str
     content: str = Field(..., min_length=1, max_length=1000)
-    symbol: Optional[str] = Field(None, max_length=24)
+    symbol: str | None = Field(None, max_length=24)
 
 class PostOut(BaseModel):
     id: int
     handle: str
     content: str
-    symbol: Optional[str]
+    symbol: str | None
     created_at: str
-    avatar_url: Optional[str] = None
+    avatar_url: str | None = None
 
 # ===== Helpers =====
 def _user_by_handle(db: Session, handle: str) -> User:
@@ -93,7 +92,8 @@ def get_user(handle: str):
 @router.post("/social/follow/{handle}")
 def follow(handle: str, authorization: str | None = Header(None)):
     with get_session() as db:
-        me = require_handle(authorization); me = require_handle(authorization); me_u = _user_by_handle(db, me)
+        me = require_handle(authorization)
+        me_u = _user_by_handle(db, me)
         target = _user_by_handle(db, handle)
         if me_u.id == target.id:
             raise HTTPException(status_code=400, detail="Cannot follow yourself")
@@ -108,7 +108,8 @@ def follow(handle: str, authorization: str | None = Header(None)):
 @router.delete("/social/follow/{handle}")
 def unfollow(handle: str, authorization: str | None = Header(None)):
     with get_session() as db:
-        me = require_handle(authorization); me = require_handle(authorization); me_u = _user_by_handle(db, me)
+        me = require_handle(authorization)
+        me_u = _user_by_handle(db, me)
         target = _user_by_handle(db, handle)
         f = db.execute(
             select(Follow).where(Follow.follower_id == me_u.id, Follow.followee_id == target.id)
@@ -122,7 +123,8 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
 @router.post("/social/posts", response_model=PostOut)
 def create_post(payload: PostCreate, authorization: str | None = Header(None)):
     with get_session() as db:
-        require_handle(authorization, payload.handle); u = _user_by_handle(db, payload.handle)
+        require_handle(authorization, payload.handle)
+        u = _user_by_handle(db, payload.handle)
         p = Post(user_id=u.id, content=payload.content, symbol=payload.symbol)
         db.add(p)
         db.flush()

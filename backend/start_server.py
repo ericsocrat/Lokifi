@@ -5,9 +5,9 @@ Fynix Backend Startup Script
 Simple Python script to start the Fynix backend servers
 """
 
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 

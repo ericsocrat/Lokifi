@@ -4,11 +4,11 @@ Addresses remaining issues and optimizes all components for production
 """
 
 import asyncio
-import sys
 import logging
 import subprocess
+import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -594,7 +594,7 @@ async def check_component_health(
         self.optimizations_made.append("Created comprehensive health check endpoint")
         return True
     
-    def create_optimization_summary(self) -> Dict[str, Any]:
+    def create_optimization_summary(self) -> dict[str, Any]:
         """Create optimization summary report"""
         
         return {
@@ -620,7 +620,7 @@ async def check_component_health(
             }
         }
     
-    async def run_optimization(self) -> Dict[str, Any]:
+    async def run_optimization(self) -> dict[str, Any]:
         """Run complete Phase K optimization"""
         
         logger.info("🚀 Starting Phase K Comprehensive Optimization")

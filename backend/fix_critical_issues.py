@@ -7,6 +7,7 @@ Automatically fixes the most critical issues identified in the codebase
 import re
 from pathlib import Path
 
+
 class CriticalIssueResolver:
     """Resolves critical issues in the Fynix codebase"""
     
@@ -19,7 +20,7 @@ class CriticalIssueResolver:
         database_file = self.backend_dir / "app" / "core" / "database.py"
         
         if database_file.exists():
-            with open(database_file, 'r', encoding='utf-8') as f:
+            with open(database_file, encoding='utf-8') as f:
                 content = f.read()
             
             # Add database_manager instance at the end
@@ -36,7 +37,7 @@ class CriticalIssueResolver:
         redis_file = self.backend_dir / "app" / "core" / "redis_client.py"
         
         if redis_file.exists():
-            with open(redis_file, 'r') as f:
+            with open(redis_file) as f:
                 content = f.read()
             
             # Add missing publish method if not present
@@ -71,7 +72,7 @@ class CriticalIssueResolver:
         for file_path in files_to_check:
             full_path = self.backend_dir / file_path
             if full_path.exists():
-                with open(full_path, 'r') as f:
+                with open(full_path) as f:
                     content = f.read()
                 
                 # Replace problematic method calls
@@ -91,7 +92,7 @@ class CriticalIssueResolver:
         auth_file = self.backend_dir / "app" / "services" / "auth_service.py"
         
         if auth_file.exists():
-            with open(auth_file, 'r') as f:
+            with open(auth_file) as f:
                 content = f.read()
             
             # Fix password hash None check
@@ -111,7 +112,7 @@ class CriticalIssueResolver:
         multimodal_file = self.backend_dir / "app" / "services" / "multimodal_ai_service.py"
         
         if multimodal_file.exists():
-            with open(multimodal_file, 'r') as f:
+            with open(multimodal_file) as f:
                 content = f.read()
             
             # Add filename None check
@@ -144,7 +145,7 @@ class CriticalIssueResolver:
         multimodal_file = self.backend_dir / "app" / "services" / "multimodal_ai_service.py"
         
         if multimodal_file.exists():
-            with open(multimodal_file, 'r') as f:
+            with open(multimodal_file) as f:
                 content = f.read()
             
             # Ensure PIL imports are properly handled
@@ -168,7 +169,7 @@ class CriticalIssueResolver:
         multimodal_file = self.backend_dir / "app" / "services" / "multimodal_ai_service.py"
         
         if multimodal_file.exists():
-            with open(multimodal_file, 'r') as f:
+            with open(multimodal_file) as f:
                 content = f.read()
             
             # Fix StreamChunk instantiation
@@ -192,7 +193,7 @@ class CriticalIssueResolver:
         analytics_file = self.backend_dir / "app" / "services" / "advanced_storage_analytics.py"
         
         if analytics_file.exists():
-            with open(analytics_file, 'r') as f:
+            with open(analytics_file) as f:
                 content = f.read()
             
             # Fix None defaults in dataclass
@@ -224,7 +225,7 @@ class CriticalIssueResolver:
         setup_file = self.backend_dir / "setup_storage.py"
         
         if setup_file.exists():
-            with open(setup_file, 'r') as f:
+            with open(setup_file) as f:
                 content = f.read()
             
             # Find and fix missing return in test_database_connection

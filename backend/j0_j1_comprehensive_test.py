@@ -19,13 +19,19 @@ backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
 
 try:
-    import requests
     import aiofiles
+    import requests
     from sqlalchemy import create_engine, text
     from sqlalchemy.orm import sessionmaker
-    from app.core.security import hash_password, verify_password, create_access_token, verify_jwt_token
-    from app.models.user import User
+
+    from app.core.security import (
+        create_access_token,
+        hash_password,
+        verify_jwt_token,
+        verify_password,
+    )
     from app.models.profile import Profile
+    from app.models.user import User
 except ImportError as e:
     print(f"❌ Import Error: {e}")
     print("Make sure all dependencies are installed in the virtual environment")

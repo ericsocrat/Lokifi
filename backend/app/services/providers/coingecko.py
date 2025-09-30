@@ -1,5 +1,7 @@
-from .base import _get
 from app.core.config import settings
+
+from .base import _get
+
 
 async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
     days = {"15m": 1, "30m": 1, "1h": 1, "4h": 7, "1d": 30, "1w": 90}[timeframe]

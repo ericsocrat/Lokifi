@@ -5,9 +5,9 @@ Provides tools for database migration, monitoring, and maintenance
 """
 
 import asyncio
-import click
-from typing import Optional
 import logging
+
+import click
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -56,9 +56,9 @@ def metrics():
     """Show current database storage metrics"""
     
     async def show_metrics():
+        from app.core.config import Settings
         from app.core.database import db_manager
         from app.services.data_archival_service import DataArchivalService
-        from app.core.config import Settings
         
         settings = Settings()
         await db_manager.initialize()
@@ -98,9 +98,9 @@ def archive(batch_size: int, dry_run: bool):
     """Archive old conversations"""
     
     async def run_archival():
+        from app.core.config import Settings
         from app.core.database import db_manager
         from app.services.data_archival_service import DataArchivalService
-        from app.core.config import Settings
         
         settings = Settings()
         await db_manager.initialize()
@@ -132,9 +132,9 @@ def compress(batch_size: int):
     """Compress old archived messages"""
     
     async def run_compression():
+        from app.core.config import Settings
         from app.core.database import db_manager
         from app.services.data_archival_service import DataArchivalService
-        from app.core.config import Settings
         
         settings = Settings()
         await db_manager.initialize()
@@ -158,9 +158,9 @@ def cleanup():
     """Delete expired conversations (7+ years old)"""
     
     async def run_cleanup():
+        from app.core.config import Settings
         from app.core.database import db_manager
         from app.services.data_archival_service import DataArchivalService
-        from app.core.config import Settings
         
         settings = Settings()
         await db_manager.initialize()
@@ -183,9 +183,9 @@ def maintenance():
     """Run full maintenance cycle (archive + compress + cleanup + vacuum)"""
     
     async def run_maintenance():
+        from app.core.config import Settings
         from app.core.database import db_manager
         from app.services.data_archival_service import DataArchivalService
-        from app.core.config import Settings
         
         settings = Settings()
         await db_manager.initialize()
@@ -225,8 +225,8 @@ def info():
     """Show database configuration information"""
     
     async def show_info():
-        from app.core.database import db_manager
         from app.core.config import Settings
+        from app.core.database import db_manager
         
         settings = Settings()
         await db_manager.initialize()
@@ -259,7 +259,7 @@ def info():
 @cli.command()
 @click.option('--days', type=int, help='Force delete data older than X days (DANGEROUS)')
 @click.confirmation_option(prompt='This will permanently delete data. Are you sure?')
-def emergency_cleanup(days: Optional[int]):
+def emergency_cleanup(days: int | None):
     """Emergency cleanup for critical storage situations"""
     
     async def run_emergency():
