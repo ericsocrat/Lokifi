@@ -7,7 +7,7 @@ import functools
 import json
 import hashlib
 import logging
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 from app.core.redis_client import redis_client
 
 logger = logging.getLogger(__name__)

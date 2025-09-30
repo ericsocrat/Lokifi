@@ -4,11 +4,11 @@ Follow service for managing follow relationships and social graph.
 
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Optional, List, Tuple
+from typing import Optional, List
 
-from sqlalchemy import select, func, and_, or_, desc, not_, exists, update
+from sqlalchemy import select, func, and_, desc, not_, exists, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, aliased
+from sqlalchemy.orm import aliased
 from fastapi import HTTPException, status
 
 from app.models.user import User

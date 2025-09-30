@@ -3,20 +3,19 @@ External Security Monitoring and Alerting System
 Comprehensive monitoring with multiple alert channels
 """
 
-import asyncio
 import smtplib
 import json
 import requests
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Optional, Any, Callable
+from typing import Dict, List, Optional, Any
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dataclasses import dataclass
 from enum import Enum
 import os
 
-from app.utils.security_logger import SecurityEvent, SecurityEventType, SecuritySeverity
+from app.utils.security_logger import SecurityEventType, SecuritySeverity
 from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)

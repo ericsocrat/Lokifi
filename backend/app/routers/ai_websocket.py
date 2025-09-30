@@ -9,12 +9,12 @@ import logging
 from typing import Dict, Optional
 from datetime import datetime
 
-from fastapi import WebSocket, WebSocketDisconnect, Depends, HTTPException, status
+from fastapi import WebSocket, WebSocketDisconnect, Depends, status
 from fastapi.routing import APIRouter
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.db.models import User, AIThread, AIMessage
+from app.db.models import User, AIMessage
 from app.services.ai_service import ai_service, RateLimitError, SafetyFilterError
 from app.services.ai_provider import StreamChunk, ProviderError
 

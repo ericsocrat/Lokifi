@@ -14,9 +14,8 @@ import random
 import string
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -185,7 +184,7 @@ class ComprehensiveStressTester:
     ) -> StressTestResult:
         """Test WebSocket connection scaling"""
         
-        logger.info(f"🔥 Starting WebSocket stress test")
+        logger.info("🔥 Starting WebSocket stress test")
         logger.info(f"📊 Connections: {concurrent_connections}, Messages/conn: {messages_per_connection}")
         
         start_time = time.time()

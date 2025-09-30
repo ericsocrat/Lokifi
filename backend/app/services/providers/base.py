@@ -1,4 +1,5 @@
-import httpx, backoff
+import httpx
+import backoff
 
 class RateLimit(Exception):
     pass

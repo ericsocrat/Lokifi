@@ -3,10 +3,8 @@ Comprehensive health check endpoint for Phase K components
 """
 
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any, List
-import asyncio
+from typing import Dict, Any
 import time
-import redis.asyncio as redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session

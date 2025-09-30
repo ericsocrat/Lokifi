@@ -2,7 +2,7 @@
 User model for authentication and basic user data.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 
 from sqlalchemy import Boolean, DateTime, String, func

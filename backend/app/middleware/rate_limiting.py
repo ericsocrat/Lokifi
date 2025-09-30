@@ -5,8 +5,8 @@ Implements sliding window rate limiting with Redis backend
 
 import time
 import logging
-from typing import Dict, Optional, Tuple
-from fastapi import Request, Response, HTTPException
+from typing import Optional
+from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp

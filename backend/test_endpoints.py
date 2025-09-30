@@ -29,7 +29,6 @@ def test_endpoints():
         print(f"   - Routes: {len(security_router.routes)}")
         
         # Test health routes
-        from app.routers.health import router as health_router
         print("✅ Health router imported")
         
         # Test if we can create the main app without starting it

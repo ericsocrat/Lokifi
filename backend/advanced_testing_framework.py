@@ -16,15 +16,12 @@ Comprehensive testing suite covering all system components:
 
 import asyncio
 import json
-import os
 import sys
 import time
-import pytest
 import httpx
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
-from unittest.mock import AsyncMock, MagicMock
+from typing import Dict, Any
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
@@ -359,7 +356,6 @@ class AdvancedTestFramework:
             # Test migrations
             total += 1
             try:
-                from alembic import command
                 from alembic.config import Config
                 
                 alembic_cfg = Config(str(backend_dir / "alembic.ini"))

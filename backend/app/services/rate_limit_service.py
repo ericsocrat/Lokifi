@@ -6,7 +6,6 @@ import uuid
 import time
 from typing import Optional, Tuple
 import redis.asyncio as redis
-from datetime import datetime, timezone
 
 from app.core.config import settings
 

@@ -5,7 +5,7 @@ J6.1 Enhanced with notification integration.
 
 import uuid
 import logging
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query

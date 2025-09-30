@@ -12,10 +12,9 @@ import asyncio
 import json
 import logging
 import time
-import weakref
-from typing import Dict, List, Set, Optional, Any, Callable
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, asdict
+from typing import Dict, List, Set, Optional, Any
+from datetime import datetime, timezone
+from dataclasses import dataclass
 from collections import defaultdict, deque
 import uuid
 
@@ -23,7 +22,6 @@ from fastapi import WebSocket, WebSocketDisconnect
 from fastapi.websockets import WebSocketState
 
 from app.core.advanced_redis_client import advanced_redis_client
-from app.models.notification_models import Notification
 from app.services.notification_service import NotificationService
 
 logger = logging.getLogger(__name__)

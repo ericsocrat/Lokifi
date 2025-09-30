@@ -3,9 +3,8 @@ AI Provider abstraction layer for Fynix AI Chatbot (J5).
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict, List, Optional, AsyncGenerator, Any, Union
+from typing import Dict, List, Optional, AsyncGenerator, Any
 from enum import Enum
-from datetime import datetime, timezone
 import uuid
 
 from pydantic import BaseModel, Field

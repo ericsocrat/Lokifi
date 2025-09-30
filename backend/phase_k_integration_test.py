@@ -4,16 +4,14 @@ Tests startup sequence, Redis integration, WebSocket auth, and analytics compati
 """
 
 import asyncio
-import pytest
 import json
 import time
 import logging
 import aiohttp
 import websockets
-from typing import Dict, Any, List
+from typing import Dict, Any
 from pathlib import Path
 import sys
-import os
 
 # Add backend to path for imports
 backend_path = Path(__file__).parent

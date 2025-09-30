@@ -9,14 +9,11 @@ Production-ready Redis client with advanced features:
 """
 
 import asyncio
-import json
 import logging
 import time
-from typing import Optional, Dict, Any, List, Union, Set
-from datetime import datetime, timezone, timedelta
-from dataclasses import asdict
+from typing import Optional, Dict, Any, List
+from datetime import datetime, timezone
 from collections import defaultdict, deque
-import hashlib
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool, Sentinel
@@ -175,7 +172,7 @@ class AdvancedRedisClient:
         for layer in self.cache_layers:
             try:
                 # Set up layer-specific configurations
-                await self.client.config_set(f'maxmemory-policy', 'allkeys-lru')
+                await self.client.config_set('maxmemory-policy', 'allkeys-lru')
             except Exception as e:
                 logger.warning(f"Failed to configure cache layer {layer}: {e}")
     

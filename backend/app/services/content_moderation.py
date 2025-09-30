@@ -6,14 +6,11 @@ Enhanced safety and moderation capabilities beyond basic filtering.
 
 import re
 import logging
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 from dataclasses import dataclass, field
 from enum import Enum
 
-from sqlalchemy.orm import Session
-from app.db.db import get_session
-from app.db.models import User, AIMessage
 
 logger = logging.getLogger(__name__)
 

@@ -136,10 +136,10 @@ async def apply_sqlite_indexes():
                     print(f"  {i:2d}. Creating index...")
                     cursor.execute(command)
                     conn.commit()
-                    print(f"      ✅ Index created successfully")
+                    print("      ✅ Index created successfully")
                 except sqlite3.Error as e:
                     if "already exists" in str(e).lower():
-                        print(f"      ✅ Index already exists")
+                        print("      ✅ Index already exists")
                     else:
                         print(f"      ❌ Failed to create index: {e}")
             

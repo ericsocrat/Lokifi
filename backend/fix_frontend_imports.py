@@ -3,7 +3,6 @@ Quick fix script for Phase J2 frontend component import paths
 Fixes import issues in the newly created profile components
 """
 
-import os
 import re
 from pathlib import Path
 

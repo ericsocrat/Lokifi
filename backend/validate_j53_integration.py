@@ -6,7 +6,6 @@ Quick validation that all J5.3 components integrate properly
 
 import asyncio
 import sys
-import os
 from pathlib import Path
 
 # Add backend to Python path

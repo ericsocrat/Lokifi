@@ -12,13 +12,11 @@ Comprehensive protection against accidental dependency downgrades including:
 """
 
 import json
-import os
 import sys
 import subprocess
-import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, Optional, Tuple, Any
 import importlib.metadata
 try:
     import pkg_resources
@@ -413,7 +411,7 @@ class DependencyProtector:
         
         try:
             # Python pip wrapper
-            pip_wrapper = f'''#!/usr/bin/env python3
+            pip_wrapper = '''#!/usr/bin/env python3
 """
 Protected pip installer - prevents accidental downgrades
 """
@@ -438,10 +436,10 @@ if protection_script.exists():
             protector.save_version_snapshot()
             
             # For now, proceed with installation but log it
-            protector.log_message(f"pip command: {{' '.join(sys.argv)}}")
+            protector.log_message(f"pip command: {' '.join(sys.argv)}")
             
     except Exception as e:
-        print(f"Protection check failed: {{e}}")
+        print(f"Protection check failed: {e}")
 
 # Execute original pip command
 sys.exit(subprocess.call([sys.executable, "-m", "pip"] + sys.argv[1:]))
@@ -452,7 +450,7 @@ sys.exit(subprocess.call([sys.executable, "-m", "pip"] + sys.argv[1:]))
                 f.write(pip_wrapper)
             
             # Node.js npm wrapper
-            npm_wrapper = f'''#!/usr/bin/env python3
+            npm_wrapper = '''#!/usr/bin/env python3
 """
 Protected npm installer - prevents accidental downgrades
 """
@@ -477,10 +475,10 @@ if protection_script.exists():
             protector.save_version_snapshot()
             
             # For now, proceed with installation but log it
-            protector.log_message(f"npm command: {{' '.join(sys.argv)}}")
+            protector.log_message(f"npm command: {' '.join(sys.argv)}")
             
     except Exception as e:
-        print(f"Protection check failed: {{e}}")
+        print(f"Protection check failed: {e}")
 
 # Execute original npm command
 sys.exit(subprocess.call(["npm"] + sys.argv[1:]))
@@ -696,11 +694,11 @@ sys.exit(subprocess.call(["npm"] + sys.argv[1:]))
         if success_rate >= 100:
             print(f"\\n{Colors.GREEN}🛡️  Dependency protection is now active!{Colors.END}")
             print(f"{Colors.WHITE}Features enabled:{Colors.END}")
-            print(f"  • Automatic version tracking")
-            print(f"  • Downgrade detection")
-            print(f"  • Rollback capabilities")
-            print(f"  • Installation logging")
-            print(f"  • Protection reports")
+            print("  • Automatic version tracking")
+            print("  • Downgrade detection")
+            print("  • Rollback capabilities")
+            print("  • Installation logging")
+            print("  • Protection reports")
             print(f"\\n{Colors.WHITE}Protection files location: {self.protection_dir}{Colors.END}")
         
         return success_rate >= 75

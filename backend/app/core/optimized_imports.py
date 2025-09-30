@@ -2,7 +2,6 @@
 Optimized import management for Phase K components
 """
 
-import sys
 from typing import Dict, Any, Optional
 import importlib
 import logging

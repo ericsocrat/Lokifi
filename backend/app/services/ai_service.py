@@ -7,20 +7,17 @@ Handles AI interactions with safety features, rate limiting, and provider manage
 import logging
 import time
 from typing import Optional, List, Dict, Any, AsyncGenerator, Union
-from datetime import datetime, timedelta
+from datetime import datetime
 from collections import defaultdict, deque
 import re
-import asyncio
 
-from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.db.db import get_session
-from app.db.models import User, AIThread, AIMessage
-from app.services.ai_provider import AIProvider, StreamChunk, TokenUsage, ProviderError
+from app.db.models import AIThread, AIMessage
+from app.services.ai_provider import StreamChunk, ProviderError
 from app.services.ai_provider_manager import get_ai_provider, ai_provider_manager
-from app.services.content_moderation import moderate_ai_input, moderate_ai_output, ModerationLevel, content_moderator
-from app.core.config import settings
+from app.services.content_moderation import moderate_ai_input, moderate_ai_output, ModerationLevel
 
 logger = logging.getLogger(__name__)
 

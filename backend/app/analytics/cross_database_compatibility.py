@@ -4,14 +4,12 @@ Provides cross-database compatibility for analytics queries with fallback strate
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Union, Callable
-from sqlalchemy import text, func, case, and_, or_, select, String
+from typing import Any, Dict, List, Optional
+from sqlalchemy import text, func, String
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ClauseElement
-from sqlalchemy.dialects import sqlite, postgresql
 from datetime import datetime, timedelta
-import json
 
 logger = logging.getLogger(__name__)
 

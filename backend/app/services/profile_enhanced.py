@@ -3,12 +3,11 @@ Enhanced profile service with additional features.
 """
 
 import uuid
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 from datetime import datetime, timezone
 
 from sqlalchemy import select, update, func, or_, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 
 from app.models.user import User

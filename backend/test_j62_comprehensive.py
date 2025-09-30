@@ -8,28 +8,22 @@ batching, scheduling, A/B testing, and performance monitoring.
 import asyncio
 import sys
 import os
-import json
 import uuid
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, List
 
 import httpx
-from uuid import UUID
 
 # Add the backend directory to the path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
 
 # Ensure proper model import order
-from app.models.user import User  # Import User first
-from app.core.database import db_manager
 from app.services.smart_notifications import (
     smart_notification_processor,
     send_rich_notification,
     send_batched_notification,
     schedule_notification,
     NotificationTemplate,
-    BatchingStrategy,
     DeliveryChannel
 )
 from app.services.notification_analytics import NotificationAnalytics
@@ -383,7 +377,6 @@ class J62TestSuite:
         try:
             # Use enhanced performance monitor
             from app.services.enhanced_performance_monitor import (
-                enhanced_performance_monitor, 
                 get_current_metrics,
                 get_system_health_score
             )

@@ -5,8 +5,7 @@ These hooks integrate notification events into the existing codebase.
 """
 
 import logging
-from typing import Optional, Dict, Any
-from datetime import datetime
+from typing import Dict, Any
 
 from app.services.notification_emitter import notification_emitter
 

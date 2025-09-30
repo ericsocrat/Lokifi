@@ -2,7 +2,7 @@
 Enhanced Security Middleware for Fynix Application
 """
 
-from fastapi import Request, Response
+from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 import time
 import logging

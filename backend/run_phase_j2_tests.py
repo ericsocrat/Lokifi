@@ -3,11 +3,8 @@ Master Test Runner for Phase J2 - User Profiles & Settings
 Runs comprehensive testing of all profile and settings functionality
 """
 
-import sys
 import time
 import json
-from pathlib import Path
-import subprocess
 import requests
 
 # Import our test suites
@@ -108,7 +105,7 @@ class PhaseJ2MasterTestRunner:
             return True
         except Exception as e:
             print(f"❌ Frontend tests failed: {e}")
-            print(f"   This might be due to missing ChromeDriver or Selenium")
+            print("   This might be due to missing ChromeDriver or Selenium")
             self.results["frontend"]["failed"] = 1
             return False
     
@@ -260,7 +257,7 @@ class PhaseJ2MasterTestRunner:
         try:
             with open("phase_j2_test_report.json", "w") as f:
                 json.dump(report_data, f, indent=2)
-            print(f"\n📄 Detailed report saved to: phase_j2_test_report.json")
+            print("\n📄 Detailed report saved to: phase_j2_test_report.json")
         except Exception as e:
             print(f"\n⚠️  Could not save report: {e}")
     

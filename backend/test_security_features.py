@@ -44,7 +44,7 @@ def test_security_alerts():
         
         # Create alert manager
         alert_manager = SecurityAlertManager()
-        print(f"✅ Alert manager created")
+        print("✅ Alert manager created")
         
         # Test alert creation
         test_alert = Alert(
@@ -66,7 +66,7 @@ def test_security_alerts():
         
         # Test alert history
         assert hasattr(alert_manager, 'alert_history')
-        print(f"✅ Alert history initialized")
+        print("✅ Alert history initialized")
         
     except Exception as e:
         print(f"❌ Security alerts test failed: {e}")

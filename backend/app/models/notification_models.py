@@ -1,7 +1,6 @@
 # J6 Enterprise Notifications - Database Models
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, ForeignKey, JSON, Index
+from sqlalchemy import Column, String, Text, DateTime, Boolean, ForeignKey, JSON, Index
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 from enum import Enum

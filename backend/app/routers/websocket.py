@@ -8,14 +8,11 @@ import logging
 import asyncio
 from typing import Dict, Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, HTTPException
-from pydantic import ValidationError
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 from app.services.websocket_manager import connection_manager, authenticate_websocket
 from app.services.conversation_service import ConversationService
-from app.services.rate_limit_service import RateLimitService
-from app.schemas.conversation import WebSocketMessage, TypingIndicatorMessage, MarkReadRequest
+from app.schemas.conversation import MarkReadRequest
 from app.db.database import AsyncSessionLocal
 from app.models.conversation import ConversationParticipant
 from app.websockets.notifications import NotificationWebSocketManager

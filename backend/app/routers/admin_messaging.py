@@ -2,9 +2,8 @@
 Admin and monitoring endpoints for J4 Direct Messages.
 """
 
-import uuid
 import logging
-from typing import List, Dict, Any
+from typing import List
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status, Query

@@ -6,7 +6,6 @@ from typing import Optional
 from fastapi import HTTPException, Depends, Header
 from sqlalchemy.orm import Session
 from jose import jwt, JWTError
-import os
 
 from app.db.db import get_session
 from app.db.models import User

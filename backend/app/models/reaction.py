@@ -4,9 +4,8 @@ Message reactions system for J4 Direct Messages.
 
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Optional, List, Dict
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, String, UniqueConstraint
+from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

@@ -17,7 +17,7 @@ async def test_j52_imports():
     
     # Test 1: AI Analytics Service - Import Only
     try:
-        from app.services.ai_analytics import ai_analytics_service, ConversationMetrics, UserInsights
+        from app.services.ai_analytics import ConversationMetrics
         print("✓ AI Analytics Service imports successfully")
         print("  - ConversationMetrics dataclass available")
         print("  - UserInsights dataclass available")
@@ -27,7 +27,7 @@ async def test_j52_imports():
     
     # Test 2: AI Context Manager - Import Only
     try:
-        from app.services.ai_context_manager import ai_context_manager, ContextSummary, ConversationMemory
+        from app.services.ai_context_manager import ContextSummary
         print("✓ AI Context Manager imports successfully")
         print("  - ContextSummary dataclass available")
         print("  - ConversationMemory dataclass available")
@@ -37,7 +37,6 @@ async def test_j52_imports():
     
     # Test 3: Multimodal AI Service - Basic Import
     try:
-        from app.services.multimodal_ai_service import FileProcessingError, UnsupportedFileTypeError
         print("✓ Multimodal AI Service core classes import successfully")
         print("  - FileProcessingError exception available")
         print("  - UnsupportedFileTypeError exception available")

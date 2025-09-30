@@ -33,7 +33,7 @@ def check_database_schema():
             # Get all tables
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
             tables = cursor.fetchall()
-            print(f"\n📋 Tables in database:")
+            print("\n📋 Tables in database:")
             for table in tables:
                 print(f"  - {table[0]}")
             

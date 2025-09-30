@@ -4,7 +4,6 @@ J5.3 Automated Optimization Scheduler
 Currently disabled due to async compatibility issues
 """
 
-import asyncio
 import logging
 from contextlib import asynccontextmanager
 from fastapi import APIRouter

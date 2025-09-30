@@ -1,7 +1,6 @@
 ﻿from __future__ import annotations
 from typing import Optional
-import os
-from fastapi import HTTPException, Header
+from fastapi import HTTPException
 from jose import jwt, JWTError
 from app.core.config import get_settings
 

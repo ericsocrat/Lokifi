@@ -1,5 +1,5 @@
 ﻿from __future__ import annotations
-from fastapi import APIRouter, HTTPException, Query, Body, Path, Header, Request
+from fastapi import APIRouter, HTTPException, Query, Header, Request
 from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 from sqlalchemy.orm import Session
@@ -10,9 +10,8 @@ import io
 
 from app.db.db import get_session, init_db
 from app.db.models import User, PortfolioPosition
-from app.services.prices import get_ohlc
 from app.services.auth import require_handle
-from app.core.redis_cache import cache_portfolio_data, cache_user_data, cache_public_data
+from app.core.redis_cache import cache_portfolio_data
 
 # Optional alerts integration
 try:

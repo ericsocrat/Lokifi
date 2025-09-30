@@ -6,7 +6,6 @@ import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Set
-from uuid import uuid4
 
 from app.services.prices import fetch_ohlc
 

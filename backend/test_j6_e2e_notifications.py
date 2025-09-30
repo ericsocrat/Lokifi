@@ -5,12 +5,10 @@ Tests the complete workflow from event → notification → UI → clearing
 """
 
 import pytest
-import asyncio
-from datetime import datetime, timezone, timedelta
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
+from datetime import datetime, timezone
+from unittest.mock import Mock, AsyncMock, patch
 import json
 import uuid
-from typing import Dict, Any, List
 from fastapi.testclient import TestClient
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -22,7 +20,6 @@ from app.models.notification_models import (
     NotificationPriority
 )
 from app.services.notification_service import notification_service, NotificationData
-from app.services.notification_emitter import notification_emitter
 from app.integrations.notification_hooks import notification_integration
 from app.websockets.notifications import NotificationWebSocketManager
 from app.routers.notifications import router as notifications_router
@@ -389,7 +386,7 @@ class TestE2ENotificationFlow:
             ai_notification.user_id = mock_authenticated_user.id
             ai_notification.type = NotificationType.AI_REPLY_FINISHED.value
             ai_notification.title = "ChatGPT response ready"
-            ai_notification.message = f"Your AI assistant has responded"
+            ai_notification.message = "Your AI assistant has responded"
             ai_notification.is_read = False
             ai_notification.payload = {
                 "ai_provider": "openai",

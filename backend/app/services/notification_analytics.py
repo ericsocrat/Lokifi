@@ -6,22 +6,18 @@ Provides insights into notification delivery, user engagement, and system perfor
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Optional
 from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass, asdict
 from collections import defaultdict, deque
-import json
 
-from sqlalchemy import select, func, and_, or_, desc, text
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, func, and_, desc
 
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
 from app.models.notification_models import (
     Notification, 
-    NotificationPreference, 
-    NotificationType, 
-    NotificationPriority
+    NotificationPreference
 )
 from app.models.user import User
 

@@ -3,10 +3,8 @@ K1 - Enhanced Startup Sequence for Fynix Phase K
 Robust FastAPI startup with proper configuration, health checks, and migrations
 """
 
-import os
 import sys
 import logging
-import asyncio
 from contextlib import asynccontextmanager
 from typing import Dict, Any, Optional
 
@@ -22,7 +20,6 @@ except ImportError:
 import uvicorn
 
 # Import existing components
-from app.core.config import settings
 from app.core.database import database_manager
 from app.core.redis_client import redis_client
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager

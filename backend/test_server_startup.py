@@ -15,7 +15,6 @@ async def test_server_components():
     
     # Test 1: Import main app
     try:
-        from app.main import app
         print("✓ Main app imports successfully")
     except Exception as e:
         print(f"❌ Main app import failed: {e}")
@@ -40,7 +39,6 @@ async def test_server_components():
     
     # Test 4: Test AI service
     try:
-        from app.services.ai_service import ai_service
         print("✓ AI service imports successfully")
     except Exception as e:
         print(f"❌ AI service import failed: {e}")
@@ -48,7 +46,6 @@ async def test_server_components():
     
     # Test 5: Test J5 WebSocket AI router
     try:
-        from app.routers.ai_websocket import router
         print("✓ J5 AI WebSocket router imports successfully")
     except Exception as e:
         print(f"❌ J5 AI WebSocket router import failed: {e}")

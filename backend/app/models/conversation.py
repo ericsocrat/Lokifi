@@ -2,11 +2,11 @@
 Conversation and message models for direct messaging (J4).
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, String, Text, func, Index, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, String, Text, func, Index
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 

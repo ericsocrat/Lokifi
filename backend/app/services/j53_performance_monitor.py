@@ -1,12 +1,10 @@
 # J5.3 Advanced Performance Monitoring and Alerting System
 from sqlalchemy import text, select, func
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Any, Callable
-import asyncio
+from typing import Dict, List, Any, Callable
 import logging
 from dataclasses import dataclass, asdict
 from enum import Enum
-import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart

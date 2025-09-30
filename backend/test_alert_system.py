@@ -53,12 +53,12 @@ async def test_alert_system():
         
         # Get alert configuration status
         config = alert_manager.config
-        print(f"✅ Alert system configured:")
+        print("✅ Alert system configured:")
         print(f"   - Enabled: {config.enabled}")
         if config.channels:
             print(f"   - Channels: {[ch.value for ch in config.channels]}")
         else:
-            print(f"   - Channels: Default (log, email)")
+            print("   - Channels: Default (log, email)")
         print(f"   - Priority threshold: {config.priority_threshold.value}")
         print(f"   - Rate limit: {config.rate_limit_minutes} minutes")
         

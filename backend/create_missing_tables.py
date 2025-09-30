@@ -45,7 +45,7 @@ def create_missing_tables():
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
             tables = cursor.fetchall()
-            print(f"\n📋 Tables now in database:")
+            print("\n📋 Tables now in database:")
             for table in tables:
                 if not table[0].startswith('sqlite_'):
                     print(f"  ✅ {table[0]}")

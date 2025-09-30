@@ -1,25 +1,19 @@
 # J5.3 Comprehensive Test Suite
 import pytest
-import asyncio
 from datetime import datetime, timedelta
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
-from typing import Dict, List, Any
-import json
+from unittest.mock import Mock, AsyncMock, patch
 
 from app.core.config import Settings
 from app.services.j53_performance_monitor import (
     J53PerformanceMonitor, 
     J53AutoOptimizer,
     AlertSeverity, 
-    MetricThreshold,
-    PerformanceAlert,
     SystemHealth
 )
 from app.services.j53_scheduler import J53OptimizationScheduler
 from app.services.advanced_storage_analytics import (
     AdvancedStorageAnalytics,
     AdvancedStorageMetrics,
-    OptimizationRecommendation,
     PerformanceBenchmark
 )
 

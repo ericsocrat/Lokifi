@@ -6,10 +6,9 @@ Provides JWT authentication for WebSocket connections with Redis coordination
 import json
 import logging
 from datetime import datetime, timezone, timedelta
-from typing import Dict, Any, Optional, List, Set
-from fastapi import WebSocket, WebSocketDisconnect, HTTPException, Query
+from typing import Dict, Any, Optional, Set
+from fastapi import WebSocket, WebSocketDisconnect
 from jose import JWTError, jwt
-from pydantic import BaseModel
 
 # Import core components
 from app.core.config import settings

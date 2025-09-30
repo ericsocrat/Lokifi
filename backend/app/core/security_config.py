@@ -3,7 +3,7 @@ Security Configuration for Fynix Application
 Centralized security settings and constants
 """
 
-from typing import List, Dict, Any
+from typing import List
 import os
 
 class SecurityConfig:

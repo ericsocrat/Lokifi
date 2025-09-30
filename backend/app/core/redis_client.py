@@ -4,12 +4,10 @@ Enhanced Redis client for J6.2 with improved error handling, connection pooling,
 and notification caching capabilities.
 """
 
-import asyncio
 import json
 import logging
-from typing import Optional, Dict, Any, List, Union
-from datetime import datetime, timezone, timedelta
-from dataclasses import asdict
+from typing import Optional, Dict, Any, List
+from datetime import datetime
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool

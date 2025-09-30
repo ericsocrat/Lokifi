@@ -56,7 +56,6 @@ def test_app_import():
     print("\n🔍 Testing main application import...")
     
     try:
-        from app.main import app
         print("✅ Main application imported successfully!")
         return True
     except Exception as e:

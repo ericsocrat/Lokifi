@@ -10,9 +10,8 @@ import time
 import logging
 import psutil
 import statistics
-from typing import Dict, Any, List, Optional, Tuple
-from datetime import datetime, timedelta
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, Any, List
+from datetime import datetime
 import websockets
 import redis.asyncio as redis
 from dataclasses import dataclass, asdict
@@ -377,17 +376,17 @@ class PhaseKStressTester:
                 test_results[test_name] = {"error": str(e)}
         
         # Run memory leak test
-        print(f"\n🧠 Running Memory Leak Analysis...")
+        print("\n🧠 Running Memory Leak Analysis...")
         try:
             memory_result = await self.memory_leak_test(60)
             test_results["Memory Leak Test"] = memory_result
             
             if memory_result["potential_leak"]:
-                print(f"⚠️  Potential memory leak detected!")
+                print("⚠️  Potential memory leak detected!")
                 print(f"   Growth: {memory_result['memory_growth_mb']:.2f} MB")
                 print(f"   Rate: {memory_result['growth_rate_mb_per_second']:.3f} MB/s")
             else:
-                print(f"✅ No significant memory leaks detected")
+                print("✅ No significant memory leaks detected")
                 print(f"   Memory stable: {memory_result['memory_growth_mb']:.2f} MB growth")
         
         except Exception as e:
@@ -559,7 +558,7 @@ async def main():
     with open("phase_k_stress_test_report.md", "w", encoding="utf-8") as f:
         f.write(report)
     
-    print(f"\n📊 Comprehensive stress test report saved to: phase_k_stress_test_report.md")
+    print("\n📊 Comprehensive stress test report saved to: phase_k_stress_test_report.md")
     
     # Print final assessment
     print("\n" + "=" * 60)

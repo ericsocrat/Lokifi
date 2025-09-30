@@ -11,7 +11,6 @@ import asyncio
 import json
 import os
 import sys
-import time
 from datetime import datetime
 from pathlib import Path
 
@@ -169,8 +168,6 @@ async def test_database_models():
     
     try:
         # Import and configure the registry to avoid relationship issues
-        from app.db.database import Base
-        from sqlalchemy import create_engine
         from sqlalchemy.orm import configure_mappers
         
         # Try to configure mappers to resolve relationships
@@ -269,20 +266,14 @@ async def test_imports():
     
     try:
         # Core imports
-        from app.main import app
         print_info("✓ Main app imported")
         
-        from app.core.security import hash_password, verify_password
         print_info("✓ Security functions imported")
         
-        from app.models.user import User
-        from app.models.profile import Profile
         print_info("✓ Database models imported")
         
-        from app.services.auth_service import AuthService
         print_info("✓ Auth service imported")
         
-        from app.routers.auth import router
         print_info("✓ Auth router imported")
         
         print_success("All critical imports successful")

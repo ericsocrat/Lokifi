@@ -1,11 +1,10 @@
 ﻿from __future__ import annotations
-from fastapi import APIRouter, HTTPException, Depends, Header
+from fastapi import APIRouter, HTTPException, Header
 from pydantic import BaseModel, Field
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone, timedelta
-import os
 
 from passlib.hash import bcrypt
 from jose import jwt, JWTError

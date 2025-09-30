@@ -8,8 +8,7 @@ from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, and_, desc, text
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, func, and_, desc
 
 from app.models.conversation import Message, Conversation, ConversationParticipant
 from app.models.user import User

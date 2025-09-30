@@ -5,12 +5,10 @@ Addresses remaining issues and optimizes all components for production
 
 import asyncio
 import sys
-import os
 import logging
 import subprocess
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-import json
+from typing import Dict, Any
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

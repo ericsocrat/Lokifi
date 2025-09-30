@@ -8,9 +8,9 @@ import logging
 import time
 import asyncio
 from datetime import datetime, timezone
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional, Any
 from enum import Enum
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 from pathlib import Path
 
 # Configure security logger

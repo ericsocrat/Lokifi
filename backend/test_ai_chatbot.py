@@ -4,15 +4,12 @@ Comprehensive test suite for Fynix AI Chatbot (J5) functionality.
 
 import pytest
 import json
-from datetime import datetime, timedelta
-from unittest.mock import Mock, patch, AsyncMock
+from datetime import datetime
+from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from app.main import app
-from app.db.models import User, AIThread, AIMessage
-from app.services.ai_service import AIService, RateLimitError, SafetyFilterError
-from app.services.ai_provider import StreamChunk, TokenUsage, ProviderError
+from app.services.ai_service import AIService
 from app.services.content_moderation import ContentModerator, ModerationLevel, ModerationCategory
 from app.services.conversation_export import ConversationExporter, ConversationImporter, ExportOptions
 

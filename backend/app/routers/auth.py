@@ -3,7 +3,7 @@ Authentication router with login, register, and OAuth endpoints.
 """
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -18,8 +18,7 @@ from app.schemas.auth import (
     UserLoginRequest, 
     GoogleOAuthRequest,
     AuthUserResponse,
-    MessageResponse,
-    TokenResponse
+    MessageResponse
 )
 
 router = APIRouter(prefix="/auth", tags=["authentication"])

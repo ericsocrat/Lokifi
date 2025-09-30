@@ -4,7 +4,6 @@ Setup script to integrate J6 notification system with existing application featu
 This script provides integration patches for existing routers to trigger notifications.
 """
 
-import asyncio
 import logging
 from typing import Dict, Any, Optional
 from datetime import datetime, timezone

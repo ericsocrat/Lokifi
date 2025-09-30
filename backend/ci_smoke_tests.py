@@ -303,9 +303,9 @@ class SmokeTestSuite:
         }
         
         # Print summary
-        print(f"\n" + "=" * 50)
-        print(f"🎯 SMOKE TEST SUMMARY")
-        print(f"=" * 50)
+        print("\n" + "=" * 50)
+        print("🎯 SMOKE TEST SUMMARY")
+        print("=" * 50)
         print(f"Total Tests: {total_tests}")
         print(f"Passed: {passed_tests}")
         print(f"Failed: {total_tests - passed_tests}")
@@ -313,11 +313,11 @@ class SmokeTestSuite:
         print(f"Total Time: {total_time:.2f}s")
         
         if summary['success_rate'] >= 90:
-            print(f"\n🎉 SMOKE TESTS PASSED! System is healthy.")
+            print("\n🎉 SMOKE TESTS PASSED! System is healthy.")
         elif summary['success_rate'] >= 70:
-            print(f"\n⚠️  SMOKE TESTS MOSTLY PASSED. Some issues detected.")
+            print("\n⚠️  SMOKE TESTS MOSTLY PASSED. Some issues detected.")
         else:
-            print(f"\n❌ SMOKE TESTS FAILED. System has significant issues.")
+            print("\n❌ SMOKE TESTS FAILED. System has significant issues.")
         
         return summary
     
@@ -358,7 +358,7 @@ async def main():
         with open("smoke_test_report.md", "w") as f:
             f.write(report)
         
-        print(f"\n📊 Report saved to: smoke_test_report.md")
+        print("\n📊 Report saved to: smoke_test_report.md")
         
         # Exit with appropriate code
         success_rate = summary.get('success_rate', 0)

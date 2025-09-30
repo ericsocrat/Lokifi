@@ -3,13 +3,11 @@
 Simple FastAPI Test Server for Stress Testing
 """
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 import asyncio
 import time
 import random
-import json
-from typing import Dict, Any, List
+from typing import Dict, Any
 import uvicorn
 
 # Simple test application
@@ -190,7 +188,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await asyncio.sleep(1)
             
     except WebSocketDisconnect:
-        print(f"WebSocket client disconnected")
+        print("WebSocket client disconnected")
 
 if __name__ == "__main__":
     print("🚀 Starting Fynix Stress Test Server...")

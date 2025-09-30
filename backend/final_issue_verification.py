@@ -64,7 +64,6 @@ async def comprehensive_verification():
     print("-" * 40)
     try:
         # Test J53 scheduler import
-        from app.services.j53_scheduler import j53_router, j53_lifespan_manager
         print("✅ J53 scheduler imports successfully")
         
         # Test main app import

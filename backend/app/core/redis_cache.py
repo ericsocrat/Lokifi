@@ -3,14 +3,13 @@ Redis Cache Decorators for Frequently Accessed API Endpoints
 High-performance caching with intelligent TTL management
 """
 
-import asyncio
 import json
 import logging
 import hashlib
 from functools import wraps
-from typing import Any, Dict, Optional, Callable, Union
+from typing import Any, Dict, Optional, Callable
 import redis.asyncio as redis
-from fastapi import Request, Response
+from fastapi import Request
 from app.core.config import Settings
 import time
 

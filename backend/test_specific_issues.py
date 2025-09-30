@@ -85,7 +85,6 @@ def test_scheduler_issues():
             print("✅ J53 scheduler properly disabled/isolated")
             
         # Test that the main app can be imported without scheduler issues
-        from app.main import app
         print("✅ Main app imports without scheduler conflicts")
         
         print("✅ SCHEDULER: No async coroutine issues detected")

@@ -6,14 +6,12 @@ Handles file uploads, image processing, and document analysis.
 
 import logging
 import uuid
-import aiofiles
 import base64
 import io
 import mimetypes
-from typing import List, Dict, Any, Optional, AsyncGenerator, Union
+from typing import Dict, Any, AsyncGenerator, Union
 from pathlib import Path
 import hashlib
-import json
 from datetime import datetime
 
 from fastapi import UploadFile
@@ -25,14 +23,11 @@ except ImportError:
     PIL_AVAILABLE = False
     Image = None
 
-from sqlalchemy.orm import Session
 
 from app.db.db import get_session
-from app.db.models import AIThread, AIMessage
-from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole, StreamOptions
+from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole
 from app.services.ai_provider_manager import ai_provider_manager
 from app.services.ai_service import StreamChunk
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

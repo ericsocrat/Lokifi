@@ -3,17 +3,15 @@ Profile service for user profile and settings management.
 """
 
 import uuid
-from typing import Optional, List, Tuple
+from typing import Optional
 from datetime import datetime, timezone
 
 from sqlalchemy import select, update, func, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 
 from app.models.user import User
 from app.models.profile import Profile
-from app.models.follow import Follow
 from app.models.notification_models import NotificationPreference
 from app.schemas.profile import (
     ProfileUpdateRequest,

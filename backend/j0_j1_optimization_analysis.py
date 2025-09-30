@@ -9,7 +9,6 @@ validates J0+J1 core functionality, and provides optimization recommendations.
 
 import asyncio
 import json
-import os
 import sys
 import time
 from datetime import datetime

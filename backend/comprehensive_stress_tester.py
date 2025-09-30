@@ -12,13 +12,11 @@ import json
 import statistics
 import psutil
 import gc
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict
-from concurrent.futures import ThreadPoolExecutor
 import logging
 import websockets
-import traceback
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -264,7 +262,7 @@ class AdvancedStressTester:
     async def run_websocket_load_test(self, concurrent_connections: int, duration_seconds: int) -> StressTestResult:
         """Run WebSocket load test"""
         
-        print(f"\n🌐 Starting WebSocket Load Test")
+        print("\n🌐 Starting WebSocket Load Test")
         print(f"   👥 Concurrent Connections: {concurrent_connections}")
         print(f"   ⏱️  Duration: {duration_seconds}s")
         
@@ -288,7 +286,7 @@ class AdvancedStressTester:
             nonlocal successful_connections, failed_connections, messages_sent, messages_received
             
             try:
-                uri = f"ws://localhost:8000/ws/test"
+                uri = "ws://localhost:8000/ws/test"
                 
                 async with websockets.connect(uri) as websocket:
                     successful_connections += 1
@@ -379,7 +377,7 @@ class AdvancedStressTester:
         
         self.results.append(result)
         
-        print(f"\n✅ WebSocket Load Test Complete:")
+        print("\n✅ WebSocket Load Test Complete:")
         print(f"   🔌 Connections: {successful_connections}/{concurrent_connections} ({connection_success_rate:.1f}%)")
         print(f"   📨 Messages: {messages_received}/{messages_sent} ({message_success_rate:.1f}%)")
         print(f"   ⚡ Avg Response: {avg_response_time:.1f}ms")
@@ -607,7 +605,7 @@ async def main():
         with open("comprehensive_stress_test_results.json", "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2, default=str)
         
-        print(f"\n📊 COMPREHENSIVE STRESS TEST COMPLETE")
+        print("\n📊 COMPREHENSIVE STRESS TEST COMPLETE")
         print("=" * 60)
         print(f"📈 Performance Score: {results['test_summary']['performance_score']}/100")
         print(f"📊 Total Requests: {results['test_summary']['total_requests']}")
@@ -616,11 +614,11 @@ async def main():
         print(f"⚡ Average Response: {results['test_summary']['average_response_time_ms']}ms")
         print(f"💾 Memory Efficiency: {results['memory_analysis']['memory_efficiency']}")
         
-        print(f"\n💡 RECOMMENDATIONS:")
+        print("\n💡 RECOMMENDATIONS:")
         for rec in results['recommendations']:
             print(f"   {rec}")
         
-        print(f"\n📄 Detailed results saved to: comprehensive_stress_test_results.json")
+        print("\n📄 Detailed results saved to: comprehensive_stress_test_results.json")
         
     except Exception as e:
         print(f"❌ Stress testing failed: {str(e)}")

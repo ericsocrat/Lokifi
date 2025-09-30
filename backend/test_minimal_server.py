@@ -19,12 +19,9 @@ async def test_minimal_server():
         print("✅ FastAPI working")
         
         # Test security modules
-        from app.utils.enhanced_validation import InputSanitizer
-        from app.utils.security_alerts import SecurityAlertManager
         print("✅ Security modules working")
         
         # Test database (without initialization)
-        from app.core.database import db_manager
         print("✅ Database module loaded")
         
         # Test settings

@@ -3,12 +3,12 @@ Security Dashboard API Routes
 Endpoints for monitoring security events and system health
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta, timezone
 
-from app.utils.security_logger import security_monitor, SecurityEventType, SecuritySeverity
+from app.utils.security_logger import security_monitor, SecurityEventType
 from app.utils.security_alerts import security_alert_manager
 from app.core.security import get_current_user
 from app.core.config import get_settings

@@ -7,16 +7,14 @@ Provides comprehensive analytics and insights for AI conversations.
 import logging
 from typing import Dict, List, Any, Optional
 from datetime import datetime, timedelta
-from collections import Counter, defaultdict
+from collections import Counter
 from dataclasses import dataclass
-import json
 
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc, and_
+from sqlalchemy import func, desc
 
 from app.db.db import get_session
-from app.db.models import User, AIThread, AIMessage
-from app.services.content_moderation import ModerationLevel
+from app.db.models import AIThread, AIMessage
 
 logger = logging.getLogger(__name__)
 

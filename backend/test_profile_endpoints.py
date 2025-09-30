@@ -3,7 +3,6 @@ Test script for Phase J2 Profile & Settings endpoints.
 """
 
 import requests
-import json
 
 BASE_URL = "http://localhost:8000"
 

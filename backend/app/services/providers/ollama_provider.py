@@ -10,7 +10,7 @@ from typing import List, AsyncGenerator, Optional
 import httpx
 from app.services.ai_provider import (
     AIProvider, AIMessage, StreamOptions, StreamChunk, TokenUsage,
-    ProviderError, ProviderUnavailableError, ProviderRateLimitError
+    ProviderError, ProviderUnavailableError
 )
 
 logger = logging.getLogger(__name__)

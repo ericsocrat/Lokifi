@@ -4,11 +4,11 @@ Message search service for J4 Direct Messages.
 
 import uuid
 from typing import List, Optional, Dict, Any
-from datetime import datetime, timezone
+from datetime import datetime
 from dataclasses import dataclass
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, text, and_, or_, func
+from sqlalchemy import select, and_, or_, func
 from sqlalchemy.orm import selectinload
 
 from app.models.conversation import Message, Conversation, ConversationParticipant

@@ -4,7 +4,6 @@ Pydantic schemas for direct messaging (J4).
 
 from datetime import datetime
 from typing import Optional, List
-from enum import Enum
 import uuid
 
 from pydantic import BaseModel, Field

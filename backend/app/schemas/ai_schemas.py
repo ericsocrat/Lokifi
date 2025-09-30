@@ -5,7 +5,7 @@ Request/response models for AI API endpoints.
 """
 
 from datetime import datetime
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, List
 from pydantic import BaseModel, Field, validator
 
 

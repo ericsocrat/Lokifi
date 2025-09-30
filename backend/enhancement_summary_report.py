@@ -10,11 +10,7 @@ upgrades, fixes, and tests that have been added to the Fynix system.
 """
 
 import asyncio
-import json
-import os
-import sys
 from datetime import datetime
-from pathlib import Path
 
 # Colors for output
 class Colors:
@@ -262,9 +258,9 @@ async def main():
         print(f"  • {file}")
     
     print(f"\n{Colors.WHITE}🔍 For detailed results, check:{Colors.END}")
-    print(f"  • enhancement_results/ - Comprehensive reports")
-    print(f"  • performance-tests/ - Performance analysis")
-    print(f"  • monitoring/ - Production monitoring configs")
+    print("  • enhancement_results/ - Comprehensive reports")
+    print("  • performance-tests/ - Performance analysis")
+    print("  • monitoring/ - Production monitoring configs")
     
     return True
 

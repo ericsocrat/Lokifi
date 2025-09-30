@@ -1,14 +1,9 @@
 # J5.3 Advanced Storage Analytics and Optimization Service
-from sqlalchemy import text, select, func, and_, or_, desc, asc
-from sqlalchemy.orm import joinedload, selectinload
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import text, select, func
 from datetime import datetime, timedelta
-from typing import Dict, Optional, List, Tuple, Any
+from typing import Dict, Optional, List, Any
 import logging
-import asyncio
-import json
 from dataclasses import dataclass, asdict
-from collections import defaultdict
 import statistics
 from enum import Enum
 

@@ -3,14 +3,10 @@ Phase K Implementation Verification Script
 Checks that all K1-K4 components are properly implemented without trying to import them
 """
 
-import asyncio
-import json
 import time
 import logging
 from pathlib import Path
-from typing import Dict, Any, List
-import os
-import sys
+from typing import Dict, Any
 
 logger = logging.getLogger(__name__)
 

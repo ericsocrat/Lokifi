@@ -4,12 +4,10 @@ Performance Optimization Analyzer for Fynix Phase K
 Analyzes system performance and provides specific optimization recommendations
 """
 
-import os
-import sys
 import ast
 import re
 from pathlib import Path
-from typing import Dict, List, Tuple, Set
+from typing import List, Set
 from dataclasses import dataclass
 import json
 

@@ -7,7 +7,7 @@ Allows users to export/import their AI conversations in various formats.
 import json
 import csv
 import xml.etree.ElementTree as ET
-from typing import List, Dict, Any, Optional, Union, BinaryIO
+from typing import List, Dict, Any, Optional, Union
 from datetime import datetime
 from io import BytesIO, StringIO
 import zipfile
@@ -16,7 +16,7 @@ from dataclasses import dataclass
 
 from sqlalchemy.orm import Session
 from app.db.db import get_session
-from app.db.models import User, AIThread, AIMessage
+from app.db.models import AIThread, AIMessage
 
 
 @dataclass

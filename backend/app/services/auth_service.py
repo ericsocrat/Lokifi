@@ -3,7 +3,7 @@ Authentication service for user management.
 """
 
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Optional, Dict, Any
 
 from sqlalchemy import select

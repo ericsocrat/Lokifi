@@ -15,13 +15,11 @@ upgrades, fixes, and tests for the Fynix system.
 
 import asyncio
 import json
-import os
 import sys
 import time
-import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Any
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
@@ -365,16 +363,16 @@ class MasterEnhancementSuite:
         # Next steps
         print(f"\n{Colors.CYAN}📋 Next Steps:{Colors.END}")
         if summary["overall_status"] == "EXCELLENT":
-            print(f"  🎉 All enhancements completed successfully!")
-            print(f"  • Review generated reports in enhancement_results/")
-            print(f"  • Check performance-tests/ for optimization insights")
-            print(f"  • Monitor system performance with new monitoring tools")
-            print(f"  • Consider deploying to production with ./deploy-production.sh")
+            print("  🎉 All enhancements completed successfully!")
+            print("  • Review generated reports in enhancement_results/")
+            print("  • Check performance-tests/ for optimization insights")
+            print("  • Monitor system performance with new monitoring tools")
+            print("  • Consider deploying to production with ./deploy-production.sh")
         else:
-            print(f"  • Address any failed enhancements")
-            print(f"  • Check individual suite logs for details")
-            print(f"  • Re-run specific suites if needed")
-            print(f"  • Ensure all dependencies are installed")
+            print("  • Address any failed enhancements")
+            print("  • Check individual suite logs for details")
+            print("  • Re-run specific suites if needed")
+            print("  • Ensure all dependencies are installed")
     
     async def save_results(self):
         """Save enhancement results to file"""
@@ -426,7 +424,7 @@ class MasterEnhancementSuite:
             print()
         
         print(f"  {len(self.suites) + 1}. {Colors.BOLD}Run All Suites{Colors.END}")
-        print(f"     Execute all enhancement suites in sequence")
+        print("     Execute all enhancement suites in sequence")
         print()
         
         try:

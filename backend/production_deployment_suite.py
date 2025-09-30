@@ -17,11 +17,9 @@ import json
 import os
 import sys
 import time
-import subprocess
-import shutil
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, Any
 import yaml
 
 # Add the backend directory to the Python path
@@ -930,10 +928,10 @@ print_success "✅ Backup process completed"
         # Final summary
         self.print_header("Production Setup Summary")
         
-        self.print_success(f"Docker production configuration created")
-        self.print_success(f"Monitoring and alerting configured")
-        self.print_success(f"Deployment scripts generated")
-        self.print_success(f"System monitoring active")
+        self.print_success("Docker production configuration created")
+        self.print_success("Monitoring and alerting configured")
+        self.print_success("Deployment scripts generated")
+        self.print_success("System monitoring active")
         
         success_rate = (success_count / total_tasks * 100)
         
@@ -943,10 +941,10 @@ print_success "✅ Backup process completed"
         if success_rate >= 100:
             print(f"\n{Colors.GREEN}🎉 Production environment is ready for deployment!{Colors.END}")
             print(f"{Colors.WHITE}Next steps:{Colors.END}")
-            print(f"  1. Review configuration files in monitoring/configs/")
-            print(f"  2. Run: ./deploy-production.sh")
-            print(f"  3. Access monitoring at http://localhost:3000 (Grafana)")
-            print(f"  4. Set up automated backups with: ./backup.sh")
+            print("  1. Review configuration files in monitoring/configs/")
+            print("  2. Run: ./deploy-production.sh")
+            print("  3. Access monitoring at http://localhost:3000 (Grafana)")
+            print("  4. Set up automated backups with: ./backup.sh")
         
         return success_rate >= 75
 

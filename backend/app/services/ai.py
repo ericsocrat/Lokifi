@@ -1,15 +1,9 @@
-import asyncio
 import json
 import httpx
-from typing import AsyncGenerator, Iterable
+from typing import AsyncGenerator
 from app.core.config import settings
 
 
-import asyncio
-import json
-import httpx
-from typing import AsyncGenerator, Iterable, List, Dict, Any, Tuple
-from app.core.config import settings
 from app.services import prices as prices_svc, news as news_svc
 from app.services.indicators import sma, ema, rsi
 

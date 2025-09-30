@@ -7,7 +7,6 @@ import sys
 import subprocess
 import logging
 from pathlib import Path
-from typing import Optional
 
 # Setup logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')

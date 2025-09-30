@@ -9,7 +9,6 @@ import logging
 import sys
 import os
 import time
-from typing import Dict, Any
 
 # Add the backend directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
@@ -30,7 +29,6 @@ async def test_enhanced_system():
     try:
         from app.services.enhanced_performance_monitor import (
             enhanced_performance_monitor, 
-            PerformanceMetrics,
             get_current_metrics,
             get_system_health_score
         )
@@ -64,7 +62,6 @@ async def test_enhanced_system():
     print("\n🗄️ Testing Database Relationship Fixes...")
     try:
         from app.models.notification_models import Notification
-        from app.models.user import User
         
         # Test that relationships are properly defined
         notification_user_rel = Notification.user
@@ -272,7 +269,7 @@ async def test_enhanced_system():
     
     # Detailed recommendations
     if weighted_percentage < 95:
-        print(f"\n📈 IMPROVEMENT RECOMMENDATIONS:")
+        print("\n📈 IMPROVEMENT RECOMMENDATIONS:")
         failed_high_impact = [name for name, passed in results.items() 
                             if not passed and quality_weights.get(name, 0) >= 15]
         if failed_high_impact:

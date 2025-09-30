@@ -1,11 +1,9 @@
 from logging.config import fileConfig
 import os
 import sys
-import asyncio
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from sqlalchemy.ext.asyncio import create_async_engine
 
 from alembic import context
 
@@ -15,7 +13,6 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 # Import the Base and all models
 from app.db.models import Base
 from app.core.config import Settings
-import app.db.models  # Import all models
 
 # Load settings
 settings = Settings()

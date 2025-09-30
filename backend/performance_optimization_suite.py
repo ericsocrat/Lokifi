@@ -21,9 +21,9 @@ import time
 import cProfile
 import pstats
 import io
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, Any
 from dataclasses import dataclass
 from collections import defaultdict, deque
 import statistics
@@ -903,11 +903,11 @@ class PerformanceOptimizer:
                 print(f"\n{Colors.GREEN}🎉 No optimization recommendations - system performing well!{Colors.END}")
             
             print(f"\n{Colors.CYAN}📊 Analysis Complete:{Colors.END}")
-            print(f"  • Application profiling completed")
-            print(f"  • System resource analysis completed")
-            print(f"  • Database performance analyzed")
-            print(f"  • Load testing performed")
-            print(f"  • Performance charts generated")
+            print("  • Application profiling completed")
+            print("  • System resource analysis completed")
+            print("  • Database performance analyzed")
+            print("  • Load testing performed")
+            print("  • Performance charts generated")
             
             return report['performance_score'] >= 50
             

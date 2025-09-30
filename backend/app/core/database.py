@@ -2,11 +2,9 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool, QueuePool
-from sqlalchemy import event
 from app.core.config import Settings, settings
 import logging
-import asyncio
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator
 import re
 
 logger = logging.getLogger(__name__)

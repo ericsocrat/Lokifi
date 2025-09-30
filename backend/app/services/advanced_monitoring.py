@@ -13,11 +13,10 @@ import logging
 import psutil
 import time
 from typing import Dict, List, Any, Optional, Callable
-from datetime import datetime, timezone, timedelta
-from dataclasses import dataclass, asdict
-from collections import defaultdict, deque
+from datetime import datetime, timezone
+from dataclasses import dataclass
+from collections import deque
 import json
-import httpx
 from sqlalchemy import text
 
 from app.core.advanced_redis_client import advanced_redis_client

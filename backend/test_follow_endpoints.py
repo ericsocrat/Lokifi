@@ -3,7 +3,6 @@ Test script for Phase J3 Follow Graph endpoints.
 """
 
 import requests
-import json
 
 BASE_URL = "http://localhost:8000"
 

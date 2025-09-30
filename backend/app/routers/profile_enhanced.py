@@ -2,13 +2,10 @@
 Enhanced profile router with additional features for Phase J2.
 """
 
-from typing import Optional
 from uuid import UUID
-import os
 from pathlib import Path
-from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 import aiofiles
@@ -16,19 +13,11 @@ from PIL import Image
 import uuid
 
 from app.db.database import get_db
-from app.core.auth_deps import get_current_user, get_current_user_optional
+from app.core.auth_deps import get_current_user
 from app.models.user import User
-from app.services.profile_service import ProfileService
 from app.services.profile_enhanced import EnhancedProfileService
 from app.schemas.profile import (
-    ProfileUpdateRequest,
-    UserSettingsUpdateRequest,
-    NotificationPreferencesUpdateRequest,
-    ProfileResponse,
-    UserSettingsResponse,
-    NotificationPreferencesResponse,
-    PublicProfileResponse,
-    ProfileSearchResponse
+    ProfileUpdateRequest
 )
 from app.schemas.auth import MessageResponse
 

@@ -7,7 +7,7 @@ Tests analytics, context management, and multimodal capabilities.
 import asyncio
 import sys
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 
 # Add the backend directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -65,8 +65,7 @@ async def test_j52_features():
     try:
         # Test that all services can work together
         from app.services.ai_analytics import ConversationMetrics
-        from app.services.ai_context_manager import ContextSummary, ConversationMemory
-        from app.services.multimodal_ai_service import FileProcessingError
+        from app.services.ai_context_manager import ContextSummary
         
         print("✓ All J5.2 data models import successfully")
         

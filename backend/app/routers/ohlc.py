@@ -1,6 +1,5 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
 from app.db.schemas.market import OHLCResponse, Timeframe
-from app.services.prices import get_ohlc
 import random
 import time
 

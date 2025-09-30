@@ -11,13 +11,11 @@ This module provides:
 - Performance regression detection and prevention
 """
 
-import asyncio
 import time
 import statistics
-from datetime import datetime, timezone, timedelta
-from typing import Dict, List, Any, Optional, Tuple, Union
+from datetime import datetime, timezone
+from typing import Dict, List, Any
 from dataclasses import dataclass, asdict
-from contextlib import asynccontextmanager
 import json
 import logging
 from enum import Enum

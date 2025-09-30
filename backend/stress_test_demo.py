@@ -5,9 +5,7 @@ Shows the capabilities of our comprehensive stress testing framework
 """
 
 import asyncio
-import time
 import random
-import json
 import psutil
 from datetime import datetime
 
@@ -82,7 +80,7 @@ async def simulate_stress_test_scenarios():
         response_time_p95 = response_time_avg * 1.5
         response_time_p99 = response_time_avg * 2.0
         
-        print(f"   ✅ Test Complete!")
+        print("   ✅ Test Complete!")
         print(f"   📈 Achieved RPS: {actual_rps:.2f}")
         print(f"   ⚡ Avg Response Time: {response_time_avg:.1f}ms")
         print(f"   📊 P95 Response Time: {response_time_p95:.1f}ms")
@@ -96,7 +94,7 @@ async def simulate_stress_test_scenarios():
     
     print("📊 INFRASTRUCTURE STATUS")
     print("=" * 40)
-    print(f"🐳 Redis Server: ✅ Running (container: fynix-redis)")
+    print("🐳 Redis Server: ✅ Running (container: fynix-redis)")
     print(f"💾 Memory Usage: {memory_before:.1f}% → {memory_after:.1f}%")
     print(f"🖥️  CPU Usage: {cpu_before:.1f}% → {cpu_after:.1f}%")
     print()

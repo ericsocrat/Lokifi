@@ -100,17 +100,17 @@ def create_missing_tables_direct():
                     print(f"  {i}. Creating table...")
                     cursor.execute(sql)
                     conn.commit()
-                    print(f"      ✅ Table created successfully")
+                    print("      ✅ Table created successfully")
                 except sqlite3.Error as e:
                     if "already exists" in str(e).lower():
-                        print(f"      ✅ Table already exists")
+                        print("      ✅ Table already exists")
                     else:
                         print(f"      ❌ Failed to create table: {e}")
             
             # Check what tables now exist
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
             tables = cursor.fetchall()
-            print(f"\n📋 Tables now in database:")
+            print("\n📋 Tables now in database:")
             for table in tables:
                 if not table[0].startswith('sqlite_'):
                     print(f"  ✅ {table[0]}")

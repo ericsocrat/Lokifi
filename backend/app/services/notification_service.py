@@ -1,16 +1,13 @@
 # J6 Enterprise Notification Service - Core Implementation
 from typing import Dict, List, Optional, Any, Union, Callable
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import asyncio
 import logging
 import uuid
 from uuid import UUID
-import json
-from dataclasses import dataclass, asdict
-from enum import Enum
+from dataclasses import dataclass
 
 from sqlalchemy import select, func, and_, or_, desc
-from sqlalchemy.orm import selectinload
 
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
@@ -20,7 +17,6 @@ from app.models.notification_models import (
     NotificationType, 
     NotificationPriority
 )
-from app.models.user import User
 
 logger = logging.getLogger(__name__)
 

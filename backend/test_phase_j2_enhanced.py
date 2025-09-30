@@ -3,14 +3,8 @@ Integration tests for Enhanced Profile Features (Phase J2)
 Tests avatar upload, data export, and advanced profile functionality
 """
 
-import pytest
-import asyncio
-import os
-import tempfile
-from pathlib import Path
 from PIL import Image
 import requests
-import json
 import io
 import time
 

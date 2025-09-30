@@ -8,13 +8,11 @@ Advanced API endpoints for J6.2 notification system including:
 - Batch management
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
-from typing import Dict, List, Any, Optional, Union
-from datetime import datetime, timezone, timedelta
+from typing import Dict, List, Any, Optional
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field
-import uuid
-from uuid import UUID
 
 from app.core.security import get_current_user
 from app.models.user import User
@@ -25,7 +23,6 @@ from app.services.smart_notifications import (
     send_rich_notification,
     send_batched_notification,
     schedule_notification,
-    RichNotificationData,
     NotificationTemplate,
     BatchingStrategy,
     DeliveryChannel

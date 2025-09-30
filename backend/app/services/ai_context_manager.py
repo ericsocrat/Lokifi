@@ -9,10 +9,9 @@ import json
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime, timedelta
 from dataclasses import dataclass
-import hashlib
 
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, and_
+from sqlalchemy import desc
 
 from app.db.db import get_session  
 from app.db.models import AIThread, AIMessage

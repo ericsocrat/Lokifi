@@ -3,23 +3,22 @@ Conversation service for direct messaging (J4).
 """
 
 import uuid
-from datetime import datetime, timezone, timedelta
-from typing import Optional, List, Tuple
+from datetime import datetime, timezone
 
-from sqlalchemy import select, func, and_, or_, desc, update
+from sqlalchemy import select, func, desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload, joinedload
+from sqlalchemy.orm import selectinload
 from fastapi import HTTPException, status
 
 from app.models.user import User
 from app.models.profile import Profile
 from app.models.conversation import (
-    Conversation, ConversationParticipant, Message, MessageReceipt, ContentType
+    Conversation, ConversationParticipant, Message, MessageReceipt
 )
 from app.schemas.conversation import (
     ConversationResponse, ConversationListResponse, MessageResponse, 
     MessagesListResponse, ConversationParticipantResponse, MessageCreate,
-    ConversationCreateRequest, MarkReadRequest
+    MarkReadRequest
 )
 
 

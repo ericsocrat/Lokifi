@@ -6,7 +6,7 @@ Comprehensive security-focused validation for all user inputs
 import re
 import html
 import unicodedata
-from typing import Any, Dict, List, Optional, Union
+from typing import Optional
 from urllib.parse import urlparse
 import bleach
 from pydantic import BaseModel, validator

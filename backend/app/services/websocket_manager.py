@@ -5,18 +5,16 @@ WebSocket manager for real-time direct messaging (J4) with J6.2 Redis integratio
 import uuid
 import json
 import logging
-from typing import Dict, Set, Optional, Any
+from typing import Dict, Set, Optional
 from datetime import datetime, timezone
 
-from fastapi import WebSocket, WebSocketDisconnect
-from pydantic import ValidationError
+from fastapi import WebSocket
 
-from app.core.config import settings
 from app.core.security import verify_jwt_token
 from app.core.redis_client import redis_client  # Use enhanced Redis client
 from app.schemas.conversation import (
     TypingIndicatorMessage, NewMessageNotification, 
-    MessageReadNotification, WebSocketMessage, MessageResponse
+    MessageReadNotification, MessageResponse
 )
 from app.services.performance_monitor import performance_monitor
 

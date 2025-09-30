@@ -15,7 +15,7 @@ import time
 import psutil
 import statistics
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Callable
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
 from contextlib import asynccontextmanager
 import json

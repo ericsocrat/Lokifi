@@ -4,10 +4,9 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import os
 import json
-import asyncio
 import httpx
 
-from app.services.auth import auth_handle_from_header, require_handle
+from app.services.auth import auth_handle_from_header
 from app.services.prices import fetch_ohlc
 from app.api.routes.portfolio import portfolio_summary as _portfolio_summary  # reuse
 from app.api.routes.alerts import create_alert as _create_alert              # reuse Pydantic validation

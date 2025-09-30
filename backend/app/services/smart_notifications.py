@@ -10,7 +10,7 @@ Advanced notification features for J6.2 including:
 
 import asyncio
 import logging
-from typing import Dict, List, Any, Optional, Union, Set
+from typing import Dict, List, Any, Optional, Union
 from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass, asdict, field
 from enum import Enum
@@ -21,13 +21,12 @@ from uuid import UUID
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
 from app.models.notification_models import (
-    Notification, 
     NotificationPreference, 
     NotificationType, 
     NotificationPriority
 )
 from app.services.notification_service import notification_service, NotificationData
-from sqlalchemy import select, and_, func
+from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
 

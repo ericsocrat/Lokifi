@@ -3,7 +3,6 @@
 Simple startup script that can import and run the app properly
 """
 import sys
-import os
 from pathlib import Path
 
 # Add the backend directory to Python path

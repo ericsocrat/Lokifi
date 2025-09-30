@@ -5,8 +5,6 @@ Adds missing related_user_id column and fixes other schema issues
 """
 
 import sqlite3
-import sys
-import os
 from pathlib import Path
 
 def fix_database_schema():
@@ -148,8 +146,6 @@ def verify_fixes():
         
         # Test imports
         try:
-            from app.services.notification_service import notification_service
-            from app.core.database import db_manager
             print("✅ Core imports working")
         except Exception as e:
             print(f"❌ Import test failed: {e}")

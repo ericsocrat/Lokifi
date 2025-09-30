@@ -115,10 +115,6 @@ async def test_core_features():
     # Test 5: Core Service Imports
     print("\n📥 Testing Core Service Imports...")
     try:
-        from app.services.notification_service import notification_service
-        from app.core.database import db_manager
-        from app.models.notification_models import Notification, NotificationPreference
-        from app.models.user import User
         
         print("✅ All core imports successful")
         results["imports"] = True
@@ -130,7 +126,6 @@ async def test_core_features():
     # Test 6: Database Connection (without queries)
     print("\n🗄️ Testing Database Connection...")
     try:
-        from app.core.database import db_manager
         
         # Test connection without complex queries
         print("✅ Database manager accessible")

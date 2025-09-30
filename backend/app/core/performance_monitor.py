@@ -3,10 +3,9 @@ Performance monitoring utilities for Phase K
 """
 
 import time
-import asyncio
 import logging
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator, Dict, Any, Optional
+from typing import AsyncGenerator, Dict, Any
 from functools import wraps
 
 logger = logging.getLogger(__name__)

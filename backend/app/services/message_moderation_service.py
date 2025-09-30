@@ -5,8 +5,7 @@ Enhanced message moderation service for J4 Direct Messages.
 import uuid
 import re
 import logging
-from typing import List, Dict, Optional, Tuple
-from datetime import datetime, timezone
+from typing import List, Dict, Optional
 from enum import Enum
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,7 +13,6 @@ from sqlalchemy import select, update
 from pydantic import BaseModel
 
 from app.models.conversation import Message
-from app.models.user import User
 
 logger = logging.getLogger(__name__)
 

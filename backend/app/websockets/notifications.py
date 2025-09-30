@@ -1,13 +1,10 @@
 # J6 Enterprise Notifications - WebSocket Real-time Delivery
-import asyncio
 import json
 import logging
-from typing import Dict, Set, Optional, Any, List
+from typing import Dict, Set, Any
 from datetime import datetime, timezone
-from dataclasses import asdict
-from uuid import UUID
 
-from fastapi import WebSocket, WebSocketDisconnect, Depends, HTTPException
+from fastapi import WebSocket
 from fastapi.routing import APIRouter
 
 # We'll handle auth differently - remove the problematic import for now

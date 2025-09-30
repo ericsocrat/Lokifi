@@ -4,15 +4,12 @@ Database configuration and connection management.
 
 import os
 import sys
-from contextlib import contextmanager
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.pool import NullPool
 
 # Import Base from core database for consistency
-from app.core.database import Base
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fynix:fynix@localhost:5432/fynix")
 

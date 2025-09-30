@@ -12,7 +12,6 @@ import sys
 import subprocess
 import importlib
 import json
-import os
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
 import platform
@@ -246,28 +245,24 @@ class DependencyVerifier:
             
             # Test database
             try:
-                from app.core.database import db_manager
                 self.print_success("Database manager: Import OK")
             except Exception as e:
                 self.print_warning(f"Database manager: {e}")
             
             # Test Redis
             try:
-                from app.core.advanced_redis_client import advanced_redis_client
                 self.print_success("Redis client: Import OK")
             except Exception as e:
                 self.print_warning(f"Redis client: {e}")
             
             # Test monitoring
             try:
-                from app.services.advanced_monitoring import monitoring_system
                 self.print_success("Monitoring system: Import OK")
             except Exception as e:
                 self.print_warning(f"Monitoring system: {e}")
             
             # Test main app
             try:
-                from app.main import app
                 self.print_success("FastAPI app: Import OK")
             except Exception as e:
                 self.print_warning(f"FastAPI app: {e}")

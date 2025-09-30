@@ -6,8 +6,6 @@ Provides tools for database migration, monitoring, and maintenance
 
 import asyncio
 import click
-import json
-from datetime import datetime, timedelta
 from typing import Optional
 import logging
 
@@ -41,7 +39,7 @@ def migrate(source: str, target: str, batch_size: int):
                 batch_size=batch_size
             )
             
-            click.echo(f"✅ Migration completed!")
+            click.echo("✅ Migration completed!")
             click.echo(f"   Users migrated: {result['users_migrated']}")
             click.echo(f"   Threads migrated: {result['threads_migrated']}")  
             click.echo(f"   Messages migrated: {result['messages_migrated']}")
@@ -121,7 +119,7 @@ def archive(batch_size: int, dry_run: bool):
         if not dry_run:
             stats = await archival_service.archive_old_conversations(batch_size=batch_size)
             
-            click.echo(f"✅ Archival completed!")
+            click.echo("✅ Archival completed!")
             click.echo(f"   Threads archived: {stats.threads_archived}")
             click.echo(f"   Messages archived: {stats.messages_archived}")
             click.echo(f"   Duration: {stats.operation_duration:.2f}s")
@@ -147,7 +145,7 @@ def compress(batch_size: int):
         
         stats = await archival_service.compress_old_messages(batch_size=batch_size)
         
-        click.echo(f"✅ Compression completed!")
+        click.echo("✅ Compression completed!")
         click.echo(f"   Messages compressed: {stats.messages_compressed}")
         click.echo(f"   Space freed: {stats.space_freed_mb:.2f} MB")
         click.echo(f"   Duration: {stats.operation_duration:.2f}s")
@@ -173,7 +171,7 @@ def cleanup():
         
         stats = await archival_service.delete_expired_conversations()
         
-        click.echo(f"✅ Cleanup completed!")
+        click.echo("✅ Cleanup completed!")
         click.echo(f"   Messages deleted: {stats.messages_deleted}")
         click.echo(f"   Threads deleted: {stats.threads_archived}")
         click.echo(f"   Duration: {stats.operation_duration:.2f}s")
@@ -207,7 +205,7 @@ def maintenance():
         after_metrics = await archival_service.get_storage_metrics()
         space_freed = before_metrics.total_size_mb - after_metrics.total_size_mb
         
-        click.echo(f"✅ Maintenance cycle completed!")
+        click.echo("✅ Maintenance cycle completed!")
         click.echo(f"   Database size after: {after_metrics.total_size_mb:.2f} MB")
         click.echo(f"   Space freed: {space_freed:.2f} MB")
         
@@ -277,7 +275,7 @@ def emergency_cleanup(days: Optional[int]):
         task_result = result.get(timeout=1800)  # 30 minutes timeout
         
         if task_result['success']:
-            click.echo(f"✅ Emergency cleanup completed!")
+            click.echo("✅ Emergency cleanup completed!")
             click.echo(f"   Space freed: {task_result['space_freed_mb']:.2f} MB")
             click.echo(f"   Messages archived: {task_result['archive_stats']['messages_archived']}")
             click.echo(f"   Messages compressed: {task_result['compress_stats']['messages_compressed']}")

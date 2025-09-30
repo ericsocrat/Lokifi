@@ -18,13 +18,11 @@ import websockets
 import time
 import statistics
 from datetime import datetime, timezone
-from typing import Dict, List, Any, Optional, Callable, Tuple
+from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, asdict
-from concurrent.futures import ThreadPoolExecutor
 import json
 import logging
 import random
-import uuid
 
 logger = logging.getLogger(__name__)
 

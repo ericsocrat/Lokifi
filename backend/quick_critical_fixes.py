@@ -4,7 +4,6 @@ Quick Critical Fix Implementation
 Fixes the most pressing issues identified in the analysis
 """
 
-import sys
 import os
 from pathlib import Path
 

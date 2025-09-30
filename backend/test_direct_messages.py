@@ -5,18 +5,14 @@ Tests for direct messaging functionality (J4).
 import os
 import uuid
 import pytest
-import asyncio
 from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
-from app.main import app
 from app.models.user import User
-from app.models.conversation import Conversation, ConversationParticipant, Message, ContentType
+from app.models.conversation import Conversation, ContentType
 from app.services.conversation_service import ConversationService
 from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import ConnectionManager

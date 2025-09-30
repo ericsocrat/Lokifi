@@ -4,7 +4,6 @@ Tests core profile features to validate implementation
 """
 
 import requests
-import json
 import time
 
 BASE_URL = "http://localhost:8000"
@@ -96,7 +95,6 @@ def check_frontend_files():
     print("\n🌐 Checking Frontend Files")
     print("=" * 30)
     
-    import os
     from pathlib import Path
     
     frontend_files = [

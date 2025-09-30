@@ -7,15 +7,15 @@ Handles AI thread creation, messaging, and provider management.
 
 import logging
 import base64
-from typing import List, Dict, Any, Optional
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, File, UploadFile
+from typing import List, Optional
+from fastapi import APIRouter, Depends, HTTPException, status, File, UploadFile
 from fastapi.responses import StreamingResponse, Response
 from sqlalchemy.orm import Session
 import json
 from datetime import datetime
 
 from app.api.deps import get_current_user, get_db
-from app.db.models import User, AIThread, AIMessage
+from app.db.models import User, AIMessage
 from app.schemas.ai_schemas import (
     AIThreadCreate,
     AIThreadResponse,

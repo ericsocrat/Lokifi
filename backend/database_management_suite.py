@@ -13,13 +13,11 @@ This script provides comprehensive database management tools including:
 
 import asyncio
 import json
-import os
 import sys
-import time
 import subprocess
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Dict, Optional, Any
 
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent

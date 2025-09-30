@@ -1,23 +1,18 @@
 # J6 Enterprise Notifications - Comprehensive Test Suite
 import pytest
-import asyncio
 from datetime import datetime, timedelta, timezone
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
-from typing import Dict, List, Any
-import json
+from unittest.mock import Mock, AsyncMock, patch
 import uuid
 
 from app.models.notification_models import (
     Notification, 
-    NotificationPreference, 
     NotificationType, 
     NotificationPriority
 )
 from app.services.notification_service import (
     notification_service, 
     NotificationData, 
-    NotificationStats,
-    NotificationEvent
+    NotificationStats
 )
 from app.services.notification_emitter import notification_emitter
 from app.integrations.notification_hooks import notification_integration

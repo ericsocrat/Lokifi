@@ -7,11 +7,10 @@ Implements key stress test scenarios with baseline metrics
 import asyncio
 import aiohttp
 import time
-import random
 import json
 import statistics
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Tuple
 import traceback
 
 class SimpleStressTester:
@@ -137,7 +136,7 @@ class SimpleStressTester:
         
         self.results.append(result)
         
-        print(f"   ✅ Results:")
+        print("   ✅ Results:")
         print(f"      📊 {successful_requests}/{total_requests_made} success ({success_rate:.1f}%)")
         print(f"      🚀 {rps:.1f} RPS")
         print(f"      ⚡ {avg_response_time:.1f}ms avg, {p95_response_time:.1f}ms P95")
@@ -352,7 +351,7 @@ async def main():
             json.dump(results, f, indent=2, default=str)
         
         # Display summary
-        print(f"\n" + "=" * 60)
+        print("\n" + "=" * 60)
         print("📊 BASELINE STRESS TEST RESULTS")
         print("=" * 60)
         
@@ -363,18 +362,18 @@ async def main():
         print(f"🚀 Average RPS: {baseline['average_rps']}")
         print(f"⚡ Average Response: {baseline['average_response_time_ms']}ms")
         
-        print(f"\n🎯 ENDPOINT ANALYSIS:")
+        print("\n🎯 ENDPOINT ANALYSIS:")
         analysis = results["endpoint_analysis"]
         print(f"🥇 Best: {analysis['best_performing']['endpoint']} ({analysis['best_performing']['success_rate']}% success)")
         print(f"🚨 Worst: {analysis['worst_performing']['endpoint']} ({analysis['worst_performing']['success_rate']}% success)")
         print(f"⚡ Fastest: {analysis['fastest_response']['endpoint']} ({analysis['fastest_response']['avg_response_time_ms']}ms)")
         print(f"🐌 Slowest: {analysis['slowest_response']['endpoint']} ({analysis['slowest_response']['avg_response_time_ms']}ms)")
         
-        print(f"\n💡 RECOMMENDATIONS:")
+        print("\n💡 RECOMMENDATIONS:")
         for rec in results["recommendations"]:
             print(f"   {rec}")
         
-        print(f"\n📄 Full results saved to: baseline_stress_test_results.json")
+        print("\n📄 Full results saved to: baseline_stress_test_results.json")
         
         # Performance grade
         score = baseline['performance_score']

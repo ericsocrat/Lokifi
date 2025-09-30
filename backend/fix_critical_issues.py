@@ -4,10 +4,7 @@ Critical Issue Resolver for Fynix Phase K
 Automatically fixes the most critical issues identified in the codebase
 """
 
-import os
-import sys
 import re
-from typing import Dict, List, Tuple
 from pathlib import Path
 
 class CriticalIssueResolver:
@@ -338,7 +335,7 @@ class AIMessage(Base):
             self.fix_missing_return_statements()
             self.create_missing_imports_fix()
             
-            print(f"\n✅ Critical Issue Resolution Complete!")
+            print("\n✅ Critical Issue Resolution Complete!")
             print(f"📊 Applied {len(self.fixes_applied)} fixes:")
             
             for i, fix in enumerate(self.fixes_applied, 1):

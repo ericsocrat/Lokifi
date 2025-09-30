@@ -9,10 +9,7 @@ RESTful API endpoints for monitoring and observability:
 """
 
 from fastapi import APIRouter, HTTPException, Query, Depends
-from fastapi.responses import JSONResponse
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timezone, timedelta
-import asyncio
+from typing import Optional, Dict
 
 from app.services.advanced_monitoring import monitoring_system
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager

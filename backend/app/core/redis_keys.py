@@ -4,7 +4,7 @@ Provides consistent Redis key patterns and centralized management
 """
 
 import hashlib
-from typing import Optional, Union, Any
+from typing import Optional, Union
 from enum import Enum
 
 class RedisKeyspace(str, Enum):
