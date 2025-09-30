@@ -1,8 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { createJSONStorage } from "zustand/middleware";
 import type { Alert, AlertEvent } from "@/lib/alerts";
-import { StateCreator } from "zustand";
+import { create, StateCreator } from "zustand";
+import { persist } from "zustand/middleware";
 
 type SetState = Parameters<StateCreator<ChartState>>[0];
 type GetState = Parameters<StateCreator<ChartState>>[1];
@@ -118,7 +116,7 @@ export interface ChartState {
   // alerts
   alerts: Alert[];
   alertEvents: AlertEvent[];
-  addAlert: (alert: Omit<Alert, 'id'|'enabled'|'triggers'>) => void;
+  addAlert: (alert: Omit<Alert, 'id' | 'enabled' | 'triggers'>) => void;
   removeAlert: (id: string) => void;
   toggleAlert: (id: string) => void;
   updateAlert: (id: string, patch: Partial<Alert>) => void;
@@ -129,7 +127,7 @@ export interface ChartState {
   setSymbol: (sym: string) => void;
   setTimeframe: (tf: string) => void;
   setAll: (state: Partial<ChartState>) => void;
-  
+
   // drawing actions
   addDrawing: (d: any) => void;
   updateDrawing: (id: string, updater: (d: any) => any) => void;
@@ -142,7 +140,7 @@ export interface ChartState {
   duplicateSelected: () => void;
   alignSelected: (direction: 'left' | 'right' | 'top' | 'bottom') => void;
   distributeSelected: (direction: 'h' | 'v') => void;
-  
+
   // selection management
   clearSelection: () => void;
   setSelection: (ids: Set<string>) => void;
@@ -246,7 +244,7 @@ export const useChartStore =
 
       alerts: [],
       alertEvents: [],
-      addAlert: (a: Omit<Alert, 'id'|'enabled'|'triggers'>) => {
+      addAlert: (a: Omit<Alert, 'id' | 'enabled' | 'triggers'>) => {
         set({
           alerts: [...get().alerts, {
             id: crypto.randomUUID(),
@@ -258,14 +256,14 @@ export const useChartStore =
       },
       removeAlert: (id: string) => set({ alerts: get().alerts.filter(a => a.id !== id) }),
       updateAlert: (id: string, patch: Partial<Alert>) => set({ alerts: get().alerts.map(a => a.id === id ? { ...a, ...patch } : a) }),
-      toggleAlert: (id: string) => set({ alerts: get().alerts.map(a => a.id === id ? {...a, enabled: !a.enabled} : a) }),
-      snoozeAlert: (id: string, until: number|undefined) => set({ alerts: get().alerts.map(a => a.id === id ? {...a, snoozedUntil: until} : a) }),
+      toggleAlert: (id: string) => set({ alerts: get().alerts.map(a => a.id === id ? { ...a, enabled: !a.enabled } : a) }),
+      snoozeAlert: (id: string, until: number | undefined) => set({ alerts: get().alerts.map(a => a.id === id ? { ...a, snoozedUntil: until } : a) }),
       clearAlertEvents: () => set({ alertEvents: [] }),
 
       setSymbol: (sym: string) => set({ symbol: sym }),
       setTimeframe: (tf: string) => set({ timeframe: tf }),
       setAll: (state: Partial<ChartState>) => set(state),
-      
+
       // Indicator methods
       toggleIndicator: (key: keyof IndicatorFlags) => {
         const indicators = get().indicators;
@@ -274,12 +272,12 @@ export const useChartStore =
 
       // Drawing methods
       setSelectedStyle: (style: Partial<DrawingStyle>) => {
-        const drawings = get().drawings.map(d => 
+        const drawings = get().drawings.map(d =>
           get().selection.has(d.id) ? { ...d, ...style } : d
         );
         set({ drawings });
       },
-      
+
       bringToFront: () => {
         const drawings = [...get().drawings];
         const selected = new Set(get().selection);
@@ -324,7 +322,7 @@ export const useChartStore =
       },
 
       setFibLevelsForSelected: (levels: number[]) => {
-        const drawings = get().drawings.map(d => 
+        const drawings = get().drawings.map(d =>
           get().selection.has(d.id) && d.type === 'fib' ? { ...d, levels } : d
         );
         set({ drawings });
@@ -399,7 +397,7 @@ export const useChartStore =
 
       deleteSelected: () => {
         const sel = get().selection;
-        set({ 
+        set({
           drawings: get().drawings.filter(d => !sel.has(d.id)),
           selection: new Set()
         });
@@ -528,7 +526,7 @@ export const useChartStore =
         const layers = [...get().layers];
         const idx = layers.findIndex(l => l.id === layerId);
         if (idx === -1) return;
-        
+
         if (direction === 'up' && idx > 0) {
           const temp = layers[idx - 1].order;
           layers[idx - 1].order = layers[idx].order;
@@ -540,7 +538,7 @@ export const useChartStore =
           layers[idx].order = temp;
           [layers[idx + 1], layers[idx]] = [layers[idx], layers[idx + 1]];
         }
-        
+
         set({ layers });
       },
 
@@ -628,7 +626,7 @@ export const useChartStore =
 (useChartStore as any).subscribe = (cb: (s: ChartState) => void) => {
   let prev = (useChartStore as any).getState();
   const unsub = (useChartStore as any)((s: ChartState) => {
-    if (s !== prev) { prev = s; try { cb(s); } catch {} }
+    if (s !== prev) { prev = s; try { cb(s); } catch { } }
   });
-  return () => { try { unsub(); } catch {} };
+  return () => { try { unsub(); } catch { } };
 };

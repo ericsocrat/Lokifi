@@ -1,13 +1,11 @@
 ﻿"use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "@/src/components/AuthProvider";
-import { requireAuth } from "@/src/lib/auth-guard";
-import { addPosition, deletePosition, getPortfolioSummary, listPortfolio, type Position, type PortfolioSummary } from "@/src/lib/portfolio";
 import { AuthModal } from "@/src/components/AuthModal";
+import { requireAuth } from "@/src/lib/auth-guard";
+import { addPosition, deletePosition, getPortfolioSummary, listPortfolio, type PortfolioSummary, type Position } from "@/src/lib/portfolio";
+import { useEffect, useState } from "react";
 
 export default function PortfolioPage() {
-  const { user, loading } = useAuth();
   const [needAuthModal, setNeedAuthModal] = useState(false);
 
   const [positions, setPositions] = useState<Position[]>([]);
@@ -55,8 +53,6 @@ export default function PortfolioPage() {
     }
   }
 
-  const totalPL = useMemo(() => summary?.total_pl ?? 0, [summary]);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -67,10 +63,10 @@ export default function PortfolioPage() {
 
       <div className="rounded-2xl border border-neutral-800 p-4 bg-neutral-900 space-y-3">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Symbol (e.g., BTCUSD)" value={form.symbol} onChange={(e)=>setForm({...form, symbol:e.target.value})} />
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Qty" value={form.qty} onChange={(e)=>setForm({...form, qty:e.target.value})} />
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Cost basis" value={form.cb} onChange={(e)=>setForm({...form, cb:e.target.value})} />
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Tags (comma sep)" value={form.tags} onChange={(e)=>setForm({...form, tags:e.target.value})} />
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Symbol (e.g., BTCUSD)" value={form.symbol} onChange={(e) => setForm({ ...form, symbol: e.target.value })} />
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Qty" value={form.qty} onChange={(e) => setForm({ ...form, qty: e.target.value })} />
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Cost basis" value={form.cb} onChange={(e) => setForm({ ...form, cb: e.target.value })} />
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Tags (comma sep)" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} />
           <button disabled={busy} onClick={add} className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60">Add / Update</button>
         </div>
         {err && <p className="text-sm text-red-400">{err}</p>}
@@ -85,7 +81,7 @@ export default function PortfolioPage() {
               <div className="text-sm text-neutral-400">Px {p.current_price ?? "-"} · MV {p.market_value ?? "-"} · P/L {p.unrealized_pl ?? "-"} ({p.pl_pct?.toFixed(2) ?? "-"}%)</div>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={async ()=>{ await deletePosition(p.id); await refresh(); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-sm">Delete</button>
+              <button onClick={async () => { await deletePosition(p.id); await refresh(); }} className="px-3 py-1.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-sm">Delete</button>
             </div>
           </div>
         ))}

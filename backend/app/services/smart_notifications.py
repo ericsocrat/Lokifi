@@ -101,8 +101,6 @@ class SmartNotificationProcessor:
     ) -> bool | str:
         """Process a rich notification with advanced features"""
         try:
-            user_id_str = str(notification_data.user_id)
-            
             # Check if notification should be scheduled
             if notification_data.scheduled_for:
                 return await self._schedule_notification(notification_data)
@@ -145,8 +143,6 @@ class SmartNotificationProcessor:
         notification_data: RichNotificationData
     ) -> bool | str:
         """Apply batching strategy to notification"""
-        user_id_str = str(notification_data.user_id)
-        
         if notification_data.batch_strategy == BatchingStrategy.SMART_GROUPING:
             return await self._smart_group_notification(notification_data)
         elif notification_data.batch_strategy == BatchingStrategy.TIME_BASED:
@@ -163,7 +159,7 @@ class SmartNotificationProcessor:
     ) -> str:
         """Smart grouping based on notification type and content"""
         user_id_str = str(notification_data.user_id)
-        grouping_key = notification_data.grouping_key or f"{notification_data.type.value}_{user_id_str}"
+        # grouping_key = notification_data.grouping_key or f"{notification_data.type.value}_{user_id_str}"
         
         # Check for existing batch
         existing_batch = None

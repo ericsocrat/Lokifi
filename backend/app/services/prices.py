@@ -13,14 +13,12 @@ def _is_equity(symbol: str) -> bool:
 
 
 async def _try_chain(tasks: Iterable[Callable[[], Awaitable[Any]]]):
-    last = None
     for fn in tasks:
         try:
             data = await fn()
             if data:
                 return data
-        except Exception as e:
-            last = e
+        except Exception:
             continue  # Continue to next provider instead of raising
     
     # Don't raise exception, return empty list so fallback can be used

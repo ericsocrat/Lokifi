@@ -1,21 +1,20 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../src/components/AuthProvider';
-import { authToken } from '../../../src/lib/auth';
-import { Navbar } from '../../../src/components/Navbar';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { 
-    Save, 
-    ArrowLeft, 
-    Camera, 
-    User, 
-    Globe, 
+import {
+    ArrowLeft,
+    Globe,
     Lock,
+    Save,
     Upload,
+    User,
     X
 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useAuth } from '../../../src/components/AuthProvider';
+import { Navbar } from '../../../src/components/Navbar';
+import { authToken } from '../../../src/lib/auth';
 
 interface Profile {
     id: string;
@@ -98,7 +97,7 @@ export default function EditProfilePage() {
                 setError('Avatar file must be less than 5MB');
                 return;
             }
-            
+
             if (!file.type.startsWith('image/')) {
                 setError('Avatar must be an image file');
                 return;
@@ -188,12 +187,12 @@ export default function EditProfilePage() {
     return (
         <div className="min-h-screen bg-gray-900">
             <Navbar />
-            
+
             <div className="container mx-auto px-4 py-8 max-w-2xl">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div className="flex items-center space-x-4">
-                        <Link 
+                        <Link
                             href="/profile"
                             className="p-2 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
                         >
@@ -221,12 +220,12 @@ export default function EditProfilePage() {
                     {/* Avatar Section */}
                     <div className="bg-gray-800 rounded-lg p-6">
                         <h3 className="text-lg font-semibold text-white mb-4">Profile Picture</h3>
-                        
+
                         <div className="flex items-center space-x-6">
                             <div className="relative">
                                 {avatarPreview ? (
-                                    <img 
-                                        src={avatarPreview} 
+                                    <img
+                                        src={avatarPreview}
                                         alt="Avatar preview"
                                         className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
                                     />
@@ -235,7 +234,7 @@ export default function EditProfilePage() {
                                         <User className="w-12 h-12 text-gray-400" />
                                     </div>
                                 )}
-                                
+
                                 {avatarPreview && (
                                     <button
                                         type="button"
@@ -246,7 +245,7 @@ export default function EditProfilePage() {
                                     </button>
                                 )}
                             </div>
-                            
+
                             <div className="flex-1">
                                 <label className="block">
                                     <input
@@ -270,7 +269,7 @@ export default function EditProfilePage() {
                     {/* Basic Information */}
                     <div className="bg-gray-800 rounded-lg p-6">
                         <h3 className="text-lg font-semibold text-white mb-4">Basic Information</h3>
-                        
+
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -329,7 +328,7 @@ export default function EditProfilePage() {
                     {/* Privacy Settings */}
                     <div className="bg-gray-800 rounded-lg p-6">
                         <h3 className="text-lg font-semibold text-white mb-4">Privacy Settings</h3>
-                        
+
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-3">
@@ -361,7 +360,7 @@ export default function EditProfilePage() {
 
                     {/* Save Button */}
                     <div className="flex items-center justify-end space-x-4">
-                        <Link 
+                        <Link
                             href="/profile"
                             className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
                         >

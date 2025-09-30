@@ -1,14 +1,13 @@
 "use client";
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
-import { indicatorStore } from '../lib/indicatorStore';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { usePaneStore } from '../lib/paneStore';
 import { symbolStore } from '../lib/symbolStore';
 import { timeframeStore } from '../lib/timeframeStore';
-import { usePaneStore } from '../lib/paneStore';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
-import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
-import { Eye, EyeOff, Lock, Unlock, GripVertical } from 'lucide-react';
 
 // Chart component with proper hook usage
 const ChartContainer = ({ children, ...props }: any) => {
@@ -25,7 +24,7 @@ const Chart = dynamic(
   () => import('lightweight-charts').then(mod => ({
     default: ChartContainer
   })),
-  { 
+  {
     ssr: false,
     loading: () => <ChartLoadingState />
   }
@@ -52,7 +51,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  
+
   const symbol = symbolStore.get();
   const timeframe = timeframeStore.get();
   const { togglePaneVisibility, togglePaneLock } = usePaneStore();
@@ -72,7 +71,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
 
     try {
       const { createChart } = await import('lightweight-charts');
-      
+
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
         height: height,
@@ -105,10 +104,10 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
       });
 
       candlestickSeries.setData(mockData);
-      
+
       chartRef.current = chart;
       seriesRef.current = candlestickSeries;
-      
+
       // Setup ResizeObserver
       if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
         resizeObserverRef.current = new ResizeObserver(() => {
@@ -119,7 +118,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
             });
           }
         });
-        
+
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
 
@@ -210,7 +209,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
       </div>
 
       {/* Chart Container */}
-      <div 
+      <div
         ref={chartContainerRef}
         style={{ height: `${height}px` }}
         className="relative bg-gray-900"
@@ -220,9 +219,8 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
       {!isLocked && (
         <div
           onMouseDown={handleResize}
-          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${
-            isDragging ? 'bg-blue-500/30' : ''
-          }`}
+          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${isDragging ? 'bg-blue-500/30' : ''
+            }`}
         >
           <GripVertical className="w-4 h-4 text-gray-500" />
         </div>
@@ -256,8 +254,8 @@ export const MultiPaneChart: React.FC = () => {
 
   return (
     <ChartErrorBoundary>
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >

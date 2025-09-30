@@ -1,21 +1,17 @@
 "use client";
-import React from 'react';
-import { useEffect, useRef, useState } from "react";
-import { createChart, Time, IChartApi, ISeriesApi } from "lightweight-charts";
-import useSWR from "swr";
+import ChartSidebar from "@/components/ChartSidebar";
 import { API } from "@/lib/api";
+import { drawStore, type Shape } from "@/lib/drawStore";
+import { indicatorStore } from "@/lib/indicatorStore";
+import { bollinger, ema, macd, rsi, stddevChannels, vwap, vwma } from "@/lib/indicators";
 import { symbolStore } from "@/lib/symbolStore";
 import { timeframeStore } from "@/lib/timeframeStore";
-import { indicatorStore } from "@/lib/indicatorStore";
-import { ema, rsi, macd, bollinger, vwap, vwma, stddevChannels } from "@/lib/indicators";
-import type { FynixWindow, FynixGlobalThis, PluginSettingsStore, PluginSymbolSettings } from "@/types/fynix";
-import { drawStore, type Shape } from "@/lib/drawStore";
-import DrawToolbar from "@/components/DrawToolbar";
-import PluginSideToolbar from "@/components/PluginSideToolbar";
-import LeftDock from "@/components/LeftDock";
-import ChartSidebar from "@/components/ChartSidebar";
-import { pluginManager } from "@/plugins/registry";
 import type { OHLCResponse } from "@/lib/types";
+import { pluginManager } from "@/plugins/registry";
+import type { FynixGlobalThis, FynixWindow } from "@/types/fynix";
+import { createChart, IChartApi, ISeriesApi, Time } from "lightweight-charts";
+import { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 
 // Helpers that were missing
 function angleDeg(x1: number, y1: number, x2: number, y2: number) {
@@ -105,10 +101,10 @@ export default function ChartPanel() {
           fibPreset: s.fibPreset,
           fibCustomLevels: s.fibCustomLevels
         });
-      } catch {}
+      } catch { }
     };
     (window as any).__fynixClearSymbolSettings = () => {
-      try { pssym?.clear?.(sym, tf); } catch {}
+      try { pssym?.clear?.(sym, tf); } catch { }
     };
     return () => { delete (window as any).__fynixApplySymbolSettings; delete (window as any).__fynixClearSymbolSettings; };
   }, [sym, tf]);
@@ -118,7 +114,7 @@ export default function ChartPanel() {
     const el = ref.current;
     const chartData = mockData; // Always use mock data for now
     if (!el || !chartData) return;
-    
+
     const mainHeight = (inds.rsi || inds.macd) ? 360 : 520;
     const chart = createChart(el, {
       height: mainHeight,
@@ -240,7 +236,7 @@ export default function ChartPanel() {
           try { const ov = pssym.get(sym, tf); return { ...base, ...ov }; } catch { return base; }
         };
       }
-    } catch {}
+    } catch { }
     pluginManager.setEnv({ chart, candle, canvas, snap: nearestSnap });
 
     return () => {
@@ -487,7 +483,7 @@ export default function ChartPanel() {
       a: { t: number; p: number };
       b?: { t: number; p: number };
     }
-    
+
     let drafting: DraftingShape | null = null;
     let dragMode: null | { kind: 'move' | 'move-group' | 'handle', id?: string, handle?: string, start: { t: number, p: number } } = null;
     let marquee: null | { x0: number, y0: number, x1: number, y1: number, add: boolean } = null;

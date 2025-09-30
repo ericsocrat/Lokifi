@@ -1,4 +1,4 @@
-import type { Time } from 'lightweight-charts'
+import type { Time } from 'lightweight-charts';
 
 export type Candle = { time: Time; open: number; high: number; low: number; close: number; volume: number }
 
@@ -16,12 +16,12 @@ export function downsampleCandlesMinMax(data: Candle[], target: number): Candle[
     const end = Math.min(data.length, Math.floor(i + bucketSize))
     if (end - start <= 0) break
     let high = -Infinity, low = Infinity
-    const open = data[start].open, close = data[end-1].close
+    const open = data[start].open, close = data[end - 1].close
     let vol = 0
-    for (let j=start; j<end; j++){
+    for (let j = start; j < end; j++) {
       const c = data[j]
       if (c.high > high) high = c.high
-      if (c.low  < low ) low  = c.low
+      if (c.low < low) low = c.low
       vol += c.volume || 0
     }
     const mid = Math.floor((start + end - 1) / 2)
@@ -41,7 +41,7 @@ export function downsampleLineMinMax(xs: Array<{ time: Time; value: number }>, t
     const end = Math.min(xs.length, Math.floor(i + bucket))
     if (end - start <= 0) break
     let hi = -Infinity, lo = Infinity, hiIdx = start, loIdx = start
-    for (let j=start; j<end; j++){
+    for (let j = start; j < end; j++) {
       const v = xs[j].value
       if (v > hi) { hi = v; hiIdx = j }
       if (v < lo) { lo = v; loIdx = j }
@@ -60,8 +60,8 @@ export function timeToSec(t: Time): number {
   if (typeof (t as any) === 'string') return Number(t)
   const bd = t as any
   if (bd && typeof bd === 'object' && 'year' in bd && 'month' in bd && 'day' in bd) {
-    const d = new Date(Date.UTC(bd.year, (bd.month||1)-1, bd.day))
-    return Math.floor(d.getTime()/1000)
+    const d = new Date(Date.UTC(bd.year, (bd.month || 1) - 1, bd.day))
+    return Math.floor(d.getTime() / 1000)
   }
   return 0
 }
@@ -92,8 +92,8 @@ export function upperBoundByTime(data: Candle[], ts: number): number {
 export function sliceByTimeWindow(data: Candle[], fromSec: number, toSec: number): Candle[] {
   if (!data.length) return data
   if (fromSec > toSec) [fromSec, toSec] = [toSec, fromSec]
-  const start = Math.max(0, Math.min(data.length-1, lowerBoundByTime(data, fromSec)))
-  const end   = Math.max(-1, Math.min(data.length-1, upperBoundByTime(data, toSec)))
+  const start = Math.max(0, Math.min(data.length - 1, lowerBoundByTime(data, fromSec)))
+  const end = Math.max(-1, Math.min(data.length - 1, upperBoundByTime(data, toSec)))
   if (end < start) return []
   return data.slice(start, end + 1)
 }

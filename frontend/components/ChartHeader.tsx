@@ -1,11 +1,11 @@
 "use client";
-import React, { useState } from 'react';
-import { BarChart3, Layers, Settings, Eye, EyeOff } from 'lucide-react';
+import { BarChart3, Layers, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { indicatorStore } from '../lib/indicatorStore';
 import { symbolStore } from '../lib/symbolStore';
 import { timeframeStore } from '../lib/timeframeStore';
-import { indicatorStore } from '../lib/indicatorStore';
-import { IndicatorModal } from './IndicatorModalV2';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
+import { IndicatorModal } from './IndicatorModalV2';
 
 interface ChartHeaderProps {
   onOpenObjectTree?: () => void;
@@ -73,25 +73,25 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
               className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M0 0h16v1H0V0zm0 7h16v1H0V7zm0 8h16v1H0v-1z"/>
-                <path d="M0 0h1v16H0V0zm7 0h1v16H7V0zm8 0h1v16h-1V0z"/>
+                <path d="M0 0h16v1H0V0zm0 7h16v1H0V7zm0 8h16v1H0v-1z" />
+                <path d="M0 0h1v16H0V0zm7 0h1v16H7V0zm8 0h1v16h-1V0z" />
               </svg>
             </button>
-            
+
             <button
               title="Toggle Volume"
               className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
             >
               <BarChart3 size={16} />
             </button>
-            
+
             <button
               title="Toggle Crosshair"
               className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M8 0v6H7V0h1zM8 10v6H7v-6h1zM0 8h6V7H0v1zm10 0h6V7h-6v1z"/>
-                <circle cx="8" cy="8" r="1.5"/>
+                <path d="M8 0v6H7V0h1zM8 10v6H7v-6h1zM0 8h6V7H0v1zm10 0h6V7h-6v1z" />
+                <circle cx="8" cy="8" r="1.5" />
               </svg>
             </button>
           </div>
@@ -99,7 +99,7 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
       </div>
 
       {/* Indicator Modal */}
-      <IndicatorModal 
+      <IndicatorModal
         isOpen={isIndicatorModalOpen}
         onClose={() => setIsIndicatorModalOpen(false)}
       />

@@ -81,15 +81,15 @@ class NotificationAnalytics:
             
         try:
             async for session in db_manager.get_session(read_only=True):
-                # Query notifications within date range
-                notifications = await session.execute(
-                    select(Notification).where(
-                        and_(
-                            Notification.created_at >= start_date,
-                            Notification.created_at <= end_date
-                        )
-                    )
-                )
+                # Query notifications within date range - count only
+                # notifications = await session.execute(
+                #     select(Notification).where(
+                #         and_(
+                #             Notification.created_at >= start_date,
+                #             Notification.created_at <= end_date
+                #         )
+                #     )
+                # )
                 
                 # Get basic counts
                 total_result = await session.execute(

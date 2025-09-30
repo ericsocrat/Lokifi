@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import { ArrowLeft, RefreshCw, Save, Settings } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../../src/components/AuthProvider';
 import { Navbar } from '../../../src/components/Navbar';
-import Link from 'next/link';
-import { Bell, Settings, Save, RefreshCw, ArrowLeft } from 'lucide-react';
 
 interface NotificationPreferences {
   id: string;
@@ -120,7 +120,7 @@ export default function NotificationPreferencesPage() {
 
     const keys = path.split('.');
     const newPrefs = { ...preferences };
-    
+
     if (keys.length === 1) {
       (newPrefs as any)[keys[0]] = value;
     } else if (keys.length === 2) {
@@ -145,8 +145,8 @@ export default function NotificationPreferencesPage() {
             <p className="text-neutral-400 mb-6">
               Please log in to manage your notification preferences.
             </p>
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
             >
               Log In
@@ -207,7 +207,7 @@ export default function NotificationPreferencesPage() {
             {/* General Settings */}
             <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6">
               <h2 className="text-lg font-semibold text-white mb-4">General Settings</h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -253,7 +253,7 @@ export default function NotificationPreferencesPage() {
             {/* Notification Types */}
             <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Notification Types</h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -340,7 +340,7 @@ export default function NotificationPreferencesPage() {
             {/* Digest Settings */}
             <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Digest Settings</h2>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -385,7 +385,7 @@ export default function NotificationPreferencesPage() {
             {/* Quiet Hours */}
             <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-6">
               <h2 className="text-lg font-semibold text-white mb-4">Quiet Hours</h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-white font-medium mb-2">Start Time</label>
@@ -407,7 +407,7 @@ export default function NotificationPreferencesPage() {
                   />
                 </div>
               </div>
-              
+
               <p className="text-sm text-neutral-400 mt-2">
                 During quiet hours, only urgent notifications will be delivered.
               </p>

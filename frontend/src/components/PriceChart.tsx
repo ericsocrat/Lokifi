@@ -1,23 +1,21 @@
+import DataStatus from '@/components/DataStatus';
+import SymbolTfBar from '@/components/SymbolTfBar';
+import { setChart } from '@/lib/chartBus';
+import { MarketDataAdapter } from '@/lib/data/adapter';
+import useHotkeys from '@/lib/hotkeys';
+import { bollinger, Candle as IndCandle, stdDevChannels, vwap, vwma } from '@/lib/indicators';
+import { debounce, rafThrottle } from '@/lib/perf';
+import { useChartStore } from '@/state/store';
+import { createChart, IChartApi, ISeriesApi, ITimeScaleApi, LineStyle, Time, type TimeRangeChangeEventHandler } from 'lightweight-charts';
 import React from 'react';
-import { createChart, LineStyle, Time, ISeriesApi, IChartApi, ITimeScaleApi, type TimeRangeChangeEventHandler } from 'lightweight-charts'
-import { useChartStore } from '@/state/store'
-import { bollinger, vwap, vwma, stdDevChannels, Candle as IndCandle } from '@/lib/indicators'
-import useHotkeys from '@/lib/hotkeys'
-import { setChart } from '@/lib/chartBus'
-import DataStatus from '@/components/DataStatus'
-import SymbolTfBar from '@/components/SymbolTfBar'
-import { MarketDataAdapter } from '@/lib/data/adapter'
-import { rafThrottle, debounce } from '@/lib/perf'
-import { wireLightweightChartsMappings } from '@/lib/lw-mapping'
 
 import {
   bucketCountFor,
   downsampleCandlesMinMax,
   downsampleLineMinMax,
-  timeToSec,
   sliceByTimeWindow,
-  // (we'll use these idx finders implicitly inside sliceByTimeWindow logic)
-} from '@/lib/lod'
+  timeToSec,
+} from '@/lib/lod';
 
 type Series = ISeriesApi<'Candlestick'>
 type CandleLW = { time: Time; open: number; high: number; low: number; close: number; volume: number };
@@ -40,18 +38,18 @@ export default function PriceChart() {
   // Define resize callback outside useEffect
   const resizeCallback = React.useCallback((chart: any, ref: any, publish: () => void, recomputeLOD: () => void, bumpRangeTick: () => void) => {
     if (!ref.current || !chart) return;
-    chart.applyOptions({ width: ref.current.clientWidth, height: ref.current.clientHeight }); 
-    publish(); 
-    recomputeLOD(); 
+    chart.applyOptions({ width: ref.current.clientWidth, height: ref.current.clientHeight });
+    publish();
+    recomputeLOD();
     bumpRangeTick();
   }, []);
 
   React.useEffect(() => {
-  // Fynix Phase U: ensure extras are stopped on unmount
-  const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
-if (!ref.current) return
+    // Fynix Phase U: ensure extras are stopped on unmount
+    const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
+    if (!ref.current) return
     const chart = createChart(ref.current, {
-      layout: { background: { color: theme==='light' ? '#fff' : '#0a0a0a' }, textColor: theme==='light' ? '#111' : '#ddd' },
+      layout: { background: { color: theme === 'light' ? '#fff' : '#0a0a0a' }, textColor: theme === 'light' ? '#111' : '#ddd' },
       grid: { horzLines: { color: '#222' }, vertLines: { color: '#222' } },
       rightPriceScale: { borderColor: '#333' },
       timeScale: { borderColor: '#333' }
@@ -64,7 +62,7 @@ if (!ref.current) return
 
     const publish = () => setChart({ chart, series, candles })
     publish()
-    
+
     const resize = () => resizeCallback(chart, ref, publish, recomputeLOD, bumpRangeTick);
 
     resize();
@@ -93,17 +91,17 @@ if (!ref.current) return
       chartRef.current = null;
       setChart({ chart: null, series: null, candles: [] });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, resizeCallback])
 
   const bumpRangeTick = React.useCallback(() => setRangeTick(t => (t + 1) | 0), [])
 
   // attach data adapter
   React.useEffect(() => {
-  // Fynix Phase U: ensure extras are stopped on unmount
-  const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
-const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timeframe })
-    let unsub = () => {}
+    // Fynix Phase U: ensure extras are stopped on unmount
+    const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
+    const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timeframe })
+    let unsub = () => { }
     unsub = adapter.on(rafThrottle((ev: any) => {
       const s = seriesRef.current
       const v = volRef.current
@@ -121,9 +119,9 @@ const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timef
 
   /** ========== Indicator plotting (windowed LOD) ========== */
   React.useEffect(() => {
-  // Fynix Phase U: ensure extras are stopped on unmount
-  const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
-const run = () => {
+    // Fynix Phase U: ensure extras are stopped on unmount
+    const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
+    const run = () => {
       const s = seriesRef.current
       const chart = chartRef.current
       if (!s || !chart || candles.length === 0) return
@@ -144,7 +142,7 @@ const run = () => {
         if (view.length >= 2) {
           // locate indices by comparing times; since sliceByTimeWindow already clamps, we can map back via time match
           const firstT = timeToSec(view[0].time as Time)
-          const lastT = timeToSec(view[view.length-1].time as Time)
+          const lastT = timeToSec(view[view.length - 1].time as Time)
           startIdx = candles.findIndex(c => timeToSec(c.time as Time) >= firstT)
           if (startIdx < 0) startIdx = 0
           endIdx = Math.max(startIdx, candles.findIndex(c => timeToSec(c.time as Time) > lastT) - 1)
@@ -171,14 +169,14 @@ const run = () => {
         // Map back to original candle times for just the visible window (not the padding)
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
         const baseData = vTimes.map((t, i) => ({ time: t, value: bb.mid[i + (startIdx - paddedStart)] ?? NaN }))
-        const upData   = vTimes.map((t, i) => ({ time: t, value: bb.upper[i + (startIdx - paddedStart)] ?? NaN }))
-        const loData   = vTimes.map((t, i) => ({ time: t, value: bb.lower[i + (startIdx - paddedStart)] ?? NaN }))
+        const upData = vTimes.map((t, i) => ({ time: t, value: bb.upper[i + (startIdx - paddedStart)] ?? NaN }))
+        const loData = vTimes.map((t, i) => ({ time: t, value: bb.lower[i + (startIdx - paddedStart)] ?? NaN }))
 
         basis.setData(downsampleLineMinMax(baseData, target))
         upper.setData(downsampleLineMinMax(upData, target))
         lower.setData(downsampleLineMinMax(loData, target))
         if (indicators.bandFill) { upper.applyOptions({ priceLineVisible: false }); lower.applyOptions({ priceLineVisible: false }) }
-        ;(window as any)._bbSeries = [basis, upper, lower]
+        ; (window as any)._bbSeries = [basis, upper, lower]
       }
 
       // --- VWAP (respect anchored index; shift relative to padded slice)
@@ -192,7 +190,7 @@ const run = () => {
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
         const data = vTimes.map((t, i) => ({ time: t, value: v[(i + (startIdx - paddedStart))] ?? NaN }))
         vwapLine.setData(downsampleLineMinMax(data, target))
-        ;(window as any)._vwap = vwapLine
+          ; (window as any)._vwap = vwapLine
       }
 
       // --- VWMA
@@ -204,24 +202,24 @@ const run = () => {
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
         const data = vTimes.map((t, i) => ({ time: t, value: vArr[(i + (startIdx - paddedStart))] ?? NaN }))
         line.setData(downsampleLineMinMax(data, target))
-        ;(window as any)._vwma = line
+          ; (window as any)._vwma = line
       }
 
       // --- StdDev Channels
       if (indicators.showStdChannels) {
         const ch = stdDevChannels(close, indicatorSettings.stdChannelPeriod, indicatorSettings.stdChannelMult)
         const mid = chart.addLineSeries({ lineWidth: 1 })
-        const up  = chart.addLineSeries({ lineWidth: 1 })
-        const lo  = chart.addLineSeries({ lineWidth: 1 })
+        const up = chart.addLineSeries({ lineWidth: 1 })
+        const lo = chart.addLineSeries({ lineWidth: 1 })
         const vTimes = candles.slice(startIdx, endIdx + 1).map(c => c.time as Time)
         const midData = vTimes.map((t, i) => ({ time: t, value: ch.mid[i + (startIdx - paddedStart)] ?? NaN }))
-        const upData  = vTimes.map((t, i) => ({ time: t, value: ch.upper[i + (startIdx - paddedStart)] ?? NaN }))
-        const loData  = vTimes.map((t, i) => ({ time: t, value: ch.lower[i + (startIdx - paddedStart)] ?? NaN }))
+        const upData = vTimes.map((t, i) => ({ time: t, value: ch.upper[i + (startIdx - paddedStart)] ?? NaN }))
+        const loData = vTimes.map((t, i) => ({ time: t, value: ch.lower[i + (startIdx - paddedStart)] ?? NaN }))
         const tgt = target
         mid.setData(downsampleLineMinMax(midData, tgt))
         up.setData(downsampleLineMinMax(upData, tgt))
         lo.setData(downsampleLineMinMax(loData, tgt))
-        ;(window as any)._stdch = [mid, up, lo]
+          ; (window as any)._stdch = [mid, up, lo]
       }
     }
     // Debounce to avoid thrashing when panning/zooming; re-run when:
@@ -254,9 +252,9 @@ const run = () => {
       // Convert Time to number for indicator processing
       const allWithNumTime = all.map(c => ({
         ...c,
-        time: typeof c.time === 'number' ? c.time : 
-              typeof c.time === 'string' ? new Date(c.time).getTime() / 1000 :
-              typeof c.time === 'object' && c.time && 'timestamp' in (c.time as {timestamp?: number}) ? (c.time as {timestamp: number}).timestamp :
+        time: typeof c.time === 'number' ? c.time :
+          typeof c.time === 'string' ? new Date(c.time).getTime() / 1000 :
+            typeof c.time === 'object' && c.time && 'timestamp' in (c.time as { timestamp?: number }) ? (c.time as { timestamp: number }).timestamp :
               new Date(String(c.time)).getTime() / 1000
       }))
       view = sliceByTimeWindow(allWithNumTime as unknown as import('@/lib/lod').Candle[], fromSec, toSec) as unknown as Candle[]

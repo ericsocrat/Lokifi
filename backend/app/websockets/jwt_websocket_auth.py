@@ -346,12 +346,12 @@ async def handle_typing_indicator(user_id: str, room: str, is_typing: bool):
             await redis_client.set(f"{typing_key}:{user_id}", "deleted", ttl=1)
         
         # Broadcast typing status to room
-        typing_message = {
-            "type": "typing_indicator",
-            "user_id": user_id,
-            "room": room,
-            "is_typing": is_typing
-        }
+        # typing_message = {
+        #     "type": "typing_indicator",
+        #     "user_id": user_id,
+        #     "room": room,
+        #     "is_typing": is_typing
+        # }
         
         # Broadcast to room (simplified implementation)
         logger.info(f"Typing indicator: {user_id} {'started' if is_typing else 'stopped'} typing in {room}")

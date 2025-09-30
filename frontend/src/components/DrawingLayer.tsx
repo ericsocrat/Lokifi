@@ -1,9 +1,9 @@
-import React from "react";
-import { useChartStore } from "@/state/store";
-import { distanceToSegment, rectFromPoints, withinRect } from "@/lib/geom";
-import { Drawing, createDrawing, updateDrawingGeometry, drawParallelChannel, drawPitchfork } from "@/lib/drawings";
-import { snapPxToGrid, snapYToPriceLevels, magnetYToOHLC, yToPrice } from "@/lib/chartMap";
 import ContextMenu from "@/components/ContextMenu";
+import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from "@/lib/chartMap";
+import { Drawing, createDrawing, drawParallelChannel, drawPitchfork, updateDrawingGeometry } from "@/lib/drawings";
+import { distanceToSegment, rectFromPoints, withinRect } from "@/lib/geom";
+import { useChartStore } from "@/state/store";
+import React from "react";
 
 type Point = { x: number; y: number };
 type Menu = { open: boolean; x: number; y: number };

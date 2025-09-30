@@ -21,8 +21,6 @@ from enum import Enum
 from typing import Any
 
 logger = logging.getLogger(__name__)
-from enum import Enum
-from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -327,8 +325,6 @@ class DatabaseOptimizer:
         recommendations = []
         
         # Analyze query patterns to suggest indexes
-        query_patterns = {}
-        
         for metric in self.query_metrics:
             if metric.full_table_scan and metric.execution_time_ms > 50:
                 # Extract table and columns for indexing suggestions

@@ -1,14 +1,14 @@
 "use client";
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Point, useDrawingStore } from '../lib/drawingStore';
+import { usePaneStore } from '../lib/paneStore';
 import { symbolStore } from '../lib/symbolStore';
 import { timeframeStore } from '../lib/timeframeStore';
-import { usePaneStore } from '../lib/paneStore';
-import { useDrawingStore, Point } from '../lib/drawingStore';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
-import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
-import { Eye, EyeOff, Lock, Unlock, GripVertical } from 'lucide-react';
 
 // Chart component with proper hook usage
 const ChartContainer = ({ children, ...props }: any) => {
@@ -25,7 +25,7 @@ const Chart = dynamic(
   () => import('lightweight-charts').then(mod => ({
     default: ChartContainer
   })),
-  { 
+  {
     ssr: false,
     loading: () => <ChartLoadingState />
   }
@@ -53,13 +53,13 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   const symbol = symbolStore.get();
   const timeframe = timeframeStore.get();
   const { togglePaneVisibility, togglePaneLock } = usePaneStore();
-  const { 
-    activeTool, 
-    isDrawing, 
+  const {
+    activeTool,
+    isDrawing,
     currentDrawing,
     objects,
     selectedObjectId,
@@ -88,7 +88,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
     try {
       const { createChart } = await import('lightweight-charts');
-      
+
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
         height: height - 40, // Account for drawing canvas
@@ -121,10 +121,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       });
 
       candlestickSeries.setData(mockData);
-      
+
       chartRef.current = chart;
       seriesRef.current = candlestickSeries;
-      
+
       // Setup ResizeObserver
       if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
         resizeObserverRef.current = new ResizeObserver(() => {
@@ -136,7 +136,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
             updateDrawingCanvas();
           }
         });
-        
+
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
 
@@ -151,7 +151,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
     const canvas = drawingCanvasRef.current;
     const container = chartContainerRef.current;
-    
+
     canvas.width = container.clientWidth;
     canvas.height = height - 40;
     canvas.style.width = `${container.clientWidth}px`;
@@ -183,7 +183,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isMouseDown || !isDrawing) return;
-    
+
     const point = getMousePosition(e);
     // For tools that need continuous updates (like rectangles), update the current drawing
     // This would typically update a preview of the shape being drawn
@@ -191,7 +191,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   const handleMouseUp = useCallback(() => {
     setIsMouseDown(false);
-    
+
     if (isDrawing && activeTool !== 'cursor') {
       // For most tools, finish drawing on mouse up
       if (['rectangle', 'circle', 'trendline', 'hline', 'vline'].includes(activeTool)) {
@@ -218,7 +218,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
     // Draw existing objects for this pane
     const paneObjects = getObjectsByPane(paneId);
-    
+
     paneObjects.forEach(obj => {
       if (!obj.properties.visible) return;
 
@@ -230,11 +230,11 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       if (obj.points.length >= 2) {
         ctx.beginPath();
         ctx.moveTo(obj.points[0].x, obj.points[0].y);
-        
+
         obj.points.slice(1).forEach(point => {
           ctx.lineTo(point.x, point.y);
         });
-        
+
         ctx.stroke();
 
         // Highlight selected object
@@ -255,11 +255,11 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
       ctx.beginPath();
       ctx.moveTo(currentDrawing.points[0].x, currentDrawing.points[0].y);
-      
+
       currentDrawing.points.slice(1).forEach(point => {
         ctx.lineTo(point.x, point.y);
       });
-      
+
       ctx.stroke();
     }
   }, [paneId, getObjectsByPane, selectedObjectId, currentDrawing]);
@@ -352,17 +352,17 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
       {/* Chart Container with Drawing Layer */}
       <div className="relative">
-        <div 
+        <div
           ref={chartContainerRef}
           style={{ height: `${height - 40}px` }}
           className="relative bg-gray-900"
         />
-        
+
         {/* Drawing Canvas Overlay */}
         <canvas
           ref={drawingCanvasRef}
           className="absolute top-0 left-0 cursor-crosshair pointer-events-auto"
-          style={{ 
+          style={{
             zIndex: 10,
             cursor: activeTool === 'cursor' ? 'default' : 'crosshair'
           }}
@@ -377,9 +377,8 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       {!isLocked && (
         <div
           onMouseDown={handleResize}
-          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${
-            isDragging ? 'bg-blue-500/30' : ''
-          }`}
+          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${isDragging ? 'bg-blue-500/30' : ''
+            }`}
         >
           <GripVertical className="w-4 h-4 text-gray-500" />
         </div>
@@ -413,8 +412,8 @@ export const DrawingChart: React.FC = () => {
 
   return (
     <ChartErrorBoundary>
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
