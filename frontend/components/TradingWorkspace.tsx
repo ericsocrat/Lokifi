@@ -54,13 +54,25 @@ export const TradingWorkspace: React.FC<TradingWorkspaceProps> = () => {
     });
   }, [objects.length, panes.length, panes]);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+  const toggleFullscreen = async () => {
+    try {
+      // Check if fullscreen API is supported
+      if (!document.documentElement.requestFullscreen) {
+        console.warn('Fullscreen API not supported');
+        return;
+      }
+
+      if (!document.fullscreenElement) {
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+          setIsFullscreen(false);
+        }
+      }
+    } catch (error) {
+      console.error('Fullscreen toggle failed:', error);
     }
   };
 
@@ -70,8 +82,18 @@ export const TradingWorkspace: React.FC<TradingWorkspaceProps> = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
 
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    // Add event listeners for different browsers
+    const events = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'msfullscreenchange'];
+    
+    events.forEach(event => {
+      document.addEventListener(event, handleFullscreenChange);
+    });
+
+    return () => {
+      events.forEach(event => {
+        document.removeEventListener(event, handleFullscreenChange);
+      });
+    };
   }, []);
 
   return (
