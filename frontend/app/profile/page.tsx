@@ -1,27 +1,26 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../src/components/AuthProvider';
-import { authToken } from '../../src/lib/auth';
-import { Navbar } from '../../src/components/Navbar';
-import Link from 'next/link';
-import { 
-    User, 
-    Edit, 
-    Settings, 
-    Shield, 
-    Bell, 
-    MapPin, 
-    Calendar,
-    Globe,
-    Camera,
-    Users,
+import {
     Activity,
-    Star,
     BarChart3,
+    Bell,
+    Calendar,
+    Camera,
+    Edit,
+    Globe,
     Heart,
-    MessageCircle
+    MessageCircle,
+    Settings,
+    Shield,
+    Star,
+    User,
+    Users
 } from 'lucide-react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../../src/components/AuthProvider';
+import { Navbar } from '../../src/components/Navbar';
+import { authToken } from '../../src/lib/auth';
 
 interface Profile {
     id: string;
@@ -121,7 +120,7 @@ export default function ProfilePage() {
                     <div className="bg-red-900/20 border border-red-500 rounded-lg p-6 text-center">
                         <h2 className="text-xl font-bold text-red-400 mb-2">Error Loading Profile</h2>
                         <p className="text-red-300">{error}</p>
-                        <button 
+                        <button
                             onClick={() => window.location.reload()}
                             className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                         >
@@ -140,8 +139,8 @@ export default function ProfilePage() {
                 <div className="flex items-start space-x-6">
                     <div className="relative">
                         {profile?.avatar_url ? (
-                            <img 
-                                src={profile.avatar_url} 
+                            <img
+                                src={profile.avatar_url}
                                 alt="Profile"
                                 className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
                             />
@@ -150,14 +149,14 @@ export default function ProfilePage() {
                                 <User className="w-12 h-12 text-gray-400" />
                             </div>
                         )}
-                        <Link 
+                        <Link
                             href="/profile/edit"
                             className="absolute -bottom-2 -right-2 bg-blue-600 p-2 rounded-full hover:bg-blue-700 transition-colors"
                         >
                             <Camera className="w-4 h-4 text-white" />
                         </Link>
                     </div>
-                    
+
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold text-white mb-1">
                             {profile?.display_name || 'User'}
@@ -166,7 +165,7 @@ export default function ProfilePage() {
                         {profile?.bio && (
                             <p className="text-gray-300 mb-4">{profile.bio}</p>
                         )}
-                        
+
                         <div className="flex items-center space-x-6 text-sm text-gray-400">
                             <div className="flex items-center space-x-1">
                                 <Users className="w-4 h-4" />
@@ -182,16 +181,16 @@ export default function ProfilePage() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="flex space-x-2">
-                        <Link 
+                        <Link
                             href="/profile/edit"
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
                         >
                             <Edit className="w-4 h-4" />
                             <span>Edit Profile</span>
                         </Link>
-                        <Link 
+                        <Link
                             href="/profile/settings"
                             className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-2"
                         >
@@ -214,7 +213,7 @@ export default function ProfilePage() {
                             <BarChart3 className="w-8 h-8 text-blue-500" />
                         </div>
                         <div className="mt-2 bg-gray-700 rounded-full h-2">
-                            <div 
+                            <div
                                 className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                                 style={{ width: `${stats.profile_completeness}%` }}
                             ></div>
@@ -281,7 +280,7 @@ export default function ProfilePage() {
         <div className="bg-gray-800 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-white mb-4">Quick Settings</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Link 
+                <Link
                     href="/profile/settings"
                     className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                 >
@@ -291,8 +290,8 @@ export default function ProfilePage() {
                         <p className="text-gray-400 text-sm">Manage your account information</p>
                     </div>
                 </Link>
-                
-                <Link 
+
+                <Link
                     href="/profile/settings"
                     className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                 >
@@ -302,8 +301,8 @@ export default function ProfilePage() {
                         <p className="text-gray-400 text-sm">Control notification preferences</p>
                     </div>
                 </Link>
-                
-                <Link 
+
+                <Link
                     href="/profile/settings"
                     className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                 >
@@ -313,8 +312,8 @@ export default function ProfilePage() {
                         <p className="text-gray-400 text-sm">Manage privacy settings</p>
                     </div>
                 </Link>
-                
-                <Link 
+
+                <Link
                     href="/profile/settings"
                     className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
                 >
@@ -342,14 +341,14 @@ export default function ProfilePage() {
                             </p>
                         </div>
                     </div>
-                    <Link 
+                    <Link
                         href="/profile/edit"
                         className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
                     >
                         Change
                     </Link>
                 </div>
-                
+
                 <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
                     <div className="flex items-center space-x-3">
                         <Shield className="w-5 h-5 text-blue-500" />
@@ -369,7 +368,7 @@ export default function ProfilePage() {
     return (
         <div className="min-h-screen bg-gray-900">
             <Navbar />
-            
+
             <div className="container mx-auto px-4 py-8">
                 {/* Tab Navigation */}
                 <div className="mb-8">
@@ -383,11 +382,10 @@ export default function ProfilePage() {
                                 <button
                                     key={id}
                                     onClick={() => setActiveTab(id)}
-                                    className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-                                        activeTab === id
+                                    className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === id
                                             ? 'border-blue-500 text-blue-400'
                                             : 'border-transparent text-gray-400 hover:text-gray-300'
-                                    }`}
+                                        }`}
                                 >
                                     <Icon className="w-4 h-4" />
                                     <span>{label}</span>
