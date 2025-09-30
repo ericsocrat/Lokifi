@@ -1,1167 +1,407 @@
 'use client';
 
-"use client";
-'use client';
-
-
-'use client';
-
 import React, { useState, useEffect } from 'react';
-'use client';
-
 import { useAuth } from '../../src/components/AuthProvider';
-'use client';
-
+import { authToken } from '../../src/lib/auth';
 import { Navbar } from '../../src/components/Navbar';
-'use client';
-
 import Link from 'next/link';
-'use client';
-
 import { 
-'use client';
-
-  User, 
-'use client';
-
-  Edit, 
-'use client';
-
-  Settings, 
-'use client';
-
-  Shield, 
-'use client';
-
-  Bell, 
-'use client';
-
-  MapPin, 
-'use client';
-
-  Calendar,
-'use client';
-
-  Globe,
-'use client';
-
-  Camera,
-'use client';
-
-  Mail,
-'use client';
-
-  Phone,
-'use client';
-
-  Link as LinkIcon
-'use client';
-
+    User, 
+    Edit, 
+    Settings, 
+    Shield, 
+    Bell, 
+    MapPin, 
+    Calendar,
+    Globe,
+    Camera,
+    Users,
+    Activity,
+    Star,
+    BarChart3,
+    Heart,
+    MessageCircle
 } from 'lucide-react';
-'use client';
 
-
-'use client';
-
-interface UserProfile {
-'use client';
-
-  id: string;
-'use client';
-
-  user_id: string;
-'use client';
-
-  username: string;
-'use client';
-
-  display_name: string;
-'use client';
-
-  bio: string;
-'use client';
-
-  avatar_url: string;
-'use client';
-
-  is_public: boolean;
-'use client';
-
-  follower_count: number;
-'use client';
-
-  following_count: number;
-'use client';
-
-  created_at: string;
-'use client';
-
-  updated_at: string;
-'use client';
-
+interface Profile {
+    id: string;
+    username: string;
+    display_name: string;
+    bio?: string;
+    avatar_url?: string;
+    is_public: boolean;
+    follower_count: number;
+    following_count: number;
+    created_at: string;
+    updated_at: string;
 }
-'use client';
 
-
-'use client';
-
-interface UserSettings {
-'use client';
-
-  id: string;
-'use client';
-
-  email: string;
-'use client';
-
-  full_name: string;
-'use client';
-
-  timezone: string;
-'use client';
-
-  language: string;
-'use client';
-
-  is_verified: boolean;
-'use client';
-
-  is_active: boolean;
-'use client';
-
-  created_at: string;
-'use client';
-
-  updated_at: string;
-'use client';
-
-  last_login: string;
-'use client';
-
+interface ProfileStats {
+    profile_completeness: number;
+    activity_score: number;
+    account_age_days: number;
+    last_active_days_ago?: number;
+    total_logins: number;
 }
-'use client';
-
-
-'use client';
 
 export default function ProfilePage() {
-'use client';
+    const { user } = useAuth();
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [stats, setStats] = useState<ProfileStats | null>(null);
+    const [activeTab, setActiveTab] = useState('overview');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  const { user } = useAuth();
-'use client';
-
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-'use client';
-
-  const [settings, setSettings] = useState<UserSettings | null>(null);
-'use client';
-
-  const [isLoading, setIsLoading] = useState(true);
-'use client';
-
-  const [error, setError] = useState<string | null>(null);
-'use client';
-
-  const [activeTab, setActiveTab] = useState<'overview' | 'settings' | 'privacy'>('overview');
-'use client';
-
-
-'use client';
-
-  useEffect(() => {
-'use client';
-
-    if (!user) return;
-'use client';
-
-
-'use client';
-
-    const loadProfileData = async () => {
-'use client';
-
-      try {
-'use client';
-
-        setIsLoading(true);
-'use client';
-
-        setError(null);
-'use client';
-
-
-'use client';
-
-        const token = localStorage.getItem('token') || localStorage.getItem('social_token');
-'use client';
-
-        if (!token) {
-'use client';
-
-          setError('No authentication token found');
-'use client';
-
-          return;
-'use client';
-
+    useEffect(() => {
+        const token = authToken();
+        if (token) {
+            fetchProfile();
+            fetchStats();
         }
-'use client';
+    }, []);
 
+    const fetchProfile = async () => {
+        try {
+            const token = authToken();
+            const response = await fetch('/api/profile/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
 
-'use client';
-
-        // Load profile
-'use client';
-
-        const profileResponse = await fetch('/api/profile/me', {
-'use client';
-
-          headers: {
-'use client';
-
-            'Authorization': `Bearer ${token}`,
-'use client';
-
-            'Content-Type': 'application/json',
-'use client';
-
-          },
-'use client';
-
-        });
-'use client';
-
-
-'use client';
-
-        if (profileResponse.ok) {
-'use client';
-
-          const profileData = await profileResponse.json();
-'use client';
-
-          setProfile(profileData);
-'use client';
-
+            if (response.ok) {
+                const profileData = await response.json();
+                setProfile(profileData);
+            } else {
+                setError('Failed to load profile');
+            }
+        } catch (err) {
+            setError('Network error loading profile');
+        } finally {
+            setLoading(false);
         }
-'use client';
-
-
-'use client';
-
-        // Load settings
-'use client';
-
-        const settingsResponse = await fetch('/api/profile/settings/user', {
-'use client';
-
-          headers: {
-'use client';
-
-            'Authorization': `Bearer ${token}`,
-'use client';
-
-            'Content-Type': 'application/json',
-'use client';
-
-          },
-'use client';
-
-        });
-'use client';
-
-
-'use client';
-
-        if (settingsResponse.ok) {
-'use client';
-
-          const settingsData = await settingsResponse.json();
-'use client';
-
-          setSettings(settingsData);
-'use client';
-
-        }
-'use client';
-
-
-'use client';
-
-      } catch (err) {
-'use client';
-
-        console.error('Failed to load profile data:', err);
-'use client';
-
-        setError(err instanceof Error ? err.message : 'Failed to load profile');
-'use client';
-
-      } finally {
-'use client';
-
-        setIsLoading(false);
-'use client';
-
-      }
-'use client';
-
     };
-'use client';
 
-
-'use client';
-
-    loadProfileData();
-'use client';
-
-  }, [user]);
-'use client';
-
-
-'use client';
-
-  if (!user) {
-'use client';
-
-    return (
-'use client';
-
-      <div className="min-h-screen bg-gray-900 text-white">
-'use client';
-
-        <Navbar />
-'use client';
-
-        <div className="max-w-4xl mx-auto px-4 py-8">
-'use client';
-
-          <div className="text-center">
-'use client';
-
-            <h1 className="text-2xl font-bold mb-4">Please log in to view your profile</h1>
-'use client';
-
-            <Link href="/login" className="text-blue-400 hover:text-blue-300">
-'use client';
-
-              Go to Login
-'use client';
-
-            </Link>
-'use client';
-
-          </div>
-'use client';
-
-        </div>
-'use client';
-
-      </div>
-'use client';
-
-    );
-'use client';
-
-  }
-'use client';
-
-
-'use client';
-
-  if (isLoading) {
-'use client';
-
-    return (
-'use client';
-
-      <div className="min-h-screen bg-gray-900 text-white">
-'use client';
-
-        <Navbar />
-'use client';
-
-        <div className="max-w-4xl mx-auto px-4 py-8">
-'use client';
-
-          <div className="animate-pulse">
-'use client';
-
-            <div className="h-32 bg-gray-800 rounded-lg mb-6"></div>
-'use client';
-
-            <div className="h-8 bg-gray-800 rounded w-1/3 mb-4"></div>
-'use client';
-
-            <div className="h-6 bg-gray-800 rounded w-2/3 mb-4"></div>
-'use client';
-
-            <div className="h-4 bg-gray-800 rounded w-1/2"></div>
-'use client';
-
-          </div>
-'use client';
-
-        </div>
-'use client';
-
-      </div>
-'use client';
-
-    );
-'use client';
-
-  }
-'use client';
-
-
-'use client';
-
-  return (
-'use client';
-
-    <div className="min-h-screen bg-gray-900 text-white">
-'use client';
-
-      <Navbar />
-'use client';
-
-      
-'use client';
-
-      <div className="max-w-4xl mx-auto px-4 py-8">
-'use client';
-
-        {error && (
-'use client';
-
-          <div className="mb-6 p-4 bg-red-900/50 border border-red-500 rounded-lg">
-'use client';
-
-            <p className="text-red-300">{error}</p>
-'use client';
-
-          </div>
-'use client';
-
-        )}
-'use client';
-
-
-'use client';
-
-        {/* Profile Header */}
-'use client';
-
-        <div className="bg-gray-800 rounded-lg p-6 mb-6">
-'use client';
-
-          <div className="flex items-start justify-between">
-'use client';
-
-            <div className="flex items-center space-x-4">
-'use client';
-
-              <div className="relative">
-'use client';
-
-                <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center">
-'use client';
-
-                  {profile?.avatar_url ? (
-'use client';
-
-                    <img 
-'use client';
-
-                      src={profile.avatar_url} 
-'use client';
-
-                      alt="Profile" 
-'use client';
-
-                      className="w-20 h-20 rounded-full object-cover"
-'use client';
-
-                    />
-'use client';
-
-                  ) : (
-'use client';
-
-                    <User className="w-8 h-8 text-gray-400" />
-'use client';
-
-                  )}
-'use client';
-
+    const fetchStats = async () => {
+        try {
+            const token = authToken();
+            const response = await fetch('/api/profile/enhanced/stats', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const statsData = await response.json();
+                setStats(statsData);
+            }
+        } catch (err) {
+            console.error('Failed to load stats:', err);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-900">
+                <Navbar />
+                <div className="container mx-auto px-4 py-8">
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    </div>
                 </div>
-'use client';
+            </div>
+        );
+    }
 
-                <button className="absolute -bottom-1 -right-1 p-1 bg-blue-600 rounded-full hover:bg-blue-700">
-'use client';
-
-                  <Camera className="w-3 h-3" />
-'use client';
-
-                </button>
-'use client';
-
-              </div>
-'use client';
-
-              
-'use client';
-
-              <div>
-'use client';
-
-                <h1 className="text-2xl font-bold">{profile?.display_name || settings?.full_name}</h1>
-'use client';
-
-                <p className="text-gray-400">@{profile?.username || 'username-not-set'}</p>
-'use client';
-
-                {profile?.bio && (
-'use client';
-
-                  <p className="text-gray-300 mt-2 max-w-md">{profile.bio}</p>
-'use client';
-
-                )}
-'use client';
-
-                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-400">
-'use client';
-
-                  <span>{profile?.follower_count || 0} followers</span>
-'use client';
-
-                  <span>{profile?.following_count || 0} following</span>
-'use client';
-
-                  <span className="flex items-center">
-'use client';
-
-                    <Calendar className="w-4 h-4 mr-1" />
-'use client';
-
-                    Joined {settings?.created_at ? new Date(settings.created_at).toLocaleDateString() : 'Unknown'}
-'use client';
-
-                  </span>
-'use client';
-
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-900">
+                <Navbar />
+                <div className="container mx-auto px-4 py-8">
+                    <div className="bg-red-900/20 border border-red-500 rounded-lg p-6 text-center">
+                        <h2 className="text-xl font-bold text-red-400 mb-2">Error Loading Profile</h2>
+                        <p className="text-red-300">{error}</p>
+                        <button 
+                            onClick={() => window.location.reload()}
+                            className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                        >
+                            Retry
+                        </button>
+                    </div>
                 </div>
-'use client';
-
-              </div>
-'use client';
-
             </div>
-'use client';
+        );
+    }
 
-            
-'use client';
-
-            <div className="flex space-x-2">
-'use client';
-
-              <Link 
-'use client';
-
-                href="/profile/edit" 
-'use client';
-
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg flex items-center space-x-2"
-'use client';
-
-              >
-'use client';
-
-                <Edit className="w-4 h-4" />
-'use client';
-
-                <span>Edit Profile</span>
-'use client';
-
-              </Link>
-'use client';
-
-              <Link 
-'use client';
-
-                href="/profile/settings" 
-'use client';
-
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-2"
-'use client';
-
-              >
-'use client';
-
-                <Settings className="w-4 h-4" />
-'use client';
-
-                <span>Settings</span>
-'use client';
-
-              </Link>
-'use client';
-
-            </div>
-'use client';
-
-          </div>
-'use client';
-
-        </div>
-'use client';
-
-
-'use client';
-
-        {/* Navigation Tabs */}
-'use client';
-
-        <div className="flex space-x-1 mb-6">
-'use client';
-
-          {[
-'use client';
-
-            { id: 'overview', label: 'Overview', icon: User },
-'use client';
-
-            { id: 'settings', label: 'Settings', icon: Settings },
-'use client';
-
-            { id: 'privacy', label: 'Privacy', icon: Shield },
-'use client';
-
-          ].map(({ id, label, icon: Icon }) => (
-'use client';
-
-            <button
-'use client';
-
-              key={id}
-'use client';
-
-              onClick={() => setActiveTab(id as any)}
-'use client';
-
-              className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
-'use client';
-
-                activeTab === id 
-'use client';
-
-                  ? 'bg-blue-600 text-white' 
-'use client';
-
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-'use client';
-
-              }`}
-'use client';
-
-            >
-'use client';
-
-              <Icon className="w-4 h-4" />
-'use client';
-
-              <span>{label}</span>
-'use client';
-
-            </button>
-'use client';
-
-          ))}
-'use client';
-
-        </div>
-'use client';
-
-
-'use client';
-
-        {/* Tab Content */}
-'use client';
-
-        {activeTab === 'overview' && (
-'use client';
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-'use client';
-
-            {/* Profile Information */}
-'use client';
-
+    const renderOverviewTab = () => (
+        <div className="space-y-6">
+            {/* Profile Header */}
             <div className="bg-gray-800 rounded-lg p-6">
-'use client';
-
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-'use client';
-
-                <User className="w-5 h-5 mr-2" />
-'use client';
-
-                Profile Information
-'use client';
-
-              </h3>
-'use client';
-
-              <div className="space-y-3">
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Display Name</label>
-'use client';
-
-                  <p className="text-white">{profile?.display_name || 'Not set'}</p>
-'use client';
-
+                <div className="flex items-start space-x-6">
+                    <div className="relative">
+                        {profile?.avatar_url ? (
+                            <img 
+                                src={profile.avatar_url} 
+                                alt="Profile"
+                                className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+                            />
+                        ) : (
+                            <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-600">
+                                <User className="w-12 h-12 text-gray-400" />
+                            </div>
+                        )}
+                        <Link 
+                            href="/profile/edit"
+                            className="absolute -bottom-2 -right-2 bg-blue-600 p-2 rounded-full hover:bg-blue-700 transition-colors"
+                        >
+                            <Camera className="w-4 h-4 text-white" />
+                        </Link>
+                    </div>
+                    
+                    <div className="flex-1">
+                        <h1 className="text-2xl font-bold text-white mb-1">
+                            {profile?.display_name || 'User'}
+                        </h1>
+                        <p className="text-gray-400 mb-2">@{profile?.username}</p>
+                        {profile?.bio && (
+                            <p className="text-gray-300 mb-4">{profile.bio}</p>
+                        )}
+                        
+                        <div className="flex items-center space-x-6 text-sm text-gray-400">
+                            <div className="flex items-center space-x-1">
+                                <Users className="w-4 h-4" />
+                                <span>{profile?.follower_count || 0} followers</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                                <Users className="w-4 h-4" />
+                                <span>{profile?.following_count || 0} following</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                                <Calendar className="w-4 h-4" />
+                                <span>Joined {new Date(profile?.created_at || '').toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="flex space-x-2">
+                        <Link 
+                            href="/profile/edit"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                        >
+                            <Edit className="w-4 h-4" />
+                            <span>Edit Profile</span>
+                        </Link>
+                        <Link 
+                            href="/profile/settings"
+                            className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors flex items-center space-x-2"
+                        >
+                            <Settings className="w-4 h-4" />
+                            <span>Settings</span>
+                        </Link>
+                    </div>
                 </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Username</label>
-'use client';
-
-                  <p className="text-white">@{profile?.username || 'Not set'}</p>
-'use client';
-
-                </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Bio</label>
-'use client';
-
-                  <p className="text-white">{profile?.bio || 'No bio added'}</p>
-'use client';
-
-                </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Profile Visibility</label>
-'use client';
-
-                  <p className="text-white flex items-center">
-'use client';
-
-                    <Globe className="w-4 h-4 mr-2" />
-'use client';
-
-                    {profile?.is_public ? 'Public' : 'Private'}
-'use client';
-
-                  </p>
-'use client';
-
-                </div>
-'use client';
-
-              </div>
-'use client';
-
             </div>
-'use client';
 
+            {/* Stats Cards */}
+            {stats && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-400">Profile Completeness</p>
+                                <p className="text-2xl font-bold text-white">{stats.profile_completeness}%</p>
+                            </div>
+                            <BarChart3 className="w-8 h-8 text-blue-500" />
+                        </div>
+                        <div className="mt-2 bg-gray-700 rounded-full h-2">
+                            <div 
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${stats.profile_completeness}%` }}
+                            ></div>
+                        </div>
+                    </div>
 
-'use client';
+                    <div className="bg-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-400">Activity Score</p>
+                                <p className="text-2xl font-bold text-white">{stats.activity_score}</p>
+                            </div>
+                            <Activity className="w-8 h-8 text-green-500" />
+                        </div>
+                    </div>
 
-            {/* Account Information */}
-'use client';
+                    <div className="bg-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-400">Account Age</p>
+                                <p className="text-2xl font-bold text-white">{stats.account_age_days} days</p>
+                            </div>
+                            <Calendar className="w-8 h-8 text-purple-500" />
+                        </div>
+                    </div>
 
+                    <div className="bg-gray-800 rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-gray-400">Total Logins</p>
+                                <p className="text-2xl font-bold text-white">{stats.total_logins}</p>
+                            </div>
+                            <Star className="w-8 h-8 text-yellow-500" />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Activity Feed Placeholder */}
             <div className="bg-gray-800 rounded-lg p-6">
-'use client';
-
-              <h3 className="text-lg font-semibold mb-4 flex items-center">
-'use client';
-
-                <Settings className="w-5 h-5 mr-2" />
-'use client';
-
-                Account Information
-'use client';
-
-              </h3>
-'use client';
-
-              <div className="space-y-3">
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Email</label>
-'use client';
-
-                  <p className="text-white flex items-center">
-'use client';
-
-                    <Mail className="w-4 h-4 mr-2" />
-'use client';
-
-                    {settings?.email}
-'use client';
-
-                    {settings?.is_verified && (
-'use client';
-
-                      <span className="ml-2 px-2 py-1 bg-green-600 text-xs rounded">Verified</span>
-'use client';
-
-                    )}
-'use client';
-
-                  </p>
-'use client';
-
+                <h3 className="text-lg font-semibold text-white mb-4">Recent Activity</h3>
+                <div className="space-y-4">
+                    <div className="flex items-center space-x-3 text-gray-400">
+                        <Heart className="w-5 h-5 text-red-500" />
+                        <span>Updated profile information</span>
+                        <span className="text-sm">2 hours ago</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-gray-400">
+                        <MessageCircle className="w-5 h-5 text-blue-500" />
+                        <span>Changed notification preferences</span>
+                        <span className="text-sm">1 day ago</span>
+                    </div>
+                    <div className="flex items-center space-x-3 text-gray-400">
+                        <User className="w-5 h-5 text-green-500" />
+                        <span>Profile created</span>
+                        <span className="text-sm">{stats?.account_age_days} days ago</span>
+                    </div>
                 </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Full Name</label>
-'use client';
-
-                  <p className="text-white">{settings?.full_name}</p>
-'use client';
-
-                </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Timezone</label>
-'use client';
-
-                  <p className="text-white flex items-center">
-'use client';
-
-                    <MapPin className="w-4 h-4 mr-2" />
-'use client';
-
-                    {settings?.timezone || 'Not set'}
-'use client';
-
-                  </p>
-'use client';
-
-                </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Language</label>
-'use client';
-
-                  <p className="text-white">{settings?.language || 'en'}</p>
-'use client';
-
-                </div>
-'use client';
-
-                <div>
-'use client';
-
-                  <label className="text-sm text-gray-400">Last Login</label>
-'use client';
-
-                  <p className="text-white">
-'use client';
-
-                    {settings?.last_login 
-'use client';
-
-                      ? new Date(settings.last_login).toLocaleString() 
-'use client';
-
-                      : 'Unknown'
-'use client';
-
-                    }
-'use client';
-
-                  </p>
-'use client';
-
-                </div>
-'use client';
-
-              </div>
-'use client';
-
             </div>
-'use client';
+        </div>
+    );
 
-          </div>
-'use client';
-
-        )}
-'use client';
-
-
-'use client';
-
-        {activeTab === 'settings' && (
-'use client';
-
-          <div className="bg-gray-800 rounded-lg p-6">
-'use client';
-
-            <h3 className="text-lg font-semibold mb-4">Quick Settings</h3>
-'use client';
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-'use client';
-
-              <Link 
-'use client';
-
-                href="/profile/edit" 
-'use client';
-
-                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-3"
-'use client';
-
-              >
-'use client';
-
-                <Edit className="w-5 h-5 text-blue-400" />
-'use client';
-
-                <span>Edit Profile</span>
-'use client';
-
-              </Link>
-'use client';
-
-              <Link 
-'use client';
-
-                href="/profile/settings" 
-'use client';
-
-                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-3"
-'use client';
-
-              >
-'use client';
-
-                <Settings className="w-5 h-5 text-green-400" />
-'use client';
-
-                <span>Account Settings</span>
-'use client';
-
-              </Link>
-'use client';
-
-              <Link 
-'use client';
-
-                href="/notifications/preferences" 
-'use client';
-
-                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-3"
-'use client';
-
-              >
-'use client';
-
-                <Bell className="w-5 h-5 text-yellow-400" />
-'use client';
-
-                <span>Notifications</span>
-'use client';
-
-              </Link>
-'use client';
-
-              <Link 
-'use client';
-
-                href="/profile/privacy" 
-'use client';
-
-                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg flex items-center space-x-3"
-'use client';
-
-              >
-'use client';
-
-                <Shield className="w-5 h-5 text-red-400" />
-'use client';
-
-                <span>Privacy & Security</span>
-'use client';
-
-              </Link>
-'use client';
-
+    const renderSettingsTab = () => (
+        <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Quick Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Link 
+                    href="/profile/settings"
+                    className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                    <User className="w-6 h-6 text-blue-500" />
+                    <div>
+                        <h4 className="text-white font-medium">Account Settings</h4>
+                        <p className="text-gray-400 text-sm">Manage your account information</p>
+                    </div>
+                </Link>
+                
+                <Link 
+                    href="/profile/settings"
+                    className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                    <Bell className="w-6 h-6 text-green-500" />
+                    <div>
+                        <h4 className="text-white font-medium">Notifications</h4>
+                        <p className="text-gray-400 text-sm">Control notification preferences</p>
+                    </div>
+                </Link>
+                
+                <Link 
+                    href="/profile/settings"
+                    className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                    <Shield className="w-6 h-6 text-red-500" />
+                    <div>
+                        <h4 className="text-white font-medium">Privacy & Security</h4>
+                        <p className="text-gray-400 text-sm">Manage privacy settings</p>
+                    </div>
+                </Link>
+                
+                <Link 
+                    href="/profile/settings"
+                    className="flex items-center space-x-3 p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors"
+                >
+                    <Globe className="w-6 h-6 text-purple-500" />
+                    <div>
+                        <h4 className="text-white font-medium">Preferences</h4>
+                        <p className="text-gray-400 text-sm">Language, timezone, and more</p>
+                    </div>
+                </Link>
             </div>
-'use client';
+        </div>
+    );
 
-          </div>
-'use client';
-
-        )}
-'use client';
-
-
-'use client';
-
-        {activeTab === 'privacy' && (
-'use client';
-
-          <div className="bg-gray-800 rounded-lg p-6">
-'use client';
-
-            <h3 className="text-lg font-semibold mb-4">Privacy & Security</h3>
-'use client';
-
+    const renderPrivacyTab = () => (
+        <div className="bg-gray-800 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Privacy Overview</h3>
             <div className="space-y-4">
-'use client';
-
-              <div className="p-4 bg-gray-700 rounded-lg">
-'use client';
-
-                <h4 className="font-medium mb-2">Profile Visibility</h4>
-'use client';
-
-                <p className="text-sm text-gray-400 mb-2">
-'use client';
-
-                  Control who can see your profile information
-'use client';
-
-                </p>
-'use client';
-
-                <label className="flex items-center">
-'use client';
-
-                  <input 
-'use client';
-
-                    type="checkbox" 
-'use client';
-
-                    checked={profile?.is_public || false}
-'use client';
-
-                    className="mr-2"
-'use client';
-
-                    disabled
-'use client';
-
-                  />
-'use client';
-
-                  <span>Public Profile</span>
-'use client';
-
-                </label>
-'use client';
-
-              </div>
-'use client';
-
-              
-'use client';
-
-              <div className="p-4 bg-gray-700 rounded-lg">
-'use client';
-
-                <h4 className="font-medium mb-2">Account Status</h4>
-'use client';
-
-                <div className="flex items-center space-x-4">
-'use client';
-
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-'use client';
-
-                    settings?.is_active 
-'use client';
-
-                      ? 'bg-green-600 text-green-100' 
-'use client';
-
-                      : 'bg-red-600 text-red-100'
-'use client';
-
-                  }`}>
-'use client';
-
-                    {settings?.is_active ? 'Active' : 'Inactive'}
-'use client';
-
-                  </span>
-'use client';
-
-                  <span className={`px-3 py-1 rounded-full text-sm ${
-'use client';
-
-                    settings?.is_verified 
-'use client';
-
-                      ? 'bg-blue-600 text-blue-100' 
-'use client';
-
-                      : 'bg-gray-600 text-gray-100'
-'use client';
-
-                  }`}>
-'use client';
-
-                    {settings?.is_verified ? 'Verified' : 'Unverified'}
-'use client';
-
-                  </span>
-'use client';
-
+                <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                        <Globe className={`w-5 h-5 ${profile?.is_public ? 'text-green-500' : 'text-red-500'}`} />
+                        <div>
+                            <h4 className="text-white font-medium">Profile Visibility</h4>
+                            <p className="text-gray-400 text-sm">
+                                Your profile is {profile?.is_public ? 'public' : 'private'}
+                            </p>
+                        </div>
+                    </div>
+                    <Link 
+                        href="/profile/edit"
+                        className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition-colors"
+                    >
+                        Change
+                    </Link>
                 </div>
-'use client';
-
-              </div>
-'use client';
-
+                
+                <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                        <Shield className="w-5 h-5 text-blue-500" />
+                        <div>
+                            <h4 className="text-white font-medium">Data Export</h4>
+                            <p className="text-gray-400 text-sm">Download your data (GDPR compliant)</p>
+                        </div>
+                    </div>
+                    <button className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-500 transition-colors">
+                        Export
+                    </button>
+                </div>
             </div>
-'use client';
+        </div>
+    );
 
-          </div>
-'use client';
+    return (
+        <div className="min-h-screen bg-gray-900">
+            <Navbar />
+            
+            <div className="container mx-auto px-4 py-8">
+                {/* Tab Navigation */}
+                <div className="mb-8">
+                    <div className="border-b border-gray-700">
+                        <nav className="-mb-px flex space-x-8">
+                            {[
+                                { id: 'overview', label: 'Overview', icon: User },
+                                { id: 'settings', label: 'Settings', icon: Settings },
+                                { id: 'privacy', label: 'Privacy', icon: Shield }
+                            ].map(({ id, label, icon: Icon }) => (
+                                <button
+                                    key={id}
+                                    onClick={() => setActiveTab(id)}
+                                    className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                                        activeTab === id
+                                            ? 'border-blue-500 text-blue-400'
+                                            : 'border-transparent text-gray-400 hover:text-gray-300'
+                                    }`}
+                                >
+                                    <Icon className="w-4 h-4" />
+                                    <span>{label}</span>
+                                </button>
+                            ))}
+                        </nav>
+                    </div>
+                </div>
 
-        )}
-'use client';
-
-      </div>
-'use client';
-
-    </div>
-'use client';
-
-  );
-'use client';
-
+                {/* Tab Content */}
+                {activeTab === 'overview' && renderOverviewTab()}
+                {activeTab === 'settings' && renderSettingsTab()}
+                {activeTab === 'privacy' && renderPrivacyTab()}
+            </div>
+        </div>
+    );
 }

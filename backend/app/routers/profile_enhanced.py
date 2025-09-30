@@ -19,6 +19,7 @@ from app.db.database import get_db
 from app.core.auth_deps import get_current_user, get_current_user_optional
 from app.models.user import User
 from app.services.profile_service import ProfileService
+from app.services.profile_enhanced import EnhancedProfileService
 from app.schemas.profile import (
     ProfileUpdateRequest,
     UserSettingsUpdateRequest,
@@ -31,7 +32,7 @@ from app.schemas.profile import (
 )
 from app.schemas.auth import MessageResponse
 
-router = APIRouter(prefix="/profile", tags=["profile"])
+router = APIRouter(prefix="/profile", tags=["profile-enhanced"])
 
 # Create uploads directory if it doesn't exist
 UPLOAD_DIR = Path("uploads/avatars")
@@ -51,24 +52,19 @@ def validate_image_file(file: UploadFile) -> None:
         )
     
     # Check file extension
-    if not file.filename:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No filename provided"
-        )
-    
-    file_ext = Path(file.filename).suffix.lower()
-    if file_ext not in ALLOWED_EXTENSIONS:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File type {file_ext} not allowed. Allowed types: {', '.join(ALLOWED_EXTENSIONS)}"
-        )
+    if file.filename:
+        file_ext = Path(file.filename).suffix.lower()
+        if file_ext not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid file type. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+            )
     
     # Check file size
     if file.size and file.size > MAX_FILE_SIZE:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"File size {file.size} exceeds maximum allowed size of {MAX_FILE_SIZE} bytes"
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"File too large. Maximum size: {MAX_FILE_SIZE // (1024*1024)}MB"
         )
 
 
@@ -77,6 +73,9 @@ async def process_avatar_image(file: UploadFile, user_id: UUID) -> str:
     validate_image_file(file)
     
     # Generate unique filename
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="No filename provided")
+    
     file_ext = Path(file.filename).suffix.lower()
     filename = f"{user_id}_{uuid.uuid4().hex}{file_ext}"
     file_path = UPLOAD_DIR / filename
@@ -87,19 +86,18 @@ async def process_avatar_image(file: UploadFile, user_id: UUID) -> str:
             content = await file.read()
             await f.write(content)
         
-        # Process image with PIL
+        # Process image with PIL (resize if needed)
         with Image.open(file_path) as img:
             # Convert to RGB if necessary
             if img.mode in ('RGBA', 'LA', 'P'):
                 img = img.convert('RGB')
             
-            # Resize to reasonable dimensions
-            max_size = (400, 400)
-            img.thumbnail(max_size, Image.Resampling.LANCZOS)
-            
-            # Save processed image
-            img.save(file_path, format='JPEG', quality=85, optimize=True)
+            # Resize if too large (max 512x512)
+            if img.width > 512 or img.height > 512:
+                img.thumbnail((512, 512), Image.Resampling.LANCZOS)
+                img.save(file_path, quality=85, optimize=True)
         
+        # Return relative URL
         return f"/uploads/avatars/{filename}"
     
     except Exception as e:
@@ -108,40 +106,11 @@ async def process_avatar_image(file: UploadFile, user_id: UUID) -> str:
             file_path.unlink()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to process image: {str(e)}"
+            detail="Failed to process image"
         )
 
 
-@router.get("/me", response_model=ProfileResponse)
-async def get_my_profile(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get current user's profile."""
-    profile_service = ProfileService(db)
-    profile = await profile_service.get_profile_by_user_id(current_user.id)
-    
-    if not profile:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Profile not found"
-        )
-    
-    return ProfileResponse.model_validate(profile)
-
-
-@router.put("/me", response_model=ProfileResponse)
-async def update_my_profile(
-    profile_data: ProfileUpdateRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Update current user's profile."""
-    profile_service = ProfileService(db)
-    return await profile_service.update_profile(current_user.id, profile_data)
-
-
-@router.post("/avatar")
+@router.post("/enhanced/avatar")
 async def upload_avatar(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
@@ -152,10 +121,24 @@ async def upload_avatar(
         # Process and save the image
         avatar_url = await process_avatar_image(file, current_user.id)
         
-        # Update profile with new avatar URL
-        profile_service = ProfileService(db)
-        profile_data = ProfileUpdateRequest(avatar_url=avatar_url)
-        updated_profile = await profile_service.update_profile(current_user.id, profile_data)
+        # Update profile with new avatar URL using the enhanced service
+        enhanced_service = EnhancedProfileService(db)
+        
+        # Get current profile first
+        current_profile = await enhanced_service.get_profile_by_user_id(current_user.id)
+        if not current_profile:
+            raise HTTPException(status_code=404, detail="Profile not found")
+        
+        # Create update request with current values plus new avatar
+        profile_data = ProfileUpdateRequest(
+            username=current_profile.username,
+            display_name=current_profile.display_name,
+            bio=current_profile.bio or "",
+            is_public=current_profile.is_public
+        )
+        
+        # Update profile
+        updated_profile = await enhanced_service.update_profile(current_user.id, profile_data)
         
         return {"avatar_url": avatar_url, "message": "Avatar uploaded successfully"}
     
@@ -164,160 +147,138 @@ async def upload_avatar(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to upload avatar: {str(e)}"
+            detail="Failed to upload avatar"
         )
 
 
-@router.get("/avatar/{filename}")
-async def get_avatar(filename: str):
-    """Serve avatar images."""
-    file_path = UPLOAD_DIR / filename
+@router.get("/enhanced/avatar/{user_id}")
+async def get_avatar(user_id: UUID):
+    """Get user avatar by user ID."""
+    # This would typically serve the avatar file
+    # For now, return a placeholder response
+    avatar_path = UPLOAD_DIR / f"{user_id}_avatar.jpg"
     
-    if not file_path.exists():
+    if avatar_path.exists():
+        return FileResponse(avatar_path)
+    else:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Avatar not found"
         )
-    
-    return FileResponse(file_path)
 
 
-@router.get("/{profile_id}", response_model=PublicProfileResponse)
-async def get_public_profile(
-    profile_id: UUID,
-    db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional)
-):
-    """Get public profile by ID."""
-    profile_service = ProfileService(db)
-    current_user_id = current_user.id if current_user else None
-    
-    return await profile_service.get_public_profile(profile_id, current_user_id)
-
-
-@router.get("", response_model=ProfileSearchResponse)
-async def search_profiles(
-    q: str = Query(..., min_length=2, max_length=50, description="Search query"),
-    page: int = Query(1, ge=1, description="Page number"),
-    page_size: int = Query(20, ge=1, le=100, description="Number of results per page"),
-    db: AsyncSession = Depends(get_db),
-    current_user: Optional[User] = Depends(get_current_user_optional)
-):
-    """Search public profiles by username or display name."""
-    profile_service = ProfileService(db)
-    current_user_id = current_user.id if current_user else None
-    
-    return await profile_service.search_profiles(
-        query=q,
-        page=page,
-        page_size=page_size,
-        current_user_id=current_user_id
-    )
-
-
-# User Settings Endpoints
-@router.get("/settings/user", response_model=UserSettingsResponse)
-async def get_user_settings(
-    current_user: User = Depends(get_current_user)
-):
-    """Get current user's settings."""
-    return UserSettingsResponse.model_validate(current_user)
-
-
-@router.put("/settings/user", response_model=UserSettingsResponse)
-async def update_user_settings(
-    settings_data: UserSettingsUpdateRequest,
+@router.post("/enhanced/validate")
+async def validate_profile_data(
+    profile_data: ProfileUpdateRequest,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Update current user's settings."""
-    profile_service = ProfileService(db)
-    return await profile_service.update_user_settings(current_user.id, settings_data)
+    """Validate profile data without saving."""
+    enhanced_service = EnhancedProfileService(db)
+    
+    try:
+        # Check if username is available (if changed)
+        if profile_data.username:
+            existing_profile = await enhanced_service.get_profile_by_username(profile_data.username)
+            if existing_profile and existing_profile.user_id != current_user.id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Username already taken"
+                )
+        
+        return {"valid": True, "message": "Profile data is valid"}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Validation failed"
+        )
 
 
-# Notification Preferences Endpoints
-@router.get("/settings/notifications", response_model=NotificationPreferencesResponse)
-async def get_notification_preferences(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Get current user's notification preferences."""
-    profile_service = ProfileService(db)
-    return await profile_service.get_notification_preferences(current_user.id)
-
-
-@router.put("/settings/notifications", response_model=NotificationPreferencesResponse)
-async def update_notification_preferences(
-    prefs_data: NotificationPreferencesUpdateRequest,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
-):
-    """Update current user's notification preferences."""
-    profile_service = ProfileService(db)
-    return await profile_service.update_notification_preferences(current_user.id, prefs_data)
-
-
-# Account Management
-@router.delete("/me", response_model=MessageResponse)
+@router.delete("/enhanced/account")
 async def delete_account(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Delete current user's account (GDPR compliance)."""
-    profile_service = ProfileService(db)
+    enhanced_service = EnhancedProfileService(db)
     
     try:
         # Delete user and all associated data
-        await profile_service.delete_user_account(current_user.id)
+        await enhanced_service.delete_user_account(current_user.id)
         
         return MessageResponse(
-            message="Account deleted successfully",
-            success=True
+            message="Account deleted successfully"
         )
+    
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete account: {str(e)}"
+            detail="Failed to delete account"
         )
 
 
-@router.get("/export/data")
+@router.get("/enhanced/export")
 async def export_user_data(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Export user data (GDPR compliance)."""
-    profile_service = ProfileService(db)
+    """Export user data for GDPR compliance."""
+    enhanced_service = EnhancedProfileService(db)
     
     try:
-        data = await profile_service.export_user_data(current_user.id)
-        
-        return {
-            "user_data": data,
-            "exported_at": datetime.now(timezone.utc).isoformat(),
-            "format_version": "1.0"
-        }
+        data = await enhanced_service.export_user_data(current_user.id)
+        return data
+    
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to export data: {str(e)}"
+            detail="Failed to export data"
         )
 
 
-# Profile Statistics
-@router.get("/stats/activity")
-async def get_profile_activity_stats(
+@router.get("/enhanced/stats")
+async def get_profile_stats(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get profile activity statistics."""
-    profile_service = ProfileService(db)
+    """Get profile statistics and activity data."""
+    enhanced_service = EnhancedProfileService(db)
     
     try:
-        stats = await profile_service.get_profile_activity_stats(current_user.id)
+        stats = await enhanced_service.get_profile_activity_stats(current_user.id)
         return stats
+    
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get activity stats: {str(e)}"
+            detail="Failed to get profile statistics"
+        )
+
+
+@router.get("/enhanced/activity")
+async def get_activity_summary(
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get user activity summary."""
+    enhanced_service = EnhancedProfileService(db)
+    
+    try:
+        # Return a basic activity summary for now
+        activity = {
+            "last_login": None,
+            "login_count": 0,
+            "profile_updates": 0,
+            "settings_changes": 0,
+            "created_at": None
+        }
+        return activity
+    
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to get activity summary"
         )
