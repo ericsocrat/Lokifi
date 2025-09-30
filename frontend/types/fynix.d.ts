@@ -1,21 +1,42 @@
 // Global type definitions for Fynix application
+import type { Drawing } from '@/types/drawings';
+import type { IChartApi, ISeriesApi } from '@/types/lightweight-charts';
+
+export interface PluginSettings {
+  [key: string]: unknown;
+}
+
+export interface SymbolSettings {
+  indicators?: Record<string, unknown>;
+  drawings?: Drawing[];
+  timeframe?: string;
+  [key: string]: unknown;
+}
+
 export interface PluginSettingsStore {
-    get(): any;
-    set(settings: any): void;
+    get(): PluginSettings;
+    set(settings: PluginSettings): void;
 }
 
 export interface PluginSymbolSettings {
-    set(symbol: string, timeframe: string, settings: any): void;
-    get(symbol: string, timeframe?: string): any;
+    set(symbol: string, timeframe: string, settings: SymbolSettings): void;
+    get(symbol: string, timeframe?: string): SymbolSettings | undefined;
     clear?(symbol: string, timeframe?: string): void;
+}
+
+export interface HUDData {
+  symbol?: string;
+  price?: number;
+  change?: number;
+  volume?: number;
 }
 
 export interface FynixWindow extends Window {
     __fynixApplySymbolSettings?: () => void;
     __fynixClearSymbolSettings?: () => void;
-    __fynixHUD?: any;
-    __fynixHover?: any;
-    __fynixGhost?: any;
+    __fynixHUD?: HUDData;
+    __fynixHover?: { x: number; y: number; visible: boolean };
+    __fynixGhost?: ISeriesApi | null;
     __fynixStopExtras?: () => void;
 }
 
@@ -49,11 +70,6 @@ export interface ChartSeries {
     update(data: ChartData): void;
 }
 
-export interface ChartInstance {
-    addCandlestickSeries(): ChartSeries;
-    addLineSeries(): ChartSeries;
-    addHistogramSeries(): ChartSeries;
-    timeScale(): any;
-    remove(): void;
-    applyOptions(options: any): void;
+export interface ChartInstance extends IChartApi {
+    // Extends lightweight-charts IChartApi with any custom methods
 }

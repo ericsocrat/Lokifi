@@ -1,6 +1,9 @@
-export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function rafThrottle<T extends (...args: any[]) => any>(fn: T): T {
   let queued = false
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastArgs: any[] | null = null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastContext: any = null
   const tick = () => {
     queued = false
@@ -8,6 +11,7 @@ export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T {
     lastArgs = null; lastContext = null
     if (args) fn.apply(ctx, args)
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (this: any, ...args: any[]) {
     lastArgs = args;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -16,11 +20,15 @@ export function rafThrottle<T extends (...args: any[]) => void>(fn: T): T {
   } as unknown as T
 }
 
-export function microBatch<T extends (...args: any[]) => void>(fn: T): T {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function microBatch<T extends (...args: any[]) => any>(fn: T): T {
   // Coalesce many calls in the same microtask into one
   let scheduled = false
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastArgs: any[] | null = null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let lastContext: any = null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (this: any, ...args: any[]) {
     lastArgs = args;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -37,8 +45,10 @@ export function microBatch<T extends (...args: any[]) => void>(fn: T): T {
   } as unknown as T
 }
 
-export function debounce<T extends (...args: any[]) => void>(fn: T, ms: number): T {
-  let timer: any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return function (this: any, ...args: any[]) {
     clearTimeout(timer)
     timer = setTimeout(() => fn.apply(this, args), ms)

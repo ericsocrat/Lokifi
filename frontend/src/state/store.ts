@@ -1,18 +1,12 @@
 import type { Alert, AlertEvent } from "@/lib/alerts";
+import type { Drawing, DrawingSettings, Layer } from "@/types/drawings";
 import { create, StateCreator } from "zustand";
 import { persist } from "zustand/middleware";
 
 type SetState = Parameters<StateCreator<ChartState>>[0];
 type GetState = Parameters<StateCreator<ChartState>>[1];
 
-export interface Layer {
-  id: string;
-  name: string;
-  visible: boolean;
-  opacity: number;
-  order: number;
-  locked: boolean;
-}
+export type { DrawingSettings, Layer } from "@/types/drawings";
 
 export interface IndicatorSettings {
   bbPeriod: number;
@@ -36,7 +30,7 @@ export type Snapshot = {
   name: string;
   title: string;
   createdAt: number; // epoch seconds
-  drawings: any[];
+  drawings: Drawing[];
   theme: 'light' | 'dark';
   timeframe: string;
 };
@@ -77,28 +71,11 @@ export interface ChartState {
   setFibDefaultLevels: (levels: number[]) => void;
 
   // drawings / selection
-  drawings: any[];
+  drawings: Drawing[];
   selection: Set<string>;
 
   // drawing settings & hotkeys
-  drawingSettings: {
-    lineWidth: number;
-    color: string;
-    opacity: number;
-    fontSize: number;
-    arrowHeadSize: number;
-    arrowHead: 'none' | 'open' | 'filled';
-    lineCap: 'butt' | 'round' | 'square';
-    snapEnabled: boolean;
-    snapStep: number;
-    showHandles: boolean;
-    perToolSnap: Record<string, boolean>;
-    fibDefaultLevels: number[];
-    showLineLabels: boolean;
-    snapPriceLevels: boolean;
-    snapToOHLC: boolean;
-    magnetTolerancePx: number;
-  };
+  drawingSettings: DrawingSettings;
   hotkeys: Record<string, string>;
 
   // layers & snapshots
@@ -129,8 +106,8 @@ export interface ChartState {
   setAll: (state: Partial<ChartState>) => void;
 
   // drawing actions
-  addDrawing: (d: any) => void;
-  updateDrawing: (id: string, updater: (d: any) => any) => void;
+  addDrawing: (d: Drawing) => void;
+  updateDrawing: (id: string, updater: (d: Drawing) => Drawing) => void;
   setStyleForSelection: (patch: Partial<{ lineWidth: number; color: string; opacity: number; fontSize: number }>) => void;
   setTextForSelection: (text: string) => void;
   toggleLockSelected: () => void;
@@ -333,9 +310,9 @@ export const useChartStore =
         set({ drawingSettings: { ...drawingSettings, fibDefaultLevels: levels } });
       },
 
-      addDrawing: (d: any) => set({ drawings: [...get().drawings, d] }),
+      addDrawing: (d: Drawing) => set({ drawings: [...get().drawings, d] }),
 
-      updateDrawing: (id: string, updater: (d: any) => any) => {
+      updateDrawing: (id: string, updater: (d: Drawing) => Drawing) => {
         const next = get().drawings.map(d => d.id === id ? updater(d) : d);
         set({ drawings: next });
       },

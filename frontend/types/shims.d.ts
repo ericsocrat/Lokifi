@@ -15,41 +15,46 @@ declare module "zustand" {
   export function create<T>(): (c: StateCreator<T>) => UseStore<T>;
 }
 
-declare module "zustand/middleware" { export const persist: any; }
+declare module "zustand/middleware" {
+  import type { StateCreator } from "zustand";
+
+  export interface PersistOptions<T> {
+    name: string;
+    storage?: {
+      getItem: (name: string) => string | null | Promise<string | null>;
+      setItem: (name: string, value: string) => void | Promise<void>;
+      removeItem: (name: string) => void | Promise<void>;
+    };
+    partialize?: (state: T) => Partial<T>;
+    onRehydrateStorage?: (state: T) => ((state?: T, error?: Error) => void) | void;
+    version?: number;
+    migrate?: (persistedState: unknown, version: number) => T | Promise<T>;
+  }
+
+  export function persist<T>(
+    config: StateCreator<T>,
+    options: PersistOptions<T>
+  ): StateCreator<T>;
+}
 
 declare module "lightweight-charts" {
-  export type Time = number | string | { timestamp: number };
+  import type {
+        ChartOptions,
+        IChartApi,
+        ISeriesApi,
+        LineStyle as LineStyleType,
+        PriceScaleApi,
+        SeriesDataPoint,
+        SeriesMarker,
+        SeriesOptions,
+        Time,
+        TimeScaleApi
+    } from '@/types/lightweight-charts';
 
-  export interface TimeScaleApi {
-    setVisibleRange(r: any): void;
-    getVisibleRange(): any;
-    subscribeVisibleTimeRangeChange(cb: (r: any) => void): void;
-    unsubscribeVisibleTimeRangeChange?(cb: (r: any) => void): void;
-    timeToCoordinate(t: Time): number | null;
-    coordinateToTime(x: number): Time | null;
-  }
+  export type { ChartOptions, IChartApi, ISeriesApi, PriceScaleApi, SeriesDataPoint, SeriesMarker, SeriesOptions, Time, TimeScaleApi };
 
-  export interface ISeriesApi<T = any> {
-    setData(data: any[]): void;
-    setMarkers?(m: any[]): void;
-    priceToCoordinate?(p: number): number | null;
-    coordinateToPrice?(c: number): number | null;
-    applyOptions?(o: Record<string, any>): void;
-  }
-
-  export interface IChartApi {
-    addLineSeries(opts?: Record<string, any>): ISeriesApi;
-    addHistogramSeries(opts?: Record<string, any>): ISeriesApi;
-    addCandlestickSeries(opts?: Record<string, any>): ISeriesApi;
-    addAreaSeries(opts?: Record<string, any>): ISeriesApi;
-    remove(): void;
-    applyOptions(opts: Record<string, any>): void;
-    timeScale(): TimeScaleApi;
-    rightPriceScale(): any;
-  }
-
-  export function createChart(el: HTMLElement, options?: Record<string, any>): IChartApi;
-  export const LineStyle: any;
+  export function createChart(el: HTMLElement, options?: ChartOptions): IChartApi;
+  export const LineStyle: LineStyleType;
 }
 
 declare global {
@@ -57,12 +62,20 @@ var __fynixStopExtras: (() => void) | undefined;  // ✅ correct arrow type
 }
 
 declare module "@/plugins" {
+  import type { Drawing } from '@/types/drawings';
+
+  export interface PluginEnvironment {
+    getDrawings: () => Drawing[];
+    addDrawing: (drawing: Drawing) => void;
+    getSelection: () => Set<string>;
+  }
+
   export interface Registered {
     id: string;
     name: string;
     description?: string;
-    defaults?: Record<string, any>;
-    run?(sel: any): void;
+    defaults?: Record<string, unknown>;
+    run?(selection: Set<string>): void;
   }
   export const pluginManager: {
     activeToolId?: string | null;
@@ -71,10 +84,10 @@ declare module "@/plugins" {
     pointerDown?(e: PointerEvent): boolean;
     pointerMove?(e: PointerEvent): boolean;
     pointerUp?(e: PointerEvent): boolean;
-    setEnv?(env: any): void;
+    setEnv?(env: PluginEnvironment): void;
     list(): Registered[];
   };
   export default pluginManager;
 }
 
-export {};
+export { };

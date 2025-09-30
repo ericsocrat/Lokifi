@@ -20,7 +20,7 @@ export class MarketDataAdapter {
   private candles: Candle[] = []
   private listeners: Listener[] = []
   private ws?: WebSocket | null
-  private pollTimer?: any
+  private pollTimer?: ReturnType<typeof setInterval>
 
   constructor(opts?: { symbol?: string; timeframe?: string; provider?: ProviderKind }) {
     this.symbol = opts?.symbol || (process.env.NEXT_PUBLIC_SYMBOL || 'BTCUSDT')
