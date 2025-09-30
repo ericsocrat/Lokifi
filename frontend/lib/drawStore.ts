@@ -28,7 +28,7 @@ function save(sym: string, tf: string, shapes: Shape[]){ try{ localStorage.setIt
 
 const listeners = new Set<(s: DrawState)=>void>();
 let _state: DrawState = { tool: "cursor", snap: true, shapes: [], selectedIds: [] };
-let undoStack: Shape[][] = []; let redoStack: Shape[][] = [];
+const undoStack: Shape[][] = []; let redoStack: Shape[][] = [];
 
 export const drawStore = {
   get(){ return _state; },

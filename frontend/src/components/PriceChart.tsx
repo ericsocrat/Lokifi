@@ -37,6 +37,15 @@ export default function PriceChart() {
   useHotkeys()
 
   // build chart once
+  // Define resize callback outside useEffect
+  const resizeCallback = React.useCallback((chart: any, ref: any, publish: () => void, recomputeLOD: () => void, bumpRangeTick: () => void) => {
+    if (!ref.current || !chart) return;
+    chart.applyOptions({ width: ref.current.clientWidth, height: ref.current.clientHeight }); 
+    publish(); 
+    recomputeLOD(); 
+    bumpRangeTick();
+  }, []);
+
   React.useEffect(() => {
   // Fynix Phase U: ensure extras are stopped on unmount
   const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
@@ -55,13 +64,8 @@ if (!ref.current) return
 
     const publish = () => setChart({ chart, series, candles })
     publish()
-    const resize = React.useCallback(() => {
-      if (!ref.current || !chart) return;
-      chart.applyOptions({ width: ref.current.clientWidth, height: ref.current.clientHeight }); 
-      publish(); 
-      recomputeLOD(); 
-      bumpRangeTick();
-    }, [chart, ref, recomputeLOD])
+    
+    const resize = () => resizeCallback(chart, ref, publish, recomputeLOD, bumpRangeTick);
 
     resize();
     window.addEventListener('resize', resize)
@@ -90,7 +94,7 @@ if (!ref.current) return
       setChart({ chart: null, series: null, candles: [] });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref])
+  }, [ref, resizeCallback])
 
   const bumpRangeTick = React.useCallback(() => setRangeTick(t => (t + 1) | 0), [])
 

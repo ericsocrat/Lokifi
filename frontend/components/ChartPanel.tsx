@@ -8,6 +8,7 @@ import { symbolStore } from "@/lib/symbolStore";
 import { timeframeStore } from "@/lib/timeframeStore";
 import { indicatorStore } from "@/lib/indicatorStore";
 import { ema, rsi, macd, bollinger, vwap, vwma, stddevChannels } from "@/lib/indicators";
+import type { FynixWindow, FynixGlobalThis, PluginSettingsStore, PluginSymbolSettings } from "@/types/fynix";
 import { drawStore, type Shape } from "@/lib/drawStore";
 import DrawToolbar from "@/components/DrawToolbar";
 import PluginSideToolbar from "@/components/PluginSideToolbar";
@@ -92,9 +93,9 @@ export default function ChartPanel() {
 
   // Bind per-symbol apply/clear functions for the settings drawer (guarded)
   useEffect(() => {
-    const pss: any = (globalThis as any).pluginSettingsStore;
-    const pssym: any = (globalThis as any).pluginSymbolSettings;
-    (window as any).__fynixApplySymbolSettings = () => {
+    const pss = (globalThis as any as FynixGlobalThis).pluginSettingsStore;
+    const pssym = (globalThis as any as FynixGlobalThis).pluginSymbolSettings;
+    (window as FynixWindow).__fynixApplySymbolSettings = () => {
       try {
         const s = pss?.get?.();
         if (!s || !pssym?.set) return;

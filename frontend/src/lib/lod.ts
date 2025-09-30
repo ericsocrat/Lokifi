@@ -16,7 +16,7 @@ export function downsampleCandlesMinMax(data: Candle[], target: number): Candle[
     const end = Math.min(data.length, Math.floor(i + bucketSize))
     if (end - start <= 0) break
     let high = -Infinity, low = Infinity
-    let open = data[start].open, close = data[end-1].close
+    const open = data[start].open, close = data[end-1].close
     let vol = 0
     for (let j=start; j<end; j++){
       const c = data[j]

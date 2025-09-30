@@ -23,15 +23,12 @@ Date: 2025-09-29
 Version: 1.0.0
 """
 
-import os
 import sys
 import json
 import datetime
 import subprocess
-import shutil
-import sqlite3
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 import logging
 
 # Setup logging

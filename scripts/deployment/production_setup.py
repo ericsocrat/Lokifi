@@ -23,9 +23,8 @@ import sys
 import json
 import datetime
 import subprocess
-import shutil
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, Any
 import logging
 
 # Setup logging

@@ -4,7 +4,6 @@ Protected pip installer - prevents accidental downgrades
 """
 import sys
 import subprocess
-import json
 from pathlib import Path
 
 # Add protection

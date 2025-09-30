@@ -6,11 +6,8 @@ Comprehensive security analysis and improvements for Fynix application
 
 import os
 import re
-import json
-import hashlib
-import secrets
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Any
 import subprocess
 import logging
 
@@ -120,7 +117,6 @@ class SecurityAuditor:
                 try:
                     # On Unix systems, check permissions
                     if os.name == 'posix':
-                        import stat
                         file_mode = os.stat(env_path).st_mode
                         permissions = oct(file_mode)[-3:]
                         if permissions != '600':

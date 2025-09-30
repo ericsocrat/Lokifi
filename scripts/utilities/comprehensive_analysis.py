@@ -15,7 +15,6 @@ This script performs a thorough analysis of the codebase including:
 """
 
 import re
-import os
 from pathlib import Path
 import json
 from datetime import datetime

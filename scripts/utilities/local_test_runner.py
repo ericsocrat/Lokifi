@@ -8,11 +8,9 @@ import os
 import sys
 import json
 import sqlite3
-import subprocess
 import importlib.util
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any
 
 class LocalTestRunner:
     def __init__(self):

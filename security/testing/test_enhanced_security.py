@@ -4,7 +4,6 @@ Test Enhanced Security Features
 """
 
 import sys
-import os
 sys.path.append('.')
 
 def test_enhanced_security():

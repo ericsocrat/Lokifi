@@ -532,7 +532,7 @@ function extendRayToBounds(a: Point, b: Point, W: number, H: number) {
   const len = Math.hypot(vx, vy) || 1;
   const nx = vx / len,
     ny = vy / len;
-  let t = 1e6; // far distance
+  const t = 1e6; // far distance
   const end = { x: a.x + nx * t, y: a.y + ny * t };
   // clamp to bounds
   end.x = Math.max(0, Math.min(W, end.x));

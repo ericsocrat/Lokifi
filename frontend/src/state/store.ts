@@ -312,7 +312,7 @@ export const useChartStore =
       ungroupSelected: () => {
         const drawings = get().drawings;
         const selected = new Set(get().selection);
-        let newDrawings = [];
+        const newDrawings = [];
         for (const d of drawings) {
           if (selected.has(d.id) && d.type === 'group') {
             newDrawings.push(...d.children);

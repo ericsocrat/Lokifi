@@ -4,12 +4,9 @@ Fynix Code Quality Analyzer
 Local code quality analysis without external services
 """
 
-import os
 import ast
-import sys
 from pathlib import Path
-from typing import Dict, List, Any
-from collections import defaultdict
+from typing import Dict, Any
 import json
 from datetime import datetime
 

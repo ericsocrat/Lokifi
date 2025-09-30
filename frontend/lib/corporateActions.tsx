@@ -341,7 +341,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       
       getNextTradingDay: (market: string, date: Date) => {
         const { isMarketOpen } = get();
-        let nextDay = new Date(date);
+        const nextDay = new Date(date);
         
         do {
           nextDay.setDate(nextDay.getDate() + 1);

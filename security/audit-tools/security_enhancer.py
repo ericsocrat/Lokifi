@@ -4,7 +4,6 @@ Security Enhancement Suite for Fynix
 Identifies and implements additional security improvements
 """
 
-import os
 from pathlib import Path
 
 def create_security_middleware():

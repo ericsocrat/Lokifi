@@ -8,13 +8,9 @@ Designed to run on Windows with proper encoding support.
 """
 
 import os
-import sys
 import json
 import datetime
-import subprocess
-import shutil
 from pathlib import Path
-from typing import Dict, List, Any
 
 # Ensure UTF-8 encoding
 if os.name == 'nt':  # Windows

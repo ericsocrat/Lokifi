@@ -10,17 +10,20 @@ import { ChartLoadingState } from './ChartLoadingState';
 import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, Lock, Unlock, GripVertical } from 'lucide-react';
 
+// Chart component with proper hook usage
+const ChartContainer = ({ children, ...props }: any) => {
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  return (
+    <div ref={chartContainerRef} {...props}>
+      {children}
+    </div>
+  );
+};
+
 // Dynamic import with loading state
 const Chart = dynamic(
   () => import('lightweight-charts').then(mod => ({
-    default: ({ children, ...props }: any) => {
-      const chartContainerRef = useRef<HTMLDivElement>(null);
-      return (
-        <div ref={chartContainerRef} {...props}>
-          {children}
-        </div>
-      );
-    }
+    default: ChartContainer
   })),
   { 
     ssr: false,

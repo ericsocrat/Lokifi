@@ -4,10 +4,7 @@ Tests all enhanced security features and measures
 """
 
 import asyncio
-import json
 import time
-from typing import Dict, List, Any
-from datetime import datetime, timezone
 
 # Test security components
 def test_input_validation():
@@ -120,8 +117,7 @@ def test_security_logger():
     from app.utils.security_logger import (
         security_monitor, 
         log_auth_failure, 
-        log_suspicious_request,
-        SecurityEventType
+        log_suspicious_request
     )
     
     passed = 0
