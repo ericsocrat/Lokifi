@@ -107,7 +107,7 @@ jobs:
 
       - name: Upload coverage reports
         continue-on-error: true
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           file: backend/coverage.xml
           flags: backend
