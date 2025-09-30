@@ -294,9 +294,19 @@ class AdvancedMonitoringSystem:
         self.last_metrics = None
         self._monitoring_task = None
         
+        # Startup grace period (2 minutes to allow services to initialize)
+        import time
+        self.startup_time = time.time()
+        self.startup_grace_period = 120  # seconds
+        
         # Initialize health checks
         self._initialize_health_checks()
         self._initialize_alert_rules()
+    
+    def _is_past_startup_grace_period(self) -> bool:
+        """Check if we're past the startup grace period"""
+        import time
+        return (time.time() - self.startup_time) > self.startup_grace_period
     
     async def start_background_tasks(self):
         """Start background monitoring tasks"""
@@ -367,18 +377,24 @@ class AdvancedMonitoringSystem:
             5
         )
         
-        # Database connection alert
+        # Database connection alert (with startup grace period)
         self.alert_manager.add_rule(
             'database_connection_issues',
-            lambda m: m.get('health_status', {}).get('database', {}).get('status') != 'healthy',
+            lambda m: (
+                self._is_past_startup_grace_period() and 
+                m.get('health_status', {}).get('database', {}).get('status') != 'healthy'
+            ),
             'critical',
             2
         )
         
-        # Redis connection alert
+        # Redis connection alert (with startup grace period)
         self.alert_manager.add_rule(
             'redis_connection_issues',
-            lambda m: m.get('health_status', {}).get('redis', {}).get('status') != 'healthy',
+            lambda m: (
+                self._is_past_startup_grace_period() and 
+                m.get('health_status', {}).get('redis', {}).get('status') != 'healthy'
+            ),
             'warning',
             3
         )
