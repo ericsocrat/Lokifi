@@ -342,7 +342,7 @@ class DatabaseManager:
                 self.print_warning(f"Database file not found: {db_file}")
                 return None
             
-            backup_file = self.backup_dir / f"fynix_backup_{timestamp}.sqlite"
+            backup_file = self.backup_dir / f"lokifi_backup_{timestamp}.sqlite"
             
             # Copy database file
             import shutil
@@ -350,7 +350,7 @@ class DatabaseManager:
             
             # Compress backup
             import gzip
-            compressed_backup = self.backup_dir / f"fynix_backup_{timestamp}.sqlite.gz"
+            compressed_backup = self.backup_dir / f"lokifi_backup_{timestamp}.sqlite.gz"
             
             with open(backup_file, 'rb') as f_in:
                 with gzip.open(compressed_backup, 'wb') as f_out:
@@ -369,7 +369,7 @@ class DatabaseManager:
     async def _backup_postgres(self, timestamp: str) -> str | None:
         """Backup PostgreSQL database"""
         try:
-            backup_file = self.backup_dir / f"fynix_backup_{timestamp}.sql.gz"
+            backup_file = self.backup_dir / f"lokifi_backup_{timestamp}.sql.gz"
             
             # Use pg_dump for backup
             cmd = [

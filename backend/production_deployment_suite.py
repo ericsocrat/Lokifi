@@ -76,13 +76,13 @@ class ProductionManager:
     def setup_metrics(self):
         """Setup Prometheus metrics"""
         self.metrics = {
-            'http_requests_total': Counter('fynix_http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'], registry=self.registry),
-            'http_request_duration': Histogram('fynix_http_request_duration_seconds', 'HTTP request duration', ['method', 'endpoint'], registry=self.registry),
-            'active_connections': Gauge('fynix_active_connections', 'Active connections', registry=self.registry),
-            'database_connections': Gauge('fynix_database_connections', 'Database connections', registry=self.registry),
-            'memory_usage': Gauge('fynix_memory_usage_bytes', 'Memory usage in bytes', registry=self.registry),
-            'cpu_usage': Gauge('fynix_cpu_usage_percent', 'CPU usage percentage', registry=self.registry),
-            'disk_usage': Gauge('fynix_disk_usage_bytes', 'Disk usage in bytes', ['path'], registry=self.registry),
+            'http_requests_total': Counter('lokifi_http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'], registry=self.registry),
+            'http_request_duration': Histogram('lokifi_http_request_duration_seconds', 'HTTP request duration', ['method', 'endpoint'], registry=self.registry),
+            'active_connections': Gauge('lokifi_active_connections', 'Active connections', registry=self.registry),
+            'database_connections': Gauge('lokifi_database_connections', 'Database connections', registry=self.registry),
+            'memory_usage': Gauge('lokifi_memory_usage_bytes', 'Memory usage in bytes', registry=self.registry),
+            'cpu_usage': Gauge('lokifi_cpu_usage_percent', 'CPU usage percentage', registry=self.registry),
+            'disk_usage': Gauge('lokifi_disk_usage_bytes', 'Disk usage in bytes', ['path'], registry=self.registry),
         }
     
     def print_header(self, title: str):
@@ -190,7 +190,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                         },
                         'ports': ['8000:8000'],
                         'environment': [
-                            'DATABASE_URL=postgresql://lokifi:fynix_password@postgres:5432/fynix_prod',
+                            'DATABASE_URL=postgresql://lokifi:lokifi_password@postgres:5432/lokifi_prod',
                             'REDIS_URL=redis://redis:6379/0',
                             'SECRET_KEY=${SECRET_KEY}',
                             'ENVIRONMENT=production'
@@ -214,9 +214,9 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                     'postgres': {
                         'image': 'postgres:15-alpine',
                         'environment': [
-                            'POSTGRES_DB=fynix_prod',
+                            'POSTGRES_DB=lokifi_prod',
                             'POSTGRES_USER=lokifi',
-                            'POSTGRES_PASSWORD=fynix_password'
+                            'POSTGRES_PASSWORD=lokifi_password'
                         ],
                         'volumes': [
                             'postgres_data:/var/lib/postgresql/data',
@@ -224,7 +224,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                         ],
                         'restart': 'unless-stopped',
                         'healthcheck': {
-                            'test': ['CMD-SHELL', 'pg_isready -U lokifi -d fynix_prod'],
+                            'test': ['CMD-SHELL', 'pg_isready -U lokifi -d lokifi_prod'],
                             'interval': '30s',
                             'timeout': '10s',
                             'retries': 3
@@ -288,7 +288,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                     'grafana_data': {}
                 },
                 'networks': {
-                    'fynix_network': {
+                    'lokifi_network': {
                         'driver': 'bridge'
                     }
                 }
@@ -363,7 +363,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
             alert_rules = {
                 'groups': [
                     {
-                        'name': 'fynix_alerts',
+                        'name': 'lokifi_alerts',
                         'rules': [
                             {
                                 'alert': 'FynixAPIDown',
@@ -379,7 +379,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                             },
                             {
                                 'alert': 'HighResponseTime',
-                                'expr': 'fynix_http_request_duration_seconds{quantile="0.95"} > 0.5',
+                                'expr': 'lokifi_http_request_duration_seconds{quantile="0.95"} > 0.5',
                                 'for': '5m',
                                 'labels': {
                                     'severity': 'warning'
@@ -391,7 +391,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                             },
                             {
                                 'alert': 'HighMemoryUsage',
-                                'expr': 'fynix_memory_usage_bytes > 1000000000',  # 1GB
+                                'expr': 'lokifi_memory_usage_bytes > 1000000000',  # 1GB
                                 'for': '10m',
                                 'labels': {
                                     'severity': 'warning'
@@ -403,7 +403,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                             },
                             {
                                 'alert': 'DatabaseConnectionFailed',
-                                'expr': 'fynix_database_connections == 0',
+                                'expr': 'lokifi_database_connections == 0',
                                 'for': '1m',
                                 'labels': {
                                     'severity': 'critical'
@@ -431,7 +431,7 @@ events {
 }
 
 http {
-    upstream fynix_backend {
+    upstream lokifi_backend {
         server lokifi-api:8000;
     }
     
@@ -459,7 +459,7 @@ http {
         
         # API proxy
         location / {
-            proxy_pass http://fynix_backend;
+            proxy_pass http://lokifi_backend;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -480,7 +480,7 @@ http {
         
         # Metrics endpoint for Prometheus
         location /metrics {
-            proxy_pass http://fynix_backend/metrics;
+            proxy_pass http://lokifi_backend/metrics;
             allow 172.16.0.0/12;  # Docker network
             deny all;
         }
@@ -554,7 +554,7 @@ if [ ! -f .env.production ]; then
     print_warning "Creating .env.production file with default values"
     cat > .env.production << EOF
 SECRET_KEY=$(openssl rand -hex 32)
-DATABASE_URL=postgresql://lokifi:fynix_password@postgres:5432/fynix_prod
+DATABASE_URL=postgresql://lokifi:lokifi_password@postgres:5432/lokifi_prod
 REDIS_URL=redis://redis:6379/0
 ENVIRONMENT=production
 DEBUG=false
@@ -652,7 +652,7 @@ print_status "Creating backup in $BACKUP_DIR"
 
 # Backup database
 print_status "Backing up PostgreSQL database..."
-docker-compose -f docker-compose.production.yml exec -T postgres pg_dump -U lokifi fynix_prod | gzip > "$BACKUP_DIR/database.sql.gz"
+docker-compose -f docker-compose.production.yml exec -T postgres pg_dump -U lokifi lokifi_prod | gzip > "$BACKUP_DIR/database.sql.gz"
 
 # Backup Redis data
 print_status "Backing up Redis data..."
