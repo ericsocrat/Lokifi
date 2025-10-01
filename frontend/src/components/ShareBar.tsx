@@ -15,7 +15,7 @@ export default function ShareBar() {
     const snap = tryLoadFromURL();
     if (snap) {
       s.setAll?.({
-        drawings: snap.drawings,
+        drawings: snap.drawings as any,
         theme: snap.theme || s.theme,
         timeframe: snap.timeframe || s.timeframe,
       });
@@ -32,7 +32,7 @@ export default function ShareBar() {
     const url = makeShareURL({
       v: 1,
       t: 'readOnly',
-      drawings: s.drawings,
+      drawings: s.drawings as any,
       theme: s.theme,
       timeframe: s.timeframe,
       createdAt: Date.now(),

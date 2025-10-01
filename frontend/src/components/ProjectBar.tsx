@@ -16,7 +16,7 @@ export default function ProjectBar() {
 
   const onSave = () => {
     const proj = projectFromState(
-      { drawings: s.drawings, theme: s.theme, timeframe: s.timeframe },
+      { drawings: s.drawings as any, theme: s.theme, timeframe: s.timeframe },
       name
     );
     saveSlot(name, proj);
@@ -32,7 +32,7 @@ export default function ProjectBar() {
     s.clearSelection();
     // Overwrite current scene safely
     s.setAll?.({
-      drawings: proj.drawings || [],
+      drawings: (proj.drawings || []) as any,
       theme: proj.theme || s.theme,
       timeframe: proj.timeframe || s.timeframe,
     });
