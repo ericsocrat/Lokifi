@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Critical Issue Resolver for Fynix Phase K
+Critical Issue Resolver for Lokifi Phase K
 Automatically fixes the most critical issues identified in the codebase
 """
 
@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 class CriticalIssueResolver:
-    """Resolves critical issues in the Fynix codebase"""
+    """Resolves critical issues in the Lokifi codebase"""
     
     def __init__(self, backend_dir: str = "."):
         self.backend_dir = Path(backend_dir)

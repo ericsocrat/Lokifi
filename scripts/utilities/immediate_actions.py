@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Immediate Actions Implementation
+Lokifi Immediate Actions Implementation
 ====================================
 
 This script implements all 8 immediate actions for production deployment.
@@ -102,7 +102,7 @@ class FynixProductionSetup:
         
         # Create production environment file
         env_prod = self.base_dir / ".env.production"
-        env_content = """# Fynix Production Environment
+        env_content = """# Lokifi Production Environment
 ENVIRONMENT=production
 DEBUG=false
 DATABASE_URL=sqlite:///./fynix_production.db
@@ -149,13 +149,13 @@ MAX_WORKERS=4
   evaluation_interval: 15s
 
 scrape_configs:
-  - job_name: 'fynix-backend'
+  - job_name: 'lokifi-backend'
     static_configs:
       - targets: ['localhost:8000']
     metrics_path: '/metrics'
     scrape_interval: 10s
 
-  - job_name: 'fynix-frontend'
+  - job_name: 'lokifi-frontend'
     static_configs:
       - targets: ['localhost:3000']
     scrape_interval: 30s
@@ -176,7 +176,7 @@ scrape_configs:
 services:
   prometheus:
     image: prom/prometheus:latest
-    container_name: fynix-prometheus
+    container_name: lokifi-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -189,7 +189,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: fynix-grafana
+    container_name: lokifi-grafana
     ports:
       - "3001:3000"
     environment:
@@ -230,7 +230,7 @@ volumes:
         
         # Create Windows backup script
         backup_script = f"""@echo off
-REM Fynix Automated Backup Script
+REM Lokifi Automated Backup Script
 REM Created: {datetime.datetime.now()}
 
 set BACKUP_DIR=backups
@@ -242,9 +242,9 @@ echo Starting backup at %date% %time%
 if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 
 REM Database backup
-if exist "backend\\fynix.sqlite" (
+if exist "backend\\lokifi.sqlite" (
     echo Backing up database...
-    copy "backend\\fynix.sqlite" "%BACKUP_DIR%\\fynix_%DATE%.sqlite"
+    copy "backend\\lokifi.sqlite" "%BACKUP_DIR%\\fynix_%DATE%.sqlite"
     echo Database backup completed
 )
 
@@ -271,8 +271,8 @@ echo Backup completed at %date% %time%
 <Task version="1.2">
   <RegistrationInfo>
     <Date>{datetime.datetime.now().isoformat()}</Date>
-    <Author>Fynix</Author>
-    <Description>Automated Fynix backup task</Description>
+    <Author>Lokifi</Author>
+    <Description>Automated Lokifi backup task</Description>
   </RegistrationInfo>
   <Triggers>
     <CalendarTrigger>
@@ -345,16 +345,16 @@ echo Backup completed at %date% %time%
         # Create Nginx SSL configuration
         nginx_ssl_config = """server {
     listen 80;
-    server_name fynix.example.com;
+    server_name lokifi.example.com;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name fynix.example.com;
+    server_name lokifi.example.com;
 
-    ssl_certificate /etc/ssl/certs/fynix.crt;
-    ssl_certificate_key /etc/ssl/private/fynix.key;
+    ssl_certificate /etc/ssl/certs/lokifi.crt;
+    ssl_certificate_key /etc/ssl/private/lokifi.key;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
     ssl_protocols TLSv1.2 TLSv1.3;
@@ -395,23 +395,23 @@ server {
 
 ## Option 1: Let's Encrypt (Recommended for production)
 1. Install Certbot on your server
-2. Run: certbot --nginx -d fynix.example.com
+2. Run: certbot --nginx -d lokifi.example.com
 3. Test auto-renewal: certbot renew --dry-run
 
 ## Option 2: Self-signed certificates (Development only)
 1. Generate certificate:
    openssl req -x509 -nodes -days 365 -newkey rsa:2048 
-   -keyout ssl/fynix.key -out ssl/fynix.crt
-   -subj "/C=US/ST=State/L=City/O=Fynix/CN=fynix.example.com"
+   -keyout ssl/lokifi.key -out ssl/lokifi.crt
+   -subj "/C=US/ST=State/L=City/O=Lokifi/CN=lokifi.example.com"
 
 ## Option 3: Commercial SSL Certificate
 1. Generate CSR: openssl req -new -newkey rsa:2048 -nodes 
-   -keyout ssl/fynix.key -out ssl/fynix.csr
+   -keyout ssl/lokifi.key -out ssl/lokifi.csr
 2. Submit CSR to certificate authority
-3. Install provided certificate as ssl/fynix.crt
+3. Install provided certificate as ssl/lokifi.crt
 
 ## Update Domain
-Replace 'fynix.example.com' with your actual domain in:
+Replace 'lokifi.example.com' with your actual domain in:
 - nginx_ssl.conf
 - docker-compose.production.yml
 - .env.production
@@ -445,7 +445,7 @@ Replace 'fynix.example.com' with your actual domain in:
         workflows_dir.mkdir(parents=True, exist_ok=True)
         
         # Create GitHub Actions workflow
-        github_workflow = f"""name: Fynix CI/CD
+        github_workflow = f"""name: Lokifi CI/CD
 
 on:
   push:
@@ -498,7 +498,7 @@ jobs:
     
     - name: Build Docker images
       run: |
-        docker build -f backend/Dockerfile.prod -t fynix/backend:latest .
+        docker build -f backend/Dockerfile.prod -t lokifi/backend:latest .
         echo "Docker images built successfully"
 
   deploy:
@@ -526,7 +526,7 @@ jobs:
             github_created = False
         
         # Create test configuration
-        test_config = """# Fynix Testing Configuration
+        test_config = """# Lokifi Testing Configuration
 
 ## Running Tests Locally
 
@@ -583,7 +583,7 @@ python performance_optimization_suite.py --quick-test
         # Create performance monitoring script
         monitor_script = f'''#!/usr/bin/env python3
 """
-Fynix Performance Monitor
+Lokifi Performance Monitor
 Simple performance monitoring with alerts
 """
 
@@ -661,7 +661,7 @@ class FynixMonitor:
     
     def run_daemon(self, interval=60):
         """Run monitoring daemon"""
-        print(f"Starting Fynix Performance Monitor (interval: {{interval}}s)")
+        print(f"Starting Lokifi Performance Monitor (interval: {{interval}}s)")
         
         try:
             while True:
@@ -699,10 +699,10 @@ if __name__ == "__main__":
         
         # Create monitoring service for Windows
         service_script = f"""@echo off
-REM Fynix Performance Monitoring Service
+REM Lokifi Performance Monitoring Service
 REM Run this to start performance monitoring
 
-echo Starting Fynix Performance Monitor...
+echo Starting Lokifi Performance Monitor...
 cd /d "{self.base_dir}"
 python performance_monitor.py --interval 60
 """
@@ -785,7 +785,7 @@ server {
 
 services:
   backend:
-    image: fynix/backend:latest
+    image: lokifi/backend:latest
     deploy:
       replicas: 3
       update_config:
@@ -804,7 +804,7 @@ services:
           cpus: '0.25'
           memory: 256M
     networks:
-      - fynix-network
+      - lokifi-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -812,7 +812,7 @@ services:
       retries: 3
 
   frontend:
-    image: fynix/frontend:latest
+    image: lokifi/frontend:latest
     deploy:
       replicas: 2
       resources:
@@ -820,7 +820,7 @@ services:
           cpus: '0.25'
           memory: 256M
     networks:
-      - fynix-network
+      - lokifi-network
 
   nginx:
     image: nginx:alpine
@@ -831,10 +831,10 @@ services:
     volumes:
       - ./nginx_loadbalancer.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
-      - fynix-network
+      - lokifi-network
 
 networks:
-  fynix-network:
+  lokifi-network:
     driver: overlay
     attachable: true"""
         
@@ -853,7 +853,7 @@ networks:
 
 ## Docker Swarm Deployment
 1. Initialize swarm: `docker swarm init`
-2. Deploy stack: `docker stack deploy -c docker-compose.swarm.yml fynix`
+2. Deploy stack: `docker stack deploy -c docker-compose.swarm.yml lokifi`
 3. Scale services: `docker service scale fynix_backend=5`
 4. Monitor: `docker service ls`
 
@@ -904,7 +904,7 @@ networks:
     def generate_summary_report(self):
         """Generate final summary report"""
         print(f"\n{'='*60}")
-        print("FYNIX PRODUCTION SETUP COMPLETE")
+        print("LOKIFI PRODUCTION SETUP COMPLETE")
         print(f"{'='*60}")
         
         total_actions = 8
@@ -950,7 +950,7 @@ networks:
     
     def run_all_immediate_actions(self):
         """Execute all 8 immediate actions"""
-        print("Starting Fynix Production Setup - All Immediate Actions")
+        print("Starting Lokifi Production Setup - All Immediate Actions")
         print(f"Working Directory: {self.base_dir}")
         
         start_time = datetime.datetime.now()

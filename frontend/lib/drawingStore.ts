@@ -411,7 +411,7 @@ export const useDrawingStore = create<DrawingState>()(
       },
     }),
     {
-      name: 'fynix-drawings',
+      name: 'lokifi-drawings',
       partialize: (state: DrawingState) => ({ 
         objects: state.objects,
         snapToGrid: state.snapToGrid,

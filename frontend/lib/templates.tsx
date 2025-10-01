@@ -726,7 +726,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       }
     })),
     {
-      name: 'fynix-templates-storage',
+      name: 'lokifi-templates-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

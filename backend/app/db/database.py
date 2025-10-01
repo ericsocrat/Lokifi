@@ -17,7 +17,7 @@ except ImportError:
     # Fallback if core database doesn't exist
     Base = declarative_base()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fynix:fynix@localhost:5432/fynix")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://lokifi:lokifi@localhost:5432/lokifi")
 
 # Create async engine
 USE_NULL_POOL = (

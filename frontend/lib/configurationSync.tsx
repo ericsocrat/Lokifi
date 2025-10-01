@@ -1755,7 +1755,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       }
     })),
     {
-      name: 'fynix-configuration-sync-storage',
+      name: 'lokifi-configuration-sync-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced Security Audit & Hardening Tool
-Comprehensive security analysis and improvements for Fynix application
+Comprehensive security analysis and improvements for Lokifi application
 """
 
 import os
@@ -217,7 +217,7 @@ def create_security_middleware():
     """Create enhanced security middleware for FastAPI"""
     middleware_code = '''
 """
-Enhanced Security Middleware for Fynix Application
+Enhanced Security Middleware for Lokifi Application
 Provides comprehensive security headers and protections
 """
 
@@ -300,7 +300,7 @@ def main():
     auditor = SecurityAuditor()
     results = auditor.run_comprehensive_audit()
     
-    print("🔒 FYNIX SECURITY AUDIT REPORT")
+    print("🔒 LOKIFI SECURITY AUDIT REPORT")
     print("=" * 50)
     
     # Display issues

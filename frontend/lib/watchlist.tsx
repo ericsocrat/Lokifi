@@ -462,7 +462,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         }
       })),
       {
-        name: 'fynix-watchlist-storage',
+        name: 'lokifi-watchlist-storage',
         version: 1,
         migrate: (persistedState: any, version: number) => {
           if (version === 0) {

@@ -1,7 +1,7 @@
-# 🛡️ Fynix Enhanced Security Setup Guide
+# 🛡️ Lokifi Enhanced Security Setup Guide
 
 ## Overview
-This guide covers the setup and configuration of the enhanced security features that have been implemented in your Fynix application.
+This guide covers the setup and configuration of the enhanced security features that have been implemented in your Lokifi application.
 
 ## 🔧 Installation Complete ✅
 
@@ -56,14 +56,14 @@ This guide covers the setup and configuration of the enhanced security features 
    SMTP_PORT=587
    SMTP_USERNAME=your-email@gmail.com
    SMTP_PASSWORD=your-app-password
-   FROM_EMAIL=security@fynix.app
-   SECURITY_ALERT_EMAILS=admin@fynix.app,security@fynix.app
+   FROM_EMAIL=security@lokifi.app
+   SECURITY_ALERT_EMAILS=admin@lokifi.app,security@lokifi.app
    ```
 
 3. **For Gmail**, create an App Password:
    - Go to Google Account settings
    - Security → 2-Step Verification → App passwords
-   - Generate password for "Fynix Security Alerts"
+   - Generate password for "Lokifi Security Alerts"
 
 ### Slack Integration Setup
 
@@ -273,7 +273,7 @@ done
 
 ## ✅ Security Enhancement Summary
 
-Your Fynix application now includes:
+Your Lokifi application now includes:
 
 - ✅ **Enhanced HTML sanitization** with Bleach library
 - ✅ **Multi-channel security alerting** (Email, Slack, Discord, Webhook)

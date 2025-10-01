@@ -6,8 +6,8 @@ export default function AlertPortal() {
 
   React.useEffect(() => {
     const onOpen = () => setOpen(true)
-    window.addEventListener("fynix:open-alert", onOpen as any)
-    return () => window.removeEventListener("fynix:open-alert", onOpen as any)
+    window.addEventListener("lokifi:open-alert", onOpen as any)
+    return () => window.removeEventListener("lokifi:open-alert", onOpen as any)
   }, [])
 
   return open ? <AlertModal open={open} onClose={()=>setOpen(false)} /> : null

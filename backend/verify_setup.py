@@ -92,7 +92,7 @@ def test_core_modules():
 
 def main():
     """Run all verification tests"""
-    print("🚀 Fynix Backend Verification Script")
+    print("🚀 Lokifi Backend Verification Script")
     print("=" * 50)
     
     tests = [

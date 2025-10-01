@@ -1,6 +1,6 @@
 # 🚀 Implementation Documentation
 
-This folder contains detailed documentation of feature implementations, technical specifications, and architectural decisions for the Fynix project.
+This folder contains detailed documentation of feature implementations, technical specifications, and architectural decisions for the Lokifi project.
 
 ## 📋 Implementation Reports
 

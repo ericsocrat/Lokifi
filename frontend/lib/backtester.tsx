@@ -861,7 +861,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
       }
     })),
     {
-      name: 'fynix-backtester-storage',
+      name: 'lokifi-backtester-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

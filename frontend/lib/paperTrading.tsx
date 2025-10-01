@@ -1196,7 +1196,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       }
     })),
     {
-      name: 'fynix-paper-trading-storage',
+      name: 'lokifi-paper-trading-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

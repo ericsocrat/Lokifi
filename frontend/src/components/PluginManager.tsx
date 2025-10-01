@@ -12,7 +12,7 @@ export default function PluginManager() {
       <div className="flex items-center justify-between">
         <div className="text-sm font-semibold">Plugins</div>
         <button className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10"
-                onClick={()=>window.dispatchEvent(new CustomEvent("fynix:install-demo-plugin"))}>Install demo</button>
+                onClick={()=>window.dispatchEvent(new CustomEvent("lokifi:install-demo-plugin"))}>Install demo</button>
       </div>
 
       <div className="space-y-2">

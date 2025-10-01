@@ -6,7 +6,7 @@ $env:JWT_SECRET_KEY = "test_jwt_secret_key_for_development_only_change_in_produc
 $env:FYNIX_JWT_SECRET = "test_jwt_secret_key_for_development_only_change_in_production"
 
 # Database URL (adjust if needed)
-$env:DATABASE_URL = "postgresql+asyncpg://fynix:fynix@localhost:5432/fynix"
+$env:DATABASE_URL = "postgresql+asyncpg://lokifi:lokifi@localhost:5432/lokifi"
 
 # Redis URL (optional)
 $env:REDIS_URL = "redis://localhost:6379/0"
@@ -17,7 +17,7 @@ $env:ENVIRONMENT = "development"
 # Optional: Disable database pooling for testing
 $env:SQL_DISABLE_POOL = "false"
 
-Write-Host "🚀 Starting Fynix Backend..." -ForegroundColor Green
+Write-Host "🚀 Starting Lokifi Backend..." -ForegroundColor Green
 Write-Host "Environment: development" -ForegroundColor Cyan
 Write-Host "Port: 8000" -ForegroundColor Cyan
 Write-Host ""

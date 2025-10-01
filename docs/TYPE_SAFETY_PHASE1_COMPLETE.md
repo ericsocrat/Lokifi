@@ -33,7 +33,7 @@
 
 ### Files Updated (5):
 1. **`types/shims.d.ts`** - Eliminated 20+ "any" types
-2. **`types/fynix.d.ts`** - Eliminated 9 "any" types
+2. **`types/lokifi.d.ts`** - Eliminated 9 "any" types
 3. **`src/state/store.ts`** - Core state types
 4. **`src/lib/perf.ts`** - Utility function types
 5. **`src/lib/data/adapter.ts`** - Timer types
@@ -73,7 +73,7 @@
 - **23.5%** reduction in "any" types
 - **362** lines of new type definitions
 - **20+** "any" types eliminated in shims
-- **9** "any" types eliminated in fynix.d.ts
+- **9** "any" types eliminated in lokifi.d.ts
 - **11** "any" types eliminated in perf.ts
 
 ### Code Locations Improved
@@ -81,7 +81,7 @@
 - Chart library interfaces (shims.d.ts)
 - Drawing system (new types/drawings.ts)
 - Performance utilities (perf.ts)
-- Plugin system (fynix.d.ts)
+- Plugin system (lokifi.d.ts)
 
 ---
 

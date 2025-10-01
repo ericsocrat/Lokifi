@@ -1,5 +1,5 @@
 """
-K3 - JWT WebSocket Authentication for Fynix Phase K (Fixed)
+K3 - JWT WebSocket Authentication for Lokifi Phase K (Fixed)
 Provides JWT authentication for WebSocket connections with Redis coordination
 """
 
@@ -207,7 +207,7 @@ class AuthenticatedWebSocketManager:
                 "user_id": user_id,
                 "username": user_auth.get("username"),
                 "connected_at": datetime.now(UTC).isoformat(),
-                "instance": settings.APP_NAME or "fynix"
+                "instance": settings.APP_NAME or "lokifi"
             }
             
             # Store connection data with TTL
@@ -262,7 +262,7 @@ class AuthenticatedWebSocketManager:
                 "user_id": user_id,
                 "status": status,
                 "last_seen": datetime.now(UTC).isoformat(),
-                "instance": settings.APP_NAME or "fynix"
+                "instance": settings.APP_NAME or "lokifi"
             }
             
             # Store presence with TTL

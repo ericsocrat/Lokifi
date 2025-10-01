@@ -1,5 +1,5 @@
 /**
- * Typed feature flag system for Fynix
+ * Typed feature flag system for Lokifi
  * All Part G enhancements are gated behind these flags (default: OFF)
  */
 

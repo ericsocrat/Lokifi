@@ -1,4 +1,4 @@
-# 🚀 Fynix Development - Easy Commands
+# 🚀 Lokifi Development - Easy Commands
 
 Since `make` is not installed on your Windows system, here are the optimized commands you can use directly:
 
@@ -8,32 +8,32 @@ Since `make` is not installed on your Windows system, here are the optimized com
 
 ```powershell
 # Quick start backend (most used)
-cd C:\Users\USER\Desktop\fynix\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+cd C:\Users\USER\Desktop\lokifi\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # Quick start frontend
-cd C:\Users\USER\Desktop\fynix\frontend; npm run dev
+cd C:\Users\USER\Desktop\lokifi\frontend; npm run dev
 
 # Run backend tests
-cd C:\Users\USER\Desktop\fynix\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m pytest tests/ -v
+cd C:\Users\USER\Desktop\lokifi\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m pytest tests/ -v
 
 # Run frontend tests  
-cd C:\Users\USER\Desktop\fynix\frontend; npm run test:ci
+cd C:\Users\USER\Desktop\lokifi\frontend; npm run test:ci
 ```
 
 ### 🛠️ Setup Commands
 
 ```powershell
 # Setup backend (first time)
-cd C:\Users\USER\Desktop\fynix\backend; python -m venv venv; .\venv\Scripts\pip.exe install -r requirements.txt
+cd C:\Users\USER\Desktop\lokifi\backend; python -m venv venv; .\venv\Scripts\pip.exe install -r requirements.txt
 
 # Setup frontend (first time)
-cd C:\Users\USER\Desktop\fynix\frontend; npm install
+cd C:\Users\USER\Desktop\lokifi\frontend; npm install
 
 # Update backend dependencies
-cd C:\Users\USER\Desktop\fynix\backend; .\venv\Scripts\pip.exe install -r requirements.txt
+cd C:\Users\USER\Desktop\lokifi\backend; .\venv\Scripts\pip.exe install -r requirements.txt
 
 # Update frontend dependencies
-cd C:\Users\USER\Desktop\fynix\frontend; npm install
+cd C:\Users\USER\Desktop\lokifi\frontend; npm install
 ```
 
 ## 🎯 Use Our Custom Scripts
@@ -80,25 +80,25 @@ cd C:\Users\USER\Desktop\fynix\frontend; npm install
 
 ```powershell
 # Start development server
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # Run tests
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m pytest tests/ -v
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m pytest tests/ -v
 
 # Run security tests
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe test_security_features.py
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe test_security_features.py
 
 # Format code
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m black .
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m black .
 
 # Lint code
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m ruff check .
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m ruff check .
 
 # Initialize database
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -c "from app.core.database import db_manager; import asyncio; asyncio.run(db_manager.initialize())"
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -c "from app.core.database import db_manager; import asyncio; asyncio.run(db_manager.initialize())"
 
 # Check health
-$env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -c "
+$env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -c "
 import asyncio
 from app.core.database import db_manager
 from app.core.advanced_redis_client import advanced_redis_client
@@ -155,10 +155,10 @@ Create these in your PowerShell profile for even faster access:
 
 ```powershell
 # Add to your PowerShell profile ($PROFILE)
-function fbe { cd C:\Users\USER\Desktop\fynix\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000 }
-function ffe { cd C:\Users\USER\Desktop\fynix\frontend; npm run dev }
-function ftest { cd C:\Users\USER\Desktop\fynix; .\dev.ps1 test }
-function fstatus { cd C:\Users\USER\Desktop\fynix; .\dev.ps1 status }
+function fbe { cd C:\Users\USER\Desktop\lokifi\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000 }
+function ffe { cd C:\Users\USER\Desktop\lokifi\frontend; npm run dev }
+function ftest { cd C:\Users\USER\Desktop\lokifi; .\dev.ps1 test }
+function fstatus { cd C:\Users\USER\Desktop\lokifi; .\dev.ps1 status }
 ```
 
 Then you can just type:
@@ -172,25 +172,25 @@ Then you can just type:
 ### Daily Development
 ```powershell
 # Backend development (copy this!)
-cd C:\Users\USER\Desktop\fynix\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+cd C:\Users\USER\Desktop\lokifi\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # Frontend development (copy this!)
-cd C:\Users\USER\Desktop\fynix\frontend; npm run dev
+cd C:\Users\USER\Desktop\lokifi\frontend; npm run dev
 
 # Quick test (copy this!)
-cd C:\Users\USER\Desktop\fynix; .\dev.ps1 test
+cd C:\Users\USER\Desktop\lokifi; .\dev.ps1 test
 ```
 
 ### Troubleshooting
 ```powershell
 # Check system health
-cd C:\Users\USER\Desktop\fynix; .\dev.ps1 status
+cd C:\Users\USER\Desktop\lokifi; .\dev.ps1 status
 
 # Clean cache
-cd C:\Users\USER\Desktop\fynix; .\dev.ps1 clean
+cd C:\Users\USER\Desktop\lokifi; .\dev.ps1 clean
 
 # Reset environment (nuclear option)
-cd C:\Users\USER\Desktop\fynix\backend; Remove-Item venv -Recurse -Force; python -m venv venv; .\venv\Scripts\pip.exe install -r requirements.txt
+cd C:\Users\USER\Desktop\lokifi\backend; Remove-Item venv -Recurse -Force; python -m venv venv; .\venv\Scripts\pip.exe install -r requirements.txt
 ```
 
 ## 📝 Notes

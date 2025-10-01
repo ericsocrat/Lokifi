@@ -1,5 +1,5 @@
 """
-Enhanced Security Middleware for Fynix Application
+Enhanced Security Middleware for Lokifi Application
 """
 
 import logging

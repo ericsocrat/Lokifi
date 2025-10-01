@@ -2,7 +2,7 @@ Param(
   [switch]$Force
 )
 
-Write-Host '=== Fynix Backend Environment Setup ==='
+Write-Host '=== Lokifi Backend Environment Setup ==='
 
 $ErrorActionPreference = 'Stop'
 

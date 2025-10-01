@@ -4,7 +4,7 @@ import { buildReportPDF, downloadPdf, ReportBlock } from "@/lib/report"
 
 export default function ReportComposer({ open, onClose }:{ open:boolean; onClose:()=>void }) {
   const s = useChartStore()
-  const [title, setTitle] = React.useState("Fynix Report")
+  const [title, setTitle] = React.useState("Lokifi Report")
   const [notes, setNotes] = React.useState("")
   const [includeRecent, setIncludeRecent] = React.useState(true)
   const [exporting, setExporting] = React.useState(false)

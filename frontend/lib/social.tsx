@@ -1251,7 +1251,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         }
       })),
       {
-        name: 'fynix-social-storage',
+        name: 'lokifi-social-storage',
         version: 1,
         migrate: (persistedState: any, version: number) => {
           if (version === 0) {

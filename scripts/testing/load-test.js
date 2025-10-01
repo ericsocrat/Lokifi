@@ -116,7 +116,7 @@ function htmlReport(data) {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Fynix Performance Test Report</title>
+    <title>Lokifi Performance Test Report</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .metric { margin: 10px 0; padding: 10px; border-left: 4px solid #007acc; }
@@ -128,7 +128,7 @@ function htmlReport(data) {
     </style>
 </head>
 <body>
-    <h1>Fynix Performance Test Report</h1>
+    <h1>Lokifi Performance Test Report</h1>
     <p>Generated: ${new Date().toISOString()}</p>
     
     <h2>Test Summary</h2>
@@ -174,7 +174,7 @@ function textSummary(data, { indent = '', enableColors = false } = {}) {
   } : { red: '', green: '', yellow: '', blue: '', reset: '' };
 
   return `
-${colors.blue}${indent}Fynix Performance Test Summary${colors.reset}
+${colors.blue}${indent}Lokifi Performance Test Summary${colors.reset}
 ${indent}=====================================
 
 ${colors.green}${indent}✓ Scenarios executed: ${Object.keys(data.root_group.groups).length}${colors.reset}

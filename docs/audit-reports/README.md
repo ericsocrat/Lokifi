@@ -1,6 +1,6 @@
 # 🔍 Audit Reports & System Analysis
 
-This folder contains comprehensive audit reports, system analysis, and quality assessments for the Fynix project.
+This folder contains comprehensive audit reports, system analysis, and quality assessments for the Lokifi project.
 
 ## 📋 Available Reports
 

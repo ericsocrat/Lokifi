@@ -1,4 +1,4 @@
-/* ==== Fynix shims (safe minimal surfaces) ==== */
+/* ==== Lokifi shims (safe minimal surfaces) ==== */
 declare module "zustand" {
   export type StateCreator<T> = (set:(p: Partial<T> | ((s: T) => Partial<T>)) => void, get: () => T) => T;
 

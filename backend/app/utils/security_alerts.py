@@ -94,8 +94,8 @@ class SecurityAlertManager:
         self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
         self.smtp_username = os.getenv("SMTP_USERNAME", "")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.from_email = os.getenv("FROM_EMAIL", "security@fynix.app")
-        self.to_emails = os.getenv("SECURITY_ALERT_EMAILS", "admin@fynix.app").split(",")
+        self.from_email = os.getenv("FROM_EMAIL", "security@lokifi.app")
+        self.to_emails = os.getenv("SECURITY_ALERT_EMAILS", "admin@lokifi.app").split(",")
         
         # Webhook configuration
         self.webhook_url = os.getenv("SECURITY_WEBHOOK_URL", "")
@@ -195,7 +195,7 @@ class SecurityAlertManager:
         msg = MIMEMultipart()
         msg['From'] = self.from_email
         msg['To'] = ", ".join(self.to_emails)
-        msg['Subject'] = f"🚨 Fynix Security Alert: {alert.title}"
+        msg['Subject'] = f"🚨 Lokifi Security Alert: {alert.title}"
         
         # Email body
         body = self._format_email_body(alert)
@@ -285,7 +285,7 @@ class SecurityAlertManager:
         
         body += """
                 <div style="margin-top: 30px; font-size: 12px; color: #6c757d;">
-                    <p>This is an automated security alert from the Fynix monitoring system.</p>
+                    <p>This is an automated security alert from the Lokifi monitoring system.</p>
                     <p>Please investigate this event and take appropriate action if necessary.</p>
                 </div>
             </div>
@@ -310,7 +310,7 @@ class SecurityAlertManager:
             "affected_user": alert.affected_user,
             "timestamp": alert.timestamp.isoformat() if alert.timestamp else None,
             "additional_data": alert.additional_data,
-            "source": "fynix-security-monitor"
+            "source": "lokifi-security-monitor"
         }
         
         headers = {"Content-Type": "application/json"}
@@ -345,7 +345,7 @@ class SecurityAlertManager:
         
         payload = {
             "channel": self.slack_channel,
-            "username": "Fynix Security Monitor",
+            "username": "Lokifi Security Monitor",
             "icon_emoji": ":shield:",
             "attachments": [{
                 "color": "danger" if alert.severity in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL] else "warning",
@@ -394,7 +394,7 @@ class SecurityAlertManager:
                 {"name": "Priority", "value": alert.priority.value.upper(), "inline": True},
                 {"name": "Event Type", "value": alert.event_type.value, "inline": True}
             ],
-            "footer": {"text": "Fynix Security Monitor"}
+            "footer": {"text": "Lokifi Security Monitor"}
         }
         
         if alert.source_ip:

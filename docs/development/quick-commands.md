@@ -1,4 +1,4 @@
-# ⚡ Quick Command Reference for Fynix
+# ⚡ Quick Command Reference for Lokifi
 
 ## 🔥 Super Quick Commands
 

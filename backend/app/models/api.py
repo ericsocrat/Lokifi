@@ -1,5 +1,5 @@
 """
-OpenAPI contract generation and validation for Fynix API
+OpenAPI contract generation and validation for Lokifi API
 """
 from datetime import UTC, datetime
 from typing import Any

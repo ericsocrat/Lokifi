@@ -102,7 +102,7 @@ async def validate_j53_core():
 
 def main():
     """Main validation function"""
-    print("🚀 J5.3 Enhanced Fynix - Core Validation")
+    print("🚀 J5.3 Enhanced Lokifi - Core Validation")
     print("=" * 50)
     
     try:

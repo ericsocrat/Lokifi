@@ -591,7 +591,7 @@ export const useChartStore =
       },
 
       setState: (patch: Partial<ChartState>) => set(patch),
-    }), { name: "fynix:chart" })
+    }), { name: "lokifi:chart" })
   );
 
 // expose helpers the UI expects on the hook function

@@ -2,7 +2,7 @@
 
 ## 🎉 What's Been Created
 
-I've created a comprehensive set of tools to make running Fynix development commands much shorter and easier:
+I've created a comprehensive set of tools to make running Lokifi development commands much shorter and easier:
 
 ### 1. 🔧 Enhanced Backend Makefile (`backend/Makefile`)
 - **Colorized output** with emojis for better readability
@@ -70,10 +70,10 @@ I've created a comprehensive set of tools to make running Fynix development comm
 ### Method 3: Direct Commands (Copy-Paste)
 ```powershell
 # Backend (most used command)
-cd C:\Users\USER\Desktop\fynix\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\fynix\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+cd C:\Users\USER\Desktop\lokifi\backend; $env:PYTHONPATH="C:\Users\USER\Desktop\lokifi\backend"; .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 # Frontend
-cd C:\Users\USER\Desktop\fynix\frontend; npm run dev
+cd C:\Users\USER\Desktop\lokifi\frontend; npm run dev
 ```
 
 ## 🔥 Most Common Commands

@@ -2,7 +2,7 @@
 
 ## Docker Swarm Deployment
 1. Initialize swarm: `docker swarm init`
-2. Deploy stack: `docker stack deploy -c docker-compose.swarm.yml fynix`
+2. Deploy stack: `docker stack deploy -c docker-compose.swarm.yml lokifi`
 3. Scale services: `docker service scale fynix_backend=5`
 4. Monitor: `docker service ls`
 

@@ -1,5 +1,5 @@
 """
-AI Provider manager and factory for Fynix AI Chatbot (J5).
+AI Provider manager and factory for Lokifi AI Chatbot (J5).
 """
 
 import logging

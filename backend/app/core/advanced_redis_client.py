@@ -118,7 +118,7 @@ class AdvancedRedisClient:
                 
                 # Get primary Redis connection
                 self.client = self.sentinel.master_for(
-                    'fynix-primary',
+                    'lokifi-primary',
                     socket_timeout=0.5,
                     password=settings.redis_password if hasattr(settings, 'redis_password') else None,
                     retry=Retry(backoff=ExponentialBackoff(), retries=3),

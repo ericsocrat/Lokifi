@@ -1748,7 +1748,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       }
     })),
     {
-      name: 'fynix-monitoring-storage',
+      name: 'lokifi-monitoring-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

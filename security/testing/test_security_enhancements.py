@@ -245,7 +245,7 @@ def test_csp_builder():
 
 def run_comprehensive_security_test():
     """Run all security tests"""
-    print("🔒 FYNIX COMPREHENSIVE SECURITY TEST SUITE")
+    print("🔒 LOKIFI COMPREHENSIVE SECURITY TEST SUITE")
     print("=" * 50)
     
     test_results = []
@@ -299,6 +299,6 @@ if __name__ == "__main__":
     
     if success:
         print("\n✨ Security enhancement verification complete!")
-        print("🔒 Your Fynix application now has enterprise-grade security")
+        print("🔒 Your Lokifi application now has enterprise-grade security")
     else:
         print("\n⚠️ Security issues detected - please review failed tests")

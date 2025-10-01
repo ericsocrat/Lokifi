@@ -7,7 +7,7 @@
 
 ## 🎯 Overview
 
-This document summarizes the code quality automation improvements implemented for the Fynix project. These changes establish automated quality gates to prevent regression and maintain high code standards.
+This document summarizes the code quality automation improvements implemented for the Lokifi project. These changes establish automated quality gates to prevent regression and maintain high code standards.
 
 ---
 

@@ -8,7 +8,7 @@ import Link from "next/link";
 export default function ChatPage() {
   const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: "system", content: "You are Fynix, a helpful market assistant." },
+    { role: "system", content: "You are Lokifi, a helpful market assistant." },
   ]);
   const [input, setInput] = useState("/price BTCUSD 1h");
   const [busy, setBusy] = useState(false);

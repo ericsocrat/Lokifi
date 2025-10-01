@@ -1,5 +1,5 @@
 """
-Rate Limiting Middleware for Fynix API
+Rate Limiting Middleware for Lokifi API
 Implements sliding window rate limiting with Redis backend
 """
 

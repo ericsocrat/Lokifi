@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Performance Monitor
+Lokifi Performance Monitor
 Simple performance monitoring with alerts
 """
 
@@ -78,7 +78,7 @@ class FynixMonitor:
     
     def run_daemon(self, interval=60):
         """Run monitoring daemon"""
-        print(f"Starting Fynix Performance Monitor (interval: {interval}s)")
+        print(f"Starting Lokifi Performance Monitor (interval: {interval}s)")
         
         try:
             while True:

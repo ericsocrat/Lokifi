@@ -2,7 +2,7 @@
 
 ## Overview
 
-Phase J4 implements a comprehensive real-time direct messaging system for Fynix with:
+Phase J4 implements a comprehensive real-time direct messaging system for Lokifi with:
 - **Database Models**: Conversations, participants, messages, and read receipts
 - **Real-time Communication**: WebSocket-based messaging with typing indicators
 - **Rate Limiting**: Redis-based sliding window rate limiting
@@ -409,7 +409,7 @@ python -m pytest test_direct_messages.py::TestLoadTesting -v
 ### Environment Variables
 ```bash
 # Database
-DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/fynix
+DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/lokifi
 
 # Redis
 REDIS_URL=redis://localhost:6379/0

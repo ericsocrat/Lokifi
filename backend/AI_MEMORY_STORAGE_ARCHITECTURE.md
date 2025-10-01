@@ -1,4 +1,4 @@
-# Fynix AI Chatbot (J5) - Memory & Conversation Storage Architecture
+# Lokifi AI Chatbot (J5) - Memory & Conversation Storage Architecture
 
 ## 🗄️ **Database Storage (Primary)**
 
@@ -264,4 +264,4 @@ This architecture provides:
 - ✅ **Intelligence**: J5.2 context management for smarter AI interactions
 - ✅ **Flexibility**: Multiple export formats and user data control
 
-**Storage Location**: `C:\Users\USER\Desktop\fynix\backend\data\` (SQLite) or configured PostgreSQL instance
+**Storage Location**: `C:\Users\USER\Desktop\lokifi\backend\data\` (SQLite) or configured PostgreSQL instance

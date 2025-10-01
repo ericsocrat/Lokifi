@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Fynix Trading Platform Deployment Script
+# Lokifi Trading Platform Deployment Script
 # Usage: ./deploy.sh [environment] [version]
 # Environments: staging, production
 # Version: optional, defaults to latest git commit
@@ -17,7 +17,7 @@ NC='\033[0m' # No Color
 # Configuration
 ENVIRONMENT=${1:-staging}
 VERSION=${2:-$(git rev-parse --short HEAD)}
-PROJECT_NAME="fynix"
+PROJECT_NAME="lokifi"
 REGISTRY="ghcr.io"
 COMPOSE_FILE="docker-compose.${ENVIRONMENT}.yml"
 
@@ -84,7 +84,7 @@ backup_database() {
         BACKUP_FILE="backups/${PROJECT_NAME}-${ENVIRONMENT}-$(date +%Y%m%d-%H%M%S).sql"
         
         # Create database backup
-        docker-compose -f "$COMPOSE_FILE" exec postgres pg_dump -U postgres fynix > "$BACKUP_FILE"
+        docker-compose -f "$COMPOSE_FILE" exec postgres pg_dump -U postgres lokifi > "$BACKUP_FILE"
         
         if [[ $? -eq 0 ]]; then
             log_success "Database backup created: $BACKUP_FILE"
@@ -153,7 +153,7 @@ wait_for_services() {
     # Wait for backend
     BACKEND_URL="http://localhost:8000"
     if [[ "$ENVIRONMENT" == "production" ]]; then
-        BACKEND_URL="https://api.fynix.example.com"
+        BACKEND_URL="https://api.lokifi.example.com"
     fi
     
     local retries=30
@@ -176,7 +176,7 @@ wait_for_services() {
     # Wait for frontend
     FRONTEND_URL="http://localhost:3000"
     if [[ "$ENVIRONMENT" == "production" ]]; then
-        FRONTEND_URL="https://fynix.example.com"
+        FRONTEND_URL="https://lokifi.example.com"
     fi
     
     retries=30
@@ -205,8 +205,8 @@ run_smoke_tests() {
     FRONTEND_URL="http://localhost:3000"
     
     if [[ "$ENVIRONMENT" == "production" ]]; then
-        BACKEND_URL="https://api.fynix.example.com"
-        FRONTEND_URL="https://fynix.example.com"
+        BACKEND_URL="https://api.lokifi.example.com"
+        FRONTEND_URL="https://lokifi.example.com"
     fi
     
     # Test backend endpoints
@@ -214,7 +214,7 @@ run_smoke_tests() {
     curl -f -s "$BACKEND_URL/api/v1/symbols" | jq .symbols | jq length | grep -q "[0-9]"
     
     # Test frontend
-    curl -f -s "$FRONTEND_URL" | grep -q "Fynix"
+    curl -f -s "$FRONTEND_URL" | grep -q "Lokifi"
     
     log_success "Smoke tests passed"
 }
@@ -234,7 +234,7 @@ cleanup_old_images() {
 
 send_notifications() {
     local status=$1
-    local message="Fynix deployment to $ENVIRONMENT"
+    local message="Lokifi deployment to $ENVIRONMENT"
     
     if [[ "$status" == "success" ]]; then
         message="✅ $message succeeded (version: $VERSION)"
@@ -311,8 +311,8 @@ main() {
     send_notifications "success"
     
     log_success "Deployment completed successfully!"
-    log_info "Frontend URL: $([ "$ENVIRONMENT" == "production" ] && echo "https://fynix.example.com" || echo "http://localhost:3000")"
-    log_info "Backend URL: $([ "$ENVIRONMENT" == "production" ] && echo "https://api.fynix.example.com" || echo "http://localhost:8000")"
+    log_info "Frontend URL: $([ "$ENVIRONMENT" == "production" ] && echo "https://lokifi.example.com" || echo "http://localhost:3000")"
+    log_info "Backend URL: $([ "$ENVIRONMENT" == "production" ] && echo "https://api.lokifi.example.com" || echo "http://localhost:8000")"
 }
 
 # Handle script interruption

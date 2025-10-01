@@ -37,7 +37,7 @@ async def tool_create_price_alert(symbol: str, direction: str, price: float, aut
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE = os.getenv("OPENAI_BASE", "https://api.openai.com/v1")
 
-SYSTEM_PROMPT = """You are Fynix, a market assistant. You can call tools to:
+SYSTEM_PROMPT = """You are Lokifi, a market assistant. You can call tools to:
 1) get_price(symbol, timeframe)
 2) portfolio_summary()
 3) create_price_alert(symbol, direction, price)

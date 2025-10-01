@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Local Development Enhancement Suite
+Lokifi Local Development Enhancement Suite
 ========================================
 
 This script implements all improvements that can be done locally without requiring:
@@ -18,7 +18,7 @@ Focus areas:
 7. Performance optimization
 8. Documentation generation
 
-Author: Fynix Enhancement Team
+Author: Lokifi Enhancement Team
 Date: 2025-09-29
 Version: 1.0.0
 """
@@ -125,28 +125,28 @@ class LocalDevelopmentEnhancer:
         # 1. Create local development scripts
         dev_scripts = {
             "start_local_dev.bat": '''@echo off
-REM Fynix Local Development Startup Script
-echo Starting Fynix Local Development Environment...
+REM Lokifi Local Development Startup Script
+echo Starting Lokifi Local Development Environment...
 
 REM Set environment variables
-set PYTHONPATH=C:\\Users\\USER\\Desktop\\fynix\\backend
+set PYTHONPATH=C:\\Users\\USER\\Desktop\\lokifi\\backend
 set ENVIRONMENT=development
 set DEBUG=true
 
 REM Start Redis (if Docker available)
 echo Starting Redis...
-docker run -d --name fynix-redis-dev -p 6379:6379 redis:alpine || echo "Redis start failed - continuing without Redis"
+docker run -d --name lokifi-redis-dev -p 6379:6379 redis:alpine || echo "Redis start failed - continuing without Redis"
 
 REM Start backend
 echo Starting backend server...
 cd backend
-start "Fynix Backend" cmd /k ".venv\\Scripts\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
+start "Lokifi Backend" cmd /k ".venv\\Scripts\\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload"
 
 REM Start frontend (if available)
 if exist "frontend\\package.json" (
     echo Starting frontend...
     cd ..\\frontend
-    start "Fynix Frontend" cmd /k "npm run dev"
+    start "Lokifi Frontend" cmd /k "npm run dev"
 )
 
 echo Local development environment started!
@@ -158,11 +158,11 @@ pause
 ''',
             "stop_local_dev.bat": '''@echo off
 REM Stop all local development services
-echo Stopping Fynix Local Development Environment...
+echo Stopping Lokifi Local Development Environment...
 
 REM Stop Docker containers
-docker stop fynix-redis-dev 2>nul
-docker rm fynix-redis-dev 2>nul
+docker stop lokifi-redis-dev 2>nul
+docker rm lokifi-redis-dev 2>nul
 
 REM Kill processes on development ports
 for /f "tokens=5" %%a in ('netstat -aon ^| find ":8000"') do taskkill /f /pid %%a 2>nul
@@ -173,7 +173,7 @@ pause
 ''',
             "quick_test.bat": '''@echo off
 REM Quick local testing script
-echo Running Fynix Quick Tests...
+echo Running Lokifi Quick Tests...
 
 cd backend
 
@@ -194,14 +194,14 @@ pause
 ''',
             "reset_database.bat": '''@echo off
 REM Reset local database to clean state
-echo Resetting Fynix Local Database...
+echo Resetting Lokifi Local Database...
 
 cd backend
 
 REM Backup current database
-if exist "fynix.sqlite" (
+if exist "lokifi.sqlite" (
     echo Creating backup...
-    copy fynix.sqlite "fynix_backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sqlite"
+    copy lokifi.sqlite "fynix_backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sqlite"
 )
 
 REM Reset database
@@ -330,7 +330,7 @@ pause
         # 1. Create comprehensive local test runner
         local_test_runner = '''#!/usr/bin/env python3
 """
-Fynix Local Test Runner
+Lokifi Local Test Runner
 Comprehensive testing without external dependencies
 """
 
@@ -413,7 +413,7 @@ class LocalTestRunner:
         """Test database operations"""
         print("\\n🗃️  Testing database operations...")
         
-        db_path = self.backend_dir / "fynix.sqlite"
+        db_path = self.backend_dir / "lokifi.sqlite"
         
         if not db_path.exists():
             self.results["tests"].append({
@@ -582,7 +582,7 @@ class LocalTestRunner:
     
     def run_all_tests(self):
         """Run all local tests"""
-        print("🚀 Starting Fynix Local Test Suite...")
+        print("🚀 Starting Lokifi Local Test Suite...")
         print(f"Timestamp: {self.results['timestamp']}")
         
         # Run all test categories
@@ -641,7 +641,7 @@ if __name__ == "__main__":
         # Create code quality analyzer
         quality_analyzer = '''#!/usr/bin/env python3
 """
-Fynix Code Quality Analyzer
+Lokifi Code Quality Analyzer
 Local code quality analysis without external services
 """
 
@@ -788,7 +788,7 @@ class CodeQualityAnalyzer:
         # Generate summary report
         summary_file = Path(f"test_results/code_quality_summary_{timestamp}.txt")
         with open(summary_file, 'w', encoding='utf-8') as f:
-            f.write("Fynix Code Quality Analysis Report\\n")
+            f.write("Lokifi Code Quality Analysis Report\\n")
             f.write("=" * 40 + "\\n\\n")
             f.write(f"Analysis Date: {self.analysis_results['timestamp']}\\n")
             f.write(f"Files Analyzed: {self.analysis_results['files_analyzed']}\\n")
@@ -848,7 +848,7 @@ if __name__ == "__main__":
         # Create local system monitor
         local_monitor = '''#!/usr/bin/env python3
 """
-Fynix Local System Monitor
+Lokifi Local System Monitor
 Real-time monitoring for local development
 """
 
@@ -987,7 +987,7 @@ if __name__ == "__main__":
         }
         
         # Create local development guide
-        dev_guide = f'''# Fynix Local Development Guide
+        dev_guide = f'''# Lokifi Local Development Guide
 Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 ## Quick Start
@@ -995,7 +995,7 @@ Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 ### 1. Environment Setup
 ```bash
 # Navigate to project
-cd C:\\Users\\USER\\Desktop\\fynix
+cd C:\\Users\\USER\\Desktop\\lokifi
 
 # Start local development
 dev_scripts\\start_local_dev.bat
@@ -1005,7 +1005,7 @@ dev_scripts\\start_local_dev.bat
 - **Backend API**: http://localhost:8000
 - **Frontend**: http://localhost:3000 (if available)
 - **API Documentation**: http://localhost:8000/docs
-- **Database**: SQLite file at backend/fynix.sqlite
+- **Database**: SQLite file at backend/lokifi.sqlite
 
 ### 3. Development Tools
 
@@ -1042,7 +1042,7 @@ python database_management_suite.py
 
 ### 4. Project Structure
 ```
-fynix/
+lokifi/
 ├── backend/                 # Python FastAPI backend
 │   ├── app/                # Application code
 │   │   ├── main.py        # Main application
@@ -1050,7 +1050,7 @@ fynix/
 │   │   ├── routers/       # API routes
 │   │   └── services/      # Business logic
 │   ├── .venv/             # Virtual environment
-│   ├── fynix.sqlite       # SQLite database
+│   ├── lokifi.sqlite       # SQLite database
 │   └── requirements.txt   # Python dependencies
 ├── frontend/               # Next.js frontend (if available)
 ├── local_tools/           # Local development tools
@@ -1075,7 +1075,7 @@ fynix/
 3. Code quality check: `python local_tools\\code_quality_analyzer.py`
 
 #### Database Operations
-1. View data: Connect to `backend/fynix.sqlite` with SQLite browser
+1. View data: Connect to `backend/lokifi.sqlite` with SQLite browser
 2. Reset database: `dev_scripts\\reset_database.bat`
 3. Backup database: Files are automatically backed up to `backups/`
 
@@ -1104,16 +1104,16 @@ fynix/
 
 #### Server Won't Start
 1. Check if port 8000 is in use: `netstat -an | findstr 8000`
-2. Verify Python path: Should be `C:\\Users\\USER\\Desktop\\fynix\\backend`
+2. Verify Python path: Should be `C:\\Users\\USER\\Desktop\\lokifi\\backend`
 3. Check dependencies: All should be in `.venv/Lib/site-packages/`
 
 #### Import Errors
-1. Ensure PYTHONPATH is set: `$env:PYTHONPATH = "C:\\Users\\USER\\Desktop\\fynix\\backend"`
+1. Ensure PYTHONPATH is set: `$env:PYTHONPATH = "C:\\Users\\USER\\Desktop\\lokifi\\backend"`
 2. Verify virtual environment is activated
 3. Check if all dependencies are installed
 
 #### Database Issues
-1. Check if `fynix.sqlite` exists in `backend/` directory
+1. Check if `lokifi.sqlite` exists in `backend/` directory
 2. Reset database: `dev_scripts\\reset_database.bat`
 3. Run database management suite for diagnosis
 
@@ -1167,7 +1167,7 @@ Happy coding! 🚀
     
     def run_all_enhancements(self):
         """Execute all local development enhancements"""
-        self.print_header("Fynix Local Development Enhancement Suite")
+        self.print_header("Lokifi Local Development Enhancement Suite")
         print("Implementing improvements that work without server/domain...")
         
         start_time = datetime.datetime.now()

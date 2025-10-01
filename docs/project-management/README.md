@@ -1,6 +1,6 @@
 # 📊 Project Management Documentation
 
-This folder contains project planning, tracking, and management documentation for the Fynix project.
+This folder contains project planning, tracking, and management documentation for the Lokifi project.
 
 ## 📋 Project Documents
 

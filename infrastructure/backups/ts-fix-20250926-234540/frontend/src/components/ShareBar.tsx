@@ -49,7 +49,7 @@ export default function ShareBar() {
         <button className='px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10' onClick={()=>exportReportPDF()}>Export PDF</button>
       </div>
       <div className='grid grid-cols-3 gap-2 text-sm'>
-        <input className='col-span-2 bg-transparent border border-white/15 rounded px-2 py-1' value={room} onChange={e=>setRoom(e.target.value)} placeholder='Room ID (e.g. fynix-dev)' />
+        <input className='col-span-2 bg-transparent border border-white/15 rounded px-2 py-1' value={room} onChange={e=>setRoom(e.target.value)} placeholder='Room ID (e.g. lokifi-dev)' />
         <button className='px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10' onClick={toggleCollab}>{collab ? 'Stop' : 'Start'} Collab</button>
       </div>
       <div className='text-xs opacity-60'>Collab uses public demo server <code>demos.yjs.dev</code>. For production, point to your own y-websocket.</div>

@@ -1,5 +1,5 @@
 """
-K4 - SQLite/Postgres Analytics Compatibility Layer for Fynix Phase K
+K4 - SQLite/Postgres Analytics Compatibility Layer for Lokifi Phase K
 Provides cross-database compatibility for analytics queries with fallback strategies
 """
 

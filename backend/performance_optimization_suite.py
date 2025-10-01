@@ -631,7 +631,7 @@ class PerformanceOptimizer:
             
             # Create a comprehensive performance dashboard
             fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-            fig.suptitle('Fynix Performance Dashboard', fontsize=16, fontweight='bold')
+            fig.suptitle('Lokifi Performance Dashboard', fontsize=16, fontweight='bold')
             
             # Chart 1: Response Times Over Time
             if self.performance_data["api_response_time"]:
@@ -877,7 +877,7 @@ class PerformanceOptimizer:
     
     async def run_comprehensive_analysis(self) -> bool:
         """Run complete performance analysis suite"""
-        self.print_header("Fynix Performance Optimization & Analytics Suite")
+        self.print_header("Lokifi Performance Optimization & Analytics Suite")
         
         print(f"{Colors.WHITE}Running comprehensive performance analysis and optimization{Colors.END}")
         print(f"{Colors.WHITE}Analysis started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}")
@@ -919,7 +919,7 @@ async def main():
     """Main performance optimization execution"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Fynix Performance Optimization Suite")
+    parser = argparse.ArgumentParser(description="Lokifi Performance Optimization Suite")
     parser.add_argument("--url", default="http://localhost:8002", help="Base URL for testing")
     parser.add_argument("--duration", type=int, default=30, help="Load test duration in seconds")
     parser.add_argument("--concurrency", type=int, default=10, help="Concurrent requests for load testing")

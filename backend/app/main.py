@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Enhanced application lifespan manager for Phase K Track 3 Infrastructure"""
-    logger.info("🚀 Starting Fynix Phase K Track 3 Infrastructure Enhancement")
+    logger.info("🚀 Starting Lokifi Phase K Track 3 Infrastructure Enhancement")
     
     try:
         # Startup sequence
@@ -119,7 +119,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=f"{settings.PROJECT_NAME} - Phase K Track 3: Infrastructure Enhancement",
-    description="Fynix with Production-Ready Infrastructure: Advanced Redis, WebSocket Manager, Monitoring System",
+    description="Lokifi with Production-Ready Infrastructure: Advanced Redis, WebSocket Manager, Monitoring System",
     version="K3.0.0",
     lifespan=lifespan
 )
@@ -177,7 +177,7 @@ app.include_router(security.router, prefix=settings.API_PREFIX)
 @app.get("/")
 async def read_root():
     return {
-        "message": "Fynix Phase K Track 3: Infrastructure Enhancement", 
+        "message": "Lokifi Phase K Track 3: Infrastructure Enhancement", 
         "version": "K3.0.0",
         "features": [
             "Advanced Redis with connection pooling",

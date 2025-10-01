@@ -64,16 +64,16 @@ class DatabaseSetup:
             # Check if container already exists
             check_cmd = [
                 "docker", "ps", "-a", 
-                "--filter", "name=fynix-postgres",
+                "--filter", "name=lokifi-postgres",
                 "--format", "{{.Names}}"
             ]
             
             result = subprocess.run(check_cmd, capture_output=True, text=True)
             
-            if "fynix-postgres" in result.stdout:
+            if "lokifi-postgres" in result.stdout:
                 logger.info("📦 PostgreSQL container exists, starting...")
                 start_result = subprocess.run(
-                    ["docker", "start", "fynix-postgres"],
+                    ["docker", "start", "lokifi-postgres"],
                     capture_output=True, text=True
                 )
                 if start_result.returncode == 0:
@@ -85,9 +85,9 @@ class DatabaseSetup:
                 
                 create_cmd = [
                     "docker", "run", "-d",
-                    "--name", "fynix-postgres",
-                    "-e", "POSTGRES_DB=fynix",
-                    "-e", "POSTGRES_USER=fynix",
+                    "--name", "lokifi-postgres",
+                    "-e", "POSTGRES_DB=lokifi",
+                    "-e", "POSTGRES_USER=lokifi",
                     "-e", "POSTGRES_PASSWORD=fynix_dev_password",
                     "-p", "5432:5432",
                     "-v", "fynix_postgres_data:/var/lib/postgresql/data",
@@ -105,8 +105,8 @@ class DatabaseSetup:
                     for i in range(30):  # Wait up to 30 seconds
                         try:
                             test_cmd = [
-                                "docker", "exec", "fynix-postgres",
-                                "pg_isready", "-U", "fynix", "-d", "fynix"
+                                "docker", "exec", "lokifi-postgres",
+                                "pg_isready", "-U", "lokifi", "-d", "lokifi"
                             ]
                             test_result = subprocess.run(test_cmd, capture_output=True)
                             if test_result.returncode == 0:
@@ -169,15 +169,15 @@ class DatabaseSetup:
         # Option 1: Try Docker PostgreSQL (recommended)
         if self.check_docker_available():
             if self.start_postgres_docker():
-                database_url = "postgresql+asyncpg://fynix:fynix_dev_password@localhost:5432/fynix"
+                database_url = "postgresql+asyncpg://lokifi:fynix_dev_password@localhost:5432/lokifi"
                 logger.info("✅ Using Docker PostgreSQL")
                 return database_url
         
         # Option 2: Try local PostgreSQL
         if self.check_postgresql_available():
-            database_url = "postgresql+asyncpg://postgres:postgres@localhost:5432/fynix"
+            database_url = "postgresql+asyncpg://postgres:postgres@localhost:5432/lokifi"
             logger.info("✅ Using local PostgreSQL")
-            logger.warning("⚠️  Make sure PostgreSQL is running and 'fynix' database exists")
+            logger.warning("⚠️  Make sure PostgreSQL is running and 'lokifi' database exists")
             return database_url
         
         # Option 3: Fall back to SQLite (with warning)
@@ -187,7 +187,7 @@ class DatabaseSetup:
         logger.info("   - Install PostgreSQL locally")
         logger.info("   - Use cloud PostgreSQL (Supabase, AWS RDS, etc.)")
         
-        database_url = "sqlite+aiosqlite:///./data/fynix.sqlite"
+        database_url = "sqlite+aiosqlite:///./data/lokifi.sqlite"
         return database_url
     
     async def test_database_connection(self, database_url: str) -> bool:
@@ -197,15 +197,15 @@ class DatabaseSetup:
                 import asyncpg
                 # Parse connection URL
                 if "localhost:5432" in database_url:
-                    if "fynix:" in database_url:
+                    if "lokifi:" in database_url:
                         # Docker setup
                         db_password = os.getenv("POSTGRES_PASSWORD", "fynix_dev_password")
                         conn = await asyncpg.connect(
                             host="localhost",
                             port=5432,
-                            user="fynix", 
+                            user="lokifi", 
                             password=db_password,
-                            database="fynix"
+                            database="lokifi"
                         )
                     else:
                         # Local PostgreSQL
@@ -225,7 +225,7 @@ class DatabaseSetup:
                 self.data_dir.mkdir(exist_ok=True)
                 
                 # Test SQLite connection
-                async with aiosqlite.connect(self.data_dir / "fynix.sqlite") as db:
+                async with aiosqlite.connect(self.data_dir / "lokifi.sqlite") as db:
                     await db.execute("SELECT 1")
                 
                 logger.info("✅ SQLite connection successful")
@@ -367,7 +367,7 @@ class CloudMigrationGuide:
 def main():
     """Main setup function"""
     
-    print("🚀 FYNIX CLOUD-READY STORAGE SETUP")
+    print("🚀 LOKIFI CLOUD-READY STORAGE SETUP")
     print("=" * 50)
     
     setup = DatabaseSetup()

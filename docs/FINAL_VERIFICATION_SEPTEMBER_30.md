@@ -27,7 +27,7 @@ Successfully implemented and tested **3 out of 4 Next Month priority tasks** fro
 ### 1. Web Vitals Tests - PASSED ✅
 
 ```
- RUN  v3.2.4 C:/Users/USER/Desktop/fynix/frontend
+ RUN  v3.2.4 C:/Users/USER/Desktop/lokifi/frontend
 
  ✓ tests/lib/webVitals.test.ts (21 tests) 260ms
    ✓ WebVitalsMonitor > Initialization (3/3)

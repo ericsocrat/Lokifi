@@ -2,7 +2,7 @@
 
 **Last Updated:** September 30, 2025
 **Version:** 1.0
-**Project:** Fynix Trading Platform
+**Project:** Lokifi Trading Platform
 
 ---
 

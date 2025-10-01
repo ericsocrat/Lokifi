@@ -2,7 +2,7 @@
 import { useChartStore } from '@/state/store'
 
 /** Merge the visible chart canvas (if found) with DrawingLayer canvas and download PNG */
-export async function exportPNG(filename = 'fynix-chart.png') {
+export async function exportPNG(filename = 'lokifi-chart.png') {
   const container = document.querySelector('main') || document.body
   const canvases = Array.from(container.querySelectorAll('canvas')) as HTMLCanvasElement[]
   if (canvases.length === 0) return
@@ -21,7 +21,7 @@ export async function exportPNG(filename = 'fynix-chart.png') {
 }
 
 /** Export vector-only drawings as SVG (doesn't rasterize the price series) */
-export function exportSVG(filename = 'fynix-drawings.svg') {
+export function exportSVG(filename = 'lokifi-drawings.svg') {
   const s = (useChartStore as any).getState?.() || null
   if (!s) return
   const container = document.querySelector('main') as HTMLElement | null

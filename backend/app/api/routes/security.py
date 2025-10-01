@@ -243,7 +243,7 @@ async def test_security_alerts(current_user=Depends(get_current_user)):
     try:
         success = await send_medium_alert(
             title="Test Security Alert",
-            message="This is a test alert from the Fynix security monitoring system.",
+            message="This is a test alert from the Lokifi security monitoring system.",
             event_type=SecurityEventType.CONFIGURATION_CHANGE,
             source_ip="127.0.0.1",
             additional_data={"test": True, "user": str(current_user.get("sub", "unknown"))}

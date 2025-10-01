@@ -6,7 +6,7 @@ version: "3.8"
 services:
   redis-primary:
     image: redis:7.2-alpine
-    container_name: fynix-redis-primary
+    container_name: lokifi-redis-primary
     ports:
       - "6379:6379"
     volumes:
@@ -16,7 +16,7 @@ services:
     environment:
       - REDIS_REPLICATION_MODE=master
     networks:
-      - fynix-network
+      - lokifi-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -27,7 +27,7 @@ services:
 
   redis-replica:
     image: redis:7.2-alpine
-    container_name: fynix-redis-replica
+    container_name: lokifi-redis-replica
     ports:
       - "6380:6379"
     volumes:
@@ -41,7 +41,7 @@ services:
       - REDIS_MASTER_HOST=redis-primary
       - REDIS_MASTER_PORT=6379
     networks:
-      - fynix-network
+      - lokifi-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -52,7 +52,7 @@ services:
 
   redis-sentinel:
     image: redis:7.2-alpine
-    container_name: fynix-redis-sentinel
+    container_name: lokifi-redis-sentinel
     ports:
       - "26379:26379"
     volumes:
@@ -62,7 +62,7 @@ services:
       - redis-primary
       - redis-replica
     networks:
-      - fynix-network
+      - lokifi-network
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "redis-cli", "-p", "26379", "ping"]
@@ -72,7 +72,7 @@ services:
 
   redis-commander:
     image: rediscommander/redis-commander:latest
-    container_name: fynix-redis-web
+    container_name: lokifi-redis-web
     ports:
       - "8081:8081"
     environment:
@@ -83,7 +83,7 @@ services:
       - redis-primary
       - redis-replica
     networks:
-      - fynix-network
+      - lokifi-network
     restart: unless-stopped
 
 volumes:
@@ -91,5 +91,5 @@ volumes:
   redis-replica-data:
 
 networks:
-  fynix-network:
+  lokifi-network:
     driver: bridge

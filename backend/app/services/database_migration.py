@@ -1,5 +1,5 @@
 """
-Database Migration Service for Fynix
+Database Migration Service for Lokifi
 Handles database schema migrations and updates
 """
 

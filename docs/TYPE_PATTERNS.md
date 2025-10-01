@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-This document defines the TypeScript type patterns and coding standards for the Fynix project. Following these standards ensures code consistency, type safety, and maintainability.
+This document defines the TypeScript type patterns and coding standards for the Lokifi project. Following these standards ensures code consistency, type safety, and maintainability.
 
 ---
 

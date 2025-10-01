@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Production Setup and Configuration Automation
+Lokifi Production Setup and Configuration Automation
 =====================================================
 
 This script implements all immediate actions for production deployment:
@@ -13,7 +13,7 @@ This script implements all immediate actions for production deployment:
 7. Performance monitoring
 8. Infrastructure scaling
 
-Author: Fynix Enhancement Team
+Author: Lokifi Enhancement Team
 Date: 2025-09-29
 Version: 1.0.0
 """
@@ -182,8 +182,8 @@ class ProductionSetupManager:
                 "REDIS_URL": "redis://redis:6379/0",
                 "SECRET_KEY": "${SECRET_KEY}",
                 "FYNIX_JWT_SECRET": "${FYNIX_JWT_SECRET}",
-                "ALLOWED_HOSTS": "localhost,127.0.0.1,fynix.example.com",
-                "CORS_ORIGINS": "https://fynix.example.com",
+                "ALLOWED_HOSTS": "localhost,127.0.0.1,lokifi.example.com",
+                "CORS_ORIGINS": "https://lokifi.example.com",
                 "LOG_LEVEL": "INFO",
                 "MAX_WORKERS": "4",
                 "WORKER_TIMEOUT": "30"
@@ -242,13 +242,13 @@ class ProductionSetupManager:
             "rule_files": ["alerts.yml"],
             "scrape_configs": [
                 {
-                    "job_name": "fynix-backend",
+                    "job_name": "lokifi-backend",
                     "static_configs": [{"targets": ["backend:8000"]}],
                     "metrics_path": "/metrics",
                     "scrape_interval": "10s"
                 },
                 {
-                    "job_name": "fynix-frontend", 
+                    "job_name": "lokifi-frontend", 
                     "static_configs": [{"targets": ["frontend:3000"]}],
                     "scrape_interval": "30s"
                 },
@@ -285,13 +285,13 @@ rule_files:
   - "alerts.yml"
 
 scrape_configs:
-  - job_name: 'fynix-backend'
+  - job_name: 'lokifi-backend'
     static_configs:
       - targets: ['backend:8000']
     metrics_path: '/metrics'
     scrape_interval: 10s
 
-  - job_name: 'fynix-frontend'
+  - job_name: 'lokifi-frontend'
     static_configs:
       - targets: ['frontend:3000']
     scrape_interval: 30s
@@ -319,8 +319,8 @@ alerting:
         dashboard_config = {
             "dashboard": {
                 "id": None,
-                "title": "Fynix System Overview",
-                "tags": ["fynix", "monitoring"],
+                "title": "Lokifi System Overview",
+                "tags": ["lokifi", "monitoring"],
                 "timezone": "browser",
                 "panels": [
                     {
@@ -423,14 +423,14 @@ alerting:
         
         # Create backup script
         backup_script = '''#!/bin/bash
-# Fynix Automated Backup Script
+# Lokifi Automated Backup Script
 # Created: ''' + str(datetime.datetime.now()) + '''
 
 set -e
 
 BACKUP_DIR="/backups"
 DATE=$(date +"%Y%m%d_%H%M%S")
-APP_NAME="fynix"
+APP_NAME="lokifi"
 
 # Create backup directory
 mkdir -p $BACKUP_DIR/database
@@ -440,9 +440,9 @@ mkdir -p $BACKUP_DIR/logs
 echo "Starting backup at $(date)"
 
 # Database backup
-if [ -f "/app/fynix.sqlite" ]; then
+if [ -f "/app/lokifi.sqlite" ]; then
     echo "Backing up SQLite database..."
-    cp /app/fynix.sqlite $BACKUP_DIR/database/fynix_${DATE}.sqlite
+    cp /app/lokifi.sqlite $BACKUP_DIR/database/fynix_${DATE}.sqlite
     gzip $BACKUP_DIR/database/fynix_${DATE}.sqlite
     echo "Database backup completed"
 fi
@@ -463,7 +463,7 @@ find $BACKUP_DIR -name "*.sqlite" -mtime +30 -delete 2>/dev/null || true
 echo "Backup completed at $(date)"
 
 # Optional: Upload to cloud storage
-# aws s3 sync $BACKUP_DIR s3://your-backup-bucket/fynix/ --delete
+# aws s3 sync $BACKUP_DIR s3://your-backup-bucket/lokifi/ --delete
 '''
         
         backup_script_path = self.base_dir / "backup_script.sh"
@@ -477,7 +477,7 @@ echo "Backup completed at $(date)"
         
         # Create Windows backup script
         windows_backup_script = '''@echo off
-REM Fynix Automated Backup Script for Windows
+REM Lokifi Automated Backup Script for Windows
 REM Created: ''' + str(datetime.datetime.now()) + '''
 
 set BACKUP_DIR=C:\\fynix_backups
@@ -492,9 +492,9 @@ if not exist "%BACKUP_DIR%\\configs" mkdir "%BACKUP_DIR%\\configs"
 if not exist "%BACKUP_DIR%\\logs" mkdir "%BACKUP_DIR%\\logs"
 
 REM Database backup
-if exist "backend\\fynix.sqlite" (
+if exist "backend\\lokifi.sqlite" (
     echo Backing up SQLite database...
-    copy "backend\\fynix.sqlite" "%BACKUP_DIR%\\database\\fynix_%DATE%.sqlite"
+    copy "backend\\lokifi.sqlite" "%BACKUP_DIR%\\database\\fynix_%DATE%.sqlite"
     echo Database backup completed
 )
 
@@ -527,7 +527,7 @@ echo Backup completed at %date% %time%
 # Add to docker-compose.production.yml for backup service
   backup:
     image: alpine:latest
-    container_name: fynix-backup
+    container_name: lokifi-backup
     volumes:
       - ./backups:/backups
       - ./backend:/app:ro
@@ -539,7 +539,7 @@ echo Backup completed at %date% %time%
       "
     restart: unless-stopped
     networks:
-      - fynix-network
+      - lokifi-network
 """
         
         try:
@@ -553,7 +553,7 @@ echo Backup completed at %date% %time%
         # Configure backup locations
         backup_dirs = [
             self.base_dir / "backups",
-            Path("C:/fynix_backups") if os.name == 'nt' else Path("/var/backups/fynix")
+            Path("C:/fynix_backups") if os.name == 'nt' else Path("/var/backups/lokifi")
         ]
         
         for backup_dir in backup_dirs:
@@ -584,17 +584,17 @@ echo Backup completed at %date% %time%
         nginx_ssl_config = """
 server {
     listen 80;
-    server_name fynix.example.com;
+    server_name lokifi.example.com;
     return 301 https://$server_name$request_uri;
 }
 
 server {
     listen 443 ssl http2;
-    server_name fynix.example.com;
+    server_name lokifi.example.com;
 
     # SSL Configuration
-    ssl_certificate /etc/ssl/certs/fynix.crt;
-    ssl_certificate_key /etc/ssl/private/fynix.key;
+    ssl_certificate /etc/ssl/certs/lokifi.crt;
+    ssl_certificate_key /etc/ssl/private/lokifi.key;
     ssl_session_timeout 1d;
     ssl_session_cache shared:SSL:50m;
     ssl_session_tickets off;
@@ -659,7 +659,7 @@ server {
 # Let's Encrypt SSL Certificate Setup
 # Run this script to obtain SSL certificates for production
 
-DOMAIN="fynix.example.com"
+DOMAIN="lokifi.example.com"
 EMAIL="admin@example.com"
 
 echo "Setting up Let's Encrypt SSL certificates for $DOMAIN"
@@ -712,13 +712,13 @@ mkdir -p $SSL_DIR
 echo "Generating self-signed SSL certificate..."
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout $SSL_DIR/fynix.key \
-    -out $SSL_DIR/fynix.crt \
-    -subj "/C=US/ST=State/L=City/O=Organization/CN=fynix.example.com"
+    -keyout $SSL_DIR/lokifi.key \
+    -out $SSL_DIR/lokifi.crt \
+    -subj "/C=US/ST=State/L=City/O=Organization/CN=lokifi.example.com"
 
 echo "Self-signed certificate generated at:"
-echo "  Certificate: $SSL_DIR/fynix.crt"
-echo "  Private Key: $SSL_DIR/fynix.key"
+echo "  Certificate: $SSL_DIR/lokifi.crt"
+echo "  Private Key: $SSL_DIR/lokifi.key"
 
 echo "WARNING: This is a self-signed certificate for development only!"
 echo "For production, use Let's Encrypt or a trusted CA."
@@ -747,7 +747,7 @@ echo "For production, use Let's Encrypt or a trusted CA."
         }
         
         # GitHub Actions workflow
-        github_workflow = """name: Fynix CI/CD Pipeline
+        github_workflow = """name: Lokifi CI/CD Pipeline
 
 on:
   push:
@@ -850,7 +850,7 @@ jobs:
         context: ./backend
         file: ./backend/Dockerfile.prod
         push: true
-        tags: fynix/backend:latest,fynix/backend:${{ github.sha }}
+        tags: lokifi/backend:latest,lokifi/backend:${{ github.sha }}
     
     - name: Build and push frontend
       uses: docker/build-push-action@v3
@@ -858,7 +858,7 @@ jobs:
         context: ./frontend
         file: ./frontend/Dockerfile.prod
         push: true
-        tags: fynix/frontend:latest,fynix/frontend:${{ github.sha }}
+        tags: lokifi/frontend:latest,lokifi/frontend:${{ github.sha }}
 
   deploy:
     needs: build
@@ -905,7 +905,7 @@ jobs:
     
     environment {
         DOCKER_REGISTRY = 'your-registry.com'
-        IMAGE_NAME = 'fynix'
+        IMAGE_NAME = 'lokifi'
     }
     
     stages {
@@ -977,13 +977,13 @@ jobs:
         success {
             slackSend(
                 color: 'good',
-                message: "✅ Fynix deployment successful - Build #${env.BUILD_NUMBER}"
+                message: "✅ Lokifi deployment successful - Build #${env.BUILD_NUMBER}"
             )
         }
         failure {
             slackSend(
                 color: 'danger',
-                message: "❌ Fynix deployment failed - Build #${env.BUILD_NUMBER}"
+                message: "❌ Lokifi deployment failed - Build #${env.BUILD_NUMBER}"
             )
         }
     }
@@ -1015,7 +1015,7 @@ jobs:
         # Performance monitoring script
         monitoring_script = '''#!/usr/bin/env python3
 """
-Fynix Performance Monitoring Daemon
+Lokifi Performance Monitoring Daemon
 Continuously monitors system performance and sends alerts
 """
 
@@ -1143,7 +1143,7 @@ class PerformanceMonitor:
     
     def run_daemon(self, interval=60):
         """Run monitoring daemon"""
-        print(f"🚀 Starting Fynix Performance Monitor (interval: {interval}s)")
+        print(f"🚀 Starting Lokifi Performance Monitor (interval: {interval}s)")
         
         try:
             while True:
@@ -1157,7 +1157,7 @@ class PerformanceMonitor:
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Fynix Performance Monitor")
+    parser = argparse.ArgumentParser(description="Lokifi Performance Monitor")
     parser.add_argument("--interval", type=int, default=60, help="Monitoring interval in seconds")
     parser.add_argument("--no-alerts", action="store_true", help="Disable alerts")
     
@@ -1196,7 +1196,7 @@ if __name__ == "__main__":
 
 services:
   backend:
-    image: fynix/backend:latest
+    image: lokifi/backend:latest
     deploy:
       replicas: 3
       update_config:
@@ -1215,7 +1215,7 @@ services:
           cpus: '0.25'
           memory: 256M
     networks:
-      - fynix-network
+      - lokifi-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -1223,7 +1223,7 @@ services:
       retries: 3
 
   frontend:
-    image: fynix/frontend:latest
+    image: lokifi/frontend:latest
     deploy:
       replicas: 2
       update_config:
@@ -1236,7 +1236,7 @@ services:
           cpus: '0.25'
           memory: 256M
     networks:
-      - fynix-network
+      - lokifi-network
 
   nginx:
     image: nginx:alpine
@@ -1252,10 +1252,10 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./ssl:/etc/ssl:ro
     networks:
-      - fynix-network
+      - lokifi-network
 
 networks:
-  fynix-network:
+  lokifi-network:
     driver: overlay
     attachable: true
 """
@@ -1273,22 +1273,22 @@ networks:
         k8s_config = """apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fynix-backend
+  name: lokifi-backend
   labels:
-    app: fynix-backend
+    app: lokifi-backend
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: fynix-backend
+      app: lokifi-backend
   template:
     metadata:
       labels:
-        app: fynix-backend
+        app: lokifi-backend
     spec:
       containers:
       - name: backend
-        image: fynix/backend:latest
+        image: lokifi/backend:latest
         ports:
         - containerPort: 8000
         resources:
@@ -1315,12 +1315,12 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: fynix-backend-hpa
+  name: lokifi-backend-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: fynix-backend
+    name: lokifi-backend
   minReplicas: 2
   maxReplicas: 10
   metrics:
@@ -1341,10 +1341,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fynix-backend-service
+  name: lokifi-backend-service
 spec:
   selector:
-    app: fynix-backend
+    app: lokifi-backend
   ports:
     - protocol: TCP
       port: 8000
@@ -1429,12 +1429,12 @@ server {
         self.print_status("Generating final setup report...", "PROGRESS")
         
         report = f"""
-# Fynix Production Setup Report
+# Lokifi Production Setup Report
 Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 ## Executive Summary
 All immediate production actions have been implemented and configured.
-The Fynix system is now ready for enterprise-grade deployment.
+The Lokifi system is now ready for enterprise-grade deployment.
 
 ## Actions Completed
 
@@ -1476,7 +1476,7 @@ The Fynix system is now ready for enterprise-grade deployment.
 3. Import dashboard: monitoring/dashboards/fynix_overview.json
 
 ### Scaling Operations
-1. Docker Swarm: `docker stack deploy -c docker-compose.swarm.yml fynix`
+1. Docker Swarm: `docker stack deploy -c docker-compose.swarm.yml lokifi`
 2. Kubernetes: `kubectl apply -f k8s-deployment.yaml`
 
 ## Production Checklist
@@ -1518,7 +1518,7 @@ The Fynix system is now ready for enterprise-grade deployment.
 - Backups: ./backups/ directory
 
 ---
-Fynix Production Setup Completed Successfully! 🚀
+Lokifi Production Setup Completed Successfully! 🚀
 """
         
         # Save report
@@ -1534,7 +1534,7 @@ Fynix Production Setup Completed Successfully! 🚀
     
     def run_all_actions(self):
         """Execute all immediate actions sequentially"""
-        self.print_header("Fynix Production Setup - Immediate Actions Implementation")
+        self.print_header("Lokifi Production Setup - Immediate Actions Implementation")
         
         actions = [
             ("reports", "Review Enhancement Reports", self.review_enhancement_reports),
@@ -1569,15 +1569,15 @@ Fynix Production Setup Completed Successfully! 🚀
         final_report = self.generate_final_report()
         
         self.print_status("🎉 All immediate actions completed successfully!", "SUCCESS")
-        self.print_status("Your Fynix system is now production-ready!", "SUCCESS")
+        self.print_status("Your Lokifi system is now production-ready!", "SUCCESS")
         
         return self.setup_results
 
 if __name__ == "__main__":
     import argparse
     
-    parser = argparse.ArgumentParser(description="Fynix Production Setup Manager")
-    parser.add_argument("--base-dir", default=".", help="Base directory for Fynix project")
+    parser = argparse.ArgumentParser(description="Lokifi Production Setup Manager")
+    parser.add_argument("--base-dir", default=".", help="Base directory for Lokifi project")
     parser.add_argument("--action", choices=[
         "all", "reports", "production", "monitoring", "backups", 
         "ssl", "cicd", "performance", "scaling"

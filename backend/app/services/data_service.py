@@ -1,5 +1,5 @@
 """
-Symbol directory and OHLC data provider for Fynix trading platform.
+Symbol directory and OHLC data provider for Lokifi trading platform.
 Supports multiple data sources with failover capabilities.
 """
 

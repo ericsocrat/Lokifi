@@ -1,4 +1,4 @@
-# Fynix Testing Configuration
+# Lokifi Testing Configuration
 
 ## Running Tests Locally
 

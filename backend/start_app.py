@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     from app.main import app
     
-    print("🚀 Starting Fynix Backend Server...")
+    print("🚀 Starting Lokifi Backend Server...")
     print("📡 Health: http://localhost:8002/api/health") 
     print("📚 Docs: http://localhost:8002/docs")
     

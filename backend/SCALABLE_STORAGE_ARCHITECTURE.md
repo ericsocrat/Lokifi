@@ -1,9 +1,9 @@
-# Fynix J5 AI - Scalable Storage Solutions for Production
+# Lokifi J5 AI - Scalable Storage Solutions for Production
 
 ## 🚨 **Current Storage Limitations**
 
 ### **Problem**: SQLite Local Storage
-- **Current Database**: SQLite file (`backend/data/fynix.sqlite`)
+- **Current Database**: SQLite file (`backend/data/lokifi.sqlite`)
 - **Scalability Issues**:
   - Single file on disk (no horizontal scaling)
   - Limited concurrent connections (~1000)
@@ -233,13 +233,13 @@ class FileStorageService:
 # scripts/backup_database.sh
 
 # Daily backup to S3
-pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://fynix-backups/daily/fynix_$(date +%Y%m%d).sql.gz
+pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/daily/fynix_$(date +%Y%m%d).sql.gz
 
 # Weekly full backup
-pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://fynix-backups/weekly/fynix_$(date +%Y%m%d).sql.gz
+pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/weekly/fynix_$(date +%Y%m%d).sql.gz
 
 # Monthly archive
-pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://fynix-backups/monthly/fynix_$(date +%Y%m%d).sql.gz \
+pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/monthly/fynix_$(date +%Y%m%d).sql.gz \
   --storage-class GLACIER
 ```
 

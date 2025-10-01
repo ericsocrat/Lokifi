@@ -886,7 +886,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         }
       })),
       {
-        name: 'fynix-alerts-v2-storage',
+        name: 'lokifi-alerts-v2-storage',
         version: 1,
         migrate: (persistedState: any, version: number) => {
           if (version === 0) {

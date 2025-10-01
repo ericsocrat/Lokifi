@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Advanced Testing Framework
+Lokifi Advanced Testing Framework
 ===============================
 
 Comprehensive testing suite covering all system components:
@@ -50,7 +50,7 @@ class Colors:
     END = '\033[0m'
 
 class AdvancedTestFramework:
-    """Comprehensive testing framework for Fynix system"""
+    """Comprehensive testing framework for Lokifi system"""
     
     def __init__(self, base_url: str = "http://localhost:8002"):
         self.base_url = base_url
@@ -67,7 +67,7 @@ class AdvancedTestFramework:
             "security": {}
         }
         self.test_user = {
-            "email": "test@fynix.dev",
+            "email": "test@lokifi.dev",
             "password": "TestPassword123!",
             "username": "testuser",
             "full_name": "Test User"
@@ -761,7 +761,7 @@ class AdvancedTestFramework:
     
     async def run_all_tests(self) -> bool:
         """Run all test suites"""
-        self.print_header("Fynix Advanced Testing Framework - Full Test Suite")
+        self.print_header("Lokifi Advanced Testing Framework - Full Test Suite")
         
         print(f"{Colors.WHITE}Running comprehensive tests on: {self.base_url}{Colors.END}")
         print(f"{Colors.WHITE}Test execution started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}")
@@ -818,7 +818,7 @@ async def main():
     """Main test execution"""
     import argparse
     
-    parser = argparse.ArgumentParser(description="Fynix Advanced Testing Framework")
+    parser = argparse.ArgumentParser(description="Lokifi Advanced Testing Framework")
     parser.add_argument("--url", default="http://localhost:8002", help="Base URL for testing")
     parser.add_argument("--category", help="Run specific test category")
     

@@ -1,6 +1,6 @@
 # 🏗️ Infrastructure Directory
 
-**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Fynix platform.
+**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Lokifi platform.
 
 ---
 
@@ -142,7 +142,7 @@ docker-compose -f docker-compose.yml \
 ### **Scaled Production**
 ```bash
 # Docker Swarm deployment
-docker stack deploy -c docker-compose.swarm.yml fynix
+docker stack deploy -c docker-compose.swarm.yml lokifi
 ```
 
 ---

@@ -1,5 +1,5 @@
 """
-AI Context Management Service for Fynix AI Chatbot (J5.2).
+AI Context Management Service for Lokifi AI Chatbot (J5.2).
 
 Handles conversation context, memory, and intelligent summarization.
 """

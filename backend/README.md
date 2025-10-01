@@ -1,4 +1,4 @@
-# Fynix Backend
+# Lokifi Backend
 
 FastAPI-based trading platform backend with multi-provider data aggregation, Redis caching, and comprehensive symbol directory.
 
@@ -183,12 +183,12 @@ make prod-run
 
 ### Build Production Image
 ```bash
-docker build -t fynix-backend:prod -f Dockerfile.prod .
+docker build -t lokifi-backend:prod -f Dockerfile.prod .
 ```
 
 ### Run with Environment
 ```bash
-docker run -p 8000:8000 --env-file .env fynix-backend:prod
+docker run -p 8000:8000 --env-file .env lokifi-backend:prod
 ```
 
 ### Docker Compose Production

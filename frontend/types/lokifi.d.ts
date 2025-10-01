@@ -1,4 +1,4 @@
-// Global type definitions for Fynix application
+// Global type definitions for Lokifi application
 import type { Drawing } from '@/types/drawings';
 import type { IChartApi, ISeriesApi } from '@/types/lightweight-charts';
 

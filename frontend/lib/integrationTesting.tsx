@@ -1862,7 +1862,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       }
     })),
     {
-      name: 'fynix-integration-testing-storage',
+      name: 'lokifi-integration-testing-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

@@ -1,5 +1,5 @@
 """
-Advanced AI Analytics Service for Fynix AI Chatbot (J5.2).
+Advanced AI Analytics Service for Lokifi AI Chatbot (J5.2).
 
 Provides comprehensive analytics and insights for AI conversations.
 """

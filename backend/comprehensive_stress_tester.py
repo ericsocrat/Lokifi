@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Advanced Stress Testing Framework for Fynix
+Advanced Stress Testing Framework for Lokifi
 Implements comprehensive load testing scenarios with detailed metrics
 """
 
@@ -79,7 +79,7 @@ class AdvancedStressTester:
         self.session = aiohttp.ClientSession(
             connector=connector,
             timeout=timeout,
-            headers={"User-Agent": "Fynix-StressTester/1.0"}
+            headers={"User-Agent": "Lokifi-StressTester/1.0"}
         )
         
     async def cleanup(self):

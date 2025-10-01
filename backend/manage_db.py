@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Database Management CLI
+Lokifi Database Management CLI
 Provides tools for database migration, monitoring, and maintenance
 """
 
@@ -15,11 +15,11 @@ logger = logging.getLogger(__name__)
 
 @click.group()
 def cli():
-    """Fynix Database Management CLI"""
+    """Lokifi Database Management CLI"""
     pass
 
 @cli.command()
-@click.option('--source', default='sqlite+aiosqlite:///./data/fynix.sqlite', help='Source database URL')
+@click.option('--source', default='sqlite+aiosqlite:///./data/lokifi.sqlite', help='Source database URL')
 @click.option('--target', required=True, help='Target database URL (PostgreSQL)')
 @click.option('--batch-size', default=1000, help='Migration batch size')
 def migrate(source: str, target: str, batch_size: int):

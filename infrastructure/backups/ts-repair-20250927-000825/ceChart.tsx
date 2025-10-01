@@ -36,7 +36,7 @@ export default function PriceChart() {
 
   // build chart once
   React.useEffect(() => {
-  // Fynix Phase U: ensure extras are stopped on unmount
+  // Lokifi Phase U: ensure extras are stopped on unmount
   const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
 if (!ref.current) return
     const chart = createChart(ref.current, {
@@ -74,7 +74,7 @@ if (!ref.current) return
 
   // attach data adapter
   React.useEffect(() => {
-  // Fynix Phase U: ensure extras are stopped on unmount
+  // Lokifi Phase U: ensure extras are stopped on unmount
   const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
 const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timeframe })
     let unsub = () => {}
@@ -95,7 +95,7 @@ const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timef
 
   /** ========== Indicator plotting (windowed LOD) ========== */
   React.useEffect(() => {
-  // Fynix Phase U: ensure extras are stopped on unmount
+  // Lokifi Phase U: ensure extras are stopped on unmount
   const __fynixCleanup = (typeof __fynixStopExtras === 'function') ? __fynixStopExtras : null;
 const run = () => {
       const s = seriesRef.current

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Local System Monitor
+Lokifi Local System Monitor
 Real-time monitoring for local development
 """
 

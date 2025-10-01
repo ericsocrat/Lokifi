@@ -1,5 +1,5 @@
 """
-AI Service Layer for Fynix AI Chatbot (J5).
+AI Service Layer for Lokifi AI Chatbot (J5).
 
 Handles AI interactions with safety features, rate limiting, and provider management.
 """

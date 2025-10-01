@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Fynix Backend Startup Script
+Lokifi Backend Startup Script
 
-Simple Python script to start the Fynix backend servers
+Simple Python script to start the Lokifi backend servers
 """
 
 import os
@@ -33,7 +33,7 @@ def main():
         server_type = sys.argv[1].lower()
         port = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 8002
     
-    print("🚀 Fynix Backend Startup Script v2.0")
+    print("🚀 Lokifi Backend Startup Script v2.0")
     print("Latest Dependencies: FastAPI 0.118.0, SQLAlchemy 2.0.43")
     print("============================================")
     print(f"📋 Server: {server_type}, Port: {port}")
@@ -43,7 +43,7 @@ def main():
     
     try:
         if server_type == "main":
-            print(f"🌟 Starting Main Fynix Server on port {port}...")
+            print(f"🌟 Starting Main Lokifi Server on port {port}...")
             print(f"📡 Health endpoint: http://localhost:{port}/api/health")
             print(f"📚 API endpoints: http://localhost:{port}/docs")
             print()
@@ -62,7 +62,7 @@ def main():
         else:
             print(f"❌ Unknown server type: {server_type}")
             print("Available options:")
-            print("  main [port]  - Start main Fynix server (default port 8002)")
+            print("  main [port]  - Start main Lokifi server (default port 8002)")
             print("  stress       - Start stress test server (port 8001)")
             print("  verify       - Run verification tests")
             print()

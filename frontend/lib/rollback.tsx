@@ -1283,7 +1283,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
           },
           configurationState: {
             environment: { NODE_ENV: 'production' },
-            appConfig: { apiUrl: 'https://api.fynix.com' },
+            appConfig: { apiUrl: 'https://api.lokifi.com' },
             serviceConfigs: {},
             securityConfig: {}
           },
@@ -1323,7 +1323,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
               type: 'database_restore',
               config: {
                 database: {
-                  connectionString: 'postgresql://localhost:5432/fynix',
+                  connectionString: 'postgresql://localhost:5432/lokifi',
                   backupPath: '/backups/fynix_backup.sql',
                   schema: 'public'
                 }
@@ -1389,7 +1389,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       }
     })),
     {
-      name: 'fynix-rollback-storage',
+      name: 'lokifi-rollback-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

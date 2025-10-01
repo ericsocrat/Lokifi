@@ -1,6 +1,6 @@
 # 🔒 Security Documentation
 
-This folder contains all security-related documentation, audits, and implementation guides for the Fynix project.
+This folder contains all security-related documentation, audits, and implementation guides for the Lokifi project.
 
 ## 📋 Security Documents
 

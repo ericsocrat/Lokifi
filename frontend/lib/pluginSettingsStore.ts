@@ -12,8 +12,8 @@ const DEFAULT: Settings = {
   fibPreset: "Extended",
   fibCustomLevels: [0,0.236,0.382,0.5,0.618,0.786,1,1.272,1.414,1.618,2,2.618],
 };
-const KEY = "fynix.plugins.settings";
-const KEY_OVR = 'fynix.plugins.settings.overrides';
+const KEY = "lokifi.plugins.settings";
+const KEY_OVR = 'lokifi.plugins.settings.overrides';
 const listeners = new Set<(s: Settings)=>void>();
 let _s: Settings = load();
 function load(): Settings{

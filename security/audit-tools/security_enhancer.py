@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Security Enhancement Suite for Fynix
+Security Enhancement Suite for Lokifi
 Identifies and implements additional security improvements
 """
 
@@ -12,7 +12,7 @@ def create_security_middleware():
     middleware_dir.mkdir(exist_ok=True)
     
     middleware_code = '''"""
-Enhanced Security Middleware for Fynix Application
+Enhanced Security Middleware for Lokifi Application
 """
 
 from fastapi import Request, Response
@@ -328,7 +328,7 @@ def analyze_current_security():
     return issues, improvements
 
 def main():
-    print("🔒 FYNIX SECURITY ENHANCEMENT SUITE")
+    print("🔒 LOKIFI SECURITY ENHANCEMENT SUITE")
     print("=" * 50)
     
     # Analyze current security

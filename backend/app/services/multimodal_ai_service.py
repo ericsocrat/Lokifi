@@ -1,5 +1,5 @@
 """
-Multi-modal AI Service for Fynix AI Chatbot (J5.2).
+Multi-modal AI Service for Lokifi AI Chatbot (J5.2).
 
 Handles file uploads, image processing, and document analysis.
 """

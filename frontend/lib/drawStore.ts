@@ -21,7 +21,7 @@ export type DrawState = {
   selectedIds: string[];
 };
 
-const LS_PREFIX = "fynix.drawings";
+const LS_PREFIX = "lokifi.drawings";
 function key(sym: string, tf: string) { return `${LS_PREFIX}.${sym}.${tf}`; }
 function load(sym: string, tf: string): Shape[] { try { const raw = localStorage.getItem(key(sym, tf)); return raw ? JSON.parse(raw) as Shape[] : []; } catch { return []; } }
 function save(sym: string, tf: string, shapes: Shape[]) { try { localStorage.setItem(key(sym, tf), JSON.stringify(shapes)); } catch { } }

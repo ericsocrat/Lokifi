@@ -38,8 +38,8 @@
       },
       "database": {},
       "configuration": {
-        "project_name": "Fynix",
-        "database_url": "sqlite+aiosqlite:///./data/fynix.sqlite",
+        "project_name": "Lokifi",
+        "database_url": "sqlite+aiosqlite:///./data/lokifi.sqlite",
         "jwt_algorithm": "HS256",
         "jwt_expire_minutes": 30
       }

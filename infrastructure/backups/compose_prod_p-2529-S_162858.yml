@@ -8,8 +8,8 @@ services:
       dockerfile: Dockerfile.prod
       args:
         - NEXT_PUBLIC_API_URL=http://backend:8000
-    image: fynix/frontend:latest
-    container_name: fynix-frontend
+    image: lokifi/frontend:latest
+    container_name: lokifi-frontend
     ports:
       - "80:3000"
     environment:
@@ -25,10 +25,10 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - fynix-network
+      - lokifi-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`fynix.example.com`)"
+      - "traefik.http.routers.frontend.rule=Host(`lokifi.example.com`)"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     logging:
@@ -42,14 +42,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
-    image: fynix/backend:latest
-    container_name: fynix-backend
+    image: lokifi/backend:latest
+    container_name: lokifi-backend
     ports:
       - "8000:8000"
     environment:
       - ENVIRONMENT=production
       - REDIS_URL=redis://redis:6379
-      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/fynix
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/lokifi
       - SECRET_KEY=${SECRET_KEY}
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY}
       - FINNHUB_API_KEY=${FINNHUB_API_KEY}
@@ -65,10 +65,10 @@ services:
       retries: 3
       start_period: 40s
     networks:
-      - fynix-network
+      - lokifi-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.fynix.example.com`)"
+      - "traefik.http.routers.backend.rule=Host(`api.lokifi.example.com`)"
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     logging:
@@ -80,9 +80,9 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: fynix-postgres
+    container_name: lokifi-postgres
     environment:
-      - POSTGRES_DB=fynix
+      - POSTGRES_DB=lokifi
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
@@ -97,7 +97,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - fynix-network
+      - lokifi-network
     logging:
       driver: "json-file"
       options:
@@ -107,7 +107,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: fynix-redis
+    container_name: lokifi-redis
     ports:
       - "6379:6379"
     volumes:
@@ -119,7 +119,7 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - fynix-network
+      - lokifi-network
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     logging:
       driver: "json-file"
@@ -130,7 +130,7 @@ services:
   # Reverse Proxy (Traefik)
   traefik:
     image: traefik:v3.0
-    container_name: fynix-traefik
+    container_name: lokifi-traefik
     command:
       - "--api.dashboard=true"
       - "--api.debug=true"
@@ -139,7 +139,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=admin@fynix.example.com"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@lokifi.example.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
@@ -149,10 +149,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik_certs:/letsencrypt
     networks:
-      - fynix-network
+      - lokifi-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.fynix.example.com`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.lokifi.example.com`)"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal"
     restart: unless-stopped
@@ -160,7 +160,7 @@ services:
   # Monitoring - Prometheus
   prometheus:
     image: prom/prometheus:latest
-    container_name: fynix-prometheus
+    container_name: lokifi-prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -173,13 +173,13 @@ services:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     networks:
-      - fynix-network
+      - lokifi-network
     restart: unless-stopped
 
   # Monitoring - Grafana
   grafana:
     image: grafana/grafana:latest
-    container_name: fynix-grafana
+    container_name: lokifi-grafana
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
     ports:
@@ -188,7 +188,7 @@ services:
       - grafana_data:/var/lib/grafana
       - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
     networks:
-      - fynix-network
+      - lokifi-network
     depends_on:
       - prometheus
     restart: unless-stopped
@@ -196,34 +196,34 @@ services:
   # Log Management - Loki
   loki:
     image: grafana/loki:latest
-    container_name: fynix-loki
+    container_name: lokifi-loki
     ports:
       - "3100:3100"
     volumes:
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
     networks:
-      - fynix-network
+      - lokifi-network
     restart: unless-stopped
 
   # Log Collector - Promtail
   promtail:
     image: grafana/promtail:latest
-    container_name: fynix-promtail
+    container_name: lokifi-promtail
     volumes:
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
       - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
-      - fynix-network
+      - lokifi-network
     depends_on:
       - loki
     restart: unless-stopped
 
 # Networks
 networks:
-  fynix-network:
+  lokifi-network:
     driver: bridge
     ipam:
       driver: default

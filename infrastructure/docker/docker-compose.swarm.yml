@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    image: fynix/backend:latest
+    image: lokifi/backend:latest
     deploy:
       replicas: 3
       update_config:
@@ -21,7 +21,7 @@ services:
           cpus: '0.25'
           memory: 256M
     networks:
-      - fynix-network
+      - lokifi-network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -29,7 +29,7 @@ services:
       retries: 3
 
   frontend:
-    image: fynix/frontend:latest
+    image: lokifi/frontend:latest
     deploy:
       replicas: 2
       resources:
@@ -37,7 +37,7 @@ services:
           cpus: '0.25'
           memory: 256M
     networks:
-      - fynix-network
+      - lokifi-network
 
   nginx:
     image: nginx:alpine
@@ -48,9 +48,9 @@ services:
     volumes:
       - ./nginx_loadbalancer.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
-      - fynix-network
+      - lokifi-network
 
 networks:
-  fynix-network:
+  lokifi-network:
     driver: overlay
     attachable: true

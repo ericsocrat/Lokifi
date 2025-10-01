@@ -1,4 +1,4 @@
-# Fynix Quick Launcher
+# Lokifi Quick Launcher
 # Just double-click this file or run: .\launch.ps1
 
 param(
@@ -8,12 +8,12 @@ param(
 )
 
 # Set the console title
-$Host.UI.RawUI.WindowTitle = "Fynix Development Launcher"
+$Host.UI.RawUI.WindowTitle = "Lokifi Development Launcher"
 
 function Show-Banner {
     Clear-Host
     Write-Host "╔══════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║              🚀 FYNIX LAUNCHER              ║" -ForegroundColor Cyan  
+    Write-Host "║              🚀 LOKIFI LAUNCHER              ║" -ForegroundColor Cyan  
     Write-Host "║         Quick Development Commands           ║" -ForegroundColor Cyan
     Write-Host "╚══════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
@@ -51,7 +51,7 @@ function Show-Menu {
 
 function Start-Backend {
     Show-Banner
-    Write-Host "🔧 Starting Fynix Backend Server..." -ForegroundColor Cyan
+    Write-Host "🔧 Starting Lokifi Backend Server..." -ForegroundColor Cyan
     Write-Host "📍 URL: http://localhost:8000" -ForegroundColor Blue
     Write-Host "📖 API Docs: http://localhost:8000/docs" -ForegroundColor Blue
     Write-Host "⏹️  Press Ctrl+C to stop" -ForegroundColor Yellow
@@ -68,7 +68,7 @@ function Start-Backend {
 
 function Start-Frontend {
     Show-Banner
-    Write-Host "🌐 Starting Fynix Frontend Server..." -ForegroundColor Cyan
+    Write-Host "🌐 Starting Lokifi Frontend Server..." -ForegroundColor Cyan
     Write-Host "📍 URL: http://localhost:3000" -ForegroundColor Blue
     Write-Host "⏹️  Press Ctrl+C to stop" -ForegroundColor Yellow
     Write-Host ""
@@ -114,7 +114,7 @@ function Start-Both {
 
 function Run-Tests {
     Show-Banner
-    Write-Host "🧪 Running Fynix Tests..." -ForegroundColor Cyan
+    Write-Host "🧪 Running Lokifi Tests..." -ForegroundColor Cyan
     
     & .\dev.ps1 test
     
@@ -124,7 +124,7 @@ function Run-Tests {
 
 function Show-Status {
     Show-Banner
-    Write-Host "📊 Fynix System Status..." -ForegroundColor Cyan
+    Write-Host "📊 Lokifi System Status..." -ForegroundColor Cyan
     
     & .\dev.ps1 status
     
@@ -144,7 +144,7 @@ function Clean-Cache {
 
 function Show-Help {
     Show-Banner
-    Write-Host "❓ Fynix Development Help" -ForegroundColor Cyan
+    Write-Host "❓ Lokifi Development Help" -ForegroundColor Cyan
     Write-Host "════════════════════════" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "🔧 Backend Commands:" -ForegroundColor Yellow

@@ -7,7 +7,7 @@ param(
     [string]$PostgresPassword = "fynix123"
 )
 
-Write-Host "🚀 Fynix Database Setup" -ForegroundColor Cyan
+Write-Host "🚀 Lokifi Database Setup" -ForegroundColor Cyan
 Write-Host "=====================" -ForegroundColor Cyan
 
 # Check if Docker is available
@@ -26,23 +26,23 @@ function Setup-Docker {
     Write-Host "🐳 Setting up PostgreSQL and Redis using Docker..." -ForegroundColor Yellow
     
     # Stop existing containers
-    docker stop fynix-postgres fynix-redis 2>$null
-    docker rm fynix-postgres fynix-redis 2>$null
+    docker stop lokifi-postgres lokifi-redis 2>$null
+    docker rm lokifi-postgres lokifi-redis 2>$null
     
     # Start PostgreSQL
     Write-Host "📊 Starting PostgreSQL container..."
     docker run -d `
-        --name fynix-postgres `
+        --name lokifi-postgres `
         -e POSTGRES_PASSWORD=$PostgresPassword `
-        -e POSTGRES_DB=fynix `
-        -e POSTGRES_USER=fynix `
+        -e POSTGRES_DB=lokifi `
+        -e POSTGRES_USER=lokifi `
         -p 5432:5432 `
         postgres:15
     
     # Start Redis
     Write-Host "🔴 Starting Redis container..."
     docker run -d `
-        --name fynix-redis `
+        --name lokifi-redis `
         -p 6379:6379 `
         redis:7-alpine
     
@@ -53,7 +53,7 @@ function Setup-Docker {
     # Update .env file
     $envContent = @"
 # Updated by setup script
-DATABASE_URL=postgresql+asyncpg://fynix:$PostgresPassword@localhost:5432/fynix
+DATABASE_URL=postgresql+asyncpg://lokifi:$PostgresPassword@localhost:5432/lokifi
 REDIS_URL=redis://localhost:6379/0
 ENABLE_DATA_ARCHIVAL=true
 ARCHIVE_THRESHOLD_DAYS=365
@@ -63,7 +63,7 @@ DELETE_THRESHOLD_DAYS=2555
     Add-Content -Path ".env" -Value $envContent
     
     Write-Host "✅ Docker setup complete!" -ForegroundColor Green
-    Write-Host "   PostgreSQL: localhost:5432 (user: fynix, password: $PostgresPassword)" -ForegroundColor Gray
+    Write-Host "   PostgreSQL: localhost:5432 (user: lokifi, password: $PostgresPassword)" -ForegroundColor Gray
     Write-Host "   Redis: localhost:6379" -ForegroundColor Gray
 }
 

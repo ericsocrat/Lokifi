@@ -1,4 +1,4 @@
-# Fynix Production Environment
+# Lokifi Production Environment
 ENVIRONMENT=production
 DEBUG=false
 DATABASE_URL=sqlite:///./fynix_production.db

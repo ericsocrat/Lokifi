@@ -1,5 +1,5 @@
-# Fynix Backend Startup Script (Updated Dependencies v2.0)
-# PowerShell script to start the Fynix backend servers
+# Lokifi Backend Startup Script (Updated Dependencies v2.0)
+# PowerShell script to start the Lokifi backend servers
 # All dependencies updated to latest versions (Sept 2025)
 
 param(
@@ -7,15 +7,15 @@ param(
     [int]$Port = 8002
 )
 
-Write-Host "🚀 Fynix Backend Startup Script v2.0" -ForegroundColor Green
+Write-Host "🚀 Lokifi Backend Startup Script v2.0" -ForegroundColor Green
 Write-Host "Latest Dependencies: FastAPI 0.118.0, SQLAlchemy 2.0.43" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Green
 
 # Set Python path
-$env:PYTHONPATH = "C:\Users\USER\Desktop\fynix\backend"
+$env:PYTHONPATH = "C:\Users\USER\Desktop\lokifi\backend"
 
 # Navigate to backend directory
-Set-Location "C:\Users\USER\Desktop\fynix\backend"
+Set-Location "C:\Users\USER\Desktop\lokifi\backend"
 
 # Check if virtual environment exists
 if (-not (Test-Path "venv\Scripts\python.exe")) {
@@ -29,7 +29,7 @@ $pythonExe = ".\venv\Scripts\python.exe"
 Write-Host "📋 Server: $Server, Port: $Port" -ForegroundColor Cyan
 
 if ($Server.ToLower() -eq "main") {
-    Write-Host "🌟 Starting Main Fynix Server on port $Port..." -ForegroundColor Yellow
+    Write-Host "🌟 Starting Main Lokifi Server on port $Port..." -ForegroundColor Yellow
     Write-Host "📡 Health endpoint: http://localhost:$Port/api/health" -ForegroundColor Cyan
     Write-Host "📚 API endpoints: http://localhost:$Port/docs" -ForegroundColor Cyan
     Write-Host "" 
@@ -48,7 +48,7 @@ elseif ($Server.ToLower() -eq "verify") {
 else {
     Write-Host "❌ Unknown server type: $Server" -ForegroundColor Red
     Write-Host "Available options:" -ForegroundColor White
-    Write-Host "  main    - Start main Fynix server (default port 8002)" -ForegroundColor White
+    Write-Host "  main    - Start main Lokifi server (default port 8002)" -ForegroundColor White
     Write-Host "  stress  - Start stress test server (port 8001)" -ForegroundColor White
     Write-Host "  verify  - Run verification tests" -ForegroundColor White
     Write-Host ""

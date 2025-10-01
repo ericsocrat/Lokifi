@@ -110,7 +110,7 @@ jobs:
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 10
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/fynix
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lokifi
           REDIS_URL: redis://localhost:6379
 
       - name: Setup Node

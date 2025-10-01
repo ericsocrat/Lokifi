@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Simplified Stress Testing for Fynix
+Simplified Stress Testing for Lokifi
 Implements key stress test scenarios with baseline metrics
 """
 
@@ -398,7 +398,7 @@ async def main():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    print("🔥 FYNIX COMPREHENSIVE STRESS TESTING FRAMEWORK")
+    print("🔥 LOKIFI COMPREHENSIVE STRESS TESTING FRAMEWORK")
     print("Testing scenarios: Normal Load, Peak Load, Extreme Stress, Memory Detection")
     print("=" * 80)
     

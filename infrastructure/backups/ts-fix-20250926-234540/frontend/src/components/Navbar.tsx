@@ -9,7 +9,7 @@ export function Navbar() {
     <header className="border-b border-neutral-800 bg-neutral-900/50">
       <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
         <nav className="flex items-center gap-4">
-          <Link href="/" className="font-semibold">Fynix</Link>
+          <Link href="/" className="font-semibold">Lokifi</Link>
           <Link href="/portfolio" className="text-neutral-300 hover:text-white">Portfolio</Link>
           <Link href="/alerts" className="text-neutral-300 hover:text-white">Alerts</Link>
                   <Link href="/chat" className="text-neutral-300 hover:text-white">Chat</Link>

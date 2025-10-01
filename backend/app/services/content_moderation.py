@@ -1,5 +1,5 @@
 """
-Advanced Content Moderation Service for Fynix AI Chatbot (J5.1).
+Advanced Content Moderation Service for Lokifi AI Chatbot (J5.1).
 
 Enhanced safety and moderation capabilities beyond basic filtering.
 """

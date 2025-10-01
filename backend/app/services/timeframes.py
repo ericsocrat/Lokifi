@@ -1,6 +1,6 @@
 ﻿from __future__ import annotations
 
-# Canonical set used by Fynix UI/backend:
+# Canonical set used by Lokifi UI/backend:
 # 1m, 5m, 15m, 1h, 4h, 1d
 
 CANONICAL = {"1m", "5m", "15m", "1h", "4h", "1d"}

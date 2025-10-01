@@ -1,6 +1,6 @@
 # ⚙️ Operations Documentation
 
-This folder contains documentation for deploying, monitoring, and maintaining Fynix in production environments.
+This folder contains documentation for deploying, monitoring, and maintaining Lokifi in production environments.
 
 ## 📋 Available Guides
 

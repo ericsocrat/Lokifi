@@ -9,8 +9,8 @@ export type ProjectV1 = {
   timeframe?: string
 }
 
-const LS_PREFIX = 'fynix.project.'
-const SLOT_INDEX_KEY = 'fynix.project.slotIndex' // stores list of used slot names
+const LS_PREFIX = 'lokifi.project.'
+const SLOT_INDEX_KEY = 'lokifi.project.slotIndex' // stores list of used slot names
 
 export function listSlots(): string[] {
   try {

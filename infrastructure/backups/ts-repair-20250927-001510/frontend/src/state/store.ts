@@ -323,7 +323,7 @@ export const useChartStore = create<ChartState>()(persist((set, get) => ({
   }),
 
 }), {
-  name: 'fynix-chart',
+  name: 'lokifi-chart',
   partialize: (s) => ({
     hotkeys: s.hotkeys,
     drawingSettings: s.drawingSettings,

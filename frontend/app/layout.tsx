@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { AuthProvider } from "@/src/components/AuthProvider";
 import "@/styles/globals.css";
 
-export const metadata: Metadata = { title: "Fynix" };
+export const metadata: Metadata = { title: "Lokifi" };
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

@@ -12,7 +12,7 @@ import uvicorn
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 
 # Simple test application
-app = FastAPI(title="Fynix Stress Test Server", version="1.0.0")
+app = FastAPI(title="Lokifi Stress Test Server", version="1.0.0")
 
 # Simulate some data storage
 users_data = {}
@@ -22,7 +22,7 @@ portfolio_data = {}
 @app.get("/")
 async def root():
     """Root endpoint"""
-    return {"message": "Fynix Stress Test Server", "status": "online"}
+    return {"message": "Lokifi Stress Test Server", "status": "online"}
 
 @app.get("/health")
 async def health_check():
@@ -192,7 +192,7 @@ async def websocket_endpoint(websocket: WebSocket):
         print("WebSocket client disconnected")
 
 if __name__ == "__main__":
-    print("🚀 Starting Fynix Stress Test Server...")
+    print("🚀 Starting Lokifi Stress Test Server...")
     print("📊 Available endpoints:")
     print("  - GET / (root)")
     print("  - GET /health")

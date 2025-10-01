@@ -33,7 +33,7 @@ def check_database(db_path, db_name):
         print(f"❌ Error checking database: {e}")
 
 # Check both database files
-check_database('data/fynix.db', 'fynix.db')
-check_database('data/fynix.sqlite', 'fynix.sqlite')
+check_database('data/lokifi.db', 'lokifi.db')
+check_database('data/lokifi.sqlite', 'lokifi.sqlite')
 
 print("\n✅ Database check completed")

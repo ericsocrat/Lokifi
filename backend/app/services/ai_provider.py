@@ -1,5 +1,5 @@
 """
-AI Provider abstraction layer for Fynix AI Chatbot (J5).
+AI Provider abstraction layer for Lokifi AI Chatbot (J5).
 """
 
 import uuid

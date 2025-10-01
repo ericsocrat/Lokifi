@@ -60,7 +60,7 @@ class IndicatorStore {
   set(partial: Partial<IndicatorStateInternal>){ this.commit(partial) }
   reset(){ this.internal = { flags: { ...DEFAULT_FLAGS }, params: { ...DEFAULT_PARAMS }, style: { ...DEFAULT_STYLE } }; this.emit() }
 
-  private key(symbol: string, timeframe?: string){ const tf = timeframe && timeframe.trim() ? ":"+timeframe : ""; return `fynix:inds:${symbol}${tf}` }
+  private key(symbol: string, timeframe?: string){ const tf = timeframe && timeframe.trim() ? ":"+timeframe : ""; return `lokifi:inds:${symbol}${tf}` }
 
   loadForSymbol(symbol: string, timeframe?: string){
     const k = this.key(symbol, timeframe);

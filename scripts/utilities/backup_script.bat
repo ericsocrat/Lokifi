@@ -1,5 +1,5 @@
 @echo off
-REM Fynix Automated Backup Script
+REM Lokifi Automated Backup Script
 REM Created: 2025-09-29 16:28:42.805666
 
 set BACKUP_DIR=backups
@@ -11,9 +11,9 @@ echo Starting backup at %date% %time%
 if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 
 REM Database backup
-if exist "backend\fynix.sqlite" (
+if exist "backend\lokifi.sqlite" (
     echo Backing up database...
-    copy "backend\fynix.sqlite" "%BACKUP_DIR%\fynix_%DATE%.sqlite"
+    copy "backend\lokifi.sqlite" "%BACKUP_DIR%\fynix_%DATE%.sqlite"
     echo Database backup completed
 )
 

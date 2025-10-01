@@ -68,7 +68,7 @@ try {
         Start-Sleep -Seconds 10
         
         # Test Redis connection
-        $redisTest = docker exec fynix-redis-primary redis-cli ping
+        $redisTest = docker exec lokifi-redis-primary redis-cli ping
         if ($redisTest -eq "PONG") {
             Write-Host "✅ Redis cluster is running" -ForegroundColor Green
         } else {
@@ -258,7 +258,7 @@ PERFORMANCE_LOGGING_ENABLED=true
     Write-Host "4. Access monitoring dashboard: http://localhost:8000/api/v1/monitoring/dashboard" -ForegroundColor Gray
     
     if ($RedisCluster) {
-        Write-Host "5. Redis web UI: http://localhost:8081 (admin/fynix-redis-admin)" -ForegroundColor Gray
+        Write-Host "5. Redis web UI: http://localhost:8081 (admin/lokifi-redis-admin)" -ForegroundColor Gray
     }
     
     Write-Host ""

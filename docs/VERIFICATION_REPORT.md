@@ -188,7 +188,7 @@ code --install-extension dbaeumer.vscode-eslint
 ```
 
 ### Verification Steps
-1. Open VS Code in the `fynix` workspace
+1. Open VS Code in the `lokifi` workspace
 2. Check bottom-right for "Install Recommended Extensions" prompt
 3. Click "Install" to get Prettier + ESLint extensions
 4. Make a change to any `.ts` file and save - should auto-format

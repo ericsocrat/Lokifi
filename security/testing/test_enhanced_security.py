@@ -73,7 +73,7 @@ if __name__ == "__main__":
     
     if success:
         print("\n✨ Enhanced security validation complete!")
-        print("🛡️ Your Fynix application now has:")
+        print("🛡️ Your Lokifi application now has:")
         print("  • Enhanced HTML sanitization with Bleach")
         print("  • Comprehensive security alerting system") 
         print("  • Multi-channel alert delivery (Email, Slack, Discord, Webhook)")

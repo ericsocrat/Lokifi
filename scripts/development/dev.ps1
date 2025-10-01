@@ -1,4 +1,4 @@
-# Fynix Development Helper Script
+# Lokifi Development Helper Script
 # Usage: .\dev.ps1 [command]
 # Examples: .\dev.ps1 start, .\dev.ps1 be, .\dev.ps1 test
 
@@ -35,7 +35,7 @@ function Write-ColoredText {
 }
 
 function Show-Help {
-    Write-ColoredText "🚀 Fynix Development Commands (PowerShell)" "Cyan"
+    Write-ColoredText "🚀 Lokifi Development Commands (PowerShell)" "Cyan"
     Write-ColoredText "=========================================" "Cyan"
     Write-Host ""
     Write-ColoredText "🔥 Quick Start:" "Green"
@@ -96,7 +96,7 @@ function Start-Frontend {
 }
 
 function Start-Development {
-    Write-ColoredText "🔥 Starting Fynix development environment..." "Cyan"
+    Write-ColoredText "🔥 Starting Lokifi development environment..." "Cyan"
     
     # Start backend in background
     Write-ColoredText "Starting backend server..." "Yellow"
@@ -133,7 +133,7 @@ function Start-Development {
 }
 
 function Setup-Environment {
-    Write-ColoredText "📦 Setting up Fynix development environment..." "Cyan"
+    Write-ColoredText "📦 Setting up Lokifi development environment..." "Cyan"
     
     # Backend setup
     Write-ColoredText "Setting up backend..." "Yellow"

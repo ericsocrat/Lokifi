@@ -1079,7 +1079,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             timestamp: new Date(),
             level,
             message,
-            logger: 'fynix',
+            logger: 'lokifi',
             sessionId: get().getCurrentSessionId(),
             userId: get().getCurrentUserId(),
             tags: [],
@@ -1697,7 +1697,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
       }))
     ),
     {
-      name: 'fynix-observability-storage',
+      name: 'lokifi-observability-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

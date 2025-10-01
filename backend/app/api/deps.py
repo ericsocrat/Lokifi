@@ -1,5 +1,5 @@
 """
-Dependencies for Fynix API endpoints.
+Dependencies for Lokifi API endpoints.
 """
 
 

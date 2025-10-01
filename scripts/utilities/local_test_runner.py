@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Local Test Runner
+Lokifi Local Test Runner
 Comprehensive testing without external dependencies
 """
 
@@ -81,7 +81,7 @@ class LocalTestRunner:
         """Test database operations"""
         print("\n🗃️  Testing database operations...")
         
-        db_path = self.backend_dir / "fynix.sqlite"
+        db_path = self.backend_dir / "lokifi.sqlite"
         
         if not db_path.exists():
             self.results["tests"].append({
@@ -250,7 +250,7 @@ class LocalTestRunner:
     
     def run_all_tests(self):
         """Run all local tests"""
-        print("🚀 Starting Fynix Local Test Suite...")
+        print("🚀 Starting Lokifi Local Test Suite...")
         print(f"Timestamp: {self.results['timestamp']}")
         
         # Run all test categories

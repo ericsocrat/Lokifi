@@ -366,7 +366,7 @@ async def generate_test_report(results: dict):
 
 async def main():
     """Main test execution"""
-    print_section("Fynix J0 + J1 Comprehensive Test Suite")
+    print_section("Lokifi J0 + J1 Comprehensive Test Suite")
     print(f"{Colors.WHITE}Testing core authentication and user management features{Colors.END}")
     print(f"{Colors.WHITE}Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}")
     

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive Stress Testing Suite for Fynix Phase K
+Comprehensive Stress Testing Suite for Lokifi Phase K
 Tests system performance, reliability, and scalability under extreme conditions
 """
 

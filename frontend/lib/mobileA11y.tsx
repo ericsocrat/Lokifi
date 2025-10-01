@@ -1477,7 +1477,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
       }))
     ),
     {
-      name: 'fynix-mobile-accessibility-storage',
+      name: 'lokifi-mobile-accessibility-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

@@ -1560,7 +1560,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
             },
             networking: {
               dns: {
-                domain: 'dev.fynix.com',
+                domain: 'dev.lokifi.com',
                 ssl: true
               },
               firewall: [
@@ -1674,7 +1674,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
             {
               id: 'dev-api',
               name: 'API Endpoint',
-              url: 'https://api.dev.fynix.com',
+              url: 'https://api.dev.lokifi.com',
               type: 'api',
               isPublic: true,
               healthCheck: { enabled: true, path: '/health', expectedStatus: 200 }
@@ -1682,7 +1682,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
             {
               id: 'dev-web',
               name: 'Web Application',
-              url: 'https://dev.fynix.com',
+              url: 'https://dev.lokifi.com',
               type: 'web',
               isPublic: true
             }
@@ -1727,7 +1727,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
             },
             networking: {
               dns: {
-                domain: 'fynix.com',
+                domain: 'lokifi.com',
                 ssl: true
               },
               firewall: [
@@ -1840,7 +1840,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
             {
               id: 'prod-api',
               name: 'Production API',
-              url: 'https://api.fynix.com',
+              url: 'https://api.lokifi.com',
               type: 'api',
               isPublic: true,
               healthCheck: { enabled: true, path: '/health', expectedStatus: 200 }
@@ -1848,7 +1848,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
             {
               id: 'prod-web',
               name: 'Production Web App',
-              url: 'https://fynix.com',
+              url: 'https://lokifi.com',
               type: 'web',
               isPublic: true
             }
@@ -1862,7 +1862,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       }
     })),
     {
-      name: 'fynix-environment-management-storage',
+      name: 'lokifi-environment-management-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

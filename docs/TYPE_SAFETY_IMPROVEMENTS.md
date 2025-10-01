@@ -80,7 +80,7 @@ import type {
 } from '@/types/lightweight-charts';
 ```
 
-#### **`types/fynix.d.ts`** - Eliminated 9 "any" types
+#### **`types/lokifi.d.ts`** - Eliminated 9 "any" types
 **Before:**
 ```typescript
 export interface PluginSettingsStore {
@@ -192,7 +192,7 @@ private pollTimer?: ReturnType<typeof setInterval>
 
 ### Declaration Files (2 updated):
 1. ✅ `types/shims.d.ts` - Eliminated 20+ "any" types
-2. ✅ `types/fynix.d.ts` - Eliminated 9 "any" types
+2. ✅ `types/lokifi.d.ts` - Eliminated 9 "any" types
 
 ### Source Files (3 updated):
 1. ✅ `src/state/store.ts` - Core state management types

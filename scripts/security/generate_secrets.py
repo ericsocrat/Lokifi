@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Secure Secret Generator for Fynix
+Secure Secret Generator for Lokifi
 ================================
 
 This script generates cryptographically secure secrets for use in production.
@@ -27,7 +27,7 @@ def generate_password(length: int = 16) -> str:
     return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 def generate_all_secrets():
-    """Generate all required secrets for Fynix."""
+    """Generate all required secrets for Lokifi."""
     secrets_config = {
         "FYNIX_JWT_SECRET": generate_jwt_secret(64),
         "JWT_SECRET_KEY": generate_jwt_secret(64), 
@@ -43,7 +43,7 @@ def create_production_env(output_file: str = ".env.production"):
     """Create a production .env file with secure secrets."""
     secrets_config = generate_all_secrets()
     
-    env_content = f"""# Fynix Production Environment Configuration
+    env_content = f"""# Lokifi Production Environment Configuration
 # Generated on $(date)
 # CRITICAL: Keep this file secure and never commit to version control
 
@@ -69,7 +69,7 @@ JWT_EXPIRE_MINUTES=30
 # ==========================================
 # APPLICATION SETTINGS
 # ==========================================
-PROJECT_NAME=Fynix
+PROJECT_NAME=Lokifi
 API_PREFIX=/api
 ENVIRONMENT=production
 DEBUG=false
@@ -143,7 +143,7 @@ def display_secrets():
     """Display generated secrets for manual use."""
     secrets_config = generate_all_secrets()
     
-    print("🔐 Generated Secure Secrets for Fynix:")
+    print("🔐 Generated Secure Secrets for Lokifi:")
     print("=" * 50)
     
     for key, value in secrets_config.items():
@@ -157,7 +157,7 @@ def display_secrets():
     print("5. Store backups securely")
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate secure secrets for Fynix")
+    parser = argparse.ArgumentParser(description="Generate secure secrets for Lokifi")
     parser.add_argument("--output", "-o", default=".env.production", 
                        help="Output file for production environment (default: .env.production)")
     parser.add_argument("--display-only", "-d", action="store_true",

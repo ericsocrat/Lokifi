@@ -1,4 +1,4 @@
-# 🚀 Fynix
+# 🚀 Lokifi
 
 **Market + Social + AI Super-App**
 
@@ -21,7 +21,7 @@ A comprehensive financial platform combining advanced market analysis with socia
 This project follows a well-organized, enterprise-ready structure:
 
 ```
-fynix/
+lokifi/
 ├── 📚 docs/              # Comprehensive documentation
 ├── 🔧 scripts/           # Automation and utility scripts
 ├── 🏗️ infrastructure/    # Docker, nginx, monitoring configs
@@ -50,8 +50,8 @@ fynix/
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/ericsocrat/Fynix.git
-   cd Fynix
+   git clone https://github.com/ericsocrat/Lokifi.git
+   cd Lokifi
    ```
 
 2. **Set up environment variables:**
@@ -90,7 +90,7 @@ npm run dev
 
 ## Feature Flags
 
-Fynix uses a comprehensive feature flag system for safe rollouts. All Part G enhancements are **OFF by default**.
+Lokifi uses a comprehensive feature flag system for safe rollouts. All Part G enhancements are **OFF by default**.
 
 ### Available Flags
 

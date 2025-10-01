@@ -172,7 +172,7 @@ async def test_j53_api_endpoints():
 def main():
     """Main validation function"""
     
-    print("🚀 Starting J5.3 Enhanced Fynix Validation")
+    print("🚀 Starting J5.3 Enhanced Lokifi Validation")
     print("=" * 60)
     
     # Run async validation

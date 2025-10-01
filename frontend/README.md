@@ -1,4 +1,4 @@
-# Fynix Frontend
+# Lokifi Frontend
 
 Local development and testing notes
 

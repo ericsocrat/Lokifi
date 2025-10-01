@@ -433,9 +433,9 @@ class J53PerformanceMonitor:
                 return False
             
             msg = MIMEMultipart()
-            msg['From'] = getattr(self.settings, 'FROM_EMAIL', 'noreply@fynix.app')
+            msg['From'] = getattr(self.settings, 'FROM_EMAIL', 'noreply@lokifi.app')
             msg['To'] = getattr(self.settings, 'ADMIN_EMAIL', msg['From'])
-            msg['Subject'] = f"🚨 Fynix {alert.severity.value.upper()} Alert: {alert.category}"
+            msg['Subject'] = f"🚨 Lokifi {alert.severity.value.upper()} Alert: {alert.category}"
             
             body = f"""
             Alert Details:
@@ -453,7 +453,7 @@ class J53PerformanceMonitor:
             Timestamp: {alert.timestamp}
             
             ---
-            Fynix J5.3 Performance Monitoring System
+            Lokifi J5.3 Performance Monitoring System
             """
             
             msg.attach(MIMEText(body, 'plain'))

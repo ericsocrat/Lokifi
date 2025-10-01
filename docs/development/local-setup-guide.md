@@ -1,4 +1,4 @@
-# Fynix Local Development Guide
+# Lokifi Local Development Guide
 Generated: 2025-09-29 16:39:36
 
 ## Quick Start
@@ -6,7 +6,7 @@ Generated: 2025-09-29 16:39:36
 ### 1. Environment Setup
 ```bash
 # Navigate to project
-cd C:\Users\USER\Desktop\fynix
+cd C:\Users\USER\Desktop\lokifi
 
 # Start local development
 dev_scripts\start_local_dev.bat
@@ -16,7 +16,7 @@ dev_scripts\start_local_dev.bat
 - **Backend API**: http://localhost:8000
 - **Frontend**: http://localhost:3000 (if available)
 - **API Documentation**: http://localhost:8000/docs
-- **Database**: SQLite file at backend/fynix.sqlite
+- **Database**: SQLite file at backend/lokifi.sqlite
 
 ### 3. Development Tools
 
@@ -53,7 +53,7 @@ python database_management_suite.py
 
 ### 4. Project Structure
 ```
-fynix/
+lokifi/
 ├── backend/                 # Python FastAPI backend
 │   ├── app/                # Application code
 │   │   ├── main.py        # Main application
@@ -61,7 +61,7 @@ fynix/
 │   │   ├── routers/       # API routes
 │   │   └── services/      # Business logic
 │   ├── .venv/             # Virtual environment
-│   ├── fynix.sqlite       # SQLite database
+│   ├── lokifi.sqlite       # SQLite database
 │   └── requirements.txt   # Python dependencies
 ├── frontend/               # Next.js frontend (if available)
 ├── local_tools/           # Local development tools
@@ -86,7 +86,7 @@ fynix/
 3. Code quality check: `python local_tools\code_quality_analyzer.py`
 
 #### Database Operations
-1. View data: Connect to `backend/fynix.sqlite` with SQLite browser
+1. View data: Connect to `backend/lokifi.sqlite` with SQLite browser
 2. Reset database: `dev_scripts\reset_database.bat`
 3. Backup database: Files are automatically backed up to `backups/`
 
@@ -115,16 +115,16 @@ fynix/
 
 #### Server Won't Start
 1. Check if port 8000 is in use: `netstat -an | findstr 8000`
-2. Verify Python path: Should be `C:\Users\USER\Desktop\fynix\backend`
+2. Verify Python path: Should be `C:\Users\USER\Desktop\lokifi\backend`
 3. Check dependencies: All should be in `.venv/Lib/site-packages/`
 
 #### Import Errors
-1. Ensure PYTHONPATH is set: `$env:PYTHONPATH = "C:\Users\USER\Desktop\fynix\backend"`
+1. Ensure PYTHONPATH is set: `$env:PYTHONPATH = "C:\Users\USER\Desktop\lokifi\backend"`
 2. Verify virtual environment is activated
 3. Check if all dependencies are installed
 
 #### Database Issues
-1. Check if `fynix.sqlite` exists in `backend/` directory
+1. Check if `lokifi.sqlite` exists in `backend/` directory
 2. Reset database: `dev_scripts\reset_database.bat`
 3. Run database management suite for diagnosis
 

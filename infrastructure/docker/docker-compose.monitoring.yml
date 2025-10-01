@@ -3,7 +3,7 @@ version: "3.8"
 services:
   prometheus:
     image: prom/prometheus:latest
-    container_name: fynix-prometheus
+    container_name: lokifi-prometheus
     ports:
       - "9090:9090"
     volumes:
@@ -16,7 +16,7 @@ services:
 
   grafana:
     image: grafana/grafana:latest
-    container_name: fynix-grafana
+    container_name: lokifi-grafana
     ports:
       - "3001:3000"
     environment:

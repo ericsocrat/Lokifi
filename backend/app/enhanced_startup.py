@@ -1,5 +1,5 @@
 """
-K1 - Enhanced Startup Sequence for Fynix Phase K
+K1 - Enhanced Startup Sequence for Lokifi Phase K
 Robust FastAPI startup with proper configuration, health checks, and migrations
 """
 
@@ -181,7 +181,7 @@ async def verify_redis_connectivity():
 
 async def startup_dependency_checks():
     """Run all startup dependency checks"""
-    logger.info("🚀 Starting Fynix Phase K - Enhanced Startup Sequence")
+    logger.info("🚀 Starting Lokifi Phase K - Enhanced Startup Sequence")
     
     # Log configuration (without secrets)
     config_summary = {
@@ -245,7 +245,7 @@ async def startup_dependency_checks():
 
 async def shutdown_sequence():
     """Clean shutdown sequence"""
-    logger.info("🛑 Starting Fynix Phase K shutdown sequence...")
+    logger.info("🛑 Starting Lokifi Phase K shutdown sequence...")
     
     # Stop monitoring
     if enhanced_settings.ENABLE_MONITORING:
@@ -278,7 +278,7 @@ async def shutdown_sequence():
         except Exception as e:
             logger.error(f"Error closing Redis: {e}")
     
-    logger.info("✅ Fynix Phase K shutdown completed")
+    logger.info("✅ Lokifi Phase K shutdown completed")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -293,8 +293,8 @@ def create_app() -> FastAPI:
     """Create FastAPI application with Phase K enhancements"""
     
     app = FastAPI(
-        title="Fynix Phase K - Enhanced Startup",
-        description="Production-ready Fynix with robust startup, health checks, and monitoring",
+        title="Lokifi Phase K - Enhanced Startup",
+        description="Production-ready Lokifi with robust startup, health checks, and monitoring",
         version="K.1.0",
         lifespan=lifespan,
         debug=enhanced_settings.DEBUG
@@ -319,7 +319,7 @@ def create_app() -> FastAPI:
     @app.get("/api/health", tags=["health"])
     async def health_check():
         """Liveness probe - basic application health"""
-        return {"status": "ok", "service": "fynix-phase-k"}
+        return {"status": "ok", "service": "lokifi-phase-k"}
     
     @app.get("/api/health/ready", tags=["health"]) 
     async def readiness_check():
@@ -329,7 +329,7 @@ def create_app() -> FastAPI:
         
         return {
             "status": "ready",
-            "service": "fynix-phase-k",
+            "service": "lokifi-phase-k",
             "checks": health_status.to_dict()
         }
     
@@ -338,7 +338,7 @@ def create_app() -> FastAPI:
         """Liveness probe - application is running"""
         return {
             "status": "live",
-            "service": "fynix-phase-k",
+            "service": "lokifi-phase-k",
             "uptime": "running"  # Could add actual uptime tracking
         }
     

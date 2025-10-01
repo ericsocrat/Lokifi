@@ -2,7 +2,7 @@
 
 ## Overview
 
-Fynix v2.0 introduces comprehensive enhancements (Part G) and seamless upgrade foundations (Part H). All new features are **feature-flagged and OFF by default** for safe deployment.
+Lokifi v2.0 introduces comprehensive enhancements (Part G) and seamless upgrade foundations (Part H). All new features are **feature-flagged and OFF by default** for safe deployment.
 
 ## Breaking Changes
 
@@ -102,11 +102,11 @@ Recommended gradual rollout:
 New Redis keys (only created when flags enabled):
 
 ```
-fynix:templates:{userId}  # Chart templates
-fynix:watchlist:{userId}  # Watchlists  
-fynix:alerts:{userId}     # Alerts
-fynix:portfolio:{userId}  # Paper trading
-fynix:social:threads:{symbol}  # Social threads
+lokifi:templates:{userId}  # Chart templates
+lokifi:watchlist:{userId}  # Watchlists  
+lokifi:alerts:{userId}     # Alerts
+lokifi:portfolio:{userId}  # Paper trading
+lokifi:social:threads:{symbol}  # Social threads
 ```
 
 ### Cleanup
@@ -115,10 +115,10 @@ Unused data can be cleaned up:
 
 ```bash
 # Remove all template data
-redis-cli --scan --pattern "fynix:templates:*" | xargs redis-cli del
+redis-cli --scan --pattern "lokifi:templates:*" | xargs redis-cli del
 
 # Remove all social data  
-redis-cli --scan --pattern "fynix:social:*" | xargs redis-cli del
+redis-cli --scan --pattern "lokifi:social:*" | xargs redis-cli del
 ```
 
 ## Performance Considerations

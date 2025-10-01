@@ -23,8 +23,8 @@ export function runAction(id: string) {
 }
 
 // expose a minimal global for third-parties
-;(globalThis as any).Fynix = (globalThis as any).Fynix || {}
-;(globalThis as any).Fynix.plugins = {
+;(globalThis as any).Lokifi = (globalThis as any).Lokifi || {}
+;(globalThis as any).Lokifi.plugins = {
   registerContextAction,
   listContextActions,
   runAction,

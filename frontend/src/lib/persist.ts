@@ -4,8 +4,8 @@ export type PersistSnapshot = {
   selection: string[]
 }
 
-const SNAP_KEY = 'fynix-drawings@current'
-const VERSIONS_KEY = 'fynix-drawings@versions'
+const SNAP_KEY = 'lokifi-drawings@current'
+const VERSIONS_KEY = 'lokifi-drawings@versions'
 const MAX_VERSIONS = 20
 
 export function saveCurrent(drawings: any[], selection: Set<string>) {

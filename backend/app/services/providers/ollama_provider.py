@@ -1,5 +1,5 @@
 """
-Ollama local AI provider for Fynix AI Chatbot (J5).
+Ollama local AI provider for Lokifi AI Chatbot (J5).
 """
 
 import json

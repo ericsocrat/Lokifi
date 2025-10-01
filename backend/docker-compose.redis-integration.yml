@@ -5,7 +5,7 @@ services:
   # Add this to your existing docker-compose.yml
   redis:
     image: redis:7-alpine
-    container_name: fynix-redis
+    container_name: lokifi-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -21,14 +21,14 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-fynix_redis_pass}
     networks:
-      - fynix-network
+      - lokifi-network
 
   # Update your existing backend service
   backend:
     build: 
       context: ./backend
       dockerfile: Dockerfile
-    container_name: fynix-backend
+    container_name: lokifi-backend
     restart: unless-stopped
     ports:
       - "${PORT:-8000}:8000"
@@ -48,11 +48,11 @@ services:
       timeout: 10s
       retries: 3
     networks:
-      - fynix-network
+      - lokifi-network
 
 volumes:
   redis_data:
 
 networks:
-  fynix-network:
+  lokifi-network:
     driver: bridge

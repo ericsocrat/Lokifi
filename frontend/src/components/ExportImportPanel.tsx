@@ -31,7 +31,7 @@ export default function ExportImportPanel() {
       timeframe: s.timeframe
     }
     const pretty = JSON.stringify(payload, null, 2)
-    downloadText(`fynix-scene-.json`, pretty)
+    downloadText(`lokifi-scene-.json`, pretty)
   }
 
   const onImportJson = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +68,7 @@ export default function ExportImportPanel() {
     const root = rootRef.current || (document.querySelector('main.relative') as HTMLElement | null)
     if (!root) { alert('Chart area not found'); return }
     try {
-      await exportPngFromRoot(root, `fynix-.png`)
+      await exportPngFromRoot(root, `lokifi-.png`)
     } catch (e) {
       alert('PNG export failed. Make sure the chart is visible.')
     }

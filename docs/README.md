@@ -1,6 +1,6 @@
-# 📚 Fynix Documentation
+# 📚 Lokifi Documentation
 
-Welcome to the comprehensive documentation for the Fynix project. This directory contains all project documentation organized by category.
+Welcome to the comprehensive documentation for the Lokifi project. This directory contains all project documentation organized by category.
 
 ## 📁 Documentation Structure
 

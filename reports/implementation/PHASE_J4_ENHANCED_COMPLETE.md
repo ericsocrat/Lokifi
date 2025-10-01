@@ -227,7 +227,7 @@ services:
     ports: ["6379:6379"]
     volumes: [redis_data:/data]
   
-  fynix-backend:
+  lokifi-backend:
     build: ./backend
     environment:
       - DATABASE_URL=${DATABASE_URL}

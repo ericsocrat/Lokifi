@@ -1579,7 +1579,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
       }))
     ),
     {
-      name: 'fynix-performance-storage',
+      name: 'lokifi-performance-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

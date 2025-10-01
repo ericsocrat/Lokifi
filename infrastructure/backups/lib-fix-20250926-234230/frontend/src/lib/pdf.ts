@@ -1,7 +1,7 @@
 ﻿import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { exportPNG } from '@/lib/exporters'
 
-export async function exportReportPDF(title = 'Fynix Chart Report') {
+export async function exportReportPDF(title = 'Lokifi Chart Report') {
   // Get PNG as data URL via existing exporter
   const container = document.querySelector('main') || document.body
   const canvases = Array.from(container.querySelectorAll('canvas')) as HTMLCanvasElement[]
@@ -32,6 +32,6 @@ export async function exportReportPDF(title = 'Fynix Chart Report') {
   const blob = new Blob([bytes], { type: 'application/pdf' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
-  a.href = url; a.download = 'fynix-report.pdf'; a.click()
+  a.href = url; a.download = 'lokifi-report.pdf'; a.click()
   setTimeout(()=>URL.revokeObjectURL(url), 10000)
 }

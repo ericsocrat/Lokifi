@@ -1,5 +1,5 @@
 """
-WebSocket handler for real-time AI chat streaming in Fynix (J5.1).
+WebSocket handler for real-time AI chat streaming in Lokifi (J5.1).
 
 Provides WebSocket endpoint for real-time bidirectional AI chat.
 """

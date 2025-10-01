@@ -1294,7 +1294,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       }
     })),
     {
-      name: 'fynix-progressive-deployment-storage',
+      name: 'lokifi-progressive-deployment-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {

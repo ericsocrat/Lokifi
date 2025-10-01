@@ -40,7 +40,7 @@
 
 ### 2. Updated Files (5):
 - **`types/shims.d.ts`** - Eliminated 20+ "any" types
-- **`types/fynix.d.ts`** - Eliminated 9 "any" types
+- **`types/lokifi.d.ts`** - Eliminated 9 "any" types
 - **`src/state/store.ts`** - Type-safe state management
 - **`src/lib/perf.ts`** - Improved utility types (with controlled any for flexibility)
 - **`src/lib/data/adapter.ts`** - Fixed timer types

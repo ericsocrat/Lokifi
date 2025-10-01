@@ -1,4 +1,4 @@
-# 🌥️ Fynix Cloud Migration Guide - Free → Paid Scaling
+# 🌥️ Lokifi Cloud Migration Guide - Free → Paid Scaling
 
 ## 📋 **Migration Strategy Overview**
 
@@ -36,13 +36,13 @@
 choco install postgresql
 
 # Option 3: Using Docker
-docker run --name fynix-postgres -e POSTGRES_PASSWORD=fynix123 -e POSTGRES_DB=fynix -p 5432:5432 -d postgres:15
+docker run --name lokifi-postgres -e POSTGRES_PASSWORD=fynix123 -e POSTGRES_DB=lokifi -p 5432:5432 -d postgres:15
 ```
 
 **Environment Configuration:**
 ```bash
 # Update .env for PostgreSQL
-DATABASE_URL=postgresql+asyncpg://postgres:fynix123@localhost:5432/fynix
+DATABASE_URL=postgresql+asyncpg://postgres:fynix123@localhost:5432/lokifi
 ENABLE_DATA_ARCHIVAL=true
 ARCHIVE_THRESHOLD_DAYS=365
 DELETE_THRESHOLD_DAYS=2555
@@ -56,7 +56,7 @@ DELETE_THRESHOLD_DAYS=2555
 # From https://github.com/tporadowski/redis/releases
 
 # Option 2: Using Docker
-docker run --name fynix-redis -p 6379:6379 -d redis:7-alpine
+docker run --name lokifi-redis -p 6379:6379 -d redis:7-alpine
 
 # Option 3: Using WSL
 wsl -d Ubuntu
@@ -136,7 +136,7 @@ REDIS_URL=redis://default:[password]@redis-12345.c123.us-east-1-2.ec2.cloud.redi
 
 ```bash
 # R2 Configuration
-AWS_S3_BUCKET=fynix-storage
+AWS_S3_BUCKET=lokifi-storage
 AWS_CLOUDFRONT_URL=https://pub-123456789.r2.dev
 AWS_ACCESS_KEY_ID=your-r2-token-id
 AWS_SECRET_ACCESS_KEY=your-r2-token-secret
@@ -155,16 +155,16 @@ AWS_ENDPOINT_URL=https://123456789.r2.cloudflarestorage.com
 ### **1. AWS RDS PostgreSQL**
 ```bash
 # Full managed PostgreSQL
-DATABASE_URL=postgresql+asyncpg://username:password@fynix-prod.abc123.us-east-1.rds.amazonaws.com:5432/fynix
+DATABASE_URL=postgresql+asyncpg://username:password@lokifi-prod.abc123.us-east-1.rds.amazonaws.com:5432/lokifi
 
 # Multi-AZ, automated backups, read replicas
-DATABASE_REPLICA_URL=postgresql+asyncpg://username:password@fynix-replica.abc123.us-east-1.rds.amazonaws.com:5432/fynix
+DATABASE_REPLICA_URL=postgresql+asyncpg://username:password@lokifi-replica.abc123.us-east-1.rds.amazonaws.com:5432/lokifi
 ```
 
 ### **2. AWS ElastiCache Redis**
 ```bash
 # Managed Redis cluster
-REDIS_URL=redis://fynix-cluster.abc123.cache.amazonaws.com:6379
+REDIS_URL=redis://lokifi-cluster.abc123.cache.amazonaws.com:6379
 
 # Multi-node, automatic failover
 ```
@@ -172,7 +172,7 @@ REDIS_URL=redis://fynix-cluster.abc123.cache.amazonaws.com:6379
 ### **3. AWS S3 + CloudFront**
 ```bash
 # Enterprise object storage
-AWS_S3_BUCKET=fynix-production
+AWS_S3_BUCKET=lokifi-production
 AWS_CLOUDFRONT_URL=https://d123456789abcdef.cloudfront.net
 ```
 
@@ -206,7 +206,7 @@ AWS_CLOUDFRONT_URL=https://d123456789abcdef.cloudfront.net
 ### **Local → Supabase Migration**
 ```bash
 # Export current data
-python manage_db.py migrate --source="sqlite+aiosqlite:///./data/fynix.sqlite" --target="postgresql+asyncpg://..." --batch-size=1000
+python manage_db.py migrate --source="sqlite+aiosqlite:///./data/lokifi.sqlite" --target="postgresql+asyncpg://..." --batch-size=1000
 
 # Verify migration
 python manage_db.py metrics

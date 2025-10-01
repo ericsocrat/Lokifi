@@ -8,7 +8,7 @@ import { symbolStore } from "@/lib/symbolStore";
 import { timeframeStore } from "@/lib/timeframeStore";
 import type { OHLCResponse } from "@/lib/types";
 import { pluginManager } from "@/plugins/registry";
-import type { FynixGlobalThis, FynixWindow } from "@/types/fynix";
+import type { FynixGlobalThis, FynixWindow } from "@/types/lokifi";
 import { createChart, IChartApi, ISeriesApi, Time } from "lightweight-charts";
 import { useEffect, useRef, useState } from "react";
 import useSWR from "swr";

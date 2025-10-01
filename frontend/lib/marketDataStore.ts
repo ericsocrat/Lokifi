@@ -150,7 +150,7 @@ export const useMarketDataStore = create<MarketDataState>()(
       },
     }),
     {
-      name: 'fynix-market-data',
+      name: 'lokifi-market-data',
       partialize: (state: any) => ({
         autoRefresh: state.autoRefresh,
         refreshInterval: state.refreshInterval

@@ -58,15 +58,15 @@ services:
   postgres:
     image: postgres:17-alpine
     environment:
-      POSTGRES_DB: fynix
-      POSTGRES_USER: fynix
-      POSTGRES_PASSWORD: fynix
+      POSTGRES_DB: lokifi
+      POSTGRES_USER: lokifi
+      POSTGRES_PASSWORD: lokifi
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U fynix"]
+      test: ["CMD-SHELL", "pg_isready -U lokifi"]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Performance Optimization Analyzer for Fynix Phase K
+Performance Optimization Analyzer for Lokifi Phase K
 Analyzes system performance and provides specific optimization recommendations
 """
 
@@ -33,7 +33,7 @@ class OptimizationOpportunity:
     files_affected: list[str]
 
 class PerformanceOptimizationAnalyzer:
-    """Analyzes Fynix codebase for performance optimization opportunities"""
+    """Analyzes Lokifi codebase for performance optimization opportunities"""
     
     def __init__(self, backend_dir: str = "."):
         self.backend_dir = Path(backend_dir)

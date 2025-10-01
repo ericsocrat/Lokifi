@@ -1,13 +1,13 @@
 @echo off
-REM Fynix Backend Startup Script (Updated Dependencies v2.0)
-REM Batch script to start the Fynix backend servers
+REM Lokifi Backend Startup Script (Updated Dependencies v2.0)
+REM Batch script to start the Lokifi backend servers
 REM All dependencies updated to latest versions (Sept 2025)
 
-echo 🚀 Fynix Backend Startup Script v2.0
+echo 🚀 Lokifi Backend Startup Script v2.0
 echo Latest Dependencies: FastAPI 0.118.0, SQLAlchemy 2.0.43
 echo ============================================
 
-cd /d "C:\Users\USER\Desktop\fynix\backend"
+cd /d "C:\Users\USER\Desktop\lokifi\backend"
 
 if not exist "venv\Scripts\python.exe" (
     echo ❌ Virtual environment not found at venv\Scripts\python.exe
@@ -15,7 +15,7 @@ if not exist "venv\Scripts\python.exe" (
     exit /b 1
 )
 
-set PYTHONPATH=C:\Users\USER\Desktop\fynix\backend
+set PYTHONPATH=C:\Users\USER\Desktop\lokifi\backend
 
 if "%1"=="main" (
     if "%2"=="" (
@@ -23,7 +23,7 @@ if "%1"=="main" (
     ) else (
         set PORT=%2
     )
-    echo 🌟 Starting Main Fynix Server on port %PORT%...
+    echo 🌟 Starting Main Lokifi Server on port %PORT%...
     echo 📡 Health endpoint: http://localhost:%PORT%/api/health
     echo 📚 API endpoints: http://localhost:%PORT%/docs
     echo.
@@ -39,7 +39,7 @@ if "%1"=="main" (
 ) else (
     echo ❌ Unknown server type: %1
     echo Available options:
-    echo   main [port]  - Start main Fynix server (default port 8002)
+    echo   main [port]  - Start main Lokifi server (default port 8002)
     echo   stress       - Start stress test server (port 8001)
     echo   verify       - Run verification tests
     echo.

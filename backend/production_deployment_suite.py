@@ -112,7 +112,7 @@ class ProductionManager:
         
         try:
             # Enhanced production Dockerfile
-            dockerfile_content = """# Multi-stage production Dockerfile for Fynix
+            dockerfile_content = """# Multi-stage production Dockerfile for Lokifi
 FROM python:3.11-slim as builder
 
 # Install system dependencies
@@ -133,7 +133,7 @@ RUN pip install --no-cache-dir --user -r requirements.txt
 FROM python:3.11-slim
 
 # Create non-root user
-RUN useradd --create-home --shell /bin/bash fynix
+RUN useradd --create-home --shell /bin/bash lokifi
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \\
@@ -142,7 +142,7 @@ RUN apt-get update && apt-get install -y \\
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Python packages from builder
-COPY --from=builder /root/.local /home/fynix/.local
+COPY --from=builder /root/.local /home/lokifi/.local
 
 # Set work directory
 WORKDIR /app
@@ -150,14 +150,14 @@ WORKDIR /app
 # Copy application code
 COPY . .
 
-# Change ownership to fynix user
-RUN chown -R fynix:fynix /app
+# Change ownership to lokifi user
+RUN chown -R lokifi:lokifi /app
 
 # Switch to non-root user
-USER fynix
+USER lokifi
 
 # Set environment variables
-ENV PATH=/home/fynix/.local/bin:$PATH
+ENV PATH=/home/lokifi/.local/bin:$PATH
 ENV PYTHONPATH=/app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -183,14 +183,14 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
             compose_content = {
                 'version': '3.8',
                 'services': {
-                    'fynix-api': {
+                    'lokifi-api': {
                         'build': {
                             'context': '.',
                             'dockerfile': 'Dockerfile.production'
                         },
                         'ports': ['8000:8000'],
                         'environment': [
-                            'DATABASE_URL=postgresql://fynix:fynix_password@postgres:5432/fynix_prod',
+                            'DATABASE_URL=postgresql://lokifi:fynix_password@postgres:5432/fynix_prod',
                             'REDIS_URL=redis://redis:6379/0',
                             'SECRET_KEY=${SECRET_KEY}',
                             'ENVIRONMENT=production'
@@ -215,7 +215,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                         'image': 'postgres:15-alpine',
                         'environment': [
                             'POSTGRES_DB=fynix_prod',
-                            'POSTGRES_USER=fynix',
+                            'POSTGRES_USER=lokifi',
                             'POSTGRES_PASSWORD=fynix_password'
                         ],
                         'volumes': [
@@ -224,7 +224,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                         ],
                         'restart': 'unless-stopped',
                         'healthcheck': {
-                            'test': ['CMD-SHELL', 'pg_isready -U fynix -d fynix_prod'],
+                            'test': ['CMD-SHELL', 'pg_isready -U lokifi -d fynix_prod'],
                             'interval': '30s',
                             'timeout': '10s',
                             'retries': 3
@@ -249,7 +249,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                             './monitoring/configs/nginx.conf:/etc/nginx/nginx.conf',
                             './monitoring/ssl:/etc/nginx/ssl'
                         ],
-                        'depends_on': ['fynix-api'],
+                        'depends_on': ['lokifi-api'],
                         'restart': 'unless-stopped'
                     },
                     'prometheus': {
@@ -322,9 +322,9 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                 ],
                 'scrape_configs': [
                     {
-                        'job_name': 'fynix-api',
+                        'job_name': 'lokifi-api',
                         'static_configs': [
-                            {'targets': ['fynix-api:8000']}
+                            {'targets': ['lokifi-api:8000']}
                         ],
                         'metrics_path': '/metrics',
                         'scrape_interval': '10s'
@@ -367,14 +367,14 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--worker
                         'rules': [
                             {
                                 'alert': 'FynixAPIDown',
-                                'expr': 'up{job="fynix-api"} == 0',
+                                'expr': 'up{job="lokifi-api"} == 0',
                                 'for': '1m',
                                 'labels': {
                                     'severity': 'critical'
                                 },
                                 'annotations': {
-                                    'summary': 'Fynix API is down',
-                                    'description': 'The Fynix API has been down for more than 1 minute.'
+                                    'summary': 'Lokifi API is down',
+                                    'description': 'The Lokifi API has been down for more than 1 minute.'
                                 }
                             },
                             {
@@ -432,7 +432,7 @@ events {
 
 http {
     upstream fynix_backend {
-        server fynix-api:8000;
+        server lokifi-api:8000;
     }
     
     # Rate limiting
@@ -509,7 +509,7 @@ http {
             deploy_script = """#!/bin/bash
 set -e
 
-echo "🚀 Starting Fynix Production Deployment"
+echo "🚀 Starting Lokifi Production Deployment"
 
 # Colors for output
 RED='\\033[0;31m'
@@ -554,7 +554,7 @@ if [ ! -f .env.production ]; then
     print_warning "Creating .env.production file with default values"
     cat > .env.production << EOF
 SECRET_KEY=$(openssl rand -hex 32)
-DATABASE_URL=postgresql://fynix:fynix_password@postgres:5432/fynix_prod
+DATABASE_URL=postgresql://lokifi:fynix_password@postgres:5432/fynix_prod
 REDIS_URL=redis://redis:6379/0
 ENVIRONMENT=production
 DEBUG=false
@@ -570,12 +570,12 @@ print_status "Pulling latest Docker images..."
 docker-compose -f docker-compose.production.yml pull
 
 # Build application image
-print_status "Building Fynix application image..."
-docker-compose -f docker-compose.production.yml build fynix-api
+print_status "Building Lokifi application image..."
+docker-compose -f docker-compose.production.yml build lokifi-api
 
 # Run database migrations
 print_status "Running database migrations..."
-docker-compose -f docker-compose.production.yml run --rm fynix-api alembic upgrade head
+docker-compose -f docker-compose.production.yml run --rm lokifi-api alembic upgrade head
 
 # Start services
 print_status "Starting production services..."
@@ -586,7 +586,7 @@ print_status "Waiting for services to be healthy..."
 sleep 30
 
 # Check service health
-services=("postgres" "redis" "fynix-api" "nginx")
+services=("postgres" "redis" "lokifi-api" "nginx")
 for service in "${services[@]}"; do
     if docker-compose -f docker-compose.production.yml ps "$service" | grep -q "Up (healthy)\\|Up"; then
         print_success "$service is running"
@@ -606,7 +606,7 @@ else
     exit 1
 fi
 
-print_success "🎉 Fynix production deployment completed successfully!"
+print_success "🎉 Lokifi production deployment completed successfully!"
 print_status "Services are running at:"
 echo "  - API: http://localhost"
 echo "  - Prometheus: http://localhost:9090"
@@ -629,7 +629,7 @@ print_status "To stop services: docker-compose -f docker-compose.production.yml 
             backup_script = """#!/bin/bash
 set -e
 
-echo "💾 Starting Fynix Backup Process"
+echo "💾 Starting Lokifi Backup Process"
 
 # Colors
 GREEN='\\033[0;32m'
@@ -652,7 +652,7 @@ print_status "Creating backup in $BACKUP_DIR"
 
 # Backup database
 print_status "Backing up PostgreSQL database..."
-docker-compose -f docker-compose.production.yml exec -T postgres pg_dump -U fynix fynix_prod | gzip > "$BACKUP_DIR/database.sql.gz"
+docker-compose -f docker-compose.production.yml exec -T postgres pg_dump -U lokifi fynix_prod | gzip > "$BACKUP_DIR/database.sql.gz"
 
 # Backup Redis data
 print_status "Backing up Redis data..."
@@ -662,7 +662,7 @@ docker cp $(docker-compose -f docker-compose.production.yml ps -q redis):/data/d
 # Backup application logs
 print_status "Backing up application logs..."
 mkdir -p "$BACKUP_DIR/logs"
-docker-compose -f docker-compose.production.yml logs fynix-api > "$BACKUP_DIR/logs/fynix-api.log" 2>&1
+docker-compose -f docker-compose.production.yml logs lokifi-api > "$BACKUP_DIR/logs/lokifi-api.log" 2>&1
 docker-compose -f docker-compose.production.yml logs postgres > "$BACKUP_DIR/logs/postgres.log" 2>&1
 docker-compose -f docker-compose.production.yml logs redis > "$BACKUP_DIR/logs/redis.log" 2>&1
 
@@ -798,7 +798,7 @@ print_success "✅ Backup process completed"
         }
         
         services_to_check = [
-            ("Fynix API", "http://localhost:8002/health"),
+            ("Lokifi API", "http://localhost:8002/health"),
             ("Prometheus", "http://localhost:9090/-/healthy"),
             ("Grafana", "http://localhost:3000/api/health"),
         ]
@@ -901,7 +901,7 @@ print_success "✅ Backup process completed"
     
     async def run_production_setup(self) -> bool:
         """Run complete production setup"""
-        self.print_header("Fynix Production Deployment & Monitoring Suite")
+        self.print_header("Lokifi Production Deployment & Monitoring Suite")
         
         print(f"{Colors.WHITE}Setting up production environment and monitoring{Colors.END}")
         print(f"{Colors.WHITE}Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}")

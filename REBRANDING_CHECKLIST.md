@@ -1,4 +1,4 @@
-# 🎨 FYNIX → LOKIFI REBRANDING CHECKLIST
+# 🎨 LOKIFI → LOKIFI REBRANDING CHECKLIST
 
 **Date:** October 2, 2025
 **New Brand:** Lokifi
@@ -11,7 +11,7 @@
 ### **Step 1: Run the Rebranding Script**
 
 ```powershell
-# From project root (C:\Users\USER\Desktop\fynix)
+# From project root (C:\Users\USER\Desktop\lokifi)
 
 # First, do a dry run to see what will change
 python rebrand_to_lokifi.py --dry-run
@@ -20,11 +20,11 @@ python rebrand_to_lokifi.py --dry-run
 python rebrand_to_lokifi.py
 
 # The script will:
-# ✅ Replace all "Fynix" with "Lokifi" in code
-# ✅ Replace all "fynix" with "lokifi" in code
-# ✅ Replace all "FYNIX" with "LOKIFI" in code
-# ✅ Rename files containing "fynix" in their names
-# ✅ Rename directories containing "fynix" in their names
+# ✅ Replace all "Lokifi" with "Lokifi" in code
+# ✅ Replace all "lokifi" with "lokifi" in code
+# ✅ Replace all "LOKIFI" with "LOKIFI" in code
+# ✅ Rename files containing "lokifi" in their names
+# ✅ Rename directories containing "lokifi" in their names
 ```
 
 **The script processes:**
@@ -58,7 +58,7 @@ python rebrand_to_lokifi.py
 ```powershell
 # Rename the main project folder
 cd C:\Users\USER\Desktop
-Rename-Item -Path "fynix" -NewName "lokifi"
+Rename-Item -Path "lokifi" -NewName "lokifi"
 cd lokifi
 
 # Update any absolute paths in your IDE/editor
@@ -75,7 +75,7 @@ cd lokifi
 
 ```json
 {
-  "name": "lokifi-frontend", // Change from fynix-frontend
+  "name": "lokifi-frontend", // Change from lokifi-frontend
   "description": "Lokifi - AI-powered fintech platform",
   "homepage": "https://lokifi.com",
   "repository": {
@@ -103,7 +103,7 @@ cd lokifi
 
 ```python
 setup(
-    name='lokifi',  # Change from fynix
+    name='lokifi',  # Change from lokifi
     description='Lokifi - AI-powered fintech platform',
     url='https://lokifi.com',
     # ... rest of config
@@ -114,7 +114,7 @@ setup(
 
 ```toml
 [project]
-name = "lokifi"  # Change from fynix
+name = "lokifi"  # Change from lokifi
 description = "Lokifi - AI-powered fintech platform"
 ```
 
@@ -182,19 +182,19 @@ notepad .env
 
 ```yaml
 services:
-  lokifi-backend: # Change from fynix-backend
+  lokifi-backend: # Change from lokifi-backend
     container_name: lokifi-backend
     image: lokifi/backend:latest
 
-  lokifi-frontend: # Change from fynix-frontend
+  lokifi-frontend: # Change from lokifi-frontend
     container_name: lokifi-frontend
     image: lokifi/frontend:latest
 
-  lokifi-db: # Change from fynix-db
+  lokifi-db: # Change from lokifi-db
     container_name: lokifi-db
 
 networks:
-  lokifi-network: # Change from fynix-network
+  lokifi-network: # Change from lokifi-network
 ```
 
 #### **Dockerfile**
@@ -211,7 +211,7 @@ ENV APP_NAME=lokifi
 
 ```sql
 -- If using PostgreSQL, rename database:
-ALTER DATABASE fynix RENAME TO lokifi;
+ALTER DATABASE lokifi RENAME TO lokifi;
 -- or
 ALTER DATABASE fynix_production RENAME TO lokifi_production;
 
@@ -222,7 +222,7 @@ ALTER DATABASE fynix_production RENAME TO lokifi_production;
 
 ```powershell
 # Rename SQLite database files
-Rename-Item -Path "backend\fynix.sqlite" -NewName "lokifi.sqlite"
+Rename-Item -Path "backend\lokifi.sqlite" -NewName "lokifi.sqlite"
 Rename-Item -Path "backend\fynix_production.db" -NewName "lokifi_production.db"
 
 # Update all references in code (should be handled by script)
@@ -233,7 +233,7 @@ Rename-Item -Path "backend\fynix_production.db" -NewName "lokifi_production.db"
 #### **Update Git Remote (if repository renamed)**
 
 ```powershell
-# If you renamed the GitHub repo from fynix to lokifi:
+# If you renamed the GitHub repo from lokifi to lokifi:
 git remote set-url origin https://github.com/ericsocrat/lokifi.git
 
 # Verify
@@ -243,8 +243,8 @@ git remote -v
 #### **Update .gitignore**
 
 ```gitignore
-# Old (if any fynix-specific patterns)
-fynix.sqlite
+# Old (if any lokifi-specific patterns)
+lokifi.sqlite
 fynix_*.db
 
 # New
@@ -258,11 +258,11 @@ lokifi_*.db
 
 ```yaml
 scrape_configs:
-  - job_name: "lokifi-backend" # Change from fynix-backend
+  - job_name: "lokifi-backend" # Change from lokifi-backend
     static_configs:
       - targets: ["localhost:8000"]
 
-  - job_name: "lokifi-frontend" # Change from fynix-frontend
+  - job_name: "lokifi-frontend" # Change from lokifi-frontend
     static_configs:
       - targets: ["localhost:3000"]
 ```
@@ -271,7 +271,7 @@ scrape_configs:
 
 ```powershell
 # Rename log directories if they exist
-Rename-Item -Path "logs\fynix" -NewName "logs\lokifi"
+Rename-Item -Path "logs\lokifi" -NewName "logs\lokifi"
 Rename-Item -Path "C:\fynix_logs" -NewName "C:\lokifi_logs"
 ```
 
@@ -281,7 +281,7 @@ Rename-Item -Path "C:\fynix_logs" -NewName "C:\lokifi_logs"
 
 ```bash
 # In backup scripts, update:
-BACKUP_DIR="/var/backups/fynix"  → "/var/backups/lokifi"
+BACKUP_DIR="/var/backups/lokifi"  → "/var/backups/lokifi"
 BACKUP_DIR="C:\fynix_backups"    → "C:\lokifi_backups"
 
 # Database backup files
@@ -293,7 +293,7 @@ fynix_*.sqlite → lokifi_*.sqlite
 #### **.github/workflows/\*.yml**
 
 ```yaml
-name: Lokifi CI/CD Pipeline # Change from Fynix
+name: Lokifi CI/CD Pipeline # Change from Lokifi
 
 jobs:
   build:
@@ -302,7 +302,7 @@ jobs:
       - name: Build Lokifi Backend # Update names
 
 env:
-  IMAGE_NAME: lokifi # Change from fynix
+  IMAGE_NAME: lokifi # Change from lokifi
 ```
 
 #### **Update GitHub Secrets**
@@ -319,8 +319,8 @@ FYNIX_API_KEY   → LOKIFI_API_KEY
 
 ```bash
 # In scripts/deployment/*.sh
-APP_NAME="fynix" → APP_NAME="lokifi"
-CONTAINER_NAME="fynix-app" → CONTAINER_NAME="lokifi-app"
+APP_NAME="lokifi" → APP_NAME="lokifi"
+CONTAINER_NAME="lokifi-app" → CONTAINER_NAME="lokifi-app"
 ```
 
 ### **13. Kubernetes/Cloud Config** (if applicable)
@@ -329,8 +329,8 @@ CONTAINER_NAME="fynix-app" → CONTAINER_NAME="lokifi-app"
 
 ```yaml
 metadata:
-  name: lokifi-backend # Change from fynix-backend
-  namespace: lokifi # Change from fynix
+  name: lokifi-backend # Change from lokifi-backend
+  namespace: lokifi # Change from lokifi
   labels:
     app: lokifi
 ```
@@ -338,9 +338,9 @@ metadata:
 ### **14. SSL Certificates**
 
 ```bash
-# If you have self-signed certs with fynix in the name:
-/etc/ssl/certs/fynix.crt → /etc/ssl/certs/lokifi.crt
-/etc/ssl/private/fynix.key → /etc/ssl/private/lokifi.key
+# If you have self-signed certs with lokifi in the name:
+/etc/ssl/certs/lokifi.crt → /etc/ssl/certs/lokifi.crt
+/etc/ssl/private/lokifi.key → /etc/ssl/private/lokifi.key
 
 # Update Nginx/Apache configs to reference new cert names
 ```
@@ -373,9 +373,9 @@ Search for hardcoded text in frontend:
 
 ```javascript
 // Old
-"Welcome to Fynix";
-"Fynix Dashboard";
-"© 2025 Fynix";
+"Welcome to Lokifi";
+"Lokifi Dashboard";
+"© 2025 Lokifi";
 
 // New
 "Welcome to Lokifi";
@@ -401,7 +401,7 @@ Update email templates:
 ```python
 # backend/main.py or similar
 app = FastAPI(
-    title="Lokifi API",  # Change from Fynix API
+    title="Lokifi API",  # Change from Lokifi API
     description="Lokifi backend services",
     version="1.0.0",
     docs_url="/api/docs",
@@ -416,7 +416,7 @@ Update test descriptions:
 ```python
 # tests/*.py
 def test_lokifi_authentication():  # Change from test_fynix_authentication
-    """Test Lokifi auth system"""  # Change from Fynix
+    """Test Lokifi auth system"""  # Change from Lokifi
     pass
 
 class TestLokifiAPI(TestCase):  # Change from TestFynixAPI
@@ -432,18 +432,18 @@ After running the script and making manual changes:
 ### **Code Verification**
 
 ```powershell
-# 1. Search for any remaining "fynix" references
-rg -i "fynix" --type py --type js --type ts --type json
+# 1. Search for any remaining "lokifi" references
+rg -i "lokifi" --type py --type js --type ts --type json
 
 # 2. Search in specific important files
-rg -i "fynix" package.json package-lock.json
-rg -i "fynix" backend/requirements.txt backend/setup.py
-rg -i "fynix" .env.example .env.template
-rg -i "fynix" docker-compose.yml Dockerfile
-rg -i "fynix" README.md
+rg -i "lokifi" package.json package-lock.json
+rg -i "lokifi" backend/requirements.txt backend/setup.py
+rg -i "lokifi" .env.example .env.template
+rg -i "lokifi" docker-compose.yml Dockerfile
+rg -i "lokifi" README.md
 
 # 3. Check for old database references
-rg -i "fynix.sqlite" --type py
+rg -i "lokifi.sqlite" --type py
 rg -i "fynix_production" --type py
 
 # 4. Check environment variables
@@ -453,11 +453,11 @@ rg -i "FYNIX_" --type py --type js --type env
 ### **File/Folder Names**
 
 ```powershell
-# Check for any remaining fynix in filenames
-Get-ChildItem -Recurse -Filter "*fynix*" | Select-Object FullName
+# Check for any remaining lokifi in filenames
+Get-ChildItem -Recurse -Filter "*lokifi*" | Select-Object FullName
 
-# Check for any remaining fynix in folder names
-Get-ChildItem -Recurse -Directory -Filter "*fynix*" | Select-Object FullName
+# Check for any remaining lokifi in folder names
+Get-ChildItem -Recurse -Directory -Filter "*lokifi*" | Select-Object FullName
 ```
 
 ### **Git Status**
@@ -479,11 +479,11 @@ git status | Select-String "renamed:"
 -- Check database name
 SELECT current_database();
 
--- Check table names (shouldn't have fynix prefix usually)
+-- Check table names (shouldn't have lokifi prefix usually)
 \dt
 
--- Check for any fynix in data (if applicable)
-SELECT * FROM your_table WHERE column_name LIKE '%fynix%';
+-- Check for any lokifi in data (if applicable)
+SELECT * FROM your_table WHERE column_name LIKE '%lokifi%';
 ```
 
 ### **Test Everything**
@@ -501,7 +501,7 @@ npm test
 npm run dev  # Frontend
 python main.py  # Backend
 
-# Check for runtime errors mentioning "fynix"
+# Check for runtime errors mentioning "lokifi"
 ```
 
 ---
@@ -510,14 +510,14 @@ python main.py  # Backend
 
 ### **Issue 1: Import Errors**
 
-**Problem:** `ModuleNotFoundError: No module named 'fynix'`
+**Problem:** `ModuleNotFoundError: No module named 'lokifi'`
 
 **Fix:**
 
 ```python
 # Update imports
-from fynix.utils import helper  →  from lokifi.utils import helper
-from fynix import config  →  from lokifi import config
+from lokifi.utils import helper  →  from lokifi.utils import helper
+from lokifi import config  →  from lokifi import config
 ```
 
 ### **Issue 2: Database Connection Fails**
@@ -531,7 +531,7 @@ from fynix import config  →  from lokifi import config
 DATABASE_URL=postgresql://user:pass@localhost:5432/lokifi_production
 
 # Or rename database
-ALTER DATABASE fynix RENAME TO lokifi;
+ALTER DATABASE lokifi RENAME TO lokifi;
 ```
 
 ### **Issue 3: Environment Variables Not Found**
@@ -570,7 +570,7 @@ module.exports = {
 
 ```dockerfile
 # Update COPY commands
-COPY fynix/ /app/  →  COPY lokifi/ /app/
+COPY lokifi/ /app/  →  COPY lokifi/ /app/
 ```
 
 ---
@@ -595,11 +595,11 @@ cd backend && python main.py
 cd frontend && npm run dev
 # Visit: http://localhost:3000
 
-# 4. No "fynix" references in logs
-# Check terminal output for any mentions of "fynix"
+# 4. No "lokifi" references in logs
+# Check terminal output for any mentions of "lokifi"
 
 # 5. Git diff review
-git diff | Select-String "fynix" -Context 2
+git diff | Select-String "lokifi" -Context 2
 ```
 
 ---
@@ -613,9 +613,9 @@ Once everything is verified:
 git add -A
 
 # Commit with clear message
-git commit -m "🎨 Rebrand from Fynix to Lokifi
+git commit -m "🎨 Rebrand from Lokifi to Lokifi
 
-- Updated all code references from Fynix/fynix to Lokifi/lokifi
+- Updated all code references from Lokifi/lokifi to Lokifi/lokifi
 - Renamed files and directories
 - Updated documentation and README
 - Updated package.json and configuration files

@@ -24,7 +24,7 @@ export function makeSharePayload(state: any, mode: ShareMode, password?: string 
 
 // Stub shortlink: return #s=hash; in future, call backend to get /s/:id
 export function makeShareUrl(hash:string): string {
-  const base = typeof window !== "undefined" ? window.location.origin + window.location.pathname : "https://app.fynix.ai/"
+  const base = typeof window !== "undefined" ? window.location.origin + window.location.pathname : "https://app.lokifi.ai/"
   return base + "#s=" + hash
 }
 

@@ -7,19 +7,19 @@ type ConfigMap = Record<string, Record<string, any>>
 
 export default function PluginDrawer() {
   const plugins = listPlugins()
-  const [cfg, setCfg] = React.useState<ConfigMap>(() => loadJSON('fynix-plugin-cfg', {}))
+  const [cfg, setCfg] = React.useState<ConfigMap>(() => loadJSON('lokifi-plugin-cfg', {}))
   const fileRef = React.useRef<HTMLInputElement>(null)
 
   function update(id: string, key: string, value: any) {
     const next = { ...cfg, [id]: { ...(cfg[id]||{}), [key]: value } }
-    setCfg(next); saveJSON('fynix-plugin-cfg', next)
+    setCfg(next); saveJSON('lokifi-plugin-cfg', next)
   }
 
   function exportJSON() {
     const blob = new Blob([JSON.stringify(cfg, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url; a.download = 'fynix-plugins.json'; a.click()
+    a.href = url; a.download = 'lokifi-plugins.json'; a.click()
     URL.revokeObjectURL(url)
   }
 
@@ -28,7 +28,7 @@ export default function PluginDrawer() {
     reader.onload = () => {
       try {
         const data = JSON.parse(String(reader.result))
-        setCfg(data); saveJSON('fynix-plugin-cfg', data)
+        setCfg(data); saveJSON('lokifi-plugin-cfg', data)
       } catch {}
     }
     reader.readAsText(file)

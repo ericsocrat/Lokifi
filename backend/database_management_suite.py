@@ -485,7 +485,7 @@ async def main():
     """Main database management execution"""
     db_manager = DatabaseManager()
     
-    db_manager.print_header("Fynix Database Management & Optimization Suite")
+    db_manager.print_header("Lokifi Database Management & Optimization Suite")
     print(f"{Colors.WHITE}Comprehensive database maintenance and performance optimization{Colors.END}")
     print(f"{Colors.WHITE}Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}")
     

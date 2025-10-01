@@ -56,7 +56,7 @@ Open a **new PowerShell terminal** and run:
 
 ```powershell
 # Navigate to backend
-cd C:\Users\USER\Desktop\fynix\backend
+cd C:\Users\USER\Desktop\lokifi\backend
 
 # Activate virtual environment
 .\venv\Scripts\Activate.ps1
@@ -91,7 +91,7 @@ curl http://localhost:8000/api/health
 In your **frontend terminal**:
 
 ```powershell
-cd C:\Users\USER\Desktop\fynix\frontend
+cd C:\Users\USER\Desktop\lokifi\frontend
 
 # Run API contract tests
 npm run test:contracts
@@ -144,7 +144,7 @@ Test Files  2 passed (2)
 Open a **new PowerShell terminal**:
 
 ```powershell
-cd C:\Users\USER\Desktop\fynix\performance-tests
+cd C:\Users\USER\Desktop\lokifi\performance-tests
 
 # Run load test
 k6 run api-load-test.js
@@ -179,7 +179,7 @@ http_req_failed................: 0.50%
 Open **another new PowerShell terminal**:
 
 ```powershell
-cd C:\Users\USER\Desktop\fynix\frontend
+cd C:\Users\USER\Desktop\lokifi\frontend
 
 # Build production version
 npm run build
@@ -220,7 +220,7 @@ curl http://localhost:3000
 In your **test terminal**:
 
 ```powershell
-cd C:\Users\USER\Desktop\fynix\frontend
+cd C:\Users\USER\Desktop\lokifi\frontend
 
 # Create baseline snapshots (first time)
 npm run test:visual -- --update-snapshots
@@ -456,7 +456,7 @@ git push origin main
 ```
 
 ### Step 2: Monitor GitHub Actions
-1. Go to: https://github.com/ericsocrat/Fynix/actions
+1. Go to: https://github.com/ericsocrat/Lokifi/actions
 2. Watch workflows run
 3. Review any failures
 4. Fix issues and push again
@@ -483,7 +483,7 @@ Create PR and verify:
 
 **Terminal 1 - Backend:**
 ```powershell
-cd C:\Users\USER\Desktop\fynix\backend
+cd C:\Users\USER\Desktop\lokifi\backend
 .\venv\Scripts\Activate.ps1
 uvicorn app.main:app --reload
 # Keep running
@@ -491,14 +491,14 @@ uvicorn app.main:app --reload
 
 **Terminal 2 - Frontend Dev:**
 ```powershell
-cd C:\Users\USER\Desktop\fynix\frontend
+cd C:\Users\USER\Desktop\lokifi\frontend
 npm start
 # Keep running for visual/a11y tests
 ```
 
 **Terminal 3 - Test Execution:**
 ```powershell
-cd C:\Users\USER\Desktop\fynix\frontend
+cd C:\Users\USER\Desktop\lokifi\frontend
 # Run tests here
 npm run test:contracts
 npm run test:security
@@ -508,7 +508,7 @@ npm run test:a11y
 
 **Terminal 4 - Performance Tests:**
 ```powershell
-cd C:\Users\USER\Desktop\fynix\performance-tests
+cd C:\Users\USER\Desktop\lokifi\performance-tests
 k6 run api-load-test.js
 k6 run stress-test.js
 ```

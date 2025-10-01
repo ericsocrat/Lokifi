@@ -1,5 +1,5 @@
 """
-Security Configuration for Fynix Application
+Security Configuration for Lokifi Application
 Centralized security settings and constants
 """
 
@@ -34,9 +34,9 @@ class SecurityConfig:
     
     # CORS settings
     PRODUCTION_CORS_ORIGINS = [
-        "https://fynix.app",
-        "https://www.fynix.app", 
-        "https://api.fynix.app"
+        "https://lokifi.app",
+        "https://www.lokifi.app", 
+        "https://api.lokifi.app"
     ]
     
     DEVELOPMENT_CORS_ORIGINS = [

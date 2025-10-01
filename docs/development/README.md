@@ -1,6 +1,6 @@
 # 🔧 Development Documentation
 
-This folder contains documentation specifically for developers working on the Fynix project.
+This folder contains documentation specifically for developers working on the Lokifi project.
 
 ## 📋 Available Guides
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Security Validation Script for Fynix
+Security Validation Script for Lokifi
 ====================================
 
 This script validates that all security configurations are properly set
@@ -171,7 +171,7 @@ class SecurityValidator:
     
     def run_full_validation(self) -> Dict[str, Any]:
         """Run complete security validation."""
-        print("🔒 Running Fynix Security Validation...")
+        print("🔒 Running Lokifi Security Validation...")
         print("=" * 50)
         
         results = {
@@ -236,7 +236,7 @@ class SecurityValidator:
 def main():
     import argparse
     
-    parser = argparse.ArgumentParser(description="Validate Fynix security configuration")
+    parser = argparse.ArgumentParser(description="Validate Lokifi security configuration")
     parser.add_argument("--project-root", default=".", help="Project root directory")
     parser.add_argument("--json", action="store_true", help="Output results as JSON")
     

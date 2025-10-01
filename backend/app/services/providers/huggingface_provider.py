@@ -1,5 +1,5 @@
 """
-Hugging Face Inference API provider for Fynix AI Chatbot (J5).
+Hugging Face Inference API provider for Lokifi AI Chatbot (J5).
 """
 
 import json

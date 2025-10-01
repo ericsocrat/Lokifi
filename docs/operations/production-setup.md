@@ -1,8 +1,8 @@
-# Fynix Trading Platform - Production Ready
+# Lokifi Trading Platform - Production Ready
 
 ## 🎯 Project Overview
 
-Fynix is a comprehensive trading platform built with modern web technologies, featuring:
+Lokifi is a comprehensive trading platform built with modern web technologies, featuring:
 
 - **Professional charting** with drawing tools and technical indicators
 - **Real-time market data** with multiple provider failover
@@ -40,8 +40,8 @@ Fynix is a comprehensive trading platform built with modern web technologies, fe
 
 ```bash
 # Clone repository
-git clone https://github.com/your-org/fynix.git
-cd fynix
+git clone https://github.com/your-org/lokifi.git
+cd lokifi
 
 # Start all services
 docker-compose up -d
@@ -175,8 +175,8 @@ lhci autorun
 ### Manual Docker Commands
 ```bash
 # Build production images
-docker build -t fynix/frontend:latest -f frontend/Dockerfile.prod frontend/
-docker build -t fynix/backend:latest -f backend/Dockerfile.prod backend/
+docker build -t lokifi/frontend:latest -f frontend/Dockerfile.prod frontend/
+docker build -t lokifi/backend:latest -f backend/Dockerfile.prod backend/
 
 # Deploy with production compose
 docker-compose -f docker-compose.production.yml up -d
@@ -356,8 +356,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Built with ❤️ by the Fynix Team**
+**Built with ❤️ by the Lokifi Team**
 
-For support: support@fynix.example.com  
-Documentation: https://docs.fynix.example.com  
-Community: https://discord.gg/fynix
+For support: support@lokifi.example.com  
+Documentation: https://docs.lokifi.example.com  
+Community: https://discord.gg/lokifi

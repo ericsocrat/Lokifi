@@ -15,7 +15,7 @@ def fix_database_schema():
     db_path = None
     
     # Try different database locations
-    for db_location in ["data/fynix.sqlite", "data/fynix.db", "fynix.sqlite", "fynix.db"]:
+    for db_location in ["data/lokifi.sqlite", "data/lokifi.db", "lokifi.sqlite", "lokifi.db"]:
         test_path = Path(db_location)
         if test_path.exists():
             db_path = test_path
@@ -123,7 +123,7 @@ def verify_fixes():
         print("\n🧪 Verifying fixes...")
         
         # Test database connection and schema
-        conn = sqlite3.connect("fynix.sqlite")
+        conn = sqlite3.connect("lokifi.sqlite")
         cursor = conn.cursor()
         
         # Test database schema

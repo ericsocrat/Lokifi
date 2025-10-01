@@ -1,5 +1,5 @@
 """
-API endpoints for Fynix AI Chatbot (J5).
+API endpoints for Lokifi AI Chatbot (J5).
 J6.1 Enhanced with notification integration.
 
 Handles AI thread creation, messaging, and provider management.

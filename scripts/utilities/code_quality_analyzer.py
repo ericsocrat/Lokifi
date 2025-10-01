@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Fynix Code Quality Analyzer
+Lokifi Code Quality Analyzer
 Local code quality analysis without external services
 """
 
@@ -144,7 +144,7 @@ class CodeQualityAnalyzer:
         # Generate summary report
         summary_file = Path(f"test_results/code_quality_summary_{timestamp}.txt")
         with open(summary_file, 'w', encoding='utf-8') as f:
-            f.write("Fynix Code Quality Analysis Report\n")
+            f.write("Lokifi Code Quality Analysis Report\n")
             f.write("=" * 40 + "\n\n")
             f.write(f"Analysis Date: {self.analysis_results['timestamp']}\n")
             f.write(f"Files Analyzed: {self.analysis_results['files_analyzed']}\n")

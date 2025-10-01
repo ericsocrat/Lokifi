@@ -1,6 +1,6 @@
 """
 Lokifi Rebranding Script
-Automatically renames all instances of Fynix/fynix to Lokifi/lokifi across the codebase
+Automatically renames all instances of Lokifi/lokifi to Lokifi/lokifi across the codebase
 """
 
 import os
@@ -74,7 +74,7 @@ class LokifiRebrander:
         return any(str(path).endswith(ext) for ext in self.file_extensions)
 
     def rebrand_content(self, content: str) -> Tuple[str, int]:
-        """Replace all variations of Fynix with Lokifi."""
+        """Replace all variations of Lokifi with Lokifi."""
         changes = 0
         original_content = content
 
@@ -126,16 +126,16 @@ class LokifiRebrander:
             return False
 
     def rename_file(self, file_path: Path) -> bool:
-        """Rename file if it contains fynix in name."""
+        """Rename file if it contains lokifi in name."""
         try:
             name = file_path.name
             new_name = name
 
-            # Replace fynix variations in filename
-            if "fynix" in name.lower():
-                new_name = name.replace("fynix", "lokifi")
-                new_name = new_name.replace("Fynix", "Lokifi")
-                new_name = new_name.replace("FYNIX", "LOKIFI")
+            # Replace lokifi variations in filename
+            if "lokifi" in name.lower():
+                new_name = name.replace("lokifi", "lokifi")
+                new_name = new_name.replace("Lokifi", "Lokifi")
+                new_name = new_name.replace("LOKIFI", "LOKIFI")
 
                 new_path = file_path.parent / new_name
                 file_path.rename(new_path)
@@ -154,7 +154,7 @@ class LokifiRebrander:
             return False
 
     def rename_directories(self) -> None:
-        """Rename directories containing fynix (from deepest to shallowest)."""
+        """Rename directories containing lokifi (from deepest to shallowest)."""
         # Get all directories sorted by depth (deepest first)
         dirs = sorted(
             [
@@ -167,11 +167,11 @@ class LokifiRebrander:
         )
 
         for dir_path in dirs:
-            if "fynix" in dir_path.name.lower():
+            if "lokifi" in dir_path.name.lower():
                 try:
-                    new_name = dir_path.name.replace("fynix", "lokifi")
-                    new_name = new_name.replace("Fynix", "Lokifi")
-                    new_name = new_name.replace("FYNIX", "LOKIFI")
+                    new_name = dir_path.name.replace("lokifi", "lokifi")
+                    new_name = new_name.replace("Lokifi", "Lokifi")
+                    new_name = new_name.replace("LOKIFI", "LOKIFI")
 
                     new_path = dir_path.parent / new_name
                     dir_path.rename(new_path)
@@ -286,14 +286,14 @@ class LokifiRebrander:
         print("   3. Update README.md with new project name")
         print("   4. Update package.json name field")
         print("   5. Update any hardcoded URLs or references")
-        print("   6. Commit changes: git commit -am 'Rebrand from Fynix to Lokifi'")
+        print("   6. Commit changes: git commit -am 'Rebrand from Lokifi to Lokifi'")
         print()
 
 
 def main():
     import argparse
 
-    parser = argparse.ArgumentParser(description="Rebrand Fynix to Lokifi")
+    parser = argparse.ArgumentParser(description="Rebrand Lokifi to Lokifi")
     parser.add_argument(
         "--project-root",
         default=".",
@@ -316,7 +316,7 @@ def main():
 
     # Confirm
     print(f"About to rebrand project in: {project_root}")
-    print("This will replace all instances of 'Fynix' with 'Lokifi'")
+    print("This will replace all instances of 'Lokifi' with 'Lokifi'")
     print()
 
     if not args.dry_run:

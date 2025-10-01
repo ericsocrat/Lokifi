@@ -46,7 +46,7 @@ export type IndicatorState = {
 
 type Listener = (s: IndicatorState) => void;
 
-const LS_KEY = "fynix.indicators";
+const LS_KEY = "lokifi.indicators";
 
 function load(): IndicatorState {
   try {

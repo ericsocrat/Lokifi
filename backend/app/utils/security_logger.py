@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 # Configure security logger
-security_logger = logging.getLogger("fynix.security")
+security_logger = logging.getLogger("lokifi.security")
 security_logger.setLevel(logging.INFO)
 
 # Create security log file handler

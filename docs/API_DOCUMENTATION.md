@@ -1,4 +1,4 @@
-# 📚 FYNIX API DOCUMENTATION
+# 📚 LOKIFI API DOCUMENTATION
 
 **Version:** 1.0.0
 **Base URL:** `http://localhost:8000/api`
@@ -1475,5 +1475,5 @@ Sort results with the `sort` query parameter:
 
 **Last Updated:** January 29, 2025
 **API Version:** 1.0.0
-**Contact:** support@fynix.com
+**Contact:** support@lokifi.com
 

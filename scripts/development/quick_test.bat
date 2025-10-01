@@ -1,6 +1,6 @@
 @echo off
 REM Quick local testing script
-echo Running Fynix Quick Tests...
+echo Running Lokifi Quick Tests...
 
 cd backend
 

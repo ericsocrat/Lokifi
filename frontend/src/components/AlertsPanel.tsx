@@ -19,7 +19,7 @@ export default function AlertsPanel() {
   })
 
   const openModal = () => {
-    window.dispatchEvent(new CustomEvent('fynix:open-alert'))
+    window.dispatchEvent(new CustomEvent('lokifi:open-alert'))
   }
 
   return (

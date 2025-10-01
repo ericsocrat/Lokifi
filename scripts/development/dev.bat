@@ -1,5 +1,5 @@
 @echo off
-REM Fynix Development Helper (Batch)
+REM Lokifi Development Helper (Batch)
 REM Usage: dev.bat [command]
 
 if "%~1"=="" goto help
@@ -15,7 +15,7 @@ goto unknown
 
 :help
 echo.
-echo 🚀 Fynix Development Commands (Batch)
+echo 🚀 Lokifi Development Commands (Batch)
 echo ====================================
 echo.
 echo Quick Commands:
@@ -32,7 +32,7 @@ echo.
 goto end
 
 :start
-echo 🚀 Starting Fynix full-stack...
+echo 🚀 Starting Lokifi full-stack...
 call make start
 goto end
 

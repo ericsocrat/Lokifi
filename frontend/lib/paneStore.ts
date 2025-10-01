@@ -142,7 +142,7 @@ export const usePaneStore = create<PaneState>()(
       },
     }),
     {
-      name: 'fynix-panes',
+      name: 'lokifi-panes',
       partialize: (state: PaneState) => ({ panes: state.panes }),
     }
   )

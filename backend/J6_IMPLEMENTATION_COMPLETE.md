@@ -2,7 +2,7 @@
 
 ## Overview
 
-The **J6 Enterprise Notifications** system provides a comprehensive, scalable notification infrastructure for the Fynix platform. This enterprise-grade system includes real-time delivery, advanced filtering, analytics, and seamless integration with existing features.
+The **J6 Enterprise Notifications** system provides a comprehensive, scalable notification infrastructure for the Lokifi platform. This enterprise-grade system includes real-time delivery, advanced filtering, analytics, and seamless integration with existing features.
 
 ## 🚀 Features Implemented
 

@@ -156,7 +156,7 @@ git commit -m "feat: Add comprehensive test automation suite (Phase 1)"
 git push origin main
 ```
 
-Then visit: https://github.com/ericsocrat/Fynix/actions
+Then visit: https://github.com/ericsocrat/Lokifi/actions
 
 ---
 
@@ -195,7 +195,7 @@ Then visit: https://github.com/ericsocrat/Fynix/actions
 
 **Command:**
 ```powershell
-cd C:\Users\USER\Desktop\fynix
+cd C:\Users\USER\Desktop\lokifi
 
 # Check what's changed
 git status
@@ -234,7 +234,7 @@ git push origin main
 ```
 
 **Then:**
-1. Go to: https://github.com/ericsocrat/Fynix/actions
+1. Go to: https://github.com/ericsocrat/Lokifi/actions
 2. Watch workflows execute
 3. Review results
 4. Fix any CI-specific issues
@@ -263,7 +263,7 @@ git push origin main
 
 4. **Run Frontend Unit Tests** ✅ (No backend needed)
    ```powershell
-   cd C:\Users\USER\Desktop\fynix\frontend
+   cd C:\Users\USER\Desktop\lokifi\frontend
    npm test -- --run
    ```
 

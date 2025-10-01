@@ -448,10 +448,10 @@ We welcome contributions! Areas for improvement:
 
 ## 📝 License
 
-This dependency protection system is part of the Fynix project and follows the same licensing terms.
+This dependency protection system is part of the Lokifi project and follows the same licensing terms.
 
 ---
 
 **🛡️ Your dependencies are now protected against accidental downgrades!**
 
-For questions or support, please refer to the main Fynix documentation or create an issue in the project repository.
+For questions or support, please refer to the main Lokifi documentation or create an issue in the project repository.

@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     # Application settings
-    PROJECT_NAME: str = Field(default="Fynix", alias="PROJECT_NAME")
+    PROJECT_NAME: str = Field(default="Lokifi", alias="PROJECT_NAME")
     API_PREFIX: str = Field(default="/api", alias="API_PREFIX")
     
     # Auth / JWT - Must be set via environment variable
@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     
     # Phase J: Database Configuration
     DATABASE_URL: str = Field(
-        default="sqlite+aiosqlite:///./data/fynix.sqlite",
+        default="sqlite+aiosqlite:///./data/lokifi.sqlite",
         alias="DATABASE_URL"
     )
     
@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     SMTP_USERNAME: str = Field(default="", alias="SMTP_USERNAME")
     SMTP_PASSWORD: str = Field(default="", alias="SMTP_PASSWORD")
     SMTP_TLS: bool = Field(default=False, alias="SMTP_TLS")
-    FROM_EMAIL: str = Field(default="noreply@fynix.com", alias="FROM_EMAIL")
+    FROM_EMAIL: str = Field(default="noreply@lokifi.com", alias="FROM_EMAIL")
     
     # Phase J: AI Providers
     OPENROUTER_API_KEY: str | None = Field(default=None, alias="OPENROUTER_API_KEY")

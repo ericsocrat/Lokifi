@@ -1,5 +1,5 @@
 """
-Conversation Export/Import System for Fynix AI Chatbot (J5.1).
+Conversation Export/Import System for Lokifi AI Chatbot (J5.1).
 
 Allows users to export/import their AI conversations in various formats.
 """

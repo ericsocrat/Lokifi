@@ -1,5 +1,5 @@
 """
-OpenRouter AI provider for Fynix AI Chatbot (J5).
+OpenRouter AI provider for Lokifi AI Chatbot (J5).
 """
 
 import json
@@ -35,8 +35,8 @@ class OpenRouterProvider(AIProvider):
             timeout=httpx.Timeout(60.0),
             headers={
                 "Authorization": f"Bearer {self.api_key}" if self.api_key else "",
-                "HTTP-Referer": "https://fynix.com",
-                "X-Title": "Fynix AI Chatbot",
+                "HTTP-Referer": "https://lokifi.com",
+                "X-Title": "Lokifi AI Chatbot",
                 "Content-Type": "application/json"
             }
         )

@@ -1,5 +1,5 @@
 """
-Comprehensive test suite for Fynix AI Chatbot (J5) functionality.
+Comprehensive test suite for Lokifi AI Chatbot (J5) functionality.
 """
 
 import json

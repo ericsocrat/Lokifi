@@ -141,7 +141,7 @@ class IndicatorStore {
 
   /**
    * Load settings for a symbol (and optional timeframe) and merge over defaults.
-   * Persists to localStorage under key: fynix:inds:<symbol>[:<tf>]
+   * Persists to localStorage under key: lokifi:inds:<symbol>[:<tf>]
    */
   loadForSymbol(symbol: string, timeframe?: string) {
     const key = this.key(symbol, timeframe);
@@ -191,7 +191,7 @@ class IndicatorStore {
 
   private key(symbol: string, timeframe?: string) {
     const tf = (timeframe && timeframe.trim()) ? ":" + timeframe : "";
-    return `fynix:inds:${symbol}${tf}`;
+    return `lokifi:inds:${symbol}${tf}`;
   }
 }
 

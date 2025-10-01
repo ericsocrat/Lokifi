@@ -1,5 +1,5 @@
 """
-Pydantic schemas for Fynix AI Chatbot (J5).
+Pydantic schemas for Lokifi AI Chatbot (J5).
 
 Request/response models for AI API endpoints.
 """

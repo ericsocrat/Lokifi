@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Stress Testing Demonstration for Fynix
+Stress Testing Demonstration for Lokifi
 Shows the capabilities of our comprehensive stress testing framework
 """
 
@@ -14,7 +14,7 @@ import psutil
 async def simulate_stress_test_scenarios():
     """Simulate the stress test scenarios that were requested"""
     
-    print("🔥 FYNIX COMPREHENSIVE STRESS TESTING DEMONSTRATION")
+    print("🔥 LOKIFI COMPREHENSIVE STRESS TESTING DEMONSTRATION")
     print("=" * 80)
     print(f"📅 Test Run: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("🎯 Target Scenarios: Normal Load, Peak Load, Extreme Stress, Endurance Test")
@@ -96,7 +96,7 @@ async def simulate_stress_test_scenarios():
     
     print("📊 INFRASTRUCTURE STATUS")
     print("=" * 40)
-    print("🐳 Redis Server: ✅ Running (container: fynix-redis)")
+    print("🐳 Redis Server: ✅ Running (container: lokifi-redis)")
     print(f"💾 Memory Usage: {memory_before:.1f}% → {memory_after:.1f}%")
     print(f"🖥️  CPU Usage: {cpu_before:.1f}% → {cpu_after:.1f}%")
     print()

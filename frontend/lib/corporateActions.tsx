@@ -458,7 +458,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       }
     })),
     {
-      name: 'fynix-corporate-actions-storage',
+      name: 'lokifi-corporate-actions-storage',
       version: 1,
       migrate: (persistedState: any, version: number) => {
         if (version === 0) {
