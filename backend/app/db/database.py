@@ -8,8 +8,14 @@ from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.pool import NullPool
+from sqlalchemy.ext.declarative import declarative_base
 
 # Import Base from core database for consistency
+try:
+    from app.core.database import Base
+except ImportError:
+    # Fallback if core database doesn't exist
+    Base = declarative_base()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://fynix:fynix@localhost:5432/fynix")
 

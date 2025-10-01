@@ -5,7 +5,7 @@ from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import QueuePool, StaticPool
+from sqlalchemy.pool import StaticPool
 
 from app.core.config import Settings, settings
 
@@ -54,24 +54,19 @@ class DatabaseManager:
                 pool_size = max(2, pool_size // 2)
                 max_overflow = max(5, max_overflow // 2)
             
+            # For asyncpg, don't use QueuePool - use NullPool or default AsyncAdaptedQueuePool
+            # QueuePool is for sync engines only
             return create_async_engine(
                 database_url,
-                poolclass=QueuePool,
+                poolclass=None,  # Use default AsyncAdaptedQueuePool for async engines
                 pool_size=pool_size,
                 max_overflow=max_overflow,
                 pool_timeout=self.settings.DATABASE_POOL_TIMEOUT,
                 pool_recycle=self.settings.DATABASE_POOL_RECYCLE,
                 pool_pre_ping=True,
                 echo=False,
-                # PostgreSQL-specific optimizations
-                connect_args={
-                    "server_settings": {
-                        "application_name": "fynix_backend",
-                        "tcp_keepalives_idle": "600",
-                        "tcp_keepalives_interval": "30",
-                        "tcp_keepalives_count": "3",
-                    }
-                }
+                # For asyncpg, connect_args should be minimal
+                # server_settings are handled differently in asyncpg
             )
     
     async def initialize(self):
