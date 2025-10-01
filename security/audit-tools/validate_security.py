@@ -38,7 +38,7 @@ class SecurityValidator:
     def validate_environment_variables(self) -> bool:
         """Validate that required environment variables are set."""
         required_vars = [
-            "FYNIX_JWT_SECRET",
+            "LOKIFI_JWT_SECRET",
             "SECRET_KEY"
         ]
         

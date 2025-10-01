@@ -11,7 +11,7 @@ import requests
 from datetime import datetime
 from pathlib import Path
 
-class FynixMonitor:
+class LokifiMonitor:
     def __init__(self):
         self.api_url = "http://localhost:8000"
         self.metrics_file = Path("performance_metrics.log")
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    monitor = FynixMonitor()
+    monitor = LokifiMonitor()
     
     if args.once:
         monitor.run_monitoring_cycle()

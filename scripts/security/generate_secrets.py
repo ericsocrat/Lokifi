@@ -29,7 +29,7 @@ def generate_password(length: int = 16) -> str:
 def generate_all_secrets():
     """Generate all required secrets for Lokifi."""
     secrets_config = {
-        "FYNIX_JWT_SECRET": generate_jwt_secret(64),
+        "LOKIFI_JWT_SECRET": generate_jwt_secret(64),
         "JWT_SECRET_KEY": generate_jwt_secret(64), 
         "SECRET_KEY": generate_secret(64),
         "GRAFANA_ADMIN_PASSWORD": generate_password(20),
@@ -50,20 +50,20 @@ def create_production_env(output_file: str = ".env.production"):
 # ==========================================
 # SECURITY SETTINGS - PRODUCTION
 # ==========================================
-FYNIX_JWT_SECRET={secrets_config['FYNIX_JWT_SECRET']}
+LOKIFI_JWT_SECRET={secrets_config['LOKIFI_JWT_SECRET']}
 JWT_SECRET_KEY={secrets_config['JWT_SECRET_KEY']}
 SECRET_KEY={secrets_config['SECRET_KEY']}
 
 # ==========================================
 # DATABASE CONFIGURATION
 # ==========================================
-DATABASE_URL=postgresql://postgres:${{POSTGRES_PASSWORD}}@localhost:5432/fynix_production
+DATABASE_URL=postgresql://postgres:${{POSTGRES_PASSWORD}}@localhost:5432/lokifi_production
 POSTGRES_PASSWORD={secrets_config['POSTGRES_PASSWORD']}
 
 # ==========================================
 # JWT CONFIGURATION
 # ==========================================
-FYNIX_JWT_TTL_MIN=1440
+LOKIFI_JWT_TTL_MIN=1440
 JWT_EXPIRE_MINUTES=30
 
 # ==========================================

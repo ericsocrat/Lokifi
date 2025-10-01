@@ -178,10 +178,10 @@ class ProductionSetupManager:
             ".env.production": {
                 "ENVIRONMENT": "production",
                 "DEBUG": "false",
-                "DATABASE_URL": "sqlite:///./fynix_production.db",
+                "DATABASE_URL": "sqlite:///./lokifi_production.db",
                 "REDIS_URL": "redis://redis:6379/0",
                 "SECRET_KEY": "${SECRET_KEY}",
-                "FYNIX_JWT_SECRET": "${FYNIX_JWT_SECRET}",
+                "LOKIFI_JWT_SECRET": "${LOKIFI_JWT_SECRET}",
                 "ALLOWED_HOSTS": "localhost,127.0.0.1,lokifi.example.com",
                 "CORS_ORIGINS": "https://lokifi.example.com",
                 "LOG_LEVEL": "INFO",
@@ -362,16 +362,16 @@ alerting:
         
         # Save Grafana dashboard
         try:
-            with open(dashboards_dir / "fynix_overview.json", 'w') as f:
+            with open(dashboards_dir / "lokifi_overview.json", 'w') as f:
                 json.dump(dashboard_config, f, indent=2)
-            results["dashboards_created"].append("fynix_overview.json")
+            results["dashboards_created"].append("lokifi_overview.json")
             self.print_status("Created Grafana dashboard", "SUCCESS")
         except Exception as e:
             self.print_status(f"Failed to create dashboard: {e}", "FAIL")
         
         # Alert rules
         alerts_config = """groups:
-  - name: fynix_alerts
+  - name: lokifi_alerts
     rules:
       - alert: HighErrorRate
         expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
@@ -442,8 +442,8 @@ echo "Starting backup at $(date)"
 # Database backup
 if [ -f "/app/lokifi.sqlite" ]; then
     echo "Backing up SQLite database..."
-    cp /app/lokifi.sqlite $BACKUP_DIR/database/fynix_${DATE}.sqlite
-    gzip $BACKUP_DIR/database/fynix_${DATE}.sqlite
+    cp /app/lokifi.sqlite $BACKUP_DIR/database/lokifi_${DATE}.sqlite
+    gzip $BACKUP_DIR/database/lokifi_${DATE}.sqlite
     echo "Database backup completed"
 fi
 
@@ -480,7 +480,7 @@ echo "Backup completed at $(date)"
 REM Lokifi Automated Backup Script for Windows
 REM Created: ''' + str(datetime.datetime.now()) + '''
 
-set BACKUP_DIR=C:\\fynix_backups
+set BACKUP_DIR=C:\\lokifi_backups
 set DATE=%date:~-4,4%%date:~-10,2%%date:~-7,2%_%time:~0,2%%time:~3,2%%time:~6,2%
 set DATE=%DATE: =0%
 
@@ -494,7 +494,7 @@ if not exist "%BACKUP_DIR%\\logs" mkdir "%BACKUP_DIR%\\logs"
 REM Database backup
 if exist "backend\\lokifi.sqlite" (
     echo Backing up SQLite database...
-    copy "backend\\lokifi.sqlite" "%BACKUP_DIR%\\database\\fynix_%DATE%.sqlite"
+    copy "backend\\lokifi.sqlite" "%BACKUP_DIR%\\database\\lokifi_%DATE%.sqlite"
     echo Database backup completed
 )
 
@@ -553,7 +553,7 @@ echo Backup completed at %date% %time%
         # Configure backup locations
         backup_dirs = [
             self.base_dir / "backups",
-            Path("C:/fynix_backups") if os.name == 'nt' else Path("/var/backups/lokifi")
+            Path("C:/lokifi_backups") if os.name == 'nt' else Path("/var/backups/lokifi")
         ]
         
         for backup_dir in backup_dirs:
@@ -1364,14 +1364,14 @@ spec:
         
         # Load balancer configuration (Nginx)
         nginx_lb_config = """
-upstream fynix_backend {
+upstream lokifi_backend {
     least_conn;
     server backend1:8000 max_fails=3 fail_timeout=30s;
     server backend2:8000 max_fails=3 fail_timeout=30s;
     server backend3:8000 max_fails=3 fail_timeout=30s;
 }
 
-upstream fynix_frontend {
+upstream lokifi_frontend {
     server frontend1:3000;
     server frontend2:3000;
 }
@@ -1381,7 +1381,7 @@ server {
     
     # Backend load balancing
     location /api/ {
-        proxy_pass http://fynix_backend;
+        proxy_pass http://lokifi_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -1396,7 +1396,7 @@ server {
     
     # Frontend load balancing
     location / {
-        proxy_pass http://fynix_frontend;
+        proxy_pass http://lokifi_frontend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -1473,7 +1473,7 @@ The Lokifi system is now ready for enterprise-grade deployment.
 ### Monitoring Dashboard
 1. Access Prometheus: http://localhost:9090
 2. Access Grafana: http://localhost:3001
-3. Import dashboard: monitoring/dashboards/fynix_overview.json
+3. Import dashboard: monitoring/dashboards/lokifi_overview.json
 
 ### Scaling Operations
 1. Docker Swarm: `docker stack deploy -c docker-compose.swarm.yml lokifi`

@@ -201,7 +201,7 @@ cd backend
 REM Backup current database
 if exist "lokifi.sqlite" (
     echo Creating backup...
-    copy lokifi.sqlite "fynix_backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sqlite"
+    copy lokifi.sqlite "lokifi_backup_%date:~-4,4%%date:~-10,2%%date:~-7,2%.sqlite"
 )
 
 REM Reset database

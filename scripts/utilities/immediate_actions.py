@@ -16,7 +16,7 @@ from pathlib import Path
 if os.name == 'nt':  # Windows
     os.environ['PYTHONIOENCODING'] = 'utf-8'
 
-class FynixProductionSetup:
+class LokifiProductionSetup:
     """Immediate production actions implementation"""
     
     def __init__(self):
@@ -105,10 +105,10 @@ class FynixProductionSetup:
         env_content = """# Lokifi Production Environment
 ENVIRONMENT=production
 DEBUG=false
-DATABASE_URL=sqlite:///./fynix_production.db
+DATABASE_URL=sqlite:///./lokifi_production.db
 REDIS_URL=redis://redis:6379/0
 SECRET_KEY=${SECRET_KEY}
-FYNIX_JWT_SECRET=${FYNIX_JWT_SECRET}
+LOKIFI_JWT_SECRET=${LOKIFI_JWT_SECRET}
 ALLOWED_HOSTS=localhost,127.0.0.1
 LOG_LEVEL=INFO
 MAX_WORKERS=4
@@ -244,7 +244,7 @@ if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 REM Database backup
 if exist "backend\\lokifi.sqlite" (
     echo Backing up database...
-    copy "backend\\lokifi.sqlite" "%BACKUP_DIR%\\fynix_%DATE%.sqlite"
+    copy "backend\\lokifi.sqlite" "%BACKUP_DIR%\\lokifi_%DATE%.sqlite"
     echo Database backup completed
 )
 
@@ -315,7 +315,7 @@ echo Backup completed at %date% %time%
 </Task>"""
         
         try:
-            task_path = self.base_dir / "fynix_backup_task.xml"
+            task_path = self.base_dir / "lokifi_backup_task.xml"
             with open(task_path, 'w', encoding='utf-8') as f:
                 f.write(task_xml)
             self.print_status("Created backup task configuration", "SUCCESS")
@@ -594,7 +594,7 @@ import requests
 from datetime import datetime
 from pathlib import Path
 
-class FynixMonitor:
+class LokifiMonitor:
     def __init__(self):
         self.api_url = "http://localhost:8000"
         self.metrics_file = Path("performance_metrics.log")
@@ -679,7 +679,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    monitor = FynixMonitor()
+    monitor = LokifiMonitor()
     
     if args.once:
         monitor.run_monitoring_cycle()
@@ -733,14 +733,14 @@ python performance_monitor.py --interval 60
         # Create load balancer configuration
         lb_config = """# Nginx Load Balancer Configuration
 
-upstream fynix_backend {
+upstream lokifi_backend {
     least_conn;
     server backend1:8000 weight=1 max_fails=3 fail_timeout=30s;
     server backend2:8000 weight=1 max_fails=3 fail_timeout=30s;
     server backend3:8000 weight=1 max_fails=3 fail_timeout=30s;
 }
 
-upstream fynix_frontend {
+upstream lokifi_frontend {
     server frontend1:3000 weight=1;
     server frontend2:3000 weight=1;
 }
@@ -749,7 +749,7 @@ server {
     listen 80;
     
     location /api/ {
-        proxy_pass http://fynix_backend;
+        proxy_pass http://lokifi_backend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -757,7 +757,7 @@ server {
     }
     
     location / {
-        proxy_pass http://fynix_frontend;
+        proxy_pass http://lokifi_frontend;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -854,7 +854,7 @@ networks:
 ## Docker Swarm Deployment
 1. Initialize swarm: `docker swarm init`
 2. Deploy stack: `docker stack deploy -c docker-compose.swarm.yml lokifi`
-3. Scale services: `docker service scale fynix_backend=5`
+3. Scale services: `docker service scale lokifi_backend=5`
 4. Monitor: `docker service ls`
 
 ## Manual Scaling
@@ -983,5 +983,5 @@ networks:
         return self.generate_summary_report()
 
 if __name__ == "__main__":
-    setup = FynixProductionSetup()
+    setup = LokifiProductionSetup()
     setup.run_all_immediate_actions()

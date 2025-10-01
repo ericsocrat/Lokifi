@@ -111,7 +111,7 @@ async def run_comprehensive_test():
         
         # Test 7: Environment Variables
         print("\n7️⃣ Testing Environment Variables...")
-        required_vars = ['SECRET_KEY', 'JWT_SECRET_KEY', 'FYNIX_JWT_SECRET']
+        required_vars = ['SECRET_KEY', 'JWT_SECRET_KEY', 'LOKIFI_JWT_SECRET']
         missing_vars = [var for var in required_vars if not os.getenv(var)]
         
         if missing_vars:
