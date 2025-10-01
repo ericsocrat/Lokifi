@@ -202,7 +202,7 @@ Copy `.env.example` to `.env` and configure:
 
 ```bash
 # JWT Configuration (Required in Production)
-FYNIX_JWT_SECRET=your-secret-key-here
+LOKIFI_JWT_SECRET=your-secret-key-here
 
 # Frontend Configuration
 FRONTEND_ORIGIN=http://localhost:3000
@@ -247,7 +247,7 @@ OPENAI_API_KEY=your-openai-key
    FRONTEND_ORIGIN=https://your-domain.com
    CORS_ORIGINS=["https://your-domain.com"]
    NEXT_PUBLIC_API_URL=https://api.your-domain.com/api
-   FYNIX_JWT_SECRET=secure-random-string-here
+   LOKIFI_JWT_SECRET=secure-random-string-here
    ```
 
 2. **Use production Docker Compose:**
