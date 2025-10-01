@@ -1,19 +1,19 @@
-"use client";
-import { ChartErrorBoundary } from "@/components/ChartErrorBoundary";
-import { ChartLoadingState } from "@/components/ChartLoadingState";
-import ChartSidebar from "@/components/ChartSidebar";
-import { API } from "@/lib/api";
-import { drawStore } from "@/lib/drawStore";
-import { indicatorStore } from "@/lib/indicatorStore";
-import { bollinger, ema, macd, rsi, stddevChannels, vwap, vwma } from "@/lib/indicators";
-import { symbolStore } from "@/lib/symbolStore";
-import { timeframeStore } from "@/lib/timeframeStore";
-import type { OHLCResponse } from "@/lib/types";
-import { pluginManager } from "@/plugins/registry";
-import { ColorType, createChart, IChartApi, Time } from "lightweight-charts";
-import dynamic from "next/dynamic";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import useSWR from "swr";
+'use client';
+import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
+import { ChartLoadingState } from '@/components/ChartLoadingState';
+import ChartSidebar from '@/components/ChartSidebar';
+import { API } from '@/lib/api';
+import { drawStore } from '@/lib/drawStore';
+import { indicatorStore } from '@/lib/indicatorStore';
+import { bollinger, ema, macd, rsi, stddevChannels, vwap, vwma } from '@/lib/indicators';
+import { symbolStore } from '@/lib/symbolStore';
+import { timeframeStore } from '@/lib/timeframeStore';
+import type { OHLCResponse } from '@/lib/types';
+import { pluginManager } from '@/plugins/registry';
+import { ColorType, createChart, IChartApi, Time } from 'lightweight-charts';
+import dynamic from 'next/dynamic';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import useSWR from 'swr';
 
 // Constants
 const CHART_HEIGHT = 520;
@@ -24,17 +24,25 @@ const MIN_CHART_WIDTH = 400;
 function tfToSeconds(tf: string): number {
   const n = parseInt(tf, 10);
   if (Number.isFinite(n)) {
-    if (tf.endsWith("m")) return n * 60;
-    if (tf.endsWith("h")) return n * 3600;
-    if (tf.endsWith("d")) return n * 86400;
-    if (tf.endsWith("w")) return n * 604800;
+    if (tf.endsWith('m')) return n * 60;
+    if (tf.endsWith('h')) return n * 3600;
+    if (tf.endsWith('d')) return n * 86400;
+    if (tf.endsWith('w')) return n * 604800;
   }
   return (Number.isFinite(n) ? n : 1) * 60;
 }
 
 function hexToRGBA(hex: string, a: number) {
-  const m = hex.replace("#", "");
-  const bigint = parseInt(m.length === 3 ? m.split("").map(c => c + c).join("") : m, 16);
+  const m = hex.replace('#', '');
+  const bigint = parseInt(
+    m.length === 3
+      ? m
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : m,
+    16
+  );
   const r = (bigint >> 16) & 255;
   const g = (bigint >> 8) & 255;
   const b = bigint & 255;
@@ -77,13 +85,13 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
   // Subscribe to store changes
   useEffect(() => {
-    const unsubIndicators = indicatorStore.subscribe(st => setInds(st));
-    const unsubSymbol = symbolStore.subscribe(s => {
+    const unsubIndicators = indicatorStore.subscribe((st) => setInds(st));
+    const unsubSymbol = symbolStore.subscribe((s) => {
       setSym(s);
       indicatorStore.loadForSymbol(s);
       drawStore.loadCurrent();
     });
-    const unsubTimeframe = timeframeStore.subscribe(t => {
+    const unsubTimeframe = timeframeStore.subscribe((t) => {
       setTf(t);
       drawStore.loadCurrent();
     });
@@ -106,22 +114,25 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
   );
 
   // Mock data fallback for development
-  const mockData = React.useMemo(() => ({
-    symbol: sym,
-    timeframe: tf,
-    candles: Array.from({ length: 100 }, (_, i) => {
-      const time = Math.floor(Date.now() / 1000) - (100 - i) * tfToSeconds(tf);
-      const price = 50000 + Math.sin(i / 10) * 2000 + (Math.random() - 0.5) * 1000;
-      return {
-        ts: time, // Already in epoch seconds
-        o: price,
-        h: price + Math.random() * 500,
-        l: price - Math.random() * 500,
-        c: price + (Math.random() - 0.5) * 400,
-        v: Math.random() * 1000
-      };
-    })
-  }), [sym, tf]);
+  const mockData = React.useMemo(
+    () => ({
+      symbol: sym,
+      timeframe: tf,
+      candles: Array.from({ length: 100 }, (_, i) => {
+        const time = Math.floor(Date.now() / 1000) - (100 - i) * tfToSeconds(tf);
+        const price = 50000 + Math.sin(i / 10) * 2000 + (Math.random() - 0.5) * 1000;
+        return {
+          ts: time, // Already in epoch seconds
+          o: price,
+          h: price + Math.random() * 500,
+          l: price - Math.random() * 500,
+          c: price + (Math.random() - 0.5) * 400,
+          v: Math.random() * 1000,
+        };
+      }),
+    }),
+    [sym, tf]
+  );
 
   // Use real data if available, otherwise fallback to mock
   const chartData = data || mockData;
@@ -182,15 +193,15 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       width: chartDimensions.width,
       height: mainHeight,
       layout: {
-        background: { type: ColorType.Solid, color: "#0a0a0a" },
-        textColor: "#e5e7eb",
+        background: { type: ColorType.Solid, color: '#0a0a0a' },
+        textColor: '#e5e7eb',
       },
       grid: {
-        vertLines: { color: "#1f2937" },
-        horzLines: { color: "#1f2937" },
+        vertLines: { color: '#1f2937' },
+        horzLines: { color: '#1f2937' },
       },
       rightPriceScale: {
-        borderColor: "#374151",
+        borderColor: '#374151',
         visible: true, // Ensure price scale is visible
       },
       timeScale: {
@@ -201,16 +212,16 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
     // Add candlestick series
     const candleSeries = chart.addCandlestickSeries({
-      upColor: "#00ff88",
-      downColor: "#ff4444",
-      borderDownColor: "#ff4444",
-      borderUpColor: "#00ff88",
-      wickDownColor: "#ff4444",
-      wickUpColor: "#00ff88",
+      upColor: '#00ff88',
+      downColor: '#ff4444',
+      borderDownColor: '#ff4444',
+      borderUpColor: '#00ff88',
+      wickDownColor: '#ff4444',
+      wickUpColor: '#00ff88',
     });
 
     // Normalize and set candlestick data
-    const normalizedCandles = chartData.candles.map(c => ({
+    const normalizedCandles = chartData.candles.map((c) => ({
       time: normalizeTimestamp(c.ts) as Time,
       open: c.o,
       high: c.h,
@@ -223,10 +234,10 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     candleSeries.setData(sortedCandles);
 
     // Prepare indicator data
-    const closes = chartData.candles.map(c => c.c);
-    const highs = chartData.candles.map(c => c.h);
-    const lows = chartData.candles.map(c => c.l);
-    const vols = chartData.candles.map(c => c.v ?? 0);
+    const closes = chartData.candles.map((c) => c.c);
+    const highs = chartData.candles.map((c) => c.h);
+    const lows = chartData.candles.map((c) => c.l);
+    const vols = chartData.candles.map((c) => c.v ?? 0);
 
     // Helper to add line series
     const addLineSeries = (values: (number | null)[], color: string, width = 2) => {
@@ -244,15 +255,15 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     };
 
     // Add indicators to main chart
-    if (inds.ema20) addLineSeries(ema(closes, 20), "#ff6b35", 2);
-    if (inds.ema50) addLineSeries(ema(closes, 50), "#4ecdc4", 2);
+    if (inds.ema20) addLineSeries(ema(closes, 20), '#ff6b35', 2);
+    if (inds.ema50) addLineSeries(ema(closes, 50), '#4ecdc4', 2);
 
     // Bollinger Bands
     if (inds.bband) {
       const bb = bollinger(closes, params.bbPeriod ?? 20, params.bbMult ?? 2);
-      addLineSeries(bb.mid, "#999999", 1);
-      addLineSeries(bb.upper, "#666666", 1);
-      addLineSeries(bb.lower, "#666666", 1);
+      addLineSeries(bb.mid, '#999999', 1);
+      addLineSeries(bb.upper, '#666666', 1);
+      addLineSeries(bb.lower, '#666666', 1);
 
       if (inds.bbFill) {
         const upperArea = chart.addAreaSeries({
@@ -260,34 +271,38 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           topColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
           bottomColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
         });
-        upperArea.setData(bb.upper.map((value, i) => ({
-          time: sortedCandles[i].time,
-          value: value ?? NaN,
-        })));
+        upperArea.setData(
+          bb.upper.map((value, i) => ({
+            time: sortedCandles[i].time,
+            value: value ?? NaN,
+          }))
+        );
       }
     }
 
     // VWAP
     if (inds.vwap) {
       const typical = closes.map((c, i) => (highs[i] + lows[i] + c) / 3);
-      const hasVolume = vols.some(v => v && v > 0);
+      const hasVolume = vols.some((v) => v && v > 0);
       const vwapValues = hasVolume ? vwap(typical, vols) : ema(typical, 20);
-      addLineSeries(vwapValues, "#ffaa00", 2);
+      addLineSeries(vwapValues, '#ffaa00', 2);
     }
 
     // VWMA
     if (inds.vwma) {
-      const hasVolume = vols.some(v => v && v > 0);
-      const vwmaValues = hasVolume ? vwma(closes, vols, params.vwmaPeriod ?? 20) : ema(closes, params.vwmaPeriod ?? 20);
-      addLineSeries(vwmaValues, "#aa00ff", 2);
+      const hasVolume = vols.some((v) => v && v > 0);
+      const vwmaValues = hasVolume
+        ? vwma(closes, vols, params.vwmaPeriod ?? 20)
+        : ema(closes, params.vwmaPeriod ?? 20);
+      addLineSeries(vwmaValues, '#aa00ff', 2);
     }
 
     // Standard Deviation Channels
     if (inds.stddev) {
       const sd = stddevChannels(closes, params.stddevPeriod ?? 20, params.stddevMult ?? 2);
-      addLineSeries(sd.mid, "#00aaff", 1);
-      addLineSeries(sd.upper, "#0088cc", 1);
-      addLineSeries(sd.lower, "#0088cc", 1);
+      addLineSeries(sd.mid, '#00aaff', 1);
+      addLineSeries(sd.upper, '#0088cc', 1);
+      addLineSeries(sd.lower, '#0088cc', 1);
     }
 
     chartRef.current = chart;
@@ -298,15 +313,15 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         width: chartDimensions.width,
         height: SUB_CHART_HEIGHT,
         layout: {
-          background: { type: ColorType.Solid, color: "#0a0a0a" },
-          textColor: "#e5e7eb",
+          background: { type: ColorType.Solid, color: '#0a0a0a' },
+          textColor: '#e5e7eb',
         },
         grid: {
-          vertLines: { color: "#1f2937" },
-          horzLines: { color: "#1f2937" },
+          vertLines: { color: '#1f2937' },
+          horzLines: { color: '#1f2937' },
         },
         rightPriceScale: {
-          borderColor: "#374151",
+          borderColor: '#374151',
           visible: true,
         },
         timeScale: {
@@ -319,17 +334,19 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       if (inds.rsi) {
         const rsiValues = rsi(closes, 14);
         const rsiSeries = subChart.addLineSeries({
-          color: "#ff6b35",
+          color: '#ff6b35',
           lineWidth: 2,
         });
-        rsiSeries.setData(rsiValues.map((value, i) => ({
-          time: sortedCandles[i].time,
-          value: value ?? NaN,
-        })));
+        rsiSeries.setData(
+          rsiValues.map((value, i) => ({
+            time: sortedCandles[i].time,
+            value: value ?? NaN,
+          }))
+        );
 
         // Add RSI levels
         const rsiLevelSeries = subChart.addLineSeries({
-          color: "#666666",
+          color: '#666666',
           lineWidth: 1,
           lineStyle: 2, // Dashed
         });
@@ -345,22 +362,26 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
         // MACD histogram
         const macdHistSeries = subChart.addHistogramSeries({
-          color: "#4ecdc4",
+          color: '#4ecdc4',
         });
-        macdHistSeries.setData(macdData.hist.map((value, i) => ({
-          time: sortedCandles[i].time,
-          value: value ?? NaN,
-        })));
+        macdHistSeries.setData(
+          macdData.hist.map((value, i) => ({
+            time: sortedCandles[i].time,
+            value: value ?? NaN,
+          }))
+        );
 
         // MACD signal line
         const signalSeries = subChart.addLineSeries({
-          color: "#ff4444",
+          color: '#ff4444',
           lineWidth: 2,
         });
-        signalSeries.setData(macdData.signalLine.map((value, i) => ({
-          time: sortedCandles[i].time,
-          value: value ?? NaN,
-        })));
+        signalSeries.setData(
+          macdData.signalLine.map((value, i) => ({
+            time: sortedCandles[i].time,
+            value: value ?? NaN,
+          }))
+        );
       }
 
       // Sync time scales
@@ -414,7 +435,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           channelDefaultWidthPct: s.channelDefaultWidthPct,
           channelWidthMode: s.channelWidthMode,
           fibPreset: s.fibPreset,
-          fibCustomLevels: s.fibCustomLevels
+          fibCustomLevels: s.fibCustomLevels,
         });
       } catch (e) {
         console.warn('Failed to apply symbol settings:', e);
@@ -461,14 +482,17 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
   }
 
   return (
-    <div className="w-full rounded-2xl border border-neutral-800 relative" data-testid="chart-container">
+    <div
+      className="w-full rounded-2xl border border-neutral-800 relative"
+      data-testid="chart-container"
+    >
       <ChartSidebar />
       <div
         ref={chartContainerRef}
         data-testid="chart-main"
         style={{
-          height: `${(inds.rsi || inds.macd) ? CHART_HEIGHT - SUB_CHART_HEIGHT : CHART_HEIGHT}px`,
-          minWidth: `${MIN_CHART_WIDTH}px`
+          height: `${inds.rsi || inds.macd ? CHART_HEIGHT - SUB_CHART_HEIGHT : CHART_HEIGHT}px`,
+          minWidth: `${MIN_CHART_WIDTH}px`,
         }}
       />
       <canvas
@@ -476,7 +500,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         className="absolute top-0 left-0 z-10 pointer-events-none"
         data-testid="chart-overlay"
         style={{
-          pointerEvents: (drawStore.get().tool === "cursor" && !pluginManager.hasActiveTool()) ? "none" : "auto"
+          pointerEvents:
+            drawStore.get().tool === 'cursor' && !pluginManager.hasActiveTool() ? 'none' : 'auto',
         }}
       />
       {(inds.rsi || inds.macd) && (
@@ -493,16 +518,19 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
 // Dynamic import to prevent SSR issues
 const ChartPanel = dynamic(
-  () => Promise.resolve(React.memo(function ChartPanelWrapper(props: ChartPanelProps) {
-    return (
-      <ChartErrorBoundary>
-        <ChartPanelCore {...props} />
-      </ChartErrorBoundary>
-    );
-  })),
+  () =>
+    Promise.resolve(
+      React.memo(function ChartPanelWrapper(props: ChartPanelProps) {
+        return (
+          <ChartErrorBoundary>
+            <ChartPanelCore {...props} />
+          </ChartErrorBoundary>
+        );
+      })
+    ),
   {
     ssr: false,
-    loading: () => <ChartLoadingState message="Loading chart component..." />
+    loading: () => <ChartLoadingState message="Loading chart component..." />,
   }
 );
 
