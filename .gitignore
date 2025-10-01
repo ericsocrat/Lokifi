@@ -1,39 +1,152 @@
-﻿# Node/Next.js
+﻿# ============================================
+# DATABASES - NEVER COMMIT THESE!
+# ============================================
+*.sqlite
+*.sqlite3
+*.db
+backend/*.sqlite
+backend/data/*.sqlite
+lokifi.sqlite
+*.rdb
+
+# ============================================
+# PYTHON VIRTUAL ENVIRONMENTS - NEVER COMMIT!
+# ============================================
+venv/
+env/
+backend/venv/
+backend/env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================
+# ENVIRONMENT FILES & SECRETS
+# ============================================
+.env
+.env.local
+.env.production
+.env.production.local
+.env.development.local
+.env.test.local
+.env.*.local
+backend/.env
+backend/.env.*
+frontend/.env.local
+frontend/.env.*.local
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ============================================
+# LOGS - NEVER COMMIT!
+# ============================================
+logs/
+*.log
+backend/logs/
+frontend/logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# REDIS & CACHE
+# ============================================
+redis/redis.conf
+redis/*.rdb
+redis/dump.rdb
+*.rdb
+
+# ============================================
+# UPLOADS & USER FILES
+# ============================================
+uploads/
+backend/uploads/
+frontend/uploads/
+backend/data/*
+!backend/data/.gitkeep
+
+# ============================================
+# NODE/NEXT.JS
+# ============================================
 node_modules/
 .next/
 out/
 dist/
+build/
 coverage/
-npm-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Env & secrets
-.env
-.env.*
-*.pem
-*.key
-
-# OS / editors
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-
-# Python (if any tools/scripts)
-__pycache__/
-*.pyc
-.venv/
+.turbo
 frontend/node_modules/
 frontend/.next/
 frontend/out/
-frontend/.env.local
+frontend/dist/
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
 backend/__pycache__/
 backend/.pytest_cache/
-backend/.venv/
-backend/.env
-backend/data/*
-!backend/data/.gitkeep
-# OS/IDE
-frontend/frontend/
-frontend/backend/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+.hypothesis/
+
+# ============================================
+# OS / EDITORS
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/settings.json
+.vscode/*.code-workspace
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# BUILD ARTIFACTS
+# ============================================
+*.egg-info/
+dist-info/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# ============================================
+# TESTING
+# ============================================
+.tox/
+.nox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+junit.xml
+
+# ============================================
+# MISC
+# ============================================
+.sass-cache/
+*.css.map
+*.sass.map
+*.scss.map

@@ -1,7 +1,7 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
 
 // Lightweight token store (localStorage). In a production app, consider httpOnly cookies.
-const KEY = "fynix_token";
+const KEY = "lokifi_token";
 
 export function setToken(token: string | null) {
   if (typeof window === "undefined") return;

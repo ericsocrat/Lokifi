@@ -31,23 +31,23 @@ export interface HUDData {
   volume?: number;
 }
 
-export interface FynixWindow extends Window {
-    __fynixApplySymbolSettings?: () => void;
-    __fynixClearSymbolSettings?: () => void;
-    __fynixHUD?: HUDData;
-    __fynixHover?: { x: number; y: number; visible: boolean };
-    __fynixGhost?: ISeriesApi | null;
-    __fynixStopExtras?: () => void;
+export interface LokifiWindow extends Window {
+    __lokifiApplySymbolSettings?: () => void;
+    __lokifiClearSymbolSettings?: () => void;
+    __lokifiHUD?: HUDData;
+    __lokifiHover?: { x: number; y: number; visible: boolean };
+    __lokifiGhost?: ISeriesApi | null;
+    __lokifiStopExtras?: () => void;
 }
 
-export interface FynixGlobalThis {
+export interface LokifiGlobalThis {
     pluginSettingsStore?: PluginSettingsStore;
     pluginSymbolSettings?: PluginSymbolSettings;
 }
 
 declare global {
-    interface Window extends FynixWindow { }
-    interface GlobalThis extends FynixGlobalThis { }
+    interface Window extends LokifiWindow { }
+    interface GlobalThis extends LokifiGlobalThis { }
 }
 
 // Chart-related types
