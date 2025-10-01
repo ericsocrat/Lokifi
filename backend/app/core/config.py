@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     API_PREFIX: str = Field(default="/api", alias="API_PREFIX")
     
     # Auth / JWT - Must be set via environment variable
-    fynix_jwt_secret: str | None = Field(default=None, alias="FYNIX_JWT_SECRET")
-    fynix_jwt_ttl_min: int = Field(default=1440, alias="FYNIX_JWT_TTL_MIN")
+    lokifi_jwt_secret: str | None = Field(default=None, alias="LOKIFI_JWT_SECRET")
+    lokifi_jwt_ttl_min: int = Field(default=1440, alias="LOKIFI_JWT_TTL_MIN")
     
     # Phase J: Database Configuration
     DATABASE_URL: str = Field(
@@ -91,8 +91,8 @@ class Settings(BaseSettings):
     def validate_required_secrets(self) -> None:
         """Validate that required secrets are set"""
         missing = []
-        if not self.fynix_jwt_secret:
-            missing.append("FYNIX_JWT_SECRET")
+        if not self.lokifi_jwt_secret:
+            missing.append("LOKIFI_JWT_SECRET")
         if not self.JWT_SECRET_KEY:
             missing.append("JWT_SECRET_KEY")
         
@@ -101,11 +101,11 @@ class Settings(BaseSettings):
     
     def get_jwt_secret(self) -> str:
         """Get JWT secret with fallback validation"""
-        if self.fynix_jwt_secret:
-            return self.fynix_jwt_secret
+        if self.lokifi_jwt_secret:
+            return self.lokifi_jwt_secret
         if self.JWT_SECRET_KEY:
             return self.JWT_SECRET_KEY
-        raise ValueError("No JWT secret configured. Set FYNIX_JWT_SECRET or JWT_SECRET_KEY environment variable.")
+        raise ValueError("No JWT secret configured. Set LOKIFI_JWT_SECRET or JWT_SECRET_KEY environment variable.")
 
 settings = Settings()
 
