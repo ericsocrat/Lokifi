@@ -1,7 +1,7 @@
 
 import type { ToolPlugin } from "./types";
 import { pluginSettingsStore } from "@/lib/pluginSettingsStore";
-const ghostKey = "__fynixGhost";
+const ghostKey = "__lokifiGhost";
 
 function uuid(){ return (globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)); }
 
@@ -13,7 +13,7 @@ export const parallelChannel: ToolPlugin = {
     const g = (globalThis as any)[ghostKey]; if (g && g.type==='channel' && g._plugin==='parallel-channel') (globalThis as any)[ghostKey] = null;
     const { snapped } = ctx.xy(e);
     const st: any = (parallelChannel as any)._state || ((parallelChannel as any)._state = { a: null as null | { t:number, p:number } });
-    if (!st.a){ st.a = snapped; (globalThis as any).__fynixAnchor = { t: snapped.t, p: snapped.p }; return true; }
+    if (!st.a){ st.a = snapped; (globalThis as any).__lokifiAnchor = { t: snapped.t, p: snapped.p }; return true; }
     // second click sets the axis; width default heuristics = 1% of price
     const a = st.a; const b = snapped;
     const s = pluginSettingsStore.get();

@@ -15,7 +15,7 @@ export default function ShareBar() {
     const snap = tryLoadFromURL()
     if (snap) {
       s.setAll?.({ drawings: snap.drawings, theme: snap.theme || s.theme, timeframe: snap.timeframe || s.timeframe })
-      try { (window as any).__fynix_toast?.('Loaded from share link') } catch { }
+      try { (window as any).__lokifi_toast?.('Loaded from share link') } catch { }
       // clear hash to avoid repeat
       history.replaceState(null, '', window.location.pathname + window.location.search)
     }
@@ -30,16 +30,16 @@ export default function ShareBar() {
       createdAt: Date.now()
     })
     navigator.clipboard.writeText(url)
-    try { (window as any).__fynix_toast?.('Share link copied') } catch { }
+    try { (window as any).__lokifi_toast?.('Share link copied') } catch { }
   }
 
   const toggleCollab = () => {
     if (collab) {
       collab.stop(); setCollab(null)
-      try { (window as any).__fynix_toast?.('Collab stopped') } catch { }
+      try { (window as any).__lokifi_toast?.('Collab stopped') } catch { }
     } else if (room.trim()) {
       setCollab(startCollab(room.trim()))
-      try { (window as any).__fynix_toast?.('Collab started') } catch { }
+      try { (window as any).__lokifi_toast?.('Collab started') } catch { }
     }
   }
 

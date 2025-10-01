@@ -75,8 +75,8 @@ export default function PluginSettingsDrawer({ open, onClose }:{ open:boolean, o
           <div className="font-medium mb-1">Per-symbol settings</div>
           <div className="text-[12px] opacity-70 mb-2">Save these settings for the current symbol + timeframe only.</div>
           <div className="flex gap-2">
-            <button onClick={()=> (window as any).__fynixApplySymbolSettings?.()} className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800">Apply to current</button>
-            <button onClick={()=> (window as any).__fynixClearSymbolSettings?.()} className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800">Clear current</button>
+            <button onClick={()=> (window as any).__lokifiApplySymbolSettings?.()} className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800">Apply to current</button>
+            <button onClick={()=> (window as any).__lokifiClearSymbolSettings?.()} className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800">Clear current</button>
           </div>
         </section>
         <div className="flex justify-between">

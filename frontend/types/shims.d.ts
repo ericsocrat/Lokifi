@@ -1,10 +1,13 @@
 /* ==== Lokifi shims (safe minimal surfaces) ==== */
-declare module "zustand" {
-  export type StateCreator<T> = (set:(p: Partial<T> | ((s: T) => Partial<T>)) => void, get: () => T) => T;
+declare module 'zustand' {
+  export type StateCreator<T> = (
+    set: (p: Partial<T> | ((s: T) => Partial<T>)) => void,
+    get: () => T
+  ) => T;
 
   type UseStore<T> = {
     (): T;
-    <U>(selector: (s: T) => U): U;         // selector overload
+    <U>(selector: (s: T) => U): U; // selector overload
     getState(): T;
     setState(p: Partial<T> | ((s: T) => Partial<T>)): void;
     subscribe(cb: (s: T) => void): () => void;
@@ -15,8 +18,8 @@ declare module "zustand" {
   export function create<T>(): (c: StateCreator<T>) => UseStore<T>;
 }
 
-declare module "zustand/middleware" {
-  import type { StateCreator } from "zustand";
+declare module 'zustand/middleware' {
+  import type { StateCreator } from 'zustand';
 
   export interface PersistOptions<T> {
     name: string;
@@ -31,37 +34,44 @@ declare module "zustand/middleware" {
     migrate?: (persistedState: unknown, version: number) => T | Promise<T>;
   }
 
-  export function persist<T>(
-    config: StateCreator<T>,
-    options: PersistOptions<T>
-  ): StateCreator<T>;
+  export function persist<T>(config: StateCreator<T>, options: PersistOptions<T>): StateCreator<T>;
 }
 
-declare module "lightweight-charts" {
+declare module 'lightweight-charts' {
   import type {
-        ChartOptions,
-        IChartApi,
-        ISeriesApi,
-        LineStyle as LineStyleType,
-        PriceScaleApi,
-        SeriesDataPoint,
-        SeriesMarker,
-        SeriesOptions,
-        Time,
-        TimeScaleApi
-    } from '@/types/lightweight-charts';
+    ChartOptions,
+    IChartApi,
+    ISeriesApi,
+    LineStyle as LineStyleType,
+    PriceScaleApi,
+    SeriesDataPoint,
+    SeriesMarker,
+    SeriesOptions,
+    Time,
+    TimeScaleApi,
+  } from '@/types/lightweight-charts';
 
-  export type { ChartOptions, IChartApi, ISeriesApi, PriceScaleApi, SeriesDataPoint, SeriesMarker, SeriesOptions, Time, TimeScaleApi };
+  export type {
+    ChartOptions,
+    IChartApi,
+    ISeriesApi,
+    PriceScaleApi,
+    SeriesDataPoint,
+    SeriesMarker,
+    SeriesOptions,
+    Time,
+    TimeScaleApi,
+  };
 
   export function createChart(el: HTMLElement, options?: ChartOptions): IChartApi;
   export const LineStyle: LineStyleType;
 }
 
 declare global {
-var __lokifiStopExtras: (() => void) | undefined;  // ✅ correct arrow type
+  var __lokifiStopExtras: (() => void) | undefined; // ✅ correct arrow type
 }
 
-declare module "@/plugins" {
+declare module '@/plugins' {
   import type { Drawing } from '@/types/drawings';
 
   export interface PluginEnvironment {
@@ -90,4 +100,4 @@ declare module "@/plugins" {
   export default pluginManager;
 }
 
-export { };
+export {};

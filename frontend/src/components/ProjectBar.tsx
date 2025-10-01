@@ -16,7 +16,7 @@ export default function ProjectBar() {
     const proj = projectFromState({ drawings: s.drawings, theme: s.theme, timeframe: s.timeframe }, name)
     saveSlot(name, proj)
     refresh()
-    try { (window as any).__fynix_toast?.('Saved project') } catch {}
+    try { (window as any).__lokifi_toast?.('Saved project') } catch {}
   }
 
   const onLoad = (slot: string) => {
@@ -29,7 +29,7 @@ export default function ProjectBar() {
       theme: proj.theme || s.theme,
       timeframe: proj.timeframe || s.timeframe
     })
-    try { (window as any).__fynix_toast?.('Loaded project') } catch {}
+    try { (window as any).__lokifi_toast?.('Loaded project') } catch {}
   }
 
   const onDelete = (slot: string) => {

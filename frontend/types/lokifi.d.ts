@@ -14,14 +14,14 @@ export interface SymbolSettings {
 }
 
 export interface PluginSettingsStore {
-    get(): PluginSettings;
-    set(settings: PluginSettings): void;
+  get(): PluginSettings;
+  set(settings: PluginSettings): void;
 }
 
 export interface PluginSymbolSettings {
-    set(symbol: string, timeframe: string, settings: SymbolSettings): void;
-    get(symbol: string, timeframe?: string): SymbolSettings | undefined;
-    clear?(symbol: string, timeframe?: string): void;
+  set(symbol: string, timeframe: string, settings: SymbolSettings): void;
+  get(symbol: string, timeframe?: string): SymbolSettings | undefined;
+  clear?(symbol: string, timeframe?: string): void;
 }
 
 export interface HUDData {
@@ -32,44 +32,44 @@ export interface HUDData {
 }
 
 export interface LokifiWindow extends Window {
-    __lokifiApplySymbolSettings?: () => void;
-    __lokifiClearSymbolSettings?: () => void;
-    __lokifiHUD?: HUDData;
-    __lokifiHover?: { x: number; y: number; visible: boolean };
-    __lokifiGhost?: ISeriesApi | null;
-    __lokifiStopExtras?: () => void;
+  __lokifiApplySymbolSettings?: () => void;
+  __lokifiClearSymbolSettings?: () => void;
+  __lokifiHUD?: HUDData;
+  __lokifiHover?: { x: number; y: number; visible: boolean };
+  __lokifiGhost?: ISeriesApi | null;
+  __lokifiStopExtras?: () => void;
 }
 
 export interface LokifiGlobalThis {
-    pluginSettingsStore?: PluginSettingsStore;
-    pluginSymbolSettings?: PluginSymbolSettings;
+  pluginSettingsStore?: PluginSettingsStore;
+  pluginSymbolSettings?: PluginSymbolSettings;
 }
 
 declare global {
-    interface Window extends LokifiWindow { }
-    interface GlobalThis extends LokifiGlobalThis { }
+  interface Window extends LokifiWindow {}
+  interface GlobalThis extends LokifiGlobalThis {}
 }
 
 // Chart-related types
 export interface ChartData {
-    time: number;
-    open: number;
-    high: number;
-    low: number;
-    close: number;
-    volume?: number;
+  time: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume?: number;
 }
 
 export interface IndicatorData {
-    time: number;
-    value: number;
+  time: number;
+  value: number;
 }
 
 export interface ChartSeries {
-    setData(data: ChartData[]): void;
-    update(data: ChartData): void;
+  setData(data: ChartData[]): void;
+  update(data: ChartData): void;
 }
 
 export interface ChartInstance extends IChartApi {
-    // Extends lightweight-charts IChartApi with any custom methods
+  // Extends lightweight-charts IChartApi with any custom methods
 }
