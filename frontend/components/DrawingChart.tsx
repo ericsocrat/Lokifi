@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -22,12 +22,13 @@ const ChartContainer = ({ children, ...props }: any) => {
 
 // Dynamic import with loading state
 const Chart = dynamic(
-  () => import('lightweight-charts').then(mod => ({
-    default: ChartContainer
-  })),
+  () =>
+    import('lightweight-charts').then((mod) => ({
+      default: ChartContainer,
+    })),
   {
     ssr: false,
-    loading: () => <ChartLoadingState />
+    loading: () => <ChartLoadingState />,
   }
 );
 
@@ -46,7 +47,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   isVisible,
   isLocked,
   indicators,
-  onHeightChange
+  onHeightChange,
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -65,7 +66,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     startDrawing,
     addPoint,
     finishDrawing,
-    getObjectsByPane
+    getObjectsByPane,
   } = useDrawingStore();
 
   const [isDragging, setIsDragging] = useState(false);
@@ -77,7 +78,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
     { time: '2024-01-03', open: 108, high: 112, low: 102, close: 110 },
     { time: '2024-01-04', open: 110, high: 118, low: 108, close: 115 },
-    { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 }
+    { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 },
   ];
 
   const initializeChart = useCallback(async () => {
@@ -136,7 +137,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
-
     } catch (error) {
       console.error('Failed to initialize chart:', error);
       throw error;
@@ -165,26 +165,32 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     };
   }, []);
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (!isVisible || activeTool === 'cursor') return;
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isVisible || activeTool === 'cursor') return;
 
-    setIsMouseDown(true);
-    const point = getMousePosition(e);
+      setIsMouseDown(true);
+      const point = getMousePosition(e);
 
-    if (!isDrawing) {
-      startDrawing(paneId, point);
-    } else {
-      addPoint(point);
-    }
-  }, [isVisible, activeTool, isDrawing, paneId, startDrawing, addPoint, getMousePosition]);
+      if (!isDrawing) {
+        startDrawing(paneId, point);
+      } else {
+        addPoint(point);
+      }
+    },
+    [isVisible, activeTool, isDrawing, paneId, startDrawing, addPoint, getMousePosition]
+  );
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isMouseDown || !isDrawing) return;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isMouseDown || !isDrawing) return;
 
-    // const point = getMousePosition(e);
-    // For tools that need continuous updates (like rectangles), update the current drawing
-    // This would typically update a preview of the shape being drawn
-  }, [isMouseDown, isDrawing]);
+      // const point = getMousePosition(e);
+      // For tools that need continuous updates (like rectangles), update the current drawing
+      // This would typically update a preview of the shape being drawn
+    },
+    [isMouseDown, isDrawing]
+  );
 
   const handleMouseUp = useCallback(() => {
     setIsMouseDown(false);
@@ -216,7 +222,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     // Draw existing objects for this pane
     const paneObjects = getObjectsByPane(paneId);
 
-    paneObjects.forEach(obj => {
+    paneObjects.forEach((obj) => {
       if (!obj.properties.visible) return;
 
       ctx.strokeStyle = obj.style.color;
@@ -228,7 +234,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         ctx.beginPath();
         ctx.moveTo(obj.points[0].x, obj.points[0].y);
 
-        obj.points.slice(1).forEach(point => {
+        obj.points.slice(1).forEach((point) => {
           ctx.lineTo(point.x, point.y);
         });
 
@@ -253,7 +259,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       ctx.beginPath();
       ctx.moveTo(currentDrawing.points[0].x, currentDrawing.points[0].y);
 
-      currentDrawing.points.slice(1).forEach(point => {
+      currentDrawing.points.slice(1).forEach((point) => {
         ctx.lineTo(point.x, point.y);
       });
 
@@ -278,28 +284,31 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     drawObjects();
   }, [drawObjects]);
 
-  const handleResize = useCallback((e: React.MouseEvent) => {
-    if (isLocked) return;
+  const handleResize = useCallback(
+    (e: React.MouseEvent) => {
+      if (isLocked) return;
 
-    setIsDragging(true);
-    const startY = e.clientY;
-    const startHeight = height;
+      setIsDragging(true);
+      const startY = e.clientY;
+      const startHeight = height;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaY = e.clientY - startY;
-      const newHeight = Math.max(150, Math.min(800, startHeight + deltaY));
-      onHeightChange(paneId, newHeight);
-    };
+      const handleMouseMove = (e: MouseEvent) => {
+        const deltaY = e.clientY - startY;
+        const newHeight = Math.max(150, Math.min(800, startHeight + deltaY));
+        onHeightChange(paneId, newHeight);
+      };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [isLocked, height, paneId, onHeightChange]);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [isLocked, height, paneId, onHeightChange]
+  );
 
   if (!isVisible) {
     return (
@@ -326,9 +335,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
             {paneId.includes('price') ? `${symbol} - ${timeframe}` : 'Indicators'}
           </div>
           {indicators.length > 0 && (
-            <div className="text-xs text-gray-400">
-              ({indicators.join(', ')})
-            </div>
+            <div className="text-xs text-gray-400">({indicators.join(', ')})</div>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -362,7 +369,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
           style={{
             zIndex: 10,
             cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
-            touchAction: 'none'
+            touchAction: 'none',
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -375,8 +382,9 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       {!isLocked && (
         <div
           onMouseDown={handleResize}
-          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${isDragging ? 'bg-blue-500/30' : ''
-            }`}
+          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${
+            isDragging ? 'bg-blue-500/30' : ''
+          }`}
         >
           <GripVertical className="w-4 h-4 text-gray-500" />
         </div>

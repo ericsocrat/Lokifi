@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Eye, 
   EyeOff, 
@@ -44,6 +44,11 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     x: number;
     y: number;
   } | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const togglePaneExpansion = (paneId: string) => {
     const newExpanded = new Set(expandedPanes);
@@ -102,6 +107,11 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     }
     return () => {}; // Always return cleanup function
   }, [contextMenu]);
+
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return <div className="w-80 bg-gray-800 border-l border-gray-700" />;
+  }
 
   if (isCollapsed) {
     return (

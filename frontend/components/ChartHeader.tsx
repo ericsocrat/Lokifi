@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { BarChart3, Layers, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { indicatorStore } from '../lib/indicatorStore';
@@ -30,9 +30,7 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
               {timeframe}
             </span>
           </div>
-          <div className="text-sm text-neutral-400">
-            Professional Trading Platform
-          </div>
+          <div className="text-sm text-neutral-400">Professional Trading Platform</div>
         </div>
 
         {/* Right: Action Buttons */}

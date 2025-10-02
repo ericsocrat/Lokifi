@@ -1,14 +1,5 @@
-"use client";
-import { 
-  BarChart3, 
-  Bell, 
-  BookOpen, 
-  Home, 
-  MessageSquare, 
-  TrendingUp, 
-  User, 
-  Wallet 
-} from 'lucide-react';
+'use client';
+import { Bell, BookOpen, Home, MessageSquare, TrendingUp, User, Wallet } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
@@ -27,8 +18,8 @@ export const Navigation: React.FC = () => {
   return (
     <nav className="bg-gray-900 border-r border-gray-700 w-16 flex flex-col items-center py-4 space-y-2">
       {/* Logo */}
-      <Link 
-        href="/" 
+      <Link
+        href="/"
         className="mb-4 p-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
         title="Lokifi"
       >
@@ -52,7 +43,7 @@ export const Navigation: React.FC = () => {
             title={item.label}
           >
             <Icon className="w-5 h-5" />
-            
+
             {/* Tooltip */}
             <span className="absolute left-full ml-2 px-2 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
               {item.label}

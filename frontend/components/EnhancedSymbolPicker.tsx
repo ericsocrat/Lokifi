@@ -30,18 +30,22 @@ const ASSET_TYPE_COLORS = {
 };
 
 export const EnhancedSymbolPicker: React.FC = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [symbols, setSymbols] = useState<Symbol[]>([]);
   const [popularSymbols, setPopularSymbols] = useState<Symbol[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedSymbol, setSelectedSymbol] = useState(symbolStore.get());
+  const [selectedSymbol, setSelectedSymbol] = useState('');
   const [activeTab, setActiveTab] = useState<'search' | 'popular' | 'recent'>('popular');
   
   const searchRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setIsMounted(true);
+    setSelectedSymbol(symbolStore.get());
+    
     // Load popular symbols on mount
     loadPopularSymbols();
     
@@ -186,6 +190,16 @@ export const EnhancedSymbolPicker: React.FC = () => {
     </div>
   );
 
+  // Prevent hydration mismatch
+  if (!isMounted) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg min-w-[200px]">
+        <div className="w-4 h-4 text-blue-400"></div>
+        <span className="font-semibold text-white">Loading...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Trigger Button */}
@@ -197,7 +211,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
           <div className="w-4 h-4 text-blue-400">
             {selectedSymbol && ASSET_TYPE_ICONS[popularSymbols.find(s => s.symbol === selectedSymbol)?.asset_type || 'stock']}
           </div>
-          <span className="font-semibold text-white">{selectedSymbol}</span>
+          <span className="font-semibold text-white">{selectedSymbol || 'Select Symbol'}</span>
         </div>
         <Search className="w-4 h-4 text-gray-400" />
       </button>
