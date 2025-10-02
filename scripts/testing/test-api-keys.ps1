@@ -17,17 +17,17 @@ function Test-Endpoint {
         [string]$Url,
         [string]$ApiKeyName = "Unknown"
     )
-    
+
     try {
         Write-Host "`n📡 Testing $Name..." -ForegroundColor Yellow
         Write-Host "   URL: $Url" -ForegroundColor Gray
         Write-Host "   API Key: $ApiKeyName" -ForegroundColor Gray
-        
+
         $response = Invoke-RestMethod -Uri $Url -Headers $headers -Method Get -ErrorAction Stop
-        
+
         if ($response) {
             Write-Host "   ✅ SUCCESS" -ForegroundColor Green
-            
+
             # Show some response data
             if ($response.Count -gt 0) {
                 Write-Host "   📊 Returned: $($response.Count) items" -ForegroundColor Gray
@@ -38,7 +38,7 @@ function Test-Endpoint {
             } elseif ($response.data) {
                 Write-Host "   📊 Has data property" -ForegroundColor Gray
             }
-            
+
             return $true
         }
     }
@@ -166,7 +166,7 @@ Write-Host "=" * 60
 $envFile = "backend\.env"
 if (Test-Path $envFile) {
     Write-Host "✅ Found .env file" -ForegroundColor Green
-    
+
     $apiKeys = @{
         "OPENAI_API_KEY" = $false
         "POLYGON_API_KEY" = $false
@@ -180,7 +180,7 @@ if (Test-Path $envFile) {
         "OPENROUTER_API_KEY" = $false
         "HUGGING_FACE_API_KEY" = $false
     }
-    
+
     Get-Content $envFile | ForEach-Object {
         $line = $_.Trim()
         if ($line -and !$line.StartsWith("#")) {
@@ -194,7 +194,7 @@ if (Test-Path $envFile) {
             }
         }
     }
-    
+
     Write-Host "`n📋 API Keys Status:" -ForegroundColor Cyan
     foreach ($key in $apiKeys.Keys | Sort-Object) {
         if ($apiKeys[$key]) {
