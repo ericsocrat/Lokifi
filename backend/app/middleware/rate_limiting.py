@@ -192,32 +192,38 @@ class SecurityMonitoringMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         """Monitor requests for security threats"""
         
-        # Check for suspicious user agents
-        user_agent = request.headers.get("user-agent", "").lower()
-        if any(blocked in user_agent for blocked in self.blocked_user_agents):
-            logger.critical(
-                f"Blocked suspicious user agent: {user_agent} "
-                f"from {request.client.host if request.client else 'unknown'}"
-            )
-            return JSONResponse(
-                status_code=403,
-                content={"error": "Forbidden", "message": "Access denied"}
-            )
+        # Skip security checks for localhost/internal calls
+        client_host = request.client.host if request.client else ""
+        is_localhost = client_host in ["127.0.0.1", "localhost", "::1"]
         
-        # Check for suspicious patterns in URL and query parameters
-        full_url = str(request.url)
-        for pattern in self.suspicious_patterns:
-            import re
-            if re.search(pattern, full_url):
+        # Check for suspicious user agents (skip for localhost)
+        if not is_localhost:
+            user_agent = request.headers.get("user-agent", "").lower()
+            if any(blocked in user_agent for blocked in self.blocked_user_agents):
                 logger.critical(
-                    f"Suspicious request pattern detected: {pattern} "
-                    f"in URL: {full_url} "
-                    f"from {request.client.host if request.client else 'unknown'}"
+                    f"Blocked suspicious user agent: {user_agent} "
+                    f"from {client_host}"
                 )
                 return JSONResponse(
                     status_code=403,
-                    content={"error": "Forbidden", "message": "Suspicious request detected"}
+                    content={"error": "Forbidden", "message": "Access denied"}
                 )
+            
+            # Check for suspicious patterns in URL (skip query parameters)
+            # Only check the path, not query string
+            url_path = request.url.path
+            for pattern in self.suspicious_patterns:
+                import re
+                if re.search(pattern, url_path):
+                    logger.critical(
+                        f"Suspicious request pattern detected: {pattern} "
+                        f"in path: {url_path} "
+                        f"from {client_host}"
+                    )
+                    return JSONResponse(
+                        status_code=403,
+                        content={"error": "Forbidden", "message": "Suspicious request detected"}
+                    )
         
         # Process request and monitor response
         start_time = time.time()

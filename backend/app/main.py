@@ -27,6 +27,8 @@ from app.routers import (
     auth,
     chat,
     conversations,
+    crypto,
+    fmp,
     follow,
     health,
     market_data,
@@ -80,7 +82,10 @@ async def lifespan(app: FastAPI):
         await startup_data_services()
 
         logger.info("📊 Starting monitoring system...")
-        await monitoring_system.start_monitoring()
+        try:
+            await monitoring_system.start_monitoring()
+        except Exception as e:
+            logger.warning(f"Monitoring system failed (development mode): {e}")
 
         # Temporarily disable J53 scheduler
         # logger.info("⏰ Initializing J5.3 scheduler...")
@@ -92,7 +97,10 @@ async def lifespan(app: FastAPI):
 
         # Shutdown sequence
         logger.info("📊 Stopping monitoring system...")
-        await monitoring_system.stop_monitoring()
+        try:
+            await monitoring_system.stop_monitoring()
+        except Exception as e:
+            logger.warning(f"Error stopping monitoring: {e}")
 
         logger.info("🔌 Stopping WebSocket manager...")
         await advanced_websocket_manager.stop_background_tasks()
@@ -185,6 +193,8 @@ app.include_router(alerts.router, prefix=settings.API_PREFIX)
 app.include_router(chat.router, prefix=settings.API_PREFIX)
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
+app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Cryptocurrency data
+app.include_router(fmp.router, prefix=settings.API_PREFIX)  # Financial Modeling Prep
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)

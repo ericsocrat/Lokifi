@@ -47,7 +47,8 @@ class MarketOverview(BaseModel):
 
 @router.get("/symbols/search", response_model=SymbolSearchResponse)
 async def search_symbols(
-    q: str = Query(..., min_length=1, max_length=50, description="Search query"),
+    q: str = Query(None, min_length=1, max_length=50, description="Search query"),
+    query: str = Query(None, min_length=1, max_length=50, description="Search query (alias)"),
     asset_type: AssetType | None = Query(None, description="Filter by asset type"),
     limit: int = Query(50, ge=1, le=200, description="Maximum results to return"),
 ):
@@ -55,12 +56,18 @@ async def search_symbols(
     Search for symbols by name or ticker.
 
     - **q**: Search query (symbol or company name)
+    - **query**: Search query (alias for q)
     - **asset_type**: Filter by asset type (stock, crypto, forex, etc.)
     - **limit**: Maximum number of results
     """
+    # Support both 'q' and 'query' parameters
+    search_query = q or query
+    if not search_query:
+        raise HTTPException(status_code=422, detail="Either 'q' or 'query' parameter is required")
+    
     try:
         symbols = await symbol_directory.search_symbols(
-            query=q, asset_type=asset_type, limit=limit
+            query=search_query, asset_type=asset_type, limit=limit
         )
 
         return SymbolSearchResponse(symbols=symbols, total=len(symbols), query=q)
