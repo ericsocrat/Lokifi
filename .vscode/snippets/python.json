@@ -1,0 +1,196 @@
+{
+  "FastAPI Router": {
+    "prefix": "fastapi-router",
+    "body": [
+      "from fastapi import APIRouter, Depends, HTTPException",
+      "from sqlalchemy.ext.asyncio import AsyncSession",
+      "",
+      "from app.core.database import get_db",
+      "from app.models import ${1:ModelName}",
+      "",
+      "router = APIRouter(prefix=\"/${2:endpoint}\", tags=[\"${2:endpoint}\"])",
+      "",
+      "@router.get(\"/\")",
+      "async def get_${2:endpoint}(db: AsyncSession = Depends(get_db)):",
+      "    \"\"\"Get all ${2:endpoint}\"\"\"",
+      "    return {\"status\": \"ok\"}",
+      "",
+      "@router.get(\"/{id}\")",
+      "async def get_${2:endpoint}_by_id(id: int, db: AsyncSession = Depends(get_db)):",
+      "    \"\"\"Get ${2:endpoint} by ID\"\"\"",
+      "    return {\"id\": id}",
+      "",
+      "@router.post(\"/\")",
+      "async def create_${2:endpoint}(db: AsyncSession = Depends(get_db)):",
+      "    \"\"\"Create new ${2:endpoint}\"\"\"",
+      "    return {\"status\": \"created\"}",
+      ""
+    ],
+    "description": "Create FastAPI router with common endpoints"
+  },
+  "FastAPI Endpoint": {
+    "prefix": "fastapi-endpoint",
+    "body": [
+      "@router.${1|get,post,put,delete,patch|}(\"/${2:path}\")",
+      "async def ${3:function_name}(",
+      "    db: AsyncSession = Depends(get_db),",
+      "    current_user = Depends(get_current_user)",
+      "):",
+      "    \"\"\"${4:Description}\"\"\"",
+      "    ${5:pass}",
+      ""
+    ],
+    "description": "Create FastAPI endpoint"
+  },
+  "Pydantic Model": {
+    "prefix": "pydantic-model",
+    "body": [
+      "from pydantic import BaseModel, Field",
+      "from typing import Optional",
+      "from datetime import datetime",
+      "",
+      "class ${1:ModelName}Base(BaseModel):",
+      "    \"\"\"Base ${1:ModelName} schema\"\"\"",
+      "    ${2:field_name}: ${3:str} = Field(..., description=\"${4:Field description}\")",
+      "",
+      "class ${1:ModelName}Create(${1:ModelName}Base):",
+      "    \"\"\"Schema for creating ${1:ModelName}\"\"\"",
+      "    pass",
+      "",
+      "class ${1:ModelName}Update(BaseModel):",
+      "    \"\"\"Schema for updating ${1:ModelName}\"\"\"",
+      "    ${2:field_name}: Optional[${3:str}] = None",
+      "",
+      "class ${1:ModelName}(${1:ModelName}Base):",
+      "    \"\"\"Schema for ${1:ModelName} in responses\"\"\"",
+      "    id: int",
+      "    created_at: datetime",
+      "    updated_at: Optional[datetime] = None",
+      "",
+      "    class Config:",
+      "        from_attributes = True",
+      ""
+    ],
+    "description": "Create Pydantic model with CRUD schemas"
+  },
+  "SQLAlchemy Model": {
+    "prefix": "sqlalchemy-model",
+    "body": [
+      "from sqlalchemy import Column, Integer, String, DateTime, ForeignKey",
+      "from sqlalchemy.orm import relationship",
+      "from datetime import datetime",
+      "",
+      "from app.core.database import Base",
+      "",
+      "class ${1:ModelName}(Base):",
+      "    \"\"\"${1:ModelName} database model\"\"\"",
+      "    __tablename__ = \"${2:table_name}\"",
+      "",
+      "    id = Column(Integer, primary_key=True, index=True)",
+      "    ${3:field_name} = Column(${4:String}, nullable=False)",
+      "    created_at = Column(DateTime, default=datetime.utcnow)",
+      "    updated_at = Column(DateTime, onupdate=datetime.utcnow)",
+      "",
+      "    def __repr__(self):",
+      "        return f\"<${1:ModelName}(id={self.id}, ${3:field_name}={self.${3:field_name}})>\"",
+      ""
+    ],
+    "description": "Create SQLAlchemy model"
+  },
+  "Async Test": {
+    "prefix": "pytest-async",
+    "body": [
+      "import pytest",
+      "from httpx import AsyncClient",
+      "",
+      "@pytest.mark.asyncio",
+      "async def test_${1:function_name}(async_client: AsyncClient):",
+      "    \"\"\"Test ${2:description}\"\"\"",
+      "    response = await async_client.${3|get,post,put,delete|}(\"${4:/endpoint}\")",
+      "    assert response.status_code == ${5:200}",
+      "    assert response.json() == {${6}}",
+      ""
+    ],
+    "description": "Create async pytest test"
+  },
+  "Error Handler": {
+    "prefix": "fastapi-error",
+    "body": [
+      "from fastapi import HTTPException, status",
+      "",
+      "raise HTTPException(",
+      "    status_code=status.HTTP_${1|400_BAD_REQUEST,401_UNAUTHORIZED,403_FORBIDDEN,404_NOT_FOUND,500_INTERNAL_SERVER_ERROR|},",
+      "    detail=\"${2:Error message}\"",
+      ")",
+      ""
+    ],
+    "description": "Raise FastAPI HTTP exception"
+  },
+  "Dependency": {
+    "prefix": "fastapi-dependency",
+    "body": [
+      "from fastapi import Depends, HTTPException, status",
+      "from sqlalchemy.ext.asyncio import AsyncSession",
+      "",
+      "async def ${1:dependency_name}(",
+      "    db: AsyncSession = Depends(get_db)",
+      ") -> ${2:ReturnType}:",
+      "    \"\"\"${3:Dependency description}\"\"\"",
+      "    ${4:pass}",
+      ""
+    ],
+    "description": "Create FastAPI dependency"
+  },
+  "Logging": {
+    "prefix": "logger",
+    "body": [
+      "import logging",
+      "",
+      "logger = logging.getLogger(__name__)",
+      "",
+      "logger.${1|info,debug,warning,error,critical|}(\"${2:Log message}\")",
+      ""
+    ],
+    "description": "Add logging"
+  },
+  "Async Context Manager": {
+    "prefix": "async-context",
+    "body": [
+      "from contextlib import asynccontextmanager",
+      "from typing import AsyncGenerator",
+      "",
+      "@asynccontextmanager",
+      "async def ${1:context_name}() -> AsyncGenerator[${2:Type}, None]:",
+      "    \"\"\"${3:Description}\"\"\"",
+      "    # Setup",
+      "    ${4:resource} = ${5:None}",
+      "    try:",
+      "        yield ${4:resource}",
+      "    finally:",
+      "        # Cleanup",
+      "        ${6:pass}",
+      ""
+    ],
+    "description": "Create async context manager"
+  },
+  "Background Task": {
+    "prefix": "background-task",
+    "body": [
+      "from fastapi import BackgroundTasks",
+      "",
+      "async def ${1:task_name}(${2:params}):",
+      "    \"\"\"${3:Background task description}\"\"\"",
+      "    ${4:pass}",
+      "",
+      "@router.post(\"/${5:endpoint}\")",
+      "async def ${6:endpoint_name}(",
+      "    background_tasks: BackgroundTasks,",
+      "    db: AsyncSession = Depends(get_db)",
+      "):",
+      "    background_tasks.add_task(${1:task_name}, ${7:args})",
+      "    return {\"status\": \"processing\"}",
+      ""
+    ],
+    "description": "Create background task"
+  }
+}

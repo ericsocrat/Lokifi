@@ -3,6 +3,7 @@ Symbol directory and OHLC data provider for Lokifi trading platform.
 Supports multiple data sources with failover capabilities.
 """
 
+import asyncio
 import logging
 import os
 from datetime import datetime, timedelta
@@ -420,8 +421,9 @@ class OHLCAggregator:
 
     async def initialize(self):
         """Initialize HTTP session and providers"""
-        # Lazily create a single shared aiohttp session
-        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
+        # Lazily create a single shared aiohttp session only if not already created
+        if self.session is None or self.session.closed:
+            self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
 
         # Configure default providers (loaded from environment)
         self.providers = [
@@ -784,8 +786,13 @@ class OHLCAggregator:
 
     async def cleanup(self):
         """Cleanup resources"""
-        if self.session:
-            await self.session.close()
+        if self.session and not self.session.closed:
+            try:
+                await self.session.close()
+                # Give it a moment to close properly
+                await asyncio.sleep(0.1)
+            except Exception as e:
+                logger.warning(f"Error closing aiohttp session: {e}")
 
 
 # Global instances

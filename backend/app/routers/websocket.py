@@ -8,14 +8,13 @@ import logging
 import uuid
 from typing import Any
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-
 from app.db.database import AsyncSessionLocal
 from app.models.conversation import ConversationParticipant
 from app.schemas.conversation import MarkReadRequest
 from app.services.conversation_service import ConversationService
 from app.services.websocket_manager import authenticate_websocket, connection_manager
 from app.websockets.notifications import NotificationWebSocketManager
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 logger = logging.getLogger(__name__)
 
@@ -31,16 +30,16 @@ async def websocket_endpoint(websocket: WebSocket):
     user_id = await authenticate_websocket(websocket)
     if not user_id:
         return
-    
+
     # Connect user to manager
     await connection_manager.connect(websocket, user_id)
-    
+
     try:
         while True:
             # Receive message from client
             data = await websocket.receive_text()
             await handle_websocket_message(websocket, user_id, data)
-    
+
     except WebSocketDisconnect:
         logger.info(f"User {user_id} disconnected from WebSocket")
     except Exception as e:
@@ -49,26 +48,28 @@ async def websocket_endpoint(websocket: WebSocket):
         await connection_manager.disconnect(websocket, user_id)
 
 
-async def handle_websocket_message(websocket: WebSocket, user_id: uuid.UUID, message: str):
+async def handle_websocket_message(
+    websocket: WebSocket, user_id: uuid.UUID, message: str
+):
     """Handle incoming WebSocket message from client."""
     try:
         # Parse message
         data = json.loads(message)
         message_type = data.get("type")
-        
+
         if message_type == "typing":
             await handle_typing_indicator(user_id, data)
-        
+
         elif message_type == "ping":
             # Respond to ping with pong
             await websocket.send_text(json.dumps({"type": "pong"}))
-        
+
         elif message_type == "mark_read":
             await handle_mark_read(user_id, data)
-        
+
         else:
             logger.warning(f"Unknown WebSocket message type: {message_type}")
-    
+
     except json.JSONDecodeError:
         logger.warning(f"Invalid JSON in WebSocket message from user {user_id}")
     except Exception as e:
@@ -80,31 +81,34 @@ async def handle_typing_indicator(user_id: uuid.UUID, data: dict[str, Any]):
     try:
         conversation_id = uuid.UUID(data["conversation_id"])
         is_typing = data.get("is_typing", False)
-        
+
         # Get database session
         async with AsyncSessionLocal() as db:
             # Get conversation participants to verify user access
             from sqlalchemy import select
+
             participant_stmt = select(ConversationParticipant).where(
                 ConversationParticipant.conversation_id == conversation_id,
-                ConversationParticipant.is_active
+                ConversationParticipant.is_active,
             )
             result = await db.execute(participant_stmt)
             participants = result.scalars().all()
             participant_ids = {p.user_id for p in participants}
-            
+
             if user_id not in participant_ids:
-                logger.warning(f"User {user_id} not authorized for conversation {conversation_id}")
+                logger.warning(
+                    f"User {user_id} not authorized for conversation {conversation_id}"
+                )
                 return
-            
+
             # Broadcast typing indicator
             await connection_manager.broadcast_typing_indicator(
                 conversation_id=conversation_id,
                 user_id=user_id,
                 is_typing=is_typing,
-                participant_ids=participant_ids
+                participant_ids=participant_ids,
             )
-    
+
     except Exception as e:
         logger.error(f"Error handling typing indicator: {e}")
 
@@ -114,56 +118,58 @@ async def handle_mark_read(user_id: uuid.UUID, data: dict[str, Any]):
     try:
         conversation_id = uuid.UUID(data["conversation_id"])
         message_id = uuid.UUID(data["message_id"])
-        
+
         async with AsyncSessionLocal() as db:
             conv_service = ConversationService(db)
-            
+
             # Create mark read request
             mark_read_data = MarkReadRequest(message_id=message_id)
-            
+
             # Mark message as read
             success = await conv_service.mark_messages_read(
                 conversation_id=conversation_id,
                 user_id=user_id,
-                mark_read_data=mark_read_data
+                mark_read_data=mark_read_data,
             )
-            
+
             if success:
                 # Get participants for broadcast
                 from sqlalchemy import select
+
                 participant_stmt = select(ConversationParticipant).where(
                     ConversationParticipant.conversation_id == conversation_id,
-                    ConversationParticipant.is_active
+                    ConversationParticipant.is_active,
                 )
                 result = await db.execute(participant_stmt)
                 participants = result.scalars().all()
                 participant_ids = {p.user_id for p in participants}
-                
+
                 # Broadcast read receipt
                 await connection_manager.broadcast_read_receipt(
                     conversation_id=conversation_id,
                     user_id=user_id,
                     message_id=message_id,
-                    participant_ids=participant_ids
+                    participant_ids=participant_ids,
                 )
-    
+
     except Exception as e:
         logger.error(f"Error handling mark read: {e}")
 
 
-@router.on_event("startup")
-async def startup_event():
-    """Initialize WebSocket manager on startup."""
-    await connection_manager.initialize_redis()
-    
-    # Start Redis message handler in background
-    asyncio.create_task(connection_manager.handle_redis_messages())
+# Disabled old-style startup events - use lifespan manager instead
+# @router.on_event("startup")
+# async def startup_event():
+#     """Initialize WebSocket manager on startup."""
+#     await connection_manager.initialize_redis()
+#
+#     # Start Redis message handler in background
+#     asyncio.create_task(connection_manager.handle_redis_messages())
 
 
-@router.on_event("shutdown")
-async def shutdown_event():
-    """Clean up WebSocket manager on shutdown."""
-    await connection_manager.close()
+# @router.on_event("shutdown")
+# async def shutdown_event():
+#     """Clean up WebSocket manager on shutdown."""
+#     await connection_manager.close()
 
 
 # Health check for WebSocket service
@@ -174,8 +180,9 @@ async def websocket_health():
     return {
         "status": "healthy",
         "online_users": online_users,
-        "redis_connected": connection_manager.redis_client is not None
+        "redis_connected": connection_manager.redis_client is not None,
     }
+
 
 # J6 Notification WebSocket endpoint
 @router.websocket("/ws/notifications")
@@ -184,62 +191,79 @@ async def notification_websocket_endpoint(websocket: WebSocket):
     user_id = await authenticate_websocket(websocket)
     if not user_id:
         return
-    
+
     # Convert UUID to string for consistency
     user_id_str = str(user_id)
-    
+
     # Create mock user object for authentication
     from unittest.mock import Mock
-    
+
     user = Mock()
     user.id = user_id_str
     user.username = f"user_{user_id_str[:8]}"  # Shortened ID for display
-    
+
     # Connect user to notification manager
     connected = await notification_websocket_manager.connect(websocket, user)
     if not connected:
         return
-    
+
     try:
         while True:
             # Keep connection alive and handle incoming messages
             try:
                 data = await websocket.receive_text()
                 message = json.loads(data)
-                
+
                 # Handle notification-specific messages
                 if message.get("type") == "ping":
-                    await websocket.send_text(json.dumps({
-                        "type": "pong",
-                        "timestamp": message.get("timestamp")
-                    }))
+                    await websocket.send_text(
+                        json.dumps(
+                            {"type": "pong", "timestamp": message.get("timestamp")}
+                        )
+                    )
                 elif message.get("type") == "mark_read":
                     # Handle mark notification as read
                     notification_id = message.get("notification_id")
                     if notification_id:
-                        from app.services.notification_service import notification_service
-                        await notification_service.mark_as_read(notification_id, user_id_str)
-                        
+                        from app.services.notification_service import (
+                            notification_service,
+                        )
+
+                        await notification_service.mark_as_read(
+                            notification_id, user_id_str
+                        )
+
                         # Send updated unread count
-                        unread_count = await notification_service.get_unread_count(user_id_str)
-                        await websocket.send_text(json.dumps({
-                            "type": "unread_count_update",
-                            "data": {"unread_count": unread_count}
-                        }))
-                
+                        unread_count = await notification_service.get_unread_count(
+                            user_id_str
+                        )
+                        await websocket.send_text(
+                            json.dumps(
+                                {
+                                    "type": "unread_count_update",
+                                    "data": {"unread_count": unread_count},
+                                }
+                            )
+                        )
+
             except TimeoutError:
                 # Send keepalive ping
-                await websocket.send_text(json.dumps({
-                    "type": "keepalive",
-                    "timestamp": asyncio.get_event_loop().time()
-                }))
-    
+                await websocket.send_text(
+                    json.dumps(
+                        {
+                            "type": "keepalive",
+                            "timestamp": asyncio.get_event_loop().time(),
+                        }
+                    )
+                )
+
     except WebSocketDisconnect:
         logger.info(f"User {user_id_str} disconnected from notification WebSocket")
     except Exception as e:
         logger.error(f"Notification WebSocket error for user {user_id_str}: {e}")
     finally:
         await notification_websocket_manager.disconnect(websocket, user_id_str)
+
 
 # Notification WebSocket stats endpoint
 @router.get("/ws/notifications/stats")
