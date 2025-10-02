@@ -6,44 +6,47 @@ class Settings(BaseSettings):
     # Application settings
     PROJECT_NAME: str = Field(default="Lokifi", alias="PROJECT_NAME")
     API_PREFIX: str = Field(default="/api", alias="API_PREFIX")
-    
+
     # Auth / JWT - Must be set via environment variable
     lokifi_jwt_secret: str | None = Field(default=None, alias="LOKIFI_JWT_SECRET")
     lokifi_jwt_ttl_min: int = Field(default=1440, alias="LOKIFI_JWT_TTL_MIN")
-    
+
     # Phase J: Database Configuration
     DATABASE_URL: str = Field(
-        default="sqlite+aiosqlite:///./data/lokifi.sqlite",
-        alias="DATABASE_URL"
+        default="sqlite+aiosqlite:///./data/lokifi.sqlite", alias="DATABASE_URL"
     )
-    
+
     # Production Database Settings
     DATABASE_REPLICA_URL: str | None = Field(default=None, alias="DATABASE_REPLICA_URL")
     DATABASE_POOL_SIZE: int = Field(default=5, alias="DATABASE_POOL_SIZE")
     DATABASE_MAX_OVERFLOW: int = Field(default=10, alias="DATABASE_MAX_OVERFLOW")
     DATABASE_POOL_TIMEOUT: int = Field(default=30, alias="DATABASE_POOL_TIMEOUT")
     DATABASE_POOL_RECYCLE: int = Field(default=3600, alias="DATABASE_POOL_RECYCLE")
-    
+
     # Storage and Archival Settings
     ENABLE_DATA_ARCHIVAL: bool = Field(default=False, alias="ENABLE_DATA_ARCHIVAL")
     ARCHIVE_THRESHOLD_DAYS: int = Field(default=365, alias="ARCHIVE_THRESHOLD_DAYS")
-    DELETE_THRESHOLD_DAYS: int = Field(default=2555, alias="DELETE_THRESHOLD_DAYS")  # 7 years
-    
+    DELETE_THRESHOLD_DAYS: int = Field(
+        default=2555, alias="DELETE_THRESHOLD_DAYS"
+    )  # 7 years
+
     # Cloud Storage Settings (Optional)
     AWS_S3_BUCKET: str | None = Field(default=None, alias="AWS_S3_BUCKET")
     AWS_CLOUDFRONT_URL: str | None = Field(default=None, alias="AWS_CLOUDFRONT_URL")
     AWS_ACCESS_KEY_ID: str | None = Field(default=None, alias="AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: str | None = Field(default=None, alias="AWS_SECRET_ACCESS_KEY")
-    
+    AWS_SECRET_ACCESS_KEY: str | None = Field(
+        default=None, alias="AWS_SECRET_ACCESS_KEY"
+    )
+
     # Phase J: Authentication - Must be set via environment variable
     JWT_SECRET_KEY: str | None = Field(default=None, alias="JWT_SECRET_KEY")
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRE_MINUTES: int = Field(default=30, alias="JWT_EXPIRE_MINUTES")
-    
+
     # Phase J: OAuth
     GOOGLE_CLIENT_ID: str | None = Field(default=None, alias="GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str | None = Field(default=None, alias="GOOGLE_CLIENT_SECRET")
-    
+
     # Phase J: Email
     SMTP_HOST: str = Field(default="localhost", alias="SMTP_HOST")
     SMTP_PORT: int = Field(default=1025, alias="SMTP_PORT")
@@ -51,22 +54,30 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = Field(default="", alias="SMTP_PASSWORD")
     SMTP_TLS: bool = Field(default=False, alias="SMTP_TLS")
     FROM_EMAIL: str = Field(default="noreply@lokifi.com", alias="FROM_EMAIL")
-    
+
     # Phase J: AI Providers
     OPENROUTER_API_KEY: str | None = Field(default=None, alias="OPENROUTER_API_KEY")
     HUGGING_FACE_API_KEY: str | None = Field(default=None, alias="HUGGING_FACE_API_KEY")
-    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434", alias="OLLAMA_BASE_URL")
+    OLLAMA_BASE_URL: str = Field(
+        default="http://localhost:11434", alias="OLLAMA_BASE_URL"
+    )
 
     # Frontend origin and CORS settings
-    frontend_origin: str = Field(default="http://localhost:3000", alias="FRONTEND_ORIGIN")
-    CORS_ORIGINS: list[str] = Field(default=["http://localhost:3000"], alias="CORS_ORIGINS")
+    frontend_origin: str = Field(
+        default="http://localhost:3000", alias="FRONTEND_ORIGIN"
+    )
+    CORS_ORIGINS: list[str] = Field(
+        default=["http://localhost:3000"], alias="CORS_ORIGINS"
+    )
 
     # Redis (for caching, pub/sub, etc.)
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
     redis_host: str = Field(default="localhost", alias="REDIS_HOST")
     redis_port: int = Field(default=6379, alias="REDIS_PORT")
     redis_sentinel_hosts: list[str] = Field(default=[], alias="REDIS_SENTINEL_HOSTS")
-    redis_sentinel_service: str = Field(default="mymaster", alias="REDIS_SENTINEL_SERVICE")
+    redis_sentinel_service: str = Field(
+        default="mymaster", alias="REDIS_SENTINEL_SERVICE"
+    )
 
     # OpenAI / LLM integration
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
@@ -84,10 +95,9 @@ class Settings(BaseSettings):
     FMP_KEY: str | None = Field(default=None, alias="FMP_KEY")
 
     model_config = SettingsConfigDict(
-        env_file=".env",
-        extra="ignore"  # allow harmless extra vars
+        env_file=".env", extra="ignore"  # allow harmless extra vars
     )
-    
+
     def validate_required_secrets(self) -> None:
         """Validate that required secrets are set"""
         missing = []
@@ -95,19 +105,25 @@ class Settings(BaseSettings):
             missing.append("LOKIFI_JWT_SECRET")
         if not self.JWT_SECRET_KEY:
             missing.append("JWT_SECRET_KEY")
-        
+
         if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
-    
+            raise ValueError(
+                f"Missing required environment variables: {', '.join(missing)}"
+            )
+
     def get_jwt_secret(self) -> str:
         """Get JWT secret with fallback validation"""
         if self.lokifi_jwt_secret:
             return self.lokifi_jwt_secret
         if self.JWT_SECRET_KEY:
             return self.JWT_SECRET_KEY
-        raise ValueError("No JWT secret configured. Set LOKIFI_JWT_SECRET or JWT_SECRET_KEY environment variable.")
+        raise ValueError(
+            "No JWT secret configured. Set LOKIFI_JWT_SECRET or JWT_SECRET_KEY environment variable."
+        )
+
 
 settings = Settings()
+
 
 def get_settings() -> Settings:
     """Get the settings instance"""

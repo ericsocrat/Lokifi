@@ -1,7 +1,7 @@
 # 🧪 Lokifi Testing & Deployment Guide
 
-**Last Updated**: October 2, 2025  
-**Project**: Lokifi (formerly Fynix)  
+**Last Updated**: October 2, 2025
+**Project**: Lokifi (formerly Fynix)
 **Status**: Production Ready ✅
 
 ---
@@ -20,6 +20,7 @@
 ## 1. Prerequisites
 
 ### Required Software:
+
 - **Python**: 3.10 or higher
 - **Node.js**: 18.x or higher
 - **Redis**: 6.x or higher
@@ -27,6 +28,7 @@
 - **Git**: Latest version
 
 ### System Requirements:
+
 - **RAM**: Minimum 4GB (8GB recommended)
 - **Storage**: 2GB free space
 - **OS**: Windows, macOS, or Linux
@@ -83,6 +85,7 @@ npm list --depth=0
 ### Step 4: Redis Setup
 
 **Option A: Local Redis Installation**
+
 ```bash
 # Windows (using Chocolatey):
 choco install redis-64
@@ -98,6 +101,7 @@ redis-server
 ```
 
 **Option B: Docker Redis**
+
 ```bash
 docker run -d -p 6379:6379 --name lokifi-redis redis:7-alpine
 ```
@@ -275,19 +279,23 @@ npm run lint
 #### ✅ Backend Testing
 
 - [ ] **Server Startup**
+
   ```bash
   cd backend
   python -m uvicorn main:app --reload
   ```
+
   - Server starts without errors
   - Swagger docs accessible at `http://localhost:8000/docs`
 
 - [ ] **Database Connection**
+
   - SQLite file created at `backend/lokifi.sqlite`
   - Tables created successfully
   - Can query database
 
 - [ ] **Redis Connection**
+
   - Redis accepts connections
   - Cache operations work
   - Session storage works
@@ -300,15 +308,18 @@ npm run lint
 #### ✅ Frontend Testing
 
 - [ ] **Development Server**
+
   ```bash
   cd frontend
   npm run dev
   ```
+
   - App runs at `http://localhost:3000`
   - No console errors
   - Hot reload works
 
 - [ ] **Authentication**
+
   - User registration works
   - User login works (creates `lokifi_token`)
   - User logout works
@@ -316,6 +327,7 @@ npm run lint
   - Protected routes require auth
 
 - [ ] **Chart Functionality**
+
   - Charts load and display
   - Symbol switching works
   - Timeframe changes work
@@ -323,12 +335,14 @@ npm run lint
   - Chart indicators display
 
 - [ ] **Drawing Tools**
+
   - All drawing tools render
   - Ghost mode works (`__lokifiGhost`)
   - Anchor points work (`__lokifiAnchor`)
   - Settings save/load correctly
 
 - [ ] **Plugin System**
+
   - Trendline Plus works
   - Ruler Measure works
   - Parallel Channels work
@@ -336,6 +350,7 @@ npm run lint
   - Settings apply per-symbol
 
 - [ ] **Project Management**
+
   - Save project works
   - Load project works
   - Export PNG works
@@ -396,6 +411,7 @@ sudo nano /etc/systemd/system/lokifi.service
 ```
 
 **lokifi.service**:
+
 ```ini
 [Unit]
 Description=Lokifi Backend API
@@ -423,6 +439,7 @@ sudo systemctl status lokifi
 #### Option B: Docker Deployment
 
 **Dockerfile** (already in `backend/Dockerfile.prod`):
+
 ```bash
 # Build image
 docker build -f Dockerfile.prod -t lokifi-backend:latest .
@@ -451,6 +468,7 @@ vercel --prod
 ```
 
 Configure environment variables in Vercel dashboard:
+
 - `NEXT_PUBLIC_API_URL=https://api.yourdomain.com`
 - `NEXT_PUBLIC_WS_URL=wss://api.yourdomain.com`
 - All other `NEXT_PUBLIC_*` variables
@@ -471,18 +489,19 @@ sudo nano /etc/nginx/sites-available/lokifi
 ```
 
 **Nginx config**:
+
 ```nginx
 server {
     listen 80;
     server_name yourdomain.com www.yourdomain.com;
-    
+
     root /var/www/lokifi;
     index index.html;
-    
+
     location / {
         try_files $uri $uri/ /index.html;
     }
-    
+
     location /api {
         proxy_pass http://localhost:8000;
         proxy_http_version 1.1;
@@ -538,6 +557,7 @@ crontab -e
 ```
 
 Add line:
+
 ```cron
 0 2 * * * sqlite3 /var/www/Lokifi/backend/lokifi.sqlite ".backup '/backups/lokifi_$(date +\%Y\%m\%d_\%H\%M\%S).sqlite'"
 ```
@@ -551,6 +571,7 @@ Add line:
 #### Issue: "Module not found" errors
 
 **Solution**:
+
 ```bash
 # Backend
 cd backend
@@ -565,6 +586,7 @@ npm install
 #### Issue: Redis connection refused
 
 **Solution**:
+
 ```bash
 # Check Redis is running
 redis-cli ping
@@ -579,6 +601,7 @@ redis-cli -a lokifi_secure_redis_2025_v2 ping
 #### Issue: Port already in use
 
 **Solution**:
+
 ```bash
 # Find process using port 8000
 netstat -ano | findstr :8000  # Windows
@@ -592,6 +615,7 @@ kill -9 <PID>                  # macOS/Linux
 #### Issue: Database locked
 
 **Solution**:
+
 ```bash
 # Close all connections to database
 # Restart backend server
@@ -603,6 +627,7 @@ rm backend/lokifi.sqlite-shm
 #### Issue: TypeScript errors in frontend
 
 **Solution**:
+
 ```bash
 cd frontend
 npm run type-check
@@ -695,6 +720,6 @@ npm run dev
 
 ---
 
-**Last Updated**: October 2, 2025  
-**Document Version**: 1.0.0  
+**Last Updated**: October 2, 2025
+**Document Version**: 1.0.0
 **Status**: Production Ready ✅

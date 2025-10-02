@@ -36,6 +36,7 @@ lokifi/
 ```
 
 ### 📖 **Navigation Guide**
+
 - **👩‍💻 Developers**: Start with [`docs/development/`](docs/development/) and [`scripts/development/`](scripts/development/)
 - **🔧 DevOps Engineers**: See [`infrastructure/`](infrastructure/) and [`scripts/deployment/`](scripts/deployment/)
 - **🔒 Security Teams**: Review [`security/`](security/) and [`scripts/security/`](scripts/security/)
@@ -49,23 +50,27 @@ lokifi/
 ### Running Locally
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/ericsocrat/Lokifi.git
    cd Lokifi
    ```
 
 2. **Set up environment variables:**
+
    ```bash
    cp security/configs/.env.example security/configs/.env
    # Edit .env with your configuration (see Feature Flags section)
    ```
 
 3. **Run with Docker Compose:**
+
    ```bash
    docker-compose -f infrastructure/docker/docker-compose.yml up
    ```
-   
+
    This will start:
+
    - Backend API at http://localhost:8000
    - Frontend at http://localhost:3000
    - Redis cache at localhost:6379
@@ -75,6 +80,7 @@ lokifi/
 ### Alternative: Local Development
 
 **Backend:**
+
 ```bash
 cd backend
 make setup  # Creates venv and installs dependencies
@@ -82,6 +88,7 @@ make dev    # Starts development server
 ```
 
 **Frontend:**
+
 ```bash
 cd frontend
 npm install
@@ -94,26 +101,27 @@ Lokifi uses a comprehensive feature flag system for safe rollouts. All Part G en
 
 ### Available Flags
 
-| Flag | Description | Default |
-|------|-------------|---------|
-| `NEXT_PUBLIC_FLAG_MULTI_CHART` | Multi-chart layouts with linking | OFF |
-| `NEXT_PUBLIC_FLAG_WATCHLIST` | Watchlists and screener | OFF |
-| `NEXT_PUBLIC_FLAG_SCREENER` | Basic stock screener | OFF |
-| `NEXT_PUBLIC_FLAG_CORP_ACTIONS` | Corporate actions & sessions | OFF |
-| `NEXT_PUBLIC_FLAG_TEMPLATES` | Chart templates & export | OFF |
-| `NEXT_PUBLIC_FLAG_IMG_EXPORT` | Image export functionality | OFF |
-| `NEXT_PUBLIC_FLAG_ALERTS_V2` | Enhanced alerts system | OFF |
-| `NEXT_PUBLIC_FLAG_BACKTESTER` | Strategy backtesting | OFF |
-| `NEXT_PUBLIC_FLAG_PROVIDER_RELIABILITY` | Enhanced provider resilience | OFF |
-| `NEXT_PUBLIC_FLAG_SOCIAL` | Social features | OFF |
-| `NEXT_PUBLIC_FLAG_PAPER_TRADING` | Paper trading & portfolio | OFF |
-| `NEXT_PUBLIC_FLAG_OTEL` | OpenTelemetry observability | OFF |
-| `NEXT_PUBLIC_FLAG_VISUAL_REGRESSION` | Visual regression testing | OFF |
-| `NEXT_PUBLIC_FLAG_FIRST_RUN_TOUR` | Onboarding tour | OFF |
+| Flag                                    | Description                      | Default |
+| --------------------------------------- | -------------------------------- | ------- |
+| `NEXT_PUBLIC_FLAG_MULTI_CHART`          | Multi-chart layouts with linking | OFF     |
+| `NEXT_PUBLIC_FLAG_WATCHLIST`            | Watchlists and screener          | OFF     |
+| `NEXT_PUBLIC_FLAG_SCREENER`             | Basic stock screener             | OFF     |
+| `NEXT_PUBLIC_FLAG_CORP_ACTIONS`         | Corporate actions & sessions     | OFF     |
+| `NEXT_PUBLIC_FLAG_TEMPLATES`            | Chart templates & export         | OFF     |
+| `NEXT_PUBLIC_FLAG_IMG_EXPORT`           | Image export functionality       | OFF     |
+| `NEXT_PUBLIC_FLAG_ALERTS_V2`            | Enhanced alerts system           | OFF     |
+| `NEXT_PUBLIC_FLAG_BACKTESTER`           | Strategy backtesting             | OFF     |
+| `NEXT_PUBLIC_FLAG_PROVIDER_RELIABILITY` | Enhanced provider resilience     | OFF     |
+| `NEXT_PUBLIC_FLAG_SOCIAL`               | Social features                  | OFF     |
+| `NEXT_PUBLIC_FLAG_PAPER_TRADING`        | Paper trading & portfolio        | OFF     |
+| `NEXT_PUBLIC_FLAG_OTEL`                 | OpenTelemetry observability      | OFF     |
+| `NEXT_PUBLIC_FLAG_VISUAL_REGRESSION`    | Visual regression testing        | OFF     |
+| `NEXT_PUBLIC_FLAG_FIRST_RUN_TOUR`       | Onboarding tour                  | OFF     |
 
 ### Enabling Features
 
 **Environment Variables (.env):**
+
 ```bash
 NEXT_PUBLIC_FLAG_MULTI_CHART=1
 NEXT_PUBLIC_FLAG_WATCHLIST=1
@@ -125,11 +133,13 @@ Visit `/dev/flags` (development only) to toggle flags live.
 ### Multi-Chart Example
 
 Enable multi-chart layouts:
+
 ```bash
 NEXT_PUBLIC_FLAG_MULTI_CHART=1
 ```
 
 Features:
+
 - 1×1, 1×2, 2×2 grid layouts
 - Symbol/timeframe/cursor linking
 - Per-user persistence with schema versioning
@@ -137,24 +147,28 @@ Features:
 ## Architecture
 
 ### Backend (FastAPI)
+
 - **Versioned APIs** with OpenAPI contracts
 - **Provider abstraction** with failover and rate limiting
 - **Plugin SDK** for indicators and drawing tools
 - **Observability** with OpenTelemetry (when enabled)
 
 ### Frontend (Next.js)
+
 - **Typed API clients** with zod validation
-- **Feature-flagged components** with graceful degradation  
+- **Feature-flagged components** with graceful degradation
 - **Versioned state migrations** for client persistence
 - **Web Workers** for heavy computations
 - **Comprehensive testing** (unit/integration/e2e/visual)
 
 ### Infrastructure
+
 - **Redis** for caching and remote config
 - **Docker** containerization with health checks
 - **CI/CD** with contract testing and feature flag gates
-npm run dev
-```
+  npm run dev
+
+````
 
 ## Testing
 
@@ -164,9 +178,10 @@ cd frontend
 npm run typecheck    # TypeScript type checking
 npm run test         # Run tests with Vitest
 npm run test:ci      # Run tests in CI mode
-```
+````
 
 ### Backend Tests
+
 ```bash
 cd backend
 pytest               # Run all tests
@@ -174,6 +189,7 @@ pytest -v            # Verbose output
 ```
 
 ### Integration Tests
+
 ```bash
 docker compose up --build    # Build and start all services
 # Services will be healthy when health endpoints return 200 OK
@@ -183,12 +199,13 @@ docker compose up --build    # Build and start all services
 
 The application provides health check endpoints for monitoring:
 
-- **Backend Health:** 
+- **Backend Health:**
+
   - `GET /api/health` - Main health endpoint
   - `GET /health` - Alternative health endpoint
   - Returns: `{"ok": true}`
 
-- **Frontend Health:** 
+- **Frontend Health:**
   - `GET /api/health` - Next.js API route
   - Returns: `{"ok": true}`
 
@@ -243,6 +260,7 @@ OPENAI_API_KEY=your-openai-key
 ### Production Configuration
 
 1. **Update environment variables:**
+
    ```bash
    FRONTEND_ORIGIN=https://your-domain.com
    CORS_ORIGINS=["https://your-domain.com"]
@@ -265,6 +283,7 @@ OPENAI_API_KEY=your-openai-key
 ### Multi-stage Builds
 
 The Docker images use multi-stage builds to optimize size:
+
 - Frontend: `deps` → `build` → `prod` stages
 - Backend: Minimal Python image with only required dependencies
 
@@ -287,7 +306,7 @@ GitHub Actions workflows:
 ```
 
 - **Frontend**: React/Next.js with TypeScript
-- **Backend**: Python FastAPI with async/await  
+- **Backend**: Python FastAPI with async/await
 - **Cache**: Redis for session storage and pub/sub
 - **Charts**: Lightweight Charts library with custom indicators
 - **State**: Zustand for client-side state management

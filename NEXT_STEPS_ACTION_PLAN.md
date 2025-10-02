@@ -1,7 +1,7 @@
 # 🚀 Lokifi - Next Steps Action Plan
 
-**Date**: October 2, 2025  
-**Status**: Rebranding Complete - Ready for Testing & Deployment  
+**Date**: October 2, 2025
+**Status**: Rebranding Complete - Ready for Testing & Deployment
 **Priority**: Execute in order listed below
 
 ---
@@ -9,6 +9,7 @@
 ## 📊 Current Project Status
 
 ### ✅ Completed (100%)
+
 - [x] Repository renamed to Lokifi
 - [x] Repository made private
 - [x] Full codebase rebranded (300+ files)
@@ -21,6 +22,7 @@
 - [x] All changes pushed to GitHub
 
 ### ⏳ Pending
+
 - [ ] Local environment tested
 - [ ] Automated tests run
 - [ ] Production deployment configured
@@ -35,6 +37,7 @@
 **Goal**: Verify the rebranded application runs correctly
 
 **Commands**:
+
 ```powershell
 # Option A: Use the automation script (Recommended)
 .\start-dev.ps1
@@ -54,6 +57,7 @@ npm run dev
 ```
 
 **What to Check**:
+
 - [ ] Redis starts without errors
 - [ ] Backend starts on http://localhost:8000
 - [ ] Frontend starts on http://localhost:3000
@@ -61,6 +65,7 @@ npm run dev
 - [ ] API docs load at http://localhost:8000/docs
 
 **Expected Results**:
+
 ```
 ✅ Redis: Connected and running
 ✅ Backend: Uvicorn running on http://0.0.0.0:8000
@@ -68,6 +73,7 @@ npm run dev
 ```
 
 **Troubleshooting**:
+
 ```powershell
 # If Redis fails:
 redis-cli ping  # Should return "PONG"
@@ -89,6 +95,7 @@ npm install  # Reinstall dependencies
 **Open in browser**: http://localhost:3000
 
 **Visual Verification Checklist**:
+
 - [ ] Page title shows "Lokifi" (not "Fynix")
 - [ ] Logo/branding shows "Lokifi"
 - [ ] Landing page displays correctly
@@ -96,6 +103,7 @@ npm install  # Reinstall dependencies
 - [ ] No 404 errors for assets
 
 **Functional Testing**:
+
 - [ ] Can access registration page
 - [ ] Can access login page
 - [ ] UI elements load properly
@@ -119,6 +127,7 @@ curl http://localhost:8000/health
 ```
 
 **API Docs Verification**:
+
 - [ ] Swagger UI loads at /docs
 - [ ] All endpoints listed correctly
 - [ ] Can expand endpoint documentation
@@ -131,11 +140,13 @@ curl http://localhost:8000/health
 **Test user registration and login**:
 
 1. **Register a test user**:
+
    - Navigate to http://localhost:3000/register
    - Create account with test credentials
    - Verify success message
 
 2. **Login**:
+
    - Navigate to http://localhost:3000/login
    - Login with test credentials
    - Verify redirect to dashboard/main app
@@ -146,6 +157,7 @@ curl http://localhost:8000/health
    - Verify redirect after logout
 
 **Expected Behavior**:
+
 - [ ] Registration creates new account
 - [ ] Login authenticates successfully
 - [ ] JWT token stored properly
@@ -175,6 +187,7 @@ pytest tests/test_auth.py -v
 ```
 
 **Expected Output**:
+
 ```
 ============== test session starts ==============
 collected XX items
@@ -187,12 +200,14 @@ tests/test_api.py::test_health PASSED
 ```
 
 **What to Verify**:
+
 - [ ] All tests pass
 - [ ] No failures or errors
 - [ ] Coverage > 70% (ideal)
 - [ ] No deprecation warnings
 
 **If Tests Fail**:
+
 ```powershell
 # Check database is accessible
 python check_db.py
@@ -224,6 +239,7 @@ npm test -- --coverage
 ```
 
 **Expected Output**:
+
 ```
 PASS  src/components/ShareBar.test.tsx
 PASS  src/components/ProjectBar.test.tsx
@@ -233,6 +249,7 @@ Tests:       X passed, X total
 ```
 
 **What to Verify**:
+
 - [ ] All test suites pass
 - [ ] No snapshot mismatches
 - [ ] No TypeScript errors
@@ -249,21 +266,25 @@ Follow the detailed checklist in `TESTING_AND_DEPLOYMENT_GUIDE.md`, section **"M
 **Critical Workflows to Test**:
 
 1. **User Flow**:
+
    - [ ] Register → Login → Dashboard → Logout
 
 2. **Chart Functionality**:
+
    - [ ] Create new chart
    - [ ] Add indicators
    - [ ] Draw tools work (lines, shapes)
    - [ ] Save chart
 
 3. **Project Management**:
+
    - [ ] Create new project
    - [ ] Save project
    - [ ] Load project
    - [ ] Delete project
 
 4. **Sharing Features**:
+
    - [ ] Generate share link
    - [ ] Export PDF/image
    - [ ] Copy to clipboard
@@ -308,10 +329,11 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 ```
 
 **Security Checklist**:
+
 - [ ] JWT secret is 32+ characters, random
 - [ ] Redis password is strong
 - [ ] Database credentials are secure
-- [ ] CORS origins are specific (not *)
+- [ ] CORS origins are specific (not \*)
 - [ ] Debug mode is OFF in production
 - [ ] All secrets stored securely (not in git)
 
@@ -326,12 +348,15 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 **Best for**: Frontend-heavy apps, quick deployment, auto-scaling
 
 **Steps**:
+
 1. Install Vercel CLI:
+
    ```bash
    npm install -g vercel
    ```
 
 2. Deploy frontend:
+
    ```bash
    cd frontend
    vercel --prod
@@ -340,12 +365,14 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 3. Deploy backend separately (Railway, Render, or traditional VPS)
 
 **Pros**:
+
 - ✅ Fastest deployment
 - ✅ Automatic SSL
 - ✅ CDN included
 - ✅ Great for Next.js
 
 **Cons**:
+
 - ❌ Backend needs separate hosting
 - ❌ Serverless limitations for backend
 
@@ -356,12 +383,15 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 **Best for**: Complete deployment, microservices, self-hosting
 
 **Steps**:
+
 1. Build images:
+
    ```bash
    docker-compose build
    ```
 
 2. Test locally:
+
    ```bash
    docker-compose up
    ```
@@ -369,12 +399,14 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 3. Deploy to cloud (AWS ECS, DigitalOcean, etc.)
 
 **Pros**:
+
 - ✅ Full stack in containers
 - ✅ Consistent environments
 - ✅ Easy scaling
 - ✅ Works anywhere
 
 **Cons**:
+
 - ❌ More complex setup
 - ❌ Requires Docker knowledge
 
@@ -385,18 +417,21 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 **Best for**: Traditional hosting, full control, cost-effective
 
 **Steps**:
+
 1. Provision Ubuntu server (DigitalOcean, AWS EC2, Linode)
 2. Follow deployment guide in `TESTING_AND_DEPLOYMENT_GUIDE.md`
 3. Configure Nginx reverse proxy
 4. Set up SSL with Let's Encrypt
 
 **Pros**:
+
 - ✅ Complete control
 - ✅ Cost-effective
 - ✅ Predictable costs
 - ✅ Well-documented
 
 **Cons**:
+
 - ❌ Manual server management
 - ❌ Requires Linux knowledge
 - ❌ More maintenance
@@ -408,6 +443,7 @@ python -c "import secrets; print(secrets.token_urlsafe(24))"
 **Production database options**:
 
 1. **PostgreSQL (Recommended)**:
+
    ```bash
    # Managed services:
    - AWS RDS
@@ -444,6 +480,7 @@ python scripts/migrate_sqlite_to_postgres.py
 **Production Redis options**:
 
 1. **Managed Redis**:
+
    - AWS ElastiCache
    - Redis Cloud
    - DigitalOcean Managed Redis
@@ -583,7 +620,7 @@ npm run export
 server {
     listen 80;
     server_name api.yourdomain.com;
-    
+
     location / {
         proxy_pass http://localhost:8000;
         proxy_set_header Host $host;
@@ -597,7 +634,7 @@ server {
 server {
     listen 80;
     server_name yourdomain.com www.yourdomain.com;
-    
+
     location / {
         proxy_pass http://localhost:3000;
         proxy_set_header Host $host;
@@ -637,6 +674,7 @@ curl https://api.yourdomain.com/docs
 ```
 
 **Checklist**:
+
 - [ ] Backend responds on production URL
 - [ ] Frontend loads correctly
 - [ ] HTTPS/SSL working (green padlock)
@@ -655,11 +693,13 @@ curl https://api.yourdomain.com/docs
 **Set up monitoring tools**:
 
 1. **Application Monitoring**:
+
    - Sentry (error tracking)
    - New Relic (APM)
    - DataDog (infrastructure)
 
 2. **Uptime Monitoring**:
+
    - UptimeRobot (free)
    - Pingdom
    - StatusCake
@@ -711,6 +751,7 @@ npm audit fix
 ```
 
 **Manual security review**:
+
 - [ ] All secrets in environment variables (not code)
 - [ ] CORS configured properly
 - [ ] Rate limiting enabled
@@ -788,6 +829,7 @@ crontab -e
 ### Week 1 After Launch
 
 **Daily checks**:
+
 - [ ] Monitor error logs
 - [ ] Check uptime status
 - [ ] Review performance metrics
@@ -796,6 +838,7 @@ crontab -e
 - [ ] Review user registration/activity
 
 **Metrics to track**:
+
 - Response times (< 200ms ideal)
 - Error rates (< 1% ideal)
 - Uptime (> 99.9% ideal)
@@ -808,6 +851,7 @@ crontab -e
 ### Monthly Maintenance
 
 **Regular tasks**:
+
 - [ ] Update dependencies
 - [ ] Review security alerts
 - [ ] Check disk space
@@ -824,6 +868,7 @@ crontab -e
 ### Documentation Resources
 
 1. **Project Documentation**:
+
    - `README.md` - Quick start guide
    - `TESTING_AND_DEPLOYMENT_GUIDE.md` - Complete testing & deployment
    - `ALL_TASKS_COMPLETE.md` - Rebranding summary
@@ -883,6 +928,6 @@ cd frontend; npm test
 
 ---
 
-**Last Updated**: October 2, 2025  
-**Status**: Ready to begin Phase 1 (Local Testing)  
+**Last Updated**: October 2, 2025
+**Status**: Ready to begin Phase 1 (Local Testing)
 **Next Action**: Run `.\start-dev.ps1` 🚀

@@ -132,20 +132,20 @@ $response = Read-Host "Would you like to open terminals to start the services? (
 if ($response -eq 'y' -or $response -eq 'Y') {
     Write-Host ""
     Write-Host "Opening terminals..." -ForegroundColor Cyan
-    
+
     # Start Redis
     Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$PWD'; Write-Host '🔴 Starting Redis...' -ForegroundColor Red; redis-server redis\redis.conf"
-    
+
     Start-Sleep -Seconds 2
-    
+
     # Start Backend
     Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$PWD\backend'; Write-Host '⚙️  Starting Backend...' -ForegroundColor Blue; .\venv\Scripts\Activate.ps1; python -m uvicorn main:app --reload"
-    
+
     Start-Sleep -Seconds 2
-    
+
     # Start Frontend
     Start-Process pwsh -ArgumentList "-NoExit", "-Command", "cd '$PWD\frontend'; Write-Host '🎨 Starting Frontend...' -ForegroundColor Magenta; npm run dev"
-    
+
     Write-Host ""
     Write-Host "✅ All terminals opened! Services are starting..." -ForegroundColor Green
     Write-Host "   Wait a few seconds and visit: http://localhost:3000" -ForegroundColor Cyan
