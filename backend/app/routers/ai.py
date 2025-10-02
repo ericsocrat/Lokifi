@@ -41,7 +41,7 @@ from app.services.multimodal_ai_service import (
 )
 
 # J6.1 Notification Integration
-from setup_j6_integration import trigger_ai_response_notification
+from app.utils.notification_helpers import trigger_ai_response_notification
 
 logger = logging.getLogger(__name__)
 

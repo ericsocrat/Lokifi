@@ -29,7 +29,7 @@ from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import connection_manager
 
 # J6.1 Notification Integration
-from setup_j6_integration import process_mentions_in_content, trigger_dm_notification
+from app.utils.notification_helpers import process_mentions_in_content, trigger_dm_notification
 
 logger = logging.getLogger(__name__)
 
