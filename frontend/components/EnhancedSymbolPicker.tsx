@@ -1,6 +1,6 @@
-"use client";
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, TrendingUp, DollarSign, Globe, Zap } from 'lucide-react';
+'use client';
+import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 import { symbolStore } from '../lib/symbolStore';
 
 interface Symbol {
@@ -18,7 +18,7 @@ const ASSET_TYPE_ICONS = {
   crypto: <Zap className="w-4 h-4" />,
   forex: <Globe className="w-4 h-4" />,
   commodity: <DollarSign className="w-4 h-4" />,
-  index: <TrendingUp className="w-4 h-4" />
+  index: <TrendingUp className="w-4 h-4" />,
 };
 
 const ASSET_TYPE_COLORS = {
@@ -26,7 +26,7 @@ const ASSET_TYPE_COLORS = {
   crypto: 'text-yellow-400',
   forex: 'text-green-400',
   commodity: 'text-orange-400',
-  index: 'text-purple-400'
+  index: 'text-purple-400',
 };
 
 export const EnhancedSymbolPicker: React.FC = () => {
@@ -38,22 +38,22 @@ export const EnhancedSymbolPicker: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState('');
   const [activeTab, setActiveTab] = useState<'search' | 'popular' | 'recent'>('popular');
-  
+
   const searchRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsMounted(true);
     setSelectedSymbol(symbolStore.get());
-    
+
     // Load popular symbols on mount
     loadPopularSymbols();
-    
+
     // Subscribe to symbol changes
     const unsubscribe = symbolStore.subscribe((newSymbol) => {
       setSelectedSymbol(newSymbol);
     });
-    
+
     return () => {
       unsubscribe();
     };
@@ -64,7 +64,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
       const debounceTimer = setTimeout(() => {
         searchSymbols(searchQuery);
       }, 300);
-      
+
       return () => clearTimeout(debounceTimer);
     } else {
       setSymbols([]);
@@ -99,11 +99,43 @@ export const EnhancedSymbolPicker: React.FC = () => {
       console.error('Failed to load popular symbols:', error);
       // Fallback to mock data
       setPopularSymbols([
-        { symbol: 'AAPL', name: 'Apple Inc.', asset_type: 'stock', exchange: 'NASDAQ', currency: 'USD', sector: 'Technology' },
-        { symbol: 'MSFT', name: 'Microsoft Corporation', asset_type: 'stock', exchange: 'NASDAQ', currency: 'USD', sector: 'Technology' },
-        { symbol: 'BTCUSD', name: 'Bitcoin', asset_type: 'crypto', exchange: 'CRYPTO', currency: 'USD' },
-        { symbol: 'EURUSD', name: 'Euro / US Dollar', asset_type: 'forex', exchange: 'FOREX', currency: 'USD' },
-        { symbol: 'SPY', name: 'SPDR S&P 500 ETF', asset_type: 'index', exchange: 'NYSE', currency: 'USD' }
+        {
+          symbol: 'AAPL',
+          name: 'Apple Inc.',
+          asset_type: 'stock',
+          exchange: 'NASDAQ',
+          currency: 'USD',
+          sector: 'Technology',
+        },
+        {
+          symbol: 'MSFT',
+          name: 'Microsoft Corporation',
+          asset_type: 'stock',
+          exchange: 'NASDAQ',
+          currency: 'USD',
+          sector: 'Technology',
+        },
+        {
+          symbol: 'BTCUSD',
+          name: 'Bitcoin',
+          asset_type: 'crypto',
+          exchange: 'CRYPTO',
+          currency: 'USD',
+        },
+        {
+          symbol: 'EURUSD',
+          name: 'Euro / US Dollar',
+          asset_type: 'forex',
+          exchange: 'FOREX',
+          currency: 'USD',
+        },
+        {
+          symbol: 'SPY',
+          name: 'SPDR S&P 500 ETF',
+          asset_type: 'index',
+          exchange: 'NYSE',
+          currency: 'USD',
+        },
       ]);
     } finally {
       setLoading(false);
@@ -113,7 +145,9 @@ export const EnhancedSymbolPicker: React.FC = () => {
   const searchSymbols = async (query: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/v1/symbols/search?q=${encodeURIComponent(query)}&limit=20`);
+      const response = await fetch(
+        `/api/v1/symbols/search?q=${encodeURIComponent(query)}&limit=20`
+      );
       if (response.ok) {
         const data = await response.json();
         setSymbols(data.symbols);
@@ -180,9 +214,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className="text-xs text-gray-500 font-mono">
-                {symbol.currency}
-              </div>
+              <div className="text-xs text-gray-500 font-mono">{symbol.currency}</div>
             </div>
           </button>
         ))
@@ -209,7 +241,10 @@ export const EnhancedSymbolPicker: React.FC = () => {
       >
         <div className="flex items-center gap-2 flex-1">
           <div className="w-4 h-4 text-blue-400">
-            {selectedSymbol && ASSET_TYPE_ICONS[popularSymbols.find(s => s.symbol === selectedSymbol)?.asset_type || 'stock']}
+            {selectedSymbol &&
+              ASSET_TYPE_ICONS[
+                popularSymbols.find((s) => s.symbol === selectedSymbol)?.asset_type || 'stock'
+              ]}
           </div>
           <span className="font-semibold text-white">{selectedSymbol || 'Select Symbol'}</span>
         </div>
@@ -264,7 +299,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
               <div className="inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
             </div>
           )}
-          
+
           {!loading && (
             <>
               {activeTab === 'popular' && renderSymbolList(popularSymbols)}

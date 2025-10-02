@@ -1,19 +1,16 @@
-"use client";
-import React, { useState, useEffect } from 'react';
-import { 
-  Eye, 
-  EyeOff, 
-  Lock, 
-  Unlock, 
-  Trash2, 
-  Copy, 
-  ChevronRight, 
+'use client';
+import {
   ChevronDown,
-  MoreHorizontal,
-  Move,
-  Edit3,
-  Layers
+  ChevronRight,
+  Copy,
+  Eye,
+  EyeOff,
+  Layers,
+  Lock,
+  Trash2,
+  Unlock,
 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { useDrawingStore } from '../lib/drawingStore';
 import { usePaneStore } from '../lib/paneStore';
 
@@ -22,19 +19,19 @@ interface ObjectTreeProps {
   onToggleCollapse?: () => void;
 }
 
-export const ObjectTree: React.FC<ObjectTreeProps> = ({ 
-  isCollapsed = false, 
-  onToggleCollapse 
+export const ObjectTree: React.FC<ObjectTreeProps> = ({
+  isCollapsed = false,
+  onToggleCollapse,
 }) => {
-  const { 
-    objects, 
-    selectedObjectId, 
-    selectObject, 
-    deleteObject, 
+  const {
+    objects,
+    selectedObjectId,
+    selectObject,
+    deleteObject,
     duplicateObject,
     setObjectProperties,
     moveObjectToPane,
-    getObjectsByPane
+    getObjectsByPane,
   } = useDrawingStore();
 
   const { panes } = usePaneStore();
@@ -70,7 +67,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     setContextMenu({
       objectId,
       x: e.clientX,
-      y: e.clientY
+      y: e.clientY,
     });
   };
 
@@ -123,7 +120,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
         >
           <Layers className="w-4 h-4 text-gray-300" />
         </button>
-        
+
         {/* Show object count when collapsed */}
         <div className="w-8 h-6 bg-gray-700 rounded text-xs text-gray-300 flex items-center justify-center">
           {objects.length}
@@ -157,7 +154,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
         {panes.map((pane) => {
           const paneObjects = getObjectsByPane(pane.id);
           const isExpanded = expandedPanes.has(pane.id);
-          
+
           return (
             <div key={pane.id} className="border-b border-gray-700/50 last:border-b-0">
               {/* Pane Header */}
@@ -182,9 +179,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
               {isExpanded && (
                 <div className="pb-2">
                   {paneObjects.length === 0 ? (
-                    <div className="px-8 py-4 text-xs text-gray-500 italic">
-                      No drawing objects
-                    </div>
+                    <div className="px-8 py-4 text-xs text-gray-500 italic">No drawing objects</div>
                   ) : (
                     paneObjects
                       .sort((a, b) => b.properties.zIndex - a.properties.zIndex)
@@ -202,8 +197,8 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                           <div className="px-3 py-2 flex items-center gap-2">
                             {/* Object Type Icon */}
                             <div className="w-4 h-4 flex items-center justify-center">
-                              <div 
-                                className="w-2 h-2 rounded-full" 
+                              <div
+                                className="w-2 h-2 rounded-full"
                                 style={{ backgroundColor: object.style.color }}
                               />
                             </div>
@@ -281,7 +276,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
             <Copy className="w-4 h-4" />
             Duplicate
           </button>
-          
+
           <div className="px-4 py-1">
             <div className="border-b border-gray-700"></div>
           </div>

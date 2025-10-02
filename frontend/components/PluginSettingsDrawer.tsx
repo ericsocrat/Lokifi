@@ -7,10 +7,10 @@ type Settings = ReturnType<typeof pluginSettingsStore.get>;
 
 export default function PluginSettingsDrawer({
   open,
-  onClose,
+  onCloseAction,
 }: {
   open: boolean;
-  onClose: () => void;
+  onCloseAction: () => void;
 }) {
   const [s, setS] = useState<Settings>(pluginSettingsStore.get());
   useEffect(() => {
@@ -24,7 +24,7 @@ export default function PluginSettingsDrawer({
     <div className="fixed right-4 top-16 z-40 w-80 rounded-2xl border border-neutral-800 bg-neutral-900/95 backdrop-blur p-3 shadow-xl">
       <div className="flex items-center justify-between mb-2">
         <div className="font-semibold">Plugin Settings</div>
-        <button onClick={onClose} className="text-xs opacity-70 hover:opacity-100">
+        <button onClick={onCloseAction} className="text-xs opacity-70 hover:opacity-100">
           Close
         </button>
       </div>
