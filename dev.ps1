@@ -6,10 +6,10 @@ param(
     [Parameter(Mandatory=$false)]
     [ValidateSet('dev', 'test', 'build', 'fix-ui', 'clean', 'restart', 'cleanup', 'check', 'commit', 'smart-commit')]
     [string]$Action = 'dev',
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Detailed,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$AutoPush
 )
@@ -99,10 +99,10 @@ function Smart-Commit {
         [switch]$Detailed,
         [switch]$AutoPush
     )
-    
+
     Write-Host "🤖 Smart Commit - AI-Generated Messages" -ForegroundColor Cyan
     Write-Host ""
-    
+
     # Check for staged changes
     $stagedFiles = git diff --cached --name-only 2>&1
     if ($LASTEXITCODE -ne 0 -or !$stagedFiles) {
@@ -110,32 +110,32 @@ function Smart-Commit {
         Write-Host "💡 Use 'git add <files>' or 'git add .' to stage changes first." -ForegroundColor Yellow
         return
     }
-    
+
     # Generate commit message
     Write-Host "📝 Generating AI commit message..." -ForegroundColor Cyan
     $tempFile = [System.IO.Path]::GetTempFileName()
-    
+
     if ($Detailed) {
         & ".\scripts\utilities\generate-commit-message.ps1" -Detailed -Output $tempFile
     } else {
         & ".\scripts\utilities\generate-commit-message.ps1" -Output $tempFile
     }
-    
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "❌ Failed to generate commit message" -ForegroundColor Red
         return
     }
-    
+
     # Show the generated message
     Write-Host ""
     Write-Host "📋 Generated commit message:" -ForegroundColor Green
     Write-Host ""
     Get-Content $tempFile | Write-Host
     Write-Host ""
-    
+
     # Ask for confirmation
     $response = Read-Host "Would you like to use this message? (Y/n/e=edit)"
-    
+
     if ($response -eq 'e' -or $response -eq 'E') {
         # Open in editor
         Write-Host "✏️ Opening editor..." -ForegroundColor Cyan
@@ -146,24 +146,24 @@ function Smart-Commit {
         Remove-Item $tempFile
         return
     }
-    
+
     # Commit with the generated message
     Write-Host "💾 Creating commit..." -ForegroundColor Cyan
     git commit -F $tempFile
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ Commit created successfully!" -ForegroundColor Green
-        
+
         # Show commit hash
         $commitHash = git rev-parse --short HEAD
         Write-Host "Commit: $commitHash" -ForegroundColor Cyan
-        
+
         # Auto-push if requested
         if ($AutoPush) {
             Write-Host ""
             Write-Host "🚀 Pushing to remote..." -ForegroundColor Cyan
             git push
-            
+
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "✅ Pushed successfully!" -ForegroundColor Green
             } else {
@@ -175,7 +175,7 @@ function Smart-Commit {
     } else {
         Write-Host "❌ Commit failed" -ForegroundColor Red
     }
-    
+
     Remove-Item $tempFile -ErrorAction SilentlyContinue
 }
 

@@ -7,15 +7,18 @@ Complete automation for generating AI-powered commit messages.
 ## ✨ Features
 
 ### 1. **Pre-commit Hook** (Automatic)
+
 - Automatically generates commit messages when you run `git commit`
 - Detects change types and categorizes files
 - Creates structured commit messages following conventional commits
 
 ### 2. **Git Alias** (Command Line)
+
 - Use `git smart-commit` for instant AI-generated messages
 - Runs the message generator and opens your editor
 
 ### 3. **dev.ps1 Command** (PowerShell)
+
 - Use `.\dev.ps1 commit` for interactive AI commits
 - Options: `-Detailed` for categorized file lists, `-AutoPush` to push after commit
 
@@ -67,6 +70,7 @@ git add .
 ### Message Generation
 
 The system analyzes:
+
 - **File types**: Frontend, backend, docs, config, styles, scripts, tests
 - **Change statistics**: Lines added/removed, files modified
 - **Commit type detection**: feat, fix, docs, style, chore, test
@@ -122,33 +126,36 @@ feat(fullstack): update frontend and backend
 
 The system automatically detects commit types based on files:
 
-| Files Changed | Type | Scope | Description |
-|---------------|------|-------|-------------|
-| Contains "theme" | `feat` | `theme` | update theme system |
-| Contains "logo" | `feat` | `branding` | update logo assets |
-| Only docs/ | `docs` | - | update documentation |
-| Frontend + Backend | `feat` | `fullstack` | update frontend and backend |
-| Only frontend/ | `feat` | `frontend` | update frontend components |
-| Only backend/ | `feat` | `backend` | update backend services |
-| Test files | `test` | - | add/update tests |
-| .css/.scss files | `style` | - | update styles |
-| .json/.yaml files | `chore` | `config` | update configuration |
+| Files Changed      | Type    | Scope       | Description                 |
+| ------------------ | ------- | ----------- | --------------------------- |
+| Contains "theme"   | `feat`  | `theme`     | update theme system         |
+| Contains "logo"    | `feat`  | `branding`  | update logo assets          |
+| Only docs/         | `docs`  | -           | update documentation        |
+| Frontend + Backend | `feat`  | `fullstack` | update frontend and backend |
+| Only frontend/     | `feat`  | `frontend`  | update frontend components  |
+| Only backend/      | `feat`  | `backend`   | update backend services     |
+| Test files         | `test`  | -           | add/update tests            |
+| .css/.scss files   | `style` | -           | update styles               |
+| .json/.yaml files  | `chore` | `config`    | update configuration        |
 
 ---
 
 ## 🔧 Configuration
 
 ### Pre-commit Hook Location
+
 ```
 .git/hooks/prepare-commit-msg
 ```
 
 ### Message Generator Script
+
 ```
 scripts/utilities/generate-commit-message.ps1
 ```
 
 ### Git Alias
+
 ```bash
 # View current alias
 git config --local --get alias.smart-commit
@@ -204,15 +211,19 @@ git add .
 ## 🔍 Troubleshooting
 
 ### "No staged changes found"
+
 **Solution**: Use `git add <files>` or `git add .` first
 
 ### "Failed to generate commit message"
+
 **Solution**: Check that you're in the git repository root
 
 ### Pre-commit hook not working
+
 **Solution**: On Windows, the hook should work automatically. If not, check that the file exists at `.git/hooks/prepare-commit-msg`
 
 ### Message generator not found
+
 **Solution**: Ensure `scripts/utilities/generate-commit-message.ps1` exists
 
 ---
@@ -227,6 +238,7 @@ git add frontend/lib/theme.ts frontend/styles/globals.css docs/THEME_DOCUMENTATI
 ```
 
 **Generated**:
+
 ```
 feat(theme): update theme system
 
@@ -253,6 +265,7 @@ git add frontend/components/DrawingChart.tsx
 ```
 
 **Generated**:
+
 ```
 feat(frontend): update frontend components
 
@@ -275,6 +288,7 @@ git add docs/
 ```
 
 **Generated**:
+
 ```
 docs: update documentation
 
