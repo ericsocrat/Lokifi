@@ -1,6 +1,15 @@
 # 📚 Lokifi Documentation
 
-Welcome to the comprehensive documentation for the Lokifi project. This directory contains all project documentation organized by category.
+**Last Updated**: October 2, 2025  
+**Current Focus**: Fixing Core Application Functionality
+
+Welcome to the Lokifi documentation. This directory contains all project documentation.
+
+## ⚠️ **IMPORTANT - START HERE**
+**Current Status**: Application has critical UI/interaction issues that need fixing before deployment.
+See: [`../CURRENT_ISSUES.md`](../CURRENT_ISSUES.md)
+
+---
 
 ## 📁 Documentation Structure
 
