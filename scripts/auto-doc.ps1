@@ -4,7 +4,7 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$FilePath,
-    
+
     [Parameter(Mandatory=$false)]
     [string]$Type
 )
