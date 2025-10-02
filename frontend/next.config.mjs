@@ -46,6 +46,15 @@ const nextConfig = {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
+  // Proxy API requests to backend
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:8000/api/:path*',
+      },
+    ];
+  },
 };
 
 export default nextConfig;

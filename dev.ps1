@@ -4,7 +4,7 @@
 
 param(
     [Parameter(Mandatory=$false)]
-    [ValidateSet('dev', 'test', 'build', 'fix-ui', 'clean', 'restart')]
+    [ValidateSet('dev', 'test', 'build', 'fix-ui', 'clean', 'restart', 'cleanup', 'check')]
     [string]$Action = 'dev'
 )
 
@@ -77,6 +77,17 @@ function Clean-Project {
     Write-Host "✅ Project cleaned!" -ForegroundColor Green
 }
 
+function Run-AutoCleanup {
+    Write-Host "🧹 Running automated cleanup..." -ForegroundColor Cyan
+    & ".\scripts\auto-cleanup.ps1"
+}
+
+function Check-Cleanup {
+    Write-Host "🔍 Checking for files that need cleanup..." -ForegroundColor Cyan
+    & ".\scripts\auto-cleanup.ps1" -DryRun
+    Write-Host "`n💡 Run '.\dev.ps1 cleanup' to clean these files." -ForegroundColor Yellow
+}
+
 # Execute action
 switch ($Action) {
     'dev' { Start-Frontend }
@@ -84,5 +95,7 @@ switch ($Action) {
     'fix-ui' { Fix-UIIssues }
     'clean' { Clean-Project }
     'restart' { Restart-Dev }
+    'cleanup' { Run-AutoCleanup }
+    'check' { Check-Cleanup }
     default { Start-Frontend }
 }

@@ -150,3 +150,30 @@ junit.xml
 *.css.map
 *.sass.map
 *.scss.map
+
+# ============================================
+# AUTO-GENERATED TEST/PERFORMANCE REPORTS
+# ============================================
+*test_report*.json
+*test_report*.txt
+*performance_report*.json
+*performance_report*.txt
+*_report_*.json
+*_report_*.txt
+backend/*_report*.json
+backend/*_report*.txt
+*.bak
+*.backup
+*.old
+*.tmp
+*.temp
+
+# ============================================
+# ARCHIVED/OLD FILES (keep in docs/archive)
+# ============================================
+backend/test_*.json
+backend/performance_*.json
+backend/*.bak
+frontend/*.bak
+package.json.bak*
+.env.bak*

@@ -63,6 +63,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     isDrawing,
     currentDrawing,
     selectedObjectId,
+    objects,
     startDrawing,
     addPoint,
     finishDrawing,
@@ -282,7 +283,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   // Redraw objects when they change
   useEffect(() => {
     drawObjects();
-  }, [drawObjects]);
+  }, [drawObjects, objects, currentDrawing, selectedObjectId]);
 
   const handleResize = useCallback(
     (e: React.MouseEvent) => {
