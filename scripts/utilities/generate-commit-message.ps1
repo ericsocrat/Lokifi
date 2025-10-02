@@ -18,18 +18,21 @@ function Get-CommitType {
     $hasTests = $files | Where-Object { $_ -match "test|spec" }
     $hasStyles = $files | Where-Object { $_ -match "\.(css|scss|sass)$" }
     $hasConfig = $files | Where-Object { $_ -match "\.(json|yaml|yml|toml|config)$" }
+    $hasAutomation = $files | Where-Object { $_ -match "script|automation|hook" }
 
-    if ($hasTheme) { return @("feat", "theme", "update theme system") }
-    if ($hasLogo) { return @("feat", "branding", "update logo assets") }
-    if ($hasTests) { return @("test", "", "add/update tests") }
-    if ($hasDocs -and $files.Count -lt 5) { return @("docs", "", "update documentation") }
-    if ($hasStyles) { return @("style", "", "update styles") }
-    if ($hasConfig) { return @("chore", "config", "update configuration") }
-    if ($hasFrontend -and $hasBackend) { return @("feat", "fullstack", "update frontend and backend") }
-    if ($hasFrontend) { return @("feat", "frontend", "update frontend components") }
-    if ($hasBackend) { return @("feat", "backend", "update backend services") }
+    # Return descriptive titles without conventional commit prefixes
+    if ($hasTheme) { return "Implement comprehensive theme system with design tokens and utilities" }
+    if ($hasLogo) { return "Add logo assets and branding integration" }
+    if ($hasAutomation) { return "Add automation scripts and development tools" }
+    if ($hasTests) { return "Add/update test coverage" }
+    if ($hasDocs -and $files.Count -lt 5) { return "Update documentation" }
+    if ($hasStyles) { return "Update styles and CSS" }
+    if ($hasConfig) { return "Update configuration files" }
+    if ($hasFrontend -and $hasBackend) { return "Update frontend and backend implementation" }
+    if ($hasFrontend) { return "Update frontend components and features" }
+    if ($hasBackend) { return "Update backend services and APIs" }
 
-    return @("chore", "", "update files")
+    return "Update project files"
 }
 
 function Get-StagedFiles {
@@ -98,14 +101,8 @@ function Generate-CommitMessage {
         [bool]$detailed
     )
     
-    $type, $scope, $description = Get-CommitType $files
-    
-    # Build title
-    if ($scope) {
-        $title = "${type}(${scope}): ${description}"
-    } else {
-        $title = "${type}: ${description}"
-    }
+    # Get descriptive title (no conventional commit prefix)
+    $title = Get-CommitType $files
     
     # Build comprehensive body
     $body = @()
