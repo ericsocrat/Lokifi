@@ -21,8 +21,10 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
     <>
       <div className="flex items-center justify-between p-4 bg-neutral-900 border-b border-neutral-800">
         {/* Left: Symbol Picker and Timeframe */}
-        <div className="flex items-center gap-4">
-          <EnhancedSymbolPicker />
+        <div className="flex items-center gap-4 relative">
+          <div className="relative z-50">
+            <EnhancedSymbolPicker />
+          </div>
           <div className="flex items-center gap-2">
             <span className="px-2 py-1 bg-neutral-800 text-electric text-sm rounded-lg font-medium">
               {timeframe}

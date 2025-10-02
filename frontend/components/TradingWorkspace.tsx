@@ -11,6 +11,7 @@ import React, { useEffect, useState } from 'react';
 import ChartHeader from '../components/ChartHeader';
 import { DrawingChart } from '../components/DrawingChart';
 import { DrawingToolbar } from '../components/DrawingToolbar';
+import { Navigation } from '../components/Navigation';
 import { ObjectTree } from '../components/ObjectTree';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useDrawingStore } from '../lib/drawingStore';
@@ -91,10 +92,15 @@ export const TradingWorkspace: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-screen bg-gray-900 flex flex-col overflow-hidden">
-      {/* Enhanced Chart Header with Stats */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <ChartHeader />
+    <div className="h-screen bg-gray-900 flex overflow-hidden">
+      {/* Left Navigation */}
+      <Navigation />
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Enhanced Chart Header with Stats */}
+        <div className="bg-gray-800 border-b border-gray-700 relative z-40" style={{ overflow: 'visible' }}>
+          <ChartHeader />
 
         {/* Workspace Stats Bar */}
         <div className="px-4 py-2 bg-gray-850 border-t border-gray-700/50">
@@ -225,6 +231,7 @@ export const TradingWorkspace: React.FC = () => {
           <span>•</span>
           <span className="font-mono">v2.0.0</span>
         </div>
+      </div>
       </div>
     </div>
   );

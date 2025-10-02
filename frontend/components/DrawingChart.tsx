@@ -156,9 +156,9 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   }, [height]);
 
   const getMousePosition = useCallback((e: React.MouseEvent): Point => {
-    if (!chartContainerRef.current) return { x: 0, y: 0 };
+    if (!drawingCanvasRef.current) return { x: 0, y: 0 };
 
-    const rect = chartContainerRef.current.getBoundingClientRect();
+    const rect = drawingCanvasRef.current.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -358,10 +358,11 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         {/* Drawing Canvas Overlay */}
         <canvas
           ref={drawingCanvasRef}
-          className="absolute top-0 left-0 cursor-crosshair pointer-events-auto"
+          className="absolute top-0 left-0 w-full h-full cursor-crosshair pointer-events-auto"
           style={{
             zIndex: 10,
-            cursor: activeTool === 'cursor' ? 'default' : 'crosshair'
+            cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
+            touchAction: 'none'
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
