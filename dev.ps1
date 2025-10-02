@@ -4,8 +4,14 @@
 
 param(
     [Parameter(Mandatory=$false)]
-    [ValidateSet('dev', 'test', 'build', 'fix-ui', 'clean', 'restart', 'cleanup', 'check')]
-    [string]$Action = 'dev'
+    [ValidateSet('dev', 'test', 'build', 'fix-ui', 'clean', 'restart', 'cleanup', 'check', 'commit', 'smart-commit')]
+    [string]$Action = 'dev',
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$Detailed,
+    
+    [Parameter(Mandatory=$false)]
+    [switch]$AutoPush
 )
 
 function Start-Frontend {
@@ -88,6 +94,91 @@ function Check-Cleanup {
     Write-Host "`n💡 Run '.\dev.ps1 cleanup' to clean these files." -ForegroundColor Yellow
 }
 
+function Smart-Commit {
+    param(
+        [switch]$Detailed,
+        [switch]$AutoPush
+    )
+    
+    Write-Host "🤖 Smart Commit - AI-Generated Messages" -ForegroundColor Cyan
+    Write-Host ""
+    
+    # Check for staged changes
+    $stagedFiles = git diff --cached --name-only 2>&1
+    if ($LASTEXITCODE -ne 0 -or !$stagedFiles) {
+        Write-Host "❌ No staged changes found." -ForegroundColor Red
+        Write-Host "💡 Use 'git add <files>' or 'git add .' to stage changes first." -ForegroundColor Yellow
+        return
+    }
+    
+    # Generate commit message
+    Write-Host "📝 Generating AI commit message..." -ForegroundColor Cyan
+    $tempFile = [System.IO.Path]::GetTempFileName()
+    
+    if ($Detailed) {
+        & ".\scripts\utilities\generate-commit-message.ps1" -Detailed -Output $tempFile
+    } else {
+        & ".\scripts\utilities\generate-commit-message.ps1" -Output $tempFile
+    }
+    
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "❌ Failed to generate commit message" -ForegroundColor Red
+        return
+    }
+    
+    # Show the generated message
+    Write-Host ""
+    Write-Host "📋 Generated commit message:" -ForegroundColor Green
+    Write-Host ""
+    Get-Content $tempFile | Write-Host
+    Write-Host ""
+    
+    # Ask for confirmation
+    $response = Read-Host "Would you like to use this message? (Y/n/e=edit)"
+    
+    if ($response -eq 'e' -or $response -eq 'E') {
+        # Open in editor
+        Write-Host "✏️ Opening editor..." -ForegroundColor Cyan
+        & code $tempFile --wait
+        Write-Host "✓ Message updated" -ForegroundColor Green
+    } elseif ($response -eq 'n' -or $response -eq 'N') {
+        Write-Host "❌ Commit cancelled" -ForegroundColor Yellow
+        Remove-Item $tempFile
+        return
+    }
+    
+    # Commit with the generated message
+    Write-Host "💾 Creating commit..." -ForegroundColor Cyan
+    git commit -F $tempFile
+    
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✅ Commit created successfully!" -ForegroundColor Green
+        
+        # Show commit hash
+        $commitHash = git rev-parse --short HEAD
+        Write-Host "Commit: $commitHash" -ForegroundColor Cyan
+        
+        # Auto-push if requested
+        if ($AutoPush) {
+            Write-Host ""
+            Write-Host "🚀 Pushing to remote..." -ForegroundColor Cyan
+            git push
+            
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "✅ Pushed successfully!" -ForegroundColor Green
+            } else {
+                Write-Host "⚠️ Push failed - you may need to pull first" -ForegroundColor Yellow
+            }
+        } else {
+            Write-Host "💡 Use '.\dev.ps1 commit -AutoPush' to push automatically" -ForegroundColor Yellow
+        }
+    } else {
+        Write-Host "❌ Commit failed" -ForegroundColor Red
+    }
+    
+    Remove-Item $tempFile -ErrorAction SilentlyContinue
+}
+
 # Execute action
 switch ($Action) {
     'dev' { Start-Frontend }
@@ -97,5 +188,7 @@ switch ($Action) {
     'restart' { Restart-Dev }
     'cleanup' { Run-AutoCleanup }
     'check' { Check-Cleanup }
+    'commit' { Smart-Commit -Detailed:$Detailed -AutoPush:$AutoPush }
+    'smart-commit' { Smart-Commit -Detailed:$Detailed -AutoPush:$AutoPush }
     default { Start-Frontend }
 }
