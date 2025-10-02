@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface ContextMenuProps {
   children?: React.ReactNode;
@@ -19,8 +19,8 @@ export default function ContextMenu({ children, x, y, onClose }: ContextMenuProp
   }, [onClose]);
 
   return (
-    <div 
-      className="context-menu absolute bg-gray-800 rounded-lg shadow-lg py-1 min-w-[120px]"
+    <div
+      className="context-menu absolute bg-bg-secondary rounded-lg shadow-lg py-1 min-w-[120px] border border-border-default"
       style={{ left: x, top: y }}
     >
       {children}

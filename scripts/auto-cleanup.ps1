@@ -5,7 +5,7 @@
 param(
     [Parameter(Mandatory=$false)]
     [switch]$DryRun,
-    
+
     [Parameter(Mandatory=$false)]
     [int]$DaysOld = 30
 )
@@ -27,10 +27,10 @@ function Write-CleanupLog {
 
 function Get-OldFiles {
     param([string]$Pattern, [string]$Path, [int]$Days)
-    
+
     $cutoffDate = (Get-Date).AddDays(-$Days)
     Get-ChildItem -Path $Path -Filter $Pattern -Recurse -File -ErrorAction SilentlyContinue |
-        Where-Object { 
+        Where-Object {
             $_.LastWriteTime -lt $cutoffDate -and
             $_.FullName -notlike "*node_modules*" -and
             $_.FullName -notlike "*\.venv*" -and
@@ -42,19 +42,19 @@ function Get-OldFiles {
 
 function Move-ToArchive {
     param([System.IO.FileInfo]$File, [string]$ArchiveFolder)
-    
+
     try {
         $relativePath = $File.FullName.Replace("$PWD\", "")
-        
+
         if ($DryRun) {
             Write-CleanupLog "Would move: $relativePath → $ArchiveFolder" "Info"
             return
         }
-        
+
         if (-not (Test-Path $ArchiveFolder)) {
             New-Item -ItemType Directory -Path $ArchiveFolder -Force | Out-Null
         }
-        
+
         Move-Item -Path $File.FullName -Destination $ArchiveFolder -Force
         Write-CleanupLog "Archived: $relativePath" "Success"
         $script:cleaned += $relativePath
@@ -67,15 +67,15 @@ function Move-ToArchive {
 
 function Remove-OldFile {
     param([System.IO.FileInfo]$File)
-    
+
     try {
         $relativePath = $File.FullName.Replace("$PWD\", "")
-        
+
         if ($DryRun) {
             Write-CleanupLog "Would delete: $relativePath" "Warning"
             return
         }
-        
+
         Remove-Item -Path $File.FullName -Force
         Write-CleanupLog "Deleted: $relativePath" "Success"
         $script:cleaned += $relativePath
@@ -129,7 +129,7 @@ foreach ($file in $backups) {
 # 5. Clean old temporary files
 Write-CleanupLog "`n🗑️  Cleaning temporary files..." "Info"
 $tempFiles = Get-ChildItem -Path "." -Recurse -File -ErrorAction SilentlyContinue |
-    Where-Object { 
+    Where-Object {
         ($_.Name -like "*.tmp" -or $_.Name -like "*.temp") -and
         $_.LastWriteTime -lt (Get-Date).AddDays(-7) -and
         $_.FullName -notlike "*node_modules*" -and
@@ -156,12 +156,12 @@ $emptyDirs = Get-ChildItem -Path . -Recurse -Directory -ErrorAction SilentlyCont
 foreach ($dir in $emptyDirs) {
     try {
         $relativePath = $dir.FullName.Replace("$PWD\", "")
-        
+
         if ($DryRun) {
             Write-CleanupLog "Would remove empty dir: $relativePath" "Warning"
             continue
         }
-        
+
         Remove-Item -Path $dir.FullName -Force
         Write-CleanupLog "Removed empty directory: $relativePath" "Success"
         $script:cleaned += $relativePath

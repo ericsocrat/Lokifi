@@ -1,0 +1,33 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Redesign v2: Abstract LF Monogram + Candlestick Chart -->
+
+  <!-- Icon: Stylized L and F -->
+  <g id="icon">
+    <!-- L Shape (Base) -->
+    <path d="M8 12 L8 48 L26 48" stroke="#3B82F6" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <!-- F Shape (as Candlestick Bars) -->
+    <rect x="26" y="18" width="20" height="8" fill="#F97316" rx="2"/>
+    <rect x="26" y="30" width="12" height="8" fill="#3B82F6" rx="2"/>
+
+    <!-- Subtle Glow for the 'F' bars -->
+    <g style="filter: url(#glow-orange);">
+      <rect x="26" y="18" width="20" height="8" fill="#F97316" rx="2"/>
+    </g>
+  </g>
+
+  <!-- Text: LOKIFI -->
+  <text x="62" y="38" font-family="'Inter', 'Segoe UI', sans-serif" font-size="24" font-weight="600" fill="#E5E7EB" letter-spacing="1">
+    LOKI<tspan fill="#3B82F6">F</tspan><tspan fill="#F97316">I</tspan>
+  </text>
+
+  <defs>
+    <filter id="glow-orange" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>

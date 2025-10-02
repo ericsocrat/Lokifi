@@ -31,6 +31,7 @@ The project now automatically prevents file bloat:
 ```
 
 **What gets cleaned:**
+
 - Test reports older than 30 days → `docs/archive/analysis`
 - Performance reports → `docs/archive/analysis`
 - Old logs → `logs/archive`

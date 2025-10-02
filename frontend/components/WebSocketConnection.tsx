@@ -1,5 +1,5 @@
-"use client";
-import React, { useEffect, useState, useRef } from 'react';
+'use client';
+import { useEffect, useRef, useState } from 'react';
 import { useMarketDataStore } from '../lib/marketDataStore';
 
 interface WebSocketConnectionProps {
@@ -7,8 +7,13 @@ interface WebSocketConnectionProps {
   symbols?: string[];
 }
 
-export default function WebSocketConnection({ enabled = false, symbols = [] }: WebSocketConnectionProps) {
-  const [connectionStatus, setConnectionStatus] = useState<'disconnected' | 'connecting' | 'connected' | 'error'>('disconnected');
+export default function WebSocketConnection({
+  enabled = false,
+  symbols = [],
+}: WebSocketConnectionProps) {
+  const [connectionStatus, setConnectionStatus] = useState<
+    'disconnected' | 'connecting' | 'connected' | 'error'
+  >('disconnected');
   const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
   const [messageCount, setMessageCount] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
@@ -45,7 +50,7 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
       setConnectionStatus('connected');
       setLastUpdate(new Date());
       reconnectAttempts.current = 0;
-      
+
       console.log('WebSocket connected (simulated)');
 
       // Simulate periodic updates
@@ -57,7 +62,7 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
         }
 
         // Simulate price updates
-        symbols.forEach(symbol => {
+        symbols.forEach((symbol) => {
           const mockUpdate = {
             symbol,
             price: Math.random() * 1000 + 100,
@@ -67,7 +72,7 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
           };
 
           console.log('WebSocket update (simulated):', mockUpdate);
-          setMessageCount(prev => prev + 1);
+          setMessageCount((prev) => prev + 1);
           setLastUpdate(new Date());
         });
       }, 5000); // Update every 5 seconds
@@ -80,13 +85,14 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
         },
         send: (data: string) => {
           console.log('WebSocket send (simulated):', data);
-        }
+        },
       };
     };
 
     // Simulate connection delay
     setTimeout(() => {
-      if (Math.random() > 0.1) { // 90% success rate
+      if (Math.random() > 0.1) {
+        // 90% success rate
         const mockWs = simulateWebSocket();
         wsRef.current = mockWs as any;
       } else {
@@ -125,7 +131,7 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
     reconnectAttempts.current++;
 
     console.log(`Scheduling reconnection attempt ${reconnectAttempts.current} in ${delay}ms`);
-    
+
     reconnectTimeoutRef.current = setTimeout(() => {
       if (enabled && symbols.length > 0) {
         connect();
@@ -135,19 +141,27 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
 
   const getStatusColor = () => {
     switch (connectionStatus) {
-      case 'connected': return 'text-green-400';
-      case 'connecting': return 'text-yellow-400';
-      case 'error': return 'text-red-400';
-      default: return 'text-gray-400';
+      case 'connected':
+        return 'text-trading-gain';
+      case 'connecting':
+        return 'text-secondary';
+      case 'error':
+        return 'text-trading-loss';
+      default:
+        return 'text-text-tertiary';
     }
   };
 
   const getStatusText = () => {
     switch (connectionStatus) {
-      case 'connected': return 'Connected';
-      case 'connecting': return 'Connecting...';
-      case 'error': return 'Error';
-      default: return 'Disconnected';
+      case 'connected':
+        return 'Connected';
+      case 'connecting':
+        return 'Connecting...';
+      case 'error':
+        return 'Error';
+      default:
+        return 'Disconnected';
     }
   };
 
@@ -157,28 +171,24 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
 
   return (
     <div className="fixed top-4 right-4 z-50">
-      <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-lg">
+      <div className="bg-bg-secondary border border-border-default rounded-lg p-3 shadow-lg">
         <div className="flex items-center gap-2 mb-2">
-          <div className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400' : connectionStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' : 'bg-red-400'}`} />
-          <span className={`text-xs font-medium ${getStatusColor()}`}>
-            {getStatusText()}
-          </span>
+          <div
+            className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-trading-gain' : connectionStatus === 'connecting' ? 'bg-secondary animate-pulse' : 'bg-trading-loss'}`}
+          />
+          <span className={`text-xs font-medium ${getStatusColor()}`}>{getStatusText()}</span>
         </div>
 
-        <div className="text-xs text-gray-300 space-y-1">
+        <div className="text-xs text-text-secondary space-y-1">
           <div>Symbols: {symbols.length}</div>
           {connectionStatus === 'connected' && (
             <>
               <div>Messages: {messageCount}</div>
-              {lastUpdate && (
-                <div>Last: {lastUpdate.toLocaleTimeString()}</div>
-              )}
+              {lastUpdate && <div>Last: {lastUpdate.toLocaleTimeString()}</div>}
             </>
           )}
           {reconnectAttempts.current > 0 && connectionStatus !== 'connected' && (
-            <div className="text-yellow-400">
-              Retry: {reconnectAttempts.current}/5
-            </div>
+            <div className="text-secondary">Retry: {reconnectAttempts.current}/5</div>
           )}
         </div>
 
@@ -188,7 +198,7 @@ export default function WebSocketConnection({ enabled = false, symbols = [] }: W
               reconnectAttempts.current = 0;
               connect();
             }}
-            className="mt-2 w-full text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded"
+            className="mt-2 w-full text-xs bg-primary hover:bg-primary-light text-white px-2 py-1 rounded transition-smooth"
           >
             Reconnect
           </button>

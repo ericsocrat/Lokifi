@@ -10,6 +10,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useDrawingStore } from '../lib/drawingStore';
 import { usePaneStore } from '../lib/paneStore';
 import { symbolStore } from '../lib/symbolStore';
+import { colors } from '../lib/theme';
 import { timeframeStore } from '../lib/timeframeStore';
 
 export const TradingWorkspace: React.FC = () => {
@@ -90,7 +91,7 @@ export const TradingWorkspace: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-screen bg-gray-900 flex overflow-hidden">
+    <div className="h-screen bg-bg-primary flex overflow-hidden">
       {/* Left Navigation */}
       <Navigation />
 
@@ -98,37 +99,39 @@ export const TradingWorkspace: React.FC = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Enhanced Chart Header with Stats */}
         <div
-          className="bg-gray-800 border-b border-gray-700 relative z-40"
+          className="bg-bg-secondary border-b border-border-default relative z-40"
           style={{ overflow: 'visible' }}
         >
           <ChartHeader />
 
           {/* Workspace Stats Bar */}
-          <div className="px-4 py-2 bg-gray-850 border-t border-gray-700/50">
+          <div className="px-4 py-2 bg-bg-tertiary border-t border-border-subtle">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-6 text-xs">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="w-3 h-3 text-blue-400" />
-                  <span className="text-gray-400">Panes:</span>
-                  <span className="text-white font-mono">{workspaceStats.totalPanes}</span>
+                  <BarChart3 className="w-3 h-3 text-primary" />
+                  <span className="text-text-secondary">Panes:</span>
+                  <span className="text-text-primary font-mono">{workspaceStats.totalPanes}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="w-3 h-3 text-green-400" />
-                  <span className="text-gray-400">Indicators:</span>
-                  <span className="text-white font-mono">{workspaceStats.activeIndicators}</span>
+                  <TrendingUp className="w-3 h-3 text-trading-gain" />
+                  <span className="text-text-secondary">Indicators:</span>
+                  <span className="text-text-primary font-mono">
+                    {workspaceStats.activeIndicators}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Layout className="w-3 h-3 text-purple-400" />
-                  <span className="text-gray-400">Objects:</span>
-                  <span className="text-white font-mono">{workspaceStats.totalObjects}</span>
+                  <Layout className="w-3 h-3 text-secondary" />
+                  <span className="text-text-secondary">Objects:</span>
+                  <span className="text-text-primary font-mono">{workspaceStats.totalObjects}</span>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                  <span className="text-gray-400">Tool:</span>
-                  <span className="text-blue-300 font-medium capitalize">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                  <span className="text-text-secondary">Tool:</span>
+                  <span className="text-primary-light font-medium capitalize">
                     {activeTool.replace(/([A-Z])/g, ' $1').trim()}
                   </span>
                 </div>
@@ -138,10 +141,10 @@ export const TradingWorkspace: React.FC = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setShowGrid(!showGrid)}
-                  className={`px-2 py-1 rounded text-xs transition-colors ${
+                  className={`px-2 py-1 rounded text-xs transition-smooth ${
                     showGrid
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      ? 'bg-primary text-white'
+                      : 'bg-bg-elevated text-text-secondary hover:bg-bg-elevated-hover'
                   }`}
                   title="Toggle Grid"
                 >
@@ -150,7 +153,7 @@ export const TradingWorkspace: React.FC = () => {
 
                 <button
                   onClick={toggleFullscreen}
-                  className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
+                  className="px-2 py-1 bg-bg-elevated hover:bg-bg-elevated-hover text-text-secondary rounded text-xs transition-smooth"
                   title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
                 >
                   {isFullscreen ? (
@@ -186,8 +189,8 @@ export const TradingWorkspace: React.FC = () => {
                 className="absolute inset-0 pointer-events-none opacity-10 z-0"
                 style={{
                   backgroundImage: `
-                  linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
+                  linear-gradient(${colors.border.subtle} 1px, transparent 1px),
+                  linear-gradient(90deg, ${colors.border.subtle} 1px, transparent 1px)
                 `,
                   backgroundSize: '20px 20px',
                 }}
@@ -201,17 +204,17 @@ export const TradingWorkspace: React.FC = () => {
 
             {/* Chart Overlay Info */}
             <div className="absolute top-4 left-4 z-20">
-              <div className="bg-black/50 backdrop-blur-sm border border-gray-700/50 rounded-lg px-3 py-2">
-                <div className="text-xs text-gray-300">
+              <div className="glass rounded-lg px-3 py-2">
+                <div className="text-xs text-text-secondary">
                   <div className="flex items-center gap-2 mb-1">
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span className="font-mono font-bold text-white">
+                    <div className="w-2 h-2 rounded-full bg-trading-gain"></div>
+                    <span className="font-mono font-bold text-text-primary">
                       {workspaceStats.currentSymbol}
                     </span>
-                    <span className="text-gray-400">•</span>
+                    <span className="text-text-tertiary">•</span>
                     <span>{workspaceStats.currentTimeframe}</span>
                   </div>
-                  <div className="text-gray-400">Professional Trading Platform</div>
+                  <div className="text-text-tertiary">Professional Trading Platform</div>
                 </div>
               </div>
             </div>
@@ -231,16 +234,16 @@ export const TradingWorkspace: React.FC = () => {
         </div>
 
         {/* Status Bar */}
-        <div className="h-6 bg-gray-800 border-t border-gray-700 px-4 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-4 text-gray-400">
+        <div className="h-6 bg-bg-secondary border-t border-border-default px-4 flex items-center justify-between text-xs">
+          <div className="flex items-center gap-4 text-text-secondary">
             <span>Ready</span>
             <span>•</span>
             <span>WebGL Accelerated</span>
             <span>•</span>
-            <span className="text-green-400">Connected</span>
+            <span className="text-trading-gain">Connected</span>
           </div>
 
-          <div className="flex items-center gap-4 text-gray-400">
+          <div className="flex items-center gap-4 text-text-secondary">
             <span>FPS: 60</span>
             <span>•</span>
             <span>Latency: 12ms</span>

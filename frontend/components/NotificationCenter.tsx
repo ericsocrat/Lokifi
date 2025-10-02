@@ -3,7 +3,7 @@
  * Full-featured notification management interface
  */
 
-"use client";
+'use client';
 
 import { format, formatDistanceToNow } from 'date-fns';
 import {
@@ -18,13 +18,19 @@ import {
   Filter,
   RefreshCw,
   Settings,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { NotificationData, useNotifications } from '../src/hooks/useNotifications';
 
 type FilterType = 'all' | 'unread' | 'read' | 'dismissed';
-type NotificationType = 'all' | 'follow' | 'dm_message_received' | 'ai_reply_finished' | 'mention' | 'system_alert';
+type NotificationType =
+  | 'all'
+  | 'follow'
+  | 'dm_message_received'
+  | 'ai_reply_finished'
+  | 'mention'
+  | 'system_alert';
 type SortType = 'newest' | 'oldest' | 'priority';
 
 interface NotificationCenterProps {
@@ -40,7 +46,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   showHeader = true,
   showFilters = true,
   showPreferences = true,
-  maxHeight = '600px'
+  maxHeight = '600px',
 }) => {
   const [filter, setFilter] = useState<FilterType>('all');
   const [typeFilter, setTypeFilter] = useState<NotificationType>('all');
@@ -62,7 +68,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     clearAllNotifications,
     refreshNotifications,
     loadMore,
-    getStats
+    getStats,
   } = useNotifications();
 
   // Filter and sort notifications
@@ -111,11 +117,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   const handleBulkMarkRead = async () => {
-    const unreadSelected = Array.from(selectedNotifications)
-      .filter(id => {
-        const notification = notifications.find((n: NotificationData) => n.id === id);
-        return notification && !notification.is_read;
-      });
+    const unreadSelected = Array.from(selectedNotifications).filter((id) => {
+      const notification = notifications.find((n: NotificationData) => n.id === id);
+      return notification && !notification.is_read;
+    });
 
     for (const id of unreadSelected) {
       await markAsRead(id);
@@ -150,48 +155,44 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   const getNotificationColor = (type: string, priority: string) => {
-    if (priority === 'urgent') return 'border-l-red-600 bg-red-500/5';
-    if (priority === 'high') return 'border-l-red-500 bg-red-500/5';
+    if (priority === 'urgent') return 'border-l-trading-loss bg-trading-loss/5';
+    if (priority === 'high') return 'border-l-trading-loss bg-trading-loss/5';
 
     switch (type) {
       case 'follow':
-        return 'border-l-blue-500 bg-blue-500/5';
+        return 'border-l-primary bg-primary/5';
       case 'dm_message_received':
-        return 'border-l-green-500 bg-green-500/5';
+        return 'border-l-trading-gain bg-trading-gain/5';
       case 'ai_reply_finished':
-        return 'border-l-purple-500 bg-purple-500/5';
+        return 'border-l-secondary bg-secondary/5';
       case 'mention':
-        return 'border-l-orange-500 bg-orange-500/5';
+        return 'border-l-secondary bg-secondary/5';
       default:
-        return 'border-l-gray-500 bg-gray-500/5';
+        return 'border-l-border-default bg-bg-elevated/50';
     }
   };
 
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return <AlertCircle className="w-4 h-4 text-red-600" />;
+        return <AlertCircle className="w-4 h-4 text-trading-loss" />;
       case 'high':
-        return <AlertCircle className="w-4 h-4 text-red-500" />;
+        return <AlertCircle className="w-4 h-4 text-trading-loss" />;
       default:
         return null;
     }
   };
 
   return (
-    <div className={`bg-neutral-900 border border-neutral-700 rounded-lg ${className}`}>
+    <div className={`bg-bg-secondary border border-border-default rounded-lg ${className}`}>
       {/* Header */}
       {showHeader && (
-        <div className="p-4 border-b border-neutral-700">
+        <div className="p-4 border-b border-border-default">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-white" />
-              <h2 className="text-lg font-semibold text-white">Notification Center</h2>
-              {unreadCount > 0 && (
-                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                  {unreadCount}
-                </span>
-              )}
+              <Bell className="w-5 h-5 text-text-primary" />
+              <h2 className="text-lg font-semibold text-text-primary">Notification Center</h2>
+              {unreadCount > 0 && <span className="badge-error">{unreadCount}</span>}
             </div>
 
             <div className="flex items-center gap-2">
@@ -289,7 +290,8 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         <div className="p-3 border-b border-neutral-700 bg-blue-500/10">
           <div className="flex items-center justify-between">
             <span className="text-sm text-white">
-              {selectedNotifications.size} notification{selectedNotifications.size > 1 ? 's' : ''} selected
+              {selectedNotifications.size} notification{selectedNotifications.size > 1 ? 's' : ''}{' '}
+              selected
             </span>
 
             <div className="flex gap-2">
@@ -316,11 +318,10 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       <div className="p-3 border-b border-neutral-700">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleSelectAll}
-              className="text-xs text-blue-400 hover:text-blue-300"
-            >
-              {selectedNotifications.size === filteredNotifications.length ? 'Deselect All' : 'Select All'}
+            <button onClick={handleSelectAll} className="text-xs text-blue-400 hover:text-blue-300">
+              {selectedNotifications.size === filteredNotifications.length
+                ? 'Deselect All'
+                : 'Select All'}
             </button>
 
             {unreadCount > 0 && (
@@ -373,9 +374,12 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
         {filteredNotifications.map((notification: NotificationData) => (
           <div
             key={notification.id}
-            className={`border-l-4 hover:bg-neutral-800/50 transition-colors ${getNotificationColor(notification.type, notification.priority)
-              } ${notification.is_read ? 'opacity-75' : ''} ${selectedNotifications.has(notification.id) ? 'bg-blue-500/10' : ''
-              }`}
+            className={`border-l-4 hover:bg-neutral-800/50 transition-colors ${getNotificationColor(
+              notification.type,
+              notification.priority
+            )} ${notification.is_read ? 'opacity-75' : ''} ${
+              selectedNotifications.has(notification.id) ? 'bg-blue-500/10' : ''
+            }`}
           >
             <div className="p-4">
               <div className="flex gap-3">
@@ -407,8 +411,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <h4 className={`font-medium text-sm ${notification.is_read ? 'text-neutral-300' : 'text-white'
-                          }`}>
+                        <h4
+                          className={`font-medium text-sm ${
+                            notification.is_read ? 'text-neutral-300' : 'text-white'
+                          }`}
+                        >
                           {notification.title}
                         </h4>
 
@@ -420,8 +427,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       </div>
 
                       {notification.message && (
-                        <p className={`text-sm mb-2 ${notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
-                          }`}>
+                        <p
+                          className={`text-sm mb-2 ${
+                            notification.is_read ? 'text-neutral-400' : 'text-neutral-300'
+                          }`}
+                        >
                           {notification.message}
                         </p>
                       )}
@@ -430,18 +440,23 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       <div className="flex items-center gap-4 text-xs text-neutral-500">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                          {formatDistanceToNow(new Date(notification.created_at), {
+                            addSuffix: true,
+                          })}
                         </span>
 
-                        <span className="capitalize">
-                          {notification.type.replace('_', ' ')}
-                        </span>
+                        <span className="capitalize">{notification.type.replace('_', ' ')}</span>
 
                         {notification.priority !== 'normal' && (
-                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${notification.priority === 'urgent' ? 'bg-red-600 text-white' :
-                            notification.priority === 'high' ? 'bg-red-500 text-white' :
-                              'bg-neutral-600 text-neutral-300'
-                            }`}>
+                          <span
+                            className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                              notification.priority === 'urgent'
+                                ? 'bg-red-600 text-white'
+                                : notification.priority === 'high'
+                                  ? 'bg-red-500 text-white'
+                                  : 'bg-neutral-600 text-neutral-300'
+                            }`}
+                          >
                             {notification.priority}
                           </span>
                         )}
@@ -450,9 +465,11 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                       {/* Expand button for detailed view */}
                       {(notification.payload || notification.message) && (
                         <button
-                          onClick={() => setExpandedNotification(
-                            expandedNotification === notification.id ? null : notification.id
-                          )}
+                          onClick={() =>
+                            setExpandedNotification(
+                              expandedNotification === notification.id ? null : notification.id
+                            )
+                          }
                           className="text-xs text-blue-400 hover:text-blue-300 mt-2 flex items-center gap-1"
                         >
                           {expandedNotification === notification.id ? (

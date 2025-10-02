@@ -4,7 +4,7 @@ const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   reactStrictMode: true,
   experimental: {
-    forceSwcTransforms: false
+    forceSwcTransforms: false,
   },
   outputFileTracingRoot: process.cwd(),
   webpack: (config, { dev, isServer }) => {

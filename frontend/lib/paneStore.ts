@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -14,7 +14,7 @@ export interface Pane {
 interface PaneState {
   panes: Pane[];
   draggedPane: string | null;
-  
+
   // Actions
   addPane: (type: 'price' | 'indicator', indicators?: string[]) => string;
   removePane: (paneId: string) => void;
@@ -33,8 +33,8 @@ const DEFAULT_PANES: Pane[] = [
   {
     id: 'price-pane',
     type: 'price',
-    height: 400,
-    indicators: ['sma', 'ema', 'bb', 'vwap'], // Price overlay indicators
+    height: 600,
+    indicators: [],
     visible: true,
     locked: false,
   },
@@ -42,7 +42,10 @@ const DEFAULT_PANES: Pane[] = [
 
 export const usePaneStore = create<PaneState>()(
   persist(
-    (set: (partial: Partial<PaneState> | ((state: PaneState) => Partial<PaneState>)) => void, get: () => PaneState) => ({
+    (
+      set: (partial: Partial<PaneState> | ((state: PaneState) => Partial<PaneState>)) => void,
+      get: () => PaneState
+    ) => ({
       panes: DEFAULT_PANES,
       draggedPane: null,
 
@@ -56,80 +59,81 @@ export const usePaneStore = create<PaneState>()(
           locked: false,
         };
 
-        set(state => ({
-          panes: [...state.panes, newPane]
+        set((state) => ({
+          panes: [...state.panes, newPane],
         }));
 
         return newPane.id;
       },
 
       removePane: (paneId: string) => {
-        set(state => ({
-          panes: state.panes.filter((pane: Pane) => pane.id !== paneId)
+        set((state) => ({
+          panes: state.panes.filter((pane: Pane) => pane.id !== paneId),
         }));
       },
 
       updatePaneHeight: (paneId: string, height: number) => {
-        set(state => ({
-          panes: state.panes.map((pane: Pane) =>
-            pane.id === paneId ? { ...pane, height } : pane
-          )
+        set((state) => ({
+          panes: state.panes.map((pane: Pane) => (pane.id === paneId ? { ...pane, height } : pane)),
         }));
       },
 
       addIndicatorToPane: (paneId: string, indicatorId: string) => {
-        set(state => ({
+        set((state) => ({
           panes: state.panes.map((pane: Pane) =>
-            pane.id === paneId 
-              ? { ...pane, indicators: [...pane.indicators, indicatorId] }
-              : pane
-          )
+            pane.id === paneId ? { ...pane, indicators: [...pane.indicators, indicatorId] } : pane
+          ),
         }));
       },
 
       removeIndicatorFromPane: (paneId: string, indicatorId: string) => {
-        set(state => ({
+        set((state) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId
               ? { ...pane, indicators: pane.indicators.filter((id: string) => id !== indicatorId) }
               : pane
-          )
+          ),
         }));
       },
 
       moveIndicatorToPane: (indicatorId: string, fromPaneId: string, toPaneId: string) => {
-        set(state => ({
+        set((state) => ({
           panes: state.panes.map((pane: Pane) => {
             if (pane.id === fromPaneId) {
-              return { ...pane, indicators: pane.indicators.filter((id: string) => id !== indicatorId) };
+              return {
+                ...pane,
+                indicators: pane.indicators.filter((id: string) => id !== indicatorId),
+              };
             }
             if (pane.id === toPaneId) {
               return { ...pane, indicators: [...pane.indicators, indicatorId] };
             }
             return pane;
-          })
+          }),
         }));
       },
 
       togglePaneVisibility: (paneId: string) => {
-        set(state => ({
+        set((state) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId ? { ...pane, visible: !pane.visible } : pane
-          )
+          ),
         }));
       },
 
       togglePaneLock: (paneId: string) => {
-        set(state => ({
+        set((state) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId ? { ...pane, locked: !pane.locked } : pane
-          )
+          ),
         }));
       },
 
       reorderPanes: (paneIds: string[]) => {
         const { panes } = get();
-        const reorderedPanes = paneIds.map(id => panes.find((pane: Pane) => pane.id === id)!).filter(Boolean);
+        const reorderedPanes = paneIds
+          .map((id) => panes.find((pane: Pane) => pane.id === id)!)
+          .filter(Boolean);
         set({ panes: reorderedPanes });
       },
 

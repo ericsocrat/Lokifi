@@ -1,0 +1,239 @@
+{
+  "timestamp": "2025-10-02T13:08:58.177Z",
+  "summary": {
+    "totalFiles": 81,
+    "filesWithThemeUsage": 1,
+    "filesWithIssues": 14,
+    "themeAdoption": 1
+  },
+  "issues": [
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\ChartPanel.test.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 5,
+          "examples": [
+            "#0a0a0a",
+            "#e5e7eb",
+            "#1f2937"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\ChartPanel.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 13,
+          "examples": [
+            "#0a0a0a",
+            "#e5e7eb",
+            "#1f2937"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        },
+        {
+          "type": "RGBA Colors",
+          "count": 12,
+          "examples": [
+            "rgba(11,11,15,1)",
+            "rgba(11,11,15,1)",
+            "rgba(59,130,246,0.95)"
+          ],
+          "suggestion": "Use theme.colors with rgba() utility function"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\ChartPanelV2.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 30,
+          "examples": [
+            "#0a0a0a",
+            "#e5e7eb",
+            "#1f2937"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\EnhancedChart.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 13,
+          "examples": [
+            "#1a1a1a",
+            "#e5e5e5",
+            "#2a2a2a"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\IndicatorSettingsDrawer.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 4,
+          "examples": [
+            "#22d3ee",
+            "#ef4444",
+            "#22c55e"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\MultiPaneChart.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 12,
+          "examples": [
+            "#1a1a1a",
+            "#d1d5db",
+            "#374151"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\components\\TradingWorkspace.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "RGBA Colors",
+          "count": 2,
+          "examples": [
+            "rgba(255,255,255,0.1)",
+            "rgba(255,255,255,0.1)"
+          ],
+          "suggestion": "Use theme.colors with rgba() utility function"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\corporateActions.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 5,
+          "examples": [
+            "#FEF3C7",
+            "#D1FAE5",
+            "#DBEAFE"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\drawingStore.ts",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 2,
+          "examples": [
+            "#60a5fa",
+            "#60a5fa"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\indicatorStore.ts",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 1,
+          "examples": [
+            "#22d3ee"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\mobileA11y.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 5,
+          "examples": [
+            "#3b82f6",
+            "#6b7280",
+            "#ffffff"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\monitoring.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 12,
+          "examples": [
+            "#FFA500",
+            "#FF0000",
+            "#00FF00"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\pluginSDK.ts",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 3,
+          "examples": [
+            "#00ff00",
+            "#00ff00",
+            "#00ff00"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\frontend\\lib\\templates.tsx",
+      "hasThemeUsage": false,
+      "issues": [
+        {
+          "type": "Hex Colors",
+          "count": 1,
+          "examples": [
+            "#ffffff"
+          ],
+          "suggestion": "Use theme.colors constants instead of hardcoded hex colors"
+        }
+      ]
+    }
+  ]
+}
