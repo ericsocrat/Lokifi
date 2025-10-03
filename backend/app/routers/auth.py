@@ -124,23 +124,18 @@ async def google_oauth(
     db: AsyncSession = Depends(get_db)
 ):
     """Authenticate with Google OAuth."""
-    if not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail="Google OAuth is not configured"
-        )
-    
     try:
-        # Verify the access token with Google
+        # Verify the ID token with Google
+        # The token from @react-oauth/google is an ID token (JWT)
         async with httpx.AsyncClient() as client:
             google_response = await client.get(
-                f"https://www.googleapis.com/oauth2/v1/userinfo?access_token={oauth_data.access_token}"
+                f"https://oauth2.googleapis.com/tokeninfo?id_token={oauth_data.token}"
             )
             
             if google_response.status_code != 200:
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid Google access token"
+                    detail="Invalid Google token"
                 )
             
             user_info = google_response.json()
@@ -148,7 +143,7 @@ async def google_oauth(
         # Extract user information
         email = user_info.get("email")
         name = user_info.get("name", email)
-        google_id = user_info.get("id")
+        google_id = user_info.get("sub")  # 'sub' is the user ID in ID tokens
         
         if not email or not google_id:
             raise HTTPException(

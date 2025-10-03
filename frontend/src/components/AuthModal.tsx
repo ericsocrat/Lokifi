@@ -136,8 +136,12 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || "Google authentication failed");
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Google auth error response:", errorData);
+        const errorMessage = typeof errorData === 'string' 
+          ? errorData 
+          : (errorData?.detail || errorData?.message || "Google authentication failed");
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();

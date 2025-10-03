@@ -25,7 +25,7 @@ class UserLoginRequest(BaseModel):
 
 class GoogleOAuthRequest(BaseModel):
     """Google OAuth request schema."""
-    access_token: str
+    token: str  # Google ID token (JWT) from Google Sign-In
 
 
 class RefreshTokenRequest(BaseModel):
