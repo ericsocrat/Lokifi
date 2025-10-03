@@ -153,9 +153,9 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+  <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
       {/* Navigation Bar */}
-      <nav className="bg-white border-b border-gray-200 px-6 py-4">
+  <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 transition-colors">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
             <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
@@ -191,11 +191,11 @@ export default function DashboardPage() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 min-h-screen p-4">
+  <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4 transition-colors">
           <nav className="space-y-1">
             <a
               href="/dashboard"
-              className="flex items-center justify-between px-4 py-3 bg-gray-100 rounded-lg text-gray-900 font-medium hover:bg-gray-200 transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <Wallet className="w-5 h-5" />
@@ -205,7 +205,7 @@ export default function DashboardPage() {
             </a>
             <a
               href="/dashboard/assets"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              className="flex items-center justify-between px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <TrendingUp className="w-5 h-5" />

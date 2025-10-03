@@ -201,9 +201,9 @@ export default function AssetsPage() {
   }
 
   return (
-  <div className="min-h-screen bg-gray-50 dark:bg-bg-base transition-colors">
+  <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
       {/* Navigation Bar */}
-  <nav className="bg-white dark:bg-bg-secondary border-b border-gray-200 dark:border-gray-700 px-6 py-4 transition-colors">
+  <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 transition-colors">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
             <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
@@ -239,11 +239,11 @@ export default function AssetsPage() {
 
       <div className="flex">
         {/* Sidebar */}
-  <aside className="w-64 bg-white dark:bg-bg-secondary border-r border-gray-200 dark:border-gray-700 min-h-screen p-4 transition-colors">
+  <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4 transition-colors">
           <nav className="space-y-1">
             <a
               href="/dashboard"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              className="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <Wallet className="w-5 h-5" />
@@ -253,7 +253,7 @@ export default function AssetsPage() {
             </a>
             <a
               href="/dashboard/assets"
-              className="flex items-center justify-between px-4 py-3 bg-gray-100 rounded-lg text-gray-900 font-medium hover:bg-gray-200 transition-colors"
+              className="flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <TrendingUp className="w-5 h-5" />
@@ -263,7 +263,7 @@ export default function AssetsPage() {
             </a>
             <a
               href="/dashboard/debts"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
+              className="flex items-center justify-between px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
             >
               <div className="flex items-center space-x-3">
                 <AlertCircle className="w-5 h-5" />
@@ -348,39 +348,47 @@ export default function AssetsPage() {
             {sections.map((section, idx) => {
               const sectionValue = section.assets.reduce((s, a) => s + a.value, 0);
               return (
-              <section className="mb-8" key={section.id}>
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">{section.name}</h2>
-                  <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">{formatCurrency(sectionValue)}</span>
-                </div>
-                <div className="space-y-2">
-                  <div className="px-4 py-2">
-                    <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">ASSET</span>
+                <section className="mb-8" key={section.id}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      {section.name}
+                    </h2>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                      {formatCurrency(sectionValue)}
+                    </span>
                   </div>
-                  {idx===0 && connectingBanks.map((bank) => (
-                    <ConnectingBankItem key={bank.id} bank={bank} />
-                  ))}
-                  {section.assets.map((asset: Asset) => (
-                    <AssetItem
-                      key={asset.id}
-                      asset={asset}
-                      onDelete={() => removeAsset(asset.id)}
-                    />
-                  ))}
-                  <div className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 cursor-pointer transition-colors group dark:bg-gray-800 dark:hover:bg-gray-700">
-                    <button
-                      onClick={openAddAssetModal}
-                      className="w-full text-center text-white font-medium"
-                    >
-                      + ADD ASSET
-                    </button>
-                    <div className="text-center text-sm text-gray-300 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      {formatCurrency(getTotalValue())}
+                  <div className="space-y-2">
+                    <div className="px-4 py-2">
+                      <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wide">
+                        ASSET
+                      </span>
+                    </div>
+                    {idx === 0 &&
+                      connectingBanks.map((bank) => (
+                        <ConnectingBankItem key={bank.id} bank={bank} />
+                      ))}
+                    {section.assets.map((asset: Asset) => (
+                      <AssetItem
+                        key={asset.id}
+                        asset={asset}
+                        onDelete={() => removeAsset(asset.id)}
+                      />
+                    ))}
+                    <div className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 cursor-pointer transition-colors group dark:bg-gray-800 dark:hover:bg-gray-700">
+                      <button
+                        onClick={openAddAssetModal}
+                        className="w-full text-center text-white font-medium"
+                      >
+                        + ADD ASSET
+                      </button>
+                      <div className="text-center text-sm text-gray-300 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {formatCurrency(getTotalValue())}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
-            )})}
+                </section>
+              );
+            })}
 
             <section>
               <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
@@ -446,7 +454,10 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
             {fmt(animatedValue)}
           </p>
         </div>
-        <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors" aria-label="Options">
+        <button
+          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          aria-label="Options"
+        >
           <MoreHorizontal className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </button>
       </div>
@@ -467,9 +478,14 @@ function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void })
       </div>
       <div className="flex items-center space-x-4 relative">
         <div className="text-right">
-          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">{fmt(asset.value)}</p>
+          <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {fmt(asset.value)}
+          </p>
         </div>
-        <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors" aria-label="Options">
+        <button
+          className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+          aria-label="Options"
+        >
           <MoreHorizontal className="w-5 h-5 text-gray-400 dark:text-gray-500" />
         </button>
         {onDelete && (

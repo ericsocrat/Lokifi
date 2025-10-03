@@ -20,16 +20,36 @@
   }
 
   body {
-    @apply bg-bg-base text-gray-200;
-    font-family:
-      'Inter',
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      'Roboto',
-      sans-serif;
+    /* Default (will be overridden by light/dark explicit rules below) */
+    @apply font-sans bg-white text-gray-900;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     font-size: 14px;
   }
+
+  /* Explicit LIGHT mode (no .dark class on html) */
+  html:not(.dark) body {
+    @apply bg-white text-gray-900;
+  }
+
+  /* High-contrast DARK mode */
+  html.dark body {
+    /* Deep background and brighter foreground for readability */
+    @apply bg-gray-950 text-gray-100;
+  }
+
+  /* Improve default element text contrast in dark mode */
+  html.dark h1, html.dark h2, html.dark h3, html.dark h4, html.dark h5, html.dark h6 {
+    @apply text-gray-50;
+  }
+  html.dark p, html.dark span, html.dark li, html.dark dt, html.dark dd, html.dark label {
+    @apply text-gray-300;
+  }
+
+  /* Cards & panels adapt */
+  html:not(.dark) .card { @apply bg-white border-gray-200 text-gray-900; }
+  html.dark .card { @apply bg-gray-900 border-gray-800 text-gray-100; }
+  html.dark .card-hover { @apply hover:border-gray-700; }
+  html.dark .card-glass { @apply bg-gray-900/80; }
 
   html[data-font-size='sm'] body {
     font-size: 13px;
