@@ -48,11 +48,12 @@
     background: #000;
     color: #fafafa;
   }
-  html.dark.oled .card { @apply bg-black border-gray-800 text-gray-100; }
+  html.dark.oled .card { @apply bg-black text-gray-100; border-color:#1f2937; }
   html.dark.oled nav, html.dark.oled aside { @apply bg-black; }
-  html.dark.oled .border-gray-800 { @apply border-gray-800; }
+  /* Direct property to avoid Tailwind circular @apply; ensures borders still visible */
+  html.dark.oled .border-gray-800 { border-color:#1f2937 !important; }
   html.dark.oled .bg-gray-900 { @apply bg-black; }
-  html.dark.oled .bg-gray-800 { @apply bg-neutral-900; }
+  html.dark.oled .bg-gray-800 { background:#111827; }
 
   /* Improve default element text contrast in dark mode */
   html.dark h1,
