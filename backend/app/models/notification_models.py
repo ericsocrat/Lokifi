@@ -5,6 +5,7 @@ from enum import Enum
 from typing import Any
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Index, String, Text
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -37,8 +38,8 @@ class Notification(Base):
     __tablename__ = "notifications"
 
     # Primary identification
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     
     # Notification classification
     type = Column(String(50), nullable=False, index=True)
@@ -73,12 +74,12 @@ class Notification(Base):
     
     # Reference to related entities
     related_entity_type = Column(String(50), nullable=True)  # e.g., "message", "thread", "user"
-    related_entity_id = Column(String(36), nullable=True)
-    related_user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=True)  # For user-specific notifications
+    related_entity_id = Column(UUID(as_uuid=True), nullable=True)
+    related_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True)  # For user-specific notifications
     
     # Batching and grouping
-    batch_id = Column(String(36), nullable=True, index=True)  # For batch operations
-    parent_notification_id = Column(String(36), ForeignKey("notifications.id"), nullable=True)
+    batch_id = Column(UUID(as_uuid=True), nullable=True, index=True)  # For batch operations
+    parent_notification_id = Column(UUID(as_uuid=True), ForeignKey("notifications.id"), nullable=True)
     
     # Relationships
     user = relationship(User, back_populates="notifications", foreign_keys=[user_id])
@@ -175,8 +176,8 @@ class NotificationPreference(Base):
     """
     __tablename__ = "notification_preferences"
 
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, unique=True)
     
     # Channel preferences
     email_enabled = Column(Boolean, nullable=False, default=True)

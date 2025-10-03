@@ -1,0 +1,105 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🔴 Start Redis Server (Docker)",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host '🔴 Redis Server (Docker)' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host 'Checking Docker...' -ForegroundColor Cyan; if (Get-Command docker -ErrorAction SilentlyContinue) { $existing = docker ps -a --filter 'name=lokifi-redis' --format '{{.Names}}' 2>$null; if ($existing -eq 'lokifi-redis') { $running = docker ps --filter 'name=lokifi-redis' --format '{{.Names}}' 2>$null; if ($running -eq 'lokifi-redis') { Write-Host '✅ Redis container already running' -ForegroundColor Green } else { Write-Host '▶️ Starting Redis container...' -ForegroundColor Yellow; docker start lokifi-redis; Write-Host '✅ Redis started' -ForegroundColor Green } } else { Write-Host '🚀 Creating Redis container...' -ForegroundColor Yellow; docker run -d --name lokifi-redis -p 6379:6379 -e REDIS_PASSWORD=23233 --restart unless-stopped redis:latest redis-server --requirepass 23233; Write-Host '✅ Redis created and started' -ForegroundColor Green }; Write-Host ''; Write-Host '📋 Connection Details:' -ForegroundColor Cyan; Write-Host '   URL: redis://:23233@localhost:6379/0' -ForegroundColor White; Write-Host '   Password: 23233' -ForegroundColor White; Write-Host '   Container: lokifi-redis' -ForegroundColor White; Write-Host ''; Write-Host '💡 To stop: docker stop lokifi-redis' -ForegroundColor Gray; Write-Host '💡 To manage: .\\manage-redis.ps1' -ForegroundColor Gray; } else { Write-Host '❌ Docker not found!' -ForegroundColor Red; Write-Host 'Please install Docker Desktop' -ForegroundColor Yellow }"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "revealProblems": "never",
+        "close": false
+      },
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "🔧 Start Backend Server",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host '🔧 Backend Server (FastAPI)' -ForegroundColor Blue; Write-Host '============================================' -ForegroundColor Green; cd backend; if (Test-Path venv/Scripts/Activate.ps1) { ./venv/Scripts/Activate.ps1 } else { python -m venv venv; ./venv/Scripts/Activate.ps1; pip install -r requirements.txt }; Write-Host '📡 Starting on http://localhost:8000' -ForegroundColor Cyan; $env:PYTHONPATH=(Get-Location).Path; python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "revealProblems": "never",
+        "close": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Application startup complete"
+        }
+      }
+    },
+    {
+      "label": "🎨 Start Frontend Server",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host '🎨 Frontend Server (Next.js)' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; cd frontend; if (-not (Test-Path node_modules)) { Write-Host '📦 Installing dependencies...' -ForegroundColor Yellow; npm install }; Write-Host '🌐 Starting on http://localhost:3000' -ForegroundColor Cyan; npm run dev"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "revealProblems": "never",
+        "close": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Ready in"
+        }
+      }
+    },
+    {
+      "label": "🚀 Start All Servers",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "🔴 Start Redis Server",
+        "🔧 Start Backend Server",
+        "🎨 Start Frontend Server"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}

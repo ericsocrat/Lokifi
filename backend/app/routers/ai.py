@@ -39,7 +39,7 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import Response, StreamingResponse
 
 # J6.1 Notification Integration
-from setup_j6_integration import trigger_ai_response_notification
+from scripts.setup_j6_integration import trigger_ai_response_notification
 from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)

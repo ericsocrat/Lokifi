@@ -21,7 +21,15 @@ settings = Settings()
 config = context.config
 
 # Override the sqlalchemy.url from our settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("+asyncpg", "").replace("+aiosqlite", ""))
+# Convert async drivers to sync drivers for migrations
+db_url = settings.DATABASE_URL
+print(f"DEBUG: Original DATABASE_URL from settings: {db_url}")
+if "+asyncpg" in db_url:
+    db_url = db_url.replace("+asyncpg", "+psycopg2")
+elif "+aiosqlite" in db_url:
+    db_url = db_url.replace("+aiosqlite", "")
+print(f"DEBUG: Converted URL for migrations: {db_url}")
+config.set_main_option("sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

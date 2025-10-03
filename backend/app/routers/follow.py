@@ -25,7 +25,7 @@ from app.services.follow_service import FollowService
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 # J6.1 Notification Integration
-from setup_j6_integration import trigger_follow_notification
+from scripts.setup_j6_integration import trigger_follow_notification
 from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/follow", tags=["follow"])

@@ -25,6 +25,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.12.2",
     "@testing-library/dom": "^10.4.0",
     "@types/lz-string": "^1.5.0",
     "@types/node": "^22.10.1",

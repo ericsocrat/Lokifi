@@ -15,14 +15,40 @@ export function getToken(): string | null {
 }
 
 export async function apiFetch(input: string, init: RequestInit = {}) {
-  const token = getToken();
+  const url = `${API_BASE}${input}`;
+  console.log('🌐 apiFetch: Making request to:', url);
+  console.log('🌐 apiFetch: Method:', init.method || 'GET');
+  
   const headers = new Headers(init.headers || {});
-  if (token) headers.set('Authorization', `Bearer ${token}`);
+  // Using HTTP-only cookies for auth, no need for Authorization header
   headers.set('Content-Type', headers.get('Content-Type') || 'application/json');
-  const res = await fetch(`${API_BASE}${input}`, { ...init, headers });
-  if (!res.ok) {
-    const t = await res.text().catch(() => '');
-    throw new Error(`${res.status}: ${t || res.statusText}`);
+  
+  try {
+    const res = await fetch(url, { 
+      ...init, 
+      headers,
+      credentials: 'include' // Enable sending/receiving cookies
+    });
+    
+    console.log('🌐 apiFetch: Response status:', res.status);
+    
+    if (!res.ok) {
+      const text = await res.text().catch(() => '');
+      console.log('❌ apiFetch: Error response:', text);
+      // Try to parse error detail from JSON response
+      try {
+        const errorData = JSON.parse(text);
+        const errorMessage = errorData.detail || text || res.statusText;
+        throw new Error(errorMessage);
+      } catch (parseError) {
+        // If JSON parse fails, use raw text
+        throw new Error(text || res.statusText);
+      }
+    }
+    
+    return res;
+  } catch (error) {
+    console.error('❌ apiFetch: Request failed:', error);
+    throw error;
   }
-  return res;
 }

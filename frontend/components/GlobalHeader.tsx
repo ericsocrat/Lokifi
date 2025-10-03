@@ -4,12 +4,12 @@ import { useAuth } from '@/src/components/AuthProvider';
 import { Bell, User } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-import { AuthModalCMC } from './AuthModalCMC';
+import { AuthModal } from '@/src/components/AuthModal';
 import { NotificationBell } from './NotificationBell';
 
 export default function GlobalHeader() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('login');
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
   const { user } = useAuth();
   const isLoggedIn = !!user;
 
@@ -99,7 +99,7 @@ export default function GlobalHeader() {
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
-                  <span className="text-sm font-medium hidden sm:inline">@{user.handle}</span>
+                  <span className="text-sm font-medium hidden sm:inline">{user.username ? `@${user.username}` : user.email}</span>
                 </Link>
               </>
             ) : (
@@ -134,7 +134,7 @@ export default function GlobalHeader() {
 
       {/* Auth Modal */}
       {isAuthModalOpen && (
-        <AuthModalCMC defaultTab={authModalTab} onClose={() => setIsAuthModalOpen(false)} />
+        <AuthModal initialMode={authModalTab} onClose={() => setIsAuthModalOpen(false)} />
       )}
     </>
   );

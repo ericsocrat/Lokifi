@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lokifi Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔐 Lokifi Authentication Test</h1>
+    
+    <h2>Register</h2>
+    <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="regEmail" value="hello@lokifi.com">
+    </div>
+    <div class="form-group">
+        <label>Password:</label>
+        <input type="password" id="regPassword" value="?Apollwng113?">
+    </div>
+    <div class="form-group">
+        <label>Full Name:</label>
+        <input type="text" id="regName" value="Test User">
+    </div>
+    <button onclick="register()">Register</button>
+    
+    <hr>
+    
+    <h2>Login</h2>
+    <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="loginEmail" value="hello@lokifi.com">
+    </div>
+    <div class="form-group">
+        <label>Password:</label>
+        <input type="password" id="loginPassword" value="?Apollwng113?">
+    </div>
+    <button onclick="login()">Login</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        async function register() {
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const full_name = document.getElementById('regName').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password, full_name })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('✅ Registration successful! User ID: ' + data.id, 'success');
+                } else {
+                    showResult('❌ Registration failed: ' + (data.detail || JSON.stringify(data)), 'error');
+                }
+            } catch (error) {
+                showResult('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('✅ Login successful! Welcome ' + data.user.email, 'success');
+                } else {
+                    showResult('❌ Login failed: ' + (data.detail || JSON.stringify(data)), 'error');
+                }
+            } catch (error) {
+                showResult('❌ Error: ' + error.message, 'error');
+            }
+        }
+        
+        function showResult(message, type) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = type;
+        }
+    </script>
+</body>
+</html>

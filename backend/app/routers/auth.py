@@ -30,8 +30,14 @@ async def register(
     db: AsyncSession = Depends(get_db)
 ):
     """Register a new user."""
-    auth_service = AuthService(db)
-    result = await auth_service.register_user(user_data)
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.register_user(user_data)
+    except Exception as e:
+        import traceback
+        print(f"❌ Registration Error: {str(e)}")
+        print(traceback.format_exc())
+        raise
     
     # Set HTTP-only cookie with access token
     response_content = jsonable_encoder({
@@ -71,19 +77,25 @@ async def login(
     db: AsyncSession = Depends(get_db)
 ):
     """Login a user."""
-    auth_service = AuthService(db)
-    result = await auth_service.login_user(login_data)
-    
-    # Set HTTP-only cookie with access token
-    response_content = jsonable_encoder({
-        "user": result["user"],
-        "profile": result["profile"],
-        "access_token": result["tokens"].access_token,
-        "refresh_token": result["tokens"].refresh_token,
-        "token_type": result["tokens"].token_type,
-        "expires_in": result["tokens"].expires_in
-    })
-    response = JSONResponse(content=response_content)
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.login_user(login_data)
+        
+        # Set HTTP-only cookie with access token
+        response_content = jsonable_encoder({
+            "user": result["user"],
+            "profile": result["profile"],
+            "access_token": result["tokens"].access_token,
+            "refresh_token": result["tokens"].refresh_token,
+            "token_type": result["tokens"].token_type,
+            "expires_in": result["tokens"].expires_in
+        })
+        response = JSONResponse(content=response_content)
+    except Exception as e:
+        import traceback
+        print(f"❌ Login Error: {str(e)}")
+        print(traceback.format_exc())
+        raise
     
     response.set_cookie(
         key="access_token",

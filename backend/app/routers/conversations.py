@@ -29,12 +29,12 @@ from app.services.message_search_service import (
     SearchFilter,
     SearchResult,
 )
-from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import connection_manager
+from app.services.rate_limit_service import RateLimitService
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 # J6.1 Notification Integration
-from setup_j6_integration import process_mentions_in_content, trigger_dm_notification
+from scripts.setup_j6_integration import process_mentions_in_content, trigger_dm_notification
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)

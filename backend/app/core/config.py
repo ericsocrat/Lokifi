@@ -13,7 +13,7 @@ class Settings(BaseSettings):
 
     # Phase J: Database Configuration
     DATABASE_URL: str = Field(
-        default="sqlite+aiosqlite:///./data/lokifi.sqlite", alias="DATABASE_URL"
+        default="postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi", alias="DATABASE_URL"
     )
 
     # Production Database Settings
@@ -74,6 +74,7 @@ class Settings(BaseSettings):
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
     redis_host: str = Field(default="localhost", alias="REDIS_HOST")
     redis_port: int = Field(default=6379, alias="REDIS_PORT")
+    redis_password: str | None = Field(default=None, alias="REDIS_PASSWORD")
     redis_sentinel_hosts: list[str] = Field(default=[], alias="REDIS_SENTINEL_HOSTS")
     redis_sentinel_service: str = Field(
         default="mymaster", alias="REDIS_SENTINEL_SERVICE"

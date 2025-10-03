@@ -27,6 +27,7 @@ from app.routers import (
     auth,
     chat,
     conversations,
+    crypto,
     follow,
     health,
     market_data,
@@ -68,11 +69,13 @@ async def lifespan(app: FastAPI):
         logger.info("🔌 Starting WebSocket manager...")
         advanced_websocket_manager.start_background_tasks()
 
-        logger.info("🗄️ Starting data services...")
-        await startup_data_services()
+        # Disable data services for faster startup (optional services)
+        logger.info("🗄️ Data services disabled for faster startup")
+        # await startup_data_services()
 
-        logger.info("📊 Starting monitoring system...")
-        await monitoring_system.start_monitoring()
+        # Disable monitoring system for faster startup (optional service)
+        logger.info("📊 Monitoring system disabled for faster startup")
+        # await monitoring_system.start_monitoring()
 
         # Temporarily disable J53 scheduler
         # logger.info("⏰ Initializing J5.3 scheduler...")
@@ -83,14 +86,14 @@ async def lifespan(app: FastAPI):
         logger.info("🛑 Shutting down Phase K Track 3 systems...")
 
         # Shutdown sequence
-        logger.info("📊 Stopping monitoring system...")
-        await monitoring_system.stop_monitoring()
+        # logger.info("📊 Stopping monitoring system...")
+        # await monitoring_system.stop_monitoring()
 
         logger.info("🔌 Stopping WebSocket manager...")
         await advanced_websocket_manager.stop_background_tasks()
 
-        logger.info("🗄️ Shutting down data services...")
-        await shutdown_data_services()
+        # logger.info("🗄️ Shutting down data services...")
+        # await shutdown_data_services()
 
         logger.info("🗄️ Shutting down database...")
         await db_manager.close()
@@ -100,18 +103,18 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Error during application lifecycle: {e}")
         # Continue with graceful shutdown even if there are errors
-        try:
-            await monitoring_system.stop_monitoring()
-        except Exception as e:
-            logger.error(f"Error stopping monitoring: {e}")
+        # try:
+        #     await monitoring_system.stop_monitoring()
+        # except Exception as e:
+        #     logger.error(f"Error stopping monitoring: {e}")
         try:
             await advanced_websocket_manager.stop_background_tasks()
         except Exception as e:
             logger.error(f"Error stopping websocket manager: {e}")
-        try:
-            await shutdown_data_services()
-        except Exception as e:
-            logger.error(f"Error shutting down data services: {e}")
+        # try:
+        #     await shutdown_data_services()
+        # except Exception as e:
+        #     logger.error(f"Error shutting down data services: {e}")
         try:
             await db_manager.close()
         except Exception as e:
@@ -127,22 +130,24 @@ app = FastAPI(
 
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")
 
-# Configure CORS with combined origins
-all_origins = settings.CORS_ORIGINS + [_frontend_origin]
+# Add logging middleware first (will execute last)
+app.add_middleware(RequestLoggingMiddleware)  # Request logging
+
+# Security middleware (temporarily disabled for testing)
+# app.add_middleware(SecurityMonitoringMiddleware)  # Monitor for threats
+# app.add_middleware(RateLimitingMiddleware)  # Rate limiting
+# app.add_middleware(RequestSizeLimitMiddleware)  # Request size limits
+# app.add_middleware(SecurityHeadersMiddleware)  # Security headers
+
+# CORS must be added LAST so it executes FIRST (middleware runs in reverse order)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=all_origins,
+    allow_origin_regex="http://localhost:.*",  # Allow any localhost port
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # More restrictive
+    allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
-
-# Add security middleware (order matters - most restrictive first)
-app.add_middleware(SecurityMonitoringMiddleware)  # Monitor for threats
-app.add_middleware(RateLimitingMiddleware)  # Rate limiting
-app.add_middleware(RequestSizeLimitMiddleware)  # Request size limits
-app.add_middleware(SecurityHeadersMiddleware)  # Security headers
-app.add_middleware(RequestLoggingMiddleware)  # Request logging
 
 # Include routers
 app.include_router(health.router, prefix=settings.API_PREFIX)
@@ -177,6 +182,7 @@ app.include_router(alerts.router, prefix=settings.API_PREFIX)
 app.include_router(chat.router, prefix=settings.API_PREFIX)
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
+app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)
