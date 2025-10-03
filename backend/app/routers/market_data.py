@@ -16,7 +16,7 @@ from ..services.data_service import (
     symbol_directory,
 )
 
-router = APIRouter(prefix="/v1", tags=["market-data"])
+router = APIRouter(prefix="/api/v1", tags=["market-data"])
 
 
 # Response models
@@ -47,10 +47,7 @@ class MarketOverview(BaseModel):
 
 @router.get("/symbols/search", response_model=SymbolSearchResponse)
 async def search_symbols(
-    q: str = Query(None, min_length=1, max_length=50, description="Search query"),
-    query: str = Query(
-        None, min_length=1, max_length=50, description="Search query (alias)"
-    ),
+    q: str = Query(..., min_length=1, max_length=50, description="Search query"),
     asset_type: AssetType | None = Query(None, description="Filter by asset type"),
     limit: int = Query(50, ge=1, le=200, description="Maximum results to return"),
 ):
@@ -58,67 +55,18 @@ async def search_symbols(
     Search for symbols by name or ticker.
 
     - **q**: Search query (symbol or company name)
-    - **query**: Search query (alias for q)
     - **asset_type**: Filter by asset type (stock, crypto, forex, etc.)
     - **limit**: Maximum number of results
     """
-    # Support both 'q' and 'query' parameters
-    search_query = q or query
-    if not search_query:
-        raise HTTPException(
-            status_code=422, detail="Either 'q' or 'query' parameter is required"
-        )
-
     try:
         symbols = await symbol_directory.search_symbols(
-            query=search_query, asset_type=asset_type, limit=limit
+            query=q, asset_type=asset_type, limit=limit
         )
 
         return SymbolSearchResponse(symbols=symbols, total=len(symbols), query=q)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
-
-
-@router.get("/symbols/popular", response_model=list[Symbol])
-async def get_popular_symbols(
-    limit: int = Query(
-        20, ge=1, le=100, description="Number of popular symbols to return"
-    )
-):
-    """
-    Get a list of popular/featured symbols for quick access.
-    """
-    # Define popular symbols across different asset types
-    popular_tickers = [
-        "AAPL",
-        "MSFT",
-        "GOOGL",
-        "TSLA",
-        "AMZN",
-        "META",
-        "NFLX",
-        "NVDA",  # Tech stocks
-        "SPY",
-        "QQQ",
-        "DIA",  # ETFs
-        "BTCUSD",
-        "ETHUSD",
-        "ADAUSD",  # Crypto
-        "EURUSD",
-        "GBPUSD",
-        "USDJPY",  # Forex
-        "GOLD",
-        "OIL",  # Commodities
-    ]
-
-    popular_symbols = []
-    for ticker in popular_tickers[:limit]:
-        symbol = symbol_directory.get_symbol(ticker)
-        if symbol and symbol.is_active:
-            popular_symbols.append(symbol)
-
-    return popular_symbols
 
 
 @router.get("/symbols/{symbol}", response_model=Symbol)
@@ -242,6 +190,47 @@ async def get_market_overview():
         asset_types=asset_type_stats,
         last_updated=datetime.now(),
     )
+
+
+@router.get("/symbols/popular", response_model=list[Symbol])
+async def get_popular_symbols(
+    limit: int = Query(
+        20, ge=1, le=100, description="Number of popular symbols to return"
+    )
+):
+    """
+    Get a list of popular/featured symbols for quick access.
+    """
+    # Define popular symbols across different asset types
+    popular_tickers = [
+        "AAPL",
+        "MSFT",
+        "GOOGL",
+        "TSLA",
+        "AMZN",
+        "META",
+        "NFLX",
+        "NVDA",  # Tech stocks
+        "SPY",
+        "QQQ",
+        "DIA",  # ETFs
+        "BTCUSD",
+        "ETHUSD",
+        "ADAUSD",  # Crypto
+        "EURUSD",
+        "GBPUSD",
+        "USDJPY",  # Forex
+        "GOLD",
+        "OIL",  # Commodities
+    ]
+
+    popular_symbols = []
+    for ticker in popular_tickers[:limit]:
+        symbol = symbol_directory.get_symbol(ticker)
+        if symbol and symbol.is_active:
+            popular_symbols.append(symbol)
+
+    return popular_symbols
 
 
 @router.get("/symbols/{symbol}/similar", response_model=list[Symbol])

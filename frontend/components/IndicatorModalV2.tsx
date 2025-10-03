@@ -127,45 +127,42 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
       onClick={onClose}
     >
       <div
-        className="bg-bg-secondary rounded-lg w-96 max-h-[80vh] flex flex-col"
+        className="bg-gray-800 rounded-lg w-96 max-h-[80vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border-default">
-          <h2 className="text-lg font-semibold text-text-primary">Add Indicator</h2>
-          <button
-            onClick={onClose}
-            className="text-text-tertiary hover:text-white transition-smooth"
-          >
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-white">Add Indicator</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-border-default">
+        <div className="p-4 border-b border-gray-700">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-tertiary w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search indicators..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input w-full pl-10"
+              className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
             />
           </div>
         </div>
 
         {/* Categories */}
-        <div className="p-4 border-b border-border-default">
+        <div className="p-4 border-b border-gray-700">
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-3 py-1 rounded-full text-sm transition-smooth ${
+                className={`px-3 py-1 rounded-full text-sm transition-colors ${
                   selectedCategory === category
-                    ? 'bg-primary text-white'
-                    : 'bg-bg-elevated text-text-secondary hover:bg-bg-elevated-hover'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                 }`}
               >
                 {category}
@@ -184,27 +181,31 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
               <div
                 key={indicator.id}
                 onClick={() => !isActive && handleAddIndicator(indicator)}
-                className={`p-3 rounded-lg border cursor-pointer transition-smooth mb-2 ${
+                className={`p-3 rounded-lg border cursor-pointer transition-all mb-2 ${
                   isActive
-                    ? 'border-trading-gain bg-trading-gain/10 cursor-not-allowed'
-                    : 'border-border-default hover:border-primary hover:bg-bg-elevated'
+                    ? 'border-green-500 bg-green-500/10 cursor-not-allowed'
+                    : 'border-gray-700 hover:border-blue-500 hover:bg-gray-700/50'
                 }`}
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-shrink-0">
-                    <IconComponent className="w-5 h-5 text-primary-light" />
+                    <IconComponent className="w-5 h-5 text-blue-400" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-text-primary">{indicator.name}</h3>
-                      {isActive && <span className="badge-success">Active</span>}
+                      <h3 className="font-medium text-white">{indicator.name}</h3>
+                      {isActive && (
+                        <span className="text-xs bg-green-500 text-white px-2 py-1 rounded">
+                          Active
+                        </span>
+                      )}
                     </div>
-                    <p className="text-sm text-text-tertiary mt-1">{indicator.description}</p>
+                    <p className="text-sm text-gray-400 mt-1">{indicator.description}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs bg-bg-elevated text-text-secondary px-2 py-1 rounded">
+                      <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
                         {indicator.category}
                       </span>
-                      <span className="text-xs bg-bg-elevated text-text-secondary px-2 py-1 rounded">
+                      <span className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
                         {indicator.paneType === 'overlay' ? 'Overlay' : 'Separate Pane'}
                       </span>
                     </div>
@@ -215,7 +216,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
           })}
 
           {filteredIndicators.length === 0 && (
-            <div className="text-center text-text-muted mt-8">
+            <div className="text-center text-gray-400 mt-8">
               <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
               <p>No indicators found matching your search.</p>
             </div>

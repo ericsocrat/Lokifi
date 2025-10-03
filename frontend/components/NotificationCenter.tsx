@@ -155,44 +155,48 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   const getNotificationColor = (type: string, priority: string) => {
-    if (priority === 'urgent') return 'border-l-trading-loss bg-trading-loss/5';
-    if (priority === 'high') return 'border-l-trading-loss bg-trading-loss/5';
+    if (priority === 'urgent') return 'border-l-red-600 bg-red-500/5';
+    if (priority === 'high') return 'border-l-red-500 bg-red-500/5';
 
     switch (type) {
       case 'follow':
-        return 'border-l-primary bg-primary/5';
+        return 'border-l-blue-500 bg-blue-500/5';
       case 'dm_message_received':
-        return 'border-l-trading-gain bg-trading-gain/5';
+        return 'border-l-green-500 bg-green-500/5';
       case 'ai_reply_finished':
-        return 'border-l-secondary bg-secondary/5';
+        return 'border-l-purple-500 bg-purple-500/5';
       case 'mention':
-        return 'border-l-secondary bg-secondary/5';
+        return 'border-l-orange-500 bg-orange-500/5';
       default:
-        return 'border-l-border-default bg-bg-elevated/50';
+        return 'border-l-gray-500 bg-gray-500/5';
     }
   };
 
   const getPriorityIcon = (priority: string) => {
     switch (priority) {
       case 'urgent':
-        return <AlertCircle className="w-4 h-4 text-trading-loss" />;
+        return <AlertCircle className="w-4 h-4 text-red-600" />;
       case 'high':
-        return <AlertCircle className="w-4 h-4 text-trading-loss" />;
+        return <AlertCircle className="w-4 h-4 text-red-500" />;
       default:
         return null;
     }
   };
 
   return (
-    <div className={`bg-bg-secondary border border-border-default rounded-lg ${className}`}>
+    <div className={`bg-neutral-900 border border-neutral-700 rounded-lg ${className}`}>
       {/* Header */}
       {showHeader && (
-        <div className="p-4 border-b border-border-default">
+        <div className="p-4 border-b border-neutral-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-text-primary" />
-              <h2 className="text-lg font-semibold text-text-primary">Notification Center</h2>
-              {unreadCount > 0 && <span className="badge-error">{unreadCount}</span>}
+              <Bell className="w-5 h-5 text-white" />
+              <h2 className="text-lg font-semibold text-white">Notification Center</h2>
+              {unreadCount > 0 && (
+                <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2">

@@ -162,9 +162,26 @@ export default function DashboardPage() {
           <div className="flex items-center space-x-4">
             <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
             <div className="flex items-center gap-2 select-none">
-              <svg className="w-6 h-6" viewBox="0 0 32 32" fill="none" role="img" aria-label="Lokifi Logo">
-                <circle cx="16" cy="16" r="16" className="fill-black dark:fill-white transition-colors" />
-                <path d="M11 9v14h10" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white dark:stroke-black" />
+              <svg
+                className="w-6 h-6"
+                viewBox="0 0 32 32"
+                fill="none"
+                role="img"
+                aria-label="Lokifi Logo"
+              >
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="16"
+                  className="fill-black dark:fill-white transition-colors"
+                />
+                <path
+                  d="M11 9v14h10"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="stroke-white dark:stroke-black"
+                />
               </svg>
               <span className="text-xl font-bold tracking-wide">Lokifi</span>
             </div>

@@ -15,12 +15,12 @@ export default function ShareBar() {
     const snap = tryLoadFromURL();
     if (snap) {
       s.setAll?.({
-        drawings: snap.drawings as any,
+        drawings: snap.drawings,
         theme: snap.theme || s.theme,
         timeframe: snap.timeframe || s.timeframe,
       });
       try {
-        (window as any).__lokifi_toast?.('Loaded from share link');
+        (window as any).__fynix_toast?.('Loaded from share link');
       } catch {}
       // clear hash to avoid repeat
       history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -32,14 +32,14 @@ export default function ShareBar() {
     const url = makeShareURL({
       v: 1,
       t: 'readOnly',
-      drawings: s.drawings as any,
+      drawings: s.drawings,
       theme: s.theme,
       timeframe: s.timeframe,
       createdAt: Date.now(),
     });
     navigator.clipboard.writeText(url);
     try {
-      (window as any).__lokifi_toast?.('Share link copied');
+      (window as any).__fynix_toast?.('Share link copied');
     } catch {}
   };
 
@@ -48,12 +48,12 @@ export default function ShareBar() {
       collab.stop();
       setCollab(null);
       try {
-        (window as any).__lokifi_toast?.('Collab stopped');
+        (window as any).__fynix_toast?.('Collab stopped');
       } catch {}
     } else if (room.trim()) {
       setCollab(startCollab(room.trim()));
       try {
-        (window as any).__lokifi_toast?.('Collab started');
+        (window as any).__fynix_toast?.('Collab started');
       } catch {}
     }
   };

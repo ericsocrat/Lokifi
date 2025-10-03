@@ -34,16 +34,16 @@ export const WatchlistPanel: React.FC = () => {
   };
 
   return (
-    <div className="bg-bg-primary border-r border-border-default w-80 flex flex-col">
+    <div className="bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-80 flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-border-default">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-text-primary">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             {activeWatchlist?.name || 'Watchlist'}
           </h2>
           <button
             onClick={() => refreshSymbolDirectory()}
-            className="p-1 text-text-tertiary hover:text-text-primary transition-smooth"
+            className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             title="Refresh data"
           >
             <RefreshIcon className="w-4 h-4" />
@@ -58,23 +58,31 @@ export const WatchlistPanel: React.FC = () => {
               value={newSymbol}
               onChange={(e) => setNewSymbol(e.target.value)}
               placeholder="Enter symbol..."
-              className="input flex-1"
+              className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
+                       rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               onKeyDown={(e) => e.key === 'Enter' && handleAddSymbol()}
               autoFocus
             />
-            <button onClick={handleAddSymbol} className="btn-primary">
+            <button
+              onClick={handleAddSymbol}
+              className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+            >
               Add
             </button>
-            <button onClick={() => setIsAddingSymbol(false)} className="btn-secondary">
+            <button
+              onClick={() => setIsAddingSymbol(false)}
+              className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
+                       text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
               Cancel
             </button>
           </div>
         ) : (
           <button
             onClick={() => setIsAddingSymbol(true)}
-            className="w-full px-3 py-2 text-sm border-2 border-dashed border-border-default
-                     text-text-tertiary rounded-md hover:border-border-hover
-                     hover:text-text-secondary transition-smooth"
+            className="w-full px-3 py-2 text-sm border-2 border-dashed border-gray-300 dark:border-gray-600
+                     text-gray-600 dark:text-gray-400 rounded-md hover:border-gray-400 dark:hover:border-gray-500
+                     hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
           >
             + Add Symbol
           </button>
@@ -84,9 +92,11 @@ export const WatchlistPanel: React.FC = () => {
       {/* Watchlist Items */}
       <div className="flex-1 overflow-y-auto">
         {items.length === 0 ? (
-          <div className="p-4 text-center text-text-muted">No symbols in watchlist</div>
+          <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+            No symbols in watchlist
+          </div>
         ) : (
-          <div className="divide-y divide-border-subtle">
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
             {items.map((item) => (
               <WatchlistItem
                 key={item.symbol}
@@ -117,27 +127,27 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
   const [showActions, setShowActions] = useState(false);
 
   const changeColor = useMemo(() => {
-    if (!metrics) return 'text-text-muted';
-    return metrics.change >= 0 ? 'text-trading-gain' : 'text-trading-loss';
+    if (!metrics) return 'text-gray-500';
+    return metrics.change >= 0 ? 'text-green-600' : 'text-red-600';
   }, [metrics]);
 
   return (
     <div
-      className="p-3 hover:bg-bg-elevated cursor-pointer group transition-smooth"
+      className="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer group"
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="font-medium text-text-primary">{item.symbol}</span>
+            <span className="font-medium text-gray-900 dark:text-white">{item.symbol}</span>
             {showActions && (
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove();
                 }}
-                className="text-text-tertiary hover:text-trading-loss transition-smooth"
+                className="text-gray-400 hover:text-red-600 transition-colors"
                 title="Remove from watchlist"
               >
                 <XIcon className="w-4 h-4" />
@@ -148,7 +158,9 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
           {metrics && (
             <div className="mt-1 space-y-1">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-text-primary font-medium">${metrics.price.toFixed(2)}</span>
+                <span className="text-gray-900 dark:text-white font-medium">
+                  ${metrics.price.toFixed(2)}
+                </span>
                 <span className={`${changeColor} font-medium`}>
                   {metrics.change >= 0 ? '+' : ''}
                   {metrics.change.toFixed(2)}({metrics.changePercent >= 0 ? '+' : ''}
@@ -156,7 +168,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
                 </span>
               </div>
 
-              <div className="text-xs text-text-tertiary">
+              <div className="text-xs text-gray-500 dark:text-gray-400">
                 Vol: {(metrics.volume / 1000000).toFixed(1)}M
                 {metrics.marketCap && (
                   <span className="ml-2">Cap: {formatMarketCap(metrics.marketCap)}</span>
@@ -166,7 +178,9 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
           )}
 
           {item.notes && (
-            <div className="mt-1 text-xs text-text-secondary truncate">{item.notes}</div>
+            <div className="mt-1 text-xs text-gray-600 dark:text-gray-400 truncate">
+              {item.notes}
+            </div>
           )}
         </div>
       </div>

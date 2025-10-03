@@ -27,8 +27,6 @@ from app.routers import (
     auth,
     chat,
     conversations,
-    crypto,
-    fmp,
     follow,
     health,
     market_data,
@@ -53,37 +51,71 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Simplified application lifespan manager"""
-    logger.info("🚀 Starting Lokifi Application")
+    """Enhanced application lifespan manager for Phase K Track 3 Infrastructure"""
+    logger.info("🚀 Starting Lokifi Phase K Track 3 Infrastructure Enhancement")
 
-    # Initialize database
-    logger.info("🗄️ Initializing database...")
     try:
+        # Startup sequence
+        logger.info("🗄️ Initializing database...")
         await db_manager.initialize()
-        logger.info("✅ Database initialized")
-    except Exception as db_error:
-        logger.warning(f"⚠️ Database unavailable: {db_error}")
 
-    # Initialize Redis
-    logger.info("📡 Initializing Redis...")
-    try:
-        await advanced_redis_client.initialize()
-        logger.info("✅ Redis initialized")
-    except Exception as e:
-        logger.warning(f"⚠️ Redis unavailable: {e}")
+        logger.info("📡 Initializing advanced Redis client...")
+        try:
+            await advanced_redis_client.initialize()
+        except Exception as e:
+            logger.warning(f"Redis initialization failed (development mode): {e}")
 
-    logger.info("✅ Application startup complete - Server ready!")
+        logger.info("🔌 Starting WebSocket manager...")
+        advanced_websocket_manager.start_background_tasks()
 
-    # This yield keeps the application running
-    yield
+        logger.info("🗄️ Starting data services...")
+        await startup_data_services()
 
-    # Cleanup on shutdown
-    logger.info("🛑 Shutting down...")
-    try:
+        logger.info("📊 Starting monitoring system...")
+        await monitoring_system.start_monitoring()
+
+        # Temporarily disable J53 scheduler
+        # logger.info("⏰ Initializing J5.3 scheduler...")
+        # async with j53_lifespan_manager(app):
+        logger.info("✅ All Phase K Track 3 systems initialized successfully")
+        yield
+
+        logger.info("🛑 Shutting down Phase K Track 3 systems...")
+
+        # Shutdown sequence
+        logger.info("📊 Stopping monitoring system...")
+        await monitoring_system.stop_monitoring()
+
+        logger.info("🔌 Stopping WebSocket manager...")
+        await advanced_websocket_manager.stop_background_tasks()
+
+        logger.info("🗄️ Shutting down data services...")
+        await shutdown_data_services()
+
+        logger.info("🗄️ Shutting down database...")
         await db_manager.close()
-        logger.info("✅ Cleanup complete")
+
+        logger.info("✅ Phase K Track 3 shutdown complete")
+
     except Exception as e:
-        logger.warning(f"Cleanup error: {e}")
+        logger.error(f"Error during application lifecycle: {e}")
+        # Continue with graceful shutdown even if there are errors
+        try:
+            await monitoring_system.stop_monitoring()
+        except Exception as e:
+            logger.error(f"Error stopping monitoring: {e}")
+        try:
+            await advanced_websocket_manager.stop_background_tasks()
+        except Exception as e:
+            logger.error(f"Error stopping websocket manager: {e}")
+        try:
+            await shutdown_data_services()
+        except Exception as e:
+            logger.error(f"Error shutting down data services: {e}")
+        try:
+            await db_manager.close()
+        except Exception as e:
+            logger.error(f"Error closing database: {e}")
 
 
 app = FastAPI(
@@ -145,8 +177,6 @@ app.include_router(alerts.router, prefix=settings.API_PREFIX)
 app.include_router(chat.router, prefix=settings.API_PREFIX)
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
-app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Cryptocurrency data
-app.include_router(fmp.router, prefix=settings.API_PREFIX)  # Financial Modeling Prep
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)

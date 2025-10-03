@@ -1,5 +1,5 @@
 import type { ToolPlugin } from './types';
-const ghostKey = '__lokifiGhost';
+const ghostKey = '__fynixGhost';
 
 function uuid() {
   return globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
@@ -18,7 +18,7 @@ export const rulerMeasure: ToolPlugin = {
       ((rulerMeasure as any)._state = { a: null as null | { t: number; p: number } });
     if (!st.a) {
       st.a = snapped;
-      (globalThis as any).__lokifiAnchor = { t: snapped.t, p: snapped.p };
+      (globalThis as any).__fynixAnchor = { t: snapped.t, p: snapped.p };
       return true;
     }
     const a = st.a;

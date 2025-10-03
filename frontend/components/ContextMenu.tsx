@@ -20,7 +20,7 @@ export default function ContextMenu({ children, x, y, onClose }: ContextMenuProp
 
   return (
     <div
-      className="context-menu absolute bg-bg-secondary rounded-lg shadow-lg py-1 min-w-[120px] border border-border-default"
+      className="context-menu absolute bg-gray-800 rounded-lg shadow-lg py-1 min-w-[120px]"
       style={{ left: x, top: y }}
     >
       {children}

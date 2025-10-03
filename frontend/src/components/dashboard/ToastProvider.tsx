@@ -1,73 +1,118 @@
 'use client';
-import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type ToastType = 'info' | 'success' | 'error';
-interface Toast {
+import React, { createContext, useCallback, useContext, useState } from 'react';
+
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
+
+export interface Toast {
   id: string;
-  title?: string;
   message: string;
   type: ToastType;
-  ttl: number;
+  duration?: number;
 }
+
 interface ToastContextType {
-  push: (t: Omit<Toast, 'id' | 'ttl'> & { ttl?: number }) => void;
+  toasts: Toast[];
+  addToast: (message: string, type?: ToastType, duration?: number) => void;
+  removeToast: (id: string) => void;
+  success: (message: string, duration?: number) => void;
+  error: (message: string, duration?: number) => void;
+  info: (message: string, duration?: number) => void;
+  warning: (message: string, duration?: number) => void;
 }
+
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const push = (t: Omit<Toast, 'id' | 'ttl'> & { ttl?: number }) => {
-    setToasts((prev) => [...prev, { id: crypto.randomUUID(), ttl: t.ttl ?? 4200, ...t }]);
-  };
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const ce = e as CustomEvent<any>;
-      if (ce.type === 'lokifi.toast' && ce.detail) {
-        push({
-          title: ce.detail.title,
-          message: ce.detail.message,
-          type: ce.detail.type || 'info',
-          ttl: ce.detail.ttl,
-        });
-      }
-    };
-    window.addEventListener('lokifi.toast', handler as EventListener);
-    return () => window.removeEventListener('lokifi.toast', handler as EventListener);
+
+  const removeToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
-  useEffect(() => {
-    if (!toasts.length) return;
-    const timers = toasts.map((t) =>
-      setTimeout(() => setToasts((p) => p.filter((x) => x.id !== t.id)), t.ttl)
-    );
-    return () => {
-      timers.forEach(clearTimeout);
-    };
-  }, [toasts]);
+
+  const addToast = useCallback(
+    (message: string, type: ToastType = 'info', duration: number = 5000) => {
+      const id = Math.random().toString(36).substring(2, 9);
+      const newToast: Toast = { id, message, type, duration };
+
+      setToasts((prev) => [...prev, newToast]);
+
+      // Auto-remove toast after duration
+      if (duration > 0) {
+        setTimeout(() => {
+          removeToast(id);
+        }, duration);
+      }
+    },
+    [removeToast]
+  );
+
+  const success = useCallback(
+    (message: string, duration?: number) => addToast(message, 'success', duration),
+    [addToast]
+  );
+
+  const error = useCallback(
+    (message: string, duration?: number) => addToast(message, 'error', duration),
+    [addToast]
+  );
+
+  const info = useCallback(
+    (message: string, duration?: number) => addToast(message, 'info', duration),
+    [addToast]
+  );
+
+  const warning = useCallback(
+    (message: string, duration?: number) => addToast(message, 'warning', duration),
+    [addToast]
+  );
+
   return (
-    <ToastContext.Provider value={{ push }}>
+    <ToastContext.Provider value={{ toasts, addToast, removeToast, success, error, info, warning }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[1000] flex flex-col gap-3 w-80 pointer-events-none">
-        {toasts.map((t) => (
+
+      {/* Toast Container */}
+      <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 max-w-md">
+        {toasts.map((toast) => (
           <div
-            key={t.id}
-            className={`pointer-events-auto rounded-md shadow-lg border px-4 py-3 text-sm backdrop-blur-sm animate-fadeIn toast-${t.type} relative`}
+            key={toast.id}
+            className={`px-4 py-3 rounded-lg shadow-lg border animate-in slide-in-from-right duration-300 ${
+              toast.type === 'success'
+                ? 'bg-green-900/90 border-green-500 text-green-100'
+                : toast.type === 'error'
+                  ? 'bg-red-900/90 border-red-500 text-red-100'
+                  : toast.type === 'warning'
+                    ? 'bg-yellow-900/90 border-yellow-500 text-yellow-100'
+                    : 'bg-blue-900/90 border-blue-500 text-blue-100'
+            }`}
           >
-            {t.title && <div className="font-medium mb-0.5">{t.title}</div>}
-            <div className="text-xs opacity-90 leading-snug">{t.message}</div>
-            <button
-              onClick={() => setToasts((p) => p.filter((x) => x.id !== t.id))}
-              className="absolute top-1 right-2 text-xs text-gray-400 hover:text-gray-200"
-            >
-              ×
-            </button>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-medium">{toast.message}</p>
+              <button
+                onClick={() => removeToast(toast.id)}
+                className="text-white/70 hover:text-white transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         ))}
       </div>
     </ToastContext.Provider>
   );
-};
-export const useToast = () => {
-  const ctx = useContext(ToastContext);
-  if (!ctx) throw new Error('useToast must be used within ToastProvider');
-  return ctx;
-};
+}
+
+export function useToast() {
+  const context = useContext(ToastContext);
+  if (context === undefined) {
+    throw new Error('useToast must be used within a ToastProvider');
+  }
+  return context;
+}

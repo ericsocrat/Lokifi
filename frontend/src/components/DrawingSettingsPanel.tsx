@@ -30,7 +30,7 @@ export default function DrawingSettingsPanel() {
     const now = Date.now();
     if (now - ding.current > 250) {
       try {
-        (window as any).__lokifi_toast?.('Saved');
+        (window as any).__fynix_toast?.('Saved');
       } catch {}
       ding.current = now;
     }
@@ -159,7 +159,7 @@ export default function DrawingSettingsPanel() {
           onClick={() => {
             resetDS();
             try {
-              (window as any).__lokifi_toast?.('Drawing settings reset');
+              (window as any).__fynix_toast?.('Drawing settings reset');
             } catch {}
           }}
           className="px-3 py-2 rounded border border-white/15 hover:bg-white/10 text-sm"
@@ -188,7 +188,7 @@ export default function DrawingSettingsPanel() {
                 if (prev) s.setHotkey(prev, '');
                 setHK(k.action, combo);
                 try {
-                  (window as any).__lokifi_toast?.('Saved');
+                  (window as any).__fynix_toast?.('Saved');
                 } catch {}
               }}
               onChange={() => {}}
@@ -203,7 +203,7 @@ export default function DrawingSettingsPanel() {
           onClick={() => {
             resetHK();
             try {
-              (window as any).__lokifi_toast?.('Hotkeys reset');
+              (window as any).__fynix_toast?.('Hotkeys reset');
             } catch {}
           }}
           className="px-3 py-2 rounded border border-white/15 hover:bg-white/10 text-sm"

@@ -1,5 +1,5 @@
 import type { ToolPlugin } from './types';
-const ghostKey = '__lokifiGhost';
+const ghostKey = '__fynixGhost';
 
 function uuid() {
   return globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);

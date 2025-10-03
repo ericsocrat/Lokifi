@@ -16,13 +16,13 @@ export default function ProjectBar() {
 
   const onSave = () => {
     const proj = projectFromState(
-      { drawings: s.drawings as any, theme: s.theme, timeframe: s.timeframe },
+      { drawings: s.drawings, theme: s.theme, timeframe: s.timeframe },
       name
     );
     saveSlot(name, proj);
     refresh();
     try {
-      (window as any).__lokifi_toast?.('Saved project');
+      (window as any).__fynix_toast?.('Saved project');
     } catch {}
   };
 
@@ -32,12 +32,12 @@ export default function ProjectBar() {
     s.clearSelection();
     // Overwrite current scene safely
     s.setAll?.({
-      drawings: (proj.drawings || []) as any,
+      drawings: proj.drawings || [],
       theme: proj.theme || s.theme,
       timeframe: proj.timeframe || s.timeframe,
     });
     try {
-      (window as any).__lokifi_toast?.('Loaded project');
+      (window as any).__fynix_toast?.('Loaded project');
     } catch {}
   };
 

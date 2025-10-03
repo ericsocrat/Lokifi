@@ -6,7 +6,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Point, useDrawingStore } from '../lib/drawingStore';
 import { usePaneStore } from '../lib/paneStore';
 import { symbolStore } from '../lib/symbolStore';
-import { colors } from '../lib/theme';
 import { timeframeStore } from '../lib/timeframeStore';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
@@ -56,15 +55,14 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
 
-  const [symbol, setSymbol] = useState(symbolStore.get());
-  const [timeframe, setTimeframe] = useState(timeframeStore.get());
+  const symbol = symbolStore.get();
+  const timeframe = timeframeStore.get();
   const { togglePaneVisibility, togglePaneLock } = usePaneStore();
   const {
     activeTool,
     isDrawing,
     currentDrawing,
     selectedObjectId,
-    objects,
     startDrawing,
     addPoint,
     finishDrawing,
@@ -73,109 +71,15 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
-  const [chartData, setChartData] = useState<BarData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Subscribe to symbol and timeframe changes
-  useEffect(() => {
-    const unsubscribeSymbol = symbolStore.subscribe((newSymbol) => {
-      setSymbol(newSymbol);
-    });
-
-    const unsubscribeTimeframe = timeframeStore.subscribe((newTimeframe) => {
-      setTimeframe(newTimeframe);
-    });
-
-    return () => {
-      unsubscribeSymbol();
-      unsubscribeTimeframe();
-    };
-  }, []);
-
-  // Fetch chart data when symbol or timeframe changes
-  useEffect(() => {
-    const fetchChartData = async () => {
-      if (!symbol || !timeframe) return;
-
-      setIsLoading(true);
-      try {
-        const response = await fetch(`/api/v1/ohlc/${symbol}?timeframe=${timeframe}&limit=100`);
-
-        if (response.ok) {
-          const data = await response.json();
-
-          // Convert API data to chart format
-          const formattedData: BarData[] = data.data.map((item: any) => ({
-            time: new Date(item.timestamp).toISOString().split('T')[0],
-            open: item.open,
-            high: item.high,
-            low: item.low,
-            close: item.close,
-          }));
-
-          setChartData(formattedData);
-        } else {
-          console.error('Failed to fetch chart data:', response.status, response.statusText);
-          // Use fallback mock data for development
-          const fallbackData: BarData[] = generateMockData(100);
-          setChartData(fallbackData);
-        }
-      } catch (error) {
-        console.error('Error fetching chart data:', error);
-        // Use fallback mock data for development
-        const fallbackData: BarData[] = generateMockData(100);
-        setChartData(fallbackData);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchChartData();
-  }, [symbol, timeframe]);
-
-  // Helper function to generate mock data
-  const generateMockData = (count: number): BarData[] => {
-    const data: BarData[] = [];
-    let basePrice = 100;
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - count);
-
-    for (let i = 0; i < count; i++) {
-      const date = new Date(startDate);
-      date.setDate(date.getDate() + i);
-      const dateString = date.toISOString().split('T')[0];
-
-      const change = (Math.random() - 0.5) * 10;
-      const open = basePrice;
-      const close = basePrice + change;
-      const high = Math.max(open, close) + Math.random() * 5;
-      const low = Math.min(open, close) - Math.random() * 5;
-
-      data.push({
-        time: dateString,
-        open: Number(open.toFixed(2)),
-        high: Number(high.toFixed(2)),
-        low: Number(low.toFixed(2)),
-        close: Number(close.toFixed(2)),
-      });
-
-      basePrice = close;
-    }
-
-    return data;
-  };
-
-  const updateDrawingCanvas = useCallback(() => {
-    if (!drawingCanvasRef.current || !chartContainerRef.current) return;
-
-    const canvas = drawingCanvasRef.current;
-    const container = chartContainerRef.current;
-
-    canvas.width = container.clientWidth;
-    canvas.height = height - 40;
-    canvas.style.width = `${container.clientWidth}px`;
-    canvas.style.height = `${height - 40}px`;
-  }, [height]);
+  // Mock data - same as previous charts
+  const mockData: BarData[] = [
+    { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
+    { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
+    { time: '2024-01-03', open: 108, high: 112, low: 102, close: 110 },
+    { time: '2024-01-04', open: 110, high: 118, low: 108, close: 115 },
+    { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 },
+  ];
 
   const initializeChart = useCallback(async () => {
     if (!chartContainerRef.current) return;
@@ -187,40 +91,37 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         width: chartContainerRef.current.clientWidth,
         height: height - 40, // Account for drawing canvas
         layout: {
-          background: { color: colors.chart.background },
-          textColor: colors.chart.textColor,
+          background: { color: '#1a1a1a' },
+          textColor: '#d1d5db',
         },
         grid: {
-          vertLines: { color: colors.chart.gridLines },
-          horzLines: { color: colors.chart.gridLines },
+          vertLines: { color: '#374151' },
+          horzLines: { color: '#374151' },
         },
         crosshair: {
           mode: 0,
         },
         rightPriceScale: {
-          borderColor: colors.border.default,
+          borderColor: '#374151',
         },
         timeScale: {
-          borderColor: colors.border.default,
+          borderColor: '#374151',
         },
       });
 
       const candlestickSeries = chart.addCandlestickSeries({
-        upColor: colors.chart.candleUp,
-        downColor: colors.chart.candleDown,
-        borderUpColor: colors.chart.candleUp,
-        borderDownColor: colors.chart.candleDown,
-        wickUpColor: colors.chart.wickUp,
-        wickDownColor: colors.chart.wickDown,
+        upColor: '#10b981',
+        downColor: '#ef4444',
+        borderUpColor: '#10b981',
+        borderDownColor: '#ef4444',
+        wickUpColor: '#10b981',
+        wickDownColor: '#ef4444',
       });
+
+      candlestickSeries.setData(mockData);
 
       chartRef.current = chart;
       seriesRef.current = candlestickSeries;
-
-      // Set initial data if available
-      if (chartData.length > 0) {
-        candlestickSeries.setData(chartData);
-      }
 
       // Setup ResizeObserver
       if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
@@ -240,12 +141,24 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       console.error('Failed to initialize chart:', error);
       throw error;
     }
-  }, [height, chartData, updateDrawingCanvas]);
+  }, [height, mockData]);
+
+  const updateDrawingCanvas = useCallback(() => {
+    if (!drawingCanvasRef.current || !chartContainerRef.current) return;
+
+    const canvas = drawingCanvasRef.current;
+    const container = chartContainerRef.current;
+
+    canvas.width = container.clientWidth;
+    canvas.height = height - 40;
+    canvas.style.width = `${container.clientWidth}px`;
+    canvas.style.height = `${height - 40}px`;
+  }, [height]);
 
   const getMousePosition = useCallback((e: React.MouseEvent): Point => {
-    if (!drawingCanvasRef.current) return { x: 0, y: 0 };
+    if (!chartContainerRef.current) return { x: 0, y: 0 };
 
-    const rect = drawingCanvasRef.current.getBoundingClientRect();
+    const rect = chartContainerRef.current.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -329,7 +242,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
         // Highlight selected object
         if (obj.id === selectedObjectId) {
-          ctx.strokeStyle = colors.primary.light;
+          ctx.strokeStyle = '#60a5fa';
           ctx.lineWidth = obj.style.lineWidth + 2;
           ctx.setLineDash([]);
           ctx.stroke();
@@ -339,7 +252,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
     // Draw current drawing in progress
     if (currentDrawing && currentDrawing.points && currentDrawing.points.length > 0) {
-      ctx.strokeStyle = currentDrawing.style?.color || colors.primary.light;
+      ctx.strokeStyle = currentDrawing.style?.color || '#60a5fa';
       ctx.lineWidth = currentDrawing.style?.lineWidth || 2;
       ctx.setLineDash([3, 3]); // Dashed line for drawing in progress
 
@@ -364,19 +277,12 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       resizeObserverRef.current?.disconnect();
       chartRef.current?.remove();
     };
-  }, [isVisible, height]);
-
-  // Update chart data when it changes
-  useEffect(() => {
-    if (seriesRef.current && chartData.length > 0) {
-      seriesRef.current.setData(chartData);
-    }
-  }, [chartData]);
+  }, [initializeChart, updateDrawingCanvas, isVisible]);
 
   // Redraw objects when they change
   useEffect(() => {
     drawObjects();
-  }, [drawObjects, objects, currentDrawing, selectedObjectId]);
+  }, [drawObjects]);
 
   const handleResize = useCallback(
     (e: React.MouseEvent) => {
@@ -406,13 +312,13 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   if (!isVisible) {
     return (
-      <div className="h-8 bg-bg-secondary border-b border-border-default flex items-center justify-between px-3">
-        <div className="text-sm text-text-secondary">
+      <div className="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
+        <div className="text-sm text-gray-400">
           {paneId.includes('price') ? 'Price Chart' : `Indicator Pane`} (Hidden)
         </div>
         <button
           onClick={() => togglePaneVisibility(paneId)}
-          className="text-text-secondary hover:text-text-primary transition-smooth"
+          className="text-gray-400 hover:text-white transition-colors"
         >
           <Eye className="w-4 h-4" />
         </button>
@@ -421,27 +327,27 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   }
 
   return (
-    <div className="relative border-b border-border-default">
+    <div className="relative border-b border-gray-700">
       {/* Pane Header */}
-      <div className="h-8 bg-bg-secondary border-b border-border-default flex items-center justify-between px-3">
+      <div className="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
         <div className="flex items-center gap-2">
-          <div className="text-sm font-medium text-text-primary">
+          <div className="text-sm font-medium text-white">
             {paneId.includes('price') ? `${symbol} - ${timeframe}` : 'Indicators'}
           </div>
           {indicators.length > 0 && (
-            <div className="text-xs text-text-tertiary">({indicators.join(', ')})</div>
+            <div className="text-xs text-gray-400">({indicators.join(', ')})</div>
           )}
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => togglePaneVisibility(paneId)}
-            className="text-text-secondary hover:text-text-primary transition-smooth p-1"
+            className="text-gray-400 hover:text-white transition-colors p-1"
           >
             {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
           <button
             onClick={() => togglePaneLock(paneId)}
-            className="text-text-secondary hover:text-text-primary transition-smooth p-1"
+            className="text-gray-400 hover:text-white transition-colors p-1"
           >
             {isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
           </button>
@@ -450,28 +356,19 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
       {/* Chart Container with Drawing Layer */}
       <div className="relative">
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-bg-primary z-20">
-            <div className="text-center">
-              <div className="inline-block w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-2"></div>
-              <p className="text-sm text-text-secondary">Loading {symbol}...</p>
-            </div>
-          </div>
-        )}
         <div
           ref={chartContainerRef}
           style={{ height: `${height - 40}px` }}
-          className="relative bg-bg-primary"
+          className="relative bg-gray-900"
         />
 
         {/* Drawing Canvas Overlay */}
         <canvas
           ref={drawingCanvasRef}
-          className="absolute top-0 left-0 w-full h-full cursor-crosshair pointer-events-auto"
+          className="absolute top-0 left-0 cursor-crosshair pointer-events-auto"
           style={{
             zIndex: 10,
             cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
-            touchAction: 'none',
           }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -484,11 +381,11 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       {!isLocked && (
         <div
           onMouseDown={handleResize}
-          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-primary/20 transition-smooth flex items-center justify-center ${
-            isDragging ? 'bg-primary/30' : ''
+          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${
+            isDragging ? 'bg-blue-500/30' : ''
           }`}
         >
-          <GripVertical className="w-4 h-4 text-text-tertiary" />
+          <GripVertical className="w-4 h-4 text-gray-500" />
         </div>
       )}
     </div>
@@ -520,7 +417,7 @@ export const DrawingChart: React.FC = () => {
     <ChartErrorBoundary>
       <div
         ref={containerRef}
-        className="w-full h-full bg-bg-primary overflow-hidden"
+        className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
         {panes.map((pane) => (

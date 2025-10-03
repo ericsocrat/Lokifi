@@ -142,13 +142,13 @@ export default function WebSocketConnection({
   const getStatusColor = () => {
     switch (connectionStatus) {
       case 'connected':
-        return 'text-trading-gain';
+        return 'text-green-400';
       case 'connecting':
-        return 'text-secondary';
+        return 'text-yellow-400';
       case 'error':
-        return 'text-trading-loss';
+        return 'text-red-400';
       default:
-        return 'text-text-tertiary';
+        return 'text-gray-400';
     }
   };
 
@@ -171,15 +171,15 @@ export default function WebSocketConnection({
 
   return (
     <div className="fixed top-4 right-4 z-50">
-      <div className="bg-bg-secondary border border-border-default rounded-lg p-3 shadow-lg">
+      <div className="bg-gray-900 border border-gray-700 rounded-lg p-3 shadow-lg">
         <div className="flex items-center gap-2 mb-2">
           <div
-            className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-trading-gain' : connectionStatus === 'connecting' ? 'bg-secondary animate-pulse' : 'bg-trading-loss'}`}
+            className={`w-2 h-2 rounded-full ${connectionStatus === 'connected' ? 'bg-green-400' : connectionStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' : 'bg-red-400'}`}
           />
           <span className={`text-xs font-medium ${getStatusColor()}`}>{getStatusText()}</span>
         </div>
 
-        <div className="text-xs text-text-secondary space-y-1">
+        <div className="text-xs text-gray-300 space-y-1">
           <div>Symbols: {symbols.length}</div>
           {connectionStatus === 'connected' && (
             <>
@@ -188,7 +188,7 @@ export default function WebSocketConnection({
             </>
           )}
           {reconnectAttempts.current > 0 && connectionStatus !== 'connected' && (
-            <div className="text-secondary">Retry: {reconnectAttempts.current}/5</div>
+            <div className="text-yellow-400">Retry: {reconnectAttempts.current}/5</div>
           )}
         </div>
 
@@ -198,7 +198,7 @@ export default function WebSocketConnection({
               reconnectAttempts.current = 0;
               connect();
             }}
-            className="mt-2 w-full text-xs bg-primary hover:bg-primary-light text-white px-2 py-1 rounded transition-smooth"
+            className="mt-2 w-full text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded"
           >
             Reconnect
           </button>

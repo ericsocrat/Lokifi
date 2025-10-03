@@ -1,90 +1,51 @@
 {
   "recommendations": [
-    // ==========================================
-    // CODE FORMATTERS
-    // ==========================================
+    // Prettier - Code formatter
     "esbenp.prettier-vscode",
-    "ms-python.black-formatter",
-    "ms-python.isort",
 
-    // ==========================================
-    // LINTERS & CODE QUALITY
-    // ==========================================
+    // ESLint - JavaScript linter
     "dbaeumer.vscode-eslint",
-    "charliermarsh.ruff",
-    "usernamehw.errorlens",
-    "streetsidesoftware.code-spell-checker",
 
-    // ==========================================
-    // PYTHON DEVELOPMENT
-    // ==========================================
+    // Python
     "ms-python.python",
     "ms-python.vscode-pylance",
+    "ms-python.black-formatter",
     "ms-python.debugpy",
+    "ms-python.isort",
 
-    // ==========================================
-    // JAVASCRIPT/TYPESCRIPT/REACT
-    // ==========================================
-    "YoavBls.pretty-ts-errors",
-    "dsznajder.es7-react-js-snippets",
-    "bradlc.vscode-tailwindcss",
-    "styled-components.vscode-styled-components",
-
-    // ==========================================
-    // GIT & VERSION CONTROL
-    // ==========================================
+    // Git
     "eamodio.gitlens",
     "mhutchie.git-graph",
-    "github.vscode-pull-request-github",
 
-    // ==========================================
-    // DOCKER & CONTAINERS
-    // ==========================================
+    // Docker
     "ms-azuretools.vscode-docker",
     "ms-vscode-remote.remote-containers",
 
-    // ==========================================
-    // DATABASE TOOLS
-    // ==========================================
+    // Markdown
+    "yzhang.markdown-all-in-one",
+
+    // TypeScript/React utilities
+    "YoavBls.pretty-ts-errors",
+    "dsznajder.es7-react-js-snippets",
+    "bradlc.vscode-tailwindcss",
+
+    // Database & SQL
     "mtxr.sqltools",
     "cweijan.vscode-database-client2",
-    "qwtel.sqlite-viewer",
-    "cweijan.vscode-redis-client",
 
-    // ==========================================
-    // API & TESTING
-    // ==========================================
+    // API & Testing
     "humao.rest-client",
-    "rangav.vscode-thunder-client",
 
-    // ==========================================
-    // MARKDOWN & DOCUMENTATION
-    // ==========================================
-    "yzhang.markdown-all-in-one",
-    "bierner.markdown-mermaid",
-    "davidanson.vscode-markdownlint",
-
-    // ==========================================
-    // PRODUCTIVITY & NAVIGATION
-    // ==========================================
+    // Productivity & Code Quality
+    "streetsidesoftware.code-spell-checker",
+    "usernamehw.errorlens",
     "christian-kohler.path-intellisense",
     "visualstudioexptteam.vscodeintellicode",
     "gruntfuggly.todo-tree",
-    "alefragnani.bookmarks",
-    "eamodio.gitlens",
 
-    // ==========================================
-    // CONFIG FILES & LANGUAGES
-    // ==========================================
+    // Config Files
     "redhat.vscode-yaml",
-    "dotenv.dotenv-vscode",
-    "tamasfe.even-better-toml",
-
-    // ==========================================
-    // AI ASSISTANTS
-    // ==========================================
-    "github.copilot",
-    "github.copilot-chat"
+    "dotenv.dotenv-vscode"
   ],
   "unwantedRecommendations": []
 }

@@ -385,10 +385,10 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
 
       // Sync time scales
-      chart.timeScale().subscribeVisibleTimeRangeChange((range: any) => {
+      chart.timeScale().subscribeVisibleTimeRangeChange((range) => {
         if (range) subChart.timeScale().setVisibleRange(range);
       });
-      subChart.timeScale().subscribeVisibleTimeRangeChange((range: any) => {
+      subChart.timeScale().subscribeVisibleTimeRangeChange((range) => {
         if (range) chart.timeScale().setVisibleRange(range);
       });
 
@@ -408,8 +408,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     }
 
     // Global chart references for external access
-    (window as any).__lokifiChart = chart;
-    (window as any).__lokifiCandle = candleSeries;
+    (window as any).__fynixChart = chart;
+    (window as any).__fynixCandle = candleSeries;
 
     // Cleanup
     return () => {
@@ -427,7 +427,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     const pss: any = (globalThis as any).pluginSettingsStore;
     const pssym: any = (globalThis as any).pluginSymbolSettings;
 
-    (window as any).__lokifiApplySymbolSettings = () => {
+    (window as any).__fynixApplySymbolSettings = () => {
       try {
         const s = pss?.get?.();
         if (!s || !pssym?.set) return;
@@ -442,7 +442,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
     };
 
-    (window as any).__lokifiClearSymbolSettings = () => {
+    (window as any).__fynixClearSymbolSettings = () => {
       try {
         pssym?.clear?.(sym, tf);
       } catch (e) {
@@ -451,8 +451,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     };
 
     return () => {
-      delete (window as any).__lokifiApplySymbolSettings;
-      delete (window as any).__lokifiClearSymbolSettings;
+      delete (window as any).__fynixApplySymbolSettings;
+      delete (window as any).__fynixClearSymbolSettings;
     };
   }, [sym, tf]);
 

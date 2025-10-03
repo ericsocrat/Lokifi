@@ -128,10 +128,10 @@ const DRAWING_TOOLS: Array<{
 ];
 
 const CATEGORY_COLORS = {
-  Basic: 'bg-primary',
-  Fibonacci: 'bg-secondary',
-  Gann: 'bg-secondary',
-  Advanced: 'bg-trading-gain',
+  Basic: 'bg-blue-600',
+  Fibonacci: 'bg-yellow-600',
+  Gann: 'bg-purple-600',
+  Advanced: 'bg-green-600',
 };
 
 interface DrawingToolbarProps {
@@ -165,12 +165,12 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="w-12 bg-bg-secondary border-r border-border-default flex flex-col items-center py-4">
+      <div className="w-12 bg-gray-800 border-r border-gray-700 flex flex-col items-center py-4">
         <button
           onClick={onToggleCollapse}
-          className="w-8 h-8 bg-bg-elevated hover:bg-bg-elevated-hover rounded flex items-center justify-center mb-4 transition-smooth"
+          className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center mb-4"
         >
-          <TrendingUp className="w-4 h-4 text-text-secondary" />
+          <TrendingUp className="w-4 h-4 text-gray-300" />
         </button>
 
         {/* Show only active tool when collapsed */}
@@ -178,10 +178,10 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
           <button
             key={tool.id}
             onClick={() => handleToolSelect(tool.id)}
-            className={`w-8 h-8 rounded mb-2 flex items-center justify-center transition-smooth ${
+            className={`w-8 h-8 rounded mb-2 flex items-center justify-center transition-colors ${
               activeTool === tool.id
-                ? 'bg-primary text-white shadow-lg'
-                : 'bg-bg-elevated hover:bg-bg-elevated-hover text-text-secondary'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
             } ${isDrawing ? 'cursor-not-allowed opacity-50' : ''}`}
             disabled={isDrawing}
             title={`${tool.name} (${tool.shortcut})`}
@@ -205,15 +205,15 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   );
 
   return (
-    <div className="w-64 bg-bg-secondary border-r border-border-default flex flex-col">
+    <div className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border-default flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-text-primary">Drawing Tools</h2>
+      <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-white">Drawing Tools</h2>
         <button
           onClick={onToggleCollapse}
-          className="w-6 h-6 bg-bg-elevated hover:bg-bg-elevated-hover rounded flex items-center justify-center transition-smooth"
+          className="w-6 h-6 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center"
         >
-          <Minus className="w-3 h-3 text-text-secondary" />
+          <Minus className="w-3 h-3 text-gray-300" />
         </button>
       </div>
 
@@ -225,7 +225,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
               <div
                 className={`w-2 h-2 rounded-full ${CATEGORY_COLORS[category as keyof typeof CATEGORY_COLORS]}`}
               />
-              <h3 className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
+              <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide">
                 {category}
               </h3>
             </div>
@@ -235,10 +235,10 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                 <button
                   key={tool.id}
                   onClick={() => handleToolSelect(tool.id)}
-                  className={`p-3 rounded-lg border-2 transition-smooth group ${
+                  className={`p-3 rounded-lg border-2 transition-all group ${
                     activeTool === tool.id
-                      ? 'border-primary bg-primary/10 shadow-lg'
-                      : 'border-border-default bg-bg-elevated hover:border-border-hover hover:bg-bg-elevated-hover'
+                      ? 'border-blue-500 bg-blue-500/10 shadow-lg'
+                      : 'border-gray-700 bg-gray-750 hover:border-gray-600 hover:bg-gray-700'
                   } ${isDrawing ? 'cursor-not-allowed opacity-50' : ''}`}
                   disabled={isDrawing}
                   title={`${tool.name} (${tool.shortcut})`}
@@ -247,8 +247,8 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                     <div
                       className={`${
                         activeTool === tool.id
-                          ? 'text-primary-light'
-                          : 'text-text-tertiary group-hover:text-text-secondary'
+                          ? 'text-blue-400'
+                          : 'text-gray-400 group-hover:text-gray-300'
                       }`}
                     >
                       {tool.icon}
@@ -256,13 +256,13 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
                     <span
                       className={`text-xs text-center leading-tight ${
                         activeTool === tool.id
-                          ? 'text-primary-light'
-                          : 'text-text-tertiary group-hover:text-text-secondary'
+                          ? 'text-blue-300'
+                          : 'text-gray-400 group-hover:text-gray-300'
                       }`}
                     >
                       {tool.name}
                     </span>
-                    <span className="text-xs text-text-muted opacity-75">{tool.shortcut}</span>
+                    <span className="text-xs text-gray-500 opacity-75">{tool.shortcut}</span>
                   </div>
                 </button>
               ))}
@@ -272,38 +272,36 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
       </div>
 
       {/* Drawing Settings */}
-      <div className="px-4 py-3 border-t border-border-default">
-        <h3 className="text-xs font-medium text-text-tertiary uppercase tracking-wide mb-3">
-          Settings
-        </h3>
+      <div className="px-4 py-3 border-t border-gray-700">
+        <h3 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Settings</h3>
 
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm text-text-secondary">
+          <label className="flex items-center gap-2 text-sm text-gray-300">
             <input
               type="checkbox"
               checked={snapToGrid}
               onChange={toggleSnapToGrid}
-              className="w-4 h-4 rounded border-border-default bg-bg-elevated text-primary focus:ring-primary focus:ring-2"
+              className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-2"
             />
             Snap to Grid
           </label>
 
-          <label className="flex items-center gap-2 text-sm text-text-secondary">
+          <label className="flex items-center gap-2 text-sm text-gray-300">
             <input
               type="checkbox"
               checked={snapToPrice}
               onChange={toggleSnapToPrice}
-              className="w-4 h-4 rounded border-border-default bg-bg-elevated text-primary focus:ring-primary focus:ring-2"
+              className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-2"
             />
             Snap to Price
           </label>
 
-          <label className="flex items-center gap-2 text-sm text-text-secondary">
+          <label className="flex items-center gap-2 text-sm text-gray-300">
             <input
               type="checkbox"
               checked={magnetMode}
               onChange={toggleMagnetMode}
-              className="w-4 h-4 rounded border-border-default bg-bg-elevated text-primary focus:ring-primary focus:ring-2"
+              className="w-4 h-4 rounded border-gray-600 bg-gray-700 text-blue-600 focus:ring-blue-500 focus:ring-2"
             />
             Magnet Mode
           </label>
@@ -312,7 +310,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
 
       {/* Status */}
       {isDrawing && (
-        <div className="px-4 py-2 bg-primary text-white text-sm">
+        <div className="px-4 py-2 bg-blue-600 text-white text-sm">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
             Drawing {DRAWING_TOOLS.find((t) => t.id === activeTool)?.name}...

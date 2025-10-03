@@ -10,7 +10,7 @@ import {
   Trash2,
   Unlock,
 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDrawingStore } from '../lib/drawingStore';
 import { usePaneStore } from '../lib/paneStore';
 
@@ -41,11 +41,6 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     x: number;
     y: number;
   } | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const togglePaneExpansion = (paneId: string) => {
     const newExpanded = new Set(expandedPanes);
@@ -105,24 +100,19 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     return () => {}; // Always return cleanup function
   }, [contextMenu]);
 
-  // Prevent hydration mismatch
-  if (!isMounted) {
-    return <div className="w-80 bg-bg-secondary border-l border-border-default" />;
-  }
-
   if (isCollapsed) {
     return (
-      <div className="w-12 bg-bg-secondary border-l border-border-default flex flex-col items-center py-4">
+      <div className="w-12 bg-gray-800 border-l border-gray-700 flex flex-col items-center py-4">
         <button
           onClick={onToggleCollapse}
-          className="w-8 h-8 bg-bg-elevated hover:bg-bg-elevated-hover rounded flex items-center justify-center mb-4 transition-smooth"
+          className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center mb-4"
           title="Expand Object Tree"
         >
-          <Layers className="w-4 h-4 text-text-secondary" />
+          <Layers className="w-4 h-4 text-gray-300" />
         </button>
 
         {/* Show object count when collapsed */}
-        <div className="w-8 h-6 bg-bg-elevated rounded text-xs text-text-secondary flex items-center justify-center">
+        <div className="w-8 h-6 bg-gray-700 rounded text-xs text-gray-300 flex items-center justify-center">
           {objects.length}
         </div>
       </div>
@@ -130,22 +120,22 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
   }
 
   return (
-    <div className="w-80 bg-bg-secondary border-l border-border-default flex flex-col">
+    <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-border-default flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-text-secondary" />
-          <h2 className="text-sm font-semibold text-text-primary">Objects</h2>
-          <span className="text-xs text-text-tertiary bg-bg-elevated px-2 py-1 rounded">
+          <Layers className="w-4 h-4 text-gray-400" />
+          <h2 className="text-sm font-semibold text-white">Objects</h2>
+          <span className="text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded">
             {objects.length}
           </span>
         </div>
         <button
           onClick={onToggleCollapse}
-          className="w-6 h-6 bg-bg-elevated hover:bg-bg-elevated-hover rounded flex items-center justify-center transition-smooth"
+          className="w-6 h-6 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center"
           title="Collapse Object Tree"
         >
-          <ChevronRight className="w-3 h-3 text-text-secondary" />
+          <ChevronRight className="w-3 h-3 text-gray-300" />
         </button>
       </div>
 
@@ -156,21 +146,21 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
           const isExpanded = expandedPanes.has(pane.id);
 
           return (
-            <div key={pane.id} className="border-b border-border-subtle last:border-b-0">
+            <div key={pane.id} className="border-b border-gray-700/50 last:border-b-0">
               {/* Pane Header */}
               <button
                 onClick={() => togglePaneExpansion(pane.id)}
-                className="w-full px-4 py-2 flex items-center gap-2 hover:bg-bg-elevated/50 transition-smooth"
+                className="w-full px-4 py-2 flex items-center gap-2 hover:bg-gray-700/50 transition-colors"
               >
                 {isExpanded ? (
-                  <ChevronDown className="w-3 h-3 text-text-secondary" />
+                  <ChevronDown className="w-3 h-3 text-gray-400" />
                 ) : (
-                  <ChevronRight className="w-3 h-3 text-text-secondary" />
+                  <ChevronRight className="w-3 h-3 text-gray-400" />
                 )}
-                <span className="text-sm font-medium text-text-secondary">
+                <span className="text-sm font-medium text-gray-300">
                   {pane.type === 'price' ? 'Price Chart' : 'Indicators'}
                 </span>
-                <span className="text-xs text-text-tertiary bg-bg-elevated px-2 py-0.5 rounded ml-auto">
+                <span className="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded ml-auto">
                   {paneObjects.length}
                 </span>
               </button>
@@ -179,19 +169,17 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
               {isExpanded && (
                 <div className="pb-2">
                   {paneObjects.length === 0 ? (
-                    <div className="px-8 py-4 text-xs text-text-tertiary italic">
-                      No drawing objects
-                    </div>
+                    <div className="px-8 py-4 text-xs text-gray-500 italic">No drawing objects</div>
                   ) : (
                     paneObjects
                       .sort((a, b) => b.properties.zIndex - a.properties.zIndex)
                       .map((object) => (
                         <div
                           key={object.id}
-                          className={`mx-2 mb-1 rounded-md transition-smooth ${
+                          className={`mx-2 mb-1 rounded-md transition-colors ${
                             selectedObjectId === object.id
-                              ? 'bg-primary/20 border border-primary/50'
-                              : 'hover:bg-bg-elevated/50 border border-transparent'
+                              ? 'bg-blue-600/20 border border-blue-600/50'
+                              : 'hover:bg-gray-700/50 border border-transparent'
                           }`}
                           onClick={() => handleObjectSelect(object.id)}
                           onContextMenu={(e) => handleContextMenu(e, object.id)}
@@ -206,7 +194,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                             </div>
 
                             {/* Object Name */}
-                            <span className="flex-1 text-sm text-text-secondary truncate">
+                            <span className="flex-1 text-sm text-gray-300 truncate">
                               {object.properties.name}
                             </span>
 
@@ -217,13 +205,13 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                                   e.stopPropagation();
                                   handleToggleVisibility(object.id, object.properties.visible);
                                 }}
-                                className="w-5 h-5 hover:bg-bg-elevated-hover rounded flex items-center justify-center transition-smooth"
+                                className="w-5 h-5 hover:bg-gray-600 rounded flex items-center justify-center"
                                 title={object.properties.visible ? 'Hide' : 'Show'}
                               >
                                 {object.properties.visible ? (
-                                  <Eye className="w-3 h-3 text-text-secondary" />
+                                  <Eye className="w-3 h-3 text-gray-400" />
                                 ) : (
-                                  <EyeOff className="w-3 h-3 text-text-tertiary" />
+                                  <EyeOff className="w-3 h-3 text-gray-500" />
                                 )}
                               </button>
 
@@ -232,13 +220,13 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                                   e.stopPropagation();
                                   handleToggleLock(object.id, object.properties.locked);
                                 }}
-                                className="w-5 h-5 hover:bg-bg-elevated-hover rounded flex items-center justify-center transition-smooth"
+                                className="w-5 h-5 hover:bg-gray-600 rounded flex items-center justify-center"
                                 title={object.properties.locked ? 'Unlock' : 'Lock'}
                               >
                                 {object.properties.locked ? (
-                                  <Lock className="w-3 h-3 text-text-secondary" />
+                                  <Lock className="w-3 h-3 text-gray-400" />
                                 ) : (
-                                  <Unlock className="w-3 h-3 text-text-tertiary" />
+                                  <Unlock className="w-3 h-3 text-gray-500" />
                                 )}
                               </button>
                             </div>
@@ -253,7 +241,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
         })}
 
         {objects.length === 0 && (
-          <div className="p-8 text-center text-text-tertiary">
+          <div className="p-8 text-center text-gray-500">
             <Layers className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p className="text-sm">No drawing objects yet</p>
             <p className="text-xs mt-1">Select a drawing tool to get started</p>
@@ -264,7 +252,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed bg-bg-secondary border border-border-default rounded-lg shadow-xl py-2 z-50"
+          className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-2 z-50"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
@@ -273,36 +261,36 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
         >
           <button
             onClick={() => handleDuplicate(contextMenu.objectId)}
-            className="w-full px-4 py-2 text-left text-sm text-text-secondary hover:bg-bg-elevated transition-smooth flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-2"
           >
             <Copy className="w-4 h-4" />
             Duplicate
           </button>
 
           <div className="px-4 py-1">
-            <div className="border-b border-border-default"></div>
+            <div className="border-b border-gray-700"></div>
           </div>
 
-          <div className="px-4 py-2 text-xs text-text-tertiary uppercase tracking-wide">
+          <div className="px-4 py-2 text-xs text-gray-500 uppercase tracking-wide">
             Move to Pane
           </div>
           {panes.map((pane) => (
             <button
               key={pane.id}
               onClick={() => handleMoveToPane(contextMenu.objectId, pane.id)}
-              className="w-full px-6 py-1 text-left text-sm text-text-secondary hover:bg-bg-elevated transition-smooth"
+              className="w-full px-6 py-1 text-left text-sm text-gray-300 hover:bg-gray-700"
             >
               {pane.type === 'price' ? 'Price Chart' : 'Indicators'}
             </button>
           ))}
 
           <div className="px-4 py-1">
-            <div className="border-b border-border-default"></div>
+            <div className="border-b border-gray-700"></div>
           </div>
 
           <button
             onClick={() => handleDelete(contextMenu.objectId)}
-            className="w-full px-4 py-2 text-left text-sm text-trading-loss hover:bg-trading-loss/10 transition-smooth flex items-center gap-2"
+            className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2"
           >
             <Trash2 className="w-4 h-4" />
             Delete

@@ -68,7 +68,7 @@ declare module 'lightweight-charts' {
 }
 
 declare global {
-  var __lokifiStopExtras: (() => void) | undefined; // ✅ correct arrow type
+  var __fynixStopExtras: (() => void) | undefined; // ✅ correct arrow type
 }
 
 declare module '@/plugins' {

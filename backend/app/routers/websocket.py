@@ -156,20 +156,19 @@ async def handle_mark_read(user_id: uuid.UUID, data: dict[str, Any]):
         logger.error(f"Error handling mark read: {e}")
 
 
-# Disabled old-style startup events - use lifespan manager instead
-# @router.on_event("startup")
-# async def startup_event():
-#     """Initialize WebSocket manager on startup."""
-#     await connection_manager.initialize_redis()
-#
-#     # Start Redis message handler in background
-#     asyncio.create_task(connection_manager.handle_redis_messages())
+@router.on_event("startup")
+async def startup_event():
+    """Initialize WebSocket manager on startup."""
+    await connection_manager.initialize_redis()
+
+    # Start Redis message handler in background
+    asyncio.create_task(connection_manager.handle_redis_messages())
 
 
-# @router.on_event("shutdown")
-# async def shutdown_event():
-#     """Clean up WebSocket manager on shutdown."""
-#     await connection_manager.close()
+@router.on_event("shutdown")
+async def shutdown_event():
+    """Clean up WebSocket manager on shutdown."""
+    await connection_manager.close()
 
 
 # Health check for WebSocket service

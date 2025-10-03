@@ -2,93 +2,18 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🚀 Backend: FastAPI (Debug)",
-      "type": "debugpy",
+      "name": "Python: FastAPI",
+      "type": "python",
       "request": "launch",
-      "module": "uvicorn",
+      "program": "${workspaceFolder}/backend/.venv/Scripts/uvicorn.exe",
       "args": [
         "app.main:app",
         "--host",
-        "0.0.0.0",
+        "127.0.0.1",
         "--port",
         "8000",
-        "--reload",
-        "--log-level",
-        "debug"
+        "--reload"
       ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend",
-        "LOKIFI_JWT_SECRET": "KJlAjdLJAWgwND2c9bOxhuoc9ZfM0tMeTnDu8viMvH+lvGDGr9tMlFYLb4Sl4t5lVwcH+W8hRSSha9gZ2otcXg=="
-      },
-      "justMyCode": false
-    },
-    {
-      "name": "🚀 Backend: FastAPI (Production Mode)",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "uvicorn",
-      "args": [
-        "app.main:app",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "8000",
-        "--no-reload"
-      ],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend",
-        "LOKIFI_JWT_SECRET": "KJlAjdLJAWgwND2c9bOxhuoc9ZfM0tMeTnDu8viMvH+lvGDGr9tMlFYLb4Sl4t5lVwcH+W8hRSSha9gZ2otcXg=="
-      },
-      "justMyCode": true
-    },
-    {
-      "name": "🐍 Python: Current File",
-      "type": "debugpy",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
-      },
-      "justMyCode": true
-    },
-    {
-      "name": "🧪 Python: Pytest (Current File)",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "pytest",
-      "args": ["${file}", "-v", "-s", "--tb=short"],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
-      },
-      "justMyCode": false
-    },
-    {
-      "name": "🧪 Python: Pytest (All Tests)",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "pytest",
-      "args": ["tests/", "-v", "--tb=short", "--cov=app", "--cov-report=html"],
-      "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
-      },
-      "justMyCode": false
-    },
-    {
-      "name": "🗄️  Database: Alembic Migrate",
-      "type": "debugpy",
-      "request": "launch",
-      "module": "alembic",
-      "args": ["upgrade", "head"],
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}/backend",
       "env": {
@@ -96,19 +21,23 @@
       }
     },
     {
-      "name": "🔍 Debug: Attach to Python Process",
-      "type": "debugpy",
-      "request": "attach",
-      "connect": {
-        "host": "localhost",
-        "port": 5678
-      },
-      "pathMappings": [
-        {
-          "localRoot": "${workspaceFolder}/backend",
-          "remoteRoot": "."
-        }
-      ]
+      "name": "Python: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      }
+    },
+    {
+      "name": "Python: Database Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/backend/database_management_suite.py",
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend"
     }
   ]
 }

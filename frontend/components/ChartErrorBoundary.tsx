@@ -39,16 +39,16 @@ export class ChartErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex flex-col items-center justify-center h-96 bg-bg-secondary rounded-2xl border border-border-default p-8">
-          <AlertTriangle className="w-12 h-12 text-secondary mb-4" />
-          <h3 className="text-lg font-semibold text-text-primary mb-2">Chart Error</h3>
-          <p className="text-text-tertiary text-center mb-4 max-w-md">
+        <div className="flex flex-col items-center justify-center h-96 bg-neutral-900 rounded-2xl border border-neutral-800 p-8">
+          <AlertTriangle className="w-12 h-12 text-amber-500 mb-4" />
+          <h3 className="text-lg font-semibold text-white mb-2">Chart Error</h3>
+          <p className="text-neutral-400 text-center mb-4 max-w-md">
             {this.state.error?.message ||
               'An error occurred while rendering the chart. This could be due to invalid data or a rendering issue.'}
           </p>
           <button
             onClick={this.handleRetry}
-            className="flex items-center gap-2 px-4 py-2 bg-primary/20 border border-primary rounded-xl hover:bg-primary/30 transition-smooth"
+            className="flex items-center gap-2 px-4 py-2 bg-electric/20 border border-electric rounded-xl hover:bg-electric/30 transition-colors"
           >
             <RefreshCw className="w-4 h-4" />
             Retry

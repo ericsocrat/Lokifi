@@ -64,7 +64,7 @@ export default function ChartSidebar() {
       {/* Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute left-2 top-2 z-30 p-2 rounded-xl bg-bg-secondary/90 border border-border-default backdrop-blur hover:bg-bg-elevated transition-smooth"
+        className="absolute left-2 top-2 z-30 p-2 rounded-xl bg-neutral-900/90 border border-neutral-800 backdrop-blur hover:bg-neutral-800 transition-colors"
         title={isOpen ? 'Close Toolbar' : 'Open Toolbar'}
       >
         {isOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
@@ -72,7 +72,7 @@ export default function ChartSidebar() {
 
       {/* Sliding Sidebar */}
       <div
-        className={`absolute left-0 top-0 z-20 h-full bg-bg-secondary/95 border-r border-border-default backdrop-blur transition-transform duration-300 ${
+        className={`absolute left-0 top-0 z-20 h-full bg-neutral-900/95 border-r border-neutral-800 backdrop-blur transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{ width: '280px' }}
@@ -86,10 +86,10 @@ export default function ChartSidebar() {
                 <button
                   key={t.key}
                   onClick={() => drawStore.setTool(t.key)}
-                  className={`p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-smooth ${
+                  className={`p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-colors ${
                     tool === t.key
-                      ? 'bg-primary/30 border-primary'
-                      : 'border-border-default hover:bg-bg-elevated'
+                      ? 'bg-electric/30 border-electric'
+                      : 'border-neutral-700 hover:bg-neutral-800'
                   }`}
                   title={`${t.label} ${t.shortcut ? `(${t.shortcut})` : ''}`}
                 >
@@ -104,7 +104,7 @@ export default function ChartSidebar() {
           </div>
 
           {/* Settings */}
-          <div className="flex items-center gap-3 p-2 rounded-xl border border-border-default">
+          <div className="flex items-center gap-3 p-2 rounded-xl border border-neutral-700">
             <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
@@ -119,13 +119,13 @@ export default function ChartSidebar() {
           <div className="flex gap-2">
             <button
               onClick={() => drawStore.undo()}
-              className="flex-1 px-3 py-2 text-sm border border-border-default rounded-xl hover:bg-bg-elevated transition-smooth"
+              className="flex-1 px-3 py-2 text-sm border border-neutral-700 rounded-xl hover:bg-neutral-800"
             >
               Undo
             </button>
             <button
               onClick={() => drawStore.redo()}
-              className="flex-1 px-3 py-2 text-sm border border-border-default rounded-xl hover:bg-bg-elevated transition-smooth"
+              className="flex-1 px-3 py-2 text-sm border border-neutral-700 rounded-xl hover:bg-neutral-800"
             >
               Redo
             </button>
@@ -140,10 +140,10 @@ export default function ChartSidebar() {
                   <button
                     key={p.id}
                     onClick={() => pluginManager.setActiveTool(p.id)}
-                    className={`w-full p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-smooth ${
+                    className={`w-full p-3 rounded-xl border text-left flex items-center gap-2 text-sm transition-colors ${
                       activePlugin === p.id
-                        ? 'bg-primary/30 border-primary'
-                        : 'border-border-default hover:bg-bg-elevated'
+                        ? 'bg-electric/30 border-electric'
+                        : 'border-neutral-700 hover:bg-neutral-800'
                     }`}
                     title={`${p.label} ${p.shortcut ? `(${p.shortcut})` : ''}`}
                   >
@@ -160,13 +160,13 @@ export default function ChartSidebar() {
 
           {/* Selection Actions */}
           {selCount > 0 && (
-            <div className="border-t border-border-default pt-4 mt-auto">
+            <div className="border-t border-neutral-800 pt-4 mt-auto">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm opacity-70">{selCount} selected</span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => drawStore.removeSelected()}
-                    className="px-3 py-1 text-sm bg-trading-loss/30 border border-trading-loss text-trading-loss-light rounded-xl hover:bg-trading-loss/50 transition-smooth"
+                    className="px-3 py-1 text-sm bg-red-900/30 border border-red-700 text-red-300 rounded-xl hover:bg-red-900/50"
                   >
                     Delete
                   </button>
@@ -178,7 +178,7 @@ export default function ChartSidebar() {
           {/* Clear All */}
           <button
             onClick={() => drawStore.clear()}
-            className="w-full px-3 py-2 text-sm border border-trading-loss text-trading-loss-light rounded-xl hover:bg-trading-loss/20 transition-smooth"
+            className="w-full px-3 py-2 text-sm border border-rose-700 text-rose-300 rounded-xl hover:bg-rose-900/20"
           >
             Clear All
           </button>

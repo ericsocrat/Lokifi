@@ -33,8 +33,8 @@ const DEFAULT_PANES: Pane[] = [
   {
     id: 'price-pane',
     type: 'price',
-    height: 600,
-    indicators: [],
+    height: 400,
+    indicators: ['sma', 'ema', 'bb', 'vwap'], // Price overlay indicators
     visible: true,
     locked: false,
   },

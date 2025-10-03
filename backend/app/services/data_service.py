@@ -3,7 +3,6 @@ Symbol directory and OHLC data provider for Lokifi trading platform.
 Supports multiple data sources with failover capabilities.
 """
 
-import asyncio
 import logging
 import os
 from datetime import datetime, timedelta
@@ -37,7 +36,6 @@ class Symbol(BaseModel):
     asset_type: AssetType
     exchange: str
     currency: str
-    logo_url: str | None = None
     country: str | None = None
     sector: str | None = None
     industry: str | None = None
@@ -85,7 +83,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/apple.com",
                 "US",
                 "Technology",
                 "Consumer Electronics",
@@ -96,7 +93,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/microsoft.com",
                 "US",
                 "Technology",
                 "Software",
@@ -107,7 +103,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/google.com",
                 "US",
                 "Technology",
                 "Internet",
@@ -118,7 +113,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/tesla.com",
                 "US",
                 "Consumer Discretionary",
                 "Auto Manufacturers",
@@ -129,7 +123,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/amazon.com",
                 "US",
                 "Consumer Discretionary",
                 "Internet Retail",
@@ -140,7 +133,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/meta.com",
                 "US",
                 "Technology",
                 "Internet",
@@ -151,7 +143,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/netflix.com",
                 "US",
                 "Communication Services",
                 "Entertainment",
@@ -162,7 +153,6 @@ class SymbolDirectory:
                 AssetType.STOCK,
                 "NASDAQ",
                 "USD",
-                "https://logo.clearbit.com/nvidia.com",
                 "US",
                 "Technology",
                 "Semiconductors",
@@ -174,7 +164,6 @@ class SymbolDirectory:
                 AssetType.INDEX,
                 "NYSE",
                 "USD",
-                "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/icon/spy.svg",
                 "US",
                 "ETF",
                 "Broad Market",
@@ -185,7 +174,6 @@ class SymbolDirectory:
                 AssetType.INDEX,
                 "NASDAQ",
                 "USD",
-                "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/icon/qqq.svg",
                 "US",
                 "ETF",
                 "Technology",
@@ -196,7 +184,6 @@ class SymbolDirectory:
                 AssetType.INDEX,
                 "NYSE",
                 "USD",
-                "https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/svg/icon/dia.svg",
                 "US",
                 "ETF",
                 "Broad Market",
@@ -208,7 +195,6 @@ class SymbolDirectory:
                 AssetType.CRYPTO,
                 "CRYPTO",
                 "USD",
-                "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/btc.svg",
                 None,
                 "Cryptocurrency",
                 "Digital Currency",
@@ -219,7 +205,6 @@ class SymbolDirectory:
                 AssetType.CRYPTO,
                 "CRYPTO",
                 "USD",
-                "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/eth.svg",
                 None,
                 "Cryptocurrency",
                 "Smart Contracts",
@@ -230,7 +215,6 @@ class SymbolDirectory:
                 AssetType.CRYPTO,
                 "CRYPTO",
                 "USD",
-                "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/ada.svg",
                 None,
                 "Cryptocurrency",
                 "Blockchain Platform",
@@ -241,7 +225,6 @@ class SymbolDirectory:
                 AssetType.CRYPTO,
                 "CRYPTO",
                 "USD",
-                "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/sol.svg",
                 None,
                 "Cryptocurrency",
                 "Web3 Platform",
@@ -252,7 +235,6 @@ class SymbolDirectory:
                 AssetType.CRYPTO,
                 "CRYPTO",
                 "USD",
-                "https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/svg/color/doge.svg",
                 None,
                 "Cryptocurrency",
                 "Meme Coin",
@@ -264,7 +246,6 @@ class SymbolDirectory:
                 AssetType.FOREX,
                 "FOREX",
                 "USD",
-                "https://raw.githubusercontent.com/transferwise/currency-flags/master/src/flags/eur.png",
                 None,
                 "Currency",
                 "Major Pair",
@@ -275,7 +256,6 @@ class SymbolDirectory:
                 AssetType.FOREX,
                 "FOREX",
                 "USD",
-                "https://raw.githubusercontent.com/transferwise/currency-flags/master/src/flags/gbp.png",
                 None,
                 "Currency",
                 "Major Pair",
@@ -286,7 +266,6 @@ class SymbolDirectory:
                 AssetType.FOREX,
                 "FOREX",
                 "JPY",
-                "https://raw.githubusercontent.com/transferwise/currency-flags/master/src/flags/jpy.png",
                 None,
                 "Currency",
                 "Major Pair",
@@ -297,7 +276,6 @@ class SymbolDirectory:
                 AssetType.FOREX,
                 "FOREX",
                 "USD",
-                "https://raw.githubusercontent.com/transferwise/currency-flags/master/src/flags/aud.png",
                 None,
                 "Currency",
                 "Major Pair",
@@ -308,7 +286,6 @@ class SymbolDirectory:
                 AssetType.FOREX,
                 "FOREX",
                 "CAD",
-                "https://raw.githubusercontent.com/transferwise/currency-flags/master/src/flags/cad.png",
                 None,
                 "Currency",
                 "Major Pair",
@@ -320,7 +297,6 @@ class SymbolDirectory:
                 AssetType.COMMODITY,
                 "COMEX",
                 "USD",
-                "https://img.icons8.com/color/96/000000/gold-bars.png",
                 None,
                 "Precious Metals",
                 "Gold",
@@ -331,7 +307,6 @@ class SymbolDirectory:
                 AssetType.COMMODITY,
                 "COMEX",
                 "USD",
-                "https://img.icons8.com/color/96/000000/silver-bars.png",
                 None,
                 "Precious Metals",
                 "Silver",
@@ -342,7 +317,6 @@ class SymbolDirectory:
                 AssetType.COMMODITY,
                 "NYMEX",
                 "USD",
-                "https://img.icons8.com/color/96/000000/oil-industry.png",
                 None,
                 "Energy",
                 "Crude Oil",
@@ -356,10 +330,9 @@ class SymbolDirectory:
                 asset_type=symbol_data[2],
                 exchange=symbol_data[3],
                 currency=symbol_data[4],
-                logo_url=symbol_data[5],
-                country=symbol_data[6],
-                sector=symbol_data[7],
-                industry=symbol_data[8],
+                country=symbol_data[5],
+                sector=symbol_data[6],
+                industry=symbol_data[7],
                 last_updated=datetime.now(),
             )
             self.symbols[symbol.symbol] = symbol
@@ -421,9 +394,8 @@ class OHLCAggregator:
 
     async def initialize(self):
         """Initialize HTTP session and providers"""
-        # Lazily create a single shared aiohttp session only if not already created
-        if self.session is None or self.session.closed:
-            self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
+        # Lazily create a single shared aiohttp session
+        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
 
         # Configure default providers (loaded from environment)
         self.providers = [
@@ -786,13 +758,8 @@ class OHLCAggregator:
 
     async def cleanup(self):
         """Cleanup resources"""
-        if self.session and not self.session.closed:
-            try:
-                await self.session.close()
-                # Give it a moment to close properly
-                await asyncio.sleep(0.1)
-            except Exception as e:
-                logger.warning(f"Error closing aiohttp session: {e}")
+        if self.session:
+            await self.session.close()
 
 
 # Global instances

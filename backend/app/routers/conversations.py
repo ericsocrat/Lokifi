@@ -31,13 +31,10 @@ from app.services.message_search_service import (
 )
 from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import connection_manager
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 # J6.1 Notification Integration
-from app.utils.notification_helpers import (
-    process_mentions_in_content,
-    trigger_dm_notification,
-)
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from setup_j6_integration import process_mentions_in_content, trigger_dm_notification
 from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
