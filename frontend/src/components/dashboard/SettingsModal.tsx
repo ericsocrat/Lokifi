@@ -252,7 +252,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div>
                   <h3 className="text-sm font-medium mb-3">Dark Mode</h3>
                   <div className="space-y-2">
-                    {['off', 'on', 'sunset', 'system'].map((opt) => (
+                    {['off', 'on', 'oled', 'sunset', 'system'].map((opt) => (
                       <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
                         <input
                           type="radio"
@@ -262,7 +262,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           onChange={() => setDarkMode(opt as any)}
                         />
                         <span className="capitalize">
-                          {opt === 'sunset' ? 'Sunset to Sunrise' : opt}
+                          {opt === 'sunset' ? 'Sunset to Sunrise' : opt === 'oled' ? 'OLED (Pure Black)' : opt}
                         </span>
                       </label>
                     ))}

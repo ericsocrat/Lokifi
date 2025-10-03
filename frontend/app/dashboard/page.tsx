@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { Button } from '../../components/ui/button';
 
 interface User {
@@ -38,6 +39,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<PortfolioStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasAssets, setHasAssets] = useState(false);
+  const { darkMode, setDarkMode } = usePreferences();
 
   useEffect(() => {
     checkAuth();
@@ -153,9 +155,9 @@ export default function DashboardPage() {
   }
 
   return (
-  <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
       {/* Navigation Bar */}
-  <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 transition-colors">
+      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 transition-colors">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
             <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
@@ -171,8 +173,16 @@ export default function DashboardPage() {
             <button className="p-2 hover:bg-gray-100 rounded-lg">
               <Share2 className="w-5 h-5 text-gray-600" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
-              <Settings className="w-5 h-5 text-gray-600" />
+            <button
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+              title="Cycle Theme"
+              onClick={() => {
+                const order = ['off','on','oled','off'];
+                const next = order[(order.indexOf(darkMode) + 1) % order.length] as any;
+                setDarkMode(next);
+              }}
+            >
+              <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
             <span className="text-sm text-gray-600">EUR €</span>
             <span className="text-sm font-medium text-gray-900 hidden sm:inline-block">
@@ -191,7 +201,7 @@ export default function DashboardPage() {
 
       <div className="flex">
         {/* Sidebar */}
-  <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4 transition-colors">
+        <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4 transition-colors">
           <nav className="space-y-1">
             <a
               href="/dashboard"

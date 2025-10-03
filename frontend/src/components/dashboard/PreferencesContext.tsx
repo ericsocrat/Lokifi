@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-export type DarkModeOption = 'off' | 'on' | 'system' | 'sunset';
+export type DarkModeOption = 'off' | 'on' | 'oled' | 'system' | 'sunset';
 export type NumberFormatOption = 'system' | 'us' | 'europe' | 'nordic' | 'swiss';
 export type FontSizeOption = 'sm' | 'md' | 'lg';
 
@@ -48,10 +48,14 @@ export const PreferencesProvider: React.FC<{ children: React.ReactNode }> = ({ c
       /* ignore */
     }
     // Theme application
+    // Reset classes first
+    document.documentElement.classList.remove('dark', 'oled');
     if (darkMode === 'on') {
       document.documentElement.classList.add('dark');
+    } else if (darkMode === 'oled') {
+      document.documentElement.classList.add('dark', 'oled');
     } else if (darkMode === 'off') {
-      document.documentElement.classList.remove('dark');
+      // light: no dark/oled classes
     } else if (darkMode === 'system') {
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       mq.matches
