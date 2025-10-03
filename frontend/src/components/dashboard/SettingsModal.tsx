@@ -117,13 +117,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <li key={t}>
                   <button
                     onClick={() => setTab(t)}
-                    className={
-                      `w-full text-left px-6 py-3 text-sm transition-colors rounded-none ${
-                        active
-                          ? 'font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
-                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-                      }`
-                    }
+                    className={`w-full text-left px-6 py-3 text-sm transition-colors rounded-none ${
+                      active
+                        ? 'font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                        : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                    }`}
                   >
                     {t}
                   </button>
@@ -135,7 +133,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         <div className="flex-1 flex flex-col max-h-[80vh]">
           <header className="px-8 py-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-start bg-white dark:bg-gray-900 transition-colors">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tab}</h2>
-            <button onClick={onClose} className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
+            <button
+              onClick={onClose}
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+            >
               ESC ✕
             </button>
           </header>
@@ -167,7 +168,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400">On trial till {trialEnds}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  On trial till {trialEnds}
+                </p>
                 <div className="flex gap-3">
                   <button
                     onClick={saveProfile}
@@ -175,7 +178,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   >
                     Save
                   </button>
-                  <button onClick={onClose} className="px-5 py-2 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 rounded text-xs transition-colors">
+                  <button
+                    onClick={onClose}
+                    className="px-5 py-2 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 rounded text-xs transition-colors"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -189,14 +195,20 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                   <div className="border rounded p-4 space-y-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Lokifi Essentials • $??/year</h3>
-                    <p className="text-gray-500 dark:text-gray-400">All core features except advanced additions.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                      Lokifi Essentials • $??/year
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      All core features except advanced additions.
+                    </p>
                     <button className="mt-2 w-full py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded text-xs transition-colors">
                       Subscribe (soon)
                     </button>
                   </div>
                   <div className="border rounded p-4 space-y-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Lokifi Pro • $??/year</h3>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                      Lokifi Pro • $??/year
+                    </h3>
                     <p className="text-gray-500 dark:text-gray-400">
                       Nested portfolios, granular permissions & VIP support.
                     </p>
@@ -227,7 +239,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   switch the aggregator or to track it manually.{' '}
                   <a
                     className="text-blue-600 underline"
-                    href="https://help.kubera.com/article/102-why-do-my-bank-and-brokerage-connections-keep-dropping"
+                    href="https://help.lokifi.app/article/bank-and-brokerage-connections"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -262,7 +274,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <h3 className="text-sm font-medium mb-3">Dark Mode</h3>
                   <div className="space-y-2">
                     {['off', 'on', 'oled', 'sunset', 'system'].map((opt) => (
-                      <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300">
+                      <label
+                        key={opt}
+                        className="flex items-center gap-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300"
+                      >
                         <input
                           type="radio"
                           name="darkmode"
@@ -353,7 +368,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   .
                 </p>
                 <div className="pt-2">
-                  <h4 className="text-xs font-medium mb-2 text-gray-700 dark:text-gray-300">Existing Keys</h4>
+                  <h4 className="text-xs font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    Existing Keys
+                  </h4>
                   <APIKeysList />
                 </div>
               </div>
@@ -361,7 +378,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {tab === 'Security' && (
               <div className="space-y-8 max-w-xl">
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Two-Factor Authentication</h3>
+                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    Two-Factor Authentication
+                  </h3>
                   <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
                     <input type="checkbox" checked={twoFA} onChange={toggle2FA} /> Enable 2FA
                     (placeholder)
@@ -371,13 +390,17 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Sign Out</h3>
+                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    Sign Out
+                  </h3>
                   <button onClick={onSignOut} className="text-xs underline text-blue-600">
                     Sign out from all devices
                   </button>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Delete Lokifi Account</h3>
+                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                    Delete Lokifi Account
+                  </h3>
                   <button onClick={deleteAccount} className="text-xs underline text-red-600">
                     Permanently delete my Lokifi account and all data
                   </button>

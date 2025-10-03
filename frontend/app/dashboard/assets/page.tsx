@@ -9,6 +9,7 @@ import {
   deleteAsset as storageDeleteAsset,
   totalValue as storageTotalValue,
 } from '@/lib/portfolioStorage';
+import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { ProfileDropdown } from '@/src/components/dashboard/ProfileDropdown';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
@@ -26,7 +27,6 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 
 interface User {
   email: string;
@@ -209,7 +209,13 @@ export default function AssetsPage() {
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center space-x-4">
             <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
-            <h1 className="text-xl font-bold">KUBERA</h1>
+            <div className="flex items-center gap-2 select-none">
+              <svg className="w-6 h-6" viewBox="0 0 32 32" fill="none" role="img" aria-label="Lokifi Logo">
+                <circle cx="16" cy="16" r="16" className="fill-black dark:fill-white transition-colors" />
+                <path d="M11 9v14h10" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="stroke-white dark:stroke-black" />
+              </svg>
+              <span className="text-xl font-bold tracking-wide">Lokifi</span>
+            </div>
           </div>
           <div className="flex items-center space-x-6">
             <button className="p-2 hover:bg-gray-100 rounded-lg">
@@ -225,7 +231,7 @@ export default function AssetsPage() {
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
               title="Cycle Theme"
               onClick={() => {
-                const order = ['off','on','oled','off'];
+                const order = ['off', 'on', 'oled', 'off'];
                 const next = order[(order.indexOf(darkMode) + 1) % order.length] as any;
                 setDarkMode(next);
               }}

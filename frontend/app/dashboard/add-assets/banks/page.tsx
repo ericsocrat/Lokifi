@@ -217,7 +217,7 @@ export default function BanksAndBrokeragesPage() {
 
             <div className="space-y-4 text-gray-700 mb-6">
               <p>
-                Kubera connects your accounts via multiple established aggregators (Mastercard, MX,
+                Lokifi connects your accounts via multiple established aggregators (Mastercard, MX,
                 Plaid, Yodlee, Akahu, Lean Insights, Aigo, Volt) who are connected to their sources
                 to log in—{' '}
                 <a href="#" className="text-blue-600 underline font-medium">
@@ -236,14 +236,14 @@ export default function BanksAndBrokeragesPage() {
 
               <p>
                 If you experience bad connections report to{' '}
-                <a href="mailto:hello@kubera.com" className="text-blue-600 underline font-medium">
-                  hello@kubera.com
+                <a href="mailto:support@lokifi.app" className="text-blue-600 underline font-medium">
+                  support@lokifi.app
                 </a>{' '}
                 for help.
               </p>
 
               <p>
-                If you expect 100% stable connectivity, Kubera isn't the right solution. No
+                If you expect 100% stable connectivity, Lokifi isn't the right solution. No
                 aggregator can guarantee uninterrupted account connections, and occasional issues
                 are unavoidable.
               </p>
