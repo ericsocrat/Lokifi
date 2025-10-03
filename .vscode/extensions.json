@@ -49,6 +49,7 @@
     "mtxr.sqltools",
     "cweijan.vscode-database-client2",
     "qwtel.sqlite-viewer",
+    "cweijan.vscode-redis-client",
 
     // ==========================================
     // API & TESTING

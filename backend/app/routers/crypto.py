@@ -1,13 +1,24 @@
 """
 Cryptocurrency data endpoints
+Uses the new crypto_data service with automatic provider fallback
 """
 
+from app.api.routes.crypto import router as crypto_routes
+from fastapi import APIRouter
+
+# Create the main router
+router = APIRouter()
+
+# Include the crypto routes with /crypto prefix
+router.include_router(crypto_routes, prefix="/crypto")
+
 import httpx
+
+# Keep the old endpoint temporarily for backward compatibility
 from app.core.config import Settings
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import HTTPException, Query
 from pydantic import BaseModel
 
-router = APIRouter()
 settings = Settings()
 
 
@@ -32,7 +43,8 @@ async def get_crypto_prices(
     currency: str = Query("usd", description="Target currency for prices"),
 ):
     """
-    Get current prices for multiple cryptocurrencies from CoinGecko
+    [DEPRECATED] Get current prices for multiple cryptocurrencies from CoinGecko
+    Use /api/crypto/list instead for better functionality
 
     - **symbols**: Comma-separated crypto IDs (bitcoin, ethereum, etc.)
     - **currency**: Target currency (default: usd)

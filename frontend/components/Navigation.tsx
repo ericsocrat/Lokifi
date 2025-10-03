@@ -6,7 +6,8 @@ import { usePathname } from 'next/navigation';
 import React from 'react';
 
 const navigationItems = [
-  { href: '/', icon: Home, label: 'Chart' },
+  { href: '/', icon: Home, label: 'Home' },
+  { href: '/chart', icon: BookOpen, label: 'Chart' },
   { href: '/portfolio', icon: Wallet, label: 'Portfolio' },
   { href: '/alerts', icon: Bell, label: 'Alerts' },
   { href: '/chat', icon: MessageSquare, label: 'Chat' },

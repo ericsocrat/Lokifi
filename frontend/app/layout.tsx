@@ -1,5 +1,7 @@
+import { ToastProvider } from '@/components/dashboard/ToastProvider';
 import { SWRProvider } from '@/components/SWRProvider';
 import { AuthProvider } from '@/src/components/AuthProvider';
+import { PreferencesProvider } from '@/src/components/dashboard/PreferencesContext';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import '../styles/globals.css';
@@ -21,9 +23,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html>
       <body>
-        <SWRProvider>
-          <AuthProvider>{children}</AuthProvider>
-        </SWRProvider>
+        <PreferencesProvider>
+          <ToastProvider>
+            <SWRProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </SWRProvider>
+          </ToastProvider>
+        </PreferencesProvider>
       </body>
     </html>
   );

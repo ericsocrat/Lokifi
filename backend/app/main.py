@@ -56,21 +56,21 @@ async def lifespan(app: FastAPI):
     """Simplified application lifespan manager"""
     logger.info("🚀 Starting Lokifi Application")
 
-    # Skip all initialization for debugging
-    logger.info("🗄️ Skipping database initialization for debugging...")
-    # try:
-    #     await db_manager.initialize()
-    #     logger.info("✅ Database initialized")
-    # except Exception as db_error:
-    #     logger.warning(f"⚠️ Database unavailable: {db_error}")
+    # Initialize database
+    logger.info("🗄️ Initializing database...")
+    try:
+        await db_manager.initialize()
+        logger.info("✅ Database initialized")
+    except Exception as db_error:
+        logger.warning(f"⚠️ Database unavailable: {db_error}")
 
-    # Skip Redis for now to isolate the shutdown issue
-    # logger.info("📡 Initializing Redis...")
-    # try:
-    #     await advanced_redis_client.initialize()
-    #     logger.info("✅ Redis initialized")
-    # except Exception as e:
-    #     logger.warning(f"⚠️ Redis unavailable: {e}")
+    # Initialize Redis
+    logger.info("📡 Initializing Redis...")
+    try:
+        await advanced_redis_client.initialize()
+        logger.info("✅ Redis initialized")
+    except Exception as e:
+        logger.warning(f"⚠️ Redis unavailable: {e}")
 
     logger.info("✅ Application startup complete - Server ready!")
 
@@ -90,7 +90,7 @@ app = FastAPI(
     title=f"{settings.PROJECT_NAME} - Phase K Track 3: Infrastructure Enhancement",
     description="Lokifi with Production-Ready Infrastructure: Advanced Redis, WebSocket Manager, Monitoring System",
     version="K3.0.0",
-    # lifespan=lifespan,  # Disabled for debugging
+    lifespan=lifespan,
 )
 
 _frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000")

@@ -28,6 +28,17 @@
       'Segoe UI',
       'Roboto',
       sans-serif;
+    font-size: 14px;
+  }
+
+  html[data-font-size='sm'] body {
+    font-size: 13px;
+  }
+  html[data-font-size='md'] body {
+    font-size: 14px;
+  }
+  html[data-font-size='lg'] body {
+    font-size: 15px;
   }
 
   /* Smooth scrolling */
@@ -273,6 +284,28 @@
    ============================================================================ */
 
 @layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 120ms ease-out;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .toast-info {
+    @apply bg-gray-800/90 text-gray-100 border-gray-600;
+  }
+  .toast-success {
+    @apply bg-green-600/90 text-white border-green-400;
+  }
+  .toast-error {
+    @apply bg-red-600/90 text-white border-red-400;
+  }
   /* Transition utilities */
   .transition-smooth {
     transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
