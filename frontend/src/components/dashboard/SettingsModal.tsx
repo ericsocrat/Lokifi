@@ -107,30 +107,39 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white w-full max-w-5xl rounded shadow-xl overflow-hidden flex animate-fadeIn">
-        <aside className="w-64 border-r border-gray-200 py-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-gray-900 w-full max-w-5xl rounded shadow-xl overflow-hidden flex animate-fadeIn border border-gray-200 dark:border-gray-800 transition-colors">
+        <aside className="w-64 border-r border-gray-200 dark:border-gray-800 py-6 bg-gray-50 dark:bg-gray-950/60 transition-colors">
           <ul className="space-y-0">
-            {tabs.map((t) => (
-              <li key={t}>
-                <button
-                  onClick={() => setTab(t)}
-                  className={`w-full text-left px-6 py-3 text-sm hover:bg-gray-100 ${tab === t ? 'font-medium bg-gray-50' : ''}`}
-                >
-                  {t}
-                </button>
-              </li>
-            ))}
+            {tabs.map((t) => {
+              const active = tab === t;
+              return (
+                <li key={t}>
+                  <button
+                    onClick={() => setTab(t)}
+                    className={
+                      `w-full text-left px-6 py-3 text-sm transition-colors rounded-none ${
+                        active
+                          ? 'font-medium bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100'
+                          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      }`
+                    }
+                  >
+                    {t}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </aside>
         <div className="flex-1 flex flex-col max-h-[80vh]">
-          <header className="px-8 py-6 border-b border-gray-200 flex justify-between items-start">
-            <h2 className="text-xl font-semibold">{tab}</h2>
-            <button onClick={onClose} className="text-xs text-gray-500 hover:text-gray-700">
+          <header className="px-8 py-6 border-b border-gray-200 dark:border-gray-800 flex justify-between items-start bg-white dark:bg-gray-900 transition-colors">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{tab}</h2>
+            <button onClick={onClose} className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors">
               ESC ✕
             </button>
           </header>
-          <div className="p-8 overflow-y-auto text-sm leading-relaxed">
+          <div className="p-8 overflow-y-auto text-sm leading-relaxed text-gray-700 dark:text-gray-300 transition-colors">
             {tab === 'Profile' && (
               <div className="space-y-6 max-w-lg">
                 <div className="flex items-center gap-6">
@@ -141,7 +150,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div>
                       <label className="text-xs font-medium">FULL NAME</label>
                       <input
-                        className="mt-1 w-full border rounded px-3 py-2"
+                        className="mt-1 w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60 focus:border-blue-500 transition-colors"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your name"
@@ -150,7 +159,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     <div>
                       <label className="text-xs font-medium">EMAIL</label>
                       <input
-                        className="mt-1 w-full border rounded px-3 py-2"
+                        className="mt-1 w-full border rounded px-3 py-2 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/60 focus:border-blue-500 transition-colors"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="email@example.com"
@@ -158,7 +167,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">On trial till {trialEnds}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">On trial till {trialEnds}</p>
                 <div className="flex gap-3">
                   <button
                     onClick={saveProfile}
@@ -166,7 +175,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   >
                     Save
                   </button>
-                  <button onClick={onClose} className="px-5 py-2 bg-gray-200 rounded text-xs">
+                  <button onClick={onClose} className="px-5 py-2 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 rounded text-xs transition-colors">
                     Cancel
                   </button>
                 </div>
@@ -174,24 +183,24 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             )}
             {tab === 'Subscription' && (
               <div className="space-y-4 max-w-xl">
-                <p className="text-sm">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   You are currently on a <strong>Free Trial</strong>. {daysLeft} day
                   {daysLeft === 1 ? '' : 's'} left. Subscription plans coming soon.
                 </p>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                  <div className="border rounded p-4 space-y-2">
-                    <h3 className="font-semibold">Lokifi Essentials • $??/year</h3>
-                    <p className="text-gray-500">All core features except advanced additions.</p>
-                    <button className="mt-2 w-full py-2 bg-gray-900 text-white rounded text-xs">
+                  <div className="border rounded p-4 space-y-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Lokifi Essentials • $??/year</h3>
+                    <p className="text-gray-500 dark:text-gray-400">All core features except advanced additions.</p>
+                    <button className="mt-2 w-full py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded text-xs transition-colors">
                       Subscribe (soon)
                     </button>
                   </div>
-                  <div className="border rounded p-4 space-y-2">
-                    <h3 className="font-semibold">Lokifi Pro • $??/year</h3>
-                    <p className="text-gray-500">
+                  <div className="border rounded p-4 space-y-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Lokifi Pro • $??/year</h3>
+                    <p className="text-gray-500 dark:text-gray-400">
                       Nested portfolios, granular permissions & VIP support.
                     </p>
-                    <button className="mt-2 w-full py-2 bg-gray-900 text-white rounded text-xs">
+                    <button className="mt-2 w-full py-2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded text-xs transition-colors">
                       Subscribe (soon)
                     </button>
                   </div>
@@ -203,14 +212,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <p className="text-sm">
                   User management (invite collaborators / family) will be implemented later.
                 </p>
-                <div className="border rounded p-4 text-xs text-gray-600">
+                <div className="border rounded p-4 text-xs text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-colors">
                   Account Owner: {user?.name || user?.email || 'You'}
                 </div>
               </div>
             )}
             {tab === 'Connectivity' && (
               <div className="space-y-4 max-w-2xl">
-                <p className="text-sm">
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   Bank & brokerage account connections are not foolproof, as many institutions still
                   rely on legacy technology. It is often easier to manually track them instead of
                   constantly dealing with connection errors and becoming frustrated. If a connection
@@ -230,7 +239,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {tab === 'Notifications' && (
               <div className="space-y-6 max-w-lg">
                 <h3 className="text-sm font-medium">Daily Digest Email</h3>
-                <div className="space-y-3 text-sm">
+                <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                   <label className="flex items-center gap-2">
                     <input type="checkbox" defaultChecked /> <span>1-Day Top Movers</span>
                   </label>
@@ -253,7 +262,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   <h3 className="text-sm font-medium mb-3">Dark Mode</h3>
                   <div className="space-y-2">
                     {['off', 'on', 'oled', 'sunset', 'system'].map((opt) => (
-                      <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer">
+                      <label key={opt} className="flex items-center gap-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300">
                         <input
                           type="radio"
                           name="darkmode"
@@ -262,7 +271,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                           onChange={() => setDarkMode(opt as any)}
                         />
                         <span className="capitalize">
-                          {opt === 'sunset' ? 'Sunset to Sunrise' : opt === 'oled' ? 'OLED (Pure Black)' : opt}
+                          {opt === 'sunset'
+                            ? 'Sunset to Sunrise'
+                            : opt === 'oled'
+                              ? 'OLED (Pure Black)'
+                              : opt}
                         </span>
                       </label>
                     ))}
@@ -270,7 +283,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </div>
                 <div>
                   <h3 className="text-sm font-medium mb-3">Number Format</h3>
-                  <div className="space-y-2">
+                  <div className="space-y-2 text-gray-700 dark:text-gray-300">
                     <FormatOption
                       value="system"
                       label="System Default"
@@ -310,7 +323,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                       <button
                         key={s}
                         onClick={() => setFontSize(s)}
-                        className={`px-3 py-1 border rounded text-xs ${fontSize === s ? 'bg-black text-white' : 'bg-white'}`}
+                        className={`px-3 py-1 border rounded text-xs transition-colors ${fontSize === s ? 'bg-black text-white dark:bg-white dark:text-gray-900' : 'bg-white dark:bg-gray-800 dark:text-gray-300 border-gray-300 dark:border-gray-700'}`}
                       >
                         {s.toUpperCase()}
                       </button>
@@ -323,7 +336,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="space-y-4 max-w-xl">
                 <button
                   onClick={() => setApiOpen(true)}
-                  className="px-5 py-2 bg-black text-white rounded text-sm font-medium"
+                  className="px-5 py-2 bg-black dark:bg-gray-100 text-white dark:text-gray-900 rounded text-sm font-medium transition-colors"
                 >
                   Generate API Key
                 </button>
@@ -340,7 +353,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   .
                 </p>
                 <div className="pt-2">
-                  <h4 className="text-xs font-medium mb-2">Existing Keys</h4>
+                  <h4 className="text-xs font-medium mb-2 text-gray-700 dark:text-gray-300">Existing Keys</h4>
                   <APIKeysList />
                 </div>
               </div>
@@ -348,23 +361,23 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             {tab === 'Security' && (
               <div className="space-y-8 max-w-xl">
                 <div>
-                  <h3 className="text-sm font-medium mb-2">Two-Factor Authentication</h3>
-                  <label className="flex items-center gap-2 text-xs text-gray-700">
+                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Two-Factor Authentication</h3>
+                  <label className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
                     <input type="checkbox" checked={twoFA} onChange={toggle2FA} /> Enable 2FA
                     (placeholder)
                   </label>
-                  <p className="text-[11px] text-gray-500 mt-1">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
                     Future: integrate with authenticator apps / email OTP.
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium mb-2">Sign Out</h3>
+                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Sign Out</h3>
                   <button onClick={onSignOut} className="text-xs underline text-blue-600">
                     Sign out from all devices
                   </button>
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium mb-2">Delete Lokifi Account</h3>
+                  <h3 className="text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Delete Lokifi Account</h3>
                   <button onClick={deleteAccount} className="text-xs underline text-red-600">
                     Permanently delete my Lokifi account and all data
                   </button>
