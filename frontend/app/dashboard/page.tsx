@@ -200,8 +200,9 @@ export default function DashboardPage() {
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
               title="Cycle Theme"
               onClick={() => {
-                const order = ['off', 'on', 'oled', 'off'];
-                const next = order[(order.indexOf(darkMode) + 1) % order.length] as any;
+                const order: Array<'off' | 'on' | 'oled'> = ['off', 'on', 'oled'];
+                const currentIndex = order.indexOf(darkMode as 'off' | 'on' | 'oled');
+                const next = order[(currentIndex + 1) % order.length];
                 setDarkMode(next);
               }}
             >
@@ -216,7 +217,7 @@ export default function DashboardPage() {
               onSignOut={() => {
                 setUser(null);
               }}
-              onUpdateUser={(u) => setUser((prev) => ({ ...prev, ...u }) as any)}
+              onUpdateUser={(u: Partial<User>) => setUser((prev) => prev ? ({ ...prev, ...u }) : null)}
             />
           </div>
         </div>
@@ -307,10 +308,10 @@ export default function DashboardPage() {
                       <span className="text-blue-600">*</span>
                     </h2>
                     <p className="text-gray-700 text-lg mb-3 leading-relaxed">
-                      Here's where you come to see the overview of your portfolio.
+                      Here&apos;s where you come to see the overview of your portfolio.
                     </p>
                     <p className="text-gray-700 text-lg mb-4 leading-relaxed">
-                      These numbers and charts will come alive when there's enough data.{' '}
+                      These numbers and charts will come alive when there&apos;s enough data.{' '}
                       <span className="font-semibold text-gray-900">
                         Please add your assets to get started.
                       </span>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "./AuthProvider";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { GoogleLogin } from '@react-oauth/google';
+import type { GoogleCredentialResponse, GoogleAuthResponse } from '@/src/types/google-auth';
 
 export function AuthModal({ onClose, initialMode = "register" }: { onClose: () => void; initialMode?: "login" | "register" }) {
   const { login, register } = useAuth();
@@ -107,24 +108,37 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
       }
       
       onClose();
-    } catch (err: any) {
-      setError(err?.message || "Authentication failed. Please try again.");
+    } catch (err: unknown) {
+      // Provide user-friendly error messages
+      const errorMessage = err instanceof Error ? err.message : "Authentication failed. Please try again.";
+      if (errorMessage.includes("Invalid email")) {
+        setError("Invalid email or password. Please check your credentials and try again.");
+      } else if (errorMessage.includes("verify your email")) {
+        setError("Please verify your email address before logging in. Check your inbox for the verification link.");
+      } else if (errorMessage.includes("deactivated")) {
+        setError("Your account has been deactivated. Please contact support for assistance.");
+      } else {
+        setError(errorMessage);
+      }
     } finally {
       setBusy(false);
     }
   };
 
   // Social auth handlers
-  const handleGoogleAuth = async (credentialResponse: any) => {
+  const handleGoogleAuth = async (credentialResponse: GoogleCredentialResponse | { credential?: string }) => {
     setSocialBusy("google");
     setError(null);
     try {
       if (!credentialResponse?.credential) {
-        throw new Error("No credential received from Google");
+        throw new Error("Failed to receive authentication from Google. Please try again.");
       }
 
+      // Get API base URL from environment variable
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
+
       // Send the Google credential to backend
-      const response = await fetch("http://localhost:8000/api/auth/google", {
+      const response = await fetch(`${API_BASE}/auth/google`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,13 +152,33 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("Google auth error response:", errorData);
-        const errorMessage = typeof errorData === 'string' 
-          ? errorData 
-          : (errorData?.detail || errorData?.message || "Google authentication failed");
+        
+        // Provide specific error messages based on response
+        let errorMessage: string;
+        if (typeof errorData === 'string') {
+          errorMessage = errorData;
+        } else if (errorData?.detail) {
+          const detail = errorData.detail;
+          // Parse backend error messages
+          if (detail.includes("token verification failed")) {
+            errorMessage = "Google authentication failed. Please try again or use email/password login.";
+          } else if (detail.includes("email not verified")) {
+            errorMessage = "Your Google email is not verified. Please verify your email with Google first.";
+          } else if (detail.includes("Invalid token audience")) {
+            errorMessage = "Invalid authentication token. Please try again.";
+          } else if (detail.includes("expired")) {
+            errorMessage = "Authentication token has expired. Please try again.";
+          } else {
+            errorMessage = detail;
+          }
+        } else {
+          errorMessage = errorData?.message || "Google authentication failed. Please try again.";
+        }
+        
         throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      const data = await response.json() as GoogleAuthResponse;
       
       // Store tokens in localStorage (optional, cookies are primary)
       if (data.access_token) {
@@ -161,9 +195,21 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
       
       onClose();
       window.location.reload(); // Refresh to update auth state
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Google auth error:", err);
-      const errorMessage = typeof err === 'string' ? err : (err?.message || "Google authentication failed");
+      
+      // Handle network errors specifically
+      let errorMessage: string;
+      if (err instanceof Error && (err.message === "Failed to fetch" || err.name === "TypeError")) {
+        errorMessage = "Cannot connect to server. Please make sure the backend is running on http://localhost:8000";
+      } else if (typeof err === 'string') {
+        errorMessage = err;
+      } else if (err instanceof Error) {
+        errorMessage = err.message;
+      } else {
+        errorMessage = "Google authentication failed. Please try again.";
+      }
+      
       setError(errorMessage);
     } finally {
       setSocialBusy(null);
@@ -176,8 +222,8 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
     try {
       setError("Apple authentication coming soon!");
       setTimeout(() => setError(null), 3000);
-    } catch (err: any) {
-      setError(err?.message || "Apple authentication failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Apple authentication failed");
     } finally {
       setSocialBusy(null);
     }
@@ -189,8 +235,8 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
     try {
       setError("Binance authentication coming soon!");
       setTimeout(() => setError(null), 3000);
-    } catch (err: any) {
-      setError(err?.message || "Binance authentication failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Binance authentication failed");
     } finally {
       setSocialBusy(null);
     }
@@ -202,8 +248,8 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
     try {
       setError("Wallet authentication coming soon!");
       setTimeout(() => setError(null), 3000);
-    } catch (err: any) {
-      setError(err?.message || "Wallet authentication failed");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Wallet authentication failed");
     } finally {
       setSocialBusy(null);
     }
@@ -502,7 +548,7 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
             {/* Terms notice (Register only) */}
             {mode === "register" && (
               <p className="text-xs text-center text-neutral-500">
-                By proceeding, you agree to Lokifi's{" "}
+                By proceeding, you agree to Lokifi&apos;s{" "}
                 <a href="/terms" className="text-blue-400 hover:underline">
                   Terms of Use
                 </a>{" "}

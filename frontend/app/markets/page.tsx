@@ -83,7 +83,7 @@ export default function MarketsPage() {
       <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Today's Cryptocurrency Prices</h1>
+          <h1 className="text-3xl font-bold mb-2">Today&apos;s Cryptocurrency Prices</h1>
           <p className="text-neutral-400">
             The global crypto market cap is{' '}
             {overview ? formatNumber(overview.total_market_cap) : '...'}, a{' '}

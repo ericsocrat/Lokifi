@@ -74,7 +74,7 @@ function AlertRow({ a }: { a: Alert }) {
       </div>
       <div className='flex gap-2'>
         <select className='bg-transparent border border-white/15 rounded px-2 py-1 text-xs' value={a.sound||'none'}
-                onChange={e=>s.updateAlert(a.id, { sound: e.target.value as any })}>
+                onChange={e=>s.updateAlert(a.id, { sound: e.target.value as 'ping' | 'none' })}>
           <option value="ping">Ping</option>
           <option value="none">No sound</option>
         </select>

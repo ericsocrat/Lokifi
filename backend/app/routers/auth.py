@@ -123,32 +123,59 @@ async def google_oauth(
     oauth_data: GoogleOAuthRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    """Authenticate with Google OAuth."""
+    """
+    Authenticate with Google OAuth using ID token.
+    
+    The @react-oauth/google library provides an ID token (JWT) that contains
+    user information. We verify this token with Google's tokeninfo endpoint.
+    """
     try:
         # Verify the ID token with Google
-        # The token from @react-oauth/google is an ID token (JWT)
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=10.0) as client:
             google_response = await client.get(
                 f"https://oauth2.googleapis.com/tokeninfo?id_token={oauth_data.token}"
             )
             
             if google_response.status_code != 200:
+                error_detail = google_response.json().get("error_description", "Invalid Google token")
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid Google token"
+                    detail=f"Google token verification failed: {error_detail}"
                 )
             
             user_info = google_response.json()
-            
+        
+        # Validate token audience (security check)
+        if user_info.get("aud") != settings.GOOGLE_CLIENT_ID:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token audience"
+            )
+        
+        # Validate token expiration (Google should handle this, but double-check)
+        import time
+        if user_info.get("exp", 0) < time.time():
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token has expired"
+            )
+        
         # Extract user information
         email = user_info.get("email")
         name = user_info.get("name", email)
         google_id = user_info.get("sub")  # 'sub' is the user ID in ID tokens
+        email_verified = user_info.get("email_verified", False)
         
         if not email or not google_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Unable to get user information from Google"
+            )
+        
+        if not email_verified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Google email not verified"
             )
         
         # Create or get user

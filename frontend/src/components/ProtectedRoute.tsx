@@ -70,7 +70,7 @@ export function ProtectedRoute({
                 Authentication Required
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                Please use the "Login / Sign Up" button in the top right to access this page
+                Please use the &quot;Login / Sign Up&quot; button in the top right to access this page
               </p>
               <div className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <span>👆</span>

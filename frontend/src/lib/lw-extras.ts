@@ -1,15 +1,17 @@
 import { setVisibleBarCoords } from '@/lib/chartMap'
 import { startPriceFeed } from '@/lib/price-feed'
+import type { IChartApi, ISeriesApi, Time, SeriesDataPoint } from '@/src/types/lightweight-charts'
 
 /**
  * Lightweight-charts extras:
  *  - Feeds precise bar X coords (for X-snap) from real series data
  *  - Starts a live price feed that drives the alerts engine (line/level crossings)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function wireLightweightChartsExtras(
-  chart: any,
-  series: any,
-  getSeriesData: () => Array<{ time: any; close?: number }>,
+  chart: IChartApi | any,
+  series: ISeriesApi<Time> | any,
+  getSeriesData: () => Array<SeriesDataPoint>,
   getLastPrice: () => number | null
 ) {
   if (!chart || !series) return () => {}
@@ -31,7 +33,7 @@ export function wireLightweightChartsExtras(
       }
       const xs: number[] = []
       for (const bar of slice) {
-        const x = ts?.timeToCoordinate?.(bar.time as any)
+        const x = ts?.timeToCoordinate?.(bar.time as Time)
         if (typeof x === 'number' && Number.isFinite(x)) xs.push(x)
       }
       setVisibleBarCoords(xs)

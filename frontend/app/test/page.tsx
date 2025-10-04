@@ -23,9 +23,9 @@ export default function TestPage() {
       console.log('Response received:', response.status);
       const data = await response.json();
       setResult(JSON.stringify(data, null, 2));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Fetch error:', err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -50,9 +50,9 @@ export default function TestPage() {
       console.log('Login response:', response.status);
       const data = await response.json();
       setResult(JSON.stringify(data, null, 2));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -124,7 +124,7 @@ export default function TestPage() {
         <strong style={{ color: '#93c5fd', fontSize: '18px' }}>Instructions:</strong>
         <ol>
           <li>Open browser console (F12)</li>
-          <li>Click "Test /api/auth/check" button</li>
+          <li>Click &quot;Test /api/auth/check&quot; button</li>
           <li>Check console for logs</li>
           <li>Check for CORS errors</li>
         </ol>

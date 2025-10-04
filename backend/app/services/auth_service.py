@@ -124,20 +124,23 @@ class AuthService:
         }
     
     async def login_user(self, login_data: UserLoginRequest) -> dict[str, Any]:
-        """Login a user."""
-        # Find user by email
-        stmt = select(User).where(User.email == login_data.email)
+        """Login a user with optimized single query."""
+        # Find user with profile in a single query using JOIN (performance optimization)
+        stmt = select(User, Profile).join(Profile, User.id == Profile.user_id).where(User.email == login_data.email)
         result = await self.db.execute(stmt)
-        user = result.scalar_one_or_none()
+        row = result.one_or_none()
         
-        if not user:
+        if not row:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
             )
         
+        user, profile = row
+        
         # Verify password
         if not user.password_hash or not verify_password(login_data.password, user.password_hash):
+            # TODO: Track failed login attempts for account lockout
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password"
@@ -147,17 +150,12 @@ class AuthService:
         if not user.is_active:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Account is deactivated"
+                detail="Your account has been deactivated. Please contact support for assistance."
             )
         
         # Update last login
         user.last_login = datetime.now(UTC)
         await self.db.commit()
-        
-        # Get user profile
-        stmt = select(Profile).where(Profile.user_id == user.id)
-        result = await self.db.execute(stmt)
-        profile = result.scalar_one_or_none()
         
         # Generate tokens
         access_token = create_access_token(str(user.id), user.email)

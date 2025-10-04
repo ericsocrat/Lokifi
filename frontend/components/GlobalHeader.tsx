@@ -1,17 +1,33 @@
 'use client';
 
 import { useAuth } from '@/src/components/AuthProvider';
-import { Bell, User } from 'lucide-react';
+import { Bell, User, Search } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { AuthModal } from '@/src/components/AuthModal';
 import { NotificationBell } from './NotificationBell';
 
 export default function GlobalHeader() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
-  const { user } = useAuth();
-  const isLoggedIn = !!user;
+  const { user, loading } = useAuth();
+  
+  // Memoize derived state to prevent unnecessary re-renders
+  const isLoggedIn = useMemo(() => !!user, [user]);
+  const displayName = useMemo(() => {
+    if (!user) return '';
+    return user.username ? `@${user.username}` : user.email?.split('@')[0] || 'User';
+  }, [user]);
+  
+  // Memoize callbacks to prevent re-creating functions
+  const handleOpenLogin = useCallback(() => {
+    setAuthModalTab('login');
+    setIsAuthModalOpen(true);
+  }, []);
+  
+  const handleCloseAuthModal = useCallback(() => {
+    setIsAuthModalOpen(false);
+  }, []);
 
   return (
     <>
@@ -26,67 +42,70 @@ export default function GlobalHeader() {
               <span className="text-xl font-bold text-white">Lokifi</span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden md:flex items-center gap-6" role="navigation" aria-label="Main navigation">
               <Link
                 href="/markets"
-                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors relative group"
               >
                 Markets
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300" />
               </Link>
               <Link
                 href="/chart"
-                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors relative group"
               >
                 Chart
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300" />
               </Link>
               <Link
                 href="/portfolio"
-                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors relative group"
               >
                 Portfolio
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300" />
               </Link>
               <Link
                 href="/alerts"
-                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors relative group"
               >
                 Alerts
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300" />
               </Link>
               <Link
                 href="/ai-research"
-                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors"
+                className="text-sm font-medium text-neutral-400 hover:text-white transition-colors relative group"
               >
                 AI Research
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-500 group-hover:w-full transition-all duration-300" />
               </Link>
             </nav>
           </div>
 
           {/* Center: Search Bar */}
           <div className="hidden lg:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
+            <div className="relative w-full group">
+              <Search 
+                className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500 group-focus-within:text-blue-500 transition-colors" 
+                aria-hidden="true"
+              />
               <input
                 type="text"
                 placeholder="Search cryptocurrencies..."
-                className="w-full px-4 py-2 pl-10 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-2 pl-10 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                aria-label="Search cryptocurrencies"
               />
-              <svg
-                className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
             </div>
           </div>
 
           {/* Right: Notifications and Auth */}
           <div className="flex items-center gap-3">
-            {isLoggedIn ? (
+            {loading ? (
+              // Loading skeleton
+              <div className="flex items-center gap-3 animate-pulse">
+                <div className="w-10 h-10 rounded-lg bg-neutral-800" />
+                <div className="hidden sm:block w-24 h-10 rounded-lg bg-neutral-800" />
+              </div>
+            ) : isLoggedIn ? (
               <>
                 {/* Notification Bell */}
                 <NotificationBell />
@@ -94,12 +113,13 @@ export default function GlobalHeader() {
                 {/* User Profile Link */}
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 px-3 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg text-white transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg text-white transition-all hover:shadow-lg hover:shadow-blue-500/10"
+                  aria-label="User profile"
                 >
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
-                  <span className="text-sm font-medium hidden sm:inline">{user.username ? `@${user.username}` : user.email}</span>
+                  <span className="text-sm font-medium hidden sm:inline">{displayName}</span>
                 </Link>
               </>
             ) : (
@@ -115,11 +135,9 @@ export default function GlobalHeader() {
 
                 {/* Log In / Sign Up Button */}
                 <button
-                  onClick={() => {
-                    setAuthModalTab('login');
-                    setIsAuthModalOpen(true);
-                  }}
-                  className="flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg text-white transition-colors"
+                  onClick={handleOpenLogin}
+                  className="flex items-center gap-2 px-4 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-700 rounded-lg text-white transition-colors hover:shadow-lg hover:shadow-blue-500/20"
+                  aria-label="Log in or sign up"
                 >
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <User size={16} className="text-white" />
@@ -134,7 +152,7 @@ export default function GlobalHeader() {
 
       {/* Auth Modal */}
       {isAuthModalOpen && (
-        <AuthModal initialMode={authModalTab} onClose={() => setIsAuthModalOpen(false)} />
+        <AuthModal initialMode={authModalTab} onClose={handleCloseAuthModal} />
       )}
     </>
   );

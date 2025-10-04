@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
 import { me, login, register as registerApi, logout as logoutApi } from "@/src/lib/auth";
 
 type User = {
@@ -28,7 +28,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null);
   const [loading, setLoading] = useState(true);
 
-  const refresh = async () => {
+  // Memoize refresh function to prevent unnecessary re-renders
+  const refresh = useCallback(async () => {
     try {
       console.log('🔄 AuthProvider: Refreshing user data...');
       const response = await me();
@@ -49,37 +50,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.log('❌ AuthProvider: Failed to get user data:', error);
       setUser(null);
     }
-  };
+  }, []);
 
   useEffect(() => {
     refresh().finally(() => setLoading(false));
+  }, [refresh]);
+
+  // Memoize login function to prevent re-renders
+  const handleLogin = useCallback(async (email: string, password: string) => {
+    console.log('🔐 AuthProvider: Logging in...');
+    await login(email, password);
+    console.log('🔐 AuthProvider: Login successful, refreshing user data...');
+    await refresh();
+  }, [refresh]);
+
+  // Memoize register function to prevent re-renders
+  const handleRegister = useCallback(async (email: string, password: string, full_name: string, username?: string) => {
+    console.log('📝 AuthProvider: Registering...');
+    await registerApi(email, password, full_name, username);
+    console.log('📝 AuthProvider: Registration successful, refreshing user data...');
+    await refresh();
+  }, [refresh]);
+
+  // Memoize logout function to prevent re-renders
+  const handleLogout = useCallback(async () => {
+    console.log('🚪 AuthProvider: Logging out...');
+    await logoutApi();
+    setUser(null);
+    console.log('🚪 AuthProvider: Logged out');
   }, []);
 
   const value = useMemo<AuthContextType>(
     () => ({
       user,
       loading,
-      login: async (email, password) => {
-        console.log('🔐 AuthProvider: Logging in...');
-        await login(email, password);
-        console.log('🔐 AuthProvider: Login successful, refreshing user data...');
-        await refresh();
-      },
-      register: async (email, password, full_name, username) => {
-        console.log('📝 AuthProvider: Registering...');
-        await registerApi(email, password, full_name, username);
-        console.log('📝 AuthProvider: Registration successful, refreshing user data...');
-        await refresh();
-      },
-      logout: async () => {
-        console.log('🚪 AuthProvider: Logging out...');
-        await logoutApi();
-        setUser(null);
-        console.log('🚪 AuthProvider: Logged out');
-      },
+      login: handleLogin,
+      register: handleRegister,
+      logout: handleLogout,
       refresh,
     }),
-    [user, loading]
+    [user, loading, handleLogin, handleRegister, handleLogout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

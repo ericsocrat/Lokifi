@@ -5,8 +5,8 @@ export default function ReportPortal() {
   const [open, setOpen] = React.useState(false)
   React.useEffect(() => {
     const openHandler = () => setOpen(true)
-    window.addEventListener("lokifi:open-report", openHandler as any)
-    return () => window.removeEventListener("lokifi:open-report", openHandler as any)
+    window.addEventListener("lokifi:open-report", openHandler)
+    return () => window.removeEventListener("lokifi:open-report", openHandler)
   }, [])
   return open ? <ReportComposer open={open} onClose={()=>setOpen(false)} /> : null
 }

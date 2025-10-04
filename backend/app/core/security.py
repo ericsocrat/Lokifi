@@ -97,12 +97,33 @@ def validate_email(email: str) -> bool:
 
 
 def validate_password_strength(password: str) -> bool:
-    """Enhanced password strength validation."""
+    """
+    Enhanced password strength validation with multiple security checks.
+    
+    Requirements:
+    - Minimum 8 characters
+    - At least 3 of 4 criteria: uppercase, lowercase, digit, special character
+    - Not a common password
+    - Sufficient entropy
+    """
+    import re
+    import math
+    
+    # Length check
     if len(password) < 8:
         return False
     
-    # Check for at least one uppercase, lowercase, digit, and special character
-    import re
+    # Common passwords check (top 100 most common)
+    common_passwords = {
+        'password', '123456', '12345678', 'qwerty', 'abc123', 'monkey', '1234567',
+        'letmein', 'trustno1', 'dragon', 'baseball', 'iloveyou', 'master', 'sunshine',
+        'ashley', 'bailey', 'passw0rd', 'shadow', '123123', '654321', 'superman',
+        'qazwsx', 'michael', 'football', 'password1', 'welcome', 'admin', 'admin123'
+    }
+    if password.lower() in common_passwords:
+        return False
+    
+    # Character variety checks
     has_upper = bool(re.search(r'[A-Z]', password))
     has_lower = bool(re.search(r'[a-z]', password))
     has_digit = bool(re.search(r'\d', password))
@@ -110,4 +131,21 @@ def validate_password_strength(password: str) -> bool:
     
     # Require at least 3 of the 4 criteria for flexibility
     criteria_met = sum([has_upper, has_lower, has_digit, has_special])
-    return criteria_met >= 3
+    if criteria_met < 3:
+        return False
+    
+    # Calculate password entropy (information theory)
+    # Higher entropy = more unpredictable password
+    char_set_size = 0
+    if has_lower: char_set_size += 26
+    if has_upper: char_set_size += 26
+    if has_digit: char_set_size += 10
+    if has_special: char_set_size += 32  # approximate
+    
+    entropy = len(password) * math.log2(char_set_size) if char_set_size > 0 else 0
+    
+    # Require minimum entropy of 35 bits (NIST recommends 30+)
+    if entropy < 35:
+        return False
+    
+    return True

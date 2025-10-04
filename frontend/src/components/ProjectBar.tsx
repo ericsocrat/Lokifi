@@ -22,7 +22,7 @@ export default function ProjectBar() {
     saveSlot(name, proj);
     refresh();
     try {
-      (window as any).__fynix_toast?.('Saved project');
+      window.__fynix_toast?.('Saved project');
     } catch {}
   };
 
@@ -37,7 +37,7 @@ export default function ProjectBar() {
       timeframe: proj.timeframe || s.timeframe,
     });
     try {
-      (window as any).__fynix_toast?.('Loaded project');
+      window.__fynix_toast?.('Loaded project');
     } catch {}
   };
 

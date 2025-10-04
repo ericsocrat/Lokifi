@@ -43,11 +43,8 @@ interface ConnectingBank {
   value: number;
 }
 
-interface AddAssetModalState {
-  show: boolean;
-  step: 'stocks' | 'metals' | 'quantity';
-  selectedItems: any[];
-}
+import type { AddAssetModalState, SelectedAsset, Asset } from '@/src/types/assets';
+
 
 function PortfolioPageContent() {
   const router = useRouter();
@@ -111,14 +108,15 @@ function PortfolioPageContent() {
   };
 
   const handleDone = () => {
-    const items = modal.selectedItems.map((item: any) => ({
+    const items: Asset[] = modal.selectedItems.map((item: SelectedAsset) => ({
+      id: `${item.symbol}-${Date.now()}`,
       name: item.name,
       symbol: item.symbol,
       shares: parseInt(shares[item.symbol] || '0'),
       value: Math.floor(Math.random() * 10000) + 1000,
       change: 0,
     }));
-    storageAddAssets('Investments', items as any);
+    storageAddAssets('Investments', items);
     const updated = loadPortfolio();
     setSections(updated);
     setModal({ show: false, step: 'stocks', selectedItems: [] });
@@ -160,7 +158,7 @@ function PortfolioPageContent() {
             target.message = 'Connected';
             localStorage.setItem('connectingBanks', JSON.stringify(current));
             setConnectingBanks(current);
-            (window as any).dispatchEvent(
+            window.dispatchEvent(
               new CustomEvent('lokifi.toast', {
                 detail: {
                   type: 'success',

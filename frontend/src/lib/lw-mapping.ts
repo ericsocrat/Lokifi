@@ -1,6 +1,8 @@
 import { setMappers, setVisibleBarCoords, setVisiblePriceLevels } from '@/lib/chartMap'
+import type { IChartApi, ISeriesApi, Time } from '@/src/types/lightweight-charts'
 
-export function wireLightweightChartsMappings(chart: any, series: any) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function wireLightweightChartsMappings(chart: IChartApi | any, series: ISeriesApi<Time> | any) {
   if (!chart || !series) return
 
   setMappers({
@@ -13,7 +15,7 @@ export function wireLightweightChartsMappings(chart: any, series: any) {
       return (typeof c === 'number') ? c : null
     },
     xToTime: (x:number) => chart?.timeScale?.()?.coordinateToTime?.(x) ?? null,
-    timeToX: (t:any) => chart?.timeScale?.()?.timeToCoordinate?.(t) ?? null,
+    timeToX: (t:string | number | Date) => chart?.timeScale?.()?.timeToCoordinate?.(t as Time) ?? null,
   })
 
   const feedVisible = () => {
@@ -29,15 +31,15 @@ export function wireLightweightChartsMappings(chart: any, series: any) {
       for (let i=0;i<=steps;i++){
         const frac = i/steps
         const t = (range.from * (1-frac)) + (range.to * frac)
-        const x = ts.timeToCoordinate?.(t as any)
+        const x = ts.timeToCoordinate?.(t as Time)
         if (typeof x === 'number') xs.push(x)
       }
       setVisibleBarCoords(xs)
 
       // light price levels (sample a few Y -> price)
-      const h = (chart as any)?.chartElement?.clientHeight ?? 600
+      const h = chart?.chartElement?.clientHeight ?? 600
       const sampleYs = [0.1, 0.3, 0.5, 0.7, 0.9].map(p => p * h)
-      const prices = sampleYs.map(y => series?.coordinateToPrice?.(y)).filter((p: any)=> typeof p === 'number') as number[]
+      const prices = sampleYs.map(y => series?.coordinateToPrice?.(y)).filter((p): p is number => typeof p === 'number')
       const levels = new Set<number>()
       prices.forEach(p => {
         const tick = Math.pow(10, Math.floor(Math.log10(Math.max(1e-9, Math.abs(p)))) - 2)

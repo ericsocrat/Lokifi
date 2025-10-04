@@ -1,6 +1,7 @@
 import React from 'react'
 import { useChartStore } from '@/state/store'
 import type { Alert } from '@/lib/alerts'
+import type { BaseAlert, AlertSound } from '@/src/types/alerts'
 
 type Props = { open: boolean; onClose: () => void }
 export default function AlertModal({ open, onClose }: Props) {
@@ -23,7 +24,7 @@ export default function AlertModal({ open, onClose }: Props) {
   const canRegion = primary && primary.kind==='rect'
 
   const submit = () => {
-    const base: any = { note, sound, cooldownMs: cooldown || 0, maxTriggers: maxTriggers === '' ? undefined : Number(maxTriggers), enabled: true }
+    const base: Omit<BaseAlert, 'id'> = { note, sound, cooldownMs: cooldown || 0, maxTriggers: maxTriggers === '' ? undefined : Number(maxTriggers), enabled: true }
     if (kind === 'time') {
       if (!when) return
       s.addAlert({ ...base, kind: 'time', when: new Date(when).getTime() })
@@ -84,7 +85,7 @@ export default function AlertModal({ open, onClose }: Props) {
 
           <label className="col-span-1 opacity-70">Sound</label>
           <select className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                  value={sound} onChange={e=>setSound(e.target.value as any)}>
+                  value={sound} onChange={e=>setSound(e.target.value as AlertSound)}>
             <option value="ping">Ping</option>
             <option value="none">None</option>
           </select>
