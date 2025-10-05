@@ -18,32 +18,85 @@ import {
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '../../components/ui/button';
+import {
+  getStats,
+  hasAssets as checkHasAssets,
+  getAllocationByCategory,
+  getTopHoldings,
+  getNetWorthChange,
+  type DashboardStats,
+  type AllocationItem,
+  type TopHolding,
+} from '@/src/lib/dashboardData';
+import { usePortfolioPrices } from '@/src/hooks/useMarketData';
+import { loadPortfolio } from '@/src/lib/portfolioStorage';
 
 interface User {
   email: string;
   name?: string;
 }
 
-interface PortfolioStats {
-  netWorth: number;
-  assets: number;
-  debts: number;
-  investableAssets: number;
-  cashOnHand: number;
-  illiquid: number;
-}
+type TimePeriod = '1d' | '7d' | '30d' | '1y' | 'all';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [stats, setStats] = useState<PortfolioStats | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [hasAssets, setHasAssets] = useState(false);
+  const [hasAnyAssets, setHasAnyAssets] = useState(false);
+  const [allocations, setAllocations] = useState<AllocationItem[]>([]);
+  const [topHoldings, setTopHoldings] = useState<TopHolding[]>([]);
+  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('1d');
+  const [netWorthData, setNetWorthData] = useState({ value: 0, change: 0, changePercent: 0 });
   const { darkMode, setDarkMode } = usePreferences();
+
+  // Get live portfolio data from master market data service
+  const portfolio = loadPortfolio();
+  const holdings = portfolio.flatMap((section) =>
+    section.assets.map((asset) => ({
+      symbol: asset.symbol,
+      shares: asset.shares,
+    }))
+  );
+  
+  const { totalValue: liveNetWorth, totalChange: liveChange, totalChangePercent: liveChangePercent } = 
+    usePortfolioPrices(holdings);
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    // Load portfolio data
+    loadDashboardData();
+  }, [selectedPeriod]);
+
+  const loadDashboardData = () => {
+    try {
+      const hasData = checkHasAssets();
+      setHasAnyAssets(hasData);
+
+      if (hasData) {
+        const dashboardStats = getStats();
+        setStats(dashboardStats);
+
+        const categoryAllocations = getAllocationByCategory();
+        setAllocations(categoryAllocations);
+
+        const holdings = getTopHoldings(5);
+        setTopHoldings(holdings);
+
+        // Use live net worth instead of static data
+        setNetWorthData({
+          value: liveNetWorth,
+          change: liveChange,
+          changePercent: liveChangePercent
+        });
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error);
+    }
+  };
 
   const checkAuth = async () => {
     try {
@@ -77,63 +130,15 @@ export default function DashboardPage() {
 
   const fetchPortfolioData = async () => {
     try {
-      // Check if user has any portfolio data
-      const response = await fetch('http://localhost:8000/api/portfolio', {
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const hasData = data && data.length > 0;
-        setHasAssets(hasData);
-
-        if (hasData) {
-          // TODO: Calculate stats from portfolio data
-          setStats({
-            netWorth: 0,
-            assets: 0,
-            debts: 0,
-            investableAssets: 0,
-            cashOnHand: 0,
-            illiquid: 0,
-          });
-        } else {
-          setStats({
-            netWorth: 0,
-            assets: 0,
-            debts: 0,
-            investableAssets: 0,
-            cashOnHand: 0,
-            illiquid: 0,
-          });
-        }
-      } else {
-        setStats({
-          netWorth: 0,
-          assets: 0,
-          debts: 0,
-          investableAssets: 0,
-          cashOnHand: 0,
-          illiquid: 0,
-        });
-        setHasAssets(false);
-      }
+      // Load portfolio data from storage (no longer from API)
+      setLoading(false);
     } catch (error) {
-      console.error('Failed to fetch portfolio:', error);
-      setStats({
-        netWorth: 0,
-        assets: 0,
-        debts: 0,
-        investableAssets: 0,
-        cashOnHand: 0,
-        illiquid: 0,
-      });
-      setHasAssets(false);
+      console.error('Auth check failed:', error);
+      setLoading(false);
     }
   };
 
-  const fmt = useCurrencyFormatter('EUR');
-  const formatCurrency = (amount: number) => fmt(amount);
+  const { formatCurrency } = useCurrencyFormatter();
 
   const getFirstName = () => {
     if (user?.name) {
@@ -155,149 +160,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 transition-colors">
-      {/* Navigation Bar */}
-      <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 transition-colors">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center space-x-4">
-            <Menu className="w-6 h-6 text-gray-600 cursor-pointer" />
-            <div className="flex items-center gap-2 select-none">
-              <svg
-                className="w-6 h-6"
-                viewBox="0 0 32 32"
-                fill="none"
-                role="img"
-                aria-label="Lokifi Logo"
-              >
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="16"
-                  className="fill-black dark:fill-white transition-colors"
-                />
-                <path
-                  d="M11 9v14h10"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="stroke-white dark:stroke-black"
-                />
-              </svg>
-              <span className="text-xl font-bold tracking-wide">Lokifi</span>
-            </div>
-          </div>
-          <div className="flex items-center space-x-6">
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
-              <Bell className="w-5 h-5 text-gray-600" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
-              <Search className="w-5 h-5 text-gray-600" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
-              <Share2 className="w-5 h-5 text-gray-600" />
-            </button>
-            <button
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-              title="Cycle Theme"
-              onClick={() => {
-                const order: Array<'off' | 'on' | 'oled'> = ['off', 'on', 'oled'];
-                const currentIndex = order.indexOf(darkMode as 'off' | 'on' | 'oled');
-                const next = order[(currentIndex + 1) % order.length];
-                setDarkMode(next);
-              }}
-            >
-              <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
-            </button>
-            <span className="text-sm text-gray-600">EUR €</span>
-            <span className="text-sm font-medium text-gray-900 hidden sm:inline-block">
-              {getFirstName()}
-            </span>
-            <ProfileDropdown
-              user={user}
-              onSignOut={() => {
-                setUser(null);
-              }}
-              onUpdateUser={(u: Partial<User>) => setUser((prev) => prev ? ({ ...prev, ...u }) : null)}
-            />
-          </div>
-        </div>
-      </nav>
-
-      <div className="flex">
-        {/* Sidebar */}
-        <aside className="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 min-h-screen p-4 transition-colors">
-          <nav className="space-y-1">
-            <a
-              href="/dashboard"
-              className="flex items-center justify-between px-4 py-3 bg-gray-100 dark:bg-gray-800 rounded-lg text-gray-900 dark:text-gray-100 font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <Wallet className="w-5 h-5" />
-                <span>Net Worth</span>
-              </div>
-              <span className="text-sm text-gray-500">{formatCurrency(stats?.netWorth || 0)}</span>
-            </a>
-            <a
-              href="/dashboard/assets"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <TrendingUp className="w-5 h-5" />
-                <span>Assets</span>
-              </div>
-              <span className="text-sm text-gray-500">{formatCurrency(stats?.assets || 0)}</span>
-            </a>
-            <a
-              href="/dashboard/debts"
-              className="flex items-center justify-between px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <div className="flex items-center space-x-3">
-                <AlertCircle className="w-5 h-5" />
-                <span>Debts</span>
-              </div>
-              <span className="text-sm text-gray-500">{formatCurrency(stats?.debts || 0)}</span>
-            </a>
-            <a
-              href="/dashboard/recap"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <PieChart className="w-5 h-5" />
-              <span>Recap</span>
-            </a>
-            <a
-              href="/dashboard/fast-forward"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7l5 5m0 0l-5 5m5-5H6"
-                />
-              </svg>
-              <span>Fast Forward</span>
-            </a>
-            <a
-              href="/dashboard/beneficiary"
-              className="flex items-center space-x-3 px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-              <span>Beneficiary</span>
-            </a>
-          </nav>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-auto">
-          {!hasAssets ? (
+    <div className="p-6 max-w-7xl mx-auto">
+          {!hasAnyAssets ? (
             // Empty State - Welcome Message
             <div className="max-w-5xl mx-auto">
               <Card className="p-10 bg-white shadow-sm rounded-2xl border border-gray-200">
@@ -334,14 +198,14 @@ export default function DashboardPage() {
                 </div>
               </Card>
 
-              {/* Stats Preview Cards */}
+              {/* Stats Preview Cards - Show SAMPLE data when empty */}
               <div className="grid grid-cols-3 gap-6 mt-8">
                 {/* Net Worth Card */}
                 <Card className="p-6 bg-white shadow-sm rounded-2xl border border-gray-200">
                   <div className="mb-6">
                     <p className="text-sm text-gray-500 mb-2 font-medium">Net Worth</p>
                     <p className="text-4xl font-semibold text-gray-900">€1.5 Million</p>
-                    <p className="text-xs text-gray-400 mt-2">1 DAY</p>
+                    <p className="text-xs text-gray-400 mt-2">SAMPLE DATA</p>
                   </div>
                   <div className="mb-6">
                     <p className="text-sm text-gray-500 mb-2 flex items-center">
@@ -598,19 +462,143 @@ export default function DashboardPage() {
               </div>
             </div>
           ) : (
-            // TODO: Populated State - Will be implemented after you send the second image
+            // Populated State - Show Real Data
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                Welcome back, {getFirstName()}!
-              </h2>
-              <p className="text-gray-600">
-                Your portfolio with assets will be displayed here once you send the populated state
-                image...
-              </p>
+              {/* Net Worth Overview */}
+              <Card className="p-8 bg-white dark:bg-gray-900 shadow-sm rounded-2xl border border-gray-200 dark:border-gray-800 mb-8 transition-colors">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">Net Worth</h2>
+                      <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-semibold uppercase tracking-wide">
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        LIVE
+                      </span>
+                    </div>
+                    <p className="text-5xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                      {formatCurrency(liveNetWorth)}
+                    </p>
+                    <div className="flex items-center space-x-2">
+                      <span className={`text-sm font-medium ${liveChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {liveChange >= 0 ? '↑ +' : '↓ '}{formatCurrency(Math.abs(liveChange))} ({liveChangePercent >= 0 ? '+' : ''}{liveChangePercent.toFixed(2)}%)
+                      </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500 uppercase">TODAY</span>
+                    </div>
+                  </div>
+                  {/* Period Selector */}
+                  <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+                    {(['1d', '7d', '30d', '1y', 'all'] as TimePeriod[]).map((period) => (
+                      <button
+                        key={period}
+                        onClick={() => setSelectedPeriod(period)}
+                        className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
+                          selectedPeriod === period
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900'
+                        }`}
+                      >
+                        {period.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Stats Cards Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <Card className="p-4 bg-white shadow-sm rounded-lg border border-gray-200">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Investable Assets</p>
+                  <p className="text-2xl font-semibold text-gray-900">{formatCurrency(stats?.investableAssets || 0)}</p>
+                </Card>
+                <Card className="p-4 bg-white shadow-sm rounded-lg border border-gray-200">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Cash on Hand</p>
+                  <p className="text-2xl font-semibold text-gray-900">{formatCurrency(stats?.cashOnHand || 0)}</p>
+                </Card>
+                <Card className="p-4 bg-white shadow-sm rounded-lg border border-gray-200">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Illiquid</p>
+                  <p className="text-2xl font-semibold text-gray-900">{formatCurrency(stats?.illiquid || 0)}</p>
+                </Card>
+                <Card className="p-4 bg-white shadow-sm rounded-lg border border-gray-200">
+                  <p className="text-xs font-medium text-gray-500 mb-1">Debts</p>
+                  <p className="text-2xl font-semibold text-red-600">{formatCurrency(stats?.debts || 0)}</p>
+                </Card>
+              </div>
+
+              {/* Allocations and Top Holdings */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                {/* Allocation Chart */}
+                <Card className="p-6 bg-white shadow-sm rounded-2xl border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Allocation by Category</h3>
+                  {allocations.length > 0 ? (
+                    <div className="space-y-3">
+                      {allocations.map((item, index) => (
+                        <div key={index} className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2 flex-1">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                            <span className="text-sm text-gray-700">{item.name}</span>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-gray-900">{formatCurrency(item.value)}</p>
+                            <p className="text-xs text-gray-500">{item.percentage.toFixed(1)}%</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No allocations yet</p>
+                  )}
+                </Card>
+
+                {/* Top Holdings */}
+                <Card className="p-6 bg-white shadow-sm rounded-2xl border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Top Holdings</h3>
+                  {topHoldings.length > 0 ? (
+                    <div className="space-y-3">
+                      {topHoldings.map((holding, index) => (
+                        <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                              <span className="text-xs font-semibold text-purple-600">{index + 1}</span>
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-gray-900">{holding.symbol}</p>
+                              <p className="text-xs text-gray-500">{holding.name}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-semibold text-gray-900">{formatCurrency(holding.value)}</p>
+                            <p className="text-xs text-gray-500">{holding.percentage.toFixed(1)}%</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No holdings yet</p>
+                  )}
+                </Card>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex space-x-4">
+                <Button
+                  onClick={() => router.push('/portfolio')}
+                  className="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-lg font-medium"
+                >
+                  View Full Portfolio
+                </Button>
+                <Button
+                  onClick={() => router.push('/dashboard/add-assets')}
+                  variant="outline"
+                  className="px-6 py-3 rounded-lg font-medium"
+                >
+                  Add More Assets
+                </Button>
+              </div>
             </div>
           )}
-        </main>
-      </div>
     </div>
   );
 }

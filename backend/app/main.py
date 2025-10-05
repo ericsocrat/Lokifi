@@ -20,6 +20,7 @@ from app.middleware.rate_limiting import (
 # Security middleware imports
 from app.middleware.security import RequestLoggingMiddleware, SecurityHeadersMiddleware
 from app.routers import (
+    smart_prices,
     admin_messaging,
     ai,
     ai_websocket,
@@ -40,6 +41,7 @@ from app.routers import (
     social,
     websocket,
 )
+from app.api.market.routes import router as realtime_market_router
 from app.routers.profile_enhanced import router as profile_enhanced_router
 from app.services.advanced_monitoring import monitoring_system
 from app.services.data_service import shutdown_data_services, startup_data_services
@@ -55,70 +57,73 @@ async def lifespan(app: FastAPI):
     """Enhanced application lifespan manager for Phase K Track 3 Infrastructure"""
     logger.info("🚀 Starting Lokifi Phase K Track 3 Infrastructure Enhancement")
 
+    # Startup sequence
+    logger.info("🗄️ Initializing database...")
     try:
-        # Startup sequence
-        logger.info("🗄️ Initializing database...")
         await db_manager.initialize()
-
-        logger.info("📡 Initializing advanced Redis client...")
-        try:
-            await advanced_redis_client.initialize()
-        except Exception as e:
-            logger.warning(f"Redis initialization failed (development mode): {e}")
-
-        logger.info("🔌 Starting WebSocket manager...")
-        advanced_websocket_manager.start_background_tasks()
-
-        # Disable data services for faster startup (optional services)
-        logger.info("🗄️ Data services disabled for faster startup")
-        # await startup_data_services()
-
-        # Disable monitoring system for faster startup (optional service)
-        logger.info("📊 Monitoring system disabled for faster startup")
-        # await monitoring_system.start_monitoring()
-
-        # Temporarily disable J53 scheduler
-        # logger.info("⏰ Initializing J5.3 scheduler...")
-        # async with j53_lifespan_manager(app):
-        logger.info("✅ All Phase K Track 3 systems initialized successfully")
-        yield
-
-        logger.info("🛑 Shutting down Phase K Track 3 systems...")
-
-        # Shutdown sequence
-        # logger.info("📊 Stopping monitoring system...")
-        # await monitoring_system.stop_monitoring()
-
-        logger.info("🔌 Stopping WebSocket manager...")
-        await advanced_websocket_manager.stop_background_tasks()
-
-        # logger.info("🗄️ Shutting down data services...")
-        # await shutdown_data_services()
-
-        logger.info("🗄️ Shutting down database...")
-        await db_manager.close()
-
-        logger.info("✅ Phase K Track 3 shutdown complete")
-
+        logger.info("✅ Database initialized")
     except Exception as e:
-        logger.error(f"Error during application lifecycle: {e}")
-        # Continue with graceful shutdown even if there are errors
-        # try:
-        #     await monitoring_system.stop_monitoring()
-        # except Exception as e:
-        #     logger.error(f"Error stopping monitoring: {e}")
-        try:
-            await advanced_websocket_manager.stop_background_tasks()
-        except Exception as e:
-            logger.error(f"Error stopping websocket manager: {e}")
-        # try:
-        #     await shutdown_data_services()
-        # except Exception as e:
-        #     logger.error(f"Error shutting down data services: {e}")
-        try:
-            await db_manager.close()
-        except Exception as e:
-            logger.error(f"Error closing database: {e}")
+        logger.error(f"❌ Database initialization failed: {e}")
+        raise
+
+    logger.info("📡 Initializing advanced Redis client...")
+    try:
+        redis_success = await advanced_redis_client.initialize()
+        if redis_success:
+            logger.info("✅ Redis initialized")
+        else:
+            logger.warning("⚠️ Redis initialization failed (continuing without Redis)")
+    except Exception as e:
+        logger.warning(f"⚠️ Redis initialization error (continuing): {e}")
+
+    logger.info("🔌 Starting WebSocket manager...")
+    try:
+        advanced_websocket_manager.start_background_tasks()
+        logger.info("✅ WebSocket manager started")
+    except Exception as e:
+        logger.error(f"❌ WebSocket manager failed: {e}")
+        # Don't fail startup for websocket issues
+        logger.warning("⚠️ Continuing without WebSocket manager")
+
+    # Disable data services for faster startup (optional services)
+    logger.info("🗄️ Data services disabled for faster startup")
+    # await startup_data_services()
+
+    # Disable monitoring system for faster startup (optional service)
+    logger.info("📊 Monitoring system disabled for faster startup")
+    # await monitoring_system.start_monitoring()
+
+    # Temporarily disable J53 scheduler
+    # logger.info("⏰ Initializing J5.3 scheduler...")
+    # async with j53_lifespan_manager(app):
+    logger.info("✅ All Phase K Track 3 systems initialized successfully")
+    
+    yield
+
+    # Shutdown sequence
+    logger.info("🛑 Shutting down Phase K Track 3 systems...")
+
+    # logger.info("📊 Stopping monitoring system...")
+    # await monitoring_system.stop_monitoring()
+
+    logger.info("🔌 Stopping WebSocket manager...")
+    try:
+        await advanced_websocket_manager.stop_background_tasks()
+        logger.info("✅ WebSocket manager stopped")
+    except Exception as e:
+        logger.error(f"❌ Error stopping websocket manager: {e}")
+
+    # logger.info("🗄️ Shutting down data services...")
+    # await shutdown_data_services()
+
+    logger.info("🗄️ Shutting down database...")
+    try:
+        await db_manager.close()
+        logger.info("✅ Database closed")
+    except Exception as e:
+        logger.error(f"❌ Error closing database: {e}")
+
+    logger.info("✅ Phase K Track 3 shutdown complete")
 
 
 app = FastAPI(
@@ -183,6 +188,7 @@ app.include_router(chat.router, prefix=settings.API_PREFIX)
 app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
 app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
+app.include_router(realtime_market_router, prefix=settings.API_PREFIX)  # Real-time prices
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)
@@ -215,3 +221,4 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
+

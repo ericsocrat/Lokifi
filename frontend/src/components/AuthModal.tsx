@@ -136,6 +136,8 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
 
       // Get API base URL from environment variable
       const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
+      console.log('🔍 Google Auth: API_BASE =', API_BASE);
+      console.log('🔍 Google Auth: Sending credential to backend...');
 
       // Send the Google credential to backend
       const response = await fetch(`${API_BASE}/auth/google`, {
@@ -148,6 +150,8 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
           token: credentialResponse.credential,
         }),
       });
+      
+      console.log('✅ Google Auth: Response received, status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));

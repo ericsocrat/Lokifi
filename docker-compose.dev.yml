@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lokifi-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      # These override the .env file (using Docker service names)
+      - DATABASE_URL=postgresql+asyncpg://lokifi:lokifi2025@postgres:5432/lokifi
+      - REDIS_URL=redis://:23233@redis:6379/0
+      - REDIS_HOST=redis
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - /app/venv  # Don't mount venv from host
+    command: python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - lokifi-network
+    restart: unless-stopped
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: lokifi-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - WATCHPACK_POLLING=true
+      - NEXT_PUBLIC_API_BASE=http://localhost:8000/api
+      - NEXT_PUBLIC_GOOGLE_CLIENT_ID=851935422649-1690h3al2cc3f5qm4j59emd6j88g4lq7.apps.googleusercontent.com
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Don't mount node_modules from host
+      - /app/.next  # Don't mount .next from host
+    command: npm run dev
+    depends_on:
+      - backend
+    networks:
+      - lokifi-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: lokifi-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: lokifi
+      POSTGRES_USER: lokifi
+      POSTGRES_PASSWORD: lokifi2025
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lokifi-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lokifi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7.4-alpine
+    container_name: lokifi-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 23233
+    volumes:
+      - redis_data:/data
+    networks:
+      - lokifi-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "23233", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+    name: lokifi-postgres-data
+  redis_data:
+    name: lokifi-redis-data
+
+networks:
+  lokifi-network:
+    name: lokifi-network
+    driver: bridge

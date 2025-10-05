@@ -2,6 +2,8 @@
 Authentication router with login, register, and OAuth endpoints.
 """
 
+import traceback
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -154,7 +156,8 @@ async def google_oauth(
         
         # Validate token expiration (Google should handle this, but double-check)
         import time
-        if user_info.get("exp", 0) < time.time():
+        exp = user_info.get("exp")
+        if exp and int(exp) < time.time():
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Token has expired"
@@ -213,10 +216,24 @@ async def google_oauth(
         
         return response
         
-    except httpx.RequestError:
+    except httpx.RequestError as e:
+        # Log the error for debugging
+        print(f"❌ Google OAuth Request Error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Unable to verify Google token"
+            detail="Unable to verify Google token. Please try again later."
+        )
+    except HTTPException:
+        # Re-raise HTTP exceptions (validation errors, etc.)
+        raise
+    except Exception as e:
+        # Log unexpected errors
+        print(f"❌ Google OAuth Unexpected Error: {str(e)}")
+        import traceback
+        print(traceback.format_exc())
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred during Google authentication."
         )
 
 

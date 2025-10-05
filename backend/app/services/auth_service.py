@@ -184,19 +184,30 @@ class AuthService:
         return result.scalar_one_or_none()
     
     async def create_user_from_oauth(self, email: str, full_name: str, google_id: str) -> dict[str, Any]:
-        """Create user from OAuth provider."""
-        # Check if user already exists with this email
-        existing_user = await self.get_user_by_email(email)
-        if existing_user:
-            # Update Google ID if not set
+        """
+        Create or update user from OAuth provider.
+        
+        Optimized to use a single query for checking existence and fetching profile.
+        """
+        # Check if user already exists with this email (optimized with JOIN)
+        stmt = select(User, Profile).outerjoin(Profile, User.id == Profile.user_id).where(User.email == email)
+        result = await self.db.execute(stmt)
+        row = result.one_or_none()
+        
+        if row and row[0]:  # User exists
+            existing_user, profile = row[0], row[1]
+            # Update Google ID and last login if not set
+            needs_update = False
             if not existing_user.google_id:
                 existing_user.google_id = google_id
-                await self.db.commit()
+                needs_update = True
             
-            # Get profile
-            stmt = select(Profile).where(Profile.user_id == existing_user.id)
-            result = await self.db.execute(stmt)
-            profile = result.scalar_one_or_none()
+            # Update last login timestamp
+            existing_user.last_login = datetime.now(UTC)
+            needs_update = True
+            
+            if needs_update:
+                await self.db.commit()
             
             # Generate tokens
             access_token = create_access_token(str(existing_user.id), existing_user.email)

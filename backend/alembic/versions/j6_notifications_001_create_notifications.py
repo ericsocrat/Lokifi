@@ -16,7 +16,12 @@ branch_labels = None
 depends_on = None
 
 def upgrade():
-    """Create notifications and notification_preferences tables"""
+    """Tables already created in initial migration (cbfdce80331d)"""
+    # This migration is kept for version history only
+    pass
+
+def _old_upgrade():
+    """DISABLED - Create notifications and notification_preferences tables"""
     
     # Create notifications table
     op.create_table('notifications',
@@ -78,7 +83,11 @@ def upgrade():
     op.create_index('idx_notifications_priority', 'notifications', ['priority'])
 
 def downgrade():
-    """Drop notifications tables and indexes"""
+    """Nothing to downgrade - tables managed by initial migration"""
+    pass
+
+def _old_downgrade():
+    """DISABLED - Drop notifications tables and indexes"""
     
     # Drop indexes
     op.drop_index('idx_notifications_priority', table_name='notifications')

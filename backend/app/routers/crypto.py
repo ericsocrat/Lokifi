@@ -27,25 +27,29 @@ async def fetch_from_coingecko(endpoint: str, params: Dict | None = None) -> dic
         params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
     
     try:
-        # Import traceback for debugging
-        import traceback
-        async with httpx.AsyncClient(timeout=30.0, verify=False) as client:
+        # Use proper SSL verification (removed verify=False security issue)
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(url, params=params)
             response.raise_for_status()
             return response.json()
     except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=503, detail=f"Failed to fetch data from CoinGecko API: {e.response.status_code}")
-    except httpx.TimeoutException as e:
-        raise HTTPException(status_code=504, detail="Request to CoinGecko API timed out")
-    except FileNotFoundError as e:
-        # Print detailed error
-        print(f"FileNotFoundError in crypto.py: {e}")
-        print(f"Traceback:\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Certificate error: {str(e)}")
+        raise HTTPException(
+            status_code=503, 
+            detail=f"CoinGecko API error: {e.response.status_code}"
+        )
+    except httpx.TimeoutException:
+        raise HTTPException(
+            status_code=504, 
+            detail="CoinGecko API request timed out"
+        )
     except Exception as e:
-        print(f"Exception in crypto.py: {type(e).__name__}: {e}")
-        print(f"Traceback:\n{traceback.format_exc()}")
-        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+        # Log error for debugging without exposing internal details
+        import logging
+        logging.error(f"CoinGecko API error: {type(e).__name__}: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail="Failed to fetch cryptocurrency data"
+        )
 
 
 @router.get("/top")

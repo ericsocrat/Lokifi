@@ -104,20 +104,35 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   const refreshIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const offset = useRef(0);
 
-  // Get auth token from localStorage
+  // Get auth token from cookies (where it's actually stored)
   const getAuthToken = useCallback(() => {
-    return localStorage.getItem('token') || localStorage.getItem('social_token');
+    // Try localStorage first (legacy)
+    const localToken = localStorage.getItem('token') || localStorage.getItem('social_token');
+    if (localToken) return localToken;
+    
+    // Check cookies (current method)
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'access_token' || name === 'token') {
+        return value;
+      }
+    }
+    return null;
   }, []);
 
   // API call helper
   const apiCall = useCallback(async (endpoint: string, options: RequestInit = {}) => {
     const token = getAuthToken();
     if (!token) {
-      throw new Error('No authentication token found');
+      // Don't throw error, just return null to prevent console spam
+      console.warn('No authentication token found for notifications');
+      return null;
     }
 
     const response = await fetch(`${API_BASE}${endpoint}`, {
       ...options,
+      credentials: 'include', // Include cookies
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -143,6 +158,15 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       const limit = 50;
 
       const data = await apiCall(`/?limit=${limit}&offset=${currentOffset}&include_dismissed=false`);
+      
+      // If no token, apiCall returns null
+      if (!data) {
+        setNotifications([]);
+        setUnreadCount(0);
+        setTotalCount(0);
+        setHasMore(false);
+        return;
+      }
 
       const newNotifications = data.notifications || [];
 
@@ -180,7 +204,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   // Mark notification as read
   const markAsRead = useCallback(async (notificationId: string) => {
     try {
-      await apiCall(`/${notificationId}/read`, { method: 'POST' });
+      const result = await apiCall(`/${notificationId}/read`, { method: 'POST' });
+      if (!result) return; // No token, skip
 
       setNotifications(prev =>
         prev.map(n =>
@@ -201,10 +226,12 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     try {
-      await apiCall('/mark-read', {
+      const result = await apiCall('/mark-read', {
         method: 'POST',
         body: JSON.stringify({})
       });
+      
+      if (!result) return; // No token, skip
 
       const now = new Date().toISOString();
       setNotifications(prev =>
@@ -222,7 +249,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   // Dismiss notification
   const dismissNotification = useCallback(async (notificationId: string) => {
     try {
-      await apiCall(`/${notificationId}/dismiss`, { method: 'POST' });
+      const result = await apiCall(`/${notificationId}/dismiss`, { method: 'POST' });
+      if (!result) return; // No token, skip
 
       setNotifications(prev =>
         prev.filter(n => n.id !== notificationId)
@@ -245,7 +273,8 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   // Clear all notifications
   const clearAllNotifications = useCallback(async () => {
     try {
-      await apiCall('/clear-all', { method: 'DELETE' });
+      const result = await apiCall('/clear-all', { method: 'DELETE' });
+      if (!result) return; // No token, skip
 
       setNotifications([]);
       setUnreadCount(0);
