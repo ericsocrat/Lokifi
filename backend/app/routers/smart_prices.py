@@ -85,3 +85,26 @@ async def get_batch_prices(request: BatchPriceRequest, force_refresh: bool = Que
         return BatchPriceResponse(success=len(data) > 0, data=data, failed=failed, cache_hits=cache_hits, api_calls=api_calls)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/admin/performance")
+async def get_performance_stats():
+    """Get performance statistics for monitoring"""
+    from app.services.smart_price_service import performance_stats
+    try:
+        stats = performance_stats.get_stats()
+        return {
+            "status": "ok",
+            "metrics": stats
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/admin/reset-stats")
+async def reset_performance_stats():
+    """Reset performance statistics"""
+    from app.services.smart_price_service import performance_stats
+    try:
+        performance_stats.reset()
+        return {"message": "Performance statistics reset successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

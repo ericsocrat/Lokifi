@@ -125,3 +125,5 @@ class SmartPriceService:
             if price:
                 results[symbol] = price
         return results
+
+# Global performance stats instance
