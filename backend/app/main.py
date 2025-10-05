@@ -189,6 +189,7 @@ app.include_router(mock_ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(market_data.router, prefix=settings.API_PREFIX)
 app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
 app.include_router(realtime_market_router, prefix=settings.API_PREFIX)  # Real-time prices
+app.include_router(smart_prices.router, prefix=settings.API_PREFIX)  # 🎯 Smart Price Service
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)
