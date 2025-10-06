@@ -1,0 +1,119 @@
+version: '3.8'
+
+services:
+  # Redis - Caching Layer
+  redis:
+    image: redis:7-alpine
+    container_name: lokifi-redis-dev
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 23233
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "23233", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - lokifi-network
+
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: lokifi-postgres-dev
+    environment:
+      POSTGRES_USER: lokifi
+      POSTGRES_PASSWORD: lokifi_dev_password
+      POSTGRES_DB: lokifi_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lokifi"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - lokifi-network
+
+  # Backend - FastAPI (Development Mode with Hot Reload)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: lokifi-backend-dev
+    environment:
+      # Database
+      DATABASE_URL: postgresql://lokifi:lokifi_dev_password@postgres:5432/lokifi_db
+      
+      # Redis
+      REDIS_URL: redis://:23233@redis:6379/0
+      
+      # API Keys
+      ALPHAVANTAGE_KEY: ${ALPHAVANTAGE_KEY:-D8RDSS583XDQ1DIA}
+      FINNHUB_KEY: ${FINNHUB_KEY:-d38p06hr01qthpo0qskgd38p06hr01qthpo0qsl0}
+      
+      # Sentry
+      ENABLE_SENTRY: ${ENABLE_SENTRY:-false}
+      SENTRY_DSN: ${SENTRY_DSN:-}
+      SENTRY_ENVIRONMENT: development
+      
+      # Development
+      DEBUG: "true"
+      ENVIRONMENT: development
+      
+      # Python
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: /app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - backend-cache:/app/__pycache__
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lokifi-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Frontend - Next.js (Development Mode with Hot Reload)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: lokifi-frontend-dev
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - lokifi-network
+    command: npm run dev
+
+volumes:
+  postgres-data:
+    name: lokifi-postgres-data-dev
+  backend-cache:
+    name: lokifi-backend-cache-dev
+
+networks:
+  lokifi-network:
+    name: lokifi-network-dev
+    driver: bridge

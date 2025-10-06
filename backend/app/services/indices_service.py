@@ -128,6 +128,10 @@ class IndicesService:
                     "apikey": settings.ALPHAVANTAGE_KEY
                 }
                 
+                if self.client is None:
+                    logger.warning("Redis client not initialized for Alpha Vantage request")
+                    return self._get_fallback_indices(limit)
+                
                 resp = await self.client.get(url, params=params)
                 resp.raise_for_status()
                 data = resp.json()
@@ -190,6 +194,10 @@ class IndicesService:
                 "symbols": symbols_str,
                 "fields": "symbol,regularMarketPrice,regularMarketChangePercent,shortName"
             }
+            
+            if self.client is None:
+                logger.warning("Redis client not initialized for Yahoo Finance request")
+                return []
             
             resp = await self.client.get(url, params=params)
             resp.raise_for_status()
