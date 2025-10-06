@@ -44,6 +44,7 @@ services:
     environment:
       # Database
       DATABASE_URL: postgresql+asyncpg://lokifi:lokifi_dev_password@postgres:5432/lokifi_db
+      POSTGRES_PASSWORD: lokifi_dev_password
       
       # Redis
       REDIS_URL: redis://:23233@redis:6379/0
