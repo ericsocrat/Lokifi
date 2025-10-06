@@ -47,6 +47,7 @@ from app.routers import (
     profile,
     social,
     websocket,
+    test_sentry,
 )
 from app.api.market.routes import router as realtime_market_router
 from app.routers.profile_enhanced import router as profile_enhanced_router
@@ -244,6 +245,9 @@ app.include_router(monitoring_router, prefix=settings.API_PREFIX)
 
 # Include security routes
 app.include_router(security.router, prefix=settings.API_PREFIX)
+
+# Include Sentry test routes (Phase 6A)
+app.include_router(test_sentry.router, prefix=settings.API_PREFIX)
 
 
 @app.get("/")
