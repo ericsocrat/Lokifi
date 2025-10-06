@@ -191,7 +191,13 @@ app.add_middleware(RequestLoggingMiddleware)  # Request logging
 # CORS must be added LAST so it executes FIRST (middleware runs in reverse order)
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex="http://localhost:.*",  # Allow any localhost port
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:8000",
+        "http://frontend:3000",  # Docker service name
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

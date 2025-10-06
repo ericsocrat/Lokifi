@@ -52,6 +52,9 @@ services:
       ALPHAVANTAGE_KEY: ${ALPHAVANTAGE_KEY:-D8RDSS583XDQ1DIA}
       FINNHUB_KEY: ${FINNHUB_KEY:-d38p06hr01qthpo0qskgd38p06hr01qthpo0qsl0}
       
+      # Google OAuth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-851935422649-1690h3al2cc3f5qm4j59emd6j88g4lq7.apps.googleusercontent.com}
+      
       # Sentry
       ENABLE_SENTRY: ${ENABLE_SENTRY:-false}
       SENTRY_DSN: ${SENTRY_DSN:-}
