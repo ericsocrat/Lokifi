@@ -62,3 +62,6 @@ mypy==1.18.2
 ruff==0.13.2
 black==25.9.0
 psutil==7.1.0
+
+# Error Tracking
+sentry-sdk[fastapi]==2.20.0

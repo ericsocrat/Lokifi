@@ -4,11 +4,12 @@
 Write-Host "🚀 Starting Lokifi Backend Server..." -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Green
 
-# Set Python path
-$env:PYTHONPATH = "$PSScriptRoot"
-
-# Navigate to backend directory
+# Navigate to backend directory first
 Set-Location $PSScriptRoot
+
+# Set Python path to current directory
+$env:PYTHONPATH = (Get-Location).Path
+Write-Host "📂 PYTHONPATH: $env:PYTHONPATH" -ForegroundColor Gray
 
 # Check if virtual environment exists
 if (-not (Test-Path "venv\Scripts\python.exe")) {
