@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
-    "@jest/globals": "^29.7.0",
+    "@jest/globals": "^30.2.0",
     "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
