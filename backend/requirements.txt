@@ -1,24 +1,24 @@
 # Core FastAPI and server
 fastapi==0.115.6
-uvicorn[standard]==0.32.1
+uvicorn[standard]==0.37.0
 pydantic==2.10.3
-pydantic-settings==2.6.1
+pydantic-settings==2.11.0
 redis==5.2.1
-aiohttp==3.11.10
+aiohttp==3.12.15
 python-multipart==0.0.20
 python-jose[cryptography]==3.5.0
 python-dotenv==1.1.1
 
 # Database
-sqlalchemy==2.0.36
-alembic==1.14.0
+sqlalchemy==2.0.43
+alembic==1.16.5
 psycopg2-binary==2.9.10
 asyncpg==0.30.0
 aiosqlite==0.21.0
 
 # Authentication & Security
 argon2-cffi==25.1.0
-authlib==1.6.4
+authlib==1.6.5
 itsdangerous==2.2.0
 PyJWT==2.10.1
 bleach==6.2.0
@@ -46,12 +46,12 @@ schedule==1.2.2
 Pillow==11.3.0
 
 # Cloud Storage (Optional)
-boto3==1.40.40
+boto3==1.40.45
 
 # Monitoring & Production
-prometheus_client==0.21.1
+prometheus_client==0.23.1
 docker==7.1.0
-pyyaml==6.0.2
+pyyaml==6.0.3
 aiofiles==24.1.0
 
 # Development dependencies
@@ -59,9 +59,9 @@ pytest==8.4.2
 pytest-asyncio==1.2.0
 pytest-cov==7.0.0
 mypy==1.18.2
-ruff==0.13.2
+ruff==0.13.3
 black==25.9.0
 psutil==7.1.0
 
 # Error Tracking
-sentry-sdk[fastapi]==2.20.0
+sentry-sdk[fastapi]==2.40.0
