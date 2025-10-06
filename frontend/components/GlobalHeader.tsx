@@ -1,16 +1,25 @@
 'use client';
 
 import { useAuth } from '@/src/components/AuthProvider';
-import { Bell, User, Search } from 'lucide-react';
+import { Bell, User, Search, TrendingUp, X } from 'lucide-react';
 import Link from 'next/link';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { AuthModal } from '@/src/components/AuthModal';
 import { NotificationBell } from './NotificationBell';
+import { useCryptoSearch } from '@/src/hooks/useBackendPrices';
+import Image from 'next/image';
 
 export default function GlobalHeader() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'register'>('login');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { user, loading } = useAuth();
+  const searchRef = useRef<HTMLDivElement>(null);
+  
+  // Search functionality
+  const { results: searchResults, loading: searchLoading } = useCryptoSearch(searchQuery, 300);
+  const showSearchResults = isSearchFocused && searchQuery.length >= 2;
   
   // Memoize derived state to prevent unnecessary re-renders
   const isLoggedIn = useMemo(() => !!user, [user]);
@@ -27,6 +36,27 @@ export default function GlobalHeader() {
   
   const handleCloseAuthModal = useCallback(() => {
     setIsAuthModalOpen(false);
+  }, []);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  }, []);
+
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('');
+    setIsSearchFocused(false);
+  }, []);
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setIsSearchFocused(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -82,7 +112,7 @@ export default function GlobalHeader() {
           </div>
 
           {/* Center: Search Bar */}
-          <div className="hidden lg:flex flex-1 max-w-md mx-8">
+          <div className="hidden lg:flex flex-1 max-w-md mx-8" ref={searchRef}>
             <div className="relative w-full group">
               <Search 
                 className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500 group-focus-within:text-blue-500 transition-colors" 
@@ -90,10 +120,95 @@ export default function GlobalHeader() {
               />
               <input
                 type="text"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onFocus={() => setIsSearchFocused(true)}
                 placeholder="Search cryptocurrencies..."
-                className="w-full px-4 py-2 pl-10 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                className="w-full px-4 py-2 pl-10 pr-10 bg-neutral-900 border border-neutral-800 rounded-lg text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 aria-label="Search cryptocurrencies"
               />
+              {searchQuery && (
+                <button
+                  onClick={handleClearSearch}
+                  className="absolute right-3 top-2.5 text-neutral-500 hover:text-white transition-colors"
+                  aria-label="Clear search"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+
+              {/* Search Results Dropdown */}
+              {showSearchResults && (
+                <div className="absolute top-full mt-2 w-full bg-neutral-900 border border-neutral-800 rounded-lg shadow-2xl shadow-black/50 max-h-96 overflow-y-auto z-50">
+                  {searchLoading ? (
+                    <div className="p-4 text-center text-neutral-500">
+                      <div className="inline-block w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      <span className="ml-2">Searching...</span>
+                    </div>
+                  ) : searchResults.length > 0 ? (
+                    <div className="py-2">
+                      {searchResults.map((crypto: any) => (
+                        <Link
+                          key={crypto.id}
+                          href={`/asset/${crypto.symbol}`}
+                          onClick={() => {
+                            setSearchQuery('');
+                            setIsSearchFocused(false);
+                          }}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-neutral-800 transition-colors"
+                        >
+                          <div className="relative w-8 h-8 rounded-full overflow-hidden bg-neutral-800 flex-shrink-0">
+                            {crypto.image ? (
+                              <Image
+                                src={crypto.image}
+                                alt={crypto.name}
+                                fill
+                                className="object-cover"
+                                sizes="32px"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-xs font-bold text-neutral-500">
+                                {crypto.symbol?.substring(0, 2).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-white truncate">{crypto.name}</span>
+                              <span className="text-xs text-neutral-500 uppercase">{crypto.symbol}</span>
+                            </div>
+                            {crypto.market_cap_rank && (
+                              <div className="text-xs text-neutral-500">
+                                Rank #{crypto.market_cap_rank}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            {crypto.current_price && (
+                              <div className="text-sm font-medium text-white">
+                                ${crypto.current_price.toLocaleString(undefined, {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: crypto.current_price < 1 ? 6 : 2
+                                })}
+                              </div>
+                            )}
+                            {crypto.price_change_percentage_24h !== null && crypto.price_change_percentage_24h !== undefined && (
+                              <div className={`text-xs ${crypto.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                {crypto.price_change_percentage_24h >= 0 ? '+' : ''}
+                                {crypto.price_change_percentage_24h.toFixed(2)}%
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-4 text-center text-neutral-500">
+                      No results found for &quot;{searchQuery}&quot;
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 

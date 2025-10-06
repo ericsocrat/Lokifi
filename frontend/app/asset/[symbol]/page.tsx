@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useAsset, useHistoricalData } from '@/src/hooks/useMarketData';
+import { useTopCryptos, useHistoricalPrices, useWebSocketPrices } from '@/src/hooks/useBackendPrices';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
 import { 
   BarChart3, 
@@ -25,23 +25,120 @@ import {
 
 type TimeFrame = '1d' | '7d' | '30d' | '1y' | 'all';
 
+interface AssetData {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  marketCap: number;
+  volume: number;
+  high24h: number;
+  low24h: number;
+  high52w: number;
+  low52w: number;
+  previousClose: number;
+  type: 'crypto';
+  category: string;
+  sector: string;
+  pe?: number | null;
+  eps?: number | null;
+  dividendYield?: number | null;
+  beta?: number | null;
+}
+
 function AssetDetailContent() {
   const params = useParams();
   const router = useRouter();
   const symbol = typeof params.symbol === 'string' ? params.symbol.toUpperCase() : '';
-  const asset = useAsset(symbol);
   
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<TimeFrame>('30d');
-  const historicalData = useHistoricalData(symbol, selectedTimeFrame);
-  
   const [showAddModal, setShowAddModal] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
 
+  // Fetch real crypto data from backend
+  const { cryptos, loading: cryptosLoading, error: cryptosError } = useTopCryptos(250);
+  
+  // Map timeframe to API period
+  const periodMap: Record<TimeFrame, '1d' | '1w' | '1m' | '3m' | '6m' | '1y' | '5y' | 'all'> = {
+    '1d': '1d',
+    '7d': '1w',
+    '30d': '1m',
+    '1y': '1y',
+    'all': 'all',
+  };
+  
+  // Fetch historical data from backend
+  const { data: historicalResponse, loading: historyLoading } = useHistoricalPrices(
+    symbol,
+    periodMap[selectedTimeFrame]
+  );
+  
+  // WebSocket for real-time price updates
+  const { prices: livePrices, connected, subscribe } = useWebSocketPrices({ 
+    symbols: [symbol],
+    autoConnect: true 
+  });
+
+  // Find the crypto in the list
+  const cryptoData = useMemo(() => {
+    return cryptos.find(c => c.symbol.toUpperCase() === symbol);
+  }, [cryptos, symbol]);
+
+  // Convert historical data to expected format
+  const historicalData = useMemo(() => {
+    if (!historicalResponse?.data) return [];
+    return historicalResponse.data.map(p => ({
+      date: new Date(p.timestamp).toISOString(),
+      price: p.price,
+      timestamp: p.timestamp,
+    }));
+  }, [historicalResponse]);
+
+  // Build asset object from crypto data with live price overlay
+  const asset: AssetData | null = useMemo(() => {
+    if (!cryptoData) return null;
+    
+    const livePrice = livePrices[symbol]?.price || cryptoData.current_price;
+    const livePriceChange = livePrices[symbol]?.change;
+    const livePriceChangePercent = livePrices[symbol]?.change_percent;
+    
+    return {
+      symbol: cryptoData.symbol.toUpperCase(),
+      name: cryptoData.name,
+      price: livePrice,
+      change: livePriceChange ?? (cryptoData.price_change_24h || 0),
+      changePercent: livePriceChangePercent ?? (cryptoData.price_change_percentage_24h || 0),
+      marketCap: cryptoData.market_cap || 0,
+      volume: cryptoData.total_volume || 0,
+      high24h: livePrices[symbol]?.high_24h || livePrice,
+      low24h: livePrices[symbol]?.low_24h || livePrice,
+      high52w: cryptoData.ath || livePrice * 1.5,
+      low52w: cryptoData.atl || livePrice * 0.5,
+      previousClose: livePrice / (1 + (cryptoData.price_change_percentage_24h || 0) / 100),
+      type: 'crypto' as const,
+      category: 'Cryptocurrency',
+      sector: 'Digital Assets',
+      pe: null,
+      eps: null,
+      dividendYield: null,
+      beta: null,
+    };
+  }, [cryptoData, livePrices, symbol]);
+
+  // Subscribe to WebSocket updates
   useEffect(() => {
-    if (!asset) {
+    if (connected && symbol) {
+      subscribe([symbol]);
+    }
+  }, [connected, symbol, subscribe]);
+
+  useEffect(() => {
+    if (!cryptosLoading && !asset) {
+      // Asset not found, redirect to markets
       router.push('/markets');
     }
-  }, [asset, router]);
+  }, [asset, cryptosLoading, router]);
 
   useEffect(() => {
     const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
@@ -84,12 +181,13 @@ function AssetDetailContent() {
     return value.toLocaleString();
   };
 
-  if (!asset) {
+  if (!asset || cryptosLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-gray-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Loading asset data...</p>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Loading asset data from backend...</p>
+          {connected && <p className="text-green-600 dark:text-green-400 text-sm mt-2">✅ Live updates connected</p>}
         </div>
       </div>
     );
@@ -114,6 +212,15 @@ function AssetDetailContent() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-gray-950 p-6 md:p-8">
       <div className="max-w-[1800px] mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => router.push('/markets')}
+          className="mb-6 px-4 py-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center gap-2 font-bold text-gray-700 dark:text-gray-300 shadow-lg"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Back to Markets
+        </button>
+
         {/* Asset Header Card */}
         <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-8 mb-8 shadow-xl">
           <div className="flex items-start justify-between mb-6 flex-wrap gap-4">
@@ -126,12 +233,14 @@ function AssetDetailContent() {
                   </span>
                 </div>
                 {/* Live indicator */}
-                <div className="absolute -top-1 -right-1">
-                  <div className="relative flex h-4 w-4">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white"></span>
+                {connected && (
+                  <div className="absolute -top-1 -right-1">
+                    <div className="relative flex h-4 w-4">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white"></span>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div>
@@ -140,17 +249,13 @@ function AssetDetailContent() {
                   <span className="px-3 py-1.5 text-sm font-bold rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                     {symbol}
                   </span>
-                  <span className={`px-3 py-1.5 text-xs font-bold rounded-xl ${
-                    asset.type === 'crypto' 
-                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400' 
-                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                  }`}>
-                    {asset.type.toUpperCase()}
+                  <span className="px-3 py-1.5 text-xs font-bold rounded-xl bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400">
+                    CRYPTO
                   </span>
                 </div>
                 
                 <p className="text-gray-600 dark:text-gray-400 text-lg font-medium mb-4">
-                  {asset.sector || asset.category || 'Financial Asset'}
+                  {asset.category}
                 </p>
 
                 {/* Massive Price Display */}
@@ -187,74 +292,52 @@ function AssetDetailContent() {
 
                 <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm">
                   <Activity className="w-4 h-4" />
-                  <span className="font-medium">Real-time data • Updates every 3 seconds</span>
+                  <span className="font-medium">
+                    {connected ? '🔴 LIVE • Real-time updates' : 'Real-time data from CoinGecko'}
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Action Buttons - Simplified to essential only */}
+            {/* Action Buttons */}
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={toggleWatchlist}
                 className={`px-5 py-3 rounded-xl font-bold transition-all flex items-center gap-2 hover:scale-105 shadow-lg ${
                   isInWatchlist
-                    ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-white shadow-yellow-500/30'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-700'
                 }`}
               >
                 <Star className={`w-5 h-5 ${isInWatchlist ? 'fill-current' : ''}`} />
-                {isInWatchlist ? 'Watching' : 'Watch'}
-              </button>
-
-              <button className="px-5 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all flex items-center gap-2 hover:scale-105">
-                <Bell className="w-5 h-5" />
-                Set Alert
-              </button>
-
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-xl transition-all flex items-center gap-2 hover:scale-105 shadow-xl shadow-blue-500/30"
-              >
-                <Plus className="w-5 h-5" />
-                Add to Portfolio
-              </button>
-
-              <button
-                onClick={() => router.push(`/chart/${symbol}`)}
-                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-xl transition-all flex items-center gap-2 hover:scale-105 shadow-xl shadow-purple-500/30"
-              >
-                <Maximize2 className="w-5 h-5" />
-                SuperChart
+                {isInWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'}
               </button>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Chart Section - MUCH LARGER */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Enhanced Chart Card */}
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Chart Section - Takes 2 columns */}
+          <div className="xl:col-span-2 space-y-6">
+            {/* Chart Card */}
             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-8 shadow-xl">
-              <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-xl flex items-center justify-center">
-                    <LineChart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">Price Performance</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Historical data analysis</p>
-                  </div>
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <LineChart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-3xl font-black text-gray-900 dark:text-white">Price Chart</h2>
                 </div>
                 
-                <div className="flex gap-2">
+                {/* Time Frame Selector */}
+                <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl">
                   {timeFrameButtons.map((tf) => (
                     <button
                       key={tf.value}
                       onClick={() => setSelectedTimeFrame(tf.value)}
-                      className={`px-5 py-2.5 rounded-xl font-bold transition-all hover:scale-105 ${
+                      className={`px-4 py-2 rounded-lg font-bold transition-all text-sm ${
                         selectedTimeFrame === tf.value
-                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30'
-                          : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                          ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                          : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
                       }`}
                     >
                       {tf.label}
@@ -263,168 +346,137 @@ function AssetDetailContent() {
                 </div>
               </div>
 
-              {/* Period Performance Card */}
-              <div className={`mb-8 p-6 rounded-xl transition-all ${
-                periodChangePercent >= 0 
-                  ? 'bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-green-900/20 border-2 border-green-200 dark:border-green-800' 
-                  : 'bg-gradient-to-r from-red-50 via-rose-50 to-red-50 dark:from-red-900/20 dark:via-rose-900/20 dark:to-red-900/20 border-2 border-red-200 dark:border-red-800'
-              }`}>
-                <div className="flex items-center justify-between flex-wrap gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className={`w-14 h-14 rounded-xl flex items-center justify-center ${
-                      periodChangePercent >= 0 
-                        ? 'bg-green-100 dark:bg-green-900/40' 
-                        : 'bg-red-100 dark:bg-red-900/40'
-                    }`}>
-                      {periodChangePercent >= 0 ? (
-                        <TrendingUp className="w-7 h-7 text-green-600 dark:text-green-400" />
-                      ) : (
-                        <TrendingDown className="w-7 h-7 text-red-600 dark:text-red-400" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-1">Period Return</p>
-                      <div className="flex items-baseline gap-3">
-                        <span className={`text-4xl font-black ${
-                          periodChangePercent >= 0 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-red-600 dark:text-red-400'
-                        }`}>
-                          {periodChangePercent >= 0 ? '+' : ''}{periodChangePercent.toFixed(2)}%
-                        </span>
-                        <span className={`text-lg font-bold ${
-                          periodChangePercent >= 0 
-                            ? 'text-green-600 dark:text-green-400' 
-                            : 'text-red-600 dark:text-red-400'
-                        }`}>
-                          ({periodChangePercent >= 0 ? '+' : ''}{formatPrice(periodChange)})
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide mb-2">Starting Price</p>
-                    <p className="text-2xl font-black text-gray-700 dark:text-gray-300">{formatPrice(periodStart)}</p>
+              {/* Chart Area */}
+              {historyLoading ? (
+                <div className="h-[400px] flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                    <p className="text-gray-500 dark:text-gray-400">Loading chart data...</p>
                   </div>
                 </div>
-              </div>
+              ) : historicalData.length === 0 ? (
+                <div className="h-[400px] flex items-center justify-center text-gray-500 dark:text-gray-400">
+                  <p>No historical data available for this period</p>
+                </div>
+              ) : (
+                <div className="relative">
+                  <svg className="w-full h-[400px]" viewBox="0 0 800 400" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0.3" />
+                        <stop offset="100%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0.05" />
+                      </linearGradient>
+                    </defs>
+                    
+                    {(() => {
+                      const prices = historicalData.map(d => d.price);
+                      const maxPrice = Math.max(...prices);
+                      const minPrice = Math.min(...prices);
+                      const priceRange = maxPrice - minPrice;
+                      
+                      const points = historicalData.map((d, i) => {
+                        const x = (i / (historicalData.length - 1)) * 800;
+                        const y = 400 - ((d.price - minPrice) / priceRange) * 380;
+                        return `${x},${y}`;
+                      }).join(' ');
 
-              {/* MUCH LARGER Chart Visualization - 600px height */}
-              <div className="relative h-[600px] bg-gradient-to-br from-gray-50 to-blue-50/30 dark:from-gray-950 dark:to-blue-950/30 rounded-xl p-6 border border-gray-200 dark:border-gray-800">
-                <svg className="w-full h-full">
-                  {historicalData.length > 1 && (() => {
-                    const width = 100;
-                    const height = 100;
-                    const padding = 5;
-                    
-                    const prices = historicalData.map(d => d.price);
-                    const minPrice = Math.min(...prices);
-                    const maxPrice = Math.max(...prices);
-                    const priceRange = maxPrice - minPrice || 1;
-                    
-                    const points = historicalData.map((d, i) => {
-                      const x = padding + ((width - 2 * padding) * i) / (historicalData.length - 1);
-                      const y = height - padding - ((d.price - minPrice) / priceRange) * (height - 2 * padding);
-                      return `${x},${y}`;
-                    }).join(' ');
-                    
-                    const isChartPositive = historicalData[historicalData.length - 1].price >= historicalData[0].price;
-                    const lineColor = isChartPositive ? '#10b981' : '#ef4444';
-                    const fillColor = isChartPositive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)';
-                    
-                    return (
-                      <>
-                        <polygon
-                          points={`${padding},${height - padding} ${points} ${width - padding},${height - padding}`}
-                          fill={fillColor}
-                        />
-                        <polyline
-                          points={points}
-                          fill="none"
-                          stroke={lineColor}
-                          strokeWidth="3"
-                          vectorEffect="non-scaling-stroke"
-                        />
-                      </>
-                    );
-                  })()}
-                </svg>
-                
-                <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-sm text-gray-600 dark:text-gray-400 font-bold py-6">
-                  <span>{formatPrice(Math.max(...historicalData.map(d => d.price)))}</span>
-                  <span>{formatPrice(Math.min(...historicalData.map(d => d.price)))}</span>
+                      const areaPoints = `0,400 ${points} 800,400`;
+
+                      return (
+                        <>
+                          <polyline
+                            points={areaPoints}
+                            fill="url(#priceGradient)"
+                          />
+                          <polyline
+                            points={points}
+                            fill="none"
+                            stroke={isPositive ? '#22c55e' : '#ef4444'}
+                            strokeWidth="3"
+                            strokeLinejoin="round"
+                            strokeLinecap="round"
+                          />
+                        </>
+                      );
+                    })()}
+                  </svg>
+                  
+                  {/* Chart Stats */}
+                  <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">High</p>
+                      <span className="text-lg font-black text-green-600 dark:text-green-400">
+                        {formatPrice(Math.max(...historicalData.map(d => d.price)))}
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Low</p>
+                      <span className="text-lg font-black text-red-600 dark:text-red-400">
+                        {formatPrice(Math.min(...historicalData.map(d => d.price)))}
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Change</p>
+                      <span className={`text-lg font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                        {periodChangePercent >= 0 ? '+' : ''}{periodChangePercent.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Data Points</p>
+                      <span className="text-lg font-black text-gray-900 dark:text-white">
+                        {historicalData.length}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500 dark:text-gray-400 font-medium px-6 pb-3">
-                  <span>{new Date(historicalData[0]?.timestamp || Date.now()).toLocaleDateString()}</span>
-                  <span>{new Date(historicalData[historicalData.length - 1]?.timestamp || Date.now()).toLocaleDateString()}</span>
-                </div>
-              </div>
+              )}
             </div>
 
-            {/* Enhanced 24h Stats Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 hover:border-green-300 dark:hover:border-green-700 transition-all group">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider">24h High</p>
+            {/* Price Range Card */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
+                <div className="flex items-center gap-4 mb-4">
                   <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
                     <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
+                  <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">52W High</h3>
                 </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.high24h)}</p>
+                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.high52w)}</p>
               </div>
 
-              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 hover:border-red-300 dark:hover:border-red-700 transition-all group">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider">24h Low</p>
-                  <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
-                    <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
-                  </div>
-                </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.low24h)}</p>
-              </div>
-
-              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 hover:border-blue-300 dark:hover:border-blue-700 transition-all group">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider">52W High</p>
-                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
-                    <Target className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  </div>
-                </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.high52w || asset.high24h)}</p>
-              </div>
-
-              <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 hover:border-orange-300 dark:hover:border-orange-700 transition-all group">
-                <div className="flex items-center justify-between mb-3">
-                  <p className="text-xs font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider">52W Low</p>
+              <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl border-2 border-orange-200 dark:border-orange-800 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
+                <div className="flex items-center gap-4 mb-4">
                   <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all">
-                    <Target className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                    <TrendingDown className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
+                  <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">52W Low</h3>
                 </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.low52w || asset.low24h)}</p>
+                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.low52w)}</p>
               </div>
             </div>
           </div>
 
-          {/* Enhanced Sidebar */}
+          {/* Sidebar - Stats */}
           <div className="space-y-6">
             {/* Live Market Data Card */}
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-6 shadow-lg">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="relative">
-                  <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
-                  <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping"></div>
+            {connected && (
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-6 shadow-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="relative">
+                    <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
+                    <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping"></div>
+                  </div>
+                  <span className="font-black text-gray-900 dark:text-white text-xl">LIVE MARKET DATA</span>
                 </div>
-                <span className="font-black text-gray-900 dark:text-white text-xl">LIVE MARKET DATA</span>
+                <p className="text-base text-gray-700 dark:text-gray-300 mb-3 font-medium">
+                  Real-time updates via WebSocket
+                </p>
+                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
+                  <Activity className="w-4 h-4" />
+                  <span>Connected to backend</span>
+                </div>
               </div>
-              <p className="text-base text-gray-700 dark:text-gray-300 mb-3 font-medium">
-                Real-time updates every 3 seconds
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 font-medium">
-                <Activity className="w-4 h-4" />
-                <span>Last updated: Just now</span>
-              </div>
-            </div>
+            )}
 
             {/* Market Statistics Card */}
             <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-xl">
@@ -441,30 +493,14 @@ function AssetDetailContent() {
                   <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Volume (24h)</span>
                   <span className="font-black text-gray-900 dark:text-white text-base">{formatVolume(asset.volume)}</span>
                 </div>
-                {asset.pe && (
-                  <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                    <span className="text-sm font-bold text-gray-600 dark:text-gray-400">P/E Ratio</span>
-                    <span className="font-black text-gray-900 dark:text-white text-base">{asset.pe.toFixed(2)}</span>
-                  </div>
-                )}
-                {asset.eps && (
-                  <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                    <span className="text-sm font-bold text-gray-600 dark:text-gray-400">EPS</span>
-                    <span className="font-black text-gray-900 dark:text-white text-base">${asset.eps.toFixed(2)}</span>
-                  </div>
-                )}
-                {asset.dividendYield && asset.dividendYield > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                    <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Dividend Yield</span>
-                    <span className="font-black text-green-600 dark:text-green-400 text-base">{asset.dividendYield.toFixed(2)}%</span>
-                  </div>
-                )}
-                {asset.beta && (
-                  <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                    <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Beta</span>
-                    <span className="font-black text-gray-900 dark:text-white text-base">{asset.beta.toFixed(2)}</span>
-                  </div>
-                )}
+                <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">24h High</span>
+                  <span className="font-black text-green-600 dark:text-green-400 text-base">{formatPrice(asset.high24h)}</span>
+                </div>
+                <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">24h Low</span>
+                  <span className="font-black text-red-600 dark:text-red-400 text-base">{formatPrice(asset.low24h)}</span>
+                </div>
                 <div className="flex justify-between items-center py-3">
                   <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Prev. Close</span>
                   <span className="font-black text-gray-900 dark:text-white text-base">{formatPrice(asset.previousClose)}</span>
@@ -510,11 +546,18 @@ function AssetDetailContent() {
               </div>
             </div>
 
-            {/* Download Button */}
-            <button className="w-full px-5 py-4 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all flex items-center justify-center gap-3">
-              <Download className="w-5 h-5" />
-              Export Data
-            </button>
+            {/* Data Source Info */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 p-6">
+              <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                💎 Real Data from Backend
+              </p>
+              <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                <li>✅ CoinGecko API integration</li>
+                <li>✅ Historical price data</li>
+                <li>✅ WebSocket live updates</li>
+                <li>✅ Batch optimized (no duplicates)</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

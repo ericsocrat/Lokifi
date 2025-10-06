@@ -3,6 +3,7 @@ import { AuthProvider } from '@/src/components/AuthProvider';
 import { PreferencesProvider } from '@/src/components/dashboard/PreferencesContext';
 import { ToastProvider } from '@/src/components/dashboard/ToastProvider';
 import { GlobalLayout } from '@/src/components/layout/GlobalLayout';
+import { ReactQueryProvider } from '@/src/components/ReactQueryProvider';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
 import '../styles/globals.css';
@@ -18,17 +19,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html>
       <body>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          <SWRProvider>
-            <AuthProvider>
-              <PreferencesProvider>
-                <ToastProvider>
-                  <GlobalLayout>
-                    {children}
-                  </GlobalLayout>
-                </ToastProvider>
-              </PreferencesProvider>
-            </AuthProvider>
-          </SWRProvider>
+          <ReactQueryProvider>
+            <SWRProvider>
+              <AuthProvider>
+                <PreferencesProvider>
+                  <ToastProvider>
+                    <GlobalLayout>
+                      {children}
+                    </GlobalLayout>
+                  </ToastProvider>
+                </PreferencesProvider>
+              </AuthProvider>
+            </SWRProvider>
+          </ReactQueryProvider>
         </GoogleOAuthProvider>
       </body>
     </html>

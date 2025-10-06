@@ -11,6 +11,7 @@ from app.services.historical_price_service import (
     OHLCVData,
     PeriodType
 )
+from app.services.unified_asset_service import UnifiedAssetService
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1/prices", tags=["prices"])
@@ -43,12 +44,24 @@ class HealthResponse(BaseModel):
     redis_connected: bool
     providers: List[str]
 
+class UnifiedAssetsResponse(BaseModel):
+    """Response model for unified multi-type assets"""
+    success: bool
+    types: List[str]
+    data: Dict[str, List[Dict]]  # e.g., {"crypto": [...], "stocks": [...]}
+    total_count: int
+    cached: bool
+
 async def get_price_service():
     async with SmartPriceService() as service:
         yield service
 
 async def get_historical_service():
     async with HistoricalPriceService() as service:
+        yield service
+
+async def get_unified_service():
+    async with UnifiedAssetService() as service:
         yield service
 
 @router.get("/health", response_model=HealthResponse)
@@ -58,6 +71,133 @@ async def health_check(service: SmartPriceService = Depends(get_price_service)):
         providers = list(service.providers.keys())
         return HealthResponse(status="healthy", redis_connected=redis_connected, providers=providers)
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/all", response_model=UnifiedAssetsResponse)
+async def get_all_assets(
+    limit_per_type: int = Query(default=10, ge=1, le=100, description="Assets per type"),
+    types: str = Query(default="crypto,stocks,indices,forex", description="Comma-separated asset types"),
+    force_refresh: bool = Query(default=False, description="Force API refresh"),
+    service: UnifiedAssetService = Depends(get_unified_service)
+):
+    """
+    🚀 **UNIFIED MULTI-ASSET ENDPOINT** - Get all asset types in one call
+    
+    **Perfect for `/markets` overview page showing all asset types!**
+    
+    **Features:**
+    - ✅ Single API call for multiple asset types
+    - ✅ 30-second Redis caching (efficient!)
+    - ✅ Parallel fetching (fast!)
+    - ✅ Consistent data format across types
+    
+    **Supported Types:**
+    - `crypto` - Top cryptocurrencies by market cap
+    - `stocks` - Top stocks (currently mock data)
+    - `indices` - Major market indices (currently mock data)
+    - `forex` - Top forex pairs (currently mock data)
+    
+    **Example Usage:**
+    ```
+    GET /api/v1/prices/all?limit_per_type=10&types=crypto,stocks
+    ```
+    
+    **Returns:**
+    ```json
+    {
+      "success": true,
+      "types": ["crypto", "stocks"],
+      "data": {
+        "crypto": [{...}, {...}],  // 10 cryptos
+        "stocks": [{...}, {...}]   // 10 stocks
+      },
+      "total_count": 20,
+      "cached": true
+    }
+    ```
+    
+    **Benefits:**
+    - Overview page: Show top 10 of each type (40 total)
+    - Single API call = faster loading
+    - Redis cache = no duplicate API calls
+    - Navigate to specific pages = data already cached!
+    """
+    try:
+        # Parse types from comma-separated string
+        type_list = [t.strip() for t in types.split(",") if t.strip()]
+        
+        if not type_list:
+            raise HTTPException(status_code=400, detail="At least one asset type required")
+        
+        # Validate types
+        valid_types = {"crypto", "stocks", "indices", "forex"}
+        invalid_types = set(type_list) - valid_types
+        if invalid_types:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid asset types: {invalid_types}. Valid: {valid_types}"
+            )
+        
+        logger.info(f"🌐 Fetching unified assets: {type_list} (limit: {limit_per_type})")
+        
+        # Check if data is cached
+        from app.core.advanced_redis_client import advanced_redis_client
+        cache_key = f"unified_assets:{':'.join(sorted(type_list))}:{limit_per_type}"
+        cached_data = None
+        is_cached = False
+        
+        if not force_refresh and advanced_redis_client.client:
+            try:
+                import json
+                cached = await advanced_redis_client.client.get(cache_key)
+                if cached:
+                    cached_data = json.loads(cached)
+                    is_cached = True
+                    logger.info(f"✅ Cache HIT: Unified assets")
+            except Exception as e:
+                logger.debug(f"Cache check failed: {e}")
+        
+        # Fetch data if not cached
+        if not is_cached:
+            # Use the unified service to fetch all types
+            data = await service.get_all_assets(
+                limit_per_type=limit_per_type,
+                types=type_list,
+                force_refresh=force_refresh
+            )
+            
+            # Cache the result for 30 seconds
+            if advanced_redis_client.client:
+                try:
+                    import json
+                    await advanced_redis_client.client.setex(cache_key, 30, json.dumps(data))
+                    logger.debug(f"💾 Cached unified assets for 30s")
+                except Exception as e:
+                    logger.debug(f"Cache set failed: {e}")
+        else:
+            data = cached_data
+        
+        # Ensure data is not None
+        if data is None:
+            data = {}
+        
+        # Calculate total count
+        total_count = sum(len(assets) for assets in data.values())
+        
+        logger.info(f"✅ Returned {total_count} assets across {len(data)} types")
+        
+        return UnifiedAssetsResponse(
+            success=True,
+            types=list(data.keys()),
+            data=data,
+            total_count=total_count,
+            cached=is_cached
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Error fetching unified assets: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{symbol}", response_model=PriceResponse)

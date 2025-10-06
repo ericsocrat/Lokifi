@@ -46,6 +46,17 @@ const nextConfig = {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
+  // Configure external image domains
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'coin-images.coingecko.com',
+        port: '',
+        pathname: '/coins/images/**',
+      },
+    ],
+  },
 };
 
 export default nextConfig;
