@@ -47,6 +47,9 @@ services:
       
       # Redis
       REDIS_URL: redis://:23233@redis:6379/0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "23233"
       
       # API Keys
       ALPHAVANTAGE_KEY: ${ALPHAVANTAGE_KEY:-D8RDSS583XDQ1DIA}
