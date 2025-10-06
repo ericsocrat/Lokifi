@@ -75,7 +75,7 @@ class UnifiedAssetService:
             params = {
                 "vs_currency": "usd",
                 "order": "market_cap_desc",
-                "per_page": 250,  # Max per page
+                "per_page": 250,  # Max per page (increased from 100)
                 "page": 1,
                 "sparkline": False
             }
@@ -211,16 +211,18 @@ class UnifiedAssetService:
         
         result = {}
         
-        # Fetch crypto if requested
+        # Fetch crypto if requested (EXPANDED: now fetching 300 instead of 100)
         if "crypto" in types:
             try:
                 async with CryptoDiscoveryService() as crypto_service:
+                    # Fetch more cryptos - 300 for comprehensive coverage
+                    crypto_limit = min(300, limit_per_type * 3) if limit_per_type < 100 else 300
                     cryptos = await crypto_service.get_top_cryptos(
-                        limit=limit_per_type,
+                        limit=crypto_limit,
                         force_refresh=force_refresh
                     )
                     result["crypto"] = [crypto.to_dict() for crypto in cryptos]
-                    logger.info(f"✅ Fetched {len(cryptos)} cryptos from CoinGecko")
+                    logger.info(f"✅ Fetched {len(cryptos)} cryptos from CoinGecko (expanded coverage)")
             except Exception as e:
                 logger.error(f"❌ Error fetching cryptos: {e}")
                 result["crypto"] = []
@@ -238,10 +240,19 @@ class UnifiedAssetService:
                 result["stocks"] = self._get_mock_stocks(limit_per_type)
                 logger.warning(f"⚠️ Using mock stock data as fallback")
         
-        # Fetch indices if requested (mock data for now)
+        # Fetch indices if requested - REAL API
         if "indices" in types:
-            result["indices"] = self._get_mock_indices()
-            logger.info(f"✅ Fetched {len(result['indices'])} indices (mock)")
+            try:
+                from app.services.indices_service import IndicesService
+                async with IndicesService(redis_client=advanced_redis_client) as indices_service:
+                    indices = await indices_service.get_indices(limit=limit_per_type)
+                    result["indices"] = indices
+                    logger.info(f"✅ Fetched {len(indices)} indices from real API")
+            except Exception as e:
+                logger.error(f"❌ Error fetching indices: {e}")
+                # Fallback to mock data if API fails
+                result["indices"] = self._get_mock_indices()
+                logger.warning(f"⚠️ Using mock indices data as fallback")
         
         # Fetch forex if requested - REAL API
         if "forex" in types:

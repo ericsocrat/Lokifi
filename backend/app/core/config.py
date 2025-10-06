@@ -47,6 +47,12 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str | None = Field(default=None, alias="GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str | None = Field(default=None, alias="GOOGLE_CLIENT_SECRET")
 
+    # Error Tracking (Sentry)
+    SENTRY_DSN: str | None = Field(default=None, alias="SENTRY_DSN")
+    SENTRY_ENVIRONMENT: str = Field(default="development", alias="SENTRY_ENVIRONMENT")
+    SENTRY_TRACES_SAMPLE_RATE: float = Field(default=1.0, alias="SENTRY_TRACES_SAMPLE_RATE")
+    ENABLE_SENTRY: bool = Field(default=False, alias="ENABLE_SENTRY")
+
     # Phase J: Email
     SMTP_HOST: str = Field(default="localhost", alias="SMTP_HOST")
     SMTP_PORT: int = Field(default=1025, alias="SMTP_PORT")
