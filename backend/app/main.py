@@ -21,6 +21,7 @@ from app.middleware.rate_limiting import (
 from app.middleware.security import RequestLoggingMiddleware, SecurityHeadersMiddleware
 from app.routers import (
     smart_prices,
+    websocket_prices,
     admin_messaging,
     ai,
     ai_websocket,
@@ -190,6 +191,7 @@ app.include_router(market_data.router, prefix=settings.API_PREFIX)
 app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
 app.include_router(realtime_market_router, prefix=settings.API_PREFIX)  # Real-time prices
 app.include_router(smart_prices.router, prefix=settings.API_PREFIX)  # 🎯 Smart Price Service
+app.include_router(websocket_prices.router, prefix=settings.API_PREFIX)  # 🔌 WebSocket Price Updates
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)
