@@ -78,7 +78,7 @@ class IndicesService:
         indices_data = []
         
         # Try Alpha Vantage first (if we have API key)
-        if settings.ALPHA_VANTAGE_API_KEY:
+        if settings.ALPHAVANTAGE_KEY:
             indices_data = await self._fetch_from_alpha_vantage(limit)
         
         # If Alpha Vantage fails or no key, try Yahoo Finance
@@ -125,7 +125,7 @@ class IndicesService:
                 params = {
                     "function": "GLOBAL_QUOTE",
                     "symbol": av_symbol,
-                    "apikey": settings.ALPHA_VANTAGE_API_KEY
+                    "apikey": settings.ALPHAVANTAGE_KEY
                 }
                 
                 resp = await self.client.get(url, params=params)

@@ -23,5 +23,6 @@ Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Yellow
 Write-Host "============================================" -ForegroundColor Green
 Write-Host ""
 
-# Start the server
+# Set PYTHONPATH and start the server
+$env:PYTHONPATH = (Get-Location).Path
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
