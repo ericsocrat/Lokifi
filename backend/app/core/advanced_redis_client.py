@@ -223,6 +223,72 @@ class AdvancedRedisClient:
             self.circuit_breaker['state'] = 'open'
             logger.warning("Circuit breaker opened due to repeated failures")
     
+    async def get(self, key: str) -> Any:
+        """Basic get operation with circuit breaker protection and JSON deserialization"""
+        start_time = time.time()
+        
+        try:
+            if not await self.is_available():
+                self.metrics.record_miss(time.time() - start_time)
+                return None
+            
+            result = await self.client.get(key)
+            
+            if result:
+                self.metrics.record_hit(time.time() - start_time)
+                # Decode bytes to string
+                value = result.decode('utf-8') if isinstance(result, bytes) else result
+                # Try to deserialize JSON
+                import json
+                try:
+                    return json.loads(value)
+                except (json.JSONDecodeError, TypeError):
+                    # Return as-is if not valid JSON
+                    return value
+            
+            self.metrics.record_miss(time.time() - start_time)
+            return None
+            
+        except Exception as e:
+            logger.error(f"Failed to get cache key {key}: {e}")
+            self.metrics.record_error()
+            return None
+    
+    async def set(
+        self, 
+        key: str, 
+        value: Any, 
+        expire: int | None = None,
+        ex: int | None = None
+    ) -> bool:
+        """Basic set operation with optional expiry (supports both 'expire' and 'ex' params)"""
+        try:
+            if not await self.is_available():
+                return False
+            
+            # Support both 'expire' and 'ex' parameter names
+            ttl = expire or ex
+            
+            # Serialize value to JSON if not already a string
+            import json
+            if not isinstance(value, str):
+                value = json.dumps(value)
+            
+            if ttl:
+                await self.client.setex(key, ttl, value)
+            else:
+                await self.client.set(key, value)
+            
+            self.metrics.record_write()
+            self.operation_stats['set']['count'] += 1
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to set cache key {key}: {e}")
+            self.metrics.record_error()
+            return False
+    
     async def get_with_layers(self, key: str, layer: str = 'warm') -> str | None:
         """Get value with multi-layer cache support"""
         start_time = time.time()
