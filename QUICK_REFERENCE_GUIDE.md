@@ -68,10 +68,14 @@ This will:
 |------|---------|
 | `README.md` | Main project documentation |
 | `START_HERE.md` | Getting started guide |
+| `QUICK_REFERENCE_GUIDE.md` | This file - quick commands |
 | `PROJECT_STATUS_CONSOLIDATED.md` | Current status & architecture |
 | `QUICK_START_GUIDE.md` | Quick setup instructions |
 | `DEPLOYMENT_GUIDE.md` | Production deployment |
 | `DEVELOPMENT_SETUP.md` | Development environment setup |
+| `ADVANCED_OPTIMIZATION_GUIDE.md` | Optimization strategies |
+| `OPTIMIZATION_PROGRESS.md` | Current optimization status |
+| `CLEANUP_SUMMARY.md` | Repository cleanup details |
 
 ---
 
