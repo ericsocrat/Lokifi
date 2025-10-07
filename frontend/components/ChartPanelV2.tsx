@@ -385,10 +385,10 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
 
       // Sync time scales
-      chart.timeScale().subscribeVisibleTimeRangeChange((range) => {
+      chart.timeScale().subscribeVisibleTimeRangeChange((range: any) => {
         if (range) subChart.timeScale().setVisibleRange(range);
       });
-      subChart.timeScale().subscribeVisibleTimeRangeChange((range) => {
+      subChart.timeScale().subscribeVisibleTimeRangeChange((range: any) => {
         if (range) chart.timeScale().setVisibleRange(range);
       });
 
