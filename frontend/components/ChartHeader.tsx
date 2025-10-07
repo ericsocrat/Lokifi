@@ -4,7 +4,7 @@ import { BarChart3, Layers, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 import { indicatorStore } from '../lib/indicatorStore';
 import { timeframeStore } from '../lib/timeframeStore';
-import { AuthModalCMC } from './AuthModalCMC';
+import { AuthModal } from '@/src/components/AuthModal';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
 
@@ -136,7 +136,7 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
 
       {/* Auth Modal */}
       {isAuthModalOpen && (
-        <AuthModalCMC defaultTab={authModalTab} onClose={() => setIsAuthModalOpen(false)} />
+        <AuthModal initialMode={authModalTab === 'login' ? 'login' : 'register'} onClose={() => setIsAuthModalOpen(false)} />
       )}
     </>
   );
