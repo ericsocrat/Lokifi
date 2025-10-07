@@ -210,7 +210,7 @@ const defaultExportOptions: ExportOptions = {
 // Create Store
 export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
   persist(
-    immer<TemplatesState & TemplatesActions>((set, get, store) => ({
+    immer<any>((set, get, store) => ({
       // Initial State
       templates: [],
       templatesByUser: new Map(),
@@ -801,3 +801,4 @@ if (typeof window !== 'undefined' && FLAGS.templates) {
   store.loadUserTemplates();
   store.loadFeaturedTemplates();
 }
+

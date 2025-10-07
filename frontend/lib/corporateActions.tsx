@@ -179,7 +179,7 @@ const defaultSessions: TradingSession[] = [
 // Create Store
 export const useCorporateActionsStore = create<CorporateActionsState & CorporateActionsActions>()(
   persist(
-    immer<CorporateActionsState & CorporateActionsActions>((set, get, store) => ({
+    immer<any>((set, get, store) => ({
       // Initial State
       actions: [],
       actionsBySymbol: new Map(),
@@ -545,3 +545,5 @@ if (typeof window !== 'undefined' && FLAGS.corpActions) {
     store.loadHolidays(market, new Date().getFullYear());
   });
 }
+
+

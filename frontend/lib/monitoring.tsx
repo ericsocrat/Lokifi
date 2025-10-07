@@ -736,7 +736,7 @@ const createInitialState = (): MonitoringState => ({
 // Create Store
 export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
   persist(
-    immer<MonitoringState & MonitoringActions>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       // Dashboard Management
@@ -1776,3 +1776,4 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
 if (typeof window !== 'undefined' && FLAGS.monitoring) {
   useMonitoringStore.getState().initialize();
 }
+

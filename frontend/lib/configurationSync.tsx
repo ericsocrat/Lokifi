@@ -671,7 +671,7 @@ const createInitialState = (): ConfigurationSyncState => ({
 // Create Store
 export const useConfigurationSyncStore = create<ConfigurationSyncState & ConfigurationSyncActions>()(
   persist(
-    immer<ConfigurationSyncState & ConfigurationSyncActions>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       // Configuration Management
@@ -1778,3 +1778,4 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
 if (typeof window !== 'undefined' && FLAGS.configurationSync) {
   useConfigurationSyncStore.getState().initialize();
 }
+

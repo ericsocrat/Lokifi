@@ -383,7 +383,7 @@ const defaultBacktestConfig: BacktestConfig = {
 // Create Store
 export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
   persist(
-    immer<BacktesterState & BacktesterActions>((set, get) => ({
+    immer<any>((set, get) => ({
       // Initial State
       strategies: [],
       activeStrategy: null,
@@ -943,3 +943,4 @@ if (typeof window !== 'undefined' && FLAGS.backtester) {
   const store = useBacktesterStore.getState();
   store.loadPublicStrategies();
 }
+

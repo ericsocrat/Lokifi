@@ -447,7 +447,7 @@ interface PerformanceActions {
 export const usePerformanceStore = create<PerformanceState & PerformanceActions>()(
   persist(
     subscribeWithSelector(
-      immer<PerformanceState & PerformanceActions>((set, get) => ({
+      immer<any>((set, get) => ({
         // Initial State
         activeProfile: null,
         profiles: [],
@@ -1738,3 +1738,4 @@ if (typeof window !== 'undefined' && FLAGS.performance) {
   const store = usePerformanceStore.getState();
   store.initialize();
 }
+

@@ -533,7 +533,7 @@ const createInitialState = (): ProgressiveDeploymentState => ({
 // Create Store
 export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState & ProgressiveDeploymentActions>()(
   persist(
-    immer<ProgressiveDeploymentState & ProgressiveDeploymentActions>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       // Strategy Management
@@ -1314,3 +1314,4 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
 if (typeof window !== 'undefined' && FLAGS.progressiveDeployment) {
   useProgressiveDeploymentStore.getState().initialize();
 }
+

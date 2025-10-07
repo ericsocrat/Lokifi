@@ -509,7 +509,7 @@ interface ObservabilityActions {
 export const useObservabilityStore = create<ObservabilityState & ObservabilityActions>()(
   persist(
     subscribeWithSelector(
-      immer<ObservabilityState & ObservabilityActions>((set, get) => ({
+      immer<any>((set, get) => ({
         // Initial State
         metrics: [],
         metricValues: [],
@@ -1749,3 +1749,4 @@ if (typeof window !== 'undefined' && FLAGS.observability) {
     store.optimizeStorage();
   }, 60000); // Every minute
 }
+

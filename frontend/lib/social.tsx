@@ -273,7 +273,7 @@ interface SocialActions {
 // Create Store
 export const useSocialStore = create<SocialState & SocialActions>()(
   persist(
-      immer<SocialState & SocialActions>((set, get) => ({
+      immer<any>((set, get) => ({
         // Initial State
         currentUser: null,
         isAuthenticated: false,
@@ -1309,3 +1309,4 @@ if (typeof window !== 'undefined' && FLAGS.social) {
     });
   }
 }
+

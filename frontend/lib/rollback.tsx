@@ -657,7 +657,7 @@ const createInitialState = (): RollbackState => ({
 // Create Store
 export const useRollbackStore = create<RollbackState & RollbackActions>()(
   persist(
-    immer<RollbackState & RollbackActions>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       // Snapshot Management
@@ -1422,3 +1422,4 @@ function generateChecksum(data: any): string {
 if (typeof window !== 'undefined' && FLAGS.rollback) {
   useRollbackStore.getState().initialize();
 }
+

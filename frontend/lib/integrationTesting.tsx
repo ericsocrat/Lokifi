@@ -889,7 +889,7 @@ const createInitialState = (): IntegrationTestingState => ({
 // Create Store
 export const useIntegrationTestingStore = create<IntegrationTestingState & IntegrationTestingActions>()(
   persist(
-    immer<IntegrationTestingState & IntegrationTestingActions>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       // Test Suite Management
@@ -1882,3 +1882,4 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
 if (typeof window !== 'undefined' && FLAGS.integrationTesting) {
   useIntegrationTestingStore.getState().initialize();
 }
+

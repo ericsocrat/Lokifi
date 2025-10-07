@@ -76,7 +76,7 @@ const createInitialState = () => ({
 
 export const useMultiChartStore = create<MultiChartStore>()(
   persist(
-    immer<MultiChartStore>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       setLayout: (layout) => {
@@ -366,3 +366,4 @@ export const LinkingControls: React.FC = () => {
     </div>
   );
 };
+

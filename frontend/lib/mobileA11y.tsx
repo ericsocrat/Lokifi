@@ -380,7 +380,7 @@ interface MobileAccessibilityActions {
 export const useMobileAccessibilityStore = create<MobileAccessibilityState & MobileAccessibilityActions>()(
   persist(
     subscribeWithSelector(
-      immer<MobileAccessibilityState & MobileAccessibilityActions>((set, get) => ({
+      immer<any>((set, get) => ({
         // Initial State
         deviceInfo: null,
         isMobile: false,
@@ -1547,3 +1547,4 @@ if (typeof window !== 'undefined' && FLAGS.mobileA11y) {
   const store = useMobileAccessibilityStore.getState();
   store.initialize();
 }
+

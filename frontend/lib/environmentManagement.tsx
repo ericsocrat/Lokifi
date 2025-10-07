@@ -800,7 +800,7 @@ const createInitialState = (): EnvironmentManagementState => ({
 // Create Store
 export const useEnvironmentManagementStore = create<EnvironmentManagementState & EnvironmentManagementActions>()(
   persist(
-    immer<EnvironmentManagementState & EnvironmentManagementActions>((set, get) => ({
+    immer<any>((set, get) => ({
       ...createInitialState(),
 
       // Environment Management
@@ -1883,3 +1883,4 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
 if (typeof window !== 'undefined' && FLAGS.environmentManagement) {
   useEnvironmentManagementStore.getState().initialize();
 }
+

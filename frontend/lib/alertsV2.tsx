@@ -251,7 +251,7 @@ interface AlertsActions {
 // Create Store
 export const useAlertsStore = create<AlertsState & AlertsActions>()(
   persist(
-      immer<AlertsState & AlertsActions>((set, get, store) => ({
+      immer<any>((set, get, store) => ({
         // Initial State
         alerts: [],
         alertsBySymbol: new Map(),
@@ -960,3 +960,4 @@ if (typeof window !== 'undefined' && FLAGS.alertsV2) {
     Notification.requestPermission();
   }
 }
+

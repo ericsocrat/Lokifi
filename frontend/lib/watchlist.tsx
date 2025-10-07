@@ -116,7 +116,7 @@ const defaultScreenerQuery: ScreenerQuery = {
 // Create Store
 export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
   persist(
-      immer<WatchlistState & WatchlistActions>((set, get, store) => ({
+      immer<any>((set, get, store) => ({
         // Initial State
         watchlists: [],
         activeWatchlistId: null,
@@ -503,3 +503,4 @@ if (typeof window !== 'undefined' && FLAGS.watchlist) {
     store.createWatchlist('My Watchlist');
   }
 }
+

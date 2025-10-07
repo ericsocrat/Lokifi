@@ -368,7 +368,7 @@ interface PaperTradingActions {
 // Create Store
 export const usePaperTradingStore = create<PaperTradingState & PaperTradingActions>()(
   persist(
-    immer<PaperTradingState & PaperTradingActions>((set, get) => ({
+    immer<any>((set, get) => ({
       // Initial State
       accounts: [],
       activeAccountId: null,
@@ -1281,3 +1281,4 @@ if (typeof window !== 'undefined' && FLAGS.paperTrading) {
     store.createAccount('Demo Account', defaultSettings);
   }
 }
+
