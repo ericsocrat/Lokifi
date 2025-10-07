@@ -305,7 +305,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         login: async (credentials) => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isLoading = true;
             state.error = null;
           });
@@ -324,7 +324,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             // Store auth token
             localStorage.setItem('social_token', token);
             
-            set((state) => {
+            set((state: any) => {
               state.currentUser = user;
               state.isAuthenticated = true;
               state.isLoading = false;
@@ -336,7 +336,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             get().connectRealtime();
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Login failed';
               state.isLoading = false;
             });
@@ -349,7 +349,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           localStorage.removeItem('social_token');
           get().disconnectRealtime();
           
-          set((state) => {
+          set((state: any) => {
             state.currentUser = null;
             state.isAuthenticated = false;
             state.feed = [];
@@ -377,12 +377,12 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const updatedUser = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.currentUser = updatedUser;
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Profile update failed';
             });
           }
@@ -415,7 +415,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           };
           
           // Optimistic update
-          set((state) => {
+          set((state: any) => {
             state.feed.unshift(post);
           });
           
@@ -433,7 +433,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const savedPost = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               const index = state.feed.findIndex(p => p.id === postId);
               if (index !== -1) {
                 state.feed[index] = savedPost;
@@ -444,7 +444,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             // Revert optimistic update
-            set((state) => {
+            set((state: any) => {
               const index = state.feed.findIndex(p => p.id === postId);
               if (index !== -1) {
                 state.feed.splice(index, 1);
@@ -472,7 +472,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const updatedPost = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               const index = state.feed.findIndex(p => p.id === postId);
               if (index !== -1) {
                 state.feed[index] = updatedPost;
@@ -480,7 +480,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to update post';
             });
           }
@@ -499,7 +499,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             if (!response.ok) throw new Error('Failed to delete post');
             
-            set((state) => {
+            set((state: any) => {
               const index = state.feed.findIndex(p => p.id === postId);
               if (index !== -1) {
                 state.feed.splice(index, 1);
@@ -507,7 +507,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to delete post';
             });
           }
@@ -518,7 +518,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           // Optimistic update
-          set((state) => {
+          set((state: any) => {
             const post = state.feed.find(p => p.id === postId);
             if (post && !post.isLiked) {
               post.likes++;
@@ -538,7 +538,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             // Revert optimistic update
-            set((state) => {
+            set((state: any) => {
               const post = state.feed.find(p => p.id === postId);
               if (post && post.isLiked) {
                 post.likes--;
@@ -553,7 +553,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           // Optimistic update
-          set((state) => {
+          set((state: any) => {
             const post = state.feed.find(p => p.id === postId);
             if (post && post.isLiked) {
               post.likes--;
@@ -573,7 +573,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             // Revert optimistic update
-            set((state) => {
+            set((state: any) => {
               const post = state.feed.find(p => p.id === postId);
               if (post && !post.isLiked) {
                 post.likes++;
@@ -587,7 +587,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         bookmarkPost: async (postId) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
-          set((state) => {
+          set((state: any) => {
             const post = state.feed.find(p => p.id === postId);
             if (post) {
               post.isBookmarked = true;
@@ -605,7 +605,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to bookmark post');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               const post = state.feed.find(p => p.id === postId);
               if (post) {
                 post.isBookmarked = false;
@@ -618,7 +618,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         unbookmarkPost: async (postId) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
-          set((state) => {
+          set((state: any) => {
             const post = state.feed.find(p => p.id === postId);
             if (post) {
               post.isBookmarked = false;
@@ -636,7 +636,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to unbookmark post');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               const post = state.feed.find(p => p.id === postId);
               if (post) {
                 post.isBookmarked = true;
@@ -661,7 +661,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             if (!response.ok) throw new Error('Failed to share post');
             
-            set((state) => {
+            set((state: any) => {
               const post = state.feed.find(p => p.id === postId);
               if (post) {
                 post.shares++;
@@ -669,7 +669,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to share post';
             });
           }
@@ -693,7 +693,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const comment = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               const post = state.feed.find(p => p.id === postId);
               if (post) {
                 post.comments++;
@@ -703,7 +703,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             return comment.id;
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to add comment';
             });
             return '';
@@ -726,7 +726,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to update comment');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to update comment';
             });
           }
@@ -746,7 +746,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to delete comment');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to delete comment';
             });
           }
@@ -766,7 +766,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to like comment');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to like comment';
             });
           }
@@ -776,7 +776,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         followUser: async (userId) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
-          set((state) => {
+          set((state: any) => {
             state.following.add(userId);
           });
           
@@ -791,7 +791,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to follow user');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.following.delete(userId);
               state.error = error instanceof Error ? error.message : 'Failed to follow user';
             });
@@ -801,7 +801,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         unfollowUser: async (userId) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
-          set((state) => {
+          set((state: any) => {
             state.following.delete(userId);
           });
           
@@ -816,7 +816,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to unfollow user');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.following.add(userId);
               state.error = error instanceof Error ? error.message : 'Failed to unfollow user';
             });
@@ -837,13 +837,13 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to block user');
             
             // Remove user's content from feed
-            set((state) => {
+            set((state: any) => {
               state.feed = state.feed.filter(post => post.authorId !== userId);
               state.following.delete(userId);
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to block user';
             });
           }
@@ -865,7 +865,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to report content');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to report content';
             });
           }
@@ -875,7 +875,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         loadFeed: async (filter = 'all', offset = 0) => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isLoading = offset === 0; // Only show loading for initial load
             state.error = null;
           });
@@ -897,7 +897,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const posts: SocialPost[] = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               if (offset === 0) {
                 state.feed = posts;
               } else {
@@ -908,7 +908,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to load feed';
               state.isLoading = false;
             });
@@ -924,12 +924,12 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const thread: SocialThread = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.threads.set(symbol, thread);
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to load thread';
             });
           }
@@ -945,7 +945,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             return await response.json();
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Search failed';
             });
             return [];
@@ -970,14 +970,14 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const copyTrading: CopyTrading = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.copyTradingPositions.push(copyTrading);
             });
             
             return copyTrading.id;
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to start copy trading';
             });
             return '';
@@ -997,14 +997,14 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             if (!response.ok) throw new Error('Failed to stop copy trading');
             
-            set((state) => {
+            set((state: any) => {
               state.copyTradingPositions = state.copyTradingPositions.filter(
                 ct => ct.id !== copyTradingId
               );
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to stop copy trading';
             });
           }
@@ -1027,7 +1027,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const updatedCopyTrading = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               const index = state.copyTradingPositions.findIndex(ct => ct.id === copyTradingId);
               if (index !== -1) {
                 state.copyTradingPositions[index] = updatedCopyTrading;
@@ -1035,7 +1035,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to update copy settings';
             });
           }
@@ -1050,12 +1050,12 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const stats = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.traderStats.set(traderId, stats);
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to load trader stats';
             });
           }
@@ -1076,12 +1076,12 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             const notifications: Notification[] = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.notifications = notifications;
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to load notifications';
             });
           }
@@ -1090,7 +1090,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         markNotificationRead: async (notificationId) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
-          set((state) => {
+          set((state: any) => {
             const notification = state.notifications.find(n => n.id === notificationId);
             if (notification) {
               notification.isRead = true;
@@ -1108,7 +1108,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to mark notification as read');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               const notification = state.notifications.find(n => n.id === notificationId);
               if (notification) {
                 notification.isRead = false;
@@ -1121,7 +1121,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         markAllNotificationsRead: async () => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
-          set((state) => {
+          set((state: any) => {
             state.notifications.forEach(n => n.isRead = true);
           });
           
@@ -1136,7 +1136,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to mark all notifications as read');
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.notifications.forEach(n => n.isRead = false);
               state.error = error instanceof Error ? error.message : 'Failed to mark all notifications as read';
             });
@@ -1150,13 +1150,13 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           const ws = new WebSocket('/ws/social');
           
           ws.onopen = () => {
-            set((state) => {
+            set((state: any) => {
               state.realtimeConnected = true;
             });
           };
           
           ws.onclose = () => {
-            set((state) => {
+            set((state: any) => {
               state.realtimeConnected = false;
             });
           };
@@ -1166,13 +1166,13 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             switch (data.type) {
               case 'new_post':
-                set((state) => {
+                set((state: any) => {
                   state.feed.unshift(data.post);
                 });
                 break;
                 
               case 'post_liked':
-                set((state) => {
+                set((state: any) => {
                   const post = state.feed.find(p => p.id === data.postId);
                   if (post) {
                     post.likes = data.likes;
@@ -1181,19 +1181,19 @@ export const useSocialStore = create<SocialState & SocialActions>()(
                 break;
                 
               case 'new_notification':
-                set((state) => {
+                set((state: any) => {
                   state.notifications.unshift(data.notification);
                 });
                 break;
                 
               case 'user_online':
-                set((state) => {
+                set((state: any) => {
                   state.activeUsers.add(data.userId);
                 });
                 break;
                 
               case 'user_offline':
-                set((state) => {
+                set((state: any) => {
                   state.activeUsers.delete(data.userId);
                 });
                 break;
@@ -1204,7 +1204,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         disconnectRealtime: () => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             state.realtimeConnected = false;
             state.activeUsers.clear();
           });
@@ -1214,7 +1214,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         updateSocialSettings: (settings) => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.socialSettings, settings);
           });
         },
@@ -1223,7 +1223,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         setSelectedSymbol: (symbol) => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             state.selectedSymbol = symbol;
           });
           
@@ -1235,7 +1235,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         setFeedFilter: (filter) => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             state.feedFilter = filter;
           });
           
@@ -1245,7 +1245,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         setSearchQuery: (query) => {
           if (!FLAGS.social) return;
           
-          set((state) => {
+          set((state: any) => {
             state.searchQuery = query;
           });
         }

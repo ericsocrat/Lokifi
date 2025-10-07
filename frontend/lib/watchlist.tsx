@@ -134,7 +134,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           const id = `wl_${Date.now()}`;
           const now = new Date();
           
-          set((state) => {
+          set((state: any) => {
             state.watchlists.push({
               id,
               name,
@@ -155,7 +155,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         deleteWatchlist: (id: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.watchlists.findIndex(w => w.id === id);
             if (index !== -1) {
               state.watchlists.splice(index, 1);
@@ -170,7 +170,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         renameWatchlist: (id: string, name: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === id);
             if (watchlist) {
               watchlist.name = name;
@@ -182,7 +182,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         setActiveWatchlist: (id: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             if (state.watchlists.find(w => w.id === id)) {
               state.activeWatchlistId = id;
             }
@@ -193,7 +193,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         addToWatchlist: (watchlistId: string, symbol: string, notes?: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === watchlistId);
             if (watchlist && !watchlist.items.find(item => item.symbol === symbol)) {
               watchlist.items.push({
@@ -210,7 +210,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         removeFromWatchlist: (watchlistId: string, symbol: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === watchlistId);
             if (watchlist) {
               const index = watchlist.items.findIndex(item => item.symbol === symbol);
@@ -225,7 +225,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         updateWatchlistItem: (watchlistId: string, symbol: string, updates: Partial<WatchlistItem>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === watchlistId);
             if (watchlist) {
               const item = watchlist.items.find(item => item.symbol === symbol);
@@ -241,7 +241,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         addAlert: (watchlistId: string, symbol: string, rule: Omit<AlertRule, 'id'>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === watchlistId);
             if (watchlist) {
               const item = watchlist.items.find(item => item.symbol === symbol);
@@ -260,7 +260,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         removeAlert: (watchlistId: string, symbol: string, alertId: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === watchlistId);
             if (watchlist) {
               const item = watchlist.items.find(item => item.symbol === symbol);
@@ -278,7 +278,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         toggleAlert: (watchlistId: string, symbol: string, alertId: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === watchlistId);
             if (watchlist) {
               const item = watchlist.items.find(item => item.symbol === symbol);
@@ -297,7 +297,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         updateScreenerQuery: (query: Partial<ScreenerQuery>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             state.screenerQuery = { ...state.screenerQuery, ...query };
           });
         },
@@ -305,7 +305,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         addScreenerFilter: (filter: Omit<ScreenerFilter, 'id'>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             state.screenerQuery.filters.push({
               ...filter,
               id: `filter_${Date.now()}`
@@ -316,7 +316,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         removeScreenerFilter: (filterId: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.screenerQuery.filters.findIndex(f => f.id === filterId);
             if (index !== -1) {
               state.screenerQuery.filters.splice(index, 1);
@@ -327,7 +327,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         runScreener: async () => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isLoading = true;
             state.error = null;
           });
@@ -379,13 +379,13 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             // Limit results
             results = results.slice(0, screenerQuery.limit);
             
-            set((state) => {
+            set((state: any) => {
               state.screenerResults = results;
               state.isLoading = false;
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Screener failed';
               state.isLoading = false;
             });
@@ -396,7 +396,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         refreshSymbolDirectory: async () => {
           if (!FLAGS.watchlist) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isLoading = true;
             state.error = null;
           });
@@ -408,7 +408,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             
             const metrics: SymbolMetrics[] = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.symbolDirectory.clear();
               for (const metric of metrics) {
                 state.symbolDirectory.set(metric.symbol, metric);
@@ -418,7 +418,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to refresh data';
               state.isLoading = false;
             });
@@ -436,7 +436,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           
           const id = get().createWatchlist('Imported Watchlist');
           
-          set((state) => {
+          set((state: any) => {
             const watchlist = state.watchlists.find(w => w.id === id);
             if (watchlist) {
               for (const symbol of items) {

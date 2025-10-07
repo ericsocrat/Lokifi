@@ -82,7 +82,7 @@ export const useMultiChartStore = create<MultiChartStore>()(
       setLayout: (layout) => {
         if (!FLAGS.multiChart) return;
         
-        set((state) => {
+        set((state: any) => {
           const newCharts = [...state.charts];
           const positions = getPositionsForLayout(layout);
           

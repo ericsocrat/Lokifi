@@ -199,7 +199,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       loadActions: async (symbol?: string) => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.isLoading = true;
           state.error = null;
         });
@@ -211,7 +211,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
           const actions: CorporateAction[] = await response.json();
 
-          set((state) => {
+          set((state: any) => {
             state.actions = actions;
 
             // Group by symbol for faster lookups
@@ -227,7 +227,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
           });
 
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load actions';
             state.isLoading = false;
           });
@@ -278,7 +278,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       toggleAdjustedData: () => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.showAdjusted = !state.showAdjusted;
         });
       },
@@ -287,7 +287,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       loadHolidays: async (market: string, year: number) => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.isLoading = true;
           state.error = null;
         });
@@ -298,7 +298,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
           const holidays: MarketHoliday[] = await response.json();
 
-          set((state) => {
+          set((state: any) => {
             // Merge new holidays
             const existingHolidays = state.holidaysByMarket.get(market) || [];
             const allHolidays = [...existingHolidays, ...holidays];
@@ -316,7 +316,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
           });
 
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load holidays';
             state.isLoading = false;
           });
@@ -354,7 +354,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       updateSessions: (sessions: TradingSession[]) => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.sessions = sessions;
         });
       },
@@ -362,7 +362,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       toggleSession: (sessionName: string) => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           const session = state.sessions.find(s => s.name === sessionName);
           if (session) {
             session.isActive = !session.isActive;
@@ -408,7 +408,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       loadQualityReport: async (symbol: string) => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.isLoading = true;
           state.error = null;
         });
@@ -419,13 +419,13 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
           const quality: DataQuality = await response.json();
 
-          set((state) => {
+          set((state: any) => {
             state.qualityReports.set(symbol, quality);
             state.isLoading = false;
           });
 
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load quality report';
             state.isLoading = false;
           });
@@ -435,7 +435,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       toggleQualityIndicators: () => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.showQualityIndicators = !state.showQualityIndicators;
         });
       },
@@ -444,7 +444,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       updatePreferredMarkets: (markets: string[]) => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.preferredMarkets = markets;
         });
       },
@@ -452,7 +452,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       toggleAutoAdjust: () => {
         if (!FLAGS.corpActions) return;
 
-        set((state) => {
+        set((state: any) => {
           state.autoAdjustForActions = !state.autoAdjustForActions;
         });
       }

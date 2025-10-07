@@ -567,7 +567,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             updatedAt: now
           };
           
-          set((state) => {
+          set((state: any) => {
             state.metrics.push(metric);
           });
           
@@ -577,7 +577,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         updateMetric: (metricId, updates) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const metric = state.metrics.find(m => m.id === metricId);
             if (metric) {
               Object.assign(metric, updates);
@@ -589,7 +589,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         deleteMetric: (metricId) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.metrics.findIndex(m => m.id === metricId);
             if (index !== -1) {
               state.metrics.splice(index, 1);
@@ -617,7 +617,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             version: '1.0'
           };
           
-          set((state) => {
+          set((state: any) => {
             state.metricValues.push(metricValue);
             
             // Keep only recent values in memory
@@ -643,7 +643,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             createdAt: new Date()
           };
           
-          set((state) => {
+          set((state: any) => {
             state.alertRules.push(rule);
           });
           
@@ -653,7 +653,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         updateAlertRule: (ruleId, updates) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const rule = state.alertRules.find(r => r.id === ruleId);
             if (rule) {
               Object.assign(rule, updates);
@@ -664,7 +664,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         deleteAlertRule: (ruleId) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.alertRules.findIndex(r => r.id === ruleId);
             if (index !== -1) {
               state.alertRules.splice(index, 1);
@@ -740,7 +740,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                 break;
             }
             
-            set((state) => {
+            set((state: any) => {
               const existingAlert = state.activeAlerts.find(a => a.id === rule.id);
               
               if (shouldFire && !existingAlert) {
@@ -774,7 +774,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         resolveAlert: (ruleId) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.activeAlerts = state.activeAlerts.filter(a => a.id !== ruleId);
             
             const rule = state.alertRules.find(r => r.id === ruleId);
@@ -832,7 +832,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             ...metricsData
           };
           
-          set((state) => {
+          set((state: any) => {
             state.systemMetrics.push(metrics);
             state.currentMetrics = metrics;
             state.lastDataUpdate = new Date();
@@ -869,7 +869,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             timestamp: new Date()
           };
           
-          set((state) => {
+          set((state: any) => {
             state.userEvents.push(event);
             
             // Group by session
@@ -946,7 +946,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             status: 'new'
           };
           
-          set((state) => {
+          set((state: any) => {
             state.errors.push(error);
             
             // Add to recent errors
@@ -965,7 +965,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         updateErrorStatus: (errorId, status, assignedTo) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const error = state.errors.find(e => e.id === errorId);
             if (error) {
               error.status = status;
@@ -1040,7 +1040,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             timestamp: new Date()
           };
           
-          set((state) => {
+          set((state: any) => {
             state.performanceTraces.push(trace);
             
             // Update performance metrics
@@ -1086,7 +1086,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             data
           };
           
-          set((state) => {
+          set((state: any) => {
             // Add to buffer first
             state.logBuffer.push(entry);
             
@@ -1142,7 +1142,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             viewCount: 0
           };
           
-          set((state) => {
+          set((state: any) => {
             state.dashboards.push(dashboard);
           });
           
@@ -1152,7 +1152,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         updateDashboard: (dashboardId, updates) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const dashboard = state.dashboards.find(d => d.id === dashboardId);
             if (dashboard) {
               Object.assign(dashboard, updates);
@@ -1164,7 +1164,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         deleteDashboard: (dashboardId) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.dashboards.findIndex(d => d.id === dashboardId);
             if (index !== -1) {
               state.dashboards.splice(index, 1);
@@ -1180,7 +1180,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         setActiveDashboard: (dashboardId) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             if (dashboardId) {
               const dashboard = state.dashboards.find(d => d.id === dashboardId);
               if (dashboard) {
@@ -1203,7 +1203,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             id: widgetId
           };
           
-          set((state) => {
+          set((state: any) => {
             const dashboard = state.dashboards.find(d => d.id === dashboardId);
             if (dashboard) {
               dashboard.widgets.push(widget);
@@ -1217,7 +1217,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         updateWidget: (dashboardId, widgetId, updates) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const dashboard = state.dashboards.find(d => d.id === dashboardId);
             if (dashboard) {
               const widget = dashboard.widgets.find(w => w.id === widgetId);
@@ -1232,7 +1232,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         removeWidget: (dashboardId, widgetId) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             const dashboard = state.dashboards.find(d => d.id === dashboardId);
             if (dashboard) {
               const index = dashboard.widgets.findIndex(w => w.id === widgetId);
@@ -1248,7 +1248,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         enableRealTime: () => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isRealTimeEnabled = true;
           });
           
@@ -1258,7 +1258,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         disableRealTime: () => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isRealTimeEnabled = false;
           });
           
@@ -1269,7 +1269,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (!FLAGS.observability || typeof window === 'undefined') return;
           
           // In a real implementation, this would establish WebSocket connection
-          set((state) => {
+          set((state: any) => {
             state.websocketConnected = true;
           });
           
@@ -1279,7 +1279,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         disconnectWebSocket: () => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.websocketConnected = false;
           });
           
@@ -1305,7 +1305,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             return await response.json();
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.errorMessage = error instanceof Error ? error.message : 'Query failed';
             });
             
@@ -1331,7 +1331,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             return await response.json();
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.errorMessage = error instanceof Error ? error.message : 'Analysis failed';
             });
             
@@ -1377,7 +1377,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         clearOldData: (beforeDate) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.metricValues = state.metricValues.filter(v => v.timestamp >= beforeDate);
             state.userEvents = state.userEvents.filter(e => e.timestamp >= beforeDate);
             state.errors = state.errors.filter(e => e.timestamp >= beforeDate);
@@ -1400,7 +1400,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         updateSettings: (settings) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.settings, settings);
           });
         },
@@ -1408,7 +1408,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         setTimeRange: (timeRange) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.selectedTimeRange = timeRange;
           });
         },
@@ -1416,7 +1416,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         setFilters: (filters) => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.filters, filters);
           });
         },
@@ -1425,7 +1425,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         initialize: async () => {
           if (!FLAGS.observability) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isLoading = true;
             state.errorMessage = null;
           });
@@ -1443,12 +1443,12 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             // Set up performance observers
             get().setupPerformanceObservers();
             
-            set((state) => {
+            set((state: any) => {
               state.isLoading = false;
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.errorMessage = error instanceof Error ? error.message : 'Initialization failed';
               state.isLoading = false;
             });
@@ -1472,7 +1472,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             
             const data = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.metricValues = [...state.metricValues, ...data.metrics];
               state.userEvents = [...state.userEvents, ...data.events];
               state.errors = [...state.errors, ...data.errors];
@@ -1481,7 +1481,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.errorMessage = error instanceof Error ? error.message : 'Failed to load historical data';
             });
           }

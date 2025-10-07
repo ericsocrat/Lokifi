@@ -585,7 +585,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             reducedMotion
           };
           
-          set((state) => {
+          set((state: any) => {
             state.deviceInfo = deviceInfo;
             state.isMobile = isMobile;
             state.isTablet = isTablet;
@@ -616,7 +616,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateDeviceInfo: (info) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             if (state.deviceInfo) {
               Object.assign(state.deviceInfo, info);
             }
@@ -635,7 +635,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
           };
           
-          set((state) => {
+          set((state: any) => {
             state.supportedFeatures = features;
           });
         },
@@ -644,7 +644,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateAccessibilitySettings: (settings) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.accessibilitySettings, settings);
           });
           
@@ -655,7 +655,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateMobileSettings: (settings) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.mobileSettings, settings);
           });
           
@@ -666,7 +666,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         resetToDefaults: () => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             // Reset to default settings based on device
             if (state.isMobile) {
               state.mobileSettings.compactMode = true;
@@ -691,7 +691,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             id: gestureId
           };
           
-          set((state) => {
+          set((state: any) => {
             state.gestures.push(gesture);
           });
           
@@ -701,7 +701,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateGesture: (gestureId, updates) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const gesture = state.gestures.find(g => g.id === gestureId);
             if (gesture) {
               Object.assign(gesture, updates);
@@ -712,7 +712,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         removeGesture: (gestureId) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.gestures.findIndex(g => g.id === gestureId);
             if (index !== -1) {
               state.gestures.splice(index, 1);
@@ -723,7 +723,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         enableGesture: (gestureId, enabled) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const gesture = state.gestures.find(g => g.id === gestureId);
             if (gesture) {
               gesture.enabled = enabled;
@@ -741,7 +741,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             id: shortcutId
           };
           
-          set((state) => {
+          set((state: any) => {
             state.keyboardShortcuts.push(shortcut);
           });
           
@@ -751,7 +751,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateKeyboardShortcut: (shortcutId, updates) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const shortcut = state.keyboardShortcuts.find(s => s.id === shortcutId);
             if (shortcut) {
               Object.assign(shortcut, updates);
@@ -762,7 +762,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         removeKeyboardShortcut: (shortcutId) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const index = state.keyboardShortcuts.findIndex(s => s.id === shortcutId);
             if (index !== -1) {
               state.keyboardShortcuts.splice(index, 1);
@@ -773,7 +773,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         enableKeyboardShortcut: (shortcutId, enabled) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const shortcut = state.keyboardShortcuts.find(s => s.id === shortcutId);
             if (shortcut) {
               shortcut.enabled = enabled;
@@ -785,7 +785,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateViewportSize: (width, height) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             state.viewportSize = { width, height };
             
             // Update breakpoint
@@ -802,7 +802,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         setBreakpoint: (breakpoint) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             state.currentBreakpoint = breakpoint;
           });
         },
@@ -810,7 +810,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         addBreakpoint: (breakpoint) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             state.breakpoints.push(breakpoint);
             // Sort by minWidth
             state.breakpoints.sort((a, b) => a.minWidth - b.minWidth);
@@ -820,7 +820,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updateBreakpoint: (name, updates) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             const breakpoint = state.breakpoints.find(bp => bp.name === name);
             if (breakpoint) {
               Object.assign(breakpoint, updates);
@@ -834,7 +834,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             throw new Error('Mobile accessibility features not enabled');
           }
           
-          set((state) => {
+          set((state: any) => {
             state.isAuditing = true;
             state.error = null;
           });
@@ -857,7 +857,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
               section508: auditResults.section508
             };
             
-            set((state) => {
+            set((state: any) => {
               state.lastAudit = audit;
               state.auditHistory.unshift(audit);
               state.activeIssues = audit.issues.filter(issue => issue.type === 'error');
@@ -872,7 +872,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             return audit;
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Audit failed';
               state.isAuditing = false;
             });
@@ -888,12 +888,12 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             // Auto-fix common accessibility issues
             await autoFixAccessibilityIssue(issueId);
             
-            set((state) => {
+            set((state: any) => {
               state.activeIssues = state.activeIssues.filter(issue => issue.id !== issueId);
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to fix issue';
             });
           }
@@ -902,7 +902,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         ignoreAccessibilityIssue: (issueId) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             state.activeIssues = state.activeIssues.filter(issue => issue.id !== issueId);
           });
         },
@@ -944,7 +944,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           if (element) {
             element.focus();
             
-            set((state) => {
+            set((state: any) => {
               state.focusedElement = elementId;
             });
           }
@@ -1086,7 +1086,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         updatePerformanceMetrics: (metrics) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.performanceMetrics, metrics);
           });
         },
@@ -1098,7 +1098,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           try {
             (window as any).screen.orientation.lock(orientation);
             
-            set((state) => {
+            set((state: any) => {
               state.orientationLocked = true;
             });
             
@@ -1113,7 +1113,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           try {
             (window as any).screen.orientation.unlock();
             
-            set((state) => {
+            set((state: any) => {
               state.orientationLocked = false;
             });
             
@@ -1208,7 +1208,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             const text = await file.text();
             const settings = JSON.parse(text);
             
-            set((state) => {
+            set((state: any) => {
               if (settings.accessibilitySettings) {
                 state.accessibilitySettings = settings.accessibilitySettings;
               }
@@ -1227,7 +1227,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to import settings';
             });
           }
@@ -1237,7 +1237,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         initialize: async () => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isInitializing = true;
             state.error = null;
           });
@@ -1257,12 +1257,12 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             get().applyAccessibilitySettings();
             get().applyMobileSettings();
             
-            set((state) => {
+            set((state: any) => {
               state.isInitializing = false;
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Initialization failed';
               state.isInitializing = false;
             });
@@ -1317,7 +1317,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           document.addEventListener('focusin', (event) => {
             const element = event.target as HTMLElement;
             if (element.id) {
-              set((state) => {
+              set((state: any) => {
                 state.focusedElement = element.id;
               });
             }
@@ -1331,7 +1331,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
               const currentHeight = window.innerHeight;
               const heightDifference = initialViewportHeight - currentHeight;
               
-              set((state) => {
+              set((state: any) => {
                 state.keyboardVisible = heightDifference > 150; // Threshold for keyboard
               });
             });

@@ -249,7 +249,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           config
         };
         
-        set((state) => {
+        set((state: any) => {
           state.templates.push(template);
           state.activeTemplate = template;
         });
@@ -265,7 +265,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const savedTemplate = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             const index = state.templates.findIndex(t => t.id === id);
             if (index !== -1) {
               state.templates[index] = savedTemplate;
@@ -274,7 +274,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to create template';
           });
         }
@@ -285,7 +285,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       updateTemplate: async (id: string, updates: Partial<ChartTemplate>) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           const template = state.templates.find(t => t.id === id);
           if (template) {
             Object.assign(template, updates);
@@ -307,7 +307,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Failed to update template');
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to update template';
           });
         }
@@ -316,7 +316,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       deleteTemplate: async (id: string) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           const index = state.templates.findIndex(t => t.id === id);
           if (index !== -1) {
             state.templates.splice(index, 1);
@@ -335,7 +335,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Failed to delete template');
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to delete template';
           });
         }
@@ -361,7 +361,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         
         if (!template) return;
         
-        set((state) => {
+        set((state: any) => {
           state.activeTemplate = template;
           
           // Increment usage count
@@ -377,7 +377,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       setActiveTemplate: (template: ChartTemplate | null) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           state.activeTemplate = template;
         });
       },
@@ -385,7 +385,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       markUnsavedChanges: (hasChanges: boolean) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           state.hasUnsavedChanges = hasChanges;
         });
       },
@@ -394,7 +394,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       loadUserTemplates: async () => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isLoading = true;
           state.error = null;
         });
@@ -405,13 +405,13 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const templates: ChartTemplate[] = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             state.templates = templates;
             state.isLoading = false;
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load templates';
             state.isLoading = false;
           });
@@ -427,12 +427,12 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const templates: ChartTemplate[] = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             state.publicTemplates = templates;
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load public templates';
           });
         }
@@ -447,12 +447,12 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const templates: ChartTemplate[] = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             state.featuredTemplates = templates;
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load featured templates';
           });
         }
@@ -467,7 +467,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const template: ChartTemplate = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             const index = state.templates.findIndex(t => t.id === id);
             if (index !== -1) {
               state.templates[index] = template;
@@ -481,7 +481,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to sync template';
           });
         }
@@ -504,7 +504,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           );
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to import template';
           });
           return '';
@@ -533,7 +533,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       exportAsImage: async (templateId: string, symbol: string, options?: Partial<ExportOptions>) => {
         if (!FLAGS.imgExport) throw new Error('Image export not enabled');
         
-        set((state) => {
+        set((state: any) => {
           state.isExporting = true;
           state.error = null;
         });
@@ -556,7 +556,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           const blob = await response.blob();
           
           // Record export history
-          set((state) => {
+          set((state: any) => {
             state.exportHistory.push({
               id: `export_${Date.now()}`,
               templateId,
@@ -571,7 +571,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           return blob;
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Export failed';
             state.isExporting = false;
           });
@@ -605,14 +605,14 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const link: ShareableLink = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             state.shareableLinks.push(link);
           });
           
           return link.shortCode;
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to create share link';
           });
           return '';
@@ -629,7 +629,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           if (!response.ok) throw new Error('Failed to revoke link');
           
-          set((state) => {
+          set((state: any) => {
             const index = state.shareableLinks.findIndex(link => link.id === linkId);
             if (index !== -1) {
               state.shareableLinks.splice(index, 1);
@@ -637,7 +637,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to revoke link';
           });
         }
@@ -656,7 +656,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       setSearchQuery: (query: string) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           state.searchQuery = query;
         });
       },
@@ -664,7 +664,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       toggleTag: (tag: string) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           const index = state.selectedTags.indexOf(tag);
           if (index !== -1) {
             state.selectedTags.splice(index, 1);
@@ -677,7 +677,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       setSortOptions: (sortBy: TemplatesState['sortBy'], sortOrder: TemplatesState['sortOrder']) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           state.sortBy = sortBy;
           state.sortOrder = sortOrder;
         });
@@ -701,7 +701,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       deleteMultipleTemplates: async (templateIds: string[]) => {
         if (!FLAGS.templates) return;
         
-        set((state) => {
+        set((state: any) => {
           state.templates = state.templates.filter(t => !templateIds.includes(t.id));
           
           if (state.activeTemplate && templateIds.includes(state.activeTemplate.id)) {
@@ -719,7 +719,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Bulk delete failed');
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to delete templates';
           });
         }

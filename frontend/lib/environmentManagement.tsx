@@ -816,7 +816,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           deploymentHistory: []
         };
         
-        set((state) => {
+        set((state: any) => {
           state.environments.push(environment);
         });
         
@@ -826,7 +826,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateEnvironment: (environmentId, updates) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             Object.assign(environment, { ...updates, updatedAt: new Date() });
@@ -837,7 +837,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       deleteEnvironment: (environmentId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.environments = state.environments.filter(e => e.id !== environmentId);
           if (state.selectedEnvironment === environmentId) {
             state.selectedEnvironment = null;
@@ -862,7 +862,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       setSelectedEnvironment: (environmentId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedEnvironment = environmentId;
         });
       },
@@ -871,7 +871,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       startEnvironment: async (environmentId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment && environment.status === 'inactive') {
             environment.status = 'deploying';
@@ -881,7 +881,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         // Simulate environment startup
         await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 5000));
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.status = 'active';
@@ -902,7 +902,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       stopEnvironment: async (environmentId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment && environment.status === 'active') {
             environment.status = 'terminating';
@@ -912,7 +912,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         // Simulate environment shutdown
         await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.status = 'inactive';
@@ -966,7 +966,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           issues: []
         };
         
-        set((state) => {
+        set((state: any) => {
           const env = state.environments.find(e => e.id === environmentId);
           if (env) {
             env.health = health;
@@ -979,7 +979,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateResourceUsage: (environmentId, resources) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.resources = resources;
@@ -997,7 +997,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           id: serviceId
         };
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.services.push(service);
@@ -1011,7 +1011,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateService: (environmentId, serviceId, updates) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             const service = environment.services.find(s => s.id === serviceId);
@@ -1026,7 +1026,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       removeService: (environmentId, serviceId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.services = environment.services.filter(s => s.id !== serviceId);
@@ -1038,7 +1038,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       restartService: async (environmentId, serviceId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             const service = environment.services.find(s => s.id === serviceId);
@@ -1051,7 +1051,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         // Simulate service restart
         await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             const service = environment.services.find(s => s.id === serviceId);
@@ -1078,7 +1078,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           usageCount: 0
         };
         
-        set((state) => {
+        set((state: any) => {
           state.templates.push(template);
         });
         
@@ -1088,7 +1088,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateTemplate: (templateId, updates) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const template = state.templates.find(t => t.id === templateId);
           if (template) {
             Object.assign(template, { ...updates, updatedAt: new Date() });
@@ -1099,7 +1099,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       deleteTemplate: (templateId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.templates = state.templates.filter(t => t.id !== templateId);
         });
       },
@@ -1146,7 +1146,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         });
         
         // Update template usage count
-        set((state) => {
+        set((state: any) => {
           const t = state.templates.find(t => t.id === templateId);
           if (t) {
             t.usageCount += 1;
@@ -1188,7 +1188,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           generatedAt: new Date()
         };
         
-        set((state) => {
+        set((state: any) => {
           state.comparisons.push(comparison);
         });
         
@@ -1206,7 +1206,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           history: []
         };
         
-        set((state) => {
+        set((state: any) => {
           state.syncJobs.push(job);
         });
         
@@ -1216,7 +1216,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateSyncJob: (jobId, updates) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const job = state.syncJobs.find(j => j.id === jobId);
           if (job) {
             Object.assign(job, updates);
@@ -1227,7 +1227,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       deleteSyncJob: (jobId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.syncJobs = state.syncJobs.filter(j => j.id !== jobId);
         });
       },
@@ -1250,7 +1250,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           errors: []
         };
         
-        set((state) => {
+        set((state: any) => {
           const j = state.syncJobs.find(j => j.id === jobId);
           if (j) {
             j.status = 'running';
@@ -1266,7 +1266,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           const changesApplied = Math.floor(Math.random() * 10);
           const hasErrors = Math.random() < 0.2;
           
-          set((state) => {
+          set((state: any) => {
             const j = state.syncJobs.find(j => j.id === jobId);
             if (j) {
               j.status = hasErrors ? 'failed' : 'completed';
@@ -1292,7 +1292,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           return executionId;
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             const j = state.syncJobs.find(j => j.id === jobId);
             if (j) {
               j.status = 'failed';
@@ -1317,7 +1317,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateEnvironmentConfig: (environmentId, config) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             Object.assign(environment.config, config);
@@ -1359,7 +1359,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           id
         };
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.credentials.push(credentials);
@@ -1373,7 +1373,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateCredentials: (environmentId, credentialsId, updates) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             const credentials = environment.credentials.find(c => c.id === credentialsId);
@@ -1388,7 +1388,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       removeCredentials: (environmentId, credentialsId) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             environment.credentials = environment.credentials.filter(c => c.id !== credentialsId);
@@ -1403,7 +1403,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         // Simulate credential rotation
         await new Promise(resolve => setTimeout(resolve, 1500 + Math.random() * 2500));
         
-        set((state) => {
+        set((state: any) => {
           const environment = state.environments.find(e => e.id === environmentId);
           if (environment) {
             const credentials = environment.credentials.find(c => c.id === credentialsId);
@@ -1419,7 +1419,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       startMonitoring: () => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isMonitoring = true;
         });
       },
@@ -1427,7 +1427,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       stopMonitoring: () => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isMonitoring = false;
         });
       },
@@ -1436,7 +1436,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       setSidebarCollapsed: (collapsed) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.sidebarCollapsed = collapsed;
         });
       },
@@ -1444,7 +1444,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       setSelectedTab: (tab) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedTab = tab;
         });
       },
@@ -1453,7 +1453,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
       updateSettings: (settings) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.settings, settings);
         });
       },
@@ -1526,7 +1526,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           }
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Initialization failed';
           });
         }

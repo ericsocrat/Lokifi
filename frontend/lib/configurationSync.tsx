@@ -689,7 +689,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           validationErrors: []
         };
         
-        set((state) => {
+        set((state: any) => {
           state.configurations.push(config);
         });
         
@@ -711,7 +711,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       updateConfiguration: (configId, updates) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const config = state.configurations.find(c => c.id === configId);
           if (config) {
             const oldValue = { ...config };
@@ -741,7 +741,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         const config = get().configurations.find(c => c.id === configId);
         if (!config) return;
         
-        set((state) => {
+        set((state: any) => {
           state.configurations = state.configurations.filter(c => c.id !== configId);
           if (state.selectedConfiguration === configId) {
             state.selectedConfiguration = null;
@@ -778,7 +778,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setSelectedConfiguration: (configId) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedConfiguration = configId;
         });
       },
@@ -834,7 +834,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         }
         
         // Update configuration with validation results
-        set((state) => {
+        set((state: any) => {
           const c = state.configurations.find(c => c.id === configId);
           if (c) {
             c.isValid = errors.length === 0;
@@ -871,7 +871,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           usageCount: 0
         };
         
-        set((state) => {
+        set((state: any) => {
           state.templates.push(template);
         });
         
@@ -881,7 +881,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       updateTemplate: (templateId, updates) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const template = state.templates.find(t => t.id === templateId);
           if (template) {
             Object.assign(template, { ...updates, updatedAt: new Date() });
@@ -892,7 +892,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       deleteTemplate: (templateId) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.templates = state.templates.filter(t => t.id !== templateId);
         });
       },
@@ -924,7 +924,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         }
         
         // Update template usage count
-        set((state) => {
+        set((state: any) => {
           const t = state.templates.find(t => t.id === templateId);
           if (t) {
             t.usageCount += 1;
@@ -952,7 +952,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           syncStatus: 'idle'
         };
         
-        set((state) => {
+        set((state: any) => {
           state.environments.push(environment);
           
           // Add to parent's children if specified
@@ -970,7 +970,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       updateEnvironment: (envId, updates) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const env = state.environments.find(e => e.id === envId);
           if (env) {
             Object.assign(env, { ...updates, updatedAt: new Date() });
@@ -981,7 +981,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       deleteEnvironment: (envId) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const env = state.environments.find(e => e.id === envId);
           if (env) {
             // Remove from parent's children
@@ -1011,7 +1011,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setSelectedEnvironment: (envId) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedEnvironment = envId;
         });
       },
@@ -1030,7 +1030,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           updatedAt: new Date()
         };
         
-        set((state) => {
+        set((state: any) => {
           state.changeRequests.push(request);
         });
         
@@ -1040,7 +1040,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       updateChangeRequest: (requestId, updates) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const request = state.changeRequests.find(r => r.id === requestId);
           if (request) {
             Object.assign(request, { ...updates, updatedAt: new Date() });
@@ -1051,7 +1051,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       approveChangeRequest: (requestId, reviewerId, comment) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const request = state.changeRequests.find(r => r.id === requestId);
           if (request) {
             const existingApproval = request.approvals.find(a => a.reviewerId === reviewerId);
@@ -1083,7 +1083,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       rejectChangeRequest: (requestId, reviewerId, comment) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const request = state.changeRequests.find(r => r.id === requestId);
           if (request) {
             const existingApproval = request.approvals.find(a => a.reviewerId === reviewerId);
@@ -1113,7 +1113,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         const request = get().changeRequests.find(r => r.id === requestId);
         if (!request || request.status !== 'approved') return;
         
-        set((state) => {
+        set((state: any) => {
           const r = state.changeRequests.find(r => r.id === requestId);
           if (r) {
             r.status = 'deployed';
@@ -1141,7 +1141,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             const r = state.changeRequests.find(r => r.id === requestId);
             if (r) {
               r.status = 'failed';
@@ -1165,7 +1165,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           updatedAt: new Date()
         };
         
-        set((state) => {
+        set((state: any) => {
           state.syncJobs.push(job);
         });
         
@@ -1175,7 +1175,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       updateSyncJob: (jobId, updates) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const job = state.syncJobs.find(j => j.id === jobId);
           if (job) {
             Object.assign(job, { ...updates, updatedAt: new Date() });
@@ -1186,7 +1186,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       deleteSyncJob: (jobId) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.syncJobs = state.syncJobs.filter(j => j.id !== jobId);
         });
       },
@@ -1213,7 +1213,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           warnings: []
         };
         
-        set((state) => {
+        set((state: any) => {
           const j = state.syncJobs.find(j => j.id === jobId);
           if (j) {
             j.status = 'running';
@@ -1230,7 +1230,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           const syncedCount = Math.floor(Math.random() * 20) + 1;
           const hasErrors = Math.random() < 0.2;
           
-          set((state) => {
+          set((state: any) => {
             const j = state.syncJobs.find(j => j.id === jobId);
             if (j) {
               j.status = hasErrors ? 'failed' : 'completed';
@@ -1259,7 +1259,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           return executionId;
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             const j = state.syncJobs.find(j => j.id === jobId);
             if (j) {
               j.status = 'failed';
@@ -1391,7 +1391,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           canRestore: true
         };
         
-        set((state) => {
+        set((state: any) => {
           state.backups.push(backup);
         });
         
@@ -1412,7 +1412,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           });
         }
         
-        set((state) => {
+        set((state: any) => {
           const b = state.backups.find(b => b.id === backupId);
           if (b) {
             b.restoredAt = new Date();
@@ -1424,7 +1424,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       deleteBackup: (backupId) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.backups = state.backups.filter(b => b.id !== backupId);
         });
       },
@@ -1457,7 +1457,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           drifts.push(drift);
         }
         
-        set((state) => {
+        set((state: any) => {
           state.drifts.push(...drifts);
         });
         
@@ -1467,7 +1467,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       resolveDrift: async (driftId, resolution) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           const drift = state.drifts.find(d => d.id === driftId);
           if (drift) {
             drift.status = resolution === 'ignore' ? 'ignored' : 'resolved';
@@ -1548,7 +1548,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setSearchQuery: (query) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.searchQuery = query;
         });
       },
@@ -1556,7 +1556,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setFilters: (filters) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.filters, filters);
         });
       },
@@ -1564,7 +1564,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       clearFilters: () => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.filters = {
             category: [],
             type: [],
@@ -1581,7 +1581,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setSidebarCollapsed: (collapsed) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.sidebarCollapsed = collapsed;
         });
       },
@@ -1589,7 +1589,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setSelectedTab: (tab) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedTab = tab;
         });
       },
@@ -1598,7 +1598,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       updateSettings: (settings) => {
         if (!FLAGS.configurationSync) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.settings, settings);
         });
       },
@@ -1613,7 +1613,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           timestamp: new Date()
         };
         
-        set((state) => {
+        set((state: any) => {
           state.auditLog.unshift(entry);
           
           // Keep only last 1000 entries
@@ -1628,7 +1628,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         if (!FLAGS.configurationSync) return;
         
         try {
-          set((state) => {
+          set((state: any) => {
             state.isLoading = true;
             state.error = null;
           });
@@ -1643,11 +1643,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           }
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Initialization failed';
           });
         } finally {
-          set((state) => {
+          set((state: any) => {
             state.isLoading = false;
           });
         }

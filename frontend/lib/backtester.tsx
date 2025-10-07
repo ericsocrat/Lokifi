@@ -405,7 +405,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
       error: null,
       
       // Strategy Management
-      createStrategy: (strategyData) => {
+      createStrategy: (strategyData: any) => {
         if (!FLAGS.backtester) return '';
         
         const id = `strategy_${Date.now()}`;
@@ -418,7 +418,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           updatedAt: now
         };
         
-        set((state) => {
+        set((state: any) => {
           state.strategies.push(strategy);
           state.activeStrategy = strategy;
         });
@@ -426,11 +426,11 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         return id;
       },
       
-      updateStrategy: (id, updates) => {
+      updateStrategy: (id: any, updates: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
-          const strategy = state.strategies.find(s => s.id === id);
+        set((state: any) => {
+          const strategy = state.strategies.find((s: any) => s.id === id);
           if (strategy) {
             Object.assign(strategy, updates);
             strategy.updatedAt = new Date();
@@ -442,11 +442,11 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         });
       },
       
-      deleteStrategy: (id) => {
+      deleteStrategy: (id: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
-          const index = state.strategies.findIndex(s => s.id === id);
+        set((state: any) => {
+          const index = state.strategies.findIndex((s: any) => s.id === id);
           if (index !== -1) {
             state.strategies.splice(index, 1);
           }
@@ -456,15 +456,15 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           }
           
           // Delete associated backtests
-          state.backtests = state.backtests.filter(b => b.strategyId !== id);
+          state.backtests = state.backtests.filter((b: any) => b.strategyId !== id);
         });
       },
       
-      duplicateStrategy: (id, newName) => {
+      duplicateStrategy: (id: any, newName: any) => {
         if (!FLAGS.backtester) return '';
         
         const { strategies, createStrategy } = get();
-        const strategy = strategies.find(s => s.id === id);
+        const strategy = strategies.find((s: any) => s.id === id);
         
         if (!strategy) return '';
         
@@ -475,20 +475,20 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         });
       },
       
-      setActiveStrategy: (strategy) => {
+      setActiveStrategy: (strategy: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           state.activeStrategy = strategy;
         });
       },
       
       // Strategy Conditions
-      addCondition: (strategyId, type, condition) => {
+      addCondition: (strategyId: any, type: any, condition: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
-          const strategy = state.strategies.find(s => s.id === strategyId);
+        set((state: any) => {
+          const strategy = state.strategies.find((s: any) => s.id === strategyId);
           if (strategy) {
             const conditionWithId = {
               ...condition,
@@ -506,17 +506,17 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         });
       },
       
-      updateCondition: (strategyId, type, conditionId, updates) => {
+      updateCondition: (strategyId: any, type: any, conditionId: any, updates: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
-          const strategy = state.strategies.find(s => s.id === strategyId);
+        set((state: any) => {
+          const strategy = state.strategies.find((s: any) => s.id === strategyId);
           if (strategy) {
             const conditions = type === 'entry' 
               ? strategy.config.entryConditions 
               : strategy.config.exitConditions;
             
-            const condition = conditions.find(c => c.id === conditionId);
+            const condition = conditions.find((c: any) => c.id === conditionId);
             if (condition) {
               Object.assign(condition, updates);
               strategy.updatedAt = new Date();
@@ -525,17 +525,17 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         });
       },
       
-      removeCondition: (strategyId, type, conditionId) => {
+      removeCondition: (strategyId: any, type: any, conditionId: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
-          const strategy = state.strategies.find(s => s.id === strategyId);
+        set((state: any) => {
+          const strategy = state.strategies.find((s: any) => s.id === strategyId);
           if (strategy) {
             const conditions = type === 'entry' 
               ? strategy.config.entryConditions 
               : strategy.config.exitConditions;
             
-            const index = conditions.findIndex(c => c.id === conditionId);
+            const index = conditions.findIndex((c: any) => c.id === conditionId);
             if (index !== -1) {
               conditions.splice(index, 1);
               strategy.updatedAt = new Date();
@@ -545,7 +545,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
       },
       
       // Backtesting
-      runBacktest: async (strategyId, symbols, config) => {
+      runBacktest: async (strategyId: any, symbols: any, config: any) => {
         if (!FLAGS.backtester) throw new Error('Backtester not enabled');
         
         const backtestId = `backtest_${Date.now()}`;
@@ -565,7 +565,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           logs: []
         };
         
-        set((state) => {
+        set((state: any) => {
           state.backtests.push(backtest);
           state.runningBacktests.add(backtestId);
           state.isLoading = true;
@@ -597,8 +597,8 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
               
               const status = await statusResponse.json();
               
-              set((state) => {
-                const bt = state.backtests.find(b => b.id === backtestId);
+              set((state: any) => {
+                const bt = state.backtests.find((b: any) => b.id === backtestId);
                 if (bt) {
                   bt.status = status.status;
                   bt.progress = status.progress;
@@ -616,7 +616,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
               });
               
               if (status.status === 'completed' || status.status === 'failed') {
-                set((state) => {
+                set((state: any) => {
                   state.runningBacktests.delete(backtestId);
                   state.isLoading = state.runningBacktests.size > 0;
                 });
@@ -633,8 +633,8 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           setTimeout(pollResults, 1000);
           
         } catch (error) {
-          set((state) => {
-            const bt = state.backtests.find(b => b.id === backtestId);
+          set((state: any) => {
+            const bt = state.backtests.find((b: any) => b.id === backtestId);
             if (bt) {
               bt.status = 'failed';
               bt.error = error instanceof Error ? error.message : 'Unknown error';
@@ -649,14 +649,14 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         return backtestId;
       },
       
-      stopBacktest: (backtestId) => {
+      stopBacktest: (backtestId: any) => {
         if (!FLAGS.backtester) return;
         
         fetch(`/api/backtester/stop/${backtestId}`, { method: 'POST' })
           .catch(console.error);
         
-        set((state) => {
-          const backtest = state.backtests.find(b => b.id === backtestId);
+        set((state: any) => {
+          const backtest = state.backtests.find((b: any) => b.id === backtestId);
           if (backtest) {
             backtest.status = 'cancelled';
           }
@@ -666,11 +666,11 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
         });
       },
       
-      deleteBacktest: (backtestId) => {
+      deleteBacktest: (backtestId: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
-          const index = state.backtests.findIndex(b => b.id === backtestId);
+        set((state: any) => {
+          const index = state.backtests.findIndex((b: any) => b.id === backtestId);
           if (index !== -1) {
             state.backtests.splice(index, 1);
           }
@@ -685,10 +685,10 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
       },
       
       // Results Analysis
-      loadBacktestResults: async (backtestId) => {
+      loadBacktestResults: async (backtestId: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isLoading = true;
           state.error = null;
         });
@@ -699,8 +699,8 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           
           const results: BacktestResults = await response.json();
           
-          set((state) => {
-            const backtest = state.backtests.find(b => b.id === backtestId);
+          set((state: any) => {
+            const backtest = state.backtests.find((b: any) => b.id === backtestId);
             if (backtest) {
               backtest.results = results;
             }
@@ -710,23 +710,23 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load results';
             state.isLoading = false;
           });
         }
       },
       
-      compareBacktests: (backtestIds) => {
+      compareBacktests: (backtestIds: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           state.comparison.backtestIds = backtestIds;
           state.selectedTab = 'comparison';
         });
       },
       
-      exportResults: async (backtestId, format) => {
+      exportResults: async (backtestId: any, format: any) => {
         if (!FLAGS.backtester) throw new Error('Backtester not enabled');
         
         const response = await fetch(`/api/backtester/export/${backtestId}?format=${format}`);
@@ -745,23 +745,23 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           
           const publicStrategies: TradingStrategy[] = await response.json();
           
-          set((state) => {
+          set((state: any) => {
             // Merge with existing strategies (avoid duplicates)
             for (const strategy of publicStrategies) {
-              if (!state.strategies.find(s => s.id === strategy.id)) {
+              if (!state.strategies.find((s: any) => s.id === strategy.id)) {
                 state.strategies.push(strategy);
               }
             }
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to load public strategies';
           });
         }
       },
       
-      saveToLibrary: async (strategyId, isPublic) => {
+      saveToLibrary: async (strategyId: any, isPublic: any) => {
         if (!FLAGS.backtester) return;
         
         try {
@@ -773,21 +773,21 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           
           if (!response.ok) throw new Error('Failed to save to library');
           
-          set((state) => {
-            const strategy = state.strategies.find(s => s.id === strategyId);
+          set((state: any) => {
+            const strategy = state.strategies.find((s: any) => s.id === strategyId);
             if (strategy) {
               strategy.isPublic = isPublic;
             }
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to save to library';
           });
         }
       },
       
-      importStrategy: async (strategyData) => {
+      importStrategy: async (strategyData: any) => {
         if (!FLAGS.backtester) return '';
         
         try {
@@ -800,7 +800,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           });
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to import strategy';
           });
           return '';
@@ -808,7 +808,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
       },
       
       // Live Trading Integration
-      createLiveSignals: async (strategyId, symbols) => {
+      createLiveSignals: async (strategyId: any, symbols: any) => {
         if (!FLAGS.backtester) return;
         
         try {
@@ -821,41 +821,41 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           if (!response.ok) throw new Error('Failed to create live signals');
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Failed to create live signals';
           });
         }
       },
       
       // Settings
-      updateDefaultConfig: (config) => {
+      updateDefaultConfig: (config: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.defaultConfig, config);
         });
       },
       
-      setDateRange: (start, end) => {
+      setDateRange: (start: any, end: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           state.dateRange = { start, end };
         });
       },
       
-      setSelectedSymbols: (symbols) => {
+      setSelectedSymbols: (symbols: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedSymbols = symbols;
         });
       },
       
-      setSelectedTab: (tab) => {
+      setSelectedTab: (tab: any) => {
         if (!FLAGS.backtester) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedTab = tab;
         });
       }
@@ -885,12 +885,12 @@ export const useRunningBacktests = () =>
 
 export const useBacktestsByStrategy = (strategyId: string) =>
   useBacktesterStore((state) => 
-    state.backtests.filter(b => b.strategyId === strategyId)
+    state.backtests.filter((b: any) => b.strategyId === strategyId)
   );
 
 export const useCompletedBacktests = () =>
   useBacktesterStore((state) => 
-    state.backtests.filter(b => b.status === 'completed' && b.results)
+    state.backtests.filter((b: any) => b.status === 'completed' && b.results)
   );
 
 // Performance calculation utilities

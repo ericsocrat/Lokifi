@@ -751,7 +751,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           updatedAt: new Date(),
         };
         
-        set((state) => {
+        set((state: any) => {
           state.dashboards.push(dashboard);
         });
         
@@ -761,7 +761,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       updateDashboard: (dashboardId, updates) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const dashboard = state.dashboards.find(d => d.id === dashboardId);
           if (dashboard) {
             Object.assign(dashboard, { ...updates, updatedAt: new Date() });
@@ -772,7 +772,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       deleteDashboard: (dashboardId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const dashboard = state.dashboards.find(d => d.id === dashboardId);
           state.dashboards = state.dashboards.filter(d => d.id !== dashboardId);
           if (state.activeDashboard === dashboardId) {
@@ -844,7 +844,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setActiveDashboard: (dashboardId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.activeDashboard = dashboardId;
         });
       },
@@ -861,7 +861,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           lastUpdated: new Date()
         };
         
-        set((state) => {
+        set((state: any) => {
           state.widgets.push(widget);
           
           // Add to dashboard layout
@@ -885,7 +885,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       updateWidget: (widgetId, updates) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const widget = state.widgets.find(w => w.id === widgetId);
           if (widget) {
             Object.assign(widget, { ...updates, lastUpdated: new Date() });
@@ -896,7 +896,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       removeWidget: (widgetId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.widgets = state.widgets.filter(w => w.id !== widgetId);
           if (state.selectedWidget === widgetId) {
             state.selectedWidget = null;
@@ -914,7 +914,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       moveWidget: (widgetId, position) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.dashboards.forEach(dashboard => {
             const widgetPos = dashboard.layout.widgets.find(w => w.widgetId === widgetId);
             if (widgetPos) {
@@ -928,7 +928,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       resizeWidget: (widgetId, size) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.dashboards.forEach(dashboard => {
             const widgetPos = dashboard.layout.widgets.find(w => w.widgetId === widgetId);
             if (widgetPos) {
@@ -943,7 +943,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setSelectedWidget: (widgetId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedWidget = widgetId;
         });
       },
@@ -954,7 +954,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         const widget = get().widgets.find(w => w.id === widgetId);
         if (!widget) return;
         
-        set((state) => {
+        set((state: any) => {
           const w = state.widgets.find(w => w.id === widgetId);
           if (w) {
             w.isLoading = true;
@@ -966,7 +966,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           // Simulate data refresh
           await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
           
-          set((state) => {
+          set((state: any) => {
             const w = state.widgets.find(w => w.id === widgetId);
             if (w) {
               w.isLoading = false;
@@ -974,7 +974,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
             }
           });
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             const w = state.widgets.find(w => w.id === widgetId);
             if (w) {
               w.isLoading = false;
@@ -995,7 +995,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           isConnected: false,
         };
         
-        set((state) => {
+        set((state: any) => {
           state.dataSources.push(dataSource);
         });
         
@@ -1005,7 +1005,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       updateDataSource: (dataSourceId, updates) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const dataSource = state.dataSources.find(ds => ds.id === dataSourceId);
           if (dataSource) {
             Object.assign(dataSource, updates);
@@ -1016,7 +1016,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       deleteDataSource: (dataSourceId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.dataSources = state.dataSources.filter(ds => ds.id !== dataSourceId);
           
           // Clean up widgets using this data source
@@ -1040,7 +1040,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           
           const success = Math.random() > 0.2; // 80% success rate
           
-          set((state) => {
+          set((state: any) => {
             const ds = state.dataSources.find(ds => ds.id === dataSourceId);
             if (ds) {
               ds.lastHealthCheck = new Date();
@@ -1055,7 +1055,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           
           return success;
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             const ds = state.dataSources.find(ds => ds.id === dataSourceId);
             if (ds) {
               ds.isConnected = false;
@@ -1076,7 +1076,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       disconnectDataSource: (dataSourceId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const dataSource = state.dataSources.find(ds => ds.id === dataSourceId);
           if (dataSource) {
             dataSource.isConnected = false;
@@ -1096,7 +1096,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           createdAt: new Date(),
         };
         
-        set((state) => {
+        set((state: any) => {
           state.alerts.push(alert);
         });
         
@@ -1106,7 +1106,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       updateAlert: (alertId, updates) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const alert = state.alerts.find(a => a.id === alertId);
           if (alert) {
             Object.assign(alert, updates);
@@ -1117,7 +1117,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       deleteAlert: (alertId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.alerts = state.alerts.filter(a => a.id !== alertId);
         });
       },
@@ -1125,7 +1125,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       enableAlert: (alertId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const alert = state.alerts.find(a => a.id === alertId);
           if (alert && alert.status === 'disabled') {
             alert.status = 'pending';
@@ -1136,7 +1136,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       disableAlert: (alertId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const alert = state.alerts.find(a => a.id === alertId);
           if (alert) {
             alert.status = 'disabled';
@@ -1147,7 +1147,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       acknowledgeAlert: (alertId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const alert = state.alerts.find(a => a.id === alertId);
           if (alert && alert.status === 'firing') {
             alert.annotations = {
@@ -1162,7 +1162,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       resolveAlert: (alertId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const alert = state.alerts.find(a => a.id === alertId);
           if (alert && alert.status === 'firing') {
             alert.status = 'resolved';
@@ -1180,7 +1180,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         // Simulate alert evaluation
         await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
         
-        set((state) => {
+        set((state: any) => {
           const a = state.alerts.find(a => a.id === alertId);
           if (a) {
             a.lastEvaluated = new Date();
@@ -1206,7 +1206,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           history: []
         };
         
-        set((state) => {
+        set((state: any) => {
           state.healthChecks.push(healthCheck);
         });
         
@@ -1216,7 +1216,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       updateHealthCheck: (healthCheckId, updates) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const healthCheck = state.healthChecks.find(hc => hc.id === healthCheckId);
           if (healthCheck) {
             Object.assign(healthCheck, updates);
@@ -1227,7 +1227,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       deleteHealthCheck: (healthCheckId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.healthChecks = state.healthChecks.filter(hc => hc.id !== healthCheckId);
         });
       },
@@ -1254,7 +1254,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
             error: success ? undefined : 'Health check failed'
           };
           
-          set((state) => {
+          set((state: any) => {
             const hc = state.healthChecks.find(hc => hc.id === healthCheckId);
             if (hc) {
               hc.lastCheck = result.timestamp;
@@ -1290,7 +1290,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
             error: error instanceof Error ? error.message : 'Execution failed'
           };
           
-          set((state) => {
+          set((state: any) => {
             const hc = state.healthChecks.find(hc => hc.id === healthCheckId);
             if (hc) {
               hc.lastCheck = result.timestamp;
@@ -1312,7 +1312,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       enableHealthCheck: (healthCheckId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const healthCheck = state.healthChecks.find(hc => hc.id === healthCheckId);
           if (healthCheck) {
             healthCheck.isEnabled = true;
@@ -1323,7 +1323,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       disableHealthCheck: (healthCheckId) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           const healthCheck = state.healthChecks.find(hc => hc.id === healthCheckId);
           if (healthCheck) {
             healthCheck.isEnabled = false;
@@ -1342,7 +1342,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           'requests_per_second', 'response_time', 'error_rate', 'active_connections'
         ];
         
-        set((state) => {
+        set((state: any) => {
           metrics.forEach(metricName => {
             let metric = state.metrics.find(m => m.name === metricName);
             
@@ -1405,7 +1405,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       clearMetrics: (olderThan) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.metrics.forEach(metric => {
             metric.history = metric.history.filter(dp => dp.timestamp > olderThan);
           });
@@ -1450,7 +1450,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       clearLogs: (olderThan) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.logs = state.logs.filter(log => log.timestamp > olderThan);
         });
       },
@@ -1458,7 +1458,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setLogFilters: (filters) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.logFilters, filters);
         });
       },
@@ -1467,7 +1467,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setSidebarCollapsed: (collapsed) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.sidebarCollapsed = collapsed;
         });
       },
@@ -1475,7 +1475,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setTimeRange: (timeRange) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedTimeRange = timeRange;
         });
       },
@@ -1483,7 +1483,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setRefreshInterval: (interval) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.refreshInterval = interval;
         });
       },
@@ -1491,7 +1491,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       setAutoRefresh: (enabled) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isAutoRefresh = enabled;
         });
       },
@@ -1500,7 +1500,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       updateSettings: (settings) => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.settings, settings);
         });
       },
@@ -1547,7 +1547,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         const text = await file.text();
         const importData = JSON.parse(text);
         
-        set((state) => {
+        set((state: any) => {
           if (importData.type === 'dashboards' && importData.data.dashboards) {
             state.dashboards.push(...importData.data.dashboards);
             if (importData.data.widgets) {
@@ -1567,7 +1567,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       connect: async () => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isConnected = true;
           state.error = null;
         });
@@ -1581,7 +1581,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       disconnect: () => {
         if (!FLAGS.monitoring) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isConnected = false;
         });
       },
@@ -1593,12 +1593,12 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           // Simulate sync
           await new Promise(resolve => setTimeout(resolve, 1000));
           
-          set((state) => {
+          set((state: any) => {
             state.lastSync = new Date();
             state.error = null;
           });
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Sync failed';
           });
         }
@@ -1618,7 +1618,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           }
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Initialization failed';
           });
         }

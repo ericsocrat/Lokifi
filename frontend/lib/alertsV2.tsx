@@ -290,7 +290,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             triggerCount: 0
           };
           
-          set((state) => {
+          set((state: any) => {
             state.alerts.push(alert);
             
             // Update symbol index
@@ -311,8 +311,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         updateAlert: (id: string, updates: Partial<Alert>) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
-            const alert = state.alerts.find(a => a.id === id);
+          set((state: any) => {
+            const alert = state.alerts.find((a: any) => a.id === id);
             if (alert) {
               const oldSymbol = alert.symbol;
               Object.assign(alert, updates);
@@ -332,7 +332,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
                 // Remove from old symbol
                 const oldAlerts = state.alertsBySymbol.get(oldSymbol);
                 if (oldAlerts) {
-                  const index = oldAlerts.findIndex(a => a.id === id);
+                  const index = oldAlerts.findIndex((a: any) => a.id === id);
                   if (index !== -1) {
                     oldAlerts.splice(index, 1);
                   }
@@ -351,8 +351,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         deleteAlert: (id: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
-            const alertIndex = state.alerts.findIndex(a => a.id === id);
+          set((state: any) => {
+            const alertIndex = state.alerts.findIndex((a: any) => a.id === id);
             if (alertIndex !== -1) {
               const alert = state.alerts[alertIndex];
               
@@ -362,7 +362,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
               // Remove from symbol index
               const symbolAlerts = state.alertsBySymbol.get(alert.symbol);
               if (symbolAlerts) {
-                const symbolIndex = symbolAlerts.findIndex(a => a.id === id);
+                const symbolIndex = symbolAlerts.findIndex((a: any) => a.id === id);
                 if (symbolIndex !== -1) {
                   symbolAlerts.splice(symbolIndex, 1);
                 }
@@ -381,7 +381,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           if (!FLAGS.alertsV2) return '';
           
           const { alerts, createAlert } = get();
-          const alert = alerts.find(a => a.id === id);
+          const alert = alerts.find((a: any) => a.id === id);
           
           if (!alert) return '';
           
@@ -396,8 +396,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         activateAlert: (id: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
-            const alert = state.alerts.find(a => a.id === id);
+          set((state: any) => {
+            const alert = state.alerts.find((a: any) => a.id === id);
             if (alert) {
               alert.isActive = true;
               alert.updatedAt = new Date();
@@ -409,8 +409,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         deactivateAlert: (id: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
-            const alert = state.alerts.find(a => a.id === id);
+          set((state: any) => {
+            const alert = state.alerts.find((a: any) => a.id === id);
             if (alert) {
               alert.isActive = false;
               alert.updatedAt = new Date();
@@ -423,7 +423,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           if (!FLAGS.alertsV2) return;
           
           const { alerts } = get();
-          const alert = alerts.find(a => a.id === id);
+          const alert = alerts.find((a: any) => a.id === id);
           
           if (alert) {
             if (alert.isActive) {
@@ -438,7 +438,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         startMonitoring: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             state.monitoringEnabled = true;
           });
           
@@ -455,7 +455,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         stopMonitoring: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             state.monitoringEnabled = false;
           });
         },
@@ -466,7 +466,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           const { activeAlerts, alerts } = get();
           
           for (const alertId of activeAlerts) {
-            const alert = alerts.find(a => a.id === alertId);
+            const alert = alerts.find((a: any) => a.id === alertId);
             if (!alert) continue;
             
             try {
@@ -485,7 +485,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             }
           }
           
-          set((state) => {
+          set((state: any) => {
             state.lastUpdate = new Date();
           });
         },
@@ -495,7 +495,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           if (!FLAGS.alertsV2) throw new Error('Alerts v2 not enabled');
           
           const { alerts } = get();
-          const alert = alerts.find(a => a.id === alertId);
+          const alert = alerts.find((a: any) => a.id === alertId);
           
           if (!alert) throw new Error('Alert not found');
           
@@ -527,8 +527,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             }
             
             // Update alert trigger count and last triggered
-            set((state) => {
-              const alertToUpdate = state.alerts.find(a => a.id === alertId);
+            set((state: any) => {
+              const alertToUpdate = state.alerts.find((a: any) => a.id === alertId);
               if (alertToUpdate) {
                 alertToUpdate.triggerCount++;
                 alertToUpdate.lastTriggered = new Date();
@@ -556,7 +556,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             execution.success = false;
             execution.error = error instanceof Error ? error.message : 'Unknown error';
             
-            set((state) => {
+            set((state: any) => {
               state.recentExecutions.unshift(execution);
             });
             
@@ -676,7 +676,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         startBacktest: async (alertId: string, startDate: Date, endDate: Date, config?: AlertBacktest['config']) => {
           if (!FLAGS.alertsV2) throw new Error('Alerts v2 not enabled');
           
-          set((state) => {
+          set((state: any) => {
             state.isBacktesting = true;
             state.error = null;
           });
@@ -701,7 +701,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             
             const backtest: AlertBacktest = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.backtests.push(backtest);
               state.currentBacktest = backtest;
               state.isBacktesting = false;
@@ -710,7 +710,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             return backtest.id;
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Backtest failed';
               state.isBacktesting = false;
             });
@@ -721,7 +721,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         stopBacktest: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isBacktesting = false;
             state.currentBacktest = null;
           });
@@ -729,14 +729,14 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         
         getBacktestResults: (backtestId: string) => {
           const { backtests } = get();
-          return backtests.find(b => b.id === backtestId) || null;
+          return backtests.find((b: any) => b.id === backtestId) || null;
         },
         
         // Data Management
         loadAlerts: async () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             state.isLoading = true;
             state.error = null;
           });
@@ -747,7 +747,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             
             const alerts: Alert[] = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.alerts = alerts;
               state.alertsBySymbol.clear();
               state.activeAlerts.clear();
@@ -768,7 +768,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to load alerts';
               state.isLoading = false;
             });
@@ -784,12 +784,12 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             
             const executions: AlertExecution[] = await response.json();
             
-            set((state) => {
+            set((state: any) => {
               state.executionHistory.set(alertId, executions);
             });
             
           } catch (error) {
-            set((state) => {
+            set((state: any) => {
               state.error = error instanceof Error ? error.message : 'Failed to load execution history';
             });
           }
@@ -798,9 +798,9 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         clearExecutionHistory: (alertId: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             state.executionHistory.delete(alertId);
-            state.recentExecutions = state.recentExecutions.filter(e => e.alertId !== alertId);
+            state.recentExecutions = state.recentExecutions.filter((e: any) => e.alertId !== alertId);
           });
         },
         
@@ -812,13 +812,13 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           const ws = new WebSocket('/ws/alerts');
           
           ws.onopen = () => {
-            set((state) => {
+            set((state: any) => {
               state.realtimeConnected = true;
             });
           };
           
           ws.onclose = () => {
-            set((state) => {
+            set((state: any) => {
               state.realtimeConnected = false;
             });
           };
@@ -836,7 +836,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         disconnectRealtime: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             state.realtimeConnected = false;
           });
         },
@@ -864,7 +864,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         updateGlobalSettings: (settings: Partial<AlertsState['globalSettings']>) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state) => {
+          set((state: any) => {
             Object.assign(state.globalSettings, settings);
           });
         },
@@ -877,7 +877,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         
         getActiveAlerts: () => {
           const { alerts, activeAlerts } = get();
-          return alerts.filter(alert => activeAlerts.has(alert.id));
+          return alerts.filter((alert: any) => activeAlerts.has(alert.id));
         },
         
         getRecentExecutions: (count = 20) => {

@@ -549,7 +549,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
           usageCount: 0
         };
         
-        set((state) => {
+        set((state: any) => {
           state.strategies.push(strategy);
         });
         
@@ -559,7 +559,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       updateStrategy: (strategyId, updates) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const strategy = state.strategies.find(s => s.id === strategyId);
           if (strategy) {
             Object.assign(strategy, { ...updates, updatedAt: new Date() });
@@ -570,7 +570,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       deleteStrategy: (strategyId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.strategies = state.strategies.filter(s => s.id !== strategyId);
           if (state.selectedStrategy === strategyId) {
             state.selectedStrategy = null;
@@ -594,7 +594,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       setSelectedStrategy: (strategyId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedStrategy = strategyId;
         });
       },
@@ -632,7 +632,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
           }
         };
         
-        set((state) => {
+        set((state: any) => {
           state.deployments.push(deployment);
         });
         
@@ -648,7 +648,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
         const strategy = get().strategies.find(s => s.id === deployment.strategyId);
         if (!strategy) return;
         
-        set((state) => {
+        set((state: any) => {
           const d = state.deployments.find(d => d.id === deploymentId);
           if (d) {
             d.status = 'running';
@@ -672,7 +672,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
           await get().executeDeploymentPhases(deploymentId);
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             const d = state.deployments.find(d => d.id === deploymentId);
             if (d) {
               d.status = 'failed';
@@ -722,7 +722,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
             }
           };
           
-          set((state) => {
+          set((state: any) => {
             const d = state.deployments.find(d => d.id === deploymentId);
             if (d) {
               d.currentPhase = i;
@@ -736,7 +736,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
           await new Promise(resolve => setTimeout(resolve, Math.min(phase.duration * 1000, 5000)));
           
           // Complete phase
-          set((state) => {
+          set((state: any) => {
             const d = state.deployments.find(d => d.id === deploymentId);
             if (d) {
               const execution = d.phaseHistory[d.phaseHistory.length - 1];
@@ -752,7 +752,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
         }
         
         // Complete deployment
-        set((state) => {
+        set((state: any) => {
           const d = state.deployments.find(d => d.id === deploymentId);
           if (d && d.status === 'running') {
             d.status = 'completed';
@@ -769,7 +769,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       pauseDeployment: (deploymentId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment && deployment.status === 'running') {
             deployment.status = 'paused';
@@ -780,7 +780,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       resumeDeployment: (deploymentId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment && deployment.status === 'paused') {
             deployment.status = 'running';
@@ -794,7 +794,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       cancelDeployment: (deploymentId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment) {
             deployment.status = 'cancelled';
@@ -809,7 +809,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       rollbackDeployment: async (deploymentId, reason = 'Manual rollback') => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment) {
             deployment.status = 'rolling_back';
@@ -820,7 +820,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
         // Simulate rollback
         await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment) {
             deployment.status = 'rolled_back';
@@ -846,7 +846,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       skipPhase: (deploymentId, phaseId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment) {
             const execution = deployment.phaseHistory.find(e => e.phaseId === phaseId);
@@ -861,7 +861,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       adjustTraffic: (deploymentId, percent) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment) {
             deployment.trafficPercent = Math.max(0, Math.min(100, percent));
@@ -873,7 +873,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       startMonitoring: () => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isMonitoring = true;
         });
         
@@ -883,7 +883,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       stopMonitoring: () => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.isMonitoring = false;
         });
       },
@@ -891,7 +891,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       updateMetrics: (deploymentId, metrics) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           const deployment = state.deployments.find(d => d.id === deploymentId);
           if (deployment) {
             deployment.metrics = metrics;
@@ -967,7 +967,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       setSidebarCollapsed: (collapsed) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.sidebarCollapsed = collapsed;
         });
       },
@@ -975,7 +975,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       setSelectedTab: (tab) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.selectedTab = tab;
         });
       },
@@ -983,7 +983,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       setActiveDeployment: (deploymentId) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           state.activeDeployment = deploymentId;
         });
       },
@@ -992,7 +992,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       updateSettings: (settings) => {
         if (!FLAGS.progressiveDeployment) return;
         
-        set((state) => {
+        set((state: any) => {
           Object.assign(state.settings, settings);
         });
       },
@@ -1037,7 +1037,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
           }
           
         } catch (error) {
-          set((state) => {
+          set((state: any) => {
             state.error = error instanceof Error ? error.message : 'Initialization failed';
           });
         }
@@ -1286,7 +1286,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
         });
         
         // Set default strategy
-        set((state) => {
+        set((state: any) => {
           if (!state.settings.defaultStrategy && state.strategies.length > 0) {
             state.settings.defaultStrategy = blueGreenId;
           }
