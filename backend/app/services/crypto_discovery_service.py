@@ -72,20 +72,14 @@ class CryptoDiscoveryService:
     
     async def _get_cached(self, key: str):
         try:
-            if advanced_redis_client.client:
-                cached = await advanced_redis_client.client.get(key)
-                if cached:
-                    import json
-                    return json.loads(cached)
+            return await advanced_redis_client.get(key)
         except Exception as e:
             logger.debug(f"Cache miss: {e}")
         return None
     
     async def _set_cache(self, key: str, value, ttl: int = 3600):
         try:
-            if advanced_redis_client.client:
-                import json
-                await advanced_redis_client.client.setex(key, ttl, json.dumps(value))
+            await advanced_redis_client.set(key, value, expire=ttl)
         except Exception as e:
             logger.debug(f"Cache set failed: {e}")
     
@@ -234,15 +228,12 @@ class CryptoDiscoveryService:
         try:
             # Check cache first
             cache_key = f"crypto_search:{query}:{limit}"
-            if advanced_redis_client.client:
-                cached_data = await advanced_redis_client.client.get(cache_key)
-                if cached_data:
-                    import json
-                    cached = json.loads(cached_data)
-                    duration = time.time() - start_time
-                    crypto_metrics.record_fetch(cached=True)
-                    logger.info(f"✅ Cache hit for search '{query}' ({len(cached)} results) - {duration*1000:.1f}ms")
-                    return [CryptoAsset(**c) for c in cached]
+            cached_data = await advanced_redis_client.get(cache_key)
+            if cached_data:
+                duration = time.time() - start_time
+                crypto_metrics.record_fetch(cached=True)
+                logger.info(f"✅ Cache hit for search '{query}' ({len(cached_data)} results) - {duration*1000:.1f}ms")
+                return [CryptoAsset(**c) for c in cached_data]
             
             # Fetch from API
             if self.client is None:
@@ -252,11 +243,10 @@ class CryptoDiscoveryService:
                 results = await self._search_cryptos(self.client, query, limit)
             
             # Cache results for 10 minutes
-            if results and advanced_redis_client.client:
-                import json
+            if results:
                 from dataclasses import asdict
-                cache_data = json.dumps([asdict(crypto) for crypto in results])
-                await advanced_redis_client.client.setex(cache_key, 600, cache_data)
+                cache_data = [asdict(crypto) for crypto in results]
+                await advanced_redis_client.set(cache_key, cache_data, expire=600)
             
             duration = time.time() - start_time
             crypto_metrics.record_fetch(cached=False)

@@ -125,11 +125,7 @@ class HistoricalPriceService:
     async def _get_cached_history(self, key: str):
         """Get cached historical data"""
         try:
-            if advanced_redis_client.client:
-                cached = await advanced_redis_client.client.get(key)
-                if cached:
-                    import json
-                    return json.loads(cached)
+            return await advanced_redis_client.get(key)
         except Exception as e:
             logger.debug(f"Cache miss: {e}")
         return None
@@ -137,9 +133,7 @@ class HistoricalPriceService:
     async def _set_cache_history(self, key: str, value, ttl: int = 1800):
         """Cache historical data (default 30 minutes)"""
         try:
-            if advanced_redis_client.client:
-                import json
-                await advanced_redis_client.client.setex(key, ttl, json.dumps(value))
+            await advanced_redis_client.set(key, value, expire=ttl)
         except Exception as e:
             logger.debug(f"Cache set failed: {e}")
     

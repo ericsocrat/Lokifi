@@ -50,15 +50,12 @@ class UnifiedAssetService:
         cache_key = "unified:asset_registry"
         
         try:
-            if advanced_redis_client.client:
-                cached = await advanced_redis_client.client.get(cache_key)
-                if cached:
-                    import json
-                    data = json.loads(cached)
-                    self._crypto_symbols = set(data.get("crypto_symbols", []))
-                    self._stock_symbols = set(data.get("stock_symbols", []))
-                    logger.info(f"✅ Loaded asset registry: {len(self._crypto_symbols)} cryptos, {len(self._stock_symbols)} stocks")
-                    return
+            data = await advanced_redis_client.get(cache_key)
+            if data:
+                self._crypto_symbols = set(data.get("crypto_symbols", []))
+                self._stock_symbols = set(data.get("stock_symbols", []))
+                logger.info(f"✅ Loaded asset registry: {len(self._crypto_symbols)} cryptos, {len(self._stock_symbols)} stocks")
+                return
         except Exception as e:
             logger.warning(f"Could not load cached registry: {e}")
         
@@ -113,17 +110,15 @@ class UnifiedAssetService:
     async def _cache_registry(self):
         """Cache the asset registry"""
         try:
-            if advanced_redis_client.client:
-                import json
-                data = {
-                    "crypto_symbols": list(self._crypto_symbols),
-                    "stock_symbols": list(self._stock_symbols)
-                }
-                await advanced_redis_client.client.setex(
-                    "unified:asset_registry",
-                    3600,  # 1 hour
-                    json.dumps(data)
-                )
+            data = {
+                "crypto_symbols": list(self._crypto_symbols),
+                "stock_symbols": list(self._stock_symbols)
+            }
+            await advanced_redis_client.set(
+                "unified:asset_registry",
+                data,
+                expire=3600  # 1 hour
+            )
         except Exception as e:
             logger.warning(f"Could not cache registry: {e}")
     

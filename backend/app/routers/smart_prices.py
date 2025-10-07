@@ -146,12 +146,10 @@ async def get_all_assets(
         cached_data = None
         is_cached = False
         
-        if not force_refresh and advanced_redis_client.client:
+        if not force_refresh:
             try:
-                import json
-                cached = await advanced_redis_client.client.get(cache_key)
-                if cached:
-                    cached_data = json.loads(cached)
+                cached_data = await advanced_redis_client.get(cache_key)
+                if cached_data:
                     is_cached = True
                     logger.info(f"✅ Cache HIT: Unified assets")
             except Exception as e:
@@ -167,13 +165,11 @@ async def get_all_assets(
             )
             
             # Cache the result for 30 seconds
-            if advanced_redis_client.client:
-                try:
-                    import json
-                    await advanced_redis_client.client.setex(cache_key, 30, json.dumps(data))
-                    logger.debug(f"💾 Cached unified assets for 30s")
-                except Exception as e:
-                    logger.debug(f"Cache set failed: {e}")
+            try:
+                await advanced_redis_client.set(cache_key, data, expire=30)
+                logger.debug(f"💾 Cached unified assets for 30s")
+            except Exception as e:
+                logger.debug(f"Cache set failed: {e}")
         else:
             data = cached_data
         
