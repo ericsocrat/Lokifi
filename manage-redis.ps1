@@ -17,7 +17,7 @@ if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
 }
 
 # Check if Docker is running
-$dockerRunning = docker ps 2>$null
+$null = docker ps 2>$null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Docker is not running!" -ForegroundColor Red
     Write-Host "   Please start Docker Desktop and try again" -ForegroundColor Yellow
