@@ -3062,8 +3062,10 @@ USAGE:
                 -Quick: Skip coverage analysis
                 Shows: Current coverage, test files, lines needed for 70%
     organize    Organize repository files
-    health      🆕 Enhanced system health check (Infrastructure + Codebase)
-                Shows: Services, API, Maintainability, Security, Tech Debt
+    health      🆕 Comprehensive health check (Infrastructure + Codebase + Quality)
+                Shows: Services, API, Code Quality, Dependencies, TypeScript, Git
+                -Quick: Skip detailed quality analysis
+                -ShowDetails: Show detailed file information
                 Overall health score: 0-100
     stop        Stop all running services
     restart     Restart all services (stop + start)
@@ -6468,7 +6470,7 @@ switch ($Action.ToLower()) {
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         Test-LokifiAPI
         
-        # 2. Codebase Health (new!)
+        # 2. Codebase Health
         Write-Host "`n📊 Codebase Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         
@@ -6518,7 +6520,7 @@ switch ($Action.ToLower()) {
                 }
             }
             
-            Write-Host "`n📊 Overall Health: " -NoNewline -ForegroundColor Cyan
+            Write-Host "`n📊 Overall Code Health: " -NoNewline -ForegroundColor Cyan
             if ($healthScore -ge 80) {
                 Write-Host "$healthScore/100 🎉 Excellent!" -ForegroundColor Green
             } elseif ($healthScore -ge 60) {
@@ -6530,6 +6532,128 @@ switch ($Action.ToLower()) {
             Write-Warning "Codebase analyzer not found. Skipping code health check."
         }
         
+        # 3. Detailed Quality Checks (from master-health-check)
+        if (-not $Quick) {
+            Write-Host "`n🔍 Detailed Quality Analysis:" -ForegroundColor Cyan
+            Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+            
+            # TypeScript Health
+            if (Test-Path "frontend") {
+                Write-Step "🎯" "TypeScript Type Safety..."
+                Push-Location frontend
+                try {
+                    $tsOutput = npm run typecheck 2>&1 | Out-String
+                    $errorCount = ([regex]::Matches($tsOutput, "error TS\d+:")).Count
+                    
+                    if ($errorCount -eq 0) {
+                        Write-Host "  ✅ No TypeScript errors" -ForegroundColor Green
+                    } elseif ($errorCount -lt 10) {
+                        Write-Host "  ⚠️  $errorCount TypeScript errors (acceptable)" -ForegroundColor Yellow
+                    } else {
+                        Write-Host "  ❌ $errorCount TypeScript errors (needs attention)" -ForegroundColor Red
+                    }
+                } catch {
+                    Write-Host "  ⚠️  Unable to check TypeScript" -ForegroundColor Yellow
+                } finally {
+                    Pop-Location
+                }
+            }
+            
+            # Dependency Security
+            Write-Step "📦" "Dependency Security..."
+            $vulnCount = 0
+            
+            if (Test-Path "frontend/package.json") {
+                Push-Location frontend
+                try {
+                    $auditOutput = npm audit --json 2>$null | ConvertFrom-Json
+                    if ($auditOutput.metadata -and $auditOutput.metadata.vulnerabilities) {
+                        $vulns = $auditOutput.metadata.vulnerabilities
+                        $critical = if ($vulns.critical) { $vulns.critical } else { 0 }
+                        $high = if ($vulns.high) { $vulns.high } else { 0 }
+                        $vulnCount = $critical + $high
+                        
+                        if ($vulnCount -eq 0) {
+                            Write-Host "  ✅ No critical/high vulnerabilities (Frontend)" -ForegroundColor Green
+                        } else {
+                            Write-Host "  ❌ $critical Critical, $high High vulnerabilities (Frontend)" -ForegroundColor Red
+                        }
+                    }
+                } catch {
+                    Write-Host "  ⚠️  Unable to check npm security" -ForegroundColor Yellow
+                } finally {
+                    Pop-Location
+                }
+            }
+            
+            # Console.log Detection
+            Write-Step "🔍" "Console Logging Quality..."
+            $consoleUsage = Get-ChildItem -Path "frontend/src" -Recurse -Include "*.tsx", "*.ts" -ErrorAction SilentlyContinue |
+                Select-String -Pattern "console\.(log|warn|error|debug)" |
+                Group-Object Path
+            
+            $totalConsoleStatements = if ($consoleUsage) { ($consoleUsage | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum } else { 0 }
+            
+            if ($totalConsoleStatements -eq 0) {
+                Write-Host "  ✅ Using proper logger utility" -ForegroundColor Green
+            } elseif ($totalConsoleStatements -lt 20) {
+                Write-Host "  ⚠️  $totalConsoleStatements console.log statements found" -ForegroundColor Yellow
+            } else {
+                Write-Host "  ❌ $totalConsoleStatements console.log statements (replace with logger)" -ForegroundColor Red
+            }
+            
+            # Technical Debt (TODOs/FIXMEs)
+            Write-Step "📝" "Technical Debt Comments..."
+            $todoComments = Get-ChildItem -Path "." -Recurse -Include "*.tsx", "*.ts", "*.py", "*.ps1" -Exclude "node_modules", ".next", "venv", ".git" -ErrorAction SilentlyContinue |
+                Select-String -Pattern "TODO|FIXME|XXX|HACK" |
+                Group-Object Path
+            
+            $totalTodos = if ($todoComments) { ($todoComments | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum } else { 0 }
+            
+            if ($totalTodos -eq 0) {
+                Write-Host "  ✅ No TODO/FIXME comments" -ForegroundColor Green
+            } elseif ($totalTodos -lt 20) {
+                Write-Host "  ⚠️  $totalTodos TODO/FIXME comments" -ForegroundColor Yellow
+            } else {
+                Write-Host "  ❌ $totalTodos TODO/FIXME comments (consider creating issues)" -ForegroundColor Red
+            }
+            
+            # Git Hygiene
+            Write-Step "🔄" "Git Repository Hygiene..."
+            $gitStatus = git status --porcelain 2>$null
+            $uncommittedFiles = if ($gitStatus) { ($gitStatus | Measure-Object).Count } else { 0 }
+            
+            if ($uncommittedFiles -eq 0) {
+                Write-Host "  ✅ Clean working directory" -ForegroundColor Green
+            } else {
+                Write-Host "  ⚠️  $uncommittedFiles uncommitted changes" -ForegroundColor Yellow
+            }
+            
+            # Large Files Check
+            Write-Step "📦" "Large Files..."
+            $largeFiles = Get-ChildItem -Path "." -Recurse -File -Exclude "node_modules", ".next", "venv", ".git", "*.db", "*.sqlite" -ErrorAction SilentlyContinue |
+                Where-Object { $_.Length -gt 1MB } |
+                Sort-Object Length -Descending |
+                Select-Object -First 3
+            
+            if (-not $largeFiles) {
+                Write-Host "  ✅ No large files (>1MB) detected" -ForegroundColor Green
+            } else {
+                $count = ($largeFiles | Measure-Object).Count
+                $largestSize = [math]::Round($largeFiles[0].Length / 1MB, 2)
+                Write-Host "  ⚠️  $count files >1MB (largest: $largestSize MB)" -ForegroundColor Yellow
+                if ($ShowDetails) {
+                    foreach ($file in $largeFiles) {
+                        $sizeMB = [math]::Round($file.Length / 1MB, 2)
+                        $relativePath = $file.FullName.Replace($Global:LokifiConfig.ProjectRoot, "").TrimStart("\")
+                        Write-Host "     • $relativePath ($sizeMB MB)" -ForegroundColor Gray
+                    }
+                }
+            }
+        }
+        
+        Write-Host ""
+        Write-Host "💡 Tip: Use -Quick to skip detailed analysis, -ShowDetails for more info" -ForegroundColor Gray
         Write-Host ""
     }
     'stop' { Stop-AllServices }
