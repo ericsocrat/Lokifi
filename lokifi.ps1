@@ -102,6 +102,7 @@ param(
     [string]$Environment = "development",
     [string]$LogLevel = "info",
     [int]$Duration = 60,
+    [int]$Hours = 24,  # For metrics percentiles
     [switch]$SkipTypeCheck,
     [switch]$SkipAnalysis,
     [switch]$Quick,
@@ -3232,8 +3233,8 @@ USAGE:
                 .\lokifi.ps1 dashboard -Component 10  # 10s refresh
                 
     metrics     Analyze performance metrics
-                .\lokifi.ps1 metrics -Component percentiles  # p50, p95, p99
-                .\lokifi.ps1 metrics -Component percentiles -Environment 48  # Last 48h
+                .\lokifi.ps1 metrics -Component percentiles  # Last 24h (default)
+                .\lokifi.ps1 metrics -Component percentiles -Hours 48  # Last 48h
                 .\lokifi.ps1 metrics -Component query -Environment 'SELECT...'
                 .\lokifi.ps1 metrics -Component init  # Initialize database
 
@@ -5306,10 +5307,9 @@ switch ($Action.ToLower()) {
         
         switch ($Component.ToLower()) {
             'percentiles' {
-                $hours = if ($Environment) { [int]$Environment } else { 24 }
-                $perf = Get-PerformancePercentiles -Hours $hours
+                $perf = Get-PerformancePercentiles -Hours $Hours
                 
-                Write-Host "Performance Metrics (Last $hours hours):" -ForegroundColor Cyan
+                Write-Host "Performance Metrics (Last $Hours hours):" -ForegroundColor Cyan
                 Write-Host ""
                 Write-Host "Response Times:" -ForegroundColor Yellow
                 Write-Host "  p50 (median): $($perf.p50)ms" -ForegroundColor White
@@ -5334,8 +5334,8 @@ switch ($Action.ToLower()) {
             }
             default {
                 Write-Info "Metrics commands:"
-                Write-Host "  .\lokifi.ps1 metrics -Component percentiles              - Show performance percentiles" -ForegroundColor Gray
-                Write-Host "  .\lokifi.ps1 metrics -Component percentiles -Environment 48  - Last 48 hours" -ForegroundColor Gray
+                Write-Host "  .\lokifi.ps1 metrics -Component percentiles              - Show performance percentiles (last 24h)" -ForegroundColor Gray
+                Write-Host "  .\lokifi.ps1 metrics -Component percentiles -Hours 48    - Last 48 hours" -ForegroundColor Gray
                 Write-Host "  .\lokifi.ps1 metrics -Component query -Environment 'SELECT...' - Custom query" -ForegroundColor Gray
                 Write-Host "  .\lokifi.ps1 metrics -Component init                     - Initialize database" -ForegroundColor Gray
             }
