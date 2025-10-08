@@ -32,22 +32,36 @@ A comprehensive financial platform combining advanced market analysis with socia
 
 ## 📂 **Project Structure**
 
-This project follows a well-organized, enterprise-ready structure:
+This project follows industry-standard monorepo architecture for scalability:
 
 ```
 lokifi/
-├── 📚 docs/
-│   ├── guides/               # Setup and reference guides
-│   ├── optimization-reports/ # Performance optimization reports
-│   ├── development/          # Development documentation
-│   ├── project-management/   # Project planning and tracking
-│   └── security/             # Security documentation
-├── 🔧 scripts/
-│   ├── analysis/            # Code quality and health analysis
-│   ├── cleanup/             # Repository maintenance tools
-│   ├── fixes/               # Automated code fixes
-│   ├── development/         # Development automation
-│   ├── deployment/          # Deployment scripts
+├── 🎯 apps/                 # All applications
+│   ├── backend/            # FastAPI Python API
+│   ├── frontend/           # Next.js React app
+│   ├── admin/              # Admin panel (Phase 4)
+│   ├── mobile/             # React Native app (Phase 5)
+│   ├── desktop/            # Desktop app (future)
+│   ├── cli/                # CLI tool (future)
+│   └── docker-compose*.yml # Service orchestration
+│
+├── 🏗️ infra/                # Infrastructure & Platform
+│   ├── docker/             # Docker configurations
+│   ├── redis/              # Redis configs
+│   ├── monitoring/         # Observability stack
+│   ├── security/           # Security tooling
+│   ├── performance-tests/  # Load testing
+│   ├── kubernetes/         # K8s manifests (Phase 4)
+│   └── terraform/          # IaC (Phase 4)
+│
+├── 🛠️ tools/                # DevOps Automation
+│   ├── lokifi.ps1          # Master CLI (6,750+ lines)
+│   └── scripts/            # Utility scripts
+│
+├── 📚 docs/                 # Documentation
+│   ├── guides/             # Setup guides
+│   ├── development/        # Dev documentation
+│   └── architecture/       # System architecture
 │   ├── testing/             # Testing automation
 │   └── security/            # Security tools
 ├── 🏗️ infrastructure/       # Docker, nginx, monitoring configs

@@ -124,15 +124,17 @@ param(
 # GLOBAL CONFIGURATION
 # ============================================
 $Global:LokifiConfig = @{
-    Version = "3.1.0-alpha"  # Phase 3.2: Monitoring & Telemetry
-    ProjectRoot = $PSScriptRoot
-    AppRoot = Join-Path $PSScriptRoot "lokifi-app"
-    BackendDir = Join-Path $PSScriptRoot "lokifi-app\backend"
-    FrontendDir = Join-Path $PSScriptRoot "lokifi-app\frontend"
-    LogsDir = Join-Path $PSScriptRoot "logs"
-    BackupsDir = Join-Path $PSScriptRoot "backups"
-    CacheDir = Join-Path $PSScriptRoot ".lokifi-cache"
-    DataDir = Join-Path $PSScriptRoot ".lokifi-data"
+    Version = "3.1.0-alpha"  # Phase 3.4: AI/ML Features - Reorganized Structure
+    ProjectRoot = (Get-Item $PSScriptRoot).Parent.FullName
+    AppRoot = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "apps"
+    BackendDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "apps\backend"
+    FrontendDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "apps\frontend"
+    InfraDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "infra"
+    ToolsDir = $PSScriptRoot
+    LogsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "logs"
+    BackupsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName ".backups"
+    CacheDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName ".lokifi-cache"
+    DataDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName ".lokifi-data"
     Redis = @{
         ContainerName = "lokifi-redis"
         Port = 6379
