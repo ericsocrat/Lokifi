@@ -992,7 +992,76 @@ $largeTeamCost = [math]::Round((2 * ($seniorCostUS / $seniorDays) + 3 * ($midCos
 | **Medium Team (4-6)** | ~$mediumTeamMonths mo (~$mediumTeamYears yr) | `$$mediumTeamCost.ToString('N0') | `$$([math]::Round($mediumTeamCost * 0.8).ToString('N0')) | `$$([math]::Round($mediumTeamCost * 0.4).ToString('N0')) | `$$([math]::Round($mediumTeamCost * 0.6).ToString('N0')) |
 | **Large Team (7-10)** | ~$largeTeamMonths mo (~$largeTeamYears yr) | `$$largeTeamCost.ToString('N0') | `$$([math]::Round($largeTeamCost * 0.8).ToString('N0')) | `$$([math]::Round($largeTeamCost * 0.4).ToString('N0')) | `$$([math]::Round($largeTeamCost * 0.6).ToString('N0')) |
 
-### 💡 Key Insights
+### � Code-Only Estimates (Excluding Documentation)
+
+**Documentation Lines**: $($Metrics.Documentation.Lines.ToString('N0')) (~$([math]::Round(($Metrics.Documentation.Lines / $Metrics.Total.Lines) * 100, 1))% of total)
+
+$(
+# Calculate code-only estimates (excluding documentation)
+$codeOnlyLOC = $effectiveLOC - $Metrics.Documentation.Lines
+
+# Solo developers (code-only)
+$juniorDaysCodeOnly = [math]::Ceiling(($codeOnlyLOC / $juniorRate) * $complexityMultiplier)
+$juniorMonthsCodeOnly = [math]::Round($juniorDaysCodeOnly / 22, 1)
+$juniorYearsCodeOnly = [math]::Round($juniorMonthsCodeOnly / 12, 1)
+$juniorCostCodeOnly = [math]::Round($juniorDaysCodeOnly * 8 * 35)
+
+$midDaysCodeOnly = [math]::Ceiling(($codeOnlyLOC / $midRate) * $complexityMultiplier)
+$midMonthsCodeOnly = [math]::Round($midDaysCodeOnly / 22, 1)
+$midYearsCodeOnly = [math]::Round($midMonthsCodeOnly / 12, 1)
+$midCostCodeOnly = [math]::Round($midDaysCodeOnly * 8 * 70)
+
+$seniorDaysCodeOnly = [math]::Ceiling(($codeOnlyLOC / $seniorRate) * $complexityMultiplier)
+$seniorMonthsCodeOnly = [math]::Round($seniorDaysCodeOnly / 22, 1)
+$seniorYearsCodeOnly = [math]::Round($seniorMonthsCodeOnly / 12, 1)
+$seniorCostCodeOnly = [math]::Round($seniorDaysCodeOnly * 8 * 100)
+
+# Teams (code-only)
+$smallTeamDaysCodeOnly = [math]::Ceiling($midDaysCodeOnly / 1.7)
+$smallTeamMonthsCodeOnly = [math]::Round($smallTeamDaysCodeOnly / 22, 1)
+$smallTeamYearsCodeOnly = [math]::Round($smallTeamMonthsCodeOnly / 12, 1)
+$smallTeamCostCodeOnly = [math]::Round(($seniorCostCodeOnly / $seniorDaysCodeOnly + 2 * ($midCostCodeOnly / $midDaysCodeOnly)) * $smallTeamDaysCodeOnly)
+
+$mediumTeamDaysCodeOnly = [math]::Ceiling($midDaysCodeOnly / 3.15)
+$mediumTeamMonthsCodeOnly = [math]::Round($mediumTeamDaysCodeOnly / 22, 1)
+$mediumTeamYearsCodeOnly = [math]::Round($mediumTeamMonthsCodeOnly / 12, 1)
+$mediumTeamCostCodeOnly = [math]::Round(($seniorCostCodeOnly / $seniorDaysCodeOnly + ($midCostCodeOnly / $midDaysCodeOnly) + 4 * ($juniorCostCodeOnly / $juniorDaysCodeOnly)) * $mediumTeamDaysCodeOnly)
+
+$largeTeamDaysCodeOnly = [math]::Ceiling($midDaysCodeOnly / 4.4)
+$largeTeamMonthsCodeOnly = [math]::Round($largeTeamDaysCodeOnly / 22, 1)
+$largeTeamYearsCodeOnly = [math]::Round($largeTeamMonthsCodeOnly / 12, 1)
+$largeTeamCostCodeOnly = [math]::Round((2 * ($seniorCostCodeOnly / $seniorDaysCodeOnly) + 3 * ($midCostCodeOnly / $midDaysCodeOnly) + 5 * ($juniorCostCodeOnly / $juniorDaysCodeOnly)) * $largeTeamDaysCodeOnly)
+
+# Calculate savings
+$juniorTimeSaved = $juniorMonths - $juniorMonthsCodeOnly
+$juniorCostSaved = $juniorCostUS - $juniorCostCodeOnly
+$midTimeSaved = $midMonths - $midMonthsCodeOnly
+$midCostSaved = $midCostUS - $midCostCodeOnly
+$seniorTimeSaved = $seniorMonths - $seniorMonthsCodeOnly
+$seniorCostSaved = $seniorCostUS - $seniorCostCodeOnly
+$smallTeamTimeSaved = $smallTeamMonths - $smallTeamMonthsCodeOnly
+$smallTeamCostSaved = $smallTeamCost - $smallTeamCostCodeOnly
+$mediumTeamTimeSaved = $mediumTeamMonths - $mediumTeamMonthsCodeOnly
+$mediumTeamCostSaved = $mediumTeamCost - $mediumTeamCostCodeOnly
+$largeTeamTimeSaved = $largeTeamMonths - $largeTeamMonthsCodeOnly
+$largeTeamCostSaved = $largeTeamCost - $largeTeamCostCodeOnly
+
+@"
+| Developer/Team | Code + Docs | Code Only | Time Saved | Cost Saved (US) |
+|----------------|-------------|-----------|------------|-----------------|
+| **Junior Solo** | $juniorMonths mo (~$juniorYears yr) | **$juniorMonthsCodeOnly mo** (~$juniorYearsCodeOnly yr) | $juniorTimeSaved mo | `$$juniorCostSaved.ToString('N0') |
+| **Mid Solo** | $midMonths mo (~$midYears yr) | **$midMonthsCodeOnly mo** (~$midYearsCodeOnly yr) | $midTimeSaved mo | `$$midCostSaved.ToString('N0') |
+| **Senior Solo** | $seniorMonths mo (~$seniorYears yr) | **$seniorMonthsCodeOnly mo** (~$seniorYearsCodeOnly yr) | $seniorTimeSaved mo | `$$seniorCostSaved.ToString('N0') |
+| **Small Team** ⭐ | $smallTeamMonths mo (~$smallTeamYears yr) | **$smallTeamMonthsCodeOnly mo** (~$smallTeamYearsCodeOnly yr) | **$smallTeamTimeSaved mo** | **`$$smallTeamCostSaved.ToString('N0')** |
+| **Medium Team** | $mediumTeamMonths mo (~$mediumTeamYears yr) | **$mediumTeamMonthsCodeOnly mo** (~$mediumTeamYearsCodeOnly yr) | $mediumTeamTimeSaved mo | `$$mediumTeamCostSaved.ToString('N0') |
+| **Large Team** | $largeTeamMonths mo (~$largeTeamYears yr) | **$largeTeamMonthsCodeOnly mo** (~$largeTeamYearsCodeOnly yr) | $largeTeamTimeSaved mo | `$$largeTeamCostSaved.ToString('N0') |
+
+**Impact**: Documentation represents $([math]::Round(($Metrics.Documentation.Lines / $effectiveLOC) * 100, 1))% of development effort. Excluding docs saves an average of **~$([math]::Round((($juniorTimeSaved + $midTimeSaved + $seniorTimeSaved + $smallTeamTimeSaved + $mediumTeamTimeSaved + $largeTeamTimeSaved) / 6), 1)) months** and **`$$([math]::Round((($juniorCostSaved + $midCostSaved + $seniorCostSaved + $smallTeamCostSaved + $mediumTeamCostSaved + $largeTeamCostSaved) / 6)).ToString('N0'))** across all scenarios.
+
+"@
+)
+
+### �💡 Key Insights
 
 1. **Complexity Impact**: Your project has **$($Complexity.Overall)/10 complexity**, adding **$(($Complexity.Overall * 10))% extra time** to development
 2. **Optimal Team**: **Small team (2-3 devs)** offers best balance → **$smallTeamMonths months** for **`$$smallTeamCost.ToString('N0')** (US)
