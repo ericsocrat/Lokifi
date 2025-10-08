@@ -75,7 +75,7 @@
 
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'clean', 'status', 
+    [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'restart', 'clean', 'status', 
                  'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs', 
                  'analyze', 'fix', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest', 
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix')]
@@ -2264,6 +2264,31 @@ function Stop-AllServices {
     Write-Success "All services stopped (Docker Compose + containers + local processes)"
 }
 
+function Restart-AllServers {
+    Write-LokifiHeader "Restarting All Services"
+    
+    Write-Step "🔄" "Step 1: Stopping all services..."
+    Write-Host ""
+    
+    # Stop everything first
+    Stop-AllServices
+    
+    Write-Host ""
+    Write-Step "⏳" "Waiting 3 seconds for cleanup..."
+    Start-Sleep -Seconds 3
+    
+    Write-Host ""
+    Write-Step "🚀" "Step 2: Starting all services..."
+    Write-Host ""
+    
+    # Start everything
+    Start-AllServers
+    
+    Write-Host ""
+    Write-Success "✅ All services restarted successfully!"
+    Write-Info "💡 Use '.\lokifi-manager-enhanced.ps1 status' to verify service status"
+}
+
 # ============================================
 # AUTOMATED TYPESCRIPT FIXER (Phase 2E)
 # ============================================
@@ -2703,6 +2728,7 @@ USAGE:
     organize    Organize repository files
     health      Full system health check
     stop        Stop all running services
+    restart     Restart all services (stop + start)
     clean       Clean development artifacts
     status      Show service status
 
@@ -4218,6 +4244,7 @@ switch ($Action.ToLower()) {
         Test-LokifiAPI | Out-Null
     }
     'stop' { Stop-AllServices }
+    'restart' { Restart-AllServers }
     'clean' {
         Write-LokifiHeader "Cleanup Operations"
         Invoke-CleanupOperation | Out-Null
