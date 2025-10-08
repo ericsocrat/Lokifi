@@ -22,7 +22,6 @@ foreach ($group in $anyUsage | Sort-Object Name) {
     $totalFiles++
     $count = $group.Count
     $totalOccurrences += $count
-    $fileName = Split-Path $group.Name -Leaf
     $relativePath = $group.Name.Replace($appDir, "app").Replace("\", "/")
     
     Write-Host "  📄 $relativePath" -ForegroundColor White

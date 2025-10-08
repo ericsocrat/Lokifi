@@ -22,25 +22,35 @@ This project follows a well-organized, enterprise-ready structure:
 
 ```
 lokifi/
-├── 📚 docs/              # Comprehensive documentation
-├── 🔧 scripts/           # Automation and utility scripts
-├── 🏗️ infrastructure/    # Docker, nginx, monitoring configs
-├── 📊 reports/           # Analysis, testing, and performance reports
-├── 🔒 security/          # Security configs, audit tools, certificates
-├── 🚀 frontend/          # Next.js React application
-├── ⚙️ backend/           # FastAPI Python backend
-├── 📊 monitoring/        # System monitoring and observability
-├── 🗄️ backups/           # Backup configurations and data
-├── 🧪 test-results/      # Testing outcomes and coverage
-└── 📦 redis/             # Redis configuration and data
+├── 📚 docs/
+│   ├── guides/               # Setup and reference guides
+│   ├── optimization-reports/ # Performance optimization reports
+│   ├── development/          # Development documentation
+│   ├── project-management/   # Project planning and tracking
+│   └── security/             # Security documentation
+├── 🔧 scripts/
+│   ├── analysis/            # Code quality and health analysis
+│   ├── cleanup/             # Repository maintenance tools
+│   ├── fixes/               # Automated code fixes
+│   ├── development/         # Development automation
+│   ├── deployment/          # Deployment scripts
+│   ├── testing/             # Testing automation
+│   └── security/            # Security tools
+├── 🏗️ infrastructure/       # Docker, nginx, monitoring configs
+├── 🚀 frontend/             # Next.js React application
+├── ⚙️ backend/              # FastAPI Python backend
+├── 📊 monitoring/           # System monitoring and observability
+├── � security/             # Security configs and audit tools
+├── 📦 redis/                # Redis configuration
+└── 🧪 performance-tests/    # Performance testing suite
 ```
 
 ### 📖 **Navigation Guide**
-- **👩‍💻 Developers**: Start with [`docs/development/`](docs/development/) and [`scripts/development/`](scripts/development/)
-- **🔧 DevOps Engineers**: See [`infrastructure/`](infrastructure/) and [`scripts/deployment/`](scripts/deployment/)
-- **🔒 Security Teams**: Review [`security/`](security/) and [`scripts/security/`](scripts/security/)
-- **📊 Project Managers**: Check [`docs/project-management/`](docs/project-management/) and [`reports/`](reports/)
-- **🔍 QA Teams**: Explore [`scripts/testing/`](scripts/testing/) and [`reports/testing/`](reports/testing/)
+- **👩‍💻 New Developers**: Start with [`START_HERE.md`](START_HERE.md) then [`docs/guides/`](docs/guides/)
+- **🔧 Setup**: Use [`docs/guides/QUICK_START_GUIDE.md`](docs/guides/QUICK_START_GUIDE.md)
+- **� Reference**: See [`docs/guides/QUICK_REFERENCE_GUIDE.md`](docs/guides/QUICK_REFERENCE_GUIDE.md)
+- **� Code Quality**: Run [`scripts/analysis/analyze-and-optimize.ps1`](scripts/analysis/analyze-and-optimize.ps1)
+- **� Deployment**: Follow [`docs/guides/DEPLOYMENT_GUIDE.md`](docs/guides/DEPLOYMENT_GUIDE.md)
 
 ---
 
