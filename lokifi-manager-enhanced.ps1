@@ -1653,6 +1653,80 @@ function Get-OptimalDocumentLocation {
     return ""
 }
 
+function New-OrganizedDocument {
+    <#
+    .SYNOPSIS
+    Creates a new document file in the optimal organized location
+    
+    .DESCRIPTION
+    Automatically determines the correct location based on filename pattern
+    and creates the file there with optional content
+    
+    .PARAMETER FileName
+    The name of the file to create (e.g., "TYPESCRIPT_FIX_REPORT.md")
+    
+    .PARAMETER Content
+    Optional content to write to the file
+    
+    .PARAMETER Force
+    Overwrite if file already exists
+    
+    .EXAMPLE
+    New-OrganizedDocument "API_DOCUMENTATION.md" -Content "# API Docs"
+    Creates file in docs\api\API_DOCUMENTATION.md
+    
+    .EXAMPLE
+    New-OrganizedDocument "OPTIMIZATION_COMPLETE.md"
+    Creates empty file in docs\optimization-reports\OPTIMIZATION_COMPLETE.md
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$FileName,
+        
+        [Parameter(Mandatory=$false)]
+        [string]$Content = "",
+        
+        [Parameter(Mandatory=$false)]
+        [switch]$Force
+    )
+    
+    # Get optimal location
+    $location = Get-OptimalDocumentLocation $FileName
+    
+    # Build full path
+    if ($location) {
+        $fullPath = Join-Path $Global:LokifiConfig.ProjectRoot (Join-Path $location $FileName)
+        $displayPath = Join-Path $location $FileName
+    } else {
+        $fullPath = Join-Path $Global:LokifiConfig.ProjectRoot $FileName
+        $displayPath = $FileName
+    }
+    
+    # Check if file exists
+    if ((Test-Path $fullPath) -and -not $Force) {
+        Write-Warning "File already exists: $displayPath"
+        Write-Host "   Use -Force to overwrite" -ForegroundColor Gray
+        return $false
+    }
+    
+    # Ensure directory exists
+    $directory = Split-Path $fullPath -Parent
+    if ($directory -and -not (Test-Path $directory)) {
+        New-Item -ItemType Directory -Path $directory -Force | Out-Null
+        Write-Host "   📁 Created directory: $(Split-Path $displayPath -Parent)" -ForegroundColor Cyan
+    }
+    
+    # Create file
+    if ($Content) {
+        Set-Content -Path $fullPath -Value $Content -Force
+    } else {
+        New-Item -Path $fullPath -ItemType File -Force | Out-Null
+    }
+    
+    Write-Host "   ✅ Created: $displayPath" -ForegroundColor Green
+    return $fullPath
+}
+
 function Invoke-UltimateDocumentOrganization {
     param([string]$OrgMode = "status")
     
@@ -1794,20 +1868,77 @@ function Invoke-UltimateDocumentOrganization {
                             Write-Host "      Root: Modified $($rootFile.LastWriteTime), Size $($rootFile.Length) bytes" -ForegroundColor Gray
                             Write-Host "      Existing: Modified $($targetFile.LastWriteTime), Size $($targetFile.Length) bytes" -ForegroundColor Gray
                             
-                            # Keep the newer file, backup the older one
+                            # ENHANCED CONSOLIDATION: Merge content intelligently
+                            # Create backup of both versions
+                            $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+                            $backupDir = Join-Path $fullTargetDir "consolidation_backup_$timestamp"
+                            New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
+                            
+                            Copy-Item -Path $targetPath -Destination (Join-Path $backupDir "$($fileName).existing") -Force
+                            Copy-Item -Path $file.FullName -Destination (Join-Path $backupDir "$($fileName).root") -Force
+                            
+                            Write-Host "      📦 Created backup: $backupDir" -ForegroundColor Cyan
+                            
+                            # Intelligent merge: combine unique content
+                            $rootLines = Get-Content $file.FullName
+                            $targetLines = Get-Content $targetPath
+                            
+                            # Determine which is newer and more complete
+                            $useRoot = $false
                             if ($rootFile.LastWriteTime -gt $targetFile.LastWriteTime) {
-                                $backupPath = $targetPath -replace '\.md$', '_backup.md'
-                                Move-Item -Path $targetPath -Destination $backupPath -Force
-                                Write-Host "      → Backed up older version to: $backupPath" -ForegroundColor Cyan
-                                Move-Item -Path $file.FullName -Destination $targetPath -Force
-                                Write-Host "      → Moved newer version from root" -ForegroundColor Green
-                                $consolidatedCount++
+                                if ($rootFile.Length -ge $targetFile.Length) {
+                                    $useRoot = $true
+                                    Write-Host "      → Root version is newer AND larger - using as base" -ForegroundColor Yellow
+                                } else {
+                                    Write-Host "      → Root version is newer but SMALLER - manual review needed" -ForegroundColor Magenta
+                                    Write-Host "      → Keeping existing, backup created for review" -ForegroundColor Cyan
+                                }
                             } else {
-                                $backupPath = $file.FullName -replace '\.md$', '_backup.md'
-                                Move-Item -Path $file.FullName -Destination $backupPath -Force
-                                Write-Host "      → Kept existing (newer), backed up root version to: $backupPath" -ForegroundColor Cyan
-                                $consolidatedCount++
+                                if ($targetFile.Length -ge $rootFile.Length) {
+                                    Write-Host "      → Existing version is newer AND larger - keeping" -ForegroundColor Yellow
+                                } else {
+                                    Write-Host "      → Existing is newer but SMALLER - manual review recommended" -ForegroundColor Magenta
+                                    Write-Host "      → Keeping existing, backup created for review" -ForegroundColor Cyan
+                                }
                             }
+                            
+                            # Apply decision
+                            if ($useRoot) {
+                                # Check if target has unique sections not in root
+                                $uniqueInTarget = $targetLines | Where-Object { $_ -notin $rootLines }
+                                if ($uniqueInTarget.Count -gt 0 -and $uniqueInTarget.Count -lt 20) {
+                                    # Small amount of unique content - try to merge
+                                    Write-Host "      → Found $($uniqueInTarget.Count) unique lines in existing file" -ForegroundColor Yellow
+                                    Write-Host "      → Adding merged content marker" -ForegroundColor Cyan
+                                    
+                                    $mergedContent = $rootContent + "`n`n---`n## MERGED CONTENT FROM PREVIOUS VERSION`n" + ($uniqueInTarget -join "`n")
+                                    Set-Content -Path $targetPath -Value $mergedContent -Force
+                                    Remove-Item $file.FullName -Force
+                                    Write-Host "      ✅ Merged content from both versions" -ForegroundColor Green
+                                } else {
+                                    # Use root version
+                                    Move-Item -Path $file.FullName -Destination $targetPath -Force
+                                    Write-Host "      ✅ Replaced with root version (newer/larger)" -ForegroundColor Green
+                                }
+                            } else {
+                                # Check if root has unique sections not in target
+                                $uniqueInRoot = $rootLines | Where-Object { $_ -notin $targetLines }
+                                if ($uniqueInRoot.Count -gt 0 -and $uniqueInRoot.Count -lt 20) {
+                                    Write-Host "      → Found $($uniqueInRoot.Count) unique lines in root file" -ForegroundColor Yellow
+                                    Write-Host "      → Appending to existing file" -ForegroundColor Cyan
+                                    
+                                    $mergedContent = $targetContent + "`n`n---`n## ADDITIONAL CONTENT FROM ROOT VERSION`n" + ($uniqueInRoot -join "`n")
+                                    Set-Content -Path $targetPath -Value $mergedContent -Force
+                                    Remove-Item $file.FullName -Force
+                                    Write-Host "      ✅ Merged unique content from root" -ForegroundColor Green
+                                } else {
+                                    # Keep existing
+                                    Remove-Item $file.FullName -Force
+                                    Write-Host "      ✅ Kept existing version (newer/larger)" -ForegroundColor Green
+                                }
+                            }
+                            
+                            $consolidatedCount++
                         } else {
                             Write-Host "   ⏭️  Skipping: $fileName (identical copy already exists in $targetDir)" -ForegroundColor Gray
                             # Remove duplicate root file since it's identical
