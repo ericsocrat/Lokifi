@@ -95,7 +95,7 @@ class WebVitalsMonitor {
     this.reports.push(report);
 
     // Notify listeners
-    this.listeners.forEach((listener) => listener(report));
+    this.listeners.forEach((listener: any) => listener(report));
 
     // Console logging
     if (this.config.consoleLog) {
@@ -154,7 +154,7 @@ class WebVitalsMonitor {
   subscribe(listener: (report: WebVitalsReport) => void): () => void {
     this.listeners.push(listener);
     return () => {
-      this.listeners = this.listeners.filter((l) => l !== listener);
+      this.listeners = this.listeners.filter((l: any) => l !== listener);
     };
   }
 
@@ -170,11 +170,11 @@ class WebVitalsMonitor {
    */
   getSnapshot(): WebVitalsSnapshot {
     return {
-      cls: this.reports.find((r) => r.name === 'CLS') || null,
-      fcp: this.reports.find((r) => r.name === 'FCP') || null,
-      inp: this.reports.find((r) => r.name === 'INP') || null,
-      lcp: this.reports.find((r) => r.name === 'LCP') || null,
-      ttfb: this.reports.find((r) => r.name === 'TTFB') || null,
+      cls: this.reports.find((r: any) => r.name === 'CLS') || null,
+      fcp: this.reports.find((r: any) => r.name === 'FCP') || null,
+      inp: this.reports.find((r: any) => r.name === 'INP') || null,
+      lcp: this.reports.find((r: any) => r.name === 'LCP') || null,
+      ttfb: this.reports.find((r: any) => r.name === 'TTFB') || null,
       timestamp: Date.now(),
     };
   }

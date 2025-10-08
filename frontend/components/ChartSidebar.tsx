@@ -42,7 +42,7 @@ export default function ChartSidebar() {
   const [, setTick] = useState(0);
 
   useEffect(() => {
-    const unsub = drawStore.subscribe((s) => {
+    const unsub = drawStore.subscribe((s: any) => {
       setTool(s.tool);
       setSnap(s.snap);
       setSelCount(s.selectedIds.length);
@@ -53,7 +53,7 @@ export default function ChartSidebar() {
   }, []);
 
   useEffect(() => {
-    const t = setInterval(() => setTick((x) => x + 1), 300);
+    const t = setInterval(() => setTick((x: any) => x + 1), 300);
     return () => clearInterval(t);
   }, []);
 
@@ -82,7 +82,7 @@ export default function ChartSidebar() {
           <div>
             <h3 className="text-[11px] uppercase tracking-wide opacity-70 mb-3">Tools</h3>
             <div className="grid grid-cols-2 gap-2">
-              {TOOLS.map((t) => (
+              {TOOLS.map((t: any) => (
                 <button
                   key={t.key}
                   onClick={() => drawStore.setTool(t.key)}
@@ -109,7 +109,7 @@ export default function ChartSidebar() {
               <input
                 type="checkbox"
                 checked={snap}
-                onChange={(e) => drawStore.setSnap(e.target.checked)}
+                onChange={(e: any) => drawStore.setSnap(e.target.checked)}
               />
               Snap to OHLC
             </label>
@@ -136,7 +136,7 @@ export default function ChartSidebar() {
             <div>
               <h3 className="text-[11px] uppercase tracking-wide opacity-70 mb-3">Plugins</h3>
               <div className="space-y-2">
-                {PLUGINS.map((p) => (
+                {PLUGINS.map((p: any) => (
                   <button
                     key={p.id}
                     onClick={() => pluginManager.setActiveTool(p.id)}

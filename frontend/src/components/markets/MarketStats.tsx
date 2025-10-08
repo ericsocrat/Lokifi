@@ -46,21 +46,21 @@ export function MarketStats({ data }: MarketStatsProps) {
     const totalMarketCap = [
       ...(data.crypto || []),
       ...(data.stocks || []),
-    ].reduce((sum, asset) => sum + (asset.market_cap || 0), 0);
+    ].reduce((sum: any, asset: any) => sum + (asset.market_cap || 0), 0);
     
     // Calculate average 24h change
-    const assetsWithChange = allAssets.filter(a => a.price_change_percentage_24h !== undefined && a.price_change_percentage_24h !== null);
+    const assetsWithChange = allAssets.filter((a: any) => a.price_change_percentage_24h !== undefined && a.price_change_percentage_24h !== null);
     const avgChange = assetsWithChange.length > 0
-      ? assetsWithChange.reduce((sum, a) => sum + a.price_change_percentage_24h, 0) / assetsWithChange.length
+      ? assetsWithChange.reduce((sum: any, a: any) => sum + a.price_change_percentage_24h, 0) / assetsWithChange.length
       : 0;
     
     // Find top gainer
-    const topGainer = assetsWithChange.reduce((max, asset) => {
+    const topGainer = assetsWithChange.reduce((max: any, asset: any) => {
       return (asset.price_change_percentage_24h > (max?.price_change_percentage_24h || -Infinity)) ? asset : max;
     }, assetsWithChange[0]);
     
     // Find top loser
-    const topLoser = assetsWithChange.reduce((min, asset) => {
+    const topLoser = assetsWithChange.reduce((min: any, asset: any) => {
       return (asset.price_change_percentage_24h < (min?.price_change_percentage_24h || Infinity)) ? asset : min;
     }, assetsWithChange[0]);
     

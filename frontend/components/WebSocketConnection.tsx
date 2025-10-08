@@ -62,7 +62,7 @@ export default function WebSocketConnection({
         }
 
         // Simulate price updates
-        symbols.forEach((symbol) => {
+        symbols.forEach((symbol: any) => {
           const mockUpdate = {
             symbol,
             price: Math.random() * 1000 + 100,
@@ -72,7 +72,7 @@ export default function WebSocketConnection({
           };
 
           console.log('WebSocket update (simulated):', mockUpdate);
-          setMessageCount((prev) => prev + 1);
+          setMessageCount((prev: any) => prev + 1);
           setLastUpdate(new Date());
         });
       }, 5000); // Update every 5 seconds

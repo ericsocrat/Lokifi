@@ -23,7 +23,7 @@ export default function DrawingStylePanel() {
         <div>
           <div className='mb-1'>Color</div>
           <div className='grid grid-cols-10 gap-2'>
-            {PALETTE.map(c => (
+            {PALETTE.map((c: any) => (
               <button key={c}
                 onClick={()=>apply({ stroke: c })}
                 className='h-6 rounded'

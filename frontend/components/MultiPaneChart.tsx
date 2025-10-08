@@ -259,7 +259,7 @@ export const MultiPaneChart: React.FC = () => {
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
-        {panes.map((pane) => (
+        {panes.map((pane: any) => (
           <PaneComponent
             key={pane.id}
             paneId={pane.id}

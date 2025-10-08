@@ -27,7 +27,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const removeToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+    setToasts((prev: any) => prev.filter((toast: any) => toast.id !== id));
   }, []);
 
   const addToast = useCallback(
@@ -35,7 +35,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       const id = Math.random().toString(36).substring(2, 9);
       const newToast: Toast = { id, message, type, duration };
 
-      setToasts((prev) => [...prev, newToast]);
+      setToasts((prev: any) => [...prev, newToast]);
 
       // Auto-remove toast after duration
       if (duration > 0) {
@@ -73,7 +73,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
       {/* Toast Container */}
       <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 max-w-md">
-        {toasts.map((toast) => (
+        {toasts.map((toast: any) => (
           <div
             key={toast.id}
             className={`px-4 py-3 rounded-lg shadow-lg border animate-in slide-in-from-right duration-300 ${

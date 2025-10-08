@@ -38,7 +38,7 @@ export default function PluginDrawer() {
     <div>
       <h2 className="text-lg font-semibold mb-2">Plugins</h2>
       <div className="space-y-3">
-        {plugins.map(p => (
+        {plugins.map((p: any) => (
           <div key={p.meta.id} className="p-3 rounded-xl border border-neutral-700">
             <div className="font-medium">{p.meta.name}</div>
             <div className="text-xs text-neutral-400">{p.meta.description || 'No description'}</div>

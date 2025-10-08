@@ -368,7 +368,7 @@ interface PaperTradingActions {
 // Create Store
 export const usePaperTradingStore = create<PaperTradingState & PaperTradingActions>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       // Initial State
       accounts: [],
       activeAccountId: null,
@@ -393,7 +393,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       error: null,
       
       // Account Management
-      createAccount: (name, settings) => {
+      createAccount: (name: any, settings: any) => {
         if (!FLAGS.paperTrading) return '';
         
         const accountId = `paper_account_${Date.now()}`;
@@ -460,18 +460,18 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         return accountId;
       },
       
-      updateAccount: (accountId, updates) => {
+      updateAccount: (accountId: any, updates: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const account = state.accounts.find(a => a.id === accountId);
+          const account = state.accounts.find((a: any) => a.id === accountId);
           if (account) {
             Object.assign(account, updates);
           }
         });
       },
       
-      deleteAccount: (accountId) => {
+      deleteAccount: (accountId: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -481,9 +481,9 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           }
           
           // Remove related data
-          state.positions = state.positions.filter(p => p.accountId !== accountId);
-          state.orders = state.orders.filter(o => o.accountId !== accountId);
-          state.trades = state.trades.filter(t => t.accountId !== accountId);
+          state.positions = state.positions.filter((p: any) => p.accountId !== accountId);
+          state.orders = state.orders.filter((o: any) => o.accountId !== accountId);
+          state.trades = state.trades.filter((t: any) => t.accountId !== accountId);
           
           // Set new active account
           if (state.activeAccountId === accountId) {
@@ -492,21 +492,21 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         });
       },
       
-      setActiveAccount: (accountId) => {
+      setActiveAccount: (accountId: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          if (state.accounts.find(a => a.id === accountId)) {
+          if (state.accounts.find((a: any) => a.id === accountId)) {
             state.activeAccountId = accountId;
           }
         });
       },
       
-      resetAccount: (accountId) => {
+      resetAccount: (accountId: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const account = state.accounts.find(a => a.id === accountId);
+          const account = state.accounts.find((a: any) => a.id === accountId);
           if (account) {
             // Reset balance
             account.balance.cash = account.settings.initialBalance;
@@ -540,15 +540,15 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
             };
             
             // Clear positions, orders, trades
-            state.positions = state.positions.filter(p => p.accountId !== accountId);
-            state.orders = state.orders.filter(o => o.accountId !== accountId);
-            state.trades = state.trades.filter(t => t.accountId !== accountId);
+            state.positions = state.positions.filter((p: any) => p.accountId !== accountId);
+            state.orders = state.orders.filter((o: any) => o.accountId !== accountId);
+            state.trades = state.trades.filter((t: any) => t.accountId !== accountId);
           }
         });
       },
       
       // Trading Operations
-      placeOrder: async (orderData) => {
+      placeOrder: async (orderData: any) => {
         if (!FLAGS.paperTrading || !get().activeAccountId) {
           throw new Error('Paper trading not available');
         }
@@ -641,7 +641,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         }
       },
       
-      cancelOrder: async (orderId) => {
+      cancelOrder: async (orderId: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -652,7 +652,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         });
       },
       
-      modifyOrder: async (orderId, updates) => {
+      modifyOrder: async (orderId: any, updates: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -664,10 +664,10 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Position Management
-      closePosition: async (positionId, reason) => {
+      closePosition: async (positionId: any, reason: any) => {
         if (!FLAGS.paperTrading) return;
         
-        const position = get().positions.find(p => p.id === positionId);
+        const position = get().positions.find((p: any) => p.id === positionId);
         if (!position) return;
         
         // Create closing order
@@ -684,22 +684,22 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         await get().placeOrder(closingOrder);
       },
       
-      updateStopLoss: (positionId, stopLoss) => {
+      updateStopLoss: (positionId: any, stopLoss: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const position = state.positions.find(p => p.id === positionId);
+          const position = state.positions.find((p: any) => p.id === positionId);
           if (position) {
             position.stopLoss = stopLoss;
           }
         });
       },
       
-      updateTakeProfit: (positionId, takeProfit) => {
+      updateTakeProfit: (positionId: any, takeProfit: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const position = state.positions.find(p => p.id === positionId);
+          const position = state.positions.find((p: any) => p.id === positionId);
           if (position) {
             position.takeProfit = takeProfit;
           }
@@ -707,7 +707,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Market Data
-      updateMarketPrice: (symbol, price) => {
+      updateMarketPrice: (symbol: any, price: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -715,7 +715,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           state.lastPriceUpdate = new Date();
           
           // Update position values
-          state.positions.forEach(position => {
+          state.positions.forEach((position: any) => {
             if (position.symbol === symbol) {
               position.currentPrice = price;
               position.marketValue = position.quantity * price;
@@ -741,10 +741,10 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           });
           
           // Update account values
-          state.accounts.forEach(account => {
-            const accountPositions = state.positions.filter(p => p.accountId === account.id);
-            const positionsValue = accountPositions.reduce((sum, p) => sum + p.marketValue, 0);
-            const unrealizedPnL = accountPositions.reduce((sum, p) => sum + p.unrealizedPnL, 0);
+          state.accounts.forEach((account: any) => {
+            const accountPositions = state.positions.filter((p: any) => p.accountId === account.id);
+            const positionsValue = accountPositions.reduce((sum: any, p: any) => sum + p.marketValue, 0);
+            const unrealizedPnL = accountPositions.reduce((sum: any, p: any) => sum + p.unrealizedPnL, 0);
             
             account.balance.totalValue = account.balance.cash + positionsValue;
             // Note: dayPnL would need to be calculated differently with proper time tracking
@@ -752,7 +752,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         });
       },
       
-      subscribeToSymbol: (symbol) => {
+      subscribeToSymbol: (symbol: any) => {
         if (!FLAGS.paperTrading) return;
         
         // In a real implementation, this would subscribe to real-time data
@@ -760,30 +760,30 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         console.log(`Subscribing to ${symbol} price updates`);
       },
       
-      unsubscribeFromSymbol: (symbol) => {
+      unsubscribeFromSymbol: (symbol: any) => {
         if (!FLAGS.paperTrading) return;
         
         console.log(`Unsubscribing from ${symbol} price updates`);
       },
       
       // Portfolio Analysis
-      calculatePerformance: (accountId) => {
+      calculatePerformance: (accountId: any) => {
         const { accounts, trades } = get();
-        const account = accounts.find(a => a.id === accountId);
+        const account = accounts.find((a: any) => a.id === accountId);
         
         if (!account) {
           throw new Error('Account not found');
         }
         
-        const accountTrades = trades.filter(t => t.accountId === accountId && t.pnl !== undefined);
+        const accountTrades = trades.filter((t: any) => t.accountId === accountId && t.pnl !== undefined);
         
-        const totalPnL = accountTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+        const totalPnL = accountTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0);
         const totalReturn = account.settings.initialBalance > 0 
           ? (totalPnL / account.settings.initialBalance) * 100 
           : 0;
         
-        const winningTrades = accountTrades.filter(t => (t.pnl || 0) > 0);
-        const losingTrades = accountTrades.filter(t => (t.pnl || 0) < 0);
+        const winningTrades = accountTrades.filter((t: any) => (t.pnl || 0) > 0);
+        const losingTrades = accountTrades.filter((t: any) => (t.pnl || 0) < 0);
         
         const performance: AccountPerformance = {
           totalReturn,
@@ -798,10 +798,10 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           losingTrades: losingTrades.length,
           winRate: accountTrades.length > 0 ? winningTrades.length / accountTrades.length : 0,
           avgWin: winningTrades.length > 0 
-            ? winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length 
+            ? winningTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0) / winningTrades.length 
             : 0,
           avgLoss: losingTrades.length > 0 
-            ? Math.abs(losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0)) / losingTrades.length 
+            ? Math.abs(losingTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0)) / losingTrades.length 
             : 0,
           profitFactor: 0, // Would need proper calculation
           avgHoldingTime: 0, // Would need trade duration analysis
@@ -813,7 +813,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         
         // Update account performance
         set((state: any) => {
-          const accountToUpdate = state.accounts.find(a => a.id === accountId);
+          const accountToUpdate = state.accounts.find((a: any) => a.id === accountId);
           if (accountToUpdate) {
             accountToUpdate.performance = performance;
           }
@@ -822,21 +822,21 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         return performance;
       },
       
-      getPositionsBySymbol: (symbol) => {
+      getPositionsBySymbol: (symbol: any) => {
         const { positions } = get();
-        return positions.filter(p => p.symbol === symbol);
+        return positions.filter((p: any) => p.symbol === symbol);
       },
       
       getTradeHistory: (accountId, limit = 100) => {
         const { trades } = get();
         return trades
-          .filter(t => t.accountId === accountId)
-          .sort((a, b) => b.executedAt.getTime() - a.executedAt.getTime())
+          .filter((t: any) => t.accountId === accountId)
+          .sort((a: any, b: any) => b.executedAt.getTime() - a.executedAt.getTime())
           .slice(0, limit);
       },
       
       // Challenges
-      joinChallenge: async (challengeId) => {
+      joinChallenge: async (challengeId: any) => {
         if (!FLAGS.paperTrading) return;
         
         try {
@@ -860,7 +860,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         }
       },
       
-      leaveChallenge: async (challengeId) => {
+      leaveChallenge: async (challengeId: any) => {
         if (!FLAGS.paperTrading) return;
         
         try {
@@ -903,14 +903,14 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Copy Trading Integration
-      followTrader: async (traderId, copySettings) => {
+      followTrader: async (traderId: any, copySettings: any) => {
         if (!FLAGS.paperTrading) return;
         
         // This would integrate with the social trading system
         console.log(`Following trader ${traderId} with settings:`, copySettings);
       },
       
-      unfollowTrader: async (traderId) => {
+      unfollowTrader: async (traderId: any) => {
         if (!FLAGS.paperTrading) return;
         
         console.log(`Unfollowing trader ${traderId}`);
@@ -919,12 +919,12 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       // Risk Management
       checkRiskLimits: (accountId, order) => {
         const { accounts, positions } = get();
-        const account = accounts.find(a => a.id === accountId);
+        const account = accounts.find((a: any) => a.id === accountId);
         
         if (!account) return false;
         
         // Check position count limit
-        const currentPositions = positions.filter(p => p.accountId === accountId);
+        const currentPositions = positions.filter((p: any) => p.accountId === accountId);
         if (currentPositions.length >= account.settings.maxPositions) {
           return false;
         }
@@ -946,11 +946,11 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         return true;
       },
       
-      liquidateAccount: async (accountId, reason) => {
+      liquidateAccount: async (accountId: any, reason: any) => {
         if (!FLAGS.paperTrading) return;
         
         const { positions } = get();
-        const accountPositions = positions.filter(p => p.accountId === accountId);
+        const accountPositions = positions.filter((p: any) => p.accountId === accountId);
         
         // Close all positions
         for (const position of accountPositions) {
@@ -959,7 +959,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         
         // Cancel all pending orders
         const { orders } = get();
-        const pendingOrders = orders.filter(o => o.accountId === accountId && o.status === 'pending');
+        const pendingOrders = orders.filter((o: any) => o.accountId === accountId && o.status === 'pending');
         
         for (const order of pendingOrders) {
           await get().cancelOrder(order.id);
@@ -967,7 +967,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Data Management
-      loadAccountData: async (accountId) => {
+      loadAccountData: async (accountId: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -989,9 +989,9 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
             }
             
             // Update positions, orders, trades
-            state.positions = [...state.positions.filter(p => p.accountId !== accountId), ...accountData.positions];
-            state.orders = [...state.orders.filter(o => o.accountId !== accountId), ...accountData.orders];
-            state.trades = [...state.trades.filter(t => t.accountId !== accountId), ...accountData.trades];
+            state.positions = [...state.positions.filter((p: any) => p.accountId !== accountId), ...accountData.positions];
+            state.orders = [...state.orders.filter((o: any) => o.accountId !== accountId), ...accountData.orders];
+            state.trades = [...state.trades.filter((t: any) => t.accountId !== accountId), ...accountData.trades];
             
             state.isLoading = false;
           });
@@ -1004,7 +1004,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         }
       },
       
-      exportTrades: async (accountId, format) => {
+      exportTrades: async (accountId: any, format: any) => {
         if (!FLAGS.paperTrading) throw new Error('Paper trading not enabled');
         
         const response = await fetch(`/api/paper-trading/accounts/${accountId}/export?format=${format}`);
@@ -1014,7 +1014,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // UI State
-      setSelectedSymbol: (symbol) => {
+      setSelectedSymbol: (symbol: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -1039,7 +1039,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Settings
-      updateGlobalSettings: (settings) => {
+      updateGlobalSettings: (settings: any) => {
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
@@ -1050,7 +1050,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       // Helper method to update positions from order fills
       updatePositionFromOrder: (order: PaperOrder, fill: OrderFill) => {
         set((state: any) => {
-          const existingPosition = state.positions.find(p => 
+          const existingPosition = state.positions.find((p: any) => 
             p.accountId === order.accountId && 
             p.symbol === order.symbol
           );
@@ -1181,7 +1181,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           }
           
           // Update account cash balance
-          const account = state.accounts.find(a => a.id === order.accountId);
+          const account = state.accounts.find((a: any) => a.id === order.accountId);
           if (account) {
             const orderValue = fill.quantity * fill.price;
             const totalCost = orderValue + fill.commission;
@@ -1226,38 +1226,38 @@ async function simulateOrderExecution(order: PaperOrder): Promise<void> {
 
 // Selectors
 export const useActiveAccount = () =>
-  usePaperTradingStore((state) => 
-    state.accounts.find(a => a.id === state.activeAccountId)
+  usePaperTradingStore((state: any) => 
+    state.accounts.find((a: any) => a.id === state.activeAccountId)
   );
 
 export const useAccountPositions = (accountId?: string) =>
-  usePaperTradingStore((state) => {
+  usePaperTradingStore((state: any) => {
     const targetAccountId = accountId || state.activeAccountId;
     return targetAccountId 
-      ? state.positions.filter(p => p.accountId === targetAccountId)
+      ? state.positions.filter((p: any) => p.accountId === targetAccountId)
       : [];
   });
 
 export const useAccountOrders = (accountId?: string) =>
-  usePaperTradingStore((state) => {
+  usePaperTradingStore((state: any) => {
     const targetAccountId = accountId || state.activeAccountId;
     return targetAccountId 
-      ? state.orders.filter(o => o.accountId === targetAccountId)
+      ? state.orders.filter((o: any) => o.accountId === targetAccountId)
       : [];
   });
 
 export const usePendingOrders = (accountId?: string) =>
-  usePaperTradingStore((state) => {
+  usePaperTradingStore((state: any) => {
     const targetAccountId = accountId || state.activeAccountId;
     return targetAccountId 
-      ? state.orders.filter(o => o.accountId === targetAccountId && o.status === 'pending')
+      ? state.orders.filter((o: any) => o.accountId === targetAccountId && o.status === 'pending')
       : [];
   });
 
 export const useAccountTotalValue = (accountId?: string) =>
-  usePaperTradingStore((state) => {
+  usePaperTradingStore((state: any) => {
     const targetAccountId = accountId || state.activeAccountId;
-    const account = state.accounts.find(a => a.id === targetAccountId);
+    const account = state.accounts.find((a: any) => a.id === targetAccountId);
     return account?.balance.totalValue || 0;
   });
 

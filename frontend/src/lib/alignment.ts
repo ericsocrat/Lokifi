@@ -45,7 +45,7 @@ export function distribute(drawings: Drawing[], ids: Set<string>, axis: 'h'|'v')
       const dx = (boxes[0].minX + gap*i) - b.minX
       out.set(b.id, dx)
     })
-    return drawings.map(d => out.has(d.id) ? ({ ...d, points: d.points.map(p=>({ x:p.x + (out.get(d.id) || 0), y:p.y })) }) : d)
+    return drawings.map((d: any) => out.has(d.id) ? ({ ...d, points: d.points.map(p=>({ x:p.x + (out.get(d.id) || 0), y:p.y })) }) : d)
   } else {
     boxes.sort((a,b)=>a.minY-b.minY)
     const totalSpan = boxes[boxes.length-1].minY - boxes[0].minY
@@ -55,6 +55,6 @@ export function distribute(drawings: Drawing[], ids: Set<string>, axis: 'h'|'v')
       const dy = (boxes[0].minY + gap*i) - b.minY
       out.set(b.id, dy)
     })
-    return drawings.map(d => out.has(d.id) ? ({ ...d, points: d.points.map(p=>({ x:p.x, y:p.y + (out.get(d.id) || 0) })) }) : d)
+    return drawings.map((d: any) => out.has(d.id) ? ({ ...d, points: d.points.map(p=>({ x:p.x, y:p.y + (out.get(d.id) || 0) })) }) : d)
   }
 }

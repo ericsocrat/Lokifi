@@ -217,7 +217,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.in_app_enabled}
-                    onChange={(e) => updatePreference('in_app_enabled', e.target.checked)}
+                    onChange={(e: any) => updatePreference('in_app_enabled', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -230,7 +230,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.push_enabled}
-                    onChange={(e) => updatePreference('push_enabled', e.target.checked)}
+                    onChange={(e: any) => updatePreference('push_enabled', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -243,7 +243,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.email_enabled}
-                    onChange={(e) => updatePreference('email_enabled', e.target.checked)}
+                    onChange={(e: any) => updatePreference('email_enabled', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -266,7 +266,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.follow_notifications}
-                    onChange={(e) => updatePreference('type_preferences.follow_notifications', e.target.checked)}
+                    onChange={(e: any) => updatePreference('type_preferences.follow_notifications', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -282,7 +282,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.dm_notifications}
-                    onChange={(e) => updatePreference('type_preferences.dm_notifications', e.target.checked)}
+                    onChange={(e: any) => updatePreference('type_preferences.dm_notifications', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -298,7 +298,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.ai_reply_notifications}
-                    onChange={(e) => updatePreference('type_preferences.ai_reply_notifications', e.target.checked)}
+                    onChange={(e: any) => updatePreference('type_preferences.ai_reply_notifications', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -314,7 +314,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.mention_notifications}
-                    onChange={(e) => updatePreference('type_preferences.mention_notifications', e.target.checked)}
+                    onChange={(e: any) => updatePreference('type_preferences.mention_notifications', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -330,7 +330,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.system_notifications}
-                    onChange={(e) => updatePreference('type_preferences.system_notifications', e.target.checked)}
+                    onChange={(e: any) => updatePreference('type_preferences.system_notifications', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -350,7 +350,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.daily_digest_enabled}
-                    onChange={(e) => updatePreference('daily_digest_enabled', e.target.checked)}
+                    onChange={(e: any) => updatePreference('daily_digest_enabled', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -363,7 +363,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.weekly_digest_enabled}
-                    onChange={(e) => updatePreference('weekly_digest_enabled', e.target.checked)}
+                    onChange={(e: any) => updatePreference('weekly_digest_enabled', e.target.checked)}
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -374,7 +374,7 @@ export default function NotificationPreferencesPage() {
                     <input
                       type="time"
                       value={preferences.digest_time}
-                      onChange={(e) => updatePreference('digest_time', e.target.value)}
+                      onChange={(e: any) => updatePreference('digest_time', e.target.value)}
                       className="bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white"
                     />
                   </div>
@@ -392,7 +392,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="time"
                     value={preferences.quiet_hours_start || '22:00'}
-                    onChange={(e) => updatePreference('quiet_hours_start', e.target.value)}
+                    onChange={(e: any) => updatePreference('quiet_hours_start', e.target.value)}
                     className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white"
                   />
                 </div>
@@ -402,7 +402,7 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="time"
                     value={preferences.quiet_hours_end || '08:00'}
-                    onChange={(e) => updatePreference('quiet_hours_end', e.target.value)}
+                    onChange={(e: any) => updatePreference('quiet_hours_end', e.target.value)}
                     className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white"
                   />
                 </div>

@@ -95,7 +95,7 @@ describe('OHLC API Contract', () => {
 
       const responses = await Promise.all(requests);
 
-      responses.forEach(response => {
+      responses.forEach((response: any) => {
         expect(response.status).toBe(200);
       });
     });

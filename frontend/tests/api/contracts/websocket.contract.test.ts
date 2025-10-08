@@ -13,7 +13,7 @@ describe('WebSocket API Contract', () => {
 
   describe('Connection', () => {
     it('establishes WebSocket connection', async () => {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve: any, reject: any) => {
         const timeout = setTimeout(() => {
           reject(new Error('WebSocket connection timeout'));
         }, 5000);
@@ -27,7 +27,7 @@ describe('WebSocket API Contract', () => {
             resolve();
           };
 
-          ws.onerror = (error) => {
+          ws.onerror = (error: any) => {
             clearTimeout(timeout);
             // WebSocket not available, skip test
             console.log('ℹ️  WebSocket not available, skipping test');
@@ -47,12 +47,12 @@ describe('WebSocket API Contract', () => {
         return;
       }
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve: any, reject: any) => {
         const timeout = setTimeout(() => {
           reject(new Error('Subscription response timeout'));
         }, 5000);
 
-        ws!.onmessage = (event) => {
+        ws!.onmessage = (event: any) => {
           clearTimeout(timeout);
 
           const data = JSON.parse(event.data);
@@ -78,13 +78,13 @@ describe('WebSocket API Contract', () => {
         return;
       }
 
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve: any, reject: any) => {
         const timeout = setTimeout(() => {
           console.log('ℹ️  No price updates received (expected in test env)');
           resolve();
         }, 3000);
 
-        ws!.onmessage = (event) => {
+        ws!.onmessage = (event: any) => {
           const data = JSON.parse(event.data);
 
           if (data.type === 'price_update') {
@@ -111,12 +111,12 @@ describe('WebSocket API Contract', () => {
         return;
       }
 
-      return new Promise<void>((resolve) => {
+      return new Promise<void>((resolve: any) => {
         const timeout = setTimeout(() => {
           resolve();
         }, 2000);
 
-        ws!.onmessage = (event) => {
+        ws!.onmessage = (event: any) => {
           const data = JSON.parse(event.data);
 
           if (data.type === 'error') {

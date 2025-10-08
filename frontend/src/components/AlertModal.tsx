@@ -17,7 +17,7 @@ export default function AlertModal({ open, onClose }: Props) {
   if (!open) return null
 
   const selection = Array.from(s.selection || [])
-  const primary = selection.length ? s.drawings.find(d => d.id===selection[0]) : undefined
+  const primary = selection.length ? s.drawings.find((d: any) => d.id===selection[0]) : undefined
 
   const canCross = primary && (primary.kind==='hline' || primary.kind==='trendline' || primary.kind==='ray' || primary.kind==='arrow')
   const canFib = primary && primary.kind==='fib'

@@ -52,9 +52,9 @@ export default function SymbolTfBar() {
         {showSymMenu && (
           <div className='absolute mt-1 left-0 w-48 max-h-56 overflow-auto rounded-md border border-white/10 bg-black/80 shadow-lg'>
             {SYMBOL_SUGGESTIONS
-              .filter(s => s.toUpperCase().includes(symInput.toUpperCase()))
+              .filter((s: any) => s.toUpperCase().includes(symInput.toUpperCase()))
               .slice(0,20)
-              .map(sug => (
+              .map((sug: any) => (
                 <button
                   key={sug}
                   onClick={() => { setSymInput(sug); setSymbol(sug); setShowSymMenu(false) }}
@@ -79,7 +79,7 @@ export default function SymbolTfBar() {
 
       {/* Timeframe presets */}
       <div className='flex gap-1'>
-        {TF_PRESETS.map(tf => (
+        {TF_PRESETS.map((tf: any) => (
           <button
             key={tf}
             onClick={() => setTimeframe(tf)}

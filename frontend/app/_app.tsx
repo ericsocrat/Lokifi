@@ -21,7 +21,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     webVitalsMonitor.init();
 
     // Subscribe to metrics for custom handling
-    const unsubscribe = webVitalsMonitor.subscribe((report) => {
+    const unsubscribe = webVitalsMonitor.subscribe((report: any) => {
       // Custom analytics integration can go here
       if (typeof window !== 'undefined' && (window as any).gtag) {
         (window as any).gtag('event', report.name, {

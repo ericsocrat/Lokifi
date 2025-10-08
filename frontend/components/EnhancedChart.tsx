@@ -31,7 +31,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
   const selectedSymbol = symbolStore.get();
   const selectedTimeframe = timeframeStore.get();
 
-  const pane = panes.find(p => p.id === paneId);
+  const pane = panes.find((p: any) => p.id === paneId);
 
   // Initialize chart
   useEffect(() => {
@@ -125,7 +125,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
 
         if (seriesRef.current && data.length > 0) {
           // Convert to chart format
-          const chartData = data.map(item => ({
+          const chartData = data.map((item: any) => ({
             time: Math.floor(new Date(item.timestamp).getTime() / 1000) as any,
             open: item.open,
             high: item.high,
@@ -176,11 +176,11 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
   useEffect(() => {
     if (!chartRef.current) return;
 
-    const paneObjects = objects.filter(obj => obj.paneId === paneId);
+    const paneObjects = objects.filter((obj: any) => obj.paneId === paneId);
 
     // This is a simplified example - real implementation would need
     // to create chart primitives or overlays for each drawing object
-    paneObjects.forEach(obj => {
+    paneObjects.forEach((obj: any) => {
       console.log('Rendering drawing object:', obj);
       // Actual rendering logic would go here
     });

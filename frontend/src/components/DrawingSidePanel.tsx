@@ -23,7 +23,7 @@ export default function DrawingSidePanel() {
   const setTool = useChartStore(s => s.setTool)
   return (
     <div className="flex flex-col gap-2">
-      {tools.map(t => (
+      {tools.map((t: any) => (
         <button key={t.id}
           className={cn('w-9 h-9 rounded-xl border border-neutral-700 hover:border-neutral-500 grid place-items-center text-sm', active===t.id && 'border-indigo-400')}
           title={t.label}

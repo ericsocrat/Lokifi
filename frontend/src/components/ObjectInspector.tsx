@@ -5,7 +5,7 @@ export default function ObjectInspector() {
   const s = useChartStore()
   const sel = Array.from(s.selection)
   const count = sel.length
-  const drawings = useChartStore(st => st.drawings.filter(d => st.selection.has(d.id)))
+  const drawings = useChartStore(st => st.drawings.filter((d: any) => st.selection.has(d.id)))
   const first = drawings[0]
 
   if (count === 0) return (
@@ -100,7 +100,7 @@ export default function ObjectInspector() {
 
 function FibEditor() {
   const s = useChartStore()
-  const drawings = useChartStore(st => st.drawings.filter(d => st.selection.has(d.id)))
+  const drawings = useChartStore(st => st.drawings.filter((d: any) => st.selection.has(d.id)))
   const first = drawings[0]
   const levels = (first?.fibLevels ?? s.drawingSettings.fibDefaultLevels).slice().sort((a: number, b: number) => a - b)
   const [val, setVal] = React.useState(levels.join(', '))

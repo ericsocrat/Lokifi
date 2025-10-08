@@ -76,10 +76,10 @@ const createInitialState = () => ({
 
 export const useMultiChartStore = create<MultiChartStore>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       ...createInitialState(),
 
-      setLayout: (layout) => {
+      setLayout: (layout: any) => {
         if (!FLAGS.multiChart) return;
         
         set((state: any) => {
@@ -99,7 +99,7 @@ export const useMultiChartStore = create<MultiChartStore>()(
           }
           
           // Update positions for existing charts
-          newCharts.forEach((chart, index) => {
+          newCharts.forEach((chart: any, index: any) => {
             if (positions[index]) {
               chart.position = positions[index];
             }
@@ -114,72 +114,72 @@ export const useMultiChartStore = create<MultiChartStore>()(
         });
       },
 
-      addChart: (chartData) => {
+      addChart: (chartData: any) => {
         if (!FLAGS.multiChart) return;
         
         const newChart: ChartInstance = {
           id: `chart-${Date.now()}`,
           ...chartData,
         };
-        set((state) => ({ charts: [...state.charts, newChart] }));
+        set((state: any) => ({ charts: [...state.charts, newChart] }));
       },
 
-      removeChart: (chartId) => {
+      removeChart: (chartId: any) => {
         if (!FLAGS.multiChart) return;
         
-        set((state) => ({
+        set((state: any) => ({
           charts: state.charts.filter(chart => chart.id !== chartId),
           activeChart: state.activeChart === chartId ? null : state.activeChart,
         }));
       },
 
-      updateChart: (chartId, updates) => {
-        set((state) => ({
-          charts: state.charts.map(chart =>
+      updateChart: (chartId: any, updates: any) => {
+        set((state: any) => ({
+          charts: state.charts.map((chart: any) =>
             chart.id === chartId ? { ...chart, ...updates } : chart
           ),
         }));
       },
 
-      setActiveChart: (chartId) => {
+      setActiveChart: (chartId: any) => {
         set({ activeChart: chartId });
       },
 
-      updateLinking: (dimension, enabled) => {
+      updateLinking: (dimension: any, enabled: any) => {
         if (!FLAGS.multiChart) return;
         
-        set((state) => ({
+        set((state: any) => ({
           linking: { ...state.linking, [dimension]: enabled },
         }));
       },
 
-      changeSymbolLinked: (symbol) => {
+      changeSymbolLinked: (symbol: any) => {
         if (!FLAGS.multiChart) return;
         
         const { linking, charts, activeChart } = get();
         if (!linking.symbol || !activeChart) return;
         
         set({
-          charts: charts.map(chart =>
+          charts: charts.map((chart: any) =>
             chart.id !== activeChart ? { ...chart, symbol } : chart
           ),
         });
       },
 
-      changeTimeframeLinked: (timeframe) => {
+      changeTimeframeLinked: (timeframe: any) => {
         if (!FLAGS.multiChart) return;
         
         const { linking, charts, activeChart } = get();
         if (!linking.timeframe || !activeChart) return;
         
         set({
-          charts: charts.map(chart =>
+          charts: charts.map((chart: any) =>
             chart.id !== activeChart ? { ...chart, timeframe } : chart
           ),
         });
       },
 
-      updateCursorLinked: (position) => {
+      updateCursorLinked: (position: any) => {
         if (!FLAGS.multiChart) return;
         
         const { linking } = get();
@@ -321,7 +321,7 @@ export const LayoutSelector: React.FC = () => {
     <div className="flex items-center space-x-2">
       <span className="text-sm text-gray-400">Layout:</span>
       <div className="flex space-x-1">
-        {(['1x1', '1x2', '2x2'] as LayoutType[]).map((layout) => (
+        {(['1x1', '1x2', '2x2'] as LayoutType[]).map((layout: any) => (
           <button
             key={layout}
             onClick={() => setLayout(layout)}
@@ -356,7 +356,7 @@ export const LinkingControls: React.FC = () => {
             <input
               type="checkbox"
               checked={enabled}
-              onChange={(e) => updateLinking(dimension as keyof LinkingDimensions, e.target.checked)}
+              onChange={(e: any) => updateLinking(dimension as keyof LinkingDimensions, e.target.checked)}
               className="w-3 h-3"
             />
             <span className="text-xs text-gray-300 capitalize">{dimension}</span>

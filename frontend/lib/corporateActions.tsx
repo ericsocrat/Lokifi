@@ -244,7 +244,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         const cutoff = new Date();
         cutoff.setDate(cutoff.getDate() + days);
 
-        return actions.filter(action => {
+        return actions.filter((action: any) => {
           const actionDate = new Date(action.date);
           return actionDate >= new Date() && actionDate <= cutoff;
         });
@@ -263,8 +263,8 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
         // Apply adjustments in reverse chronological order
         const sortedActions = [...actions]
-          .filter(action => action.status === 'processed')
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          .filter((action: any) => action.status === 'processed')
+          .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         let adjustedData = [...data];
 
@@ -363,7 +363,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         if (!FLAGS.corpActions) return;
 
         set((state: any) => {
-          const session = state.sessions.find(s => s.name === sessionName);
+          const session = state.sessions.find((s: any) => s.name === sessionName);
           if (session) {
             session.isActive = !session.isActive;
 
@@ -382,7 +382,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       getActiveSessionsAt: (time: Date) => {
         const { sessions } = get();
 
-        return sessions.filter(session => {
+        return sessions.filter((session: any) => {
           if (!session.isActive) return false;
 
           // Convert session times to the given date
@@ -478,7 +478,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 function applyAdjustment(data: OHLCBar[], action: CorporateAction): OHLCBar[] {
   const actionDate = new Date(action.date).getTime();
 
-  return data.map(bar => {
+  return data.map((bar: any) => {
     // Only adjust bars before the action date
     if (bar.timestamp >= actionDate) return bar;
 
@@ -520,28 +520,28 @@ function applyAdjustment(data: OHLCBar[], action: CorporateAction): OHLCBar[] {
 
 // Selectors
 export const useMarketHolidays = (market?: string) =>
-  useCorporateActionsStore((state) =>
+  useCorporateActionsStore((state: any) =>
     market
       ? state.holidaysByMarket.get(market) || []
       : state.holidays
   );
 
 export const useActiveSessions = () =>
-  useCorporateActionsStore((state) =>
+  useCorporateActionsStore((state: any) =>
     state.sessions.filter(s => s.isActive)
   );
 
 export const useUpcomingActions = (days = 7) =>
-  useCorporateActionsStore((state) => state.getUpcomingActions(days));
+  useCorporateActionsStore((state: any) => state.getUpcomingActions(days));
 
 export const useDataQuality = (symbol: string) =>
-  useCorporateActionsStore((state) => state.qualityReports.get(symbol));
+  useCorporateActionsStore((state: any) => state.qualityReports.get(symbol));
 
 // Initialize store with default data
 if (typeof window !== 'undefined' && FLAGS.corpActions) {
   const store = useCorporateActionsStore.getState();
   // Load current year holidays for preferred markets
-  store.preferredMarkets.forEach(market => {
+  store.preferredMarkets.forEach((market: any) => {
     store.loadHolidays(market, new Date().getFullYear());
   });
 }

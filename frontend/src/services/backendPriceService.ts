@@ -180,7 +180,7 @@ export class HistoricalDataService {
     const results = new Map<string, HistoricalPriceResponse>();
     
     await Promise.all(
-      symbols.map(async (symbol) => {
+      symbols.map(async (symbol: any) => {
         try {
           const data = await this.getHistory(symbol, period as any);
           results.set(symbol, data);
@@ -290,7 +290,7 @@ export class WebSocketPriceService {
 
     this.isConnecting = true;
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve: any, reject: any) => {
       try {
         const wsUrl = `${WS_BASE_URL}/ws/prices?client_id=${this.clientId}`;
         this.ws = new WebSocket(wsUrl);
@@ -308,7 +308,7 @@ export class WebSocketPriceService {
           resolve();
         };
 
-        this.ws.onmessage = (event) => {
+        this.ws.onmessage = (event: any) => {
           try {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
@@ -317,7 +317,7 @@ export class WebSocketPriceService {
           }
         };
 
-        this.ws.onerror = (error) => {
+        this.ws.onerror = (error: any) => {
           console.error('WebSocket error:', error);
           this.isConnecting = false;
           reject(error);
@@ -348,7 +348,7 @@ export class WebSocketPriceService {
       case 'price_update':
         if (message.data) {
           // Notify all subscribers
-          this.subscribers.forEach((callbacks) => {
+          this.subscribers.forEach((callbacks: any) => {
             callbacks.forEach((callback) => {
               callback(message.data!);
             });
@@ -380,11 +380,11 @@ export class WebSocketPriceService {
   subscribe(symbols: string[]): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       console.warn('WebSocket not connected. Storing subscriptions for later.');
-      symbols.forEach(s => this.subscriptions.add(s));
+      symbols.forEach((s: any) => this.subscriptions.add(s));
       return;
     }
 
-    symbols.forEach(s => this.subscriptions.add(s));
+    symbols.forEach((s: any) => this.subscriptions.add(s));
 
     this.ws.send(JSON.stringify({
       action: 'subscribe',
@@ -400,7 +400,7 @@ export class WebSocketPriceService {
       return;
     }
 
-    symbols.forEach(s => this.subscriptions.delete(s));
+    symbols.forEach((s: any) => this.subscriptions.delete(s));
 
     this.ws.send(JSON.stringify({
       action: 'unsubscribe',
@@ -453,7 +453,7 @@ export class WebSocketPriceService {
     console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
 
     setTimeout(() => {
-      this.connect().catch((error) => {
+      this.connect().catch((error: any) => {
         console.error('Reconnection failed:', error);
       });
     }, delay);

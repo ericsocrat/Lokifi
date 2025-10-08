@@ -38,7 +38,7 @@ function MarketsPageContent() {
   // Subscribe to top 50 cryptos for real-time updates
   useEffect(() => {
     if (connected && allCryptos.length > 0) {
-      const symbols = allCryptos.slice(0, 50).map(c => c.symbol.toUpperCase());
+      const symbols = allCryptos.slice(0, 50).map((c: any) => c.symbol.toUpperCase());
       subscribe(symbols);
     }
   }, [connected, allCryptos, subscribe]);
@@ -51,7 +51,7 @@ function MarketsPageContent() {
 
   const toggleWatchlist = (symbol: string) => {
     const newWatchlist = watchlist.includes(symbol)
-      ? watchlist.filter(s => s !== symbol)
+      ? watchlist.filter((s: any) => s !== symbol)
       : [...watchlist, symbol];
     setWatchlist(newWatchlist);
     localStorage.setItem('watchlist', JSON.stringify(newWatchlist));
@@ -63,19 +63,19 @@ function MarketsPageContent() {
   // Calculate market stats from real data
   const marketStats = useMemo(() => {
     const topMovers = [...displayCryptos]
-      .sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0));
+      .sort((a: any, b: any) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0));
     
     return {
       activeAssets: displayCryptos.length,
-      totalMarketCap: displayCryptos.reduce((sum, c) => sum + (c.market_cap || 0), 0),
-      totalVolume: displayCryptos.reduce((sum, c) => sum + (c.total_volume || 0), 0),
+      totalMarketCap: displayCryptos.reduce((sum: any, c: any) => sum + (c.market_cap || 0), 0),
+      totalVolume: displayCryptos.reduce((sum: any, c: any) => sum + (c.total_volume || 0), 0),
       topGainer: topMovers[0] || null,
       topLoser: topMovers[topMovers.length - 1] || null,
     };
   }, [displayCryptos]);
 
   const getSortedAssets = () => {
-    return [...displayCryptos].sort((a, b) => {
+    return [...displayCryptos].sort((a: any, b: any) => {
       let aVal: number | string = 0;
       let bVal: number | string = 0;
       
@@ -210,7 +210,7 @@ function MarketsPageContent() {
               type="text"
               placeholder="Search cryptocurrencies by name or symbol..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: any) => setSearchQuery(e.target.value)}
               className="w-full pl-16 pr-6 py-5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-2 border-purple-200 dark:border-purple-800 rounded-2xl text-lg font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-purple-400 shadow-xl transition-all duration-200"
             />
             {searchLoading && (
@@ -271,7 +271,7 @@ function MarketsPageContent() {
                     </td>
                   </tr>
                 ) : (
-                  sortedAssets.map((asset) => {
+                  sortedAssets.map((asset: any) => {
                     const currentPrice = getLivePrice(asset.symbol, asset.current_price);
                     const isPositive = (asset.price_change_percentage_24h || 0) >= 0;
                     
@@ -318,7 +318,7 @@ function MarketsPageContent() {
                         </td>
                         <td className="px-4 py-4">
                           <button
-                            onClick={(e) => {
+                            onClick={(e: any) => {
                               e.stopPropagation();
                               toggleWatchlist(asset.symbol.toUpperCase());
                             }}

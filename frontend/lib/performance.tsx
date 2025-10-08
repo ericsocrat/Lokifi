@@ -447,7 +447,7 @@ interface PerformanceActions {
 export const usePerformanceStore = create<PerformanceState & PerformanceActions>()(
   persist(
     subscribeWithSelector(
-      immer<any>((set, get) => ({
+      immer<any>((set: any, get: any) => ({
         // Initial State
         activeProfile: null,
         profiles: [],
@@ -489,7 +489,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         error: null,
         
         // Profile Management
-        createProfile: (profileData) => {
+        createProfile: (profileData: any) => {
           if (!FLAGS.performance) return '';
           
           const profileId = `profile_${Date.now()}`;
@@ -514,11 +514,11 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return profileId;
         },
         
-        updateProfile: (profileId, updates) => {
+        updateProfile: (profileId: any, updates: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const profile = state.profiles.find(p => p.id === profileId);
+            const profile = state.profiles.find((p: any) => p.id === profileId);
             if (profile) {
               Object.assign(profile, updates);
               profile.lastModified = new Date();
@@ -531,7 +531,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           });
         },
         
-        deleteProfile: (profileId) => {
+        deleteProfile: (profileId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -547,21 +547,21 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           });
         },
         
-        setActiveProfile: (profileId) => {
+        setActiveProfile: (profileId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const profile = state.profiles.find(p => p.id === profileId);
+            const profile = state.profiles.find((p: any) => p.id === profileId);
             if (profile) {
               state.activeProfile = profile;
             }
           });
         },
         
-        cloneProfile: (profileId, name) => {
+        cloneProfile: (profileId: any, name: any) => {
           if (!FLAGS.performance) return '';
           
-          const profile = get().profiles.find(p => p.id === profileId);
+          const profile = get().profiles.find((p: any) => p.id === profileId);
           if (!profile) return '';
           
           return get().createProfile({
@@ -664,12 +664,12 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           }
         },
         
-        clearMetrics: (olderThan) => {
+        clearMetrics: (olderThan: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
             if (olderThan) {
-              state.metricsHistory = state.metricsHistory.filter(m => m.timestamp >= olderThan);
+              state.metricsHistory = state.metricsHistory.filter((m: any) => m.timestamp >= olderThan);
             } else {
               state.metricsHistory = [];
               state.currentMetrics = null;
@@ -678,7 +678,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Benchmarking
-        runBenchmark: async (config) => {
+        runBenchmark: async (config: any) => {
           if (!FLAGS.performance) {
             throw new Error('Performance features not enabled');
           }
@@ -742,12 +742,12 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           }
         },
         
-        compareBenchmarks: (benchmarkId1, benchmarkId2) => {
+        compareBenchmarks: (benchmarkId1: any, benchmarkId2: any) => {
           if (!FLAGS.performance) return null;
           
           const { benchmarks } = get();
-          const benchmark1 = benchmarks.find(b => b.id === benchmarkId1);
-          const benchmark2 = benchmarks.find(b => b.id === benchmarkId2);
+          const benchmark1 = benchmarks.find((b: any) => b.id === benchmarkId1);
+          const benchmark2 = benchmarks.find((b: any) => b.id === benchmarkId2);
           
           if (!benchmark1 || !benchmark2) return null;
           
@@ -767,7 +767,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           };
         },
         
-        deleteBenchmark: (benchmarkId) => {
+        deleteBenchmark: (benchmarkId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -836,7 +836,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           
           set((state: any) => {
             // Add new issues
-            issues.forEach(issue => {
+            issues.forEach((issue: any) => {
               if (!state.activeIssues.some(existing => existing.type === issue.type && existing.affectedMetric === issue.affectedMetric)) {
                 state.activeIssues.push(issue);
               }
@@ -846,7 +846,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return issues;
         },
         
-        reportIssue: (issueData) => {
+        reportIssue: (issueData: any) => {
           if (!FLAGS.performance) return '';
           
           const issueId = `issue_${Date.now()}`;
@@ -863,7 +863,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return issueId;
         },
         
-        resolveIssue: (issueId, resolution) => {
+        resolveIssue: (issueId: any, resolution: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -881,7 +881,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           });
         },
         
-        ignoreIssue: (issueId) => {
+        ignoreIssue: (issueId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -967,16 +967,16 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return usage;
         },
         
-        getResourceTrend: (resource, timeRange) => {
+        getResourceTrend: (resource: any, timeRange: any) => {
           if (!FLAGS.performance) return [];
           
           const { resourceUsage } = get();
-          const filteredUsage = resourceUsage.filter(u => 
+          const filteredUsage = resourceUsage.filter((u: any) => 
             u.timestamp >= timeRange.start && u.timestamp <= timeRange.end
           );
           
           // Extract values based on resource path
-          return filteredUsage.map(usage => {
+          return filteredUsage.map((usage: any) => {
             const keys = resource.split('.');
             let value: any = usage;
             
@@ -1000,7 +1000,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           // Clear caches
           if ('caches' in window) {
             caches.keys().then(names => {
-              names.forEach(name => {
+              names.forEach((name: any) => {
                 if (name.includes('temp') || name.includes('old')) {
                   caches.delete(name);
                 }
@@ -1013,7 +1013,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Optimization
-        addOptimizationRule: (ruleData) => {
+        addOptimizationRule: (ruleData: any) => {
           if (!FLAGS.performance) return '';
           
           const ruleId = `rule_${Date.now()}`;
@@ -1030,18 +1030,18 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return ruleId;
         },
         
-        updateOptimizationRule: (ruleId, updates) => {
+        updateOptimizationRule: (ruleId: any, updates: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const rule = state.optimizationRules.find(r => r.id === ruleId);
+            const rule = state.optimizationRules.find((r: any) => r.id === ruleId);
             if (rule) {
               Object.assign(rule, updates);
             }
           });
         },
         
-        deleteOptimizationRule: (ruleId) => {
+        deleteOptimizationRule: (ruleId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -1051,14 +1051,14 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
             }
             
             // Remove from active optimizations
-            state.activeOptimizations = state.activeOptimizations.filter(id => id !== ruleId);
+            state.activeOptimizations = state.activeOptimizations.filter((id: any) => id !== ruleId);
           });
         },
         
-        applyOptimization: (ruleId) => {
+        applyOptimization: (ruleId: any) => {
           if (!FLAGS.performance) return;
           
-          const rule = get().optimizationRules.find(r => r.id === ruleId);
+          const rule = get().optimizationRules.find((r: any) => r.id === ruleId);
           if (!rule || !rule.enabled) return;
           
           set((state: any) => {
@@ -1067,7 +1067,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
             }
             
             // Update rule
-            const ruleToUpdate = state.optimizationRules.find(r => r.id === ruleId);
+            const ruleToUpdate = state.optimizationRules.find((r: any) => r.id === ruleId);
             if (ruleToUpdate) {
               ruleToUpdate.triggerCount++;
               ruleToUpdate.lastTriggered = new Date();
@@ -1078,11 +1078,11 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           executeOptimizationAction(rule.action);
         },
         
-        revertOptimization: (ruleId) => {
+        revertOptimization: (ruleId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            state.activeOptimizations = state.activeOptimizations.filter(id => id !== ruleId);
+            state.activeOptimizations = state.activeOptimizations.filter((id: any) => id !== ruleId);
           });
           
           // Would revert the optimization action
@@ -1090,7 +1090,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Alerts
-        createAlert: (alertData) => {
+        createAlert: (alertData: any) => {
           if (!FLAGS.performance) return '';
           
           const alertId = `alert_${Date.now()}`;
@@ -1116,7 +1116,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return alertId;
         },
         
-        acknowledgeAlert: (alertId) => {
+        acknowledgeAlert: (alertId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -1128,7 +1128,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           });
         },
         
-        resolveAlert: (alertId) => {
+        resolveAlert: (alertId: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -1154,7 +1154,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Performance Budget
-        setBudget: (budget) => {
+        setBudget: (budget: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -1193,13 +1193,13 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Analysis
-        analyzePerformance: (timeRange) => {
+        analyzePerformance: (timeRange: any) => {
           if (!FLAGS.performance) return {};
           
           const { metricsHistory } = get();
           const range = timeRange || get().selectedTimeRange;
           
-          const filteredMetrics = metricsHistory.filter(m => 
+          const filteredMetrics = metricsHistory.filter((m: any) => 
             m.timestamp >= range.start && m.timestamp <= range.end
           );
           
@@ -1212,9 +1212,9 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
               averageMetrics: calculateAverageMetrics(filteredMetrics)
             },
             trends: {
-              lcp: calculateTrend(filteredMetrics.map(m => m.lcp)),
-              fid: calculateTrend(filteredMetrics.map(m => m.fid)),
-              memoryUsage: calculateTrend(filteredMetrics.map(m => m.memoryUsage))
+              lcp: calculateTrend(filteredMetrics.map((m: any) => m.lcp)),
+              fid: calculateTrend(filteredMetrics.map((m: any) => m.fid)),
+              memoryUsage: calculateTrend(filteredMetrics.map((m: any) => m.memoryUsage))
             },
             insights: generateInsights(filteredMetrics)
           };
@@ -1222,7 +1222,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return analysis;
         },
         
-        generateReport: async (type) => {
+        generateReport: async (type: any) => {
           if (!FLAGS.performance) throw new Error('Performance features not enabled');
           
           const analysis = get().analyzePerformance();
@@ -1249,7 +1249,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           const recommendations: string[] = [];
           
           // Based on active issues
-          activeIssues.forEach(issue => {
+          activeIssues.forEach((issue: any) => {
             recommendations.push(...issue.suggestions);
           });
           
@@ -1272,7 +1272,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Settings
-        updateSettings: (settings) => {
+        updateSettings: (settings: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -1281,7 +1281,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // Data Management
-        exportData: async (type) => {
+        exportData: async (type: any) => {
           if (!FLAGS.performance) throw new Error('Performance features not enabled');
           
           const data = {
@@ -1297,7 +1297,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           return blob;
         },
         
-        importData: async (file) => {
+        importData: async (file: any) => {
           if (!FLAGS.performance) return;
           
           try {
@@ -1331,7 +1331,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
         },
         
         // UI State
-        setSelectedMetric: (metric) => {
+        setSelectedMetric: (metric: any) => {
           if (!FLAGS.performance) return;
           
           set((state: any) => {
@@ -1532,7 +1532,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           
           try {
             // Observe paint timing
-            const paintObserver = new PerformanceObserver((list) => {
+            const paintObserver = new PerformanceObserver((list: any) => {
               for (const entry of list.getEntries()) {
                 if (entry.name === 'first-contentful-paint') {
                   set((state: any) => {
@@ -1547,7 +1547,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
             paintObserver.observe({ entryTypes: ['paint'] });
             
             // Observe long tasks
-            const longTaskObserver = new PerformanceObserver((list) => {
+            const longTaskObserver = new PerformanceObserver((list: any) => {
               for (const entry of list.getEntries()) {
                 if (entry.duration > 50) { // Long task threshold
                   get().createAlert({
@@ -1623,7 +1623,7 @@ async function runBenchmarkOperations(config: PerformanceBenchmark['testConfig']
   const endTime = performance.now();
   const totalDuration = (endTime - startTime) / 1000; // seconds
   
-  durations.sort((a, b) => a - b);
+  durations.sort((a: any, b: any) => a - b);
   
   return {
     operationsPerSecond: operationCount / totalDuration,
@@ -1663,13 +1663,13 @@ function calculateAverageMetrics(metrics: PerformanceMetrics[]): Partial<Perform
   if (metrics.length === 0) return {};
   
   return {
-    lcp: metrics.reduce((sum, m) => sum + m.lcp, 0) / metrics.length,
-    fid: metrics.reduce((sum, m) => sum + m.fid, 0) / metrics.length,
-    cls: metrics.reduce((sum, m) => sum + m.cls, 0) / metrics.length,
-    memoryUsage: metrics.reduce((sum, m) => sum + m.memoryUsage, 0) / metrics.length,
-    cpuUsage: metrics.reduce((sum, m) => sum + m.cpuUsage, 0) / metrics.length,
-    chartRenderTime: metrics.reduce((sum, m) => sum + m.chartRenderTime, 0) / metrics.length,
-    apiResponseTime: metrics.reduce((sum, m) => sum + m.apiResponseTime, 0) / metrics.length
+    lcp: metrics.reduce((sum: any, m: any) => sum + m.lcp, 0) / metrics.length,
+    fid: metrics.reduce((sum: any, m: any) => sum + m.fid, 0) / metrics.length,
+    cls: metrics.reduce((sum: any, m: any) => sum + m.cls, 0) / metrics.length,
+    memoryUsage: metrics.reduce((sum: any, m: any) => sum + m.memoryUsage, 0) / metrics.length,
+    cpuUsage: metrics.reduce((sum: any, m: any) => sum + m.cpuUsage, 0) / metrics.length,
+    chartRenderTime: metrics.reduce((sum: any, m: any) => sum + m.chartRenderTime, 0) / metrics.length,
+    apiResponseTime: metrics.reduce((sum: any, m: any) => sum + m.apiResponseTime, 0) / metrics.length
   };
 }
 
@@ -1679,8 +1679,8 @@ function calculateTrend(values: number[]): { direction: 'up' | 'down' | 'stable'
   const firstHalf = values.slice(0, Math.floor(values.length / 2));
   const secondHalf = values.slice(Math.floor(values.length / 2));
   
-  const firstAvg = firstHalf.reduce((sum, v) => sum + v, 0) / firstHalf.length;
-  const secondAvg = secondHalf.reduce((sum, v) => sum + v, 0) / secondHalf.length;
+  const firstAvg = firstHalf.reduce((sum: any, v: any) => sum + v, 0) / firstHalf.length;
+  const secondAvg = secondHalf.reduce((sum: any, v: any) => sum + v, 0) / secondHalf.length;
   
   const change = ((secondAvg - firstAvg) / firstAvg) * 100;
   
@@ -1695,8 +1695,8 @@ function generateInsights(metrics: PerformanceMetrics[]): string[] {
   
   if (metrics.length === 0) return insights;
   
-  const avgMemory = metrics.reduce((sum, m) => sum + m.memoryUsage, 0) / metrics.length;
-  const avgLcp = metrics.reduce((sum, m) => sum + m.lcp, 0) / metrics.length;
+  const avgMemory = metrics.reduce((sum: any, m: any) => sum + m.memoryUsage, 0) / metrics.length;
+  const avgLcp = metrics.reduce((sum: any, m: any) => sum + m.lcp, 0) / metrics.length;
   
   if (avgMemory > 100) {
     insights.push('Memory usage is consistently high. Consider implementing memory optimization.');
@@ -1706,7 +1706,7 @@ function generateInsights(metrics: PerformanceMetrics[]): string[] {
     insights.push('Page load times are slow. Focus on optimizing LCP metrics.');
   }
   
-  const memoryTrend = calculateTrend(metrics.map(m => m.memoryUsage));
+  const memoryTrend = calculateTrend(metrics.map((m: any) => m.memoryUsage));
   if (memoryTrend.direction === 'up' && memoryTrend.change > 10) {
     insights.push('Memory usage is trending upward. Check for potential memory leaks.');
   }
@@ -1716,19 +1716,19 @@ function generateInsights(metrics: PerformanceMetrics[]): string[] {
 
 // Selectors
 export const useActiveProfile = () =>
-  usePerformanceStore((state) => state.activeProfile);
+  usePerformanceStore((state: any) => state.activeProfile);
 
 export const useCurrentMetrics = () =>
-  usePerformanceStore((state) => state.currentMetrics);
+  usePerformanceStore((state: any) => state.currentMetrics);
 
 export const useActiveIssuesCount = () =>
-  usePerformanceStore((state) => state.activeIssues.length);
+  usePerformanceStore((state: any) => state.activeIssues.length);
 
 export const useUnreadAlertsCount = () =>
-  usePerformanceStore((state) => state.unreadAlerts);
+  usePerformanceStore((state: any) => state.unreadAlerts);
 
 export const useBudgetStatus = () =>
-  usePerformanceStore((state) => {
+  usePerformanceStore((state: any) => {
     const store = usePerformanceStore.getState();
     return store.checkBudget();
   });

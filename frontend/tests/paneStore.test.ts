@@ -26,7 +26,7 @@ describe('PaneStore', () => {
     
     expect(panes).toHaveLength(2);
     
-    const indicatorPane = panes.find(pane => pane.id === newPaneId);
+    const indicatorPane = panes.find((pane: any) => pane.id === newPaneId);
     expect(indicatorPane).toBeDefined();
     expect(indicatorPane?.type).toBe('indicator');
     expect(indicatorPane?.height).toBe(150);
@@ -40,7 +40,7 @@ describe('PaneStore', () => {
     addIndicatorToPane(pricePane.id, 'sma');
     
     const updatedPanes = usePaneStore.getState().panes;
-    const updatedPricePane = updatedPanes.find(pane => pane.id === pricePane.id);
+    const updatedPricePane = updatedPanes.find((pane: any) => pane.id === pricePane.id);
     
     expect(updatedPricePane?.indicators).toContain('sma');
   });
@@ -56,7 +56,7 @@ describe('PaneStore', () => {
     removeIndicatorFromPane(pricePane.id, 'sma');
     
     const updatedPanes = usePaneStore.getState().panes;
-    const updatedPricePane = updatedPanes.find(pane => pane.id === pricePane.id);
+    const updatedPricePane = updatedPanes.find((pane: any) => pane.id === pricePane.id);
     
     expect(updatedPricePane?.indicators).not.toContain('sma');
   });
@@ -74,8 +74,8 @@ describe('PaneStore', () => {
     moveIndicatorToPane('sma', pricePane.id, indicatorPaneId);
     
     const updatedPanes = usePaneStore.getState().panes;
-    const updatedPricePane = updatedPanes.find(pane => pane.id === pricePane.id);
-    const updatedIndicatorPane = updatedPanes.find(pane => pane.id === indicatorPaneId);
+    const updatedPricePane = updatedPanes.find((pane: any) => pane.id === pricePane.id);
+    const updatedIndicatorPane = updatedPanes.find((pane: any) => pane.id === indicatorPaneId);
     
     expect(updatedPricePane?.indicators).not.toContain('sma');
     expect(updatedIndicatorPane?.indicators).toContain('sma');
@@ -90,7 +90,7 @@ describe('PaneStore', () => {
     togglePaneVisibility(pricePane.id);
     
     const updatedPanes = usePaneStore.getState().panes;
-    const updatedPricePane = updatedPanes.find(pane => pane.id === pricePane.id);
+    const updatedPricePane = updatedPanes.find((pane: any) => pane.id === pricePane.id);
     
     expect(updatedPricePane?.visible).toBe(false);
   });
@@ -102,7 +102,7 @@ describe('PaneStore', () => {
     updatePaneHeight(pricePane.id, 500);
     
     const updatedPanes = usePaneStore.getState().panes;
-    const updatedPricePane = updatedPanes.find(pane => pane.id === pricePane.id);
+    const updatedPricePane = updatedPanes.find((pane: any) => pane.id === pricePane.id);
     
     expect(updatedPricePane?.height).toBe(500);
   });
@@ -117,7 +117,7 @@ describe('PaneStore', () => {
     removePane(indicatorPaneId);
     panes = usePaneStore.getState().panes;
     expect(panes).toHaveLength(1);
-    expect(panes.find(pane => pane.id === indicatorPaneId)).toBeUndefined();
+    expect(panes.find((pane: any) => pane.id === indicatorPaneId)).toBeUndefined();
   });
 
   it('should reorder panes', () => {

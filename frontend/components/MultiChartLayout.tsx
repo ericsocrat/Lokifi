@@ -38,7 +38,7 @@ export const MultiChartLayout: React.FC<MultiChartLayoutProps> = ({ children }) 
 
       {/* Chart grid */}
       <div className={`flex-1 grid ${getGridClass()} gap-1 p-1`}>
-        {charts.map((chart) => (
+        {charts.map((chart: any) => (
           <div
             key={chart.id}
             className="bg-gray-900 border border-gray-700 rounded relative"

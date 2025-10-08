@@ -59,7 +59,7 @@ export default function MarketsLayout({
       <div className="border-b border-neutral-800 bg-[#17171A]/60 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex gap-1">
-            {tabs.map((tab) => {
+            {tabs.map((tab: any) => {
               const Icon = tab.icon;
               const active = isActive(tab);
 

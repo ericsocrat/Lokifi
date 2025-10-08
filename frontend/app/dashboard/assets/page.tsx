@@ -140,7 +140,7 @@ export default function AssetsPage() {
   const formatCurrency = (amount: number) => formatCurrencyHook(amount);
 
   const getTotalValue = () =>
-    storageTotalValue() + connectingBanks.reduce((s, b) => s + b.value, 0);
+    storageTotalValue() + connectingBanks.reduce((s: any, b: any) => s + b.value, 0);
 
   const addNewSection = () => {
     const updated = storageAddSection();
@@ -153,7 +153,7 @@ export default function AssetsPage() {
     toast.push({ type: 'info', title: 'Asset Removed', message: 'Asset deleted.' });
   };
 
-  const hasAnyAssets = sections.some((s) => s.assets.length > 0);
+  const hasAnyAssets = sections.some((s: any) => s.assets.length > 0);
 
   const simulateBankConnections = () => {
     const banks = JSON.parse(localStorage.getItem('connectingBanks') || '[]');
@@ -264,7 +264,7 @@ export default function AssetsPage() {
               onSignOut={() => {
                 setUser(null);
               }}
-              onUpdateUser={(u) => setUser((prev) => ({ ...prev, ...u }) as any)}
+              onUpdateUser={(u: any) => setUser((prev: any) => ({ ...prev, ...u }) as any)}
             />
           </div>
         </div>
@@ -378,7 +378,7 @@ export default function AssetsPage() {
               </button>
             </div>
 
-            {sections.map((section, idx) => {
+            {sections.map((section: any, idx: any) => {
               const sectionValue = section.assets.reduce((s, a) => s + a.value, 0);
               return (
                 <section className="mb-8" key={section.id}>
@@ -397,7 +397,7 @@ export default function AssetsPage() {
                       </span>
                     </div>
                     {idx === 0 &&
-                      connectingBanks.map((bank) => (
+                      connectingBanks.map((bank: any) => (
                         <ConnectingBankItem key={bank.id} bank={bank} />
                       ))}
                     {section.assets.map((asset: Asset) => (
@@ -458,7 +458,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimatedValue((prev) => {
+      setAnimatedValue((prev: any) => {
         const change = Math.floor(Math.random() * 200) - 100;
         return Math.max(0, prev + change);
       });

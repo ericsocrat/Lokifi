@@ -286,7 +286,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return;
         
         set((state: any) => {
-          const template = state.templates.find(t => t.id === id);
+          const template = state.templates.find((t: any) => t.id === id);
           if (template) {
             Object.assign(template, updates);
             template.updatedAt = new Date();
@@ -345,7 +345,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return '';
         
         const { templates, createTemplate } = get();
-        const template = templates.find(t => t.id === id);
+        const template = templates.find((t: any) => t.id === id);
         
         if (!template) return '';
         
@@ -357,7 +357,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return;
         
         const { templates } = get();
-        const template = templates.find(t => t.id === templateId);
+        const template = templates.find((t: any) => t.id === templateId);
         
         if (!template) return;
         
@@ -513,7 +513,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       
       exportTemplate: (id: string) => {
         const { templates } = get();
-        const template = templates.find(t => t.id === id);
+        const template = templates.find((t: any) => t.id === id);
         
         if (!template) {
           throw new Error('Template not found');
@@ -702,7 +702,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return;
         
         set((state: any) => {
-          state.templates = state.templates.filter(t => !templateIds.includes(t.id));
+          state.templates = state.templates.filter((t: any) => !templateIds.includes(t.id));
           
           if (state.activeTemplate && templateIds.includes(state.activeTemplate.id)) {
             state.activeTemplate = null;
@@ -744,13 +744,13 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
 
 // Selectors
 export const useFilteredTemplates = () => 
-  useTemplatesStore((state) => {
+  useTemplatesStore((state: any) => {
     let filtered = [...state.templates];
     
     // Apply search filter
     if (state.searchQuery) {
       const query = state.searchQuery.toLowerCase();
-      filtered = filtered.filter(template =>
+      filtered = filtered.filter((template: any) =>
         template.name.toLowerCase().includes(query) ||
         template.description?.toLowerCase().includes(query) ||
         template.tags.some(tag => tag.toLowerCase().includes(query))
@@ -759,13 +759,13 @@ export const useFilteredTemplates = () =>
     
     // Apply tag filter
     if (state.selectedTags.length > 0) {
-      filtered = filtered.filter(template =>
+      filtered = filtered.filter((template: any) =>
         state.selectedTags.some(tag => template.tags.includes(tag))
       );
     }
     
     // Apply sorting
-    filtered.sort((a, b) => {
+    filtered.sort((a: any, b: any) => {
       let comparison = 0;
       
       switch (state.sortBy) {
@@ -790,10 +790,10 @@ export const useFilteredTemplates = () =>
   });
 
 export const useTemplateById = (id: string) =>
-  useTemplatesStore((state) => state.templates.find(t => t.id === id));
+  useTemplatesStore((state: any) => state.templates.find((t: any) => t.id === id));
 
 export const useActiveTemplate = () =>
-  useTemplatesStore((state) => state.activeTemplate);
+  useTemplatesStore((state: any) => state.activeTemplate);
 
 // Initialize store
 if (typeof window !== 'undefined' && FLAGS.templates) {

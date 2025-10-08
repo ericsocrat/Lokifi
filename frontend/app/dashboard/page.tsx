@@ -52,7 +52,7 @@ export default function DashboardPage() {
 
   // Get live portfolio data from master market data service
   const portfolio = loadPortfolio();
-  const holdings = portfolio.flatMap((section) =>
+  const holdings = portfolio.flatMap((section: any) =>
     section.assets.map((asset) => ({
       symbol: asset.symbol,
       shares: asset.shares,
@@ -490,7 +490,7 @@ export default function DashboardPage() {
                   </div>
                   {/* Period Selector */}
                   <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
-                    {(['1d', '7d', '30d', '1y', 'all'] as TimePeriod[]).map((period) => (
+                    {(['1d', '7d', '30d', '1y', 'all'] as TimePeriod[]).map((period: any) => (
                       <button
                         key={period}
                         onClick={() => setSelectedPeriod(period)}
@@ -534,7 +534,7 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-6">Allocation by Category</h3>
                   {allocations.length > 0 ? (
                     <div className="space-y-3">
-                      {allocations.map((item, index) => (
+                      {allocations.map((item: any, index: any) => (
                         <div key={index} className="flex items-center justify-between">
                           <div className="flex items-center space-x-2 flex-1">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
@@ -557,7 +557,7 @@ export default function DashboardPage() {
                   <h3 className="text-lg font-semibold text-gray-900 mb-6">Top Holdings</h3>
                   {topHoldings.length > 0 ? (
                     <div className="space-y-3">
-                      {topHoldings.map((holding, index) => (
+                      {topHoldings.map((holding: any, index: any) => (
                         <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">

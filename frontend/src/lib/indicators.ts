@@ -10,7 +10,7 @@ export type NumOrNull = number | null;
 /** Simple moving average */
 function sma(values: number[], period: number): NumOrNull[] {
   const out: NumOrNull[] = Array(values.length).fill(null);
-  if (period <= 1) return values.map(v => (Number.isFinite(v) ? v : null));
+  if (period <= 1) return values.map((v: any) => (Number.isFinite(v) ? v : null));
   let sum = 0;
   for (let i = 0; i < values.length; i++) {
     const v = values[i];
@@ -24,7 +24,7 @@ function sma(values: number[], period: number): NumOrNull[] {
 /** Exponential moving average (Wilder-style smoothing disabled; standard EMA) */
 export function ema(values: number[], period: number): NumOrNull[] {
   const out: NumOrNull[] = Array(values.length).fill(null);
-  if (period <= 1) return values.map(v => (Number.isFinite(v) ? v : null));
+  if (period <= 1) return values.map((v: any) => (Number.isFinite(v) ? v : null));
   const k = 2 / (period + 1);
   let prev: number | null = null;
   for (let i = 0; i < values.length; i++) {
@@ -85,7 +85,7 @@ export interface MACDResult {
 export function macd(values: number[], fast = 12, slow = 26, signal = 9): MACDResult {
   const fastE = ema(values, fast);
   const slowE = ema(values, slow);
-  const macdLine: NumOrNull[] = values.map((_, i) =>
+  const macdLine: NumOrNull[] = values.map((_: any, i: any) =>
     fastE[i] != null && slowE[i] != null ? (fastE[i]! - slowE[i]!) : null
   );
   // signal on macdLine (treat nulls as no output)
@@ -99,7 +99,7 @@ export function macd(values: number[], fast = 12, slow = 26, signal = 9): MACDRe
     prev = v * k + prev * (1 - k);
     sig[i] = prev;
   }
-  const hist: NumOrNull[] = values.map((_, i) =>
+  const hist: NumOrNull[] = values.map((_: any, i: any) =>
     macdLine[i] != null && sig[i] != null ? (macdLine[i]! - sig[i]!) : null
   );
   return { macd: macdLine, signalLine: sig, hist };

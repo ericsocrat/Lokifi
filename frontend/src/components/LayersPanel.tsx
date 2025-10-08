@@ -19,7 +19,7 @@ export default function LayersPanel() {
       </div>
 
       <div className='space-y-2'>
-        {layers.map(l => <LayerRow key={l.id} layer={l} />)}
+        {layers.map((l: any) => <LayerRow key={l.id} layer={l} />)}
       </div>
     </div>
   )

@@ -46,7 +46,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
     loadPopularSymbols();
 
     // Subscribe to symbol changes
-    const unsubscribe = symbolStore.subscribe((newSymbol) => {
+    const unsubscribe = symbolStore.subscribe((newSymbol: any) => {
       setSelectedSymbol(newSymbol);
     });
 
@@ -180,7 +180,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
           </p>
         </div>
       ) : (
-        symbolList.map((symbol) => (
+        symbolList.map((symbol: any) => (
           <button
             key={symbol.symbol}
             onClick={() => handleSymbolSelect(symbol.symbol)}
@@ -229,7 +229,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
           <div className="w-4 h-4 text-blue-400">
             {selectedSymbol &&
               ASSET_TYPE_ICONS[
-                popularSymbols.find((s) => s.symbol === selectedSymbol)?.asset_type || 'stock'
+                popularSymbols.find((s: any) => s.symbol === selectedSymbol)?.asset_type || 'stock'
               ]}
           </div>
           <span className="font-semibold text-white">{selectedSymbol}</span>
@@ -249,7 +249,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
                 type="text"
                 placeholder="Search symbols..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e: any) => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
               />
             </div>

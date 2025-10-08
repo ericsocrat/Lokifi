@@ -50,7 +50,7 @@ export function magnetXToBars(x:number, tolerancePx:number): number {
     if (_visibleBarXs[mid] < x) lo = mid + 1; else hi = mid
   }
   const idx = lo
-  const cands = [idx-1, idx, idx+1].filter(i => i>=0 && i<_visibleBarXs.length).map(i => _visibleBarXs[i])
+  const cands = [idx-1, idx, idx+1].filter((i: any) => i>=0 && i<_visibleBarXs.length).map(i => _visibleBarXs[i])
   let best = x, dBest = Number.POSITIVE_INFINITY
   for (const cx of cands) { const d = Math.abs(cx - x); if (d < dBest) { dBest = d; best = cx } }
   return dBest <= tolerancePx ? best : x

@@ -171,7 +171,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === id);
+            const watchlist = state.watchlists.find((w: any) => w.id === id);
             if (watchlist) {
               watchlist.name = name;
               watchlist.updatedAt = new Date();
@@ -183,7 +183,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            if (state.watchlists.find(w => w.id === id)) {
+            if (state.watchlists.find((w: any) => w.id === id)) {
               state.activeWatchlistId = id;
             }
           });
@@ -194,8 +194,8 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === watchlistId);
-            if (watchlist && !watchlist.items.find(item => item.symbol === symbol)) {
+            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
+            if (watchlist && !watchlist.items.find((item: any) => item.symbol === symbol)) {
               watchlist.items.push({
                 symbol: symbol.toUpperCase(),
                 addedAt: new Date(),
@@ -211,7 +211,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === watchlistId);
+            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
             if (watchlist) {
               const index = watchlist.items.findIndex(item => item.symbol === symbol);
               if (index !== -1) {
@@ -226,9 +226,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === watchlistId);
+            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find(item => item.symbol === symbol);
+              const item = watchlist.items.find((item: any) => item.symbol === symbol);
               if (item) {
                 Object.assign(item, updates);
                 watchlist.updatedAt = new Date();
@@ -242,9 +242,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === watchlistId);
+            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find(item => item.symbol === symbol);
+              const item = watchlist.items.find((item: any) => item.symbol === symbol);
               if (item) {
                 if (!item.alerts) item.alerts = [];
                 item.alerts.push({
@@ -261,9 +261,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === watchlistId);
+            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find(item => item.symbol === symbol);
+              const item = watchlist.items.find((item: any) => item.symbol === symbol);
               if (item?.alerts) {
                 const index = item.alerts.findIndex(alert => alert.id === alertId);
                 if (index !== -1) {
@@ -279,9 +279,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === watchlistId);
+            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find(item => item.symbol === symbol);
+              const item = watchlist.items.find((item: any) => item.symbol === symbol);
               if (item?.alerts) {
                 const alert = item.alerts.find(alert => alert.id === alertId);
                 if (alert) {
@@ -339,7 +339,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             let results = Array.from(symbolDirectory.values());
             
             for (const filter of screenerQuery.filters) {
-              results = results.filter(symbol => {
+              results = results.filter((symbol: any) => {
                 const value = symbol[filter.field];
                 if (value === undefined || value === null) return false;
                 
@@ -366,7 +366,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             }
             
             // Sort results
-            results.sort((a, b) => {
+            results.sort((a: any, b: any) => {
               const aVal = a[screenerQuery.sortBy];
               const bVal = b[screenerQuery.sortBy];
               
@@ -437,10 +437,10 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           const id = get().createWatchlist('Imported Watchlist');
           
           set((state: any) => {
-            const watchlist = state.watchlists.find(w => w.id === id);
+            const watchlist = state.watchlists.find((w: any) => w.id === id);
             if (watchlist) {
               for (const symbol of items) {
-                if (!watchlist.items.find(item => item.symbol === symbol)) {
+                if (!watchlist.items.find((item: any) => item.symbol === symbol)) {
                   watchlist.items.push({
                     symbol: symbol.toUpperCase(),
                     addedAt: new Date(),
@@ -457,8 +457,8 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         
         exportWatchlist: (watchlistId: string) => {
           const { watchlists } = get();
-          const watchlist = watchlists.find(w => w.id === watchlistId);
-          return watchlist ? watchlist.items.map(item => item.symbol) : [];
+          const watchlist = watchlists.find((w: any) => w.id === watchlistId);
+          return watchlist ? watchlist.items.map((item: any) => item.symbol) : [];
         }
       })),
       {
@@ -481,8 +481,8 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
 
 // Selectors for common use cases
 export const useActiveWatchlist = () => 
-  useWatchlistStore((state) => 
-    state.watchlists.find(w => w.id === state.activeWatchlistId)
+  useWatchlistStore((state: any) => 
+    state.watchlists.find((w: any) => w.id === state.activeWatchlistId)
   );
 
 export const useWatchlistItems = () => {
@@ -491,10 +491,10 @@ export const useWatchlistItems = () => {
 };
 
 export const useScreenerResults = () => 
-  useWatchlistStore((state) => state.screenerResults);
+  useWatchlistStore((state: any) => state.screenerResults);
 
 export const useScreenerQuery = () => 
-  useWatchlistStore((state) => state.screenerQuery);
+  useWatchlistStore((state: any) => state.screenerQuery);
 
 // Initialize default watchlist
 if (typeof window !== 'undefined' && FLAGS.watchlist) {

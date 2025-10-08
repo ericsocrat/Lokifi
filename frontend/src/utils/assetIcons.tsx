@@ -262,7 +262,7 @@ export function AssetIcon({ symbol, type, size = 32, className = '' }: AssetIcon
       alt={`${symbol} logo`}
       className={`rounded-full object-cover ${className}`}
       style={{ width: size, height: size }}
-      onError={(e) => {
+      onError={(e: any) => {
         // Fallback to initials avatar on error
         const target = e.target as HTMLImageElement;
         target.src = `https://ui-avatars.com/api/?name=${symbol}&background=667eea&color=fff&bold=true&size=${size * 2}`;

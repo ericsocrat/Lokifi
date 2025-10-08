@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState } from "react";
 import { chat, type ChatMessage } from "@/src/lib/chat";
@@ -41,7 +41,7 @@ export default function ChatPage() {
       <h1 className="text-2xl font-semibold">AI Chat</h1>
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900">
         <div ref={boxRef} className="max-h-[60vh] overflow-auto p-4 space-y-3">
-          {messages.filter(m => m.role !== "system").map((m, i) => (
+          {messages.filter((m: any) => m.role !== "system").map((m: any, i: any) => (
             <div key={i} className={m.role === "user" ? "text-right" : ""}>
               <div className={`inline-block px-3 py-2 rounded-xl ${m.role==="user" ? "bg-sky-600" : "bg-neutral-800"} max-w-[80%]`}>
                 <pre className="whitespace-pre-wrap text-sm">{m.content}</pre>

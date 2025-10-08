@@ -9,7 +9,7 @@ export function useGlobalHotkeys() {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       const pressed = keyFromEvent(e)
-      const action = Object.keys(bindings).find(a => bindings[a] === pressed)
+      const action = Object.keys(bindings).find((a: any) => bindings[a] === pressed)
       if (!action) return
       e.preventDefault()
 

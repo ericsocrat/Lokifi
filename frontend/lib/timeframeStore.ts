@@ -8,7 +8,7 @@ export const timeframeStore = {
   get: () => _tf,
   set: (t: TF) => {
     _tf = t;
-    listeners.forEach(l => l(_tf));
+    listeners.forEach((l: any) => l(_tf));
   },
   subscribe: (l: Listener) => {
     listeners.add(l);

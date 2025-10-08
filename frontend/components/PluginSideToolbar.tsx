@@ -31,7 +31,7 @@ export default function PluginSideToolbar(){
           <button onClick={()=> setOpen(x=>!x)} className="text-[11px] px-2 py-1 border border-neutral-700 rounded hover:bg-neutral-800">Settings</button>
         </div>
         <div className="text-[11px] opacity-60">Ghost previews while placing points</div>
-        {ITEMS.map(it => (
+        {ITEMS.map((it: any) => (
           <button
             key={it.id}
             onClick={()=> pluginManager.setActiveTool(active === it.id ? null : it.id)}

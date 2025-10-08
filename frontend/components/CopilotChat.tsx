@@ -25,7 +25,7 @@ export default function CopilotChat() {
     const tf = useChartCtx ? timeframeStore.get() : "";
     const url = `${API}/chat/stream?q=${encodeURIComponent(q)}$1${ctx ? `&ctx_symbols=${encodeURIComponent(ctx)}` : ""}${tf ? `&ctx_timeframe=${encodeURIComponent(tf)}` : ""}`;
     const es = new EventSource(url);
-    es.onmessage = (e) => setLog(prev => prev + e.data);
+    es.onmessage = (e: any) => setLog(prev => prev + e.data);
     es.onerror = () => es.close();
     esRef.current = es;
   };
@@ -37,18 +37,18 @@ export default function CopilotChat() {
         <div className="flex gap-2 items-center">
           <select
             value={preset}
-            onChange={(e) => setPreset(e.target.value)}
+            onChange={(e: any) => setPreset(e.target.value)}
             className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
             aria-label="Model preset"
           >
-            {PRESETS.map(p => (
+            {PRESETS.map((p: any) => (
               <option key={p.value} value={p.value}>{p.label}</option>
             ))}
           </select>
           {preset === "__custom__" && (
             <input
               value={customModel}
-              onChange={(e) => setCustomModel(e.target.value)}
+              onChange={(e: any) => setCustomModel(e.target.value)}
               placeholder="ollama model id (e.g., llama3.1:8b)"
               className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             />

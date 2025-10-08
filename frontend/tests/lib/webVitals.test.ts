@@ -7,35 +7,35 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock web-vitals module
 vi.mock('web-vitals', () => ({
-  onCLS: vi.fn((callback) => callback({
+  onCLS: vi.fn((callback: any) => callback({
     name: 'CLS',
     value: 0.05,
     delta: 0.05,
     id: 'test-cls-1',
     navigationType: 'navigate',
   })),
-  onFCP: vi.fn((callback) => callback({
+  onFCP: vi.fn((callback: any) => callback({
     name: 'FCP',
     value: 1500,
     delta: 1500,
     id: 'test-fcp-1',
     navigationType: 'navigate',
   })),
-  onINP: vi.fn((callback) => callback({
+  onINP: vi.fn((callback: any) => callback({
     name: 'INP',
     value: 150,
     delta: 150,
     id: 'test-inp-1',
     navigationType: 'navigate',
   })),
-  onLCP: vi.fn((callback) => callback({
+  onLCP: vi.fn((callback: any) => callback({
     name: 'LCP',
     value: 2000,
     delta: 2000,
     id: 'test-lcp-1',
     navigationType: 'navigate',
   })),
-  onTTFB: vi.fn((callback) => callback({
+  onTTFB: vi.fn((callback: any) => callback({
     name: 'TTFB',
     value: 600,
     delta: 600,

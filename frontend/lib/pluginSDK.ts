@@ -85,7 +85,7 @@ class IndicatorRegistry {
   }
 
   getByCategory(category: string): IndicatorDefinition[] {
-    return this.getAll().filter(ind => ind.category === category);
+    return this.getAll().filter((ind: any) => ind.category === category);
   }
 }
 
@@ -108,7 +108,7 @@ class DrawingToolRegistry {
   }
 
   getByCategory(category: string): DrawingToolDefinition[] {
-    return this.getAll().filter(tool => tool.category === category);
+    return this.getAll().filter((tool: any) => tool.category === category);
   }
 }
 
@@ -127,7 +127,7 @@ export function registerTool(definition: DrawingToolDefinition) {
 
 // Auto-generated settings UI component generator
 export function generateSettingsUI(parameters: PluginParameter[]) {
-  return parameters.map(param => ({
+  return parameters.map((param: any) => ({
     ...param,
     component: getComponentForType(param.type),
     validation: getValidationForParam(param),
@@ -172,7 +172,7 @@ export const BUILTIN_INDICATORS = {
     
     for (let i = period - 1; i < data.length; i++) {
       const sum = data.slice(i - period + 1, i + 1)
-        .reduce((acc, bar) => acc + bar.close, 0);
+        .reduce((acc: any, bar: any) => acc + bar.close, 0);
       
       results.push({
         timestamp: data[i].timestamp,
@@ -191,7 +191,7 @@ export const BUILTIN_INDICATORS = {
     if (data.length === 0) return results;
     
     // Start with SMA for first value
-    let ema = data.slice(0, period).reduce((acc, bar) => acc + bar.close, 0) / period;
+    let ema = data.slice(0, period).reduce((acc: any, bar: any) => acc + bar.close, 0) / period;
     results.push({ timestamp: data[period - 1].timestamp, value: ema });
     
     for (let i = period; i < data.length; i++) {
@@ -209,16 +209,16 @@ export const BUILTIN_INDICATORS = {
     if (data.length < period + 1) return results;
     
     // Calculate price changes
-    const changes = data.slice(1).map((bar, i) => bar.close - data[i].close);
+    const changes = data.slice(1).map((bar: any, i: any) => bar.close - data[i].close);
     
     // Calculate initial averages
     let avgGain = changes.slice(0, period)
-      .filter(change => change > 0)
-      .reduce((acc, gain) => acc + gain, 0) / period;
+      .filter((change: any) => change > 0)
+      .reduce((acc: any, gain: any) => acc + gain, 0) / period;
     
     let avgLoss = changes.slice(0, period)
-      .filter(change => change < 0)
-      .reduce((acc, loss) => acc - loss, 0) / period;
+      .filter((change: any) => change < 0)
+      .reduce((acc: any, loss: any) => acc - loss, 0) / period;
     
     // Calculate RSI
     for (let i = period; i < changes.length; i++) {

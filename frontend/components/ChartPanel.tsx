@@ -40,7 +40,7 @@ function hexToRGBA(hex: string, a: number) {
     m.length === 3
       ? m
           .split('')
-          .map((c) => c + c)
+          .map((c: any) => c + c)
           .join('')
       : m,
     16
@@ -60,7 +60,7 @@ export default function ChartPanel() {
   const params = inds.params;
   const style = inds.style;
   useEffect(() => {
-    const unsub = indicatorStore.subscribe((st) => setInds(st));
+    const unsub = indicatorStore.subscribe((st: any) => setInds(st));
     return () => {
       unsub();
     };
@@ -68,7 +68,7 @@ export default function ChartPanel() {
 
   const [sym, setSym] = useState(symbolStore.get());
   useEffect(() => {
-    const unsub = symbolStore.subscribe((s) => {
+    const unsub = symbolStore.subscribe((s: any) => {
       setSym(s);
       indicatorStore.loadForSymbol(s);
       drawStore.loadCurrent();
@@ -80,7 +80,7 @@ export default function ChartPanel() {
 
   const [tf, setTf] = useState(timeframeStore.get());
   useEffect(() => {
-    const unsub = timeframeStore.subscribe((t) => {
+    const unsub = timeframeStore.subscribe((t: any) => {
       setTf(t);
       drawStore.loadCurrent();
     });
@@ -95,7 +95,7 @@ export default function ChartPanel() {
   const mockData = {
     symbol: sym,
     timeframe: tf,
-    candles: Array.from({ length: 100 }, (_, i) => {
+    candles: Array.from({ length: 100 }, (_: any, i: any) => {
       const time = Date.now() - (100 - i) * 3600 * 1000;
       const price = 50000 + Math.sin(i / 10) * 2000 + Math.random() * 1000;
       return {
@@ -151,7 +151,7 @@ export default function ChartPanel() {
       timeScale: { timeVisible: true },
     });
     const candle = chart.addCandlestickSeries();
-    const candles = (chartData?.candles || []).map((c) => ({
+    const candles = (chartData?.candles || []).map((c: any) => ({
       time: Math.floor(c.ts / 1000) as Time,
       open: c.o,
       high: c.h,
@@ -160,16 +160,16 @@ export default function ChartPanel() {
     }));
     candle.setData(candles);
 
-    const closes = (chartData?.candles || []).map((c) => c.c);
-    const highs = (chartData?.candles || []).map((c) => c.h);
-    const lows = (chartData?.candles || []).map((c) => c.l);
-    const vols = (chartData?.candles || []).map((c) => c.v ?? 0);
+    const closes = (chartData?.candles || []).map((c: any) => c.c);
+    const highs = (chartData?.candles || []).map((c: any) => c.h);
+    const lows = (chartData?.candles || []).map((c: any) => c.l);
+    const vols = (chartData?.candles || []).map((c: any) => c.v ?? 0);
 
     const overlayLine = (vals: (number | null)[] | null, width = 2) => {
       if (!vals) return null;
       const line = chart.addLineSeries({ lineWidth: width });
       line.setData(
-        vals.map((v, i) =>
+        vals.map((v: any, i: any) =>
           v == null ? { time: candles[i].time, value: NaN } : { time: candles[i].time, value: v }
         )
       );
@@ -185,8 +185,8 @@ export default function ChartPanel() {
       overlayLine(bb.mid, 1);
       const u = chart.addLineSeries({ lineWidth: 1 });
       const l = chart.addLineSeries({ lineWidth: 1 });
-      u.setData(bb.upper.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number })));
-      l.setData(bb.lower.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number })));
+      u.setData(bb.upper.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number })));
+      l.setData(bb.lower.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number })));
       if (inds.bbFill) {
         const top = chart.addAreaSeries({
           lineWidth: 0,
@@ -194,7 +194,7 @@ export default function ChartPanel() {
           bottomColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
         });
         top.setData(
-          bb.upper.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
+          bb.upper.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
         );
         const bot = chart.addAreaSeries({
           lineWidth: 0,
@@ -202,19 +202,19 @@ export default function ChartPanel() {
           bottomColor: 'rgba(11,11,15,1)',
         });
         bot.setData(
-          bb.lower.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
+          bb.lower.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
         );
       }
     }
 
     // VWAP/VWMA
     if (inds.vwap) {
-      const typ = closes.map((c, i) => (highs[i] + lows[i] + c) / 3);
-      const hasVol = vols.some((v) => v && v > 0);
+      const typ = closes.map((c: any, i: any) => (highs[i] + lows[i] + c) / 3);
+      const hasVol = vols.some((v: any) => v && v > 0);
       overlayLine(hasVol ? vwap(typ, vols) : ema(typ, 20), 2);
     }
     if (inds.vwma) {
-      const hasVol = vols.some((v) => v && v > 0);
+      const hasVol = vols.some((v: any) => v && v > 0);
       overlayLine(
         hasVol ? vwma(closes, vols, params.vwmaPeriod ?? 20) : ema(closes, params.vwmaPeriod ?? 20),
         2
@@ -241,17 +241,17 @@ export default function ChartPanel() {
       if (inds.rsi) {
         const r = rsi(closes, 14);
         const line = subChart.addLineSeries();
-        line.setData(r.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number })));
+        line.setData(r.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number })));
       }
       if (inds.macd) {
         const m = macd(closes, 12, 26, 9);
         const hist = subChart.addHistogramSeries();
         hist.setData(
-          m.hist.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
+          m.hist.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
         );
         const sig = subChart.addLineSeries({ lineWidth: 1 });
         sig.setData(
-          m.signalLine.map((v, i) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
+          m.signalLine.map((v: any, i: any) => ({ time: candles[i].time, value: (v ?? NaN) as number }))
         );
       }
       const sync = () => {
@@ -886,7 +886,7 @@ export default function ChartPanel() {
         const dp = p - start.p;
         if (dragMode.kind === 'handle' && dragMode.id) {
           const which = dragMode.handle!;
-          drawStore.updateShape(dragMode.id, (s) => {
+          drawStore.updateShape(dragMode.id, (s: any) => {
             if (s.type === 'hline' && which === 'y') return { ...s, y: p };
             if (s.type === 'channel3' && which === 'c') return { ...s, c: { t, p } };
             if ('a' in s && 'b' in s) {
@@ -896,7 +896,7 @@ export default function ChartPanel() {
             return s as any;
           });
         } else if (dragMode.kind === 'move') {
-          drawStore.updateShape(dragMode.id!, (s) => {
+          drawStore.updateShape(dragMode.id!, (s: any) => {
             if (s.type === 'hline') {
               return { ...s, y: s.y + dp };
             }
@@ -932,8 +932,8 @@ export default function ChartPanel() {
           bottom = Math.max(marquee.y0, marquee.y1);
         const ids = drawStore
           .get()
-          .shapes.filter((s) => shapeIntersectsRect(s, left, top, right, bottom))
-          .map((s) => s.id);
+          .shapes.filter((s: any) => shapeIntersectsRect(s, left, top, right, bottom))
+          .map((s: any) => s.id);
         if (marquee.add)
           drawStore.setSelection(Array.from(new Set([...drawStore.get().selectedIds, ...ids])));
         else drawStore.setSelection(ids);
@@ -1031,7 +1031,7 @@ export default function ChartPanel() {
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
         e.preventDefault();
-        drawStore.setSelection(drawStore.get().shapes.map((s) => s.id));
+        drawStore.setSelection(drawStore.get().shapes.map((s: any) => s.id));
       }
     };
     window.addEventListener('keydown', onKey);

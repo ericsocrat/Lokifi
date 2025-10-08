@@ -657,11 +657,11 @@ const createInitialState = (): RollbackState => ({
 // Create Store
 export const useRollbackStore = create<RollbackState & RollbackActions>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       ...createInitialState(),
 
       // Snapshot Management
-      createSnapshot: async (snapshotData) => {
+      createSnapshot: async (snapshotData: any) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
         
         const id = `snapshot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -686,14 +686,14 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
           
           // Auto-cleanup old snapshots
           if (state.settings.maxSnapshotsPerVersion > 0) {
-            const versionSnapshots = state.snapshots.filter(s => s.version === snapshot.version);
+            const versionSnapshots = state.snapshots.filter((s: any) => s.version === snapshot.version);
             if (versionSnapshots.length > state.settings.maxSnapshotsPerVersion) {
               // Remove oldest snapshots
               const toRemove = versionSnapshots
-                .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+                .sort((a: any, b: any) => a.createdAt.getTime() - b.createdAt.getTime())
                 .slice(0, versionSnapshots.length - state.settings.maxSnapshotsPerVersion);
               
-              state.snapshots = state.snapshots.filter(s => !toRemove.includes(s));
+              state.snapshots = state.snapshots.filter((s: any) => !toRemove.includes(s));
             }
           }
         });
@@ -701,21 +701,21 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         return id;
       },
 
-      deleteSnapshot: (snapshotId) => {
+      deleteSnapshot: (snapshotId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          state.snapshots = state.snapshots.filter(s => s.id !== snapshotId);
+          state.snapshots = state.snapshots.filter((s: any) => s.id !== snapshotId);
           if (state.selectedSnapshot === snapshotId) {
             state.selectedSnapshot = null;
           }
         });
       },
 
-      verifySnapshot: async (snapshotId) => {
+      verifySnapshot: async (snapshotId: any) => {
         if (!FLAGS.rollback) return false;
         
-        const snapshot = get().snapshots.find(s => s.id === snapshotId);
+        const snapshot = get().snapshots.find((s: any) => s.id === snapshotId);
         if (!snapshot) return false;
         
         try {
@@ -725,7 +725,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
           const isValid = Math.random() > 0.1; // 90% success rate
           
           set((state: any) => {
-            const s = state.snapshots.find(s => s.id === snapshotId);
+            const s = state.snapshots.find((s: any) => s.id === snapshotId);
             if (s) {
               s.isVerified = isValid;
               s.lastVerified = new Date();
@@ -738,7 +738,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
           return isValid;
         } catch (error) {
           set((state: any) => {
-            const s = state.snapshots.find(s => s.id === snapshotId);
+            const s = state.snapshots.find((s: any) => s.id === snapshotId);
             if (s) {
               s.isVerified = false;
               s.status = 'corrupted';
@@ -749,7 +749,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         }
       },
 
-      setSelectedSnapshot: (snapshotId) => {
+      setSelectedSnapshot: (snapshotId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
@@ -758,7 +758,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       },
 
       // Plan Management
-      createPlan: (planData) => {
+      createPlan: (planData: any) => {
         if (!FLAGS.rollback) return '';
         
         const id = `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -777,18 +777,18 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         return id;
       },
 
-      updatePlan: (planId, updates) => {
+      updatePlan: (planId: any, updates: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
             Object.assign(plan, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deletePlan: (planId) => {
+      deletePlan: (planId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
@@ -799,10 +799,10 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         });
       },
 
-      clonePlan: (planId, name) => {
+      clonePlan: (planId: any, name: any) => {
         if (!FLAGS.rollback) return '';
         
-        const plan = get().plans.find(p => p.id === planId);
+        const plan = get().plans.find((p: any) => p.id === planId);
         if (!plan) return '';
         
         return get().createPlan({
@@ -812,7 +812,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         });
       },
 
-      setActivePlan: (planId) => {
+      setActivePlan: (planId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
@@ -821,7 +821,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       },
 
       // Plan Configuration
-      addStep: (planId, stepData) => {
+      addStep: (planId: any, stepData: any) => {
         if (!FLAGS.rollback) return '';
         
         const stepId = `step_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -831,7 +831,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         };
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
             plan.rollbackSteps.push(step);
             plan.updatedAt = new Date();
@@ -845,9 +845,9 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
-            const step = plan.rollbackSteps.find(s => s.id === stepId);
+            const step = plan.rollbackSteps.find((s: any) => s.id === stepId);
             if (step) {
               Object.assign(step, updates);
               plan.updatedAt = new Date();
@@ -856,25 +856,25 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         });
       },
 
-      removeStep: (planId, stepId) => {
+      removeStep: (planId: any, stepId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
-            plan.rollbackSteps = plan.rollbackSteps.filter(s => s.id !== stepId);
+            plan.rollbackSteps = plan.rollbackSteps.filter((s: any) => s.id !== stepId);
             plan.updatedAt = new Date();
           }
         });
       },
 
-      reorderSteps: (planId, stepIds) => {
+      reorderSteps: (planId: any, stepIds: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
-            const reorderedSteps = stepIds.map(id => plan.rollbackSteps.find(s => s.id === id)!).filter(Boolean);
+            const reorderedSteps = stepIds.map(id => plan.rollbackSteps.find((s: any) => s.id === id)!).filter(Boolean);
             plan.rollbackSteps = reorderedSteps;
             plan.updatedAt = new Date();
           }
@@ -882,7 +882,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       },
 
       // Trigger Management
-      addTrigger: (planId, triggerData) => {
+      addTrigger: (planId: any, triggerData: any) => {
         if (!FLAGS.rollback) return '';
         
         const triggerId = `trigger_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -893,7 +893,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         };
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
             plan.triggers.push(trigger);
             plan.updatedAt = new Date();
@@ -907,7 +907,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
             const trigger = plan.triggers.find(t => t.id === triggerId);
             if (trigger) {
@@ -918,13 +918,13 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         });
       },
 
-      removeTrigger: (planId, triggerId) => {
+      removeTrigger: (planId: any, triggerId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const plan = state.plans.find(p => p.id === planId);
+          const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
-            plan.triggers = plan.triggers.filter(t => t.id !== triggerId);
+            plan.triggers = plan.triggers.filter((t: any) => t.id !== triggerId);
             plan.updatedAt = new Date();
           }
         });
@@ -934,7 +934,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       executeRollback: async (planId, reason = 'Manual execution') => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
         
-        const plan = get().plans.find(p => p.id === planId);
+        const plan = get().plans.find((p: any) => p.id === planId);
         if (!plan) throw new Error('Plan not found');
         
         if (get().isExecuting) {
@@ -967,7 +967,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         
         try {
           // Execute steps in order
-          for (const step of plan.rollbackSteps.sort((a, b) => a.order - b.order)) {
+          for (const step of plan.rollbackSteps.sort((a: any, b: any) => a.order - b.order)) {
             const stepResult: RollbackStepResult = {
               stepId: step.id,
               startedAt: new Date(),
@@ -975,7 +975,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
             };
             
             set((state: any) => {
-              const exec = state.executions.find(e => e.id === executionId);
+              const exec = state.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 exec.stepsExecuted.push(stepResult);
               }
@@ -988,7 +988,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
             const endTime = new Date();
             
             set((state: any) => {
-              const exec = state.executions.find(e => e.id === executionId);
+              const exec = state.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 const result = exec.stepsExecuted.find(r => r.stepId === step.id);
                 if (result) {
@@ -1010,7 +1010,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
           // Success
           const endTime = new Date();
           set((state: any) => {
-            const exec = state.executions.find(e => e.id === executionId);
+            const exec = state.executions.find((e: any) => e.id === executionId);
             if (exec) {
               exec.status = 'completed';
               exec.completedAt = endTime;
@@ -1020,7 +1020,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
             state.currentExecution = null;
             
             // Update plan execution history
-            const p = state.plans.find(p => p.id === planId);
+            const p = state.plans.find((p: any) => p.id === planId);
             if (p) {
               p.executionHistory.push(execution);
               p.lastExecuted = endTime;
@@ -1033,7 +1033,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
           // Failure
           const endTime = new Date();
           set((state: any) => {
-            const exec = state.executions.find(e => e.id === executionId);
+            const exec = state.executions.find((e: any) => e.id === executionId);
             if (exec) {
               exec.status = 'failed';
               exec.completedAt = endTime;
@@ -1049,11 +1049,11 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         }
       },
 
-      cancelExecution: (executionId) => {
+      cancelExecution: (executionId: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          const execution = state.executions.find(e => e.id === executionId);
+          const execution = state.executions.find((e: any) => e.id === executionId);
           if (execution && execution.status === 'running') {
             execution.status = 'cancelled';
             execution.completedAt = new Date();
@@ -1069,14 +1069,14 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         });
       },
 
-      pauseExecution: (executionId) => {
+      pauseExecution: (executionId: any) => {
         if (!FLAGS.rollback) return;
         
         // In a real implementation, this would pause the actual execution
         console.log(`Pausing execution ${executionId}`);
       },
 
-      resumeExecution: (executionId) => {
+      resumeExecution: (executionId: any) => {
         if (!FLAGS.rollback) return;
         
         // In a real implementation, this would resume the paused execution
@@ -1084,10 +1084,10 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       },
 
       // Validation
-      validatePlan: async (planId) => {
+      validatePlan: async (planId: any) => {
         if (!FLAGS.rollback) return [];
         
-        const plan = get().plans.find(p => p.id === planId);
+        const plan = get().plans.find((p: any) => p.id === planId);
         if (!plan) return [];
         
         const results: ValidationResult[] = [];
@@ -1113,10 +1113,10 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         return results;
       },
 
-      validateSnapshot: async (snapshotId) => {
+      validateSnapshot: async (snapshotId: any) => {
         if (!FLAGS.rollback) return [];
         
-        const snapshot = get().snapshots.find(s => s.id === snapshotId);
+        const snapshot = get().snapshots.find((s: any) => s.id === snapshotId);
         if (!snapshot) return [];
         
         const results: ValidationResult[] = [];
@@ -1145,7 +1145,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       },
 
       // UI Actions
-      setSidebarCollapsed: (collapsed) => {
+      setSidebarCollapsed: (collapsed: any) => {
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
@@ -1171,10 +1171,10 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
       },
 
       // Data Management
-      exportPlan: async (planId) => {
+      exportPlan: async (planId: any) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
         
-        const plan = get().plans.find(p => p.id === planId);
+        const plan = get().plans.find((p: any) => p.id === planId);
         if (!plan) throw new Error('Plan not found');
         
         const exportData = {
@@ -1190,7 +1190,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         return blob;
       },
 
-      importPlan: async (file) => {
+      importPlan: async (file: any) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
         
         const text = await file.text();
@@ -1199,10 +1199,10 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         return get().createPlan(data.plan);
       },
 
-      exportSnapshot: async (snapshotId) => {
+      exportSnapshot: async (snapshotId: any) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
         
-        const snapshot = get().snapshots.find(s => s.id === snapshotId);
+        const snapshot = get().snapshots.find((s: any) => s.id === snapshotId);
         if (!snapshot) throw new Error('Snapshot not found');
         
         const exportData = {

@@ -257,7 +257,7 @@ describe('Security: Input Validation', () => {
       console.log('Security Headers:', securityHeaders);
 
       // At least some security headers should be present
-      const presentHeaders = Object.values(securityHeaders).filter(v => v !== null);
+      const presentHeaders = Object.values(securityHeaders).filter((v: any) => v !== null);
 
       if (presentHeaders.length === 0) {
         console.log('⚠️  No security headers detected');

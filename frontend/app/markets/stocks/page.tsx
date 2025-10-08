@@ -44,7 +44,7 @@ function StocksPageContent() {
 
   const toggleWatchlist = (symbol: string) => {
     const newWatchlist = watchlist.includes(symbol)
-      ? watchlist.filter((s) => s !== symbol)
+      ? watchlist.filter((s: any) => s !== symbol)
       : [...watchlist, symbol];
     setWatchlist(newWatchlist);
     localStorage.setItem('watchlist', JSON.stringify(newWatchlist));
@@ -152,7 +152,7 @@ function StocksPageContent() {
               type="text"
               placeholder="Search stocks by name or symbol..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e: any) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-neutral-900 border border-neutral-800 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
@@ -251,7 +251,7 @@ function StocksPageContent() {
                   {/* Watchlist */}
                   <div className="col-span-1 flex items-center justify-center">
                     <button
-                      onClick={(e) => {
+                      onClick={(e: any) => {
                         e.stopPropagation();
                         toggleWatchlist(stock.symbol);
                       }}

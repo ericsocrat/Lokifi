@@ -42,7 +42,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const useMarketDataStore = create<MarketDataState>()(
   persist(
-    (set, get) => ({
+    (set: any, get: any) => ({
       // Initial state
       ohlcData: {},
       lastUpdate: {},

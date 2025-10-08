@@ -117,7 +117,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
   };
 
   const handleBulkMarkRead = async () => {
-    const unreadSelected = Array.from(selectedNotifications).filter((id) => {
+    const unreadSelected = Array.from(selectedNotifications).filter((id: any) => {
       const notification = notifications.find((n: NotificationData) => n.id === id);
       return notification && !notification.is_read;
     });
@@ -245,7 +245,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <label className="block text-xs text-neutral-400 mb-2">Status</label>
               <select
                 value={filter}
-                onChange={(e) => setFilter(e.target.value as FilterType)}
+                onChange={(e: any) => setFilter(e.target.value as FilterType)}
                 className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-sm text-white"
               >
                 <option value="all">All</option>
@@ -260,7 +260,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <label className="block text-xs text-neutral-400 mb-2">Type</label>
               <select
                 value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value as NotificationType)}
+                onChange={(e: any) => setTypeFilter(e.target.value as NotificationType)}
                 className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-sm text-white"
               >
                 <option value="all">All Types</option>
@@ -277,7 +277,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <label className="block text-xs text-neutral-400 mb-2">Sort by</label>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortType)}
+                onChange={(e: any) => setSortBy(e.target.value as SortType)}
                 className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-sm text-white"
               >
                 <option value="newest">Newest first</option>
@@ -392,7 +392,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   <input
                     type="checkbox"
                     checked={selectedNotifications.has(notification.id)}
-                    onChange={(e) => {
+                    onChange={(e: any) => {
                       const newSelection = new Set(selectedNotifications);
                       if (e.target.checked) {
                         newSelection.add(notification.id);

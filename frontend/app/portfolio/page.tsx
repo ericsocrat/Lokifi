@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useToast } from '@/src/components/dashboard/ToastProvider';
 import {
@@ -92,8 +92,8 @@ function PortfolioPageContent() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('1D');
 
   // Get live portfolio prices from master market data service
-  const holdings = sections.flatMap((section) =>
-    section.assets.map((asset) => ({
+  const holdings = sections.flatMap((section: any) =>
+    section.assets.map((asset: any) => ({
       symbol: asset.symbol,
       shares: asset.shares,
     }))
@@ -148,7 +148,7 @@ function PortfolioPageContent() {
   };
 
   const handleAddAssets = (assets: any[], category: string) => {
-    const items: Asset[] = assets.map((asset) => ({
+    const items: Asset[] = assets.map((asset: any) => ({
       id: `${asset.symbol}-${Date.now()}-${Math.random()}`,
       name: asset.name,
       symbol: asset.symbol,
@@ -169,7 +169,7 @@ function PortfolioPageContent() {
 
   const getTotalValue = () => {
     // Use live portfolio value + connecting banks value
-    const banksValue = connectingBanks.reduce((s, b) => s + b.value, 0);
+    const banksValue = connectingBanks.reduce((s: any, b: any) => s + b.value, 0);
     return livePortfolioValue + banksValue;
   };
 
@@ -187,7 +187,7 @@ function PortfolioPageContent() {
   };
 
   const toggleSection = (sectionTitle: string) => {
-    setCollapsedSections((prev) => {
+    setCollapsedSections((prev: any) => {
       const next = new Set(prev);
       if (next.has(sectionTitle)) {
         next.delete(sectionTitle);
@@ -198,7 +198,7 @@ function PortfolioPageContent() {
     });
   };
 
-  const hasAnyAssets = sections.some((s) => s.assets.length > 0);
+  const hasAnyAssets = sections.some((s: any) => s.assets.length > 0);
 
   const simulateBankConnections = () => {
     const banks = JSON.parse(localStorage.getItem('connectingBanks') || '[]');
@@ -301,7 +301,7 @@ function PortfolioPageContent() {
                     
                     {/* Timeframe Selector */}
                     <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1">
-                      {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map((tf) => (
+                      {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map((tf: any) => (
                         <button
                           key={tf}
                           onClick={() => setSelectedTimeframe(tf)}
@@ -320,7 +320,7 @@ function PortfolioPageContent() {
                 
                 {/* Mini Chart Visualization */}
                 <div className="h-20 flex items-end gap-1 mb-2">
-                  {Array.from({ length: 30 }).map((_, i) => {
+                  {Array.from({ length: 30 }).map((_: any, i: any) => {
                     const height = 20 + Math.random() * 60;
                     const isPositive = Math.random() > 0.4;
                     return (
@@ -402,7 +402,7 @@ function PortfolioPageContent() {
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-                {sections.reduce((sum, s) => sum + s.assets.length, 0)}
+                {sections.reduce((sum: any, s: any) => sum + s.assets.length, 0)}
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 Total holdings
@@ -593,9 +593,9 @@ function PortfolioPageContent() {
         </div>
 
         {/* Sections */}
-        {sections.map((section, idx) => {
+        {sections.map((section: any, idx: any) => {
           // Calculate live section value using current market prices
-          const liveSectionValue = section.assets.reduce((sum, asset) => {
+          const liveSectionValue = section.assets.reduce((sum: any, asset: any) => {
             const livePrice = prices.get(asset.symbol) || (asset.value / asset.shares);
             return sum + (livePrice * asset.shares);
           }, 0);
@@ -627,10 +627,10 @@ function PortfolioPageContent() {
               
               {!isCollapsed && (
                 <div className="space-y-3">
-                  {idx === 0 && connectingBanks.map((bank) => (
+                  {idx === 0 && connectingBanks.map((bank: any) => (
                     <ConnectingBankItem key={bank.id} bank={bank} />
                   ))}
-                  {section.assets.map((asset) => (
+                  {section.assets.map((asset: any) => (
                     <AssetItem
                       key={asset.id}
                       asset={asset}
@@ -639,7 +639,7 @@ function PortfolioPageContent() {
                     />
                   ))}
                   <button
-                    onClick={(e) => {
+                    onClick={(e: any) => {
                       e.stopPropagation();
                       openAddAssetModal();
                     }}
@@ -708,7 +708,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimatedValue((prev) => {
+      setAnimatedValue((prev: any) => {
         const change = Math.floor(Math.random() * 200) - 100;
         return Math.max(0, prev + change);
       });

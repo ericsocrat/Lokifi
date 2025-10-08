@@ -63,10 +63,10 @@ export function addSection(section: PortfolioSection): void {
 // Delete an asset
 export function deleteAsset(sectionTitle: string, assetId: string): void {
   const sections = loadPortfolio();
-  const section = sections.find(s => s.title === sectionTitle);
+  const section = sections.find((s: any) => s.title === sectionTitle);
   
   if (section) {
-    section.assets = section.assets.filter(a => a.id !== assetId);
+    section.assets = section.assets.filter((a: any) => a.id !== assetId);
     savePortfolio(sections);
   }
 }
@@ -74,7 +74,7 @@ export function deleteAsset(sectionTitle: string, assetId: string): void {
 // Calculate total portfolio value
 export function totalValue(): number {
   const sections = loadPortfolio();
-  return sections.reduce((total, section) => {
+  return sections.reduce((total: any, section: any) => {
     return total + section.assets.reduce((sum, asset) => sum + asset.value, 0);
   }, 0);
 }

@@ -509,7 +509,7 @@ interface ObservabilityActions {
 export const useObservabilityStore = create<ObservabilityState & ObservabilityActions>()(
   persist(
     subscribeWithSelector(
-      immer<any>((set, get) => ({
+      immer<any>((set: any, get: any) => ({
         // Initial State
         metrics: [],
         metricValues: [],
@@ -554,7 +554,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         errorMessage: null,
         
         // Metrics
-        createMetric: (metricData) => {
+        createMetric: (metricData: any) => {
           if (!FLAGS.observability) return '';
           
           const metricId = `metric_${Date.now()}`;
@@ -574,11 +574,11 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           return metricId;
         },
         
-        updateMetric: (metricId, updates) => {
+        updateMetric: (metricId: any, updates: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const metric = state.metrics.find(m => m.id === metricId);
+            const metric = state.metrics.find((m: any) => m.id === metricId);
             if (metric) {
               Object.assign(metric, updates);
               metric.updatedAt = new Date();
@@ -586,7 +586,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        deleteMetric: (metricId) => {
+        deleteMetric: (metricId: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
@@ -596,8 +596,8 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
             
             // Remove related data
-            state.metricValues = state.metricValues.filter(v => v.metricId !== metricId);
-            state.alertRules = state.alertRules.filter(r => r.metricId !== metricId);
+            state.metricValues = state.metricValues.filter((v: any) => v.metricId !== metricId);
+            state.alertRules = state.alertRules.filter((r: any) => r.metricId !== metricId);
           });
         },
         
@@ -632,7 +632,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Alerts
-        createAlertRule: (ruleData) => {
+        createAlertRule: (ruleData: any) => {
           if (!FLAGS.observability) return '';
           
           const ruleId = `alert_${Date.now()}`;
@@ -650,18 +650,18 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           return ruleId;
         },
         
-        updateAlertRule: (ruleId, updates) => {
+        updateAlertRule: (ruleId: any, updates: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const rule = state.alertRules.find(r => r.id === ruleId);
+            const rule = state.alertRules.find((r: any) => r.id === ruleId);
             if (rule) {
               Object.assign(rule, updates);
             }
           });
         },
         
-        deleteAlertRule: (ruleId) => {
+        deleteAlertRule: (ruleId: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
@@ -671,7 +671,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
             
             // Remove from active alerts
-            state.activeAlerts = state.activeAlerts.filter(a => a.id !== ruleId);
+            state.activeAlerts = state.activeAlerts.filter((a: any) => a.id !== ruleId);
           });
         },
         
@@ -681,12 +681,12 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           const { alertRules, metricValues } = get();
           const now = new Date();
           
-          alertRules.forEach(rule => {
+          alertRules.forEach((rule: any) => {
             if (!rule.isEnabled) return;
             
             // Get recent metric values
             const windowStart = new Date(now.getTime() - rule.condition.window * 1000);
-            const recentValues = metricValues.filter(v => 
+            const recentValues = metricValues.filter((v: any) => 
               v.metricId === rule.metricId && 
               v.timestamp >= windowStart
             );
@@ -695,14 +695,14 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             
             // Calculate aggregated value
             let aggregatedValue: number;
-            const values = recentValues.map(v => v.value);
+            const values = recentValues.map((v: any) => v.value);
             
             switch (rule.condition.aggregation) {
               case 'avg':
-                aggregatedValue = values.reduce((sum, v) => sum + v, 0) / values.length;
+                aggregatedValue = values.reduce((sum: any, v: any) => sum + v, 0) / values.length;
                 break;
               case 'sum':
-                aggregatedValue = values.reduce((sum, v) => sum + v, 0);
+                aggregatedValue = values.reduce((sum: any, v: any) => sum + v, 0);
                 break;
               case 'min':
                 aggregatedValue = Math.min(...values);
@@ -741,7 +741,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
             
             set((state: any) => {
-              const existingAlert = state.activeAlerts.find(a => a.id === rule.id);
+              const existingAlert = state.activeAlerts.find((a: any) => a.id === rule.id);
               
               if (shouldFire && !existingAlert) {
                 // Fire alert
@@ -749,7 +749,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                 state.activeAlerts.push(updatedRule);
                 
                 // Update original rule
-                const originalRule = state.alertRules.find(r => r.id === rule.id);
+                const originalRule = state.alertRules.find((r: any) => r.id === rule.id);
                 if (originalRule) {
                   originalRule.status = 'firing';
                   originalRule.lastTriggered = now;
@@ -760,9 +760,9 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                 
               } else if (!shouldFire && existingAlert) {
                 // Resolve alert
-                state.activeAlerts = state.activeAlerts.filter(a => a.id !== rule.id);
+                state.activeAlerts = state.activeAlerts.filter((a: any) => a.id !== rule.id);
                 
-                const originalRule = state.alertRules.find(r => r.id === rule.id);
+                const originalRule = state.alertRules.find((r: any) => r.id === rule.id);
                 if (originalRule) {
                   originalRule.status = 'resolved';
                 }
@@ -771,13 +771,13 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        resolveAlert: (ruleId) => {
+        resolveAlert: (ruleId: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            state.activeAlerts = state.activeAlerts.filter(a => a.id !== ruleId);
+            state.activeAlerts = state.activeAlerts.filter((a: any) => a.id !== ruleId);
             
-            const rule = state.alertRules.find(r => r.id === ruleId);
+            const rule = state.alertRules.find((r: any) => r.id === ruleId);
             if (rule) {
               rule.status = 'resolved';
             }
@@ -785,7 +785,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // System Monitoring
-        recordSystemMetrics: (metricsData) => {
+        recordSystemMetrics: (metricsData: any) => {
           if (!FLAGS.observability) return;
           
           const metrics: SystemMetrics = {
@@ -859,7 +859,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // User Behavior Tracking
-        trackEvent: (eventData) => {
+        trackEvent: (eventData: any) => {
           if (!FLAGS.observability || !get().settings.enableUserTracking) return;
           
           const eventId = `event_${Date.now()}_${Math.random()}`;
@@ -935,7 +935,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Error Tracking
-        reportError: (errorData) => {
+        reportError: (errorData: any) => {
           if (!FLAGS.observability || !get().settings.enableErrorReporting) return;
           
           const errorId = `error_${Date.now()}`;
@@ -976,7 +976,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Performance Tracking
-        startTrace: (name, operation) => {
+        startTrace: (name: any, operation: any) => {
           if (!FLAGS.observability || !get().settings.enablePerformanceMonitoring) return '';
           
           const traceId = `trace_${Date.now()}_${Math.random()}`;
@@ -1030,7 +1030,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           performance.clearMeasures(`trace_${traceId}`);
         },
         
-        recordPerformance: (traceData) => {
+        recordPerformance: (traceData: any) => {
           if (!FLAGS.observability) return;
           
           const traceId = `perf_${Date.now()}`;
@@ -1045,7 +1045,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             
             // Update performance metrics
             const recentTraces = state.performanceTraces.slice(-1000);
-            const durations = recentTraces.map(t => t.duration).sort((a, b) => a - b);
+            const durations = recentTraces.map((t: any) => t.duration).sort((a: any, b: any) => a - b);
             
             if (durations.length > 0) {
               const p50Index = Math.floor(durations.length * 0.5);
@@ -1056,8 +1056,8 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                 p50: durations[p50Index] || 0,
                 p95: durations[p95Index] || 0,
                 p99: durations[p99Index] || 0,
-                avgResponseTime: durations.reduce((sum, d) => sum + d, 0) / durations.length,
-                errorRate: recentTraces.filter(t => t.status === 'error').length / recentTraces.length
+                avgResponseTime: durations.reduce((sum: any, d: any) => sum + d, 0) / durations.length,
+                errorRate: recentTraces.filter((t: any) => t.status === 'error').length / recentTraces.length
               };
             }
             
@@ -1114,9 +1114,9 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           }
         },
         
-        debug: (message, data) => get().log('debug', message, data),
-        info: (message, data) => get().log('info', message, data),
-        warn: (message, data) => get().log('warn', message, data),
+        debug: (message: any, data: any) => get().log('debug', message, data),
+        info: (message: any, data: any) => get().log('info', message, data),
+        warn: (message: any, data: any) => get().log('warn', message, data),
         error: (message, error, data = {}) => {
           const errorData = error ? {
             name: error.name,
@@ -1128,7 +1128,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Dashboard Management
-        createDashboard: (dashboardData) => {
+        createDashboard: (dashboardData: any) => {
           if (!FLAGS.observability) return '';
           
           const dashboardId = `dashboard_${Date.now()}`;
@@ -1149,11 +1149,11 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           return dashboardId;
         },
         
-        updateDashboard: (dashboardId, updates) => {
+        updateDashboard: (dashboardId: any, updates: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const dashboard = state.dashboards.find(d => d.id === dashboardId);
+            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
             if (dashboard) {
               Object.assign(dashboard, updates);
               dashboard.updatedAt = new Date();
@@ -1161,7 +1161,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        deleteDashboard: (dashboardId) => {
+        deleteDashboard: (dashboardId: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
@@ -1177,12 +1177,12 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        setActiveDashboard: (dashboardId) => {
+        setActiveDashboard: (dashboardId: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
             if (dashboardId) {
-              const dashboard = state.dashboards.find(d => d.id === dashboardId);
+              const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
               if (dashboard) {
                 state.activeDashboard = dashboard;
                 dashboard.lastViewedAt = new Date();
@@ -1194,7 +1194,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        addWidget: (dashboardId, widgetData) => {
+        addWidget: (dashboardId: any, widgetData: any) => {
           if (!FLAGS.observability) return '';
           
           const widgetId = `widget_${Date.now()}`;
@@ -1204,7 +1204,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           };
           
           set((state: any) => {
-            const dashboard = state.dashboards.find(d => d.id === dashboardId);
+            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
             if (dashboard) {
               dashboard.widgets.push(widget);
               dashboard.updatedAt = new Date();
@@ -1218,7 +1218,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const dashboard = state.dashboards.find(d => d.id === dashboardId);
+            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
             if (dashboard) {
               const widget = dashboard.widgets.find(w => w.id === widgetId);
               if (widget) {
@@ -1229,11 +1229,11 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        removeWidget: (dashboardId, widgetId) => {
+        removeWidget: (dashboardId: any, widgetId: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const dashboard = state.dashboards.find(d => d.id === dashboardId);
+            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
             if (dashboard) {
               const index = dashboard.widgets.findIndex(w => w.id === widgetId);
               if (index !== -1) {
@@ -1287,7 +1287,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Query & Analysis
-        queryMetrics: async (query, timeRange) => {
+        queryMetrics: async (query: any, timeRange: any) => {
           if (!FLAGS.observability) return [];
           
           try {
@@ -1313,7 +1313,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           }
         },
         
-        analyzePerformance: async (timeRange) => {
+        analyzePerformance: async (timeRange: any) => {
           if (!FLAGS.observability) return {};
           
           try {
@@ -1339,7 +1339,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           }
         },
         
-        generateReport: async (type, config) => {
+        generateReport: async (type: any, config: any) => {
           if (!FLAGS.observability) throw new Error('Observability not enabled');
           
           const response = await fetch('/api/observability/reports/generate', {
@@ -1357,7 +1357,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Data Management
-        exportData: async (type, timeRange) => {
+        exportData: async (type: any, timeRange: any) => {
           if (!FLAGS.observability) throw new Error('Observability not enabled');
           
           const response = await fetch(`/api/observability/data/export/${type}`, {
@@ -1374,16 +1374,16 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           return await response.blob();
         },
         
-        clearOldData: (beforeDate) => {
+        clearOldData: (beforeDate: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            state.metricValues = state.metricValues.filter(v => v.timestamp >= beforeDate);
-            state.userEvents = state.userEvents.filter(e => e.timestamp >= beforeDate);
-            state.errors = state.errors.filter(e => e.timestamp >= beforeDate);
-            state.performanceTraces = state.performanceTraces.filter(t => t.timestamp >= beforeDate);
+            state.metricValues = state.metricValues.filter((v: any) => v.timestamp >= beforeDate);
+            state.userEvents = state.userEvents.filter((e: any) => e.timestamp >= beforeDate);
+            state.errors = state.errors.filter((e: any) => e.timestamp >= beforeDate);
+            state.performanceTraces = state.performanceTraces.filter((t: any) => t.timestamp >= beforeDate);
             state.logs = state.logs.filter(l => l.timestamp >= beforeDate);
-            state.systemMetrics = state.systemMetrics.filter(m => m.timestamp >= beforeDate);
+            state.systemMetrics = state.systemMetrics.filter((m: any) => m.timestamp >= beforeDate);
           });
         },
         
@@ -1397,7 +1397,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
         },
         
         // Settings
-        updateSettings: (settings) => {
+        updateSettings: (settings: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
@@ -1405,7 +1405,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
         },
         
-        setTimeRange: (timeRange) => {
+        setTimeRange: (timeRange: any) => {
           if (!FLAGS.observability) return;
           
           set((state: any) => {
@@ -1455,7 +1455,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           }
         },
         
-        loadHistoricalData: async (timeRange) => {
+        loadHistoricalData: async (timeRange: any) => {
           if (!FLAGS.observability) return;
           
           try {
@@ -1544,7 +1544,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
           ];
           
-          defaultMetrics.forEach(metric => {
+          defaultMetrics.forEach((metric: any) => {
             get().createMetric(metric);
           });
         },
@@ -1553,7 +1553,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (typeof window === 'undefined') return;
           
           // Global error handler
-          window.addEventListener('error', (event) => {
+          window.addEventListener('error', (event: any) => {
             get().reportError({
               type: 'javascript',
               message: event.message,
@@ -1574,7 +1574,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           });
           
           // Unhandled promise rejections
-          window.addEventListener('unhandledrejection', (event) => {
+          window.addEventListener('unhandledrejection', (event: any) => {
             get().reportError({
               type: 'javascript',
               message: `Unhandled promise rejection: ${event.reason}`,
@@ -1596,7 +1596,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           
           try {
             // Navigation timing
-            const navObserver = new PerformanceObserver((list) => {
+            const navObserver = new PerformanceObserver((list: any) => {
               for (const entry of list.getEntries()) {
                 if (entry.entryType === 'navigation') {
                   const navEntry = entry as PerformanceNavigationTiming;
@@ -1717,16 +1717,16 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
 
 // Selectors
 export const useActiveMetrics = () =>
-  useObservabilityStore((state) => state.metrics.filter(m => m.isActive));
+  useObservabilityStore((state: any) => state.metrics.filter((m: any) => m.isActive));
 
 export const useRecentErrors = (limit = 10) =>
-  useObservabilityStore((state) => state.recentErrors.slice(0, limit));
+  useObservabilityStore((state: any) => state.recentErrors.slice(0, limit));
 
 export const usePerformanceMetrics = () =>
-  useObservabilityStore((state) => state.performanceMetrics);
+  useObservabilityStore((state: any) => state.performanceMetrics);
 
 export const useSystemHealth = () =>
-  useObservabilityStore((state) => {
+  useObservabilityStore((state: any) => {
     const current = state.currentMetrics;
     if (!current) return null;
     

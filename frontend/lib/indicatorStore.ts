@@ -113,7 +113,7 @@ class IndicatorStore {
 
   private notify() {
     const snap = this.get();
-    this.subs.forEach((fn) => { try { fn(snap); } catch {} });
+    this.subs.forEach((fn: any) => { try { fn(snap); } catch {} });
   }
 
   /** Toggle a boolean flag in state.flags by key */

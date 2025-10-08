@@ -30,12 +30,12 @@ export class MarketDataAdapter {
 
   on(cb: Listener) {
     this.listeners.push(cb)
-    return () => { this.listeners = this.listeners.filter(l => l !== cb) }
+    return () => { this.listeners = this.listeners.filter((l: any) => l !== cb) }
   }
 
   private emit(type: 'snapshot'|'update') {
     const c = this.candles
-    this.listeners.forEach(l => l({ type, candles: c }))
+    this.listeners.forEach((l: any) => l({ type, candles: c }))
   }
 
   setSymbol(sym: string) {
@@ -120,7 +120,7 @@ export class MarketDataAdapter {
         this.candles = []; this.emit('snapshot')
       }
       this.ws = new WebSocket(applyQuery(stream, { symbol: this.symbol, tf: this.timeframe }))
-      this.ws.onmessage = (m) => {
+      this.ws.onmessage = (m: any) => {
         try {
           const obj = JSON.parse(m.data as any)
           const c = normalizeCandle(obj)
@@ -131,7 +131,7 @@ export class MarketDataAdapter {
       }
       this.ws.onopen = () => console.log('WS connected')
       this.ws.onclose = () => console.log('WS closed')
-      this.ws.onerror = (e) => console.log('WS error', e)
+      this.ws.onerror = (e: any) => console.log('WS error', e)
     }
   }
 

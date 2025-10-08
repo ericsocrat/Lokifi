@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { AuthModal } from "@/src/components/AuthModal";
 import { createAlert, deleteAlert, listAlerts, subscribeAlerts, toggleAlert, type Alert } from "@/src/lib/alerts";
@@ -27,7 +27,7 @@ export default function AlertsPage() {
       }
       await refresh();
       // subscribe SSE
-      subRef.current = subscribeAlerts((ev) => {
+      subRef.current = subscribeAlerts((ev: any) => {
         setLog((l) => [`${new Date(ev.at).toLocaleTimeString()} ${ev.kind} ${ev.price ? `@ $${ev.price}` : ''}`, ...l].slice(0, 50));
       }, true);
     })();
@@ -68,21 +68,21 @@ export default function AlertsPage() {
 
       <div className="rounded-2xl border border-neutral-800 p-4 bg-neutral-900 space-y-3">
         <div className="grid grid-cols-2 md:grid-cols-6 gap-2">
-          <select className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value as Kind })}>
+          <select className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" value={form.kind} onChange={(e: any) => setForm({ ...form, kind: e.target.value as Kind })}>
             <option value="price_threshold">Price threshold</option>
             <option value="pct_change">% change</option>
           </select>
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Symbol" value={form.symbol} onChange={(e) => setForm({ ...form, symbol: e.target.value })} />
-          <select className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" value={form.timeframe} onChange={(e) => setForm({ ...form, timeframe: e.target.value })}>
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Symbol" value={form.symbol} onChange={(e: any) => setForm({ ...form, symbol: e.target.value })} />
+          <select className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" value={form.timeframe} onChange={(e: any) => setForm({ ...form, timeframe: e.target.value })}>
             <option>1m</option><option>5m</option><option>15m</option><option>1h</option><option>4h</option><option>1d</option>
           </select>
-          <select className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" value={form.direction} onChange={(e) => setForm({ ...form, direction: e.target.value })}>
+          <select className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" value={form.direction} onChange={(e: any) => setForm({ ...form, direction: e.target.value })}>
             <option value="above">Above/Up</option>
             <option value="below">Below/Down</option>
             <option value="abs">Abs (for %)</option>
           </select>
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Price or % threshold" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} />
-          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Window (min, % only)" value={form.window} onChange={(e) => setForm({ ...form, window: e.target.value })} />
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Price or % threshold" value={form.number} onChange={(e: any) => setForm({ ...form, number: e.target.value })} />
+          <input className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700" placeholder="Window (min, % only)" value={form.window} onChange={(e: any) => setForm({ ...form, window: e.target.value })} />
         </div>
         <div className="flex gap-2">
           <button onClick={create} className="px-3 py-2 rounded-lg bg-sky-600 hover:bg-sky-500">Create alert</button>
@@ -91,7 +91,7 @@ export default function AlertsPage() {
       </div>
 
       <div className="grid gap-2">
-        {alerts.map(a => (
+        {alerts.map((a: any) => (
           <div key={a.id} className="rounded-xl border border-neutral-800 p-3 bg-neutral-900 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div className="text-sm">
               <span className="font-medium">{a.kind}</span>
@@ -112,7 +112,7 @@ export default function AlertsPage() {
       <div className="rounded-xl border border-neutral-800 p-3 bg-neutral-900">
         <div className="font-medium mb-2">Live triggers</div>
         <div className="space-y-1 text-sm text-neutral-300 max-h-64 overflow-auto">
-          {log.map((l, i) => <div key={i} className="font-mono">{l}</div>)}
+          {log.map((l: any, i: any) => <div key={i} className="font-mono">{l}</div>)}
         </div>
       </div>
     </div>

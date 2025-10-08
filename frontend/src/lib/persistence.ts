@@ -32,7 +32,7 @@ export function saveSlot(slotName: string, project: ProjectV1) {
   const pack = JSON.stringify({ checksum, payload })
   localStorage.setItem(LS_PREFIX + slotName, pack)
   const slots = listSlots()
-  setSlots([ ...slots.filter(s => s !== slotName), slotName ])
+  setSlots([ ...slots.filter((s: any) => s !== slotName), slotName ])
 }
 
 export function loadSlot(slotName: string): ProjectV1 | null {
@@ -53,7 +53,7 @@ export function loadSlot(slotName: string): ProjectV1 | null {
 
 export function deleteSlot(slotName: string) {
   localStorage.removeItem(LS_PREFIX + slotName)
-  setSlots(listSlots().filter(s => s !== slotName))
+  setSlots(listSlots().filter((s: any) => s !== slotName))
 }
 
 export function projectFromState(s: {

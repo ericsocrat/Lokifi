@@ -28,7 +28,7 @@ export function ExportButton({ data, filename, disabled }: ExportButtonProps) {
       // Create CSV content
       const csvContent = [
         headers.join(','),
-        ...data.map(item => 
+        ...data.map((item: any) => 
           headers.map(header => {
             const value = item[header];
             // Handle values with commas by wrapping in quotes

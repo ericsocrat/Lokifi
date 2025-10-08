@@ -163,7 +163,7 @@ describe('Chart Data Processing', () => {
     ];
 
     // Test the conversion logic
-    const chartData = mockOHLCData.map(item => ({
+    const chartData = mockOHLCData.map((item: any) => ({
       time: Math.floor(new Date(item.timestamp).getTime() / 1000),
       open: item.open,
       high: item.high,

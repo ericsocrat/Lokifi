@@ -82,16 +82,33 @@ lokifi/
 
    The services include health checks and will automatically restart if unhealthy.
 
-### Alternative: Local Development
+### Alternative: Ultimate Manager (Enhanced)
 
-**Backend:**
+**All-in-One Command:**
+```bash
+# Quick start (servers + setup)
+.\lokifi-manager-enhanced.ps1 servers
+
+# Quick analysis & health check
+.\lokifi-manager-enhanced.ps1 analyze
+
+# Fix common issues automatically
+.\lokifi-manager-enhanced.ps1 fix
+
+# Interactive development menu
+.\lokifi-manager-enhanced.ps1 launch
+
+# Development workflow
+.\lokifi-manager-enhanced.ps1 dev -Component both
+```
+
+**Traditional Setup:**
 ```bash
 cd backend
 make setup  # Creates venv and installs dependencies
 make dev    # Starts development server
 ```
 
-**Frontend:**
 ```bash
 cd frontend
 npm install

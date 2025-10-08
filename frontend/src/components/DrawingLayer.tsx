@@ -34,7 +34,7 @@ export default function DrawingLayer() {
 
   React.useEffect(
     () =>
-      useChartStore.subscribe((state) => {
+      useChartStore.subscribe((state: any) => {
         setDrawings(state.drawings);
         needsDraw.current = true;
       }),
@@ -76,7 +76,7 @@ export default function DrawingLayer() {
       ctx.scale(dpr, dpr);
       ctx.lineCap = s.drawingSettings.lineCap;
 
-      drawings.forEach((d) => {
+      drawings.forEach((d: any) => {
         const ly = layerOf((d as any).layerId || s.activeLayerId || "layer-1");
         if (!ly.visible) return;
         if ((d as any).hidden) return;
@@ -372,7 +372,7 @@ export default function DrawingLayer() {
     const p = toLocal(e);
 
     if (s.activeTool === "select") {
-      const hit = drawings.find((d) => !(d as any).locked && !(d as any).hidden && hitTest(d, p, containerRef.current!) < HIT_PAD);
+      const hit = drawings.find((d: any) => !(d as any).locked && !(d as any).hidden && hitTest(d, p, containerRef.current!) < HIT_PAD);
       if (!hit) {
         setMarquee({ start: p, end: p });
         s.clearSelection();
@@ -397,16 +397,16 @@ export default function DrawingLayer() {
   const onMouseMove = (e: React.MouseEvent) => {
     const p = toLocal(e);
     if (marquee) {
-      setMarquee((v) => (v ? { ...v, end: p } : null));
+      setMarquee((v: any) => (v ? { ...v, end: p } : null));
       invalidate();
       return;
     }
     if (dragId) {
-      s.updateDrawing(dragId, (dr) => updateDrawingGeometry(dr, p));
+      s.updateDrawing(dragId, (dr: any) => updateDrawingGeometry(dr, p));
       invalidate();
       return;
     }
-    const id = drawings.find((d) => !(d as any).hidden && hitTest(d, p, containerRef.current!) < HIT_PAD)?.id ?? null;
+    const id = drawings.find((d: any) => !(d as any).hidden && hitTest(d, p, containerRef.current!) < HIT_PAD)?.id ?? null;
     setHoverId(id); // cosmetic; no invalidate
   };
 
@@ -414,8 +414,8 @@ export default function DrawingLayer() {
     if (marquee) {
       const r = rectFromPoints(marquee.start, marquee.end);
       const ids = drawings
-        .filter((d) => !(d as any).hidden && !(d as any).locked && (d as any).points.some((pt: Point) => withinRect(pt, r)))
-        .map((d) => d.id);
+        .filter((d: any) => !(d as any).hidden && !(d as any).locked && (d as any).points.some((pt: Point) => withinRect(pt, r)))
+        .map((d: any) => d.id);
       s.setSelection(new Set(ids));
       setMarquee(null);
       invalidate();

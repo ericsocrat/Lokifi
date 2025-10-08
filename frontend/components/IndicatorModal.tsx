@@ -109,7 +109,7 @@ function IndicatorModal({ isOpen, onClose }: IndicatorModalProps) {
   const categories = ['All', 'Trend', 'Momentum', 'Volatility', 'Volume'];
 
   const filteredIndicators = useMemo(() => {
-    return INDICATORS.filter(indicator => {
+    return INDICATORS.filter((indicator: any) => {
       const matchesSearch = indicator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           indicator.description.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = selectedCategory === 'All' || indicator.category === selectedCategory;
@@ -150,14 +150,14 @@ function IndicatorModal({ isOpen, onClose }: IndicatorModalProps) {
               type="text"
               placeholder="Search indicators..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e: any) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none"
             />
           </div>
 
           {/* Category Filter */}
           <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
+            {categories.map((category: any) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -176,7 +176,7 @@ function IndicatorModal({ isOpen, onClose }: IndicatorModalProps) {
         {/* Indicators List */}
         <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(80vh - 200px)' }}>
           <div className="p-4 space-y-2">
-            {filteredIndicators.map((indicator) => {
+            {filteredIndicators.map((indicator: any) => {
               const IconComponent = CATEGORY_ICONS[indicator.category];
               
               return (

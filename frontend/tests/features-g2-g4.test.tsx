@@ -42,7 +42,7 @@ describe('Watchlist Store (G2)', () => {
         const id = result.current.createWatchlist('Test Watchlist');
         result.current.addToWatchlist(id, 'AAPL', 'Test note');
         
-        const watchlist = result.current.watchlists.find(w => w.id === id);
+        const watchlist = result.current.watchlists.find((w: any) => w.id === id);
         expect(watchlist?.items).toHaveLength(1);
         expect(watchlist?.items[0].symbol).toBe('AAPL');
         expect(watchlist?.items[0].notes).toBe('Test note');
@@ -57,7 +57,7 @@ describe('Watchlist Store (G2)', () => {
         result.current.addToWatchlist(id, 'AAPL');
         result.current.addToWatchlist(id, 'AAPL'); // Duplicate
         
-        const watchlist = result.current.watchlists.find(w => w.id === id);
+        const watchlist = result.current.watchlists.find((w: any) => w.id === id);
         expect(watchlist?.items).toHaveLength(1);
       });
     });
@@ -71,7 +71,7 @@ describe('Watchlist Store (G2)', () => {
         result.current.addToWatchlist(id, 'GOOGL');
         result.current.removeFromWatchlist(id, 'AAPL');
         
-        const watchlist = result.current.watchlists.find(w => w.id === id);
+        const watchlist = result.current.watchlists.find((w: any) => w.id === id);
         expect(watchlist?.items).toHaveLength(1);
         expect(watchlist?.items[0].symbol).toBe('GOOGL');
       });
@@ -92,7 +92,7 @@ describe('Watchlist Store (G2)', () => {
           isActive: true
         });
         
-        const watchlist = result.current.watchlists.find(w => w.id === id);
+        const watchlist = result.current.watchlists.find((w: any) => w.id === id);
         const item = watchlist?.items[0];
         expect(item?.alerts).toHaveLength(1);
         expect(item?.alerts?.[0].condition).toBe('above');
@@ -113,13 +113,13 @@ describe('Watchlist Store (G2)', () => {
           isActive: true
         });
         
-        const watchlist = result.current.watchlists.find(w => w.id === id);
+        const watchlist = result.current.watchlists.find((w: any) => w.id === id);
         const alertId = watchlist?.items[0].alerts?.[0].id;
         expect(alertId).toBeTruthy();
         
         result.current.toggleAlert(id, 'AAPL', alertId!);
         
-        const updatedWatchlist = result.current.watchlists.find(w => w.id === id);
+        const updatedWatchlist = result.current.watchlists.find((w: any) => w.id === id);
         const alert = updatedWatchlist?.items[0].alerts?.[0];
         expect(alert?.isActive).toBe(false);
       });
@@ -172,7 +172,7 @@ describe('Watchlist Store (G2)', () => {
       act(() => {
         const id = result.current.importWatchlist(['AAPL', 'GOOGL', 'MSFT']);
         
-        const watchlist = result.current.watchlists.find(w => w.id === id);
+        const watchlist = result.current.watchlists.find((w: any) => w.id === id);
         expect(watchlist?.items).toHaveLength(3);
         expect(watchlist?.name).toBe('Imported Watchlist');
       });
@@ -276,7 +276,7 @@ describe('Templates Store (G4)', () => {
         
         expect(result.current.templates).toHaveLength(2);
         
-        const duplicate = result.current.templates.find(t => t.id === duplicateId);
+        const duplicate = result.current.templates.find((t: any) => t.id === duplicateId);
         expect(duplicate?.name).toBe('Duplicate Template');
         expect(duplicate?.config.chartType).toBe('line');
         expect(duplicate?.config.timeframe).toBe('4H');
@@ -492,7 +492,7 @@ describe('Templates Store (G4)', () => {
         const id = await result.current.importTemplate(templateData);
         
         expect(id).toBeTruthy();
-        const imported = result.current.templates.find(t => t.id === id);
+        const imported = result.current.templates.find((t: any) => t.id === id);
         expect(imported?.name).toBe('Imported Template');
         expect(imported?.config.chartType).toBe('line');
       });

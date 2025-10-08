@@ -18,17 +18,17 @@ export function QuickStats({ data, showMarketCap = false }: QuickStatsProps) {
   if (data.length === 0) return null;
   
   // Calculate statistics
-  const assetsWithChange = data.filter(a => a.price_change_percentage_24h !== undefined);
+  const assetsWithChange = data.filter((a: any) => a.price_change_percentage_24h !== undefined);
   
   const avgChange = assetsWithChange.length > 0
-    ? assetsWithChange.reduce((sum, a) => sum + a.price_change_percentage_24h, 0) / assetsWithChange.length
+    ? assetsWithChange.reduce((sum: any, a: any) => sum + a.price_change_percentage_24h, 0) / assetsWithChange.length
     : 0;
   
-  const gainers = assetsWithChange.filter(a => a.price_change_percentage_24h > 0).length;
-  const losers = assetsWithChange.filter(a => a.price_change_percentage_24h < 0).length;
+  const gainers = assetsWithChange.filter((a: any) => a.price_change_percentage_24h > 0).length;
+  const losers = assetsWithChange.filter((a: any) => a.price_change_percentage_24h < 0).length;
   
-  const totalVolume = data.reduce((sum, a) => sum + (a.total_volume || 0), 0);
-  const totalMarketCap = data.reduce((sum, a) => sum + (a.market_cap || 0), 0);
+  const totalVolume = data.reduce((sum: any, a: any) => sum + (a.total_volume || 0), 0);
+  const totalMarketCap = data.reduce((sum: any, a: any) => sum + (a.market_cap || 0), 0);
   
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

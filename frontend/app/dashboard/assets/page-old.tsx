@@ -261,7 +261,7 @@ export default function AssetsPage() {
 
                 {/* Connecting Banks */}
                 <div className="space-y-3">
-                  {connectingBanks.map((bank) => (
+                  {connectingBanks.map((bank: any) => (
                     <ConnectingBankItem key={bank.id} bank={bank} />
                   ))}
                 </div>
@@ -302,7 +302,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
   useEffect(() => {
     // Animate value changing
     const interval = setInterval(() => {
-      setAnimatedValue((prev) => {
+      setAnimatedValue((prev: any) => {
         const change = Math.floor(Math.random() * 200) - 100; // Random change -100 to +100
         const newValue = Math.max(0, prev + change);
         return newValue;
@@ -319,7 +319,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
   const getBankInitials = (name: string) => {
     return name
       .split(' ')
-      .map((word) => word[0])
+      .map((word: any) => word[0])
       .join('')
       .substring(0, 2)
       .toUpperCase();

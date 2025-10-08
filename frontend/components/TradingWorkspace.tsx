@@ -35,7 +35,7 @@ export const TradingWorkspace: React.FC = () => {
     setWorkspaceStats({
       totalObjects: objects.length,
       totalPanes: panes.length,
-      activeIndicators: panes.reduce((sum, pane) => sum + pane.indicators.length, 0),
+      activeIndicators: panes.reduce((sum: any, pane: any) => sum + pane.indicators.length, 0),
       currentSymbol: symbolStore.get(),
       currentTimeframe: timeframeStore.get(),
     });
@@ -77,12 +77,12 @@ export const TradingWorkspace: React.FC = () => {
       'msfullscreenchange',
     ];
 
-    events.forEach((event) => {
+    events.forEach((event: any) => {
       document.addEventListener(event, handleFullscreenChange);
     });
 
     return () => {
-      events.forEach((event) => {
+      events.forEach((event: any) => {
         document.removeEventListener(event, handleFullscreenChange);
       });
     };

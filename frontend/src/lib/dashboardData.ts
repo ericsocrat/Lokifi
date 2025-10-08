@@ -50,9 +50,9 @@ export function getStats(): DashboardStats {
   let illiquid = 0;
   let debts = 0;
 
-  portfolio.forEach(section => {
+  portfolio.forEach((section: any) => {
     const sectionTitle = section.title.toLowerCase();
-    const sectionValue = section.assets.reduce((sum, asset) => sum + asset.value, 0);
+    const sectionValue = section.assets.reduce((sum: any, asset: any) => sum + asset.value, 0);
 
     // Categorize based on section title
     if (sectionTitle.includes('invest') || sectionTitle.includes('stock') || sectionTitle.includes('crypto')) {
@@ -90,8 +90,8 @@ export function getAllocationByCategory(): AllocationItem[] {
   const categoryMap = new Map<string, number>();
   const total = totalValue();
 
-  portfolio.forEach(section => {
-    const value = section.assets.reduce((sum, asset) => sum + asset.value, 0);
+  portfolio.forEach((section: any) => {
+    const value = section.assets.reduce((sum: any, asset: any) => sum + asset.value, 0);
     categoryMap.set(section.title, value);
   });
 
@@ -107,7 +107,7 @@ export function getAllocationByCategory(): AllocationItem[] {
   let colorIndex = 0;
   const allocations: AllocationItem[] = [];
 
-  categoryMap.forEach((value, name) => {
+  categoryMap.forEach((value: any, name: any) => {
     allocations.push({
       name,
       value,
@@ -117,7 +117,7 @@ export function getAllocationByCategory(): AllocationItem[] {
     colorIndex++;
   });
 
-  return allocations.sort((a, b) => b.value - a.value);
+  return allocations.sort((a: any, b: any) => b.value - a.value);
 }
 
 /**
@@ -128,7 +128,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
   const typeMap = new Map<string, number>();
   const total = totalValue();
 
-  portfolio.forEach(section => {
+  portfolio.forEach((section: any) => {
     section.assets.forEach(asset => {
       // Group by symbol or name
       const key = asset.symbol || asset.name;
@@ -145,7 +145,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
   let colorIndex = 0;
   const allocations: AllocationItem[] = [];
 
-  typeMap.forEach((value, name) => {
+  typeMap.forEach((value: any, name: any) => {
     allocations.push({
       name,
       value,
@@ -157,7 +157,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
 
   // Return top 10 only
   return allocations
-    .sort((a, b) => b.value - a.value)
+    .sort((a: any, b: any) => b.value - a.value)
     .slice(0, 10);
 }
 
@@ -169,7 +169,7 @@ export function getTopHoldings(limit: number = 5): TopHolding[] {
   const holdings: TopHolding[] = [];
   const total = totalValue();
 
-  portfolio.forEach(section => {
+  portfolio.forEach((section: any) => {
     section.assets.forEach(asset => {
       holdings.push({
         symbol: asset.symbol,
@@ -181,7 +181,7 @@ export function getTopHoldings(limit: number = 5): TopHolding[] {
   });
 
   return holdings
-    .sort((a, b) => b.value - a.value)
+    .sort((a: any, b: any) => b.value - a.value)
     .slice(0, limit);
 }
 
@@ -256,5 +256,5 @@ export function hasAssets(): boolean {
  */
 export function getAssetCount(): number {
   const portfolio = loadPortfolio();
-  return portfolio.reduce((count, section) => count + section.assets.length, 0);
+  return portfolio.reduce((count: any, section: any) => count + section.assets.length, 0);
 }

@@ -671,11 +671,11 @@ const createInitialState = (): ConfigurationSyncState => ({
 // Create Store
 export const useConfigurationSyncStore = create<ConfigurationSyncState & ConfigurationSyncActions>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       ...createInitialState(),
 
       // Configuration Management
-      createConfiguration: (configData) => {
+      createConfiguration: (configData: any) => {
         if (!FLAGS.configurationSync) return '';
         
         const id = `config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -708,11 +708,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         return id;
       },
 
-      updateConfiguration: (configId, updates) => {
+      updateConfiguration: (configId: any, updates: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const config = state.configurations.find(c => c.id === configId);
+          const config = state.configurations.find((c: any) => c.id === configId);
           if (config) {
             const oldValue = { ...config };
             Object.assign(config, { ...updates, updatedAt: new Date(), version: config.version + 1 });
@@ -735,14 +735,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         });
       },
 
-      deleteConfiguration: (configId) => {
+      deleteConfiguration: (configId: any) => {
         if (!FLAGS.configurationSync) return;
         
-        const config = get().configurations.find(c => c.id === configId);
+        const config = get().configurations.find((c: any) => c.id === configId);
         if (!config) return;
         
         set((state: any) => {
-          state.configurations = state.configurations.filter(c => c.id !== configId);
+          state.configurations = state.configurations.filter((c: any) => c.id !== configId);
           if (state.selectedConfiguration === configId) {
             state.selectedConfiguration = null;
           }
@@ -761,10 +761,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         });
       },
 
-      cloneConfiguration: (configId, targetEnvironment) => {
+      cloneConfiguration: (configId: any, targetEnvironment: any) => {
         if (!FLAGS.configurationSync) return '';
         
-        const config = get().configurations.find(c => c.id === configId);
+        const config = get().configurations.find((c: any) => c.id === configId);
         if (!config) return '';
         
         return get().createConfiguration({
@@ -775,7 +775,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         });
       },
 
-      setSelectedConfiguration: (configId) => {
+      setSelectedConfiguration: (configId: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
@@ -784,10 +784,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Configuration Values
-      getConfigurationValue: (key, environmentId) => {
+      getConfigurationValue: (key: any, environmentId: any) => {
         if (!FLAGS.configurationSync) return undefined;
         
-        const config = get().configurations.find(c => 
+        const config = get().configurations.find((c: any) => 
           c.key === key && 
           (environmentId ? c.environmentId === environmentId : true)
         );
@@ -798,7 +798,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       setConfigurationValue: (key, value, environmentId) => {
         if (!FLAGS.configurationSync) return;
         
-        const config = get().configurations.find(c => 
+        const config = get().configurations.find((c: any) => 
           c.key === key && 
           (environmentId ? c.environmentId === environmentId : true)
         );
@@ -809,10 +809,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Validation
-      validateConfiguration: async (configId) => {
+      validateConfiguration: async (configId: any) => {
         if (!FLAGS.configurationSync) return [];
         
-        const config = get().configurations.find(c => c.id === configId);
+        const config = get().configurations.find((c: any) => c.id === configId);
         if (!config || !config.schema) return [];
         
         // Simulate validation
@@ -835,7 +835,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         
         // Update configuration with validation results
         set((state: any) => {
-          const c = state.configurations.find(c => c.id === configId);
+          const c = state.configurations.find((c: any) => c.id === configId);
           if (c) {
             c.isValid = errors.length === 0;
             c.validationErrors = errors;
@@ -858,7 +858,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Templates
-      createTemplate: (templateData) => {
+      createTemplate: (templateData: any) => {
         if (!FLAGS.configurationSync) return '';
         
         const id = `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -878,29 +878,29 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         return id;
       },
 
-      updateTemplate: (templateId, updates) => {
+      updateTemplate: (templateId: any, updates: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const template = state.templates.find(t => t.id === templateId);
+          const template = state.templates.find((t: any) => t.id === templateId);
           if (template) {
             Object.assign(template, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteTemplate: (templateId) => {
+      deleteTemplate: (templateId: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          state.templates = state.templates.filter(t => t.id !== templateId);
+          state.templates = state.templates.filter((t: any) => t.id !== templateId);
         });
       },
 
       applyTemplate: async (templateId, environmentId, variables) => {
         if (!FLAGS.configurationSync) return [];
         
-        const template = get().templates.find(t => t.id === templateId);
+        const template = get().templates.find((t: any) => t.id === templateId);
         if (!template) return [];
         
         const configIds: string[] = [];
@@ -925,7 +925,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         
         // Update template usage count
         set((state: any) => {
-          const t = state.templates.find(t => t.id === templateId);
+          const t = state.templates.find((t: any) => t.id === templateId);
           if (t) {
             t.usageCount += 1;
             if (!t.environments.includes(environmentId)) {
@@ -938,7 +938,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Environment Management
-      createEnvironment: (envData) => {
+      createEnvironment: (envData: any) => {
         if (!FLAGS.configurationSync) return '';
         
         const id = `env_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -957,7 +957,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           
           // Add to parent's children if specified
           if (environment.parentEnvironment) {
-            const parent = state.environments.find(e => e.id === environment.parentEnvironment);
+            const parent = state.environments.find((e: any) => e.id === environment.parentEnvironment);
             if (parent && !parent.childEnvironments.includes(id)) {
               parent.childEnvironments.push(id);
             }
@@ -967,48 +967,48 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         return id;
       },
 
-      updateEnvironment: (envId, updates) => {
+      updateEnvironment: (envId: any, updates: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const env = state.environments.find(e => e.id === envId);
+          const env = state.environments.find((e: any) => e.id === envId);
           if (env) {
             Object.assign(env, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteEnvironment: (envId) => {
+      deleteEnvironment: (envId: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const env = state.environments.find(e => e.id === envId);
+          const env = state.environments.find((e: any) => e.id === envId);
           if (env) {
             // Remove from parent's children
             if (env.parentEnvironment) {
-              const parent = state.environments.find(e => e.id === env.parentEnvironment);
+              const parent = state.environments.find((e: any) => e.id === env.parentEnvironment);
               if (parent) {
-                parent.childEnvironments = parent.childEnvironments.filter(id => id !== envId);
+                parent.childEnvironments = parent.childEnvironments.filter((id: any) => id !== envId);
               }
             }
             
             // Update children to remove parent reference
-            env.childEnvironments.forEach(childId => {
-              const child = state.environments.find(e => e.id === childId);
+            env.childEnvironments.forEach((childId: any) => {
+              const child = state.environments.find((e: any) => e.id === childId);
               if (child) {
                 child.parentEnvironment = undefined;
               }
             });
           }
           
-          state.environments = state.environments.filter(e => e.id !== envId);
+          state.environments = state.environments.filter((e: any) => e.id !== envId);
           if (state.selectedEnvironment === envId) {
             state.selectedEnvironment = null;
           }
         });
       },
 
-      setSelectedEnvironment: (envId) => {
+      setSelectedEnvironment: (envId: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
@@ -1017,7 +1017,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Change Management
-      createChangeRequest: (requestData) => {
+      createChangeRequest: (requestData: any) => {
         if (!FLAGS.configurationSync) return '';
         
         const id = `cr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1037,11 +1037,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         return id;
       },
 
-      updateChangeRequest: (requestId, updates) => {
+      updateChangeRequest: (requestId: any, updates: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const request = state.changeRequests.find(r => r.id === requestId);
+          const request = state.changeRequests.find((r: any) => r.id === requestId);
           if (request) {
             Object.assign(request, { ...updates, updatedAt: new Date() });
           }
@@ -1052,7 +1052,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const request = state.changeRequests.find(r => r.id === requestId);
+          const request = state.changeRequests.find((r: any) => r.id === requestId);
           if (request) {
             const existingApproval = request.approvals.find(a => a.reviewerId === reviewerId);
             if (existingApproval) {
@@ -1070,7 +1070,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
             }
             
             // Check if all required approvals are met
-            const approvedCount = request.approvals.filter(a => a.status === 'approved').length;
+            const approvedCount = request.approvals.filter((a: any) => a.status === 'approved').length;
             if (approvedCount >= request.requiredApprovals && request.status === 'pending_review') {
               request.status = 'approved';
             }
@@ -1084,7 +1084,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const request = state.changeRequests.find(r => r.id === requestId);
+          const request = state.changeRequests.find((r: any) => r.id === requestId);
           if (request) {
             const existingApproval = request.approvals.find(a => a.reviewerId === reviewerId);
             if (existingApproval) {
@@ -1107,14 +1107,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         });
       },
 
-      deployChangeRequest: async (requestId) => {
+      deployChangeRequest: async (requestId: any) => {
         if (!FLAGS.configurationSync) return;
         
-        const request = get().changeRequests.find(r => r.id === requestId);
+        const request = get().changeRequests.find((r: any) => r.id === requestId);
         if (!request || request.status !== 'approved') return;
         
         set((state: any) => {
-          const r = state.changeRequests.find(r => r.id === requestId);
+          const r = state.changeRequests.find((r: any) => r.id === requestId);
           if (r) {
             r.status = 'deployed';
             r.completedAt = new Date();
@@ -1142,7 +1142,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           
         } catch (error) {
           set((state: any) => {
-            const r = state.changeRequests.find(r => r.id === requestId);
+            const r = state.changeRequests.find((r: any) => r.id === requestId);
             if (r) {
               r.status = 'failed';
             }
@@ -1152,7 +1152,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Sync Management
-      createSyncJob: (jobData) => {
+      createSyncJob: (jobData: any) => {
         if (!FLAGS.configurationSync) return '';
         
         const id = `sync_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1172,18 +1172,18 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         return id;
       },
 
-      updateSyncJob: (jobId, updates) => {
+      updateSyncJob: (jobId: any, updates: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const job = state.syncJobs.find(j => j.id === jobId);
+          const job = state.syncJobs.find((j: any) => j.id === jobId);
           if (job) {
             Object.assign(job, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteSyncJob: (jobId) => {
+      deleteSyncJob: (jobId: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
@@ -1191,10 +1191,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         });
       },
 
-      runSyncJob: async (jobId) => {
+      runSyncJob: async (jobId: any) => {
         if (!FLAGS.configurationSync) return '';
         
-        const job = get().syncJobs.find(j => j.id === jobId);
+        const job = get().syncJobs.find((j: any) => j.id === jobId);
         if (!job) return '';
         
         const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1214,7 +1214,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         };
         
         set((state: any) => {
-          const j = state.syncJobs.find(j => j.id === jobId);
+          const j = state.syncJobs.find((j: any) => j.id === jobId);
           if (j) {
             j.status = 'running';
             j.lastRunAt = startTime;
@@ -1231,11 +1231,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           const hasErrors = Math.random() < 0.2;
           
           set((state: any) => {
-            const j = state.syncJobs.find(j => j.id === jobId);
+            const j = state.syncJobs.find((j: any) => j.id === jobId);
             if (j) {
               j.status = hasErrors ? 'failed' : 'completed';
               
-              const exec = j.executions.find(e => e.id === executionId);
+              const exec = j.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = hasErrors ? 'failed' : 'completed';
@@ -1260,11 +1260,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
           
         } catch (error) {
           set((state: any) => {
-            const j = state.syncJobs.find(j => j.id === jobId);
+            const j = state.syncJobs.find((j: any) => j.id === jobId);
             if (j) {
               j.status = 'failed';
               
-              const exec = j.executions.find(e => e.id === executionId);
+              const exec = j.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = 'failed';
@@ -1287,11 +1287,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       syncConfiguration: async (configId, sourceEnv, targetEnv) => {
         if (!FLAGS.configurationSync) return;
         
-        const config = get().configurations.find(c => c.id === configId && c.environmentId === sourceEnv);
+        const config = get().configurations.find((c: any) => c.id === configId && c.environmentId === sourceEnv);
         if (!config) throw new Error('Configuration not found');
         
         // Create or update in target environment
-        const targetConfig = get().configurations.find(c => c.key === config.key && c.environmentId === targetEnv);
+        const targetConfig = get().configurations.find((c: any) => c.key === config.key && c.environmentId === targetEnv);
         
         if (targetConfig) {
           get().updateConfiguration(targetConfig.id, { value: config.value });
@@ -1319,7 +1319,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         };
         
         try {
-          const configsToSync = get().configurations.filter(c => 
+          const configsToSync = get().configurations.filter((c: any) => 
             c.environmentId === sourceEnv && 
             (!configIds || configIds.includes(c.id))
           );
@@ -1363,12 +1363,12 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       createBackup: async (name, environmentIds, configIds) => {
         if (!FLAGS.configurationSync) return '';
         
-        const configurations = get().configurations.filter(c => 
+        const configurations = get().configurations.filter((c: any) => 
           (!environmentIds.length || environmentIds.includes(c.environmentId || '')) &&
           (!configIds || configIds.includes(c.id))
         );
         
-        const environments = get().environments.filter(e => 
+        const environments = get().environments.filter((e: any) => 
           !environmentIds.length || environmentIds.includes(e.id)
         );
         
@@ -1398,10 +1398,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         return id;
       },
 
-      restoreBackup: async (backupId, targetEnvironment) => {
+      restoreBackup: async (backupId: any, targetEnvironment: any) => {
         if (!FLAGS.configurationSync) return;
         
-        const backup = get().backups.find(b => b.id === backupId);
+        const backup = get().backups.find((b: any) => b.id === backupId);
         if (!backup) throw new Error('Backup not found');
         
         // Restore configurations
@@ -1413,7 +1413,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         }
         
         set((state: any) => {
-          const b = state.backups.find(b => b.id === backupId);
+          const b = state.backups.find((b: any) => b.id === backupId);
           if (b) {
             b.restoredAt = new Date();
             b.restoredBy = 'current_user';
@@ -1421,7 +1421,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         });
       },
 
-      deleteBackup: (backupId) => {
+      deleteBackup: (backupId: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
@@ -1430,7 +1430,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Drift Detection
-      scanForDrift: async (environmentId) => {
+      scanForDrift: async (environmentId: any) => {
         if (!FLAGS.configurationSync) return [];
         
         // Simulate drift detection
@@ -1468,7 +1468,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          const drift = state.drifts.find(d => d.id === driftId);
+          const drift = state.drifts.find((d: any) => d.id === driftId);
           if (drift) {
             drift.status = resolution === 'ignore' ? 'ignored' : 'resolved';
             drift.resolvedAt = new Date();
@@ -1479,10 +1479,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Import/Export
-      exportConfigurations: async (configIds, format) => {
+      exportConfigurations: async (configIds: any, format: any) => {
         if (!FLAGS.configurationSync) throw new Error('Configuration sync not enabled');
         
-        const configurations = get().configurations.filter(c => configIds.includes(c.id));
+        const configurations = get().configurations.filter((c: any) => configIds.includes(c.id));
         
         let content: string;
         let mimeType: string;
@@ -1494,11 +1494,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
             break;
           case 'yaml':
             // Simplified YAML export
-            content = configurations.map(c => `${c.key}: ${JSON.stringify(c.value)}`).join('\n');
+            content = configurations.map((c: any) => `${c.key}: ${JSON.stringify(c.value)}`).join('\n');
             mimeType = 'text/yaml';
             break;
           case 'env':
-            content = configurations.map(c => `${c.key.toUpperCase().replace(/\./g, '_')}=${c.value}`).join('\n');
+            content = configurations.map((c: any) => `${c.key.toUpperCase().replace(/\./g, '_')}=${c.value}`).join('\n');
             mimeType = 'text/plain';
             break;
         }
@@ -1521,7 +1521,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         const importedIds: string[] = [];
         
         for (const config of importData) {
-          const existingConfig = get().configurations.find(c => 
+          const existingConfig = get().configurations.find((c: any) => 
             c.key === config.key && c.environmentId === environmentId
           );
           
@@ -1545,7 +1545,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // Search & Filtering
-      setSearchQuery: (query) => {
+      setSearchQuery: (query: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
@@ -1578,7 +1578,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       // UI Actions
-      setSidebarCollapsed: (collapsed) => {
+      setSidebarCollapsed: (collapsed: any) => {
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
@@ -1678,8 +1678,8 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
       },
 
       createDefaultConfigurations: () => {
-        const devEnv = get().environments.find(e => e.type === 'development');
-        const prodEnv = get().environments.find(e => e.type === 'production');
+        const devEnv = get().environments.find((e: any) => e.type === 'development');
+        const prodEnv = get().environments.find((e: any) => e.type === 'production');
         
         if (!devEnv || !prodEnv) return;
         

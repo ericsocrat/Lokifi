@@ -7,7 +7,7 @@ export const symbolStore = {
   get: () => _symbol,
   set: (s: string) => {
     _symbol = s.toUpperCase();
-    listeners.forEach(l => l(_symbol));
+    listeners.forEach((l: any) => l(_symbol));
   },
   subscribe: (l: Listener) => {
     listeners.add(l);

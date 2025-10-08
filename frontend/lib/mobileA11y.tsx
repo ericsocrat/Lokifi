@@ -380,7 +380,7 @@ interface MobileAccessibilityActions {
 export const useMobileAccessibilityStore = create<MobileAccessibilityState & MobileAccessibilityActions>()(
   persist(
     subscribeWithSelector(
-      immer<any>((set, get) => ({
+      immer<any>((set: any, get: any) => ({
         // Initial State
         deviceInfo: null,
         isMobile: false,
@@ -613,7 +613,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           get().optimizeForDevice();
         },
         
-        updateDeviceInfo: (info) => {
+        updateDeviceInfo: (info: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -641,7 +641,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Settings Management
-        updateAccessibilitySettings: (settings) => {
+        updateAccessibilitySettings: (settings: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -652,7 +652,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           get().applyAccessibilitySettings();
         },
         
-        updateMobileSettings: (settings) => {
+        updateMobileSettings: (settings: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -682,7 +682,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Gesture Management
-        addGesture: (gestureData) => {
+        addGesture: (gestureData: any) => {
           if (!FLAGS.mobileA11y) return '';
           
           const gestureId = `gesture_${Date.now()}`;
@@ -698,18 +698,18 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           return gestureId;
         },
         
-        updateGesture: (gestureId, updates) => {
+        updateGesture: (gestureId: any, updates: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const gesture = state.gestures.find(g => g.id === gestureId);
+            const gesture = state.gestures.find((g: any) => g.id === gestureId);
             if (gesture) {
               Object.assign(gesture, updates);
             }
           });
         },
         
-        removeGesture: (gestureId) => {
+        removeGesture: (gestureId: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -720,11 +720,11 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
         },
         
-        enableGesture: (gestureId, enabled) => {
+        enableGesture: (gestureId: any, enabled: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const gesture = state.gestures.find(g => g.id === gestureId);
+            const gesture = state.gestures.find((g: any) => g.id === gestureId);
             if (gesture) {
               gesture.enabled = enabled;
             }
@@ -732,7 +732,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Keyboard Shortcuts
-        addKeyboardShortcut: (shortcutData) => {
+        addKeyboardShortcut: (shortcutData: any) => {
           if (!FLAGS.mobileA11y) return '';
           
           const shortcutId = `shortcut_${Date.now()}`;
@@ -748,18 +748,18 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           return shortcutId;
         },
         
-        updateKeyboardShortcut: (shortcutId, updates) => {
+        updateKeyboardShortcut: (shortcutId: any, updates: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const shortcut = state.keyboardShortcuts.find(s => s.id === shortcutId);
+            const shortcut = state.keyboardShortcuts.find((s: any) => s.id === shortcutId);
             if (shortcut) {
               Object.assign(shortcut, updates);
             }
           });
         },
         
-        removeKeyboardShortcut: (shortcutId) => {
+        removeKeyboardShortcut: (shortcutId: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -770,11 +770,11 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
         },
         
-        enableKeyboardShortcut: (shortcutId, enabled) => {
+        enableKeyboardShortcut: (shortcutId: any, enabled: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const shortcut = state.keyboardShortcuts.find(s => s.id === shortcutId);
+            const shortcut = state.keyboardShortcuts.find((s: any) => s.id === shortcutId);
             if (shortcut) {
               shortcut.enabled = enabled;
             }
@@ -782,14 +782,14 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Responsive Design
-        updateViewportSize: (width, height) => {
+        updateViewportSize: (width: any, height: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
             state.viewportSize = { width, height };
             
             // Update breakpoint
-            const breakpoint = state.breakpoints.find(bp => 
+            const breakpoint = state.breakpoints.find((bp: any) => 
               width >= bp.minWidth && (!bp.maxWidth || width <= bp.maxWidth)
             );
             
@@ -799,7 +799,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
         },
         
-        setBreakpoint: (breakpoint) => {
+        setBreakpoint: (breakpoint: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -807,13 +807,13 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
         },
         
-        addBreakpoint: (breakpoint) => {
+        addBreakpoint: (breakpoint: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
             state.breakpoints.push(breakpoint);
             // Sort by minWidth
-            state.breakpoints.sort((a, b) => a.minWidth - b.minWidth);
+            state.breakpoints.sort((a: any, b: any) => a.minWidth - b.minWidth);
           });
         },
         
@@ -821,7 +821,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const breakpoint = state.breakpoints.find(bp => bp.name === name);
+            const breakpoint = state.breakpoints.find((bp: any) => bp.name === name);
             if (breakpoint) {
               Object.assign(breakpoint, updates);
             }
@@ -860,7 +860,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             set((state: any) => {
               state.lastAudit = audit;
               state.auditHistory.unshift(audit);
-              state.activeIssues = audit.issues.filter(issue => issue.type === 'error');
+              state.activeIssues = audit.issues.filter((issue: any) => issue.type === 'error');
               state.isAuditing = false;
               
               // Keep only last 10 audits
@@ -881,7 +881,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        fixAccessibilityIssue: async (issueId) => {
+        fixAccessibilityIssue: async (issueId: any) => {
           if (!FLAGS.mobileA11y) return;
           
           try {
@@ -889,7 +889,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             await autoFixAccessibilityIssue(issueId);
             
             set((state: any) => {
-              state.activeIssues = state.activeIssues.filter(issue => issue.id !== issueId);
+              state.activeIssues = state.activeIssues.filter((issue: any) => issue.id !== issueId);
             });
             
           } catch (error) {
@@ -899,11 +899,11 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        ignoreAccessibilityIssue: (issueId) => {
+        ignoreAccessibilityIssue: (issueId: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            state.activeIssues = state.activeIssues.filter(issue => issue.id !== issueId);
+            state.activeIssues = state.activeIssues.filter((issue: any) => issue.id !== issueId);
           });
         },
         
@@ -937,7 +937,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           liveRegion.textContent = message;
         },
         
-        setFocus: (elementId) => {
+        setFocus: (elementId: any) => {
           if (!FLAGS.mobileA11y) return;
           
           const element = document.getElementById(elementId);
@@ -1008,7 +1008,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        processVoiceCommand: (command) => {
+        processVoiceCommand: (command: any) => {
           if (!FLAGS.mobileA11y) return;
           
           const commands = {
@@ -1020,7 +1020,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             'stop listening': () => get().stopVoiceRecognition()
           };
           
-          const matchedCommand = Object.keys(commands).find(cmd => 
+          const matchedCommand = Object.keys(commands).find((cmd: any) => 
             command.includes(cmd.toLowerCase())
           );
           
@@ -1035,7 +1035,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         handleGesture: (gestureType, event, context) => {
           if (!FLAGS.mobileA11y || !get().mobileSettings.gestureNavigation) return;
           
-          const gesture = get().gestures.find(g => 
+          const gesture = get().gestures.find((g: any) => 
             g.type === gestureType && 
             g.enabled && 
             g.contexts.includes(context)
@@ -1083,7 +1083,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        updatePerformanceMetrics: (metrics) => {
+        updatePerformanceMetrics: (metrics: any) => {
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
@@ -1092,7 +1092,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Orientation & Layout
-        lockOrientation: (orientation) => {
+        lockOrientation: (orientation: any) => {
           if (!FLAGS.mobileA11y || !('screen' in window) || !('orientation' in (window as any).screen)) return;
           
           try {
@@ -1133,7 +1133,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Notification & Feedback
-        showAccessibilityNotification: (message, type) => {
+        showAccessibilityNotification: (message: any, type: any) => {
           if (!FLAGS.mobileA11y) return;
           
           // Show visual notification
@@ -1148,13 +1148,13 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        vibrate: (pattern) => {
+        vibrate: (pattern: any) => {
           if (!FLAGS.mobileA11y || !get().mobileSettings.vibration || !('vibrate' in navigator)) return;
           
           navigator.vibrate(pattern);
         },
         
-        playAccessibilitySound: (soundType) => {
+        playAccessibilitySound: (soundType: any) => {
           if (!FLAGS.mobileA11y || !get().accessibilitySettings.soundEffects) return;
           
           // This would play appropriate accessibility sounds
@@ -1201,7 +1201,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           return blob;
         },
         
-        importSettings: async (file) => {
+        importSettings: async (file: any) => {
           if (!FLAGS.mobileA11y) return;
           
           try {
@@ -1286,8 +1286,8 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
           
           // Keyboard events
-          window.addEventListener('keydown', (event) => {
-            const shortcuts = get().keyboardShortcuts.filter(s => s.enabled);
+          window.addEventListener('keydown', (event: any) => {
+            const shortcuts = get().keyboardShortcuts.filter((s: any) => s.enabled);
             
             for (const shortcut of shortcuts) {
               const modifiersMatch = shortcut.modifiers.every(mod => {
@@ -1314,7 +1314,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
           
           // Focus tracking
-          document.addEventListener('focusin', (event) => {
+          document.addEventListener('focusin', (event: any) => {
             const element = event.target as HTMLElement;
             if (element.id) {
               set((state: any) => {
@@ -1527,20 +1527,20 @@ async function autoFixAccessibilityIssue(issueId: string): Promise<void> {
 
 // Selectors
 export const useCurrentBreakpoint = () =>
-  useMobileAccessibilityStore((state) => state.currentBreakpoint);
+  useMobileAccessibilityStore((state: any) => state.currentBreakpoint);
 
 export const useDeviceType = () =>
-  useMobileAccessibilityStore((state) => ({
+  useMobileAccessibilityStore((state: any) => ({
     isMobile: state.isMobile,
     isTablet: state.isTablet,
     isDesktop: state.isDesktop
   }));
 
 export const useAccessibilityScore = () =>
-  useMobileAccessibilityStore((state) => state.lastAudit?.score || 0);
+  useMobileAccessibilityStore((state: any) => state.lastAudit?.score || 0);
 
 export const useActiveIssuesCount = () =>
-  useMobileAccessibilityStore((state) => state.activeIssues.length);
+  useMobileAccessibilityStore((state: any) => state.activeIssues.length);
 
 // Initialize store on client
 if (typeof window !== 'undefined' && FLAGS.mobileA11y) {

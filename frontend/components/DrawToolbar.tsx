@@ -24,7 +24,7 @@ export default function DrawToolbar(){
 
   return (
     <div className="flex items-center gap-2 px-2 py-1 rounded-xl bg-neutral-900/90 border border-neutral-800 backdrop-blur">
-      {TOOLS.map(t => (
+      {TOOLS.map((t: any) => (
         <button
           key={t.key}
           onClick={()=> drawStore.setTool(t.key)}

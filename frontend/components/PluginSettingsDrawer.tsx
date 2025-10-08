@@ -36,7 +36,7 @@ export default function PluginSettingsDrawer({
             <span>Width mode</span>
             <select
               value={s.channelWidthMode as any}
-              onChange={(e) => pluginSettingsStore.set('channelWidthMode', e.target.value as any)}
+              onChange={(e: any) => pluginSettingsStore.set('channelWidthMode', e.target.value as any)}
               className="ml-auto px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
             >
               <option value="percent">% of price</option>
@@ -51,7 +51,7 @@ export default function PluginSettingsDrawer({
               min="0"
               max="50"
               value={s.channelDefaultWidthPct}
-              onChange={(e) =>
+              onChange={(e: any) =>
                 pluginSettingsStore.set('channelDefaultWidthPct', parseFloat(e.target.value || '0'))
               }
               className="ml-auto w-24 px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
@@ -64,7 +64,7 @@ export default function PluginSettingsDrawer({
           <div className="flex items-center gap-2">
             <select
               value={s.fibPreset}
-              onChange={(e) => pluginSettingsStore.set('fibPreset', e.target.value as any)}
+              onChange={(e: any) => pluginSettingsStore.set('fibPreset', e.target.value as any)}
               className="px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
             >
               <option value="Classic">Classic (0→1)</option>
@@ -77,10 +77,10 @@ export default function PluginSettingsDrawer({
             <div className="mt-2">
               <input
                 value={s.fibCustomLevels.join(',')}
-                onChange={(e) => {
+                onChange={(e: any) => {
                   const vals = e.target.value
                     .split(',')
-                    .map((x) => parseFloat(x.trim()))
+                    .map((x: any) => parseFloat(x.trim()))
                     .filter((n) => !Number.isNaN(n));
                   pluginSettingsStore.set('fibCustomLevels', vals);
                 }}

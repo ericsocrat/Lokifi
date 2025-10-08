@@ -23,12 +23,12 @@ export type TVImport = {
 };
 
 function detectDelimiter(sample: string): string {
-  const head = sample.split(/\r?\n/).find(l => l.trim().length > 0) ?? "";
+  const head = sample.split(/\r?\n/).find((l: any) => l.trim().length > 0) ?? "";
   const counts = [
     { d: ",", n: (head.match(/,/g) || []).length },
     { d: ";", n: (head.match(/;/g) || []).length },
     { d: "\t", n: (head.match(/\t/g) || []).length },
-  ].sort((a, b) => b.n - a.n);
+  ].sort((a: any, b: any) => b.n - a.n);
   return counts[0].n > 0 ? counts[0].d : ",";
 }
 
@@ -75,7 +75,7 @@ function mapHeader(cols: string[]): HeaderMap | null {
 }
 
 export function parseTradingViewCSV(csv: string): TVImport {
-  const lines = csv.split(/\r?\n/).filter(l => l.trim().length > 0 && !/^\s*(#|\/\/|;{3,}|={3,})/.test(l));
+  const lines = csv.split(/\r?\n/).filter((l: any) => l.trim().length > 0 && !/^\s*(#|\/\/|;{3,}|={3,})/.test(l));
   if (!lines.length) return { bars: [] };
 
   // Optional metadata line (e.g., "Symbol,Timeframe" or "SYMBOL:BTCUSD, 1h")
@@ -88,7 +88,7 @@ export function parseTradingViewCSV(csv: string): TVImport {
   let header: HeaderMap | null = null;
 
   for (let i = 0; i < Math.min(lines.length, 5); i++) {
-    const cols = lines[i].split(delim).map(c => c.trim());
+    const cols = lines[i].split(delim).map((c: any) => c.trim());
     const hm = mapHeader(cols);
     if (hm) { header = hm; headerLineIndex = i; break; }
     // Try to pick up a symbol/timeframe style metadata line
@@ -119,7 +119,7 @@ export function parseTradingViewCSV(csv: string): TVImport {
   }
 
   // Ensure ascending by time (some CSVs export newest-first)
-  bars.sort((a, b) => a.time - b.time);
+  bars.sort((a: any, b: any) => a.time - b.time);
 
   return { symbol, timeframe, bars };
 }

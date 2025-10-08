@@ -736,11 +736,11 @@ const createInitialState = (): MonitoringState => ({
 // Create Store
 export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       ...createInitialState(),
 
       // Dashboard Management
-      createDashboard: (dashboardData) => {
+      createDashboard: (dashboardData: any) => {
         if (!FLAGS.monitoring) return '';
         
         const id = `dashboard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -758,38 +758,38 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return id;
       },
 
-      updateDashboard: (dashboardId, updates) => {
+      updateDashboard: (dashboardId: any, updates: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const dashboard = state.dashboards.find(d => d.id === dashboardId);
+          const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
           if (dashboard) {
             Object.assign(dashboard, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteDashboard: (dashboardId) => {
+      deleteDashboard: (dashboardId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const dashboard = state.dashboards.find(d => d.id === dashboardId);
-          state.dashboards = state.dashboards.filter(d => d.id !== dashboardId);
+          const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+          state.dashboards = state.dashboards.filter((d: any) => d.id !== dashboardId);
           if (state.activeDashboard === dashboardId) {
             state.activeDashboard = null;
           }
           // Remove widgets from this dashboard
           if (dashboard) {
-            const widgetIdsToRemove = dashboard.layout.widgets.map(w => w.widgetId);
-            state.widgets = state.widgets.filter(w => !widgetIdsToRemove.includes(w.id));
+            const widgetIdsToRemove = dashboard.layout.widgets.map((w: any) => w.widgetId);
+            state.widgets = state.widgets.filter((w: any) => !widgetIdsToRemove.includes(w.id));
           }
         });
       },
 
-      cloneDashboard: (dashboardId, name) => {
+      cloneDashboard: (dashboardId: any, name: any) => {
         if (!FLAGS.monitoring) return '';
         
-        const dashboard = get().dashboards.find(d => d.id === dashboardId);
+        const dashboard = get().dashboards.find((d: any) => d.id === dashboardId);
         if (!dashboard) return '';
         
         const newId = get().createDashboard({
@@ -802,16 +802,16 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return newId;
       },
 
-      exportDashboard: async (dashboardId) => {
+      exportDashboard: async (dashboardId: any) => {
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
         
-        const dashboard = get().dashboards.find(d => d.id === dashboardId);
+        const dashboard = get().dashboards.find((d: any) => d.id === dashboardId);
         if (!dashboard) throw new Error('Dashboard not found');
         
         const exportData = {
           dashboard,
-          widgets: get().widgets.filter(w => 
-            dashboard.layout.widgets.find(dw => dw.widgetId === w.id)
+          widgets: get().widgets.filter((w: any) => 
+            dashboard.layout.widgets.find((dw: any) => dw.widgetId === w.id)
           ),
           exportedAt: new Date().toISOString(),
           version: '1.0'
@@ -824,7 +824,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return blob;
       },
 
-      importDashboard: async (file) => {
+      importDashboard: async (file: any) => {
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
         
         const text = await file.text();
@@ -841,7 +841,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return dashboardId;
       },
 
-      setActiveDashboard: (dashboardId) => {
+      setActiveDashboard: (dashboardId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -850,7 +850,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       },
 
       // Widget Management
-      addWidget: (dashboardId, widgetData) => {
+      addWidget: (dashboardId: any, widgetData: any) => {
         if (!FLAGS.monitoring) return '';
         
         const widgetId = `widget_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -865,7 +865,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           state.widgets.push(widget);
           
           // Add to dashboard layout
-          const dashboard = state.dashboards.find(d => d.id === dashboardId);
+          const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
           if (dashboard) {
             const position: WidgetPosition = {
               widgetId,
@@ -882,28 +882,28 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return widgetId;
       },
 
-      updateWidget: (widgetId, updates) => {
+      updateWidget: (widgetId: any, updates: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const widget = state.widgets.find(w => w.id === widgetId);
+          const widget = state.widgets.find((w: any) => w.id === widgetId);
           if (widget) {
             Object.assign(widget, { ...updates, lastUpdated: new Date() });
           }
         });
       },
 
-      removeWidget: (widgetId) => {
+      removeWidget: (widgetId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.widgets = state.widgets.filter(w => w.id !== widgetId);
+          state.widgets = state.widgets.filter((w: any) => w.id !== widgetId);
           if (state.selectedWidget === widgetId) {
             state.selectedWidget = null;
           }
           
           // Remove from all dashboard layouts
-          state.dashboards.forEach(dashboard => {
+          state.dashboards.forEach((dashboard: any) => {
             dashboard.layout.widgets = dashboard.layout.widgets.filter(
               w => w.widgetId !== widgetId
             );
@@ -911,12 +911,12 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      moveWidget: (widgetId, position) => {
+      moveWidget: (widgetId: any, position: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.dashboards.forEach(dashboard => {
-            const widgetPos = dashboard.layout.widgets.find(w => w.widgetId === widgetId);
+          state.dashboards.forEach((dashboard: any) => {
+            const widgetPos = dashboard.layout.widgets.find((w: any) => w.widgetId === widgetId);
             if (widgetPos) {
               Object.assign(widgetPos, position);
               dashboard.updatedAt = new Date();
@@ -925,12 +925,12 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      resizeWidget: (widgetId, size) => {
+      resizeWidget: (widgetId: any, size: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.dashboards.forEach(dashboard => {
-            const widgetPos = dashboard.layout.widgets.find(w => w.widgetId === widgetId);
+          state.dashboards.forEach((dashboard: any) => {
+            const widgetPos = dashboard.layout.widgets.find((w: any) => w.widgetId === widgetId);
             if (widgetPos) {
               widgetPos.width = size.width;
               widgetPos.height = size.height;
@@ -940,7 +940,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      setSelectedWidget: (widgetId) => {
+      setSelectedWidget: (widgetId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -948,14 +948,14 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      refreshWidget: async (widgetId) => {
+      refreshWidget: async (widgetId: any) => {
         if (!FLAGS.monitoring) return;
         
-        const widget = get().widgets.find(w => w.id === widgetId);
+        const widget = get().widgets.find((w: any) => w.id === widgetId);
         if (!widget) return;
         
         set((state: any) => {
-          const w = state.widgets.find(w => w.id === widgetId);
+          const w = state.widgets.find((w: any) => w.id === widgetId);
           if (w) {
             w.isLoading = true;
             w.error = undefined;
@@ -967,7 +967,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
           
           set((state: any) => {
-            const w = state.widgets.find(w => w.id === widgetId);
+            const w = state.widgets.find((w: any) => w.id === widgetId);
             if (w) {
               w.isLoading = false;
               w.lastUpdated = new Date();
@@ -975,7 +975,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           });
         } catch (error) {
           set((state: any) => {
-            const w = state.widgets.find(w => w.id === widgetId);
+            const w = state.widgets.find((w: any) => w.id === widgetId);
             if (w) {
               w.isLoading = false;
               w.error = error instanceof Error ? error.message : 'Refresh failed';
@@ -985,7 +985,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       },
 
       // Data Source Management
-      createDataSource: (dataSourceData) => {
+      createDataSource: (dataSourceData: any) => {
         if (!FLAGS.monitoring) return '';
         
         const id = `datasource_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1002,7 +1002,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return id;
       },
 
-      updateDataSource: (dataSourceId, updates) => {
+      updateDataSource: (dataSourceId: any, updates: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -1013,14 +1013,14 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      deleteDataSource: (dataSourceId) => {
+      deleteDataSource: (dataSourceId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
           state.dataSources = state.dataSources.filter(ds => ds.id !== dataSourceId);
           
           // Clean up widgets using this data source
-          state.widgets.forEach(widget => {
+          state.widgets.forEach((widget: any) => {
             if (widget.dataSourceId === dataSourceId) {
               widget.error = 'Data source deleted';
             }
@@ -1028,7 +1028,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      testDataSource: async (dataSourceId) => {
+      testDataSource: async (dataSourceId: any) => {
         if (!FLAGS.monitoring) return false;
         
         const dataSource = get().dataSources.find(ds => ds.id === dataSourceId);
@@ -1067,13 +1067,13 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         }
       },
 
-      connectDataSource: async (dataSourceId) => {
+      connectDataSource: async (dataSourceId: any) => {
         if (!FLAGS.monitoring) return;
         
         await get().testDataSource(dataSourceId);
       },
 
-      disconnectDataSource: (dataSourceId) => {
+      disconnectDataSource: (dataSourceId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -1085,7 +1085,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       },
 
       // Alert Management
-      createAlert: (alertData) => {
+      createAlert: (alertData: any) => {
         if (!FLAGS.monitoring) return '';
         
         const id = `alert_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1107,14 +1107,14 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const alert = state.alerts.find(a => a.id === alertId);
+          const alert = state.alerts.find((a: any) => a.id === alertId);
           if (alert) {
             Object.assign(alert, updates);
           }
         });
       },
 
-      deleteAlert: (alertId) => {
+      deleteAlert: (alertId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -1122,33 +1122,33 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      enableAlert: (alertId) => {
+      enableAlert: (alertId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const alert = state.alerts.find(a => a.id === alertId);
+          const alert = state.alerts.find((a: any) => a.id === alertId);
           if (alert && alert.status === 'disabled') {
             alert.status = 'pending';
           }
         });
       },
 
-      disableAlert: (alertId) => {
+      disableAlert: (alertId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const alert = state.alerts.find(a => a.id === alertId);
+          const alert = state.alerts.find((a: any) => a.id === alertId);
           if (alert) {
             alert.status = 'disabled';
           }
         });
       },
 
-      acknowledgeAlert: (alertId) => {
+      acknowledgeAlert: (alertId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const alert = state.alerts.find(a => a.id === alertId);
+          const alert = state.alerts.find((a: any) => a.id === alertId);
           if (alert && alert.status === 'firing') {
             alert.annotations = {
               ...alert.annotations,
@@ -1159,11 +1159,11 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      resolveAlert: (alertId) => {
+      resolveAlert: (alertId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const alert = state.alerts.find(a => a.id === alertId);
+          const alert = state.alerts.find((a: any) => a.id === alertId);
           if (alert && alert.status === 'firing') {
             alert.status = 'resolved';
             alert.resolvedAt = new Date();
@@ -1171,17 +1171,17 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      testAlert: async (alertId) => {
+      testAlert: async (alertId: any) => {
         if (!FLAGS.monitoring) return;
         
-        const alert = get().alerts.find(a => a.id === alertId);
+        const alert = get().alerts.find((a: any) => a.id === alertId);
         if (!alert) return;
         
         // Simulate alert evaluation
         await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
         
         set((state: any) => {
-          const a = state.alerts.find(a => a.id === alertId);
+          const a = state.alerts.find((a: any) => a.id === alertId);
           if (a) {
             a.lastEvaluated = new Date();
             // Simulate test result
@@ -1194,7 +1194,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       },
 
       // Health Check Management
-      createHealthCheck: (healthCheckData) => {
+      createHealthCheck: (healthCheckData: any) => {
         if (!FLAGS.monitoring) return '';
         
         const id = `healthcheck_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1213,18 +1213,18 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return id;
       },
 
-      updateHealthCheck: (healthCheckId, updates) => {
+      updateHealthCheck: (healthCheckId: any, updates: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const healthCheck = state.healthChecks.find(hc => hc.id === healthCheckId);
+          const healthCheck = state.healthChecks.find((hc: any) => hc.id === healthCheckId);
           if (healthCheck) {
             Object.assign(healthCheck, updates);
           }
         });
       },
 
-      deleteHealthCheck: (healthCheckId) => {
+      deleteHealthCheck: (healthCheckId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -1232,10 +1232,10 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      runHealthCheck: async (healthCheckId) => {
+      runHealthCheck: async (healthCheckId: any) => {
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
         
-        const healthCheck = get().healthChecks.find(hc => hc.id === healthCheckId);
+        const healthCheck = get().healthChecks.find((hc: any) => hc.id === healthCheckId);
         if (!healthCheck) throw new Error('Health check not found');
         
         const start = Date.now();
@@ -1255,7 +1255,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           };
           
           set((state: any) => {
-            const hc = state.healthChecks.find(hc => hc.id === healthCheckId);
+            const hc = state.healthChecks.find((hc: any) => hc.id === healthCheckId);
             if (hc) {
               hc.lastCheck = result.timestamp;
               hc.history.push(result);
@@ -1291,7 +1291,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           };
           
           set((state: any) => {
-            const hc = state.healthChecks.find(hc => hc.id === healthCheckId);
+            const hc = state.healthChecks.find((hc: any) => hc.id === healthCheckId);
             if (hc) {
               hc.lastCheck = result.timestamp;
               hc.lastFailure = result.timestamp;
@@ -1309,22 +1309,22 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         }
       },
 
-      enableHealthCheck: (healthCheckId) => {
+      enableHealthCheck: (healthCheckId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const healthCheck = state.healthChecks.find(hc => hc.id === healthCheckId);
+          const healthCheck = state.healthChecks.find((hc: any) => hc.id === healthCheckId);
           if (healthCheck) {
             healthCheck.isEnabled = true;
           }
         });
       },
 
-      disableHealthCheck: (healthCheckId) => {
+      disableHealthCheck: (healthCheckId: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const healthCheck = state.healthChecks.find(hc => hc.id === healthCheckId);
+          const healthCheck = state.healthChecks.find((hc: any) => hc.id === healthCheckId);
           if (healthCheck) {
             healthCheck.isEnabled = false;
           }
@@ -1344,7 +1344,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         
         set((state: any) => {
           metrics.forEach(metricName => {
-            let metric = state.metrics.find(m => m.name === metricName);
+            let metric = state.metrics.find((m: any) => m.name === metricName);
             
             if (!metric) {
               metric = {
@@ -1377,10 +1377,10 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         });
       },
 
-      getMetricHistory: (metricId, timeRange) => {
+      getMetricHistory: (metricId: any, timeRange: any) => {
         if (!FLAGS.monitoring) return [];
         
-        const metric = get().metrics.find(m => m.id === metricId);
+        const metric = get().metrics.find((m: any) => m.id === metricId);
         if (!metric) return [];
         
         const now = new Date();
@@ -1399,63 +1399,63 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           cutoff = timeRange.start;
         }
         
-        return metric.history.filter(dp => dp.timestamp >= cutoff);
+        return metric.history.filter((dp: any) => dp.timestamp >= cutoff);
       },
 
-      clearMetrics: (olderThan) => {
+      clearMetrics: (olderThan: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
           state.metrics.forEach(metric => {
-            metric.history = metric.history.filter(dp => dp.timestamp > olderThan);
+            metric.history = metric.history.filter((dp: any) => dp.timestamp > olderThan);
           });
         });
       },
 
       // Logs
-      queryLogs: async (filters) => {
+      queryLogs: async (filters: any) => {
         if (!FLAGS.monitoring) return [];
         
         const { logs } = get();
         let filteredLogs = logs;
         
         if (filters.levels && filters.levels.length > 0) {
-          filteredLogs = filteredLogs.filter(log => filters.levels!.includes(log.level));
+          filteredLogs = filteredLogs.filter((log: any) => filters.levels!.includes(log.level));
         }
         
         if (filters.sources && filters.sources.length > 0) {
-          filteredLogs = filteredLogs.filter(log => filters.sources!.includes(log.source));
+          filteredLogs = filteredLogs.filter((log: any) => filters.sources!.includes(log.source));
         }
         
         if (filters.searchTerm) {
           const term = filters.searchTerm.toLowerCase();
-          filteredLogs = filteredLogs.filter(log => 
+          filteredLogs = filteredLogs.filter((log: any) => 
             log.message.toLowerCase().includes(term) ||
             (log.component && log.component.toLowerCase().includes(term))
           );
         }
         
         if (filters.tags && filters.tags.length > 0) {
-          filteredLogs = filteredLogs.filter(log => 
+          filteredLogs = filteredLogs.filter((log: any) => 
             log.tags && filters.tags!.some(tag => log.tags!.includes(tag))
           );
         }
         
         // Sort by timestamp desc
-        filteredLogs.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+        filteredLogs.sort((a: any, b: any) => b.timestamp.getTime() - a.timestamp.getTime());
         
         return filteredLogs.slice(0, get().settings.maxLogEntriesPerQuery);
       },
 
-      clearLogs: (olderThan) => {
+      clearLogs: (olderThan: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.logs = state.logs.filter(log => log.timestamp > olderThan);
+          state.logs = state.logs.filter((log: any) => log.timestamp > olderThan);
         });
       },
 
-      setLogFilters: (filters) => {
+      setLogFilters: (filters: any) => {
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
@@ -1541,7 +1541,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return blob;
       },
 
-      importData: async (file) => {
+      importData: async (file: any) => {
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
         
         const text = await file.text();

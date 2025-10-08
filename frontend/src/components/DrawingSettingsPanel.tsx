@@ -18,12 +18,12 @@ const HOTKEYS: Array<{ action: string; label: string }> = [
 ];
 
 export default function DrawingSettingsPanel() {
-  const ds = useChartStore((s) => s.drawingSettings);
-  const setDS = useChartStore((s) => s.setDrawingSettings);
-  const resetDS = useChartStore((s) => s.resetDrawingSettings);
-  const hk = useChartStore((s) => s.hotkeys);
-  const setHK = useChartStore((s) => s.setHotkey);
-  const resetHK = useChartStore((s) => s.resetHotkeys);
+  const ds = useChartStore((s: any) => s.drawingSettings);
+  const setDS = useChartStore((s: any) => s.setDrawingSettings);
+  const resetDS = useChartStore((s: any) => s.resetDrawingSettings);
+  const hk = useChartStore((s: any) => s.hotkeys);
+  const setHK = useChartStore((s: any) => s.setHotkey);
+  const resetHK = useChartStore((s: any) => s.resetHotkeys);
 
   const ding = React.useRef<number>(0);
   const saved = (msg = 'Saved') => {
@@ -45,7 +45,7 @@ export default function DrawingSettingsPanel() {
           <input
             type="checkbox"
             checked={ds.snapEnabled}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ snapEnabled: e.target.checked });
               saved();
             }}
@@ -60,7 +60,7 @@ export default function DrawingSettingsPanel() {
             value={ds.snapStep}
             min={1}
             max={50}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ snapStep: Math.max(1, parseInt(e.target.value || '1', 10)) });
               saved();
             }}
@@ -71,7 +71,7 @@ export default function DrawingSettingsPanel() {
           <input
             type="checkbox"
             checked={ds.snapPriceLevels}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ snapPriceLevels: e.target.checked });
               saved();
             }}
@@ -83,7 +83,7 @@ export default function DrawingSettingsPanel() {
           <input
             type="checkbox"
             checked={ds.showHandles}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ showHandles: e.target.checked });
               saved();
             }}
@@ -95,7 +95,7 @@ export default function DrawingSettingsPanel() {
           <input
             type="checkbox"
             checked={ds.showLineLabels}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ showLineLabels: e.target.checked });
               saved();
             }}
@@ -110,7 +110,7 @@ export default function DrawingSettingsPanel() {
           <select
             className="w-full bg-transparent border border-white/15 rounded px-2 py-1"
             value={ds.lineCap}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ lineCap: e.target.value as any });
               saved();
             }}
@@ -126,7 +126,7 @@ export default function DrawingSettingsPanel() {
           <select
             className="w-full bg-transparent border border-white/15 rounded px-2 py-1"
             value={ds.arrowHead}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ arrowHead: e.target.value as any });
               saved();
             }}
@@ -144,7 +144,7 @@ export default function DrawingSettingsPanel() {
             min={6}
             max={48}
             value={ds.arrowHeadSize}
-            onChange={(e) => {
+            onChange={(e: any) => {
               setDS({ arrowHeadSize: parseInt(e.target.value, 10) });
               saved();
             }}
@@ -172,18 +172,18 @@ export default function DrawingSettingsPanel() {
 
       <h3 className="font-semibold">Hotkeys</h3>
       <div className="space-y-2">
-        {HOTKEYS.map((k) => (
+        {HOTKEYS.map((k: any) => (
           <div key={k.action} className="flex items-center justify-between gap-2 text-sm">
             <div className="opacity-80">{k.label}</div>
             <input
               className="w-44 bg-transparent border border-white/15 rounded px-2 py-1"
               value={hk[k.action] || ''}
-              onKeyDown={(e) => {
+              onKeyDown={(e: any) => {
                 e.preventDefault();
                 const combo = keyFromEvent(e);
                 const s = useChartStore.getState();
                 const prev = Object.keys(s.hotkeys).find(
-                  (a) => s.hotkeys[a] === combo && a !== k.action
+                  (a: any) => s.hotkeys[a] === combo && a !== k.action
                 );
                 if (prev) s.setHotkey(prev, '');
                 setHK(k.action, combo);

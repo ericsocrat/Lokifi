@@ -70,7 +70,7 @@ export default function ProjectBar() {
         <input
           className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e: any) => setName(e.target.value)}
           placeholder="Slot name"
         />
         <button
@@ -83,7 +83,7 @@ export default function ProjectBar() {
 
       <div className="space-y-1">
         {slots.length === 0 && <div className="text-xs opacity-60">No saved projects yet.</div>}
-        {slots.map((slot) => (
+        {slots.map((slot: any) => (
           <div key={slot} className="flex items-center justify-between text-sm">
             <div className="truncate">{slot}</div>
             <div className="flex gap-2">

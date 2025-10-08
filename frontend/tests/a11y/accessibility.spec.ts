@@ -26,7 +26,7 @@ test.describe('Accessibility Tests', () => {
     // Check if inputs have associated labels
     const inputs = await page.locator('input').all();
     for (const input of inputs) {
-      const hasLabel = await input.evaluate((el) => {
+      const hasLabel = await input.evaluate((el: any) => {
         const id = el.id;
         if (id) {
           const label = document.querySelector(`label[for="${id}"]`);
@@ -46,13 +46,13 @@ test.describe('Accessibility Tests', () => {
     const buttons = await page.locator('button').all();
 
     for (const button of buttons) {
-      const isAccessible = await button.evaluate((el) => {
+      const isAccessible = await button.evaluate((el: any) => {
         return !el.hasAttribute('disabled');
       });
 
       if (isAccessible) {
         await button.focus();
-        const isFocused = await button.evaluate((el) => el === document.activeElement);
+        const isFocused = await button.evaluate((el: any) => el === document.activeElement);
         expect(isFocused).toBeTruthy();
       }
     }
@@ -65,7 +65,7 @@ test.describe('Accessibility Tests', () => {
     expect(await firstFocused.count()).toBeGreaterThan(0);
 
     // Check focus visible indicator
-    const outline = await firstFocused.evaluate((el) => {
+    const outline = await firstFocused.evaluate((el: any) => {
       const styles = window.getComputedStyle(el);
       return styles.outline !== 'none' || styles.boxShadow !== 'none';
     });
@@ -91,7 +91,7 @@ test.describe('Accessibility Tests', () => {
       .analyze();
 
     const contrastViolations = contrastResults.violations.filter(
-      (v) => v.id === 'color-contrast'
+      (v: any) => v.id === 'color-contrast'
     );
 
     expect(contrastViolations).toEqual([]);
@@ -104,7 +104,7 @@ test.describe('Accessibility Tests', () => {
       .analyze();
 
     const nameViolations = results.violations.filter(
-      (v) => v.id === 'button-name' || v.id === 'link-name' || v.id === 'label'
+      (v: any) => v.id === 'button-name' || v.id === 'link-name' || v.id === 'label'
     );
 
     expect(nameViolations).toEqual([]);
@@ -138,7 +138,7 @@ test.describe('Accessibility Tests', () => {
       const newFocusedElement = await page.locator(':focus');
 
       // Focus should stay within modal
-      const isInModal = await newFocusedElement.evaluate((el) => {
+      const isInModal = await newFocusedElement.evaluate((el: any) => {
         return el.closest('[role="dialog"], [role="alertdialog"]') !== null;
       });
 
@@ -155,7 +155,7 @@ test.describe('Accessibility Tests', () => {
       .withTags(['wcag2a', 'wcag2aa'])
       .analyze();
 
-    const ariaViolations = results.violations.filter((v) =>
+    const ariaViolations = results.violations.filter((v: any) =>
       v.id.startsWith('aria-')
     );
 
@@ -186,7 +186,7 @@ test.describe('Accessibility Tests', () => {
     const canvas = page.locator('canvas').first();
 
     if (await canvas.count() > 0) {
-      const hasAriaLabel = await canvas.evaluate((el) => {
+      const hasAriaLabel = await canvas.evaluate((el: any) => {
         return (
           el.hasAttribute('aria-label') ||
           el.hasAttribute('aria-labelledby') ||

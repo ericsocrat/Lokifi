@@ -65,9 +65,9 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
   };
 
   const handleAssetToggle = (asset: MarketAsset) => {
-    const exists = selectedAssets.find(a => a.symbol === asset.symbol);
+    const exists = selectedAssets.find((a: any) => a.symbol === asset.symbol);
     if (exists) {
-      setSelectedAssets(selectedAssets.filter(a => a.symbol !== asset.symbol));
+      setSelectedAssets(selectedAssets.filter((a: any) => a.symbol !== asset.symbol));
     } else {
       setSelectedAssets([...selectedAssets, {
         symbol: asset.symbol,
@@ -84,7 +84,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
   };
 
   const handleDone = () => {
-    const assetsWithQuantity = selectedAssets.map(asset => ({
+    const assetsWithQuantity = selectedAssets.map((asset: any) => ({
       ...asset,
       quantity: parseFloat(quantities[asset.symbol] || '1'),
       value: parseFloat(values[asset.symbol] || String(asset.price || 0)),
@@ -111,7 +111,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
 
   // Use search results if searching, otherwise show all assets for category
   const filteredAssets = searchQuery.trim().length > 0 
-    ? searchResults.filter(asset => 
+    ? searchResults.filter((asset: any) => 
         (selectedCategory === 'stocks' && asset.type === 'stock') ||
         (selectedCategory === 'crypto' && asset.type === 'crypto')
       )
@@ -133,7 +133,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
             )}
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {step === 'category' && 'Select Asset Category'}
-              {step === 'selection' && `Select ${ASSET_CATEGORIES.find(c => c.id === selectedCategory)?.name}`}
+              {step === 'selection' && `Select ${ASSET_CATEGORIES.find((c: any) => c.id === selectedCategory)?.name}`}
               {step === 'quantity' && 'Enter Details'}
             </h2>
           </div>
@@ -151,7 +151,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
           {step === 'category' && (
             <div className="p-6">
               <div className="grid grid-cols-2 gap-4">
-                {ASSET_CATEGORIES.map((category) => {
+                {ASSET_CATEGORIES.map((category: any) => {
                   const Icon = category.icon;
                   return (
                     <button
@@ -191,7 +191,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                     type="text"
                     placeholder="Search assets..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e: any) => setSearchQuery(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
@@ -199,7 +199,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
 
               {/* Asset List */}
               <div className="space-y-2 max-h-96 overflow-y-auto">
-                {filteredAssets.map((asset) => {
+                {filteredAssets.map((asset: any) => {
                   const isSelected = selectedAssets.some(a => a.symbol === asset.symbol);
                   return (
                     <button
@@ -259,9 +259,9 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
           {step === 'quantity' && (
             <div className="p-6">
               <div className="space-y-4">
-                {selectedAssets.map((asset) => {
+                {selectedAssets.map((asset: any) => {
                   // Find the full asset data from the market data
-                  const fullAsset = filteredAssets.find(a => a.symbol === asset.symbol);
+                  const fullAsset = filteredAssets.find((a: any) => a.symbol === asset.symbol);
                   return (
                     <div key={asset.symbol} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                       <div className="mb-3 flex items-center space-x-3">
@@ -290,7 +290,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                           step="0.01"
                           placeholder="0.00"
                           value={quantities[asset.symbol] || ''}
-                          onChange={(e) => setQuantities({ ...quantities, [asset.symbol]: e.target.value })}
+                          onChange={(e: any) => setQuantities({ ...quantities, [asset.symbol]: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
                         />
                       </div>
@@ -303,7 +303,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                           step="0.01"
                           placeholder={asset.price?.toFixed(2) || '0.00'}
                           value={values[asset.symbol] || ''}
-                          onChange={(e) => setValues({ ...values, [asset.symbol]: e.target.value })}
+                          onChange={(e: any) => setValues({ ...values, [asset.symbol]: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
                         />
                       </div>

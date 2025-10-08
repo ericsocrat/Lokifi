@@ -6,7 +6,7 @@ let idSeq = 1
 
 export function toast(text: string, ttl = 1200) {
   const msg: ToastMsg = { id: idSeq++, text, ttl }
-  listeners.forEach(fn => fn(msg))
+  listeners.forEach((fn: any) => fn(msg))
 }
 
 export function ToastHost() {
@@ -15,15 +15,15 @@ export function ToastHost() {
     const on = (m: ToastMsg) => {
       setItems(prev => [...prev, m])
       setTimeout(() => {
-        setItems(prev => prev.filter(x => x.id !== m.id))
+        setItems(prev => prev.filter((x: any) => x.id !== m.id))
       }, m.ttl)
     }
     listeners.push(on)
-    return () => { listeners = listeners.filter(l => l !== on) }
+    return () => { listeners = listeners.filter((l: any) => l !== on) }
   }, [])
   return (
     <div className="pointer-events-none fixed z-[999] bottom-4 right-4 flex flex-col gap-2">
-      {items.map(m => (
+      {items.map((m: any) => (
         <div key={m.id}
              className="pointer-events-auto rounded-md border border-white/15 bg-black/80 text-white/90 px-3 py-2 text-sm shadow">
           {m.text}

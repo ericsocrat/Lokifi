@@ -365,7 +365,7 @@ describe('PriceChart Component', () => {
 
   describe('Performance', () => {
     it('should handle large datasets efficiently', async () => {
-      const largeDataset = Array.from({ length: 1000 }, (_, i) => ({
+      const largeDataset = Array.from({ length: 1000 }, (_: any, i: any) => ({
         ts: 1000000 + i * 60,
         o: 50000 + Math.random() * 1000,
         h: 51000 + Math.random() * 1000,

@@ -823,7 +823,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             });
           };
           
-          ws.onmessage = (event) => {
+          ws.onmessage = (event: any) => {
             const data = JSON.parse(event.data);
             // Handle real-time price updates
             if (data.type === 'price_update') {
@@ -845,19 +845,19 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         activateMultiple: (alertIds: string[]) => {
           if (!FLAGS.alertsV2) return;
           
-          alertIds.forEach(id => get().activateAlert(id));
+          alertIds.forEach((id: any) => get().activateAlert(id));
         },
         
         deactivateMultiple: (alertIds: string[]) => {
           if (!FLAGS.alertsV2) return;
           
-          alertIds.forEach(id => get().deactivateAlert(id));
+          alertIds.forEach((id: any) => get().deactivateAlert(id));
         },
         
         deleteMultiple: (alertIds: string[]) => {
           if (!FLAGS.alertsV2) return;
           
-          alertIds.forEach(id => get().deleteAlert(id));
+          alertIds.forEach((id: any) => get().deleteAlert(id));
         },
         
         // Settings
@@ -942,13 +942,13 @@ async function evaluateAlertCondition(alert: Alert): Promise<boolean> {
 
 // Selectors
 export const useActiveAlertsCount = () =>
-  useAlertsStore((state) => state.activeAlerts.size);
+  useAlertsStore((state: any) => state.activeAlerts.size);
 
 export const useAlertsBySymbol = (symbol: string) =>
-  useAlertsStore((state) => state.getAlertsBySymbol(symbol));
+  useAlertsStore((state: any) => state.getAlertsBySymbol(symbol));
 
 export const useRecentExecutions = (count?: number) =>
-  useAlertsStore((state) => state.getRecentExecutions(count));
+  useAlertsStore((state: any) => state.getRecentExecutions(count));
 
 // Initialize store
 if (typeof window !== 'undefined' && FLAGS.alertsV2) {

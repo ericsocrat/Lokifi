@@ -12,12 +12,12 @@ let listeners: Array<() => void> = []
 
 export function setChart(next: ChartCtx) {
   ctx = next
-  listeners.forEach(fn => fn())
+  listeners.forEach((fn: any) => fn())
 }
 export function getChart(): ChartCtx {
   return ctx
 }
 export function onChartChange(fn: () => void) {
   listeners.push(fn)
-  return () => { listeners = listeners.filter(f => f !== fn) }
+  return () => { listeners = listeners.filter((f: any) => f !== fn) }
 }

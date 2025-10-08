@@ -9,7 +9,7 @@ export default function AlertsPanel() {
   const s = useChartStore()
   const [filter, setFilter] = React.useState<Filter>('all')
 
-  const list = s.alerts.filter(a => {
+  const list = s.alerts.filter((a: any) => {
     if (filter === 'all') return true
     if (filter === 'active') return a.enabled && (!a.snoozedUntil || a.snoozedUntil < Date.now())
     if (filter === 'snoozed') return !!a.snoozedUntil && a.snoozedUntil > Date.now()
@@ -43,13 +43,13 @@ export default function AlertsPanel() {
 
       <div className='space-y-2'>
         {list.length === 0 && <div className='text-xs opacity-60'>No alerts.</div>}
-        {list.map(al => <AlertRow key={al.id} a={al} />)}
+        {list.map((al: any) => <AlertRow key={al.id} a={al} />)}
       </div>
 
       {s.alertEvents.length>0 && (
         <div className='rounded border border-emerald-500/30 bg-emerald-500/10 p-2 text-xs'>
           <div className='font-semibold mb-1'>Recent triggers</div>
-          {s.alertEvents.slice(-8).reverse().map(ev => (
+          {s.alertEvents.slice(-8).reverse().map((ev: any) => (
             <div key={ev.at} className='opacity-90'>
               #{ev.id.slice(0,5)} — {ev.kind} at {new Date(ev.at).toLocaleTimeString()} {ev.price!=null ? `@ ${ev.price.toFixed(2)}`:''}
             </div>

@@ -889,11 +889,11 @@ const createInitialState = (): IntegrationTestingState => ({
 // Create Store
 export const useIntegrationTestingStore = create<IntegrationTestingState & IntegrationTestingActions>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       ...createInitialState(),
 
       // Test Suite Management
-      createTestSuite: (suiteData) => {
+      createTestSuite: (suiteData: any) => {
         if (!FLAGS.integrationTesting) return '';
         
         const id = `suite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -913,32 +913,32 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         return id;
       },
 
-      updateTestSuite: (suiteId, updates) => {
+      updateTestSuite: (suiteId: any, updates: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
             Object.assign(suite, { ...updates, updatedAt: new Date(), version: suite.version + 1 });
           }
         });
       },
 
-      deleteTestSuite: (suiteId) => {
+      deleteTestSuite: (suiteId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          state.testSuites = state.testSuites.filter(s => s.id !== suiteId);
+          state.testSuites = state.testSuites.filter((s: any) => s.id !== suiteId);
           if (state.selectedTestSuite === suiteId) {
             state.selectedTestSuite = null;
           }
         });
       },
 
-      cloneTestSuite: (suiteId, name) => {
+      cloneTestSuite: (suiteId: any, name: any) => {
         if (!FLAGS.integrationTesting) return '';
         
-        const suite = get().testSuites.find(s => s.id === suiteId);
+        const suite = get().testSuites.find((s: any) => s.id === suiteId);
         if (!suite) return '';
         
         return get().createTestSuite({
@@ -948,7 +948,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      setSelectedTestSuite: (suiteId) => {
+      setSelectedTestSuite: (suiteId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -957,7 +957,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Test Case Management
-      addTestCase: (suiteId, testCaseData) => {
+      addTestCase: (suiteId: any, testCaseData: any) => {
         if (!FLAGS.integrationTesting) return '';
         
         const testCaseId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -969,7 +969,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         };
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
             suite.tests.push(testCase);
             suite.updatedAt = new Date();
@@ -983,9 +983,9 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
-            const testCase = suite.tests.find(t => t.id === testCaseId);
+            const testCase = suite.tests.find((t: any) => t.id === testCaseId);
             if (testCase) {
               Object.assign(testCase, { ...updates, updatedAt: new Date() });
               suite.updatedAt = new Date();
@@ -994,13 +994,13 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      removeTestCase: (suiteId, testCaseId) => {
+      removeTestCase: (suiteId: any, testCaseId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
-            suite.tests = suite.tests.filter(t => t.id !== testCaseId);
+            suite.tests = suite.tests.filter((t: any) => t.id !== testCaseId);
             suite.updatedAt = new Date();
           }
         });
@@ -1010,7 +1010,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       runTestSuite: async (suiteId, environment, options) => {
         if (!FLAGS.integrationTesting) return '';
         
-        const suite = get().testSuites.find(s => s.id === suiteId);
+        const suite = get().testSuites.find((s: any) => s.id === suiteId);
         if (!suite) throw new Error('Test suite not found');
         
         const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1050,7 +1050,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           state.activeExecutions.push(executionId);
           state.isRunning = true;
           
-          const s = state.testSuites.find(s => s.id === suiteId);
+          const s = state.testSuites.find((s: any) => s.id === suiteId);
           if (s) {
             s.lastExecutionId = executionId;
             s.executionIds.push(executionId);
@@ -1085,7 +1085,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
               completedAt: testEndTime,
               duration,
               status: passed ? 'passed' : 'failed',
-              stepResults: testCase.steps.map(step => ({
+              stepResults: testCase.steps.map((step: any) => ({
                 stepId: step.id,
                 stepName: step.name,
                 status: passed ? 'passed' : (Math.random() < 0.5 ? 'failed' : 'passed'),
@@ -1093,7 +1093,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
                 completedAt: testEndTime,
                 duration: duration / testCase.steps.length
               })),
-              assertionResults: testCase.assertions.map(assertion => ({
+              assertionResults: testCase.assertions.map((assertion: any) => ({
                 assertionId: assertion.id,
                 assertionName: assertion.name,
                 status: passed ? 'passed' : 'failed',
@@ -1138,7 +1138,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
               exec.summary.averageDuration = totalDuration / totalTests;
             }
             
-            state.activeExecutions = state.activeExecutions.filter(id => id !== executionId);
+            state.activeExecutions = state.activeExecutions.filter((id: any) => id !== executionId);
             if (state.activeExecutions.length === 0) {
               state.isRunning = false;
             }
@@ -1161,7 +1161,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
               });
             }
             
-            state.activeExecutions = state.activeExecutions.filter(id => id !== executionId);
+            state.activeExecutions = state.activeExecutions.filter((id: any) => id !== executionId);
             if (state.activeExecutions.length === 0) {
               state.isRunning = false;
             }
@@ -1174,8 +1174,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       runTestCase: async (suiteId, testCaseId, environment) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
-        const suite = get().testSuites.find(s => s.id === suiteId);
-        const testCase = suite?.tests.find(t => t.id === testCaseId);
+        const suite = get().testSuites.find((s: any) => s.id === suiteId);
+        const testCase = suite?.tests.find((t: any) => t.id === testCaseId);
         
         if (!testCase) throw new Error('Test case not found');
         
@@ -1202,7 +1202,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         return result;
       },
 
-      cancelExecution: async (executionId) => {
+      cancelExecution: async (executionId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -1212,7 +1212,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
             exec.completedAt = new Date();
           }
           
-          state.activeExecutions = state.activeExecutions.filter(id => id !== executionId);
+          state.activeExecutions = state.activeExecutions.filter((id: any) => id !== executionId);
           if (state.activeExecutions.length === 0) {
             state.isRunning = false;
           }
@@ -1220,7 +1220,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Pipeline Management
-      createPipeline: (pipelineData) => {
+      createPipeline: (pipelineData: any) => {
         if (!FLAGS.integrationTesting) return '';
         
         const id = `pipeline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1240,18 +1240,18 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         return id;
       },
 
-      updatePipeline: (pipelineId, updates) => {
+      updatePipeline: (pipelineId: any, updates: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const pipeline = state.pipelines.find(p => p.id === pipelineId);
+          const pipeline = state.pipelines.find((p: any) => p.id === pipelineId);
           if (pipeline) {
             Object.assign(pipeline, { ...updates, updatedAt: new Date(), version: pipeline.version + 1 });
           }
         });
       },
 
-      deletePipeline: (pipelineId) => {
+      deletePipeline: (pipelineId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -1262,7 +1262,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      setSelectedPipeline: (pipelineId) => {
+      setSelectedPipeline: (pipelineId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -1274,7 +1274,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       runPipeline: async (pipelineId, environment = 'staging') => {
         if (!FLAGS.integrationTesting) return '';
         
-        const pipeline = get().pipelines.find(p => p.id === pipelineId);
+        const pipeline = get().pipelines.find((p: any) => p.id === pipelineId);
         if (!pipeline) throw new Error('Pipeline not found');
         
         const executionId = `pipeline_exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1304,7 +1304,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         };
         
         set((state: any) => {
-          const p = state.pipelines.find(p => p.id === pipelineId);
+          const p = state.pipelines.find((p: any) => p.id === pipelineId);
           if (p) {
             p.executions.push(execution);
             p.status = 'running';
@@ -1316,7 +1316,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           await new Promise(resolve => setTimeout(resolve, 5000 + Math.random() * 10000));
           
           set((state: any) => {
-            const p = state.pipelines.find(p => p.id === pipelineId);
+            const p = state.pipelines.find((p: any) => p.id === pipelineId);
             if (p) {
               const exec = p.executions.find(e => e.id === executionId);
               if (exec) {
@@ -1333,7 +1333,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           
         } catch (error) {
           set((state: any) => {
-            const p = state.pipelines.find(p => p.id === pipelineId);
+            const p = state.pipelines.find((p: any) => p.id === pipelineId);
             if (p) {
               const exec = p.executions.find(e => e.id === executionId);
               if (exec) {
@@ -1351,7 +1351,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const pipeline = state.pipelines.find(p => 
+          const pipeline = state.pipelines.find((p: any) => 
             p.executions.some(e => e.id === executionId)
           );
           if (pipeline) {
@@ -1374,7 +1374,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const pipeline = state.pipelines.find(p => 
+          const pipeline = state.pipelines.find((p: any) => 
             p.executions.some(e => e.id === executionId)
           );
           if (pipeline) {
@@ -1395,7 +1395,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Environment Health
-      checkEnvironmentHealth: async (environmentId) => {
+      checkEnvironmentHealth: async (environmentId: any) => {
         if (!FLAGS.integrationTesting) return [];
         
         // Simulate health checks
@@ -1466,7 +1466,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Test Data Management
-      createTestData: (suiteId, testDataData) => {
+      createTestData: (suiteId: any, testDataData: any) => {
         if (!FLAGS.integrationTesting) return '';
         
         const dataId = `data_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1476,10 +1476,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         };
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
             // Add to test cases that can use this data
-            suite.tests.forEach(test => {
+            suite.tests.forEach((test: any) => {
               if (!test.testData) test.testData = [];
               test.testData.push(testData);
             });
@@ -1494,9 +1494,9 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
-            suite.tests.forEach(test => {
+            suite.tests.forEach((test: any) => {
               const data = test.testData?.find(d => d.id === dataId);
               if (data) {
                 Object.assign(data, updates);
@@ -1507,15 +1507,15 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      deleteTestData: (suiteId, dataId) => {
+      deleteTestData: (suiteId: any, dataId: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const suite = state.testSuites.find(s => s.id === suiteId);
+          const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
-            suite.tests.forEach(test => {
+            suite.tests.forEach((test: any) => {
               if (test.testData) {
-                test.testData = test.testData.filter(d => d.id !== dataId);
+                test.testData = test.testData.filter((d: any) => d.id !== dataId);
               }
             });
             suite.updatedAt = new Date();
@@ -1524,7 +1524,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Reporting
-      generateReport: async (executionId, format) => {
+      generateReport: async (executionId: any, format: any) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
         const execution = get().executions.find(e => e.id === executionId);
@@ -1557,10 +1557,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         return new Blob([content], { type: mimeType });
       },
 
-      exportResults: async (executionIds, format) => {
+      exportResults: async (executionIds: any, format: any) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
-        const executions = get().executions.filter(e => executionIds.includes(e.id));
+        const executions = get().executions.filter((e: any) => executionIds.includes(e.id));
         
         let content: string;
         let mimeType: string;
@@ -1572,14 +1572,14 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
             break;
           case 'csv':
             const headers = 'ID,Suite,Environment,Status,Duration,Pass Rate';
-            const rows = executions.map(e => 
+            const rows = executions.map((e: any) => 
               `${e.id},${e.suiteId},${e.environment},${e.status},${e.duration},${e.summary.passRate}%`
             ).join('\n');
             content = `${headers}\n${rows}`;
             mimeType = 'text/csv';
             break;
           case 'xml':
-            content = `<?xml version="1.0"?><executions>${executions.map(e => 
+            content = `<?xml version="1.0"?><executions>${executions.map((e: any) => 
               `<execution id="${e.id}" status="${e.status}"/>`
             ).join('')}</executions>`;
             mimeType = 'application/xml';
@@ -1590,7 +1590,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Search & Filtering
-      setSearchQuery: (query) => {
+      setSearchQuery: (query: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -1622,7 +1622,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // UI Actions
-      setSidebarCollapsed: (collapsed) => {
+      setSidebarCollapsed: (collapsed: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -1630,7 +1630,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      setSelectedTab: (tab) => {
+      setSelectedTab: (tab: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
@@ -1639,7 +1639,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Settings
-      updateSettings: (settings) => {
+      updateSettings: (settings: any) => {
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {

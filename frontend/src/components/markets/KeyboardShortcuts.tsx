@@ -102,7 +102,7 @@ function ShortcutItem({ keys, description }: { keys: string[]; description: stri
     <div className="flex items-center justify-between py-2">
       <span className="text-neutral-300 text-sm">{description}</span>
       <div className="flex items-center gap-1">
-        {keys.map((key, i) => (
+        {keys.map((key: any, i: any) => (
           <kbd
             key={i}
             className="px-3 py-1.5 bg-neutral-800 border border-neutral-700 rounded text-sm font-mono text-white shadow-sm"

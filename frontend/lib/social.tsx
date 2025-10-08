@@ -273,7 +273,7 @@ interface SocialActions {
 // Create Store
 export const useSocialStore = create<SocialState & SocialActions>()(
   persist(
-      immer<any>((set, get) => ({
+      immer<any>((set: any, get: any) => ({
         // Initial State
         currentUser: null,
         isAuthenticated: false,
@@ -302,7 +302,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         error: null,
         
         // Authentication
-        login: async (credentials) => {
+        login: async (credentials: any) => {
           if (!FLAGS.social) return;
           
           set((state: any) => {
@@ -360,7 +360,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           });
         },
         
-        updateProfile: async (updates) => {
+        updateProfile: async (updates: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -389,7 +389,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         },
         
         // Content Creation
-        createPost: async (postData) => {
+        createPost: async (postData: any) => {
           if (!FLAGS.social || !get().isAuthenticated) throw new Error('Not authenticated');
           
           const postId = `post_${Date.now()}`;
@@ -455,7 +455,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        updatePost: async (postId, updates) => {
+        updatePost: async (postId: any, updates: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -486,7 +486,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        deletePost: async (postId) => {
+        deletePost: async (postId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -514,12 +514,12 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         },
         
         // Content Interaction
-        likePost: async (postId) => {
+        likePost: async (postId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           // Optimistic update
           set((state: any) => {
-            const post = state.feed.find(p => p.id === postId);
+            const post = state.feed.find((p: any) => p.id === postId);
             if (post && !post.isLiked) {
               post.likes++;
               post.isLiked = true;
@@ -539,7 +539,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           } catch (error) {
             // Revert optimistic update
             set((state: any) => {
-              const post = state.feed.find(p => p.id === postId);
+              const post = state.feed.find((p: any) => p.id === postId);
               if (post && post.isLiked) {
                 post.likes--;
                 post.isLiked = false;
@@ -549,12 +549,12 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        unlikePost: async (postId) => {
+        unlikePost: async (postId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           // Optimistic update
           set((state: any) => {
-            const post = state.feed.find(p => p.id === postId);
+            const post = state.feed.find((p: any) => p.id === postId);
             if (post && post.isLiked) {
               post.likes--;
               post.isLiked = false;
@@ -574,7 +574,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           } catch (error) {
             // Revert optimistic update
             set((state: any) => {
-              const post = state.feed.find(p => p.id === postId);
+              const post = state.feed.find((p: any) => p.id === postId);
               if (post && !post.isLiked) {
                 post.likes++;
                 post.isLiked = true;
@@ -584,11 +584,11 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        bookmarkPost: async (postId) => {
+        bookmarkPost: async (postId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
-            const post = state.feed.find(p => p.id === postId);
+            const post = state.feed.find((p: any) => p.id === postId);
             if (post) {
               post.isBookmarked = true;
             }
@@ -606,7 +606,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             set((state: any) => {
-              const post = state.feed.find(p => p.id === postId);
+              const post = state.feed.find((p: any) => p.id === postId);
               if (post) {
                 post.isBookmarked = false;
               }
@@ -615,11 +615,11 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        unbookmarkPost: async (postId) => {
+        unbookmarkPost: async (postId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
-            const post = state.feed.find(p => p.id === postId);
+            const post = state.feed.find((p: any) => p.id === postId);
             if (post) {
               post.isBookmarked = false;
             }
@@ -637,7 +637,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             set((state: any) => {
-              const post = state.feed.find(p => p.id === postId);
+              const post = state.feed.find((p: any) => p.id === postId);
               if (post) {
                 post.isBookmarked = true;
               }
@@ -646,7 +646,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        sharePost: async (postId, platform) => {
+        sharePost: async (postId: any, platform: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -662,7 +662,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to share post');
             
             set((state: any) => {
-              const post = state.feed.find(p => p.id === postId);
+              const post = state.feed.find((p: any) => p.id === postId);
               if (post) {
                 post.shares++;
               }
@@ -694,7 +694,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             const comment = await response.json();
             
             set((state: any) => {
-              const post = state.feed.find(p => p.id === postId);
+              const post = state.feed.find((p: any) => p.id === postId);
               if (post) {
                 post.comments++;
               }
@@ -710,7 +710,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        updateComment: async (commentId, content) => {
+        updateComment: async (commentId: any, content: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -732,7 +732,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        deleteComment: async (commentId) => {
+        deleteComment: async (commentId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -752,7 +752,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        likeComment: async (commentId) => {
+        likeComment: async (commentId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -773,7 +773,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         },
         
         // Social Interactions
-        followUser: async (userId) => {
+        followUser: async (userId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
@@ -798,7 +798,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        unfollowUser: async (userId) => {
+        unfollowUser: async (userId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
@@ -823,7 +823,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        blockUser: async (userId) => {
+        blockUser: async (userId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -838,7 +838,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             // Remove user's content from feed
             set((state: any) => {
-              state.feed = state.feed.filter(post => post.authorId !== userId);
+              state.feed = state.feed.filter((post: any) => post.authorId !== userId);
               state.following.delete(userId);
             });
             
@@ -915,7 +915,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        loadSymbolThread: async (symbol) => {
+        loadSymbolThread: async (symbol: any) => {
           if (!FLAGS.social) return;
           
           try {
@@ -935,7 +935,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        searchContent: async (query) => {
+        searchContent: async (query: any) => {
           if (!FLAGS.social) return [];
           
           try {
@@ -953,7 +953,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         },
         
         // Copy Trading (simplified - would integrate with paper trading)
-        startCopyTrading: async (traderId, settings) => {
+        startCopyTrading: async (traderId: any, settings: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return '';
           
           try {
@@ -984,7 +984,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        stopCopyTrading: async (copyTradingId) => {
+        stopCopyTrading: async (copyTradingId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -1010,7 +1010,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        updateCopySettings: async (copyTradingId, settings) => {
+        updateCopySettings: async (copyTradingId: any, settings: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           try {
@@ -1041,7 +1041,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        loadTraderStats: async (traderId) => {
+        loadTraderStats: async (traderId: any) => {
           if (!FLAGS.social) return;
           
           try {
@@ -1087,7 +1087,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        markNotificationRead: async (notificationId) => {
+        markNotificationRead: async (notificationId: any) => {
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
@@ -1122,7 +1122,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
-            state.notifications.forEach(n => n.isRead = true);
+            state.notifications.forEach((n: any) => n.isRead = true);
           });
           
           try {
@@ -1137,7 +1137,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             set((state: any) => {
-              state.notifications.forEach(n => n.isRead = false);
+              state.notifications.forEach((n: any) => n.isRead = false);
               state.error = error instanceof Error ? error.message : 'Failed to mark all notifications as read';
             });
           }
@@ -1173,7 +1173,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
                 
               case 'post_liked':
                 set((state: any) => {
-                  const post = state.feed.find(p => p.id === data.postId);
+                  const post = state.feed.find((p: any) => p.id === data.postId);
                   if (post) {
                     post.likes = data.likes;
                   }
@@ -1211,7 +1211,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         },
         
         // Settings
-        updateSocialSettings: (settings) => {
+        updateSocialSettings: (settings: any) => {
           if (!FLAGS.social) return;
           
           set((state: any) => {
@@ -1220,7 +1220,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
         },
         
         // UI State
-        setSelectedSymbol: (symbol) => {
+        setSelectedSymbol: (symbol: any) => {
           if (!FLAGS.social) return;
           
           set((state: any) => {
@@ -1232,7 +1232,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           }
         },
         
-        setFeedFilter: (filter) => {
+        setFeedFilter: (filter: any) => {
           if (!FLAGS.social) return;
           
           set((state: any) => {
@@ -1242,7 +1242,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           get().loadFeed(filter, 0);
         },
         
-        setSearchQuery: (query) => {
+        setSearchQuery: (query: any) => {
           if (!FLAGS.social) return;
           
           set((state: any) => {
@@ -1270,18 +1270,18 @@ export const useSocialStore = create<SocialState & SocialActions>()(
 
 // Selectors
 export const useUnreadNotificationsCount = () =>
-  useSocialStore((state) => 
+  useSocialStore((state: any) => 
     state.notifications.filter(n => !n.isRead).length
   );
 
 export const useIsFollowing = (userId: string) =>
-  useSocialStore((state) => state.following.has(userId));
+  useSocialStore((state: any) => state.following.has(userId));
 
 export const useSymbolThread = (symbol: string) =>
-  useSocialStore((state) => state.threads.get(symbol));
+  useSocialStore((state: any) => state.threads.get(symbol));
 
 export const useCopyTradingPositions = () =>
-  useSocialStore((state) => state.copyTradingPositions);
+  useSocialStore((state: any) => state.copyTradingPositions);
 
 // Initialize store
 if (typeof window !== 'undefined' && FLAGS.social) {

@@ -116,7 +116,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('Loading state renders consistently', async ({ page }) => {
     // Intercept API calls to slow them down
-    await page.route('**/api/ohlc/**', async (route) => {
+    await page.route('**/api/ohlc/**', async (route: any) => {
       await page.waitForTimeout(2000);
       await route.continue();
     });
@@ -133,7 +133,7 @@ test.describe('Visual Regression Tests', () => {
 
   test('Error state renders consistently', async ({ page }) => {
     // Intercept API calls to return error
-    await page.route('**/api/ohlc/**', async (route) => {
+    await page.route('**/api/ohlc/**', async (route: any) => {
       await route.abort('failed');
     });
 

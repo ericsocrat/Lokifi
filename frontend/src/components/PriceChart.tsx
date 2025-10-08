@@ -123,7 +123,7 @@ export default function PriceChart() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, resizeCallback]);
 
-  const bumpRangeTick = React.useCallback(() => setRangeTick((t) => (t + 1) | 0), []);
+  const bumpRangeTick = React.useCallback(() => setRangeTick((t: any) => (t + 1) | 0), []);
 
   // attach data adapter
   React.useEffect(() => {
@@ -182,11 +182,11 @@ export default function PriceChart() {
           // locate indices by comparing times; since sliceByTimeWindow already clamps, we can map back via time match
           const firstT = timeToSec(view[0].time as Time);
           const lastT = timeToSec(view[view.length - 1].time as Time);
-          startIdx = candles.findIndex((c) => timeToSec(c.time as Time) >= firstT);
+          startIdx = candles.findIndex((c: any) => timeToSec(c.time as Time) >= firstT);
           if (startIdx < 0) startIdx = 0;
           endIdx = Math.max(
             startIdx,
-            candles.findIndex((c) => timeToSec(c.time as Time) > lastT) - 1
+            candles.findIndex((c: any) => timeToSec(c.time as Time) > lastT) - 1
           );
           if (endIdx < 0) endIdx = candles.length - 1;
         }
@@ -201,7 +201,7 @@ export default function PriceChart() {
       const paddedStart = Math.max(0, startIdx - pad);
       const paddedEnd = endIdx;
       const slice = candles.slice(paddedStart, paddedEnd + 1);
-      const close = slice.map((c) => c.close);
+      const close = slice.map((c: any) => c.close);
       const width = ref.current?.clientWidth || 1200;
       const target = Math.floor(width / 2.5);
 
@@ -213,16 +213,16 @@ export default function PriceChart() {
         const lower = chart.addLineSeries({ lineStyle: LineStyle.Solid, lineWidth: 1 });
 
         // Map back to original candle times for just the visible window (not the padding)
-        const vTimes = candles.slice(startIdx, endIdx + 1).map((c) => c.time as Time);
-        const baseData = vTimes.map((t, i) => ({
+        const vTimes = candles.slice(startIdx, endIdx + 1).map((c: any) => c.time as Time);
+        const baseData = vTimes.map((t: any, i: any) => ({
           time: t,
           value: bb.mid[i + (startIdx - paddedStart)] ?? NaN,
         }));
-        const upData = vTimes.map((t, i) => ({
+        const upData = vTimes.map((t: any, i: any) => ({
           time: t,
           value: bb.upper[i + (startIdx - paddedStart)] ?? NaN,
         }));
-        const loData = vTimes.map((t, i) => ({
+        const loData = vTimes.map((t: any, i: any) => ({
           time: t,
           value: bb.lower[i + (startIdx - paddedStart)] ?? NaN,
         }));
@@ -241,12 +241,12 @@ export default function PriceChart() {
       if (indicators.showVWAP) {
         const anchorAbs = indicatorSettings.vwapAnchorIndex ?? 0;
         const anchorRel = Math.max(0, anchorAbs - paddedStart);
-        const typical = slice.map((c) => (c.high + c.low + c.close) / 3);
-        const volume = slice.map((c) => c.volume);
+        const typical = slice.map((c: any) => (c.high + c.low + c.close) / 3);
+        const volume = slice.map((c: any) => c.volume);
         const v = vwap(typical, volume);
         const vwapLine = chart.addLineSeries({ lineWidth: 2 });
-        const vTimes = candles.slice(startIdx, endIdx + 1).map((c) => c.time as Time);
-        const data = vTimes.map((t, i) => ({
+        const vTimes = candles.slice(startIdx, endIdx + 1).map((c: any) => c.time as Time);
+        const data = vTimes.map((t: any, i: any) => ({
           time: t,
           value: v[i + (startIdx - paddedStart)] ?? NaN,
         }));
@@ -256,12 +256,12 @@ export default function PriceChart() {
 
       // --- VWMA
       if (indicators.showVWMA) {
-        const prices = slice.map((c) => c.close);
-        const volumes = slice.map((c) => c.volume);
+        const prices = slice.map((c: any) => c.close);
+        const volumes = slice.map((c: any) => c.volume);
         const vArr = vwma(prices, volumes, indicatorSettings.vwmaPeriod);
         const line = chart.addLineSeries({ lineWidth: 1 });
-        const vTimes = candles.slice(startIdx, endIdx + 1).map((c) => c.time as Time);
-        const data = vTimes.map((t, i) => ({
+        const vTimes = candles.slice(startIdx, endIdx + 1).map((c: any) => c.time as Time);
+        const data = vTimes.map((t: any, i: any) => ({
           time: t,
           value: vArr[i + (startIdx - paddedStart)] ?? NaN,
         }));
@@ -279,16 +279,16 @@ export default function PriceChart() {
         const mid = chart.addLineSeries({ lineWidth: 1 });
         const up = chart.addLineSeries({ lineWidth: 1 });
         const lo = chart.addLineSeries({ lineWidth: 1 });
-        const vTimes = candles.slice(startIdx, endIdx + 1).map((c) => c.time as Time);
-        const midData = vTimes.map((t, i) => ({
+        const vTimes = candles.slice(startIdx, endIdx + 1).map((c: any) => c.time as Time);
+        const midData = vTimes.map((t: any, i: any) => ({
           time: t,
           value: ch.mid[i + (startIdx - paddedStart)] ?? NaN,
         }));
-        const upData = vTimes.map((t, i) => ({
+        const upData = vTimes.map((t: any, i: any) => ({
           time: t,
           value: ch.upper[i + (startIdx - paddedStart)] ?? NaN,
         }));
-        const loData = vTimes.map((t, i) => ({
+        const loData = vTimes.map((t: any, i: any) => ({
           time: t,
           value: ch.lower[i + (startIdx - paddedStart)] ?? NaN,
         }));
@@ -327,7 +327,7 @@ export default function PriceChart() {
       const fromSec = timeToSec(vr.from as Time);
       const toSec = timeToSec(vr.to as Time);
       // Convert Time to number for indicator processing
-      const allWithNumTime = all.map((c) => ({
+      const allWithNumTime = all.map((c: any) => ({
         ...c,
         time:
           typeof c.time === 'number'
@@ -350,7 +350,7 @@ export default function PriceChart() {
 
     const ds = downsampleCandlesMinMax(view as any, target);
     s.setData(ds as any);
-    v.setData(ds.map((c) => ({ time: c.time as Time, value: c.volume })));
+    v.setData(ds.map((c: any) => ({ time: c.time as Time, value: c.volume })));
   }, [candles]);
 
   return (

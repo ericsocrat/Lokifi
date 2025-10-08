@@ -159,7 +159,7 @@ describe('Chart timestamp normalization', () => {
       { ts: 1640998800, o: 104, h: 109, l: 101, c: 106, v: 900 },
     ];
 
-    const sortedCandles = candles.sort((a, b) => a.ts - b.ts);
+    const sortedCandles = candles.sort((a: any, b: any) => a.ts - b.ts);
 
     expect(sortedCandles[0].ts).toBe(1640991600);
     expect(sortedCandles[1].ts).toBe(1640995200);

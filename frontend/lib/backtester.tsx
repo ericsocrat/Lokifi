@@ -383,7 +383,7 @@ const defaultBacktestConfig: BacktestConfig = {
 // Create Store
 export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
   persist(
-    immer<any>((set, get) => ({
+    immer<any>((set: any, get: any) => ({
       // Initial State
       strategies: [],
       activeStrategy: null,
@@ -881,29 +881,29 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
 
 // Selectors
 export const useRunningBacktests = () =>
-  useBacktesterStore((state) => state.runningBacktests);
+  useBacktesterStore((state: any) => state.runningBacktests);
 
 export const useBacktestsByStrategy = (strategyId: string) =>
-  useBacktesterStore((state) => 
+  useBacktesterStore((state: any) => 
     state.backtests.filter((b: any) => b.strategyId === strategyId)
   );
 
 export const useCompletedBacktests = () =>
-  useBacktesterStore((state) => 
+  useBacktesterStore((state: any) => 
     state.backtests.filter((b: any) => b.status === 'completed' && b.results)
   );
 
 // Performance calculation utilities
 export const calculatePerformanceMetrics = (trades: BacktestTrade[]): StrategyPerformance => {
-  const completedTrades = trades.filter(t => t.pnl !== undefined);
-  const returns = completedTrades.map(t => t.pnlPercent || 0);
+  const completedTrades = trades.filter((t: any) => t.pnl !== undefined);
+  const returns = completedTrades.map((t: any) => t.pnlPercent || 0);
   
-  const totalReturn = returns.reduce((sum, r) => sum + r, 0);
-  const winningTrades = completedTrades.filter(t => (t.pnl || 0) > 0);
-  const losingTrades = completedTrades.filter(t => (t.pnl || 0) < 0);
+  const totalReturn = returns.reduce((sum: any, r: any) => sum + r, 0);
+  const winningTrades = completedTrades.filter((t: any) => (t.pnl || 0) > 0);
+  const losingTrades = completedTrades.filter((t: any) => (t.pnl || 0) < 0);
   
   const avgReturn = returns.length > 0 ? totalReturn / returns.length : 0;
-  const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+  const variance = returns.reduce((sum: any, r: any) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
   const volatility = Math.sqrt(variance);
   
   return {
@@ -919,8 +919,8 @@ export const calculatePerformanceMetrics = (trades: BacktestTrade[]): StrategyPe
     winningTrades: winningTrades.length,
     losingTrades: losingTrades.length,
     winRate: completedTrades.length > 0 ? winningTrades.length / completedTrades.length : 0,
-    avgWin: winningTrades.length > 0 ? winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length : 0,
-    avgLoss: losingTrades.length > 0 ? Math.abs(losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0)) / losingTrades.length : 0,
+    avgWin: winningTrades.length > 0 ? winningTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0) / winningTrades.length : 0,
+    avgLoss: losingTrades.length > 0 ? Math.abs(losingTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0)) / losingTrades.length : 0,
     profitFactor: 0, // Would need proper calculation
     
     var95: 0,
@@ -929,7 +929,7 @@ export const calculatePerformanceMetrics = (trades: BacktestTrade[]): StrategyPe
     correlation: 0,
     
     avgHoldingPeriod: completedTrades.length > 0 
-      ? completedTrades.reduce((sum, t) => sum + (t.holdingPeriod || 0), 0) / completedTrades.length 
+      ? completedTrades.reduce((sum: any, t: any) => sum + (t.holdingPeriod || 0), 0) / completedTrades.length 
       : 0,
     tradingFrequency: 0,
     

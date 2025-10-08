@@ -29,7 +29,7 @@ export default function ReportComposer({ open, onClose }: { open: boolean; onClo
         const lines = s.alertEvents
           .slice(-12)
           .map(
-            (ev) =>
+            (ev: any) =>
               `- ${new Date(ev.at).toLocaleString()} — ${ev.kind}${ev.price != null ? ` @ ${ev.price.toFixed(2)}` : ''}`
           );
         blocks.push({
@@ -65,7 +65,7 @@ ${lines.join('\n')}`,
           <input
             className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e: any) => setTitle(e.target.value)}
           />
 
           <label className="opacity-70">Notes</label>
@@ -74,7 +74,7 @@ ${lines.join('\n')}`,
             className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
             placeholder="Markdown supported (**, *, `code`, [text](url))"
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e: any) => setNotes(e.target.value)}
           />
 
           <label className="opacity-70">Include recent alerts</label>
@@ -83,7 +83,7 @@ ${lines.join('\n')}`,
               <input
                 type="checkbox"
                 checked={includeRecent}
-                onChange={(e) => setIncludeRecent(e.target.checked)}
+                onChange={(e: any) => setIncludeRecent(e.target.checked)}
               />
               <span>Last 12 alerts</span>
             </label>

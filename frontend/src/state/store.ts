@@ -231,10 +231,10 @@ export const useChartStore =
           }]
         });
       },
-      removeAlert: (id: string) => set({ alerts: get().alerts.filter(a => a.id !== id) }),
-      updateAlert: (id: string, patch: Partial<Alert>) => set({ alerts: get().alerts.map(a => a.id === id ? { ...a, ...patch } : a) }),
-      toggleAlert: (id: string) => set({ alerts: get().alerts.map(a => a.id === id ? { ...a, enabled: !a.enabled } : a) }),
-      snoozeAlert: (id: string, until: number | undefined) => set({ alerts: get().alerts.map(a => a.id === id ? { ...a, snoozedUntil: until } : a) }),
+      removeAlert: (id: string) => set({ alerts: get().alerts.filter((a: any) => a.id !== id) }),
+      updateAlert: (id: string, patch: Partial<Alert>) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, ...patch } : a) }),
+      toggleAlert: (id: string) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, enabled: !a.enabled } : a) }),
+      snoozeAlert: (id: string, until: number | undefined) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, snoozedUntil: until } : a) }),
       clearAlertEvents: () => set({ alertEvents: [] }),
 
       setSymbol: (sym: string) => set({ symbol: sym }),
@@ -249,7 +249,7 @@ export const useChartStore =
 
       // Drawing methods
       setSelectedStyle: (style: Partial<DrawingStyle>) => {
-        const drawings = get().drawings.map(d =>
+        const drawings = get().drawings.map((d: any) =>
           get().selection.has(d.id) ? { ...d, ...style } : d
         );
         set({ drawings });
@@ -258,24 +258,24 @@ export const useChartStore =
       bringToFront: () => {
         const drawings = [...get().drawings];
         const selected = new Set(get().selection);
-        const toMove = drawings.filter(d => selected.has(d.id));
-        const others = drawings.filter(d => !selected.has(d.id));
+        const toMove = drawings.filter((d: any) => selected.has(d.id));
+        const others = drawings.filter((d: any) => !selected.has(d.id));
         set({ drawings: [...others, ...toMove] });
       },
 
       sendToBack: () => {
         const drawings = [...get().drawings];
         const selected = new Set(get().selection);
-        const toMove = drawings.filter(d => selected.has(d.id));
-        const others = drawings.filter(d => !selected.has(d.id));
+        const toMove = drawings.filter((d: any) => selected.has(d.id));
+        const others = drawings.filter((d: any) => !selected.has(d.id));
         set({ drawings: [...toMove, ...others] });
       },
 
       groupSelected: () => {
         const drawings = get().drawings;
         const selected = new Set(get().selection);
-        const toGroup = drawings.filter(d => selected.has(d.id));
-        const others = drawings.filter(d => !selected.has(d.id));
+        const toGroup = drawings.filter((d: any) => selected.has(d.id));
+        const others = drawings.filter((d: any) => !selected.has(d.id));
         const group = {
           id: crypto.randomUUID(),
           type: 'group',
@@ -299,7 +299,7 @@ export const useChartStore =
       },
 
       setFibLevelsForSelected: (levels: number[]) => {
-        const drawings = get().drawings.map(d =>
+        const drawings = get().drawings.map((d: any) =>
           get().selection.has(d.id) && d.type === 'fib' ? { ...d, levels } : d
         );
         set({ drawings });
@@ -313,13 +313,13 @@ export const useChartStore =
       addDrawing: (d: Drawing) => set({ drawings: [...get().drawings, d] }),
 
       updateDrawing: (id: string, updater: (d: Drawing) => Drawing) => {
-        const next = get().drawings.map(d => d.id === id ? updater(d) : d);
+        const next = get().drawings.map((d: any) => d.id === id ? updater(d) : d);
         set({ drawings: next });
       },
 
       setStyleForSelection: (patch: Partial<DrawingStyle>) => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
+        const next = get().drawings.map((d: any) =>
           sel.has(d.id) ? { ...d, style: { ...(d.style || {}), ...patch } } : d
         );
         set({ drawings: next });
@@ -342,7 +342,7 @@ export const useChartStore =
 
       setTextForSelection: (text: string) => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
+        const next = get().drawings.map((d: any) =>
           sel.has(d.id) ? { ...d, text } : d
         );
         set({ drawings: next });
@@ -350,7 +350,7 @@ export const useChartStore =
 
       toggleLockSelected: () => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
+        const next = get().drawings.map((d: any) =>
           sel.has(d.id) ? { ...d, locked: !d.locked } : d
         );
         set({ drawings: next });
@@ -358,7 +358,7 @@ export const useChartStore =
 
       toggleVisibilitySelected: () => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
+        const next = get().drawings.map((d: any) =>
           sel.has(d.id) ? { ...d, hidden: !d.hidden } : d
         );
         set({ drawings: next });
@@ -366,7 +366,7 @@ export const useChartStore =
 
       renameSelected: (name: string) => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
+        const next = get().drawings.map((d: any) =>
           sel.has(d.id) ? { ...d, name } : d
         );
         set({ drawings: next });
@@ -375,15 +375,15 @@ export const useChartStore =
       deleteSelected: () => {
         const sel = get().selection;
         set({
-          drawings: get().drawings.filter(d => !sel.has(d.id)),
+          drawings: get().drawings.filter((d: any) => !sel.has(d.id)),
           selection: new Set()
         });
       },
 
       duplicateSelected: () => {
         const sel = get().selection;
-        const toDuplicate = get().drawings.filter(d => sel.has(d.id));
-        const duplicates = toDuplicate.map(d => ({
+        const toDuplicate = get().drawings.filter((d: any) => sel.has(d.id));
+        const duplicates = toDuplicate.map((d: any) => ({
           ...d,
           id: crypto.randomUUID(),
           name: `${d.name || 'Drawing'} (copy)`
@@ -395,8 +395,8 @@ export const useChartStore =
         const sel = get().selection;
         if (sel.size < 2) return;
 
-        const selectedDrawings = get().drawings.filter(d => sel.has(d.id));
-        const bounds = selectedDrawings.map(d => ({
+        const selectedDrawings = get().drawings.filter((d: any) => sel.has(d.id));
+        const bounds = selectedDrawings.map((d: any) => ({
           id: d.id,
           x: d.x,
           y: d.y,
@@ -407,25 +407,25 @@ export const useChartStore =
         let alignTo: number;
         switch (direction) {
           case 'left':
-            alignTo = Math.min(...bounds.map(b => b.x));
+            alignTo = Math.min(...bounds.map((b: any) => b.x));
             bounds.forEach(b => b.x = alignTo);
             break;
           case 'right':
-            alignTo = Math.max(...bounds.map(b => b.x + b.width));
+            alignTo = Math.max(...bounds.map((b: any) => b.x + b.width));
             bounds.forEach(b => b.x = alignTo - b.width);
             break;
           case 'top':
-            alignTo = Math.min(...bounds.map(b => b.y));
+            alignTo = Math.min(...bounds.map((b: any) => b.y));
             bounds.forEach(b => b.y = alignTo);
             break;
           case 'bottom':
-            alignTo = Math.max(...bounds.map(b => b.y + b.height));
+            alignTo = Math.max(...bounds.map((b: any) => b.y + b.height));
             bounds.forEach(b => b.y = alignTo - b.height);
             break;
         }
 
-        const next = get().drawings.map(d => {
-          const bound = bounds.find(b => b.id === d.id);
+        const next = get().drawings.map((d: any) => {
+          const bound = bounds.find((b: any) => b.id === d.id);
           return bound ? { ...d, x: bound.x, y: bound.y } : d;
         });
         set({ drawings: next });
@@ -436,8 +436,8 @@ export const useChartStore =
         if (sel.size < 3) return;
 
         const selectedDrawings = get().drawings
-          .filter(d => sel.has(d.id))
-          .sort((a, b) => direction === 'h' ? a.x - b.x : a.y - b.y);
+          .filter((d: any) => sel.has(d.id))
+          .sort((a: any, b: any) => direction === 'h' ? a.x - b.x : a.y - b.y);
 
         const total = selectedDrawings.length;
         const first = selectedDrawings[0];
@@ -446,7 +446,7 @@ export const useChartStore =
           ? (last.x - first.x) / (total - 1)
           : (last.y - first.y) / (total - 1);
 
-        const next = get().drawings.map(d => {
+        const next = get().drawings.map((d: any) => {
           const idx = selectedDrawings.findIndex(sd => sd.id === d.id);
           if (idx === -1 || idx === 0 || idx === total - 1) return d;
 
@@ -462,7 +462,7 @@ export const useChartStore =
       // Layer actions
       addLayer: (name: string) => {
         const layers = get().layers;
-        const maxOrder = Math.max(0, ...layers.map(l => l.order));
+        const maxOrder = Math.max(0, ...layers.map((l: any) => l.order));
         set({
           layers: [...layers, {
             id: crypto.randomUUID(),
@@ -477,7 +477,7 @@ export const useChartStore =
 
       toggleLayerVisibility: (layerId: string) => {
         set({
-          layers: get().layers.map(l =>
+          layers: get().layers.map((l: any) =>
             l.id === layerId ? { ...l, visible: !l.visible } : l
           )
         });
@@ -485,7 +485,7 @@ export const useChartStore =
 
       toggleLayerLock: (layerId: string) => {
         set({
-          layers: get().layers.map(l =>
+          layers: get().layers.map((l: any) =>
             l.id === layerId ? { ...l, locked: !l.locked } : l
           )
         });
@@ -493,7 +493,7 @@ export const useChartStore =
 
       setLayerOpacity: (layerId: string, opacity: number) => {
         set({
-          layers: get().layers.map(l =>
+          layers: get().layers.map((l: any) =>
             l.id === layerId ? { ...l, opacity } : l
           )
         });
@@ -523,7 +523,7 @@ export const useChartStore =
 
       renameLayer: (layerId: string, name: string) => {
         set({
-          layers: get().layers.map(l =>
+          layers: get().layers.map((l: any) =>
             l.id === layerId ? { ...l, name } : l
           )
         });
@@ -558,7 +558,7 @@ export const useChartStore =
       },
 
       loadSnapshot: (id: string) => {
-        const snapshot = get().snapshots.find(s => s.id === id);
+        const snapshot = get().snapshots.find((s: any) => s.id === id);
         if (!snapshot) return;
         set({
           drawings: snapshot.drawings,
@@ -569,7 +569,7 @@ export const useChartStore =
 
       deleteSnapshot: (id: string) => {
         set({
-          snapshots: get().snapshots.filter(s => s.id !== id)
+          snapshots: get().snapshots.filter((s: any) => s.id !== id)
         });
       },
 

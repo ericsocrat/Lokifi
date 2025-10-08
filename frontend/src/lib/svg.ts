@@ -74,7 +74,7 @@ export function lineEl(a: P, b: P, style: SvgStyle = {}): string {
 
 /** <polyline .../> */
 export function polylineEl(points: P[], style: SvgStyle = {}): string {
-  const pts = points.map(p => `${p.x},${p.y}`).join(" ");
+  const pts = points.map((p: any) => `${p.x},${p.y}`).join(" ");
   const attrs = {
     points: pts,
     ...commonStroke(style),
@@ -153,7 +153,7 @@ export function dLine(a: P, b: P): string {
 
 /** Convenience: polygon/polyline "points" from points array */
 export function pointsAttr(points: P[]): string {
-  return points.map(p => `${p.x},${p.y}`).join(" ");
+  return points.map((p: any) => `${p.x},${p.y}`).join(" ");
 }
 
 /** Default export with common helpers for flexible imports */

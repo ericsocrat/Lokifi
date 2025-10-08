@@ -178,7 +178,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
             {!isLoading &&
               !error &&
-              recentNotifications.map((notification) => (
+              recentNotifications.map((notification: any) => (
                 <div
                   key={notification.id}
                   className={`p-4 border-l-2 hover:bg-neutral-800 cursor-pointer transition-colors ${getNotificationColor(
@@ -208,7 +208,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                         <div className="flex gap-1">
                           {!notification.is_read && (
                             <button
-                              onClick={(e) => {
+                              onClick={(e: any) => {
                                 e.stopPropagation();
                                 markAsRead(notification.id);
                               }}
@@ -219,7 +219,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                             </button>
                           )}
                           <button
-                            onClick={(e) => {
+                            onClick={(e: any) => {
                               e.stopPropagation();
                               dismissNotification(notification.id);
                             }}

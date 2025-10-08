@@ -23,7 +23,7 @@ const ChartContainer = ({ children, ...props }: any) => {
 // Dynamic import with loading state
 const Chart = dynamic(
   () =>
-    import('lightweight-charts').then((mod) => ({
+    import('lightweight-charts').then((mod: any) => ({
       default: ChartContainer,
     })),
   {
@@ -222,7 +222,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     // Draw existing objects for this pane
     const paneObjects = getObjectsByPane(paneId);
 
-    paneObjects.forEach((obj) => {
+    paneObjects.forEach((obj: any) => {
       if (!obj.properties.visible) return;
 
       ctx.strokeStyle = obj.style.color;
@@ -234,7 +234,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         ctx.beginPath();
         ctx.moveTo(obj.points[0].x, obj.points[0].y);
 
-        obj.points.slice(1).forEach((point) => {
+        obj.points.slice(1).forEach((point: any) => {
           ctx.lineTo(point.x, point.y);
         });
 
@@ -259,7 +259,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       ctx.beginPath();
       ctx.moveTo(currentDrawing.points[0].x, currentDrawing.points[0].y);
 
-      currentDrawing.points.slice(1).forEach((point) => {
+      currentDrawing.points.slice(1).forEach((point: any) => {
         ctx.lineTo(point.x, point.y);
       });
 
@@ -420,7 +420,7 @@ export const DrawingChart: React.FC = () => {
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
-        {panes.map((pane) => (
+        {panes.map((pane: any) => (
           <DrawingPaneComponent
             key={pane.id}
             paneId={pane.id}

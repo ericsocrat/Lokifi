@@ -11982,8 +11982,8 @@ export const ALL_ASSETS: Asset[] = [
   }
 ];
 
-export const MARKET_DATA_MAP: Record<string, Asset> = ALL_ASSETS.reduce((map, asset) => { map[asset.symbol] = asset; return map; }, {} as Record<string, Asset>);
+export const MARKET_DATA_MAP: Record<string, Asset> = ALL_ASSETS.reduce((map: any, asset: any) => { map[asset.symbol] = asset; return map; }, {} as Record<string, Asset>);
 
 export function getAsset(symbol: string): Asset | undefined { return MARKET_DATA_MAP[symbol.toUpperCase()]; }
-export function searchAssets(query: string): Asset[] { const lowerQuery = query.toLowerCase(); return ALL_ASSETS.filter(asset => asset.symbol.toLowerCase().includes(lowerQuery) || asset.name.toLowerCase().includes(lowerQuery)).slice(0, 50); }
+export function searchAssets(query: string): Asset[] { const lowerQuery = query.toLowerCase(); return ALL_ASSETS.filter((asset: any) => asset.symbol.toLowerCase().includes(lowerQuery) || asset.name.toLowerCase().includes(lowerQuery)).slice(0, 50); }
 export const ASSET_COUNT = 775;

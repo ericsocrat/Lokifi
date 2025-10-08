@@ -38,7 +38,7 @@ function hexToRGBA(hex: string, a: number) {
     m.length === 3
       ? m
           .split('')
-          .map((c) => c + c)
+          .map((c: any) => c + c)
           .join('')
       : m,
     16
@@ -85,13 +85,13 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
   // Subscribe to store changes
   useEffect(() => {
-    const unsubIndicators = indicatorStore.subscribe((st) => setInds(st));
-    const unsubSymbol = symbolStore.subscribe((s) => {
+    const unsubIndicators = indicatorStore.subscribe((st: any) => setInds(st));
+    const unsubSymbol = symbolStore.subscribe((s: any) => {
       setSym(s);
       indicatorStore.loadForSymbol(s);
       drawStore.loadCurrent();
     });
-    const unsubTimeframe = timeframeStore.subscribe((t) => {
+    const unsubTimeframe = timeframeStore.subscribe((t: any) => {
       setTf(t);
       drawStore.loadCurrent();
     });
@@ -118,7 +118,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     () => ({
       symbol: sym,
       timeframe: tf,
-      candles: Array.from({ length: 100 }, (_, i) => {
+      candles: Array.from({ length: 100 }, (_: any, i: any) => {
         const time = Math.floor(Date.now() / 1000) - (100 - i) * tfToSeconds(tf);
         const price = 50000 + Math.sin(i / 10) * 2000 + (Math.random() - 0.5) * 1000;
         return {
@@ -221,7 +221,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     });
 
     // Normalize and set candlestick data
-    const normalizedCandles = chartData.candles.map((c) => ({
+    const normalizedCandles = chartData.candles.map((c: any) => ({
       time: normalizeTimestamp(c.ts) as Time,
       open: c.o,
       high: c.h,
@@ -230,14 +230,14 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     }));
 
     // Ensure timestamps are monotonic
-    const sortedCandles = normalizedCandles.sort((a, b) => Number(a.time) - Number(b.time));
+    const sortedCandles = normalizedCandles.sort((a: any, b: any) => Number(a.time) - Number(b.time));
     candleSeries.setData(sortedCandles);
 
     // Prepare indicator data
-    const closes = chartData.candles.map((c) => c.c);
-    const highs = chartData.candles.map((c) => c.h);
-    const lows = chartData.candles.map((c) => c.l);
-    const vols = chartData.candles.map((c) => c.v ?? 0);
+    const closes = chartData.candles.map((c: any) => c.c);
+    const highs = chartData.candles.map((c: any) => c.h);
+    const lows = chartData.candles.map((c: any) => c.l);
+    const vols = chartData.candles.map((c: any) => c.v ?? 0);
 
     // Helper to add line series
     const addLineSeries = (values: (number | null)[], color: string, width = 2) => {
@@ -246,7 +246,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         color,
         lineWidth: width,
       });
-      const lineData = values.map((value, i) => ({
+      const lineData = values.map((value: any, i: any) => ({
         time: sortedCandles[i].time,
         value: value ?? NaN,
       }));
@@ -272,7 +272,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           bottomColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
         });
         upperArea.setData(
-          bb.upper.map((value, i) => ({
+          bb.upper.map((value: any, i: any) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -282,15 +282,15 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
     // VWAP
     if (inds.vwap) {
-      const typical = closes.map((c, i) => (highs[i] + lows[i] + c) / 3);
-      const hasVolume = vols.some((v) => v && v > 0);
+      const typical = closes.map((c: any, i: any) => (highs[i] + lows[i] + c) / 3);
+      const hasVolume = vols.some((v: any) => v && v > 0);
       const vwapValues = hasVolume ? vwap(typical, vols) : ema(typical, 20);
       addLineSeries(vwapValues, '#ffaa00', 2);
     }
 
     // VWMA
     if (inds.vwma) {
-      const hasVolume = vols.some((v) => v && v > 0);
+      const hasVolume = vols.some((v: any) => v && v > 0);
       const vwmaValues = hasVolume
         ? vwma(closes, vols, params.vwmaPeriod ?? 20)
         : ema(closes, params.vwmaPeriod ?? 20);
@@ -338,7 +338,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           lineWidth: 2,
         });
         rsiSeries.setData(
-          rsiValues.map((value, i) => ({
+          rsiValues.map((value: any, i: any) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -365,7 +365,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           color: '#4ecdc4',
         });
         macdHistSeries.setData(
-          macdData.hist.map((value, i) => ({
+          macdData.hist.map((value: any, i: any) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -377,7 +377,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           lineWidth: 2,
         });
         signalSeries.setData(
-          macdData.signalLine.map((value, i) => ({
+          macdData.signalLine.map((value: any, i: any) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))

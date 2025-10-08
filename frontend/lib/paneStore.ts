@@ -59,7 +59,7 @@ export const usePaneStore = create<PaneState>()(
           locked: false,
         };
 
-        set((state) => ({
+        set((state: any) => ({
           panes: [...state.panes, newPane],
         }));
 
@@ -67,19 +67,19 @@ export const usePaneStore = create<PaneState>()(
       },
 
       removePane: (paneId: string) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.filter((pane: Pane) => pane.id !== paneId),
         }));
       },
 
       updatePaneHeight: (paneId: string, height: number) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.map((pane: Pane) => (pane.id === paneId ? { ...pane, height } : pane)),
         }));
       },
 
       addIndicatorToPane: (paneId: string, indicatorId: string) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId ? { ...pane, indicators: [...pane.indicators, indicatorId] } : pane
           ),
@@ -87,7 +87,7 @@ export const usePaneStore = create<PaneState>()(
       },
 
       removeIndicatorFromPane: (paneId: string, indicatorId: string) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId
               ? { ...pane, indicators: pane.indicators.filter((id: string) => id !== indicatorId) }
@@ -97,7 +97,7 @@ export const usePaneStore = create<PaneState>()(
       },
 
       moveIndicatorToPane: (indicatorId: string, fromPaneId: string, toPaneId: string) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.map((pane: Pane) => {
             if (pane.id === fromPaneId) {
               return {
@@ -114,7 +114,7 @@ export const usePaneStore = create<PaneState>()(
       },
 
       togglePaneVisibility: (paneId: string) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId ? { ...pane, visible: !pane.visible } : pane
           ),
@@ -122,7 +122,7 @@ export const usePaneStore = create<PaneState>()(
       },
 
       togglePaneLock: (paneId: string) => {
-        set((state) => ({
+        set((state: any) => ({
           panes: state.panes.map((pane: Pane) =>
             pane.id === paneId ? { ...pane, locked: !pane.locked } : pane
           ),
@@ -132,7 +132,7 @@ export const usePaneStore = create<PaneState>()(
       reorderPanes: (paneIds: string[]) => {
         const { panes } = get();
         const reorderedPanes = paneIds
-          .map((id) => panes.find((pane: Pane) => pane.id === id)!)
+          .map((id: any) => panes.find((pane: Pane) => pane.id === id)!)
           .filter(Boolean);
         set({ panes: reorderedPanes });
       },

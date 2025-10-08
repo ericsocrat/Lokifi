@@ -30,7 +30,7 @@ export default function SnapshotsPanel() {
 
       <div className='space-y-2 max-h-60 overflow-auto'>
         {s.snapshots.length===0 && <div className='text-xs opacity-60'>No snapshots yet.</div>}
-        {s.snapshots.map(sn => (
+        {s.snapshots.map((sn: any) => (
           <div key={sn.id} className='flex items-center justify-between text-sm rounded border border-white/10 px-2 py-1'>
             <div className='truncate'>
               <span className='opacity-70'>#{sn.id.slice(0,5)}</span> — {sn.name}

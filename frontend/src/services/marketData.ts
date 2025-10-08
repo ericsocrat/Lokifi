@@ -373,7 +373,7 @@ class MarketDataService {
     // Initialize all assets
     const allAssets = [...stocks, ...cryptos];
     
-    allAssets.forEach(asset => {
+    allAssets.forEach((asset: any) => {
       const basePrice = asset.price!;
       const fullAsset: MarketAsset = {
         symbol: asset.symbol!,
@@ -462,7 +462,7 @@ class MarketDataService {
       const stocks: string[] = [];
       const cryptos: string[] = [];
       
-      this.assets.forEach((asset, symbol) => {
+      this.assets.forEach((asset: any, symbol: any) => {
         if (asset.type === 'stock') stocks.push(symbol);
         else if (asset.type === 'crypto') cryptos.push(symbol);
       });
@@ -527,7 +527,7 @@ class MarketDataService {
     
     // If API fetch failed, use simulated prices
     if (!success) {
-      this.assets.forEach((asset, symbol) => {
+      this.assets.forEach((asset: any, symbol: any) => {
         const volatility = asset.type === 'crypto' ? 0.005 : 0.001; // Crypto more volatile
         const change = (Math.random() - 0.5) * volatility;
         
@@ -580,7 +580,7 @@ class MarketDataService {
    * Notify all subscribers of updates
    */
   private notifySubscribers() {
-    this.subscribers.forEach(callback => {
+    this.subscribers.forEach((callback: any) => {
       callback(this.assets);
     });
   }
@@ -603,7 +603,7 @@ class MarketDataService {
    * Get assets by type
    */
   public getAssetsByType(type: 'stock' | 'crypto' | 'etf'): MarketAsset[] {
-    return this.getAllAssets().filter(asset => asset.type === type);
+    return this.getAllAssets().filter((asset: any) => asset.type === type);
   }
 
   /**
@@ -611,7 +611,7 @@ class MarketDataService {
    */
   public searchAssets(query: string): MarketAsset[] {
     const q = query.toLowerCase();
-    return this.getAllAssets().filter(asset =>
+    return this.getAllAssets().filter((asset: any) =>
       asset.symbol.toLowerCase().includes(q) ||
       asset.name.toLowerCase().includes(q)
     );
@@ -622,24 +622,24 @@ class MarketDataService {
    */
   public getMarketStats(): MarketStats {
     const allAssets = this.getAllAssets();
-    const cryptoAssets = allAssets.filter(a => a.type === 'crypto');
+    const cryptoAssets = allAssets.filter((a: any) => a.type === 'crypto');
     
     // Calculate total market cap and volume
-    const totalMarketCap = cryptoAssets.reduce((sum, a) => sum + a.marketCap, 0);
-    const total24hVolume = cryptoAssets.reduce((sum, a) => sum + a.volume, 0);
+    const totalMarketCap = cryptoAssets.reduce((sum: any, a: any) => sum + a.marketCap, 0);
+    const total24hVolume = cryptoAssets.reduce((sum: any, a: any) => sum + a.volume, 0);
     
     // BTC dominance
     const btc = this.getAsset('BTC');
     const btcDominance = btc ? (btc.marketCap / totalMarketCap) * 100 : 0;
     
     // Top gainers and losers
-    const sorted = [...allAssets].sort((a, b) => b.changePercent - a.changePercent);
+    const sorted = [...allAssets].sort((a: any, b: any) => b.changePercent - a.changePercent);
     const gainers = sorted.slice(0, 10);
     const losers = sorted.slice(-10).reverse();
     
     // Trending (high volume relative to market cap)
     const trending = [...allAssets]
-      .sort((a, b) => (b.volume / b.marketCap) - (a.volume / a.marketCap))
+      .sort((a: any, b: any) => (b.volume / b.marketCap) - (a.volume / a.marketCap))
       .slice(0, 10);
 
     return {
@@ -670,7 +670,7 @@ class MarketDataService {
     };
 
     const cutoff = now - periodMs[period];
-    return asset.history.filter(point => point.timestamp >= cutoff);
+    return asset.history.filter((point: any) => point.timestamp >= cutoff);
   }
 
   /**

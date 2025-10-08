@@ -208,7 +208,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       if (!result) return; // No token, skip
 
       setNotifications(prev =>
-        prev.map(n =>
+        prev.map((n: any) =>
           n.id === notificationId
             ? { ...n, is_read: true, read_at: new Date().toISOString() }
             : n
@@ -235,7 +235,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
       const now = new Date().toISOString();
       setNotifications(prev =>
-        prev.map(n => ({ ...n, is_read: true, read_at: n.read_at || now }))
+        prev.map((n: any) => ({ ...n, is_read: true, read_at: n.read_at || now }))
       );
 
       setUnreadCount(0);
@@ -253,11 +253,11 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       if (!result) return; // No token, skip
 
       setNotifications(prev =>
-        prev.filter(n => n.id !== notificationId)
+        prev.filter((n: any) => n.id !== notificationId)
       );
 
       // Update unread count if the dismissed notification was unread
-      const notification = notifications.find(n => n.id === notificationId);
+      const notification = notifications.find((n: any) => n.id === notificationId);
       if (notification && !notification.is_read) {
         setUnreadCount(prev => Math.max(0, prev - 1));
       }
@@ -320,7 +320,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         setError(null);
       };
 
-      ws.onmessage = (event) => {
+      ws.onmessage = (event: any) => {
         try {
           const data = JSON.parse(event.data);
 
@@ -348,7 +348,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
             case 'notification_read':
               const readId = data.data.notification_id;
               setNotifications(prev =>
-                prev.map(n =>
+                prev.map((n: any) =>
                   n.id === readId
                     ? { ...n, is_read: true, read_at: new Date().toISOString() }
                     : n
@@ -358,7 +358,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
             case 'notification_dismissed':
               const dismissedId = data.data.notification_id;
-              setNotifications(prev => prev.filter(n => n.id !== dismissedId));
+              setNotifications(prev => prev.filter((n: any) => n.id !== dismissedId));
               break;
 
             case 'keepalive':
@@ -371,7 +371,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         }
       };
 
-      ws.onclose = (event) => {
+      ws.onclose = (event: any) => {
         console.log('Notification WebSocket disconnected:', event.code, event.reason);
         setIsConnected(false);
         wsRef.current = null;
@@ -382,7 +382,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         }
       };
 
-      ws.onerror = (error) => {
+      ws.onerror = (error: any) => {
         console.error('Notification WebSocket error:', error);
         setError('WebSocket connection failed');
       };

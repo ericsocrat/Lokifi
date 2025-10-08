@@ -17,7 +17,7 @@ export default function PluginManager() {
 
       <div className="space-y-2">
         {plugins.length===0 && <div className="text-xs opacity-60">No plugins installed.</div>}
-        {plugins.map(p => (
+        {plugins.map((p: any) => (
           <div key={p.meta.id} className="flex items-center justify-between text-sm rounded border border-white/10 px-2 py-1">
             <div>
               <div className="font-medium">{p.meta.name} <span className="opacity-60 text-xs">#{p.meta.id}</span></div>
