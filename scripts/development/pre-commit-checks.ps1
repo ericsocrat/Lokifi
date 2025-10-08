@@ -9,19 +9,39 @@
     - Linting and formatting
     - Security scanning
     - TODO tracking
+    
+    Now enhanced with master-health-check.ps1 integration
 .NOTES
     Created: October 8, 2025
+    Updated: Enhanced with master script integration
     Part of Session 4+ automation enhancement
 #>
 
 param(
     [switch]$SkipTypeCheck,
     [switch]$SkipAnalysis,
-    [switch]$Quick
+    [switch]$Quick,
+    [switch]$UseMasterCheck
 )
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
+
+# Option to use master health check instead
+if ($UseMasterCheck) {
+    Write-Host ""
+    Write-Host "🚀 Using Master Health Check for validation..." -ForegroundColor Cyan
+    Write-Host ""
+    
+    $masterCheck = Join-Path $projectRoot "scripts/analysis/master-health-check.ps1"
+    
+    if (Test-Path $masterCheck) {
+        & $masterCheck -Mode Quick
+        exit $LASTEXITCODE
+    } else {
+        Write-Host "⚠️  Master health check not found, falling back to standard checks" -ForegroundColor Yellow
+    }
+}
 
 Write-Host ""
 Write-Host "🔍 Pre-Commit Checks" -ForegroundColor Cyan
