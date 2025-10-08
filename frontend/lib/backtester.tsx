@@ -678,7 +678,7 @@ export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
           state.runningBacktests.delete(backtestId);
           
           if (state.currentResults && 
-              state.backtests.find(b => b.results === state.currentResults)?.id === backtestId) {
+              state.backtests.find((b: any) => b.results === state.currentResults)?.id === backtestId) {
             state.currentResults = null;
           }
         });

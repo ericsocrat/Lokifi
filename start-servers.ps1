@@ -8,13 +8,12 @@ Write-Host ""
 $projectRoot = $PSScriptRoot
 $backendDir = Join-Path $projectRoot "backend"
 $frontendDir = Join-Path $projectRoot "frontend"
-$redisDir = Join-Path $projectRoot "redis"
 
 # Check if Docker is available
 $dockerAvailable = $false
 if (Get-Command docker -ErrorAction SilentlyContinue) {
-    # Check if Docker daemon is running
-    $dockerRunning = docker ps 2>$null
+    # Check if Docker daemon is running by testing docker ps
+    docker ps 2>$null | Out-Null
     if ($LASTEXITCODE -eq 0) {
         $dockerAvailable = $true
         Write-Host "✅ Docker found and running - will start Redis container" -ForegroundColor Green
