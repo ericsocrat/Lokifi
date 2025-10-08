@@ -6399,11 +6399,30 @@ switch ($Action.ToLower()) {
         Invoke-QuickAnalysis
     }
     'estimate' {
-        Write-LokifiHeader "Codebase Estimation"
-        if (Test-Path (Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1")) {
-            . (Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1")
+        Write-LokifiHeader "Codebase Estimation V2.0"
+        
+        # Try V2 first, fallback to V1
+        $analyzerV2 = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer-v2.ps1"
+        $analyzerV1 = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+        
+        if (Test-Path $analyzerV2) {
+            Write-Host "🚀 Using Enhanced Analyzer V2.0..." -ForegroundColor Cyan
+            . $analyzerV2
+            
+            # Parse options from Target parameter
+            $options = @{}
+            if ($Target -match 'json|csv|html|all') { $options.OutputFormat = $Target }
+            if ($Target -match 'eu|asia|remote') { $options.Region = $Target }
+            if ($Target -eq 'detailed') { $options.Detailed = $true }
+            
+            Invoke-CodebaseAnalysis @options
+        }
+        elseif (Test-Path $analyzerV1) {
+            Write-Host "📊 Using Standard Analyzer V1.0..." -ForegroundColor Yellow
+            . $analyzerV1
             Invoke-CodebaseAnalysis
-        } else {
+        }
+        else {
             Write-Error "Codebase analyzer not found. Please run: .\lokifi.ps1 setup"
         }
     }
