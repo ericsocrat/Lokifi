@@ -29,7 +29,7 @@ export function ExportButton({ data, filename, disabled }: ExportButtonProps) {
       const csvContent = [
         headers.join(','),
         ...data.map((item: any) => 
-          headers.map(header => {
+          headers.map((header: any) => {
             const value = item[header];
             // Handle values with commas by wrapping in quotes
             if (typeof value === 'string' && value.includes(',')) {

@@ -736,7 +736,8 @@ const createInitialState = (): MonitoringState => ({
 // Create Store
 export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Dashboard Management
@@ -905,7 +906,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           // Remove from all dashboard layouts
           state.dashboards.forEach((dashboard: any) => {
             dashboard.layout.widgets = dashboard.layout.widgets.filter(
-              w => w.widgetId !== widgetId
+              (w: any) => w.widgetId !== widgetId
             );
           });
         });
@@ -1006,7 +1007,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const dataSource = state.dataSources.find(ds => ds.id === dataSourceId);
+          const dataSource = state.dataSources.find((ds: any) => ds.id === dataSourceId);
           if (dataSource) {
             Object.assign(dataSource, updates);
           }
@@ -1017,7 +1018,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.dataSources = state.dataSources.filter(ds => ds.id !== dataSourceId);
+          state.dataSources = state.dataSources.filter((ds: any) => ds.id !== dataSourceId);
           
           // Clean up widgets using this data source
           state.widgets.forEach((widget: any) => {
@@ -1031,7 +1032,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
       testDataSource: async (dataSourceId: any) => {
         if (!FLAGS.monitoring) return false;
         
-        const dataSource = get().dataSources.find(ds => ds.id === dataSourceId);
+        const dataSource = get().dataSources.find((ds: any) => ds.id === dataSourceId);
         if (!dataSource) return false;
         
         try {
@@ -1041,7 +1042,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           const success = Math.random() > 0.2; // 80% success rate
           
           set((state: any) => {
-            const ds = state.dataSources.find(ds => ds.id === dataSourceId);
+            const ds = state.dataSources.find((ds: any) => ds.id === dataSourceId);
             if (ds) {
               ds.lastHealthCheck = new Date();
               ds.isConnected = success;
@@ -1056,7 +1057,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           return success;
         } catch (error) {
           set((state: any) => {
-            const ds = state.dataSources.find(ds => ds.id === dataSourceId);
+            const ds = state.dataSources.find((ds: any) => ds.id === dataSourceId);
             if (ds) {
               ds.isConnected = false;
               ds.error = error instanceof Error ? error.message : 'Test failed';
@@ -1077,7 +1078,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          const dataSource = state.dataSources.find(ds => ds.id === dataSourceId);
+          const dataSource = state.dataSources.find((ds: any) => ds.id === dataSourceId);
           if (dataSource) {
             dataSource.isConnected = false;
           }
@@ -1118,7 +1119,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.alerts = state.alerts.filter(a => a.id !== alertId);
+          state.alerts = state.alerts.filter((a: any) => a.id !== alertId);
         });
       },
 
@@ -1228,7 +1229,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.healthChecks = state.healthChecks.filter(hc => hc.id !== healthCheckId);
+          state.healthChecks = state.healthChecks.filter((hc: any) => hc.id !== healthCheckId);
         });
       },
 
@@ -1343,7 +1344,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         ];
         
         set((state: any) => {
-          metrics.forEach(metricName => {
+          metrics.forEach((metricName: any) => {
             let metric = state.metrics.find((m: any) => m.name === metricName);
             
             if (!metric) {
@@ -1394,7 +1395,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
             weeks: 7 * 24 * 60 * 60 * 1000,
             months: 30 * 24 * 60 * 60 * 1000
           };
-          cutoff = new Date(now.getTime() - (timeRange.value * msMap[timeRange.unit]));
+          cutoff = new Date(now.getTime() - (timeRange.value * msMap[timeRange.unit as keyof typeof msMap]));
         } else if (timeRange.type === 'absolute' && timeRange.start) {
           cutoff = timeRange.start;
         }
@@ -1406,7 +1407,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         if (!FLAGS.monitoring) return;
         
         set((state: any) => {
-          state.metrics.forEach(metric => {
+          state.metrics.forEach((metric: any) => {
             metric.history = metric.history.filter((dp: any) => dp.timestamp > olderThan);
           });
         });
@@ -1437,7 +1438,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         
         if (filters.tags && filters.tags.length > 0) {
           filteredLogs = filteredLogs.filter((log: any) => 
-            log.tags && filters.tags!.some(tag => log.tags!.includes(tag))
+            log.tags && filters.tags!.some((tag: any) => log.tags!.includes(tag))
           );
         }
         

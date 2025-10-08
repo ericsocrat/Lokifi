@@ -188,8 +188,8 @@ export const EnhancedSymbolPicker: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`flex-shrink-0 ${ASSET_TYPE_COLORS[symbol.asset_type]}`}>
-                  {ASSET_TYPE_ICONS[symbol.asset_type]}
+                <div className={`flex-shrink-0 ${ASSET_TYPE_COLORS[symbol.asset_type as keyof typeof ASSET_TYPE_COLORS]}`}>
+                  {ASSET_TYPE_ICONS[symbol.asset_type as keyof typeof ASSET_TYPE_ICONS]}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">

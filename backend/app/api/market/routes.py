@@ -4,7 +4,7 @@ Market Data API Endpoints
 Provides real-time stock and crypto prices with automatic API key fallback
 """
 
-from typing import List, Optional
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -17,20 +17,20 @@ router = APIRouter(prefix="/market", tags=["real-time-market"])
 
 class BatchRequest(BaseModel):
     """Request model for batch price fetching"""
-    stocks: List[str] = []
-    cryptos: List[str] = []
+    stocks: list[str] = []
+    cryptos: list[str] = []
 
 
 class PriceResponse(BaseModel):
     """Response model for price data"""
     symbol: str
     price: float
-    change: Optional[float] = None
-    changePercent: Optional[float] = None
-    volume: Optional[int] = None
-    marketCap: Optional[int] = None
-    high24h: Optional[float] = None
-    low24h: Optional[float] = None
+    change: float | None = None
+    changePercent: float | None = None
+    volume: int | None = None
+    marketCap: int | None = None
+    high24h: float | None = None
+    low24h: float | None = None
     lastUpdated: int
 
 

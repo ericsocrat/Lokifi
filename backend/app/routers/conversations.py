@@ -7,6 +7,9 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.security import get_current_user
 from app.db.database import get_db
 from app.models.user import User
@@ -29,13 +32,11 @@ from app.services.message_search_service import (
     SearchFilter,
     SearchResult,
 )
-from app.services.websocket_manager import connection_manager
 from app.services.rate_limit_service import RateLimitService
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from app.services.websocket_manager import connection_manager
 
 # J6.1 Notification Integration
 from scripts.setup_j6_integration import process_mentions_in_content, trigger_dm_notification
-from sqlalchemy.ext.asyncio import AsyncSession
 
 logger = logging.getLogger(__name__)
 
@@ -195,8 +196,9 @@ async def send_message(
         )
 
         # Get conversation participants for real-time broadcast
-        from app.models.conversation import ConversationParticipant
         from sqlalchemy import select
+
+        from app.models.conversation import ConversationParticipant
 
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
@@ -295,8 +297,9 @@ async def mark_messages_read(
             )
 
         # Get conversation participants for real-time broadcast
-        from app.models.conversation import ConversationParticipant
         from sqlalchemy import select
+
+        from app.models.conversation import ConversationParticipant
 
         participant_stmt = select(ConversationParticipant).where(
             ConversationParticipant.conversation_id == conversation_id,
@@ -336,8 +339,9 @@ async def delete_message(
     """Soft delete a message (mark as deleted)."""
     try:
         # Verify user owns the message
-        from app.models.conversation import Message
         from sqlalchemy import select, update
+
+        from app.models.conversation import Message
 
         message_stmt = select(Message).where(
             Message.id == message_id,

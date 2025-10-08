@@ -26,7 +26,7 @@ function load(): Settings{
 }
 function save(){
   try { localStorage.setItem(KEY, JSON.stringify(_s)); } catch {}
-  listeners.forEach(l=>l(_s));
+  listeners.forEach((l: any) =>l(_s));
 }
 export const pluginSettingsStore = {
   get(): Settings { return _s; },
@@ -43,8 +43,8 @@ export const pluginSymbolSettings = {
     const map = readOverrides(); return map[`${symbol}.${timeframe}`] || {};
   },
   set(symbol: string, timeframe: string, patch: Partial<Settings>){
-    const map = readOverrides(); map[`${symbol}.${timeframe}`] = { ...(map[`${symbol}.${timeframe}`] || {}), ...patch }; writeOverrides(map); listeners.forEach(l=>l(_s));
+    const map = readOverrides(); map[`${symbol}.${timeframe}`] = { ...(map[`${symbol}.${timeframe}`] || {}), ...patch }; writeOverrides(map); listeners.forEach((l: any) =>l(_s));
   },
-  clear(symbol: string, timeframe: string){ const map = readOverrides(); delete map[`${symbol}.${timeframe}`]; writeOverrides(map); listeners.forEach(l=>l(_s)); },
+  clear(symbol: string, timeframe: string){ const map = readOverrides(); delete map[`${symbol}.${timeframe}`]; writeOverrides(map); listeners.forEach((l: any) =>l(_s)); },
   listKeys(): string[]{ return Object.keys(readOverrides()); }
 };

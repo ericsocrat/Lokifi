@@ -368,7 +368,8 @@ interface PaperTradingActions {
 // Create Store
 export const usePaperTradingStore = create<PaperTradingState & PaperTradingActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       // Initial State
       accounts: [],
       activeAccountId: null,
@@ -475,7 +476,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const index = state.accounts.findIndex(a => a.id === accountId);
+          const index = state.accounts.findIndex((a: any) => a.id === accountId);
           if (index !== -1) {
             state.accounts.splice(index, 1);
           }
@@ -584,7 +585,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           await simulateOrderExecution(order);
           
           set((state: any) => {
-            const orderToUpdate = state.orders.find(o => o.id === orderId);
+            const orderToUpdate = state.orders.find((o: any) => o.id === orderId);
             if (orderToUpdate) {
               orderToUpdate.status = 'filled';
               orderToUpdate.filledQuantity = orderToUpdate.quantity;
@@ -628,7 +629,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           
         } catch (error) {
           set((state: any) => {
-            const orderToUpdate = state.orders.find(o => o.id === orderId);
+            const orderToUpdate = state.orders.find((o: any) => o.id === orderId);
             if (orderToUpdate) {
               orderToUpdate.status = 'rejected';
             }
@@ -645,7 +646,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const order = state.orders.find(o => o.id === orderId);
+          const order = state.orders.find((o: any) => o.id === orderId);
           if (order && order.status === 'pending') {
             order.status = 'cancelled';
           }
@@ -656,7 +657,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         if (!FLAGS.paperTrading) return;
         
         set((state: any) => {
-          const order = state.orders.find(o => o.id === orderId);
+          const order = state.orders.find((o: any) => o.id === orderId);
           if (order && order.status === 'pending') {
             Object.assign(order, updates);
           }
@@ -872,7 +873,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           if (!response.ok) throw new Error('Failed to leave challenge');
           
           set((state: any) => {
-            state.participatingChallenges = state.participatingChallenges.filter(id => id !== challengeId);
+            state.participatingChallenges = state.participatingChallenges.filter((id: any) => id !== challengeId);
           });
           
         } catch (error) {
@@ -983,7 +984,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           const accountData = await response.json();
           
           set((state: any) => {
-            const accountIndex = state.accounts.findIndex(a => a.id === accountId);
+            const accountIndex = state.accounts.findIndex((a: any) => a.id === accountId);
             if (accountIndex !== -1) {
               state.accounts[accountIndex] = accountData.account;
             }
@@ -1111,7 +1112,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
                   existingPosition.entryTime = fill.timestamp;
                 } else {
                   // Remove position
-                  const positionIndex = state.positions.findIndex(p => p.id === existingPosition.id);
+                  const positionIndex = state.positions.findIndex((p: any) => p.id === existingPosition.id);
                   if (positionIndex !== -1) {
                     state.positions.splice(positionIndex, 1);
                   }

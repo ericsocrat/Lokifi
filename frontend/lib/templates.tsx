@@ -210,6 +210,7 @@ const defaultExportOptions: ExportOptions = {
 // Create Store
 export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
   persist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     immer<any>((set, get, store) => ({
       // Initial State
       templates: [],
@@ -266,7 +267,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           const savedTemplate = await response.json();
           
           set((state: any) => {
-            const index = state.templates.findIndex(t => t.id === id);
+            const index = state.templates.findIndex((t: any) => t.id === id);
             if (index !== -1) {
               state.templates[index] = savedTemplate;
               state.activeTemplate = savedTemplate;
@@ -317,7 +318,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return;
         
         set((state: any) => {
-          const index = state.templates.findIndex(t => t.id === id);
+          const index = state.templates.findIndex((t: any) => t.id === id);
           if (index !== -1) {
             state.templates.splice(index, 1);
           }
@@ -468,7 +469,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           const template: ChartTemplate = await response.json();
           
           set((state: any) => {
-            const index = state.templates.findIndex(t => t.id === id);
+            const index = state.templates.findIndex((t: any) => t.id === id);
             if (index !== -1) {
               state.templates[index] = template;
             } else {
@@ -630,7 +631,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Failed to revoke link');
           
           set((state: any) => {
-            const index = state.shareableLinks.findIndex(link => link.id === linkId);
+            const index = state.shareableLinks.findIndex((link: any) => link.id === linkId);
             if (index !== -1) {
               state.shareableLinks.splice(index, 1);
             }
@@ -753,14 +754,14 @@ export const useFilteredTemplates = () =>
       filtered = filtered.filter((template: any) =>
         template.name.toLowerCase().includes(query) ||
         template.description?.toLowerCase().includes(query) ||
-        template.tags.some(tag => tag.toLowerCase().includes(query))
+        template.tags.some((tag: any) => tag.toLowerCase().includes(query))
       );
     }
     
     // Apply tag filter
     if (state.selectedTags.length > 0) {
       filtered = filtered.filter((template: any) =>
-        state.selectedTags.some(tag => template.tags.includes(tag))
+        state.selectedTags.some((tag: any) => template.tags.includes(tag))
       );
     }
     

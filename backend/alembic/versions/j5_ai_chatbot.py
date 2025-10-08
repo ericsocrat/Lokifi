@@ -5,9 +5,7 @@ Revises: (current head)
 Create Date: 2025-01-27 20:00:00.000000
 
 """
-import sqlalchemy as sa
 
-from alembic import op
 
 # revision identifiers, used by Alembic.
 revision = 'j5_ai_chatbot'

@@ -6,9 +6,9 @@ ExchangeRate-API's latest rates endpoint.
 """
 
 import logging
-from typing import List, Dict, Optional
-import httpx
 from datetime import datetime
+
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +93,7 @@ class ForexService:
         self._rates_cache = {}
         self._cache_timestamp = {}
     
-    async def get_forex_pairs(self, limit: int = 50) -> List[Dict]:
+    async def get_forex_pairs(self, limit: int = 50) -> list[dict]:
         """
         Get real-time forex exchange rates for major currency pairs
         
@@ -144,7 +144,7 @@ class ForexService:
             logger.error(f"Error in get_forex_pairs: {e}")
             return []
     
-    async def _fetch_forex_rate(self, client: httpx.AsyncClient, pair: Dict) -> Optional[Dict]:
+    async def _fetch_forex_rate(self, client: httpx.AsyncClient, pair: dict) -> dict | None:
         """
         Fetch a single forex rate from ExchangeRate-API
         

@@ -234,7 +234,7 @@ export const useChartStore =
       removeAlert: (id: string) => set({ alerts: get().alerts.filter((a: any) => a.id !== id) }),
       updateAlert: (id: string, patch: Partial<Alert>) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, ...patch } : a) }),
       toggleAlert: (id: string) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, enabled: !a.enabled } : a) }),
-      snoozeAlert: (id: string, until: number | undefined) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, snoozedUntil: until } : a) }),
+      snoozeAlert: (id: string, until: number | null) => set({ alerts: get().alerts.map((a: any) => a.id === id ? { ...a, snoozedUntil: until } : a) }),
       clearAlertEvents: () => set({ alertEvents: [] }),
 
       setSymbol: (sym: string) => set({ symbol: sym }),
@@ -278,10 +278,10 @@ export const useChartStore =
         const others = drawings.filter((d: any) => !selected.has(d.id));
         const group = {
           id: crypto.randomUUID(),
-          type: 'group',
+          type: 'group' as const,
           children: toGroup
         };
-        set({ drawings: [...others, group] });
+        set({ drawings: [...others, group as any] });
       },
 
       ungroupSelected: () => {
@@ -289,8 +289,8 @@ export const useChartStore =
         const selected = new Set(get().selection);
         const newDrawings = [];
         for (const d of drawings) {
-          if (selected.has(d.id) && d.type === 'group') {
-            newDrawings.push(...d.children);
+          if (selected.has(d.id) && (d as any).type === 'group') {
+            newDrawings.push(...(d as any).children);
           } else {
             newDrawings.push(d);
           }
@@ -408,19 +408,19 @@ export const useChartStore =
         switch (direction) {
           case 'left':
             alignTo = Math.min(...bounds.map((b: any) => b.x));
-            bounds.forEach(b => b.x = alignTo);
+            bounds.forEach((b: any) => b.x = alignTo);
             break;
           case 'right':
             alignTo = Math.max(...bounds.map((b: any) => b.x + b.width));
-            bounds.forEach(b => b.x = alignTo - b.width);
+            bounds.forEach((b: any) => b.x = alignTo - b.width);
             break;
           case 'top':
             alignTo = Math.min(...bounds.map((b: any) => b.y));
-            bounds.forEach(b => b.y = alignTo);
+            bounds.forEach((b: any) => b.y = alignTo);
             break;
           case 'bottom':
             alignTo = Math.max(...bounds.map((b: any) => b.y + b.height));
-            bounds.forEach(b => b.y = alignTo - b.height);
+            bounds.forEach((b: any) => b.y = alignTo - b.height);
             break;
         }
 
@@ -437,23 +437,23 @@ export const useChartStore =
 
         const selectedDrawings = get().drawings
           .filter((d: any) => sel.has(d.id))
-          .sort((a: any, b: any) => direction === 'h' ? a.x - b.x : a.y - b.y);
+          .sort((a: any, b: any) => direction === 'h' ? (a as any).x - (b as any).x : (a as any).y - (b as any).y);
 
         const total = selectedDrawings.length;
-        const first = selectedDrawings[0];
-        const last = selectedDrawings[total - 1];
+        const first = selectedDrawings[0] as any;
+        const last = selectedDrawings[total - 1] as any;
         const space = direction === 'h'
-          ? (last.x - first.x) / (total - 1)
-          : (last.y - first.y) / (total - 1);
+          ? ((last as any).x - (first as any).x) / (total - 1)
+          : ((last as any).y - (first as any).y) / (total - 1);
 
         const next = get().drawings.map((d: any) => {
-          const idx = selectedDrawings.findIndex(sd => sd.id === d.id);
+          const idx = selectedDrawings.findIndex((sd: any) => sd.id === d.id);
           if (idx === -1 || idx === 0 || idx === total - 1) return d;
 
           return {
             ...d,
-            x: direction === 'h' ? first.x + space * idx : d.x,
-            y: direction === 'v' ? first.y + space * idx : d.y
+            x: direction === 'h' ? (first as any).x + space * idx : (d as any).x,
+            y: direction === 'v' ? (first as any).y + space * idx : (d as any).y
           };
         });
         set({ drawings: next });
@@ -501,7 +501,7 @@ export const useChartStore =
 
       moveLayer: (layerId: string, direction: 'up' | 'down') => {
         const layers = [...get().layers];
-        const idx = layers.findIndex(l => l.id === layerId);
+        const idx = layers.findIndex((l: any) => l.id === layerId);
         if (idx === -1) return;
 
         if (direction === 'up' && idx > 0) {
@@ -578,7 +578,7 @@ export const useChartStore =
         if (!snapshots.length) return;
 
         const currentId = get().snapshots[0]?.id;
-        const currentIndex = snapshots.findIndex(s => s.id === currentId);
+        const currentIndex = snapshots.findIndex((s: any) => s.id === currentId);
         const nextIndex = (currentIndex + delta + snapshots.length) % snapshots.length;
         const nextSnapshot = snapshots[nextIndex];
         if (nextSnapshot) {

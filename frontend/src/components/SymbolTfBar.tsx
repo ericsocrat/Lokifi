@@ -44,8 +44,8 @@ export default function SymbolTfBar() {
       <div className='relative' ref={menuRef}>
         <input
           value={symInput}
-          onChange={e => { setSymInput(e.target.value.toUpperCase()); setShowSymMenu(true) }}
-          onKeyDown={e => { if (e.key==='Enter') applySymbol() }}
+          onChange={(e: any) => { setSymInput(e.target.value.toUpperCase()); setShowSymMenu(true) }}
+          onKeyDown={(e: any) => { if (e.key==='Enter') applySymbol() }}
           className='px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-36 outline-none'
           placeholder='Symbol'
         />
@@ -92,8 +92,8 @@ export default function SymbolTfBar() {
       {/* Freeform timeframe */}
       <input
         value={tfInput}
-        onChange={e => setTfInput(e.target.value)}
-        onKeyDown={e => { if (e.key==='Enter') applyTf() }}
+        onChange={(e: any) => setTfInput(e.target.value)}
+        onKeyDown={(e: any) => { if (e.key==='Enter') applyTf() }}
         className='px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-20 outline-none'
         placeholder='e.g. 90m'
       />

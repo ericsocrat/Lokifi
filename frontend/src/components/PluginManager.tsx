@@ -25,7 +25,7 @@ export default function PluginManager() {
             </div>
             <div className="flex items-center gap-2">
               <label className="text-xs opacity-70">Enable</label>
-              <input type="checkbox" checked={p.enabled} onChange={e=>{ setPluginEnabled(p.meta.id, e.target.checked); force() }} />
+              <input type="checkbox" checked={p.enabled} onChange={(e: any) =>{ setPluginEnabled(p.meta.id, e.target.checked); force() }} />
             </div>
           </div>
         ))}

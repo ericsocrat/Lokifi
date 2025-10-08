@@ -3,9 +3,10 @@ Indices Service - Real data from Alpha Vantage and Yahoo Finance
 Replaces mock data with actual market indices
 """
 import logging
-from typing import Dict, List, Optional
-import httpx
 from datetime import datetime
+
+import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -44,7 +45,7 @@ class IndicesService:
     
     def __init__(self, redis_client=None):
         self.redis_client = redis_client or advanced_redis_client
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
         self.cache_ttl = 60  # 60 seconds for indices
     
     async def __aenter__(self):
@@ -55,7 +56,7 @@ class IndicesService:
         if self.client:
             await self.client.aclose()
     
-    async def get_indices(self, limit: int = 15) -> List[Dict]:
+    async def get_indices(self, limit: int = 15) -> list[dict]:
         """
         Get real-time indices data
         Returns: List of index data with current prices and changes
@@ -105,7 +106,7 @@ class IndicesService:
         
         return indices_data[:limit]
     
-    async def _fetch_from_alpha_vantage(self, limit: int) -> List[Dict]:
+    async def _fetch_from_alpha_vantage(self, limit: int) -> list[dict]:
         """Fetch indices from Alpha Vantage Global Quote API"""
         if not self.client:
             async with httpx.AsyncClient(timeout=30.0) as client:
@@ -113,7 +114,7 @@ class IndicesService:
                 return await self._fetch_av_data(limit)
         return await self._fetch_av_data(limit)
     
-    async def _fetch_av_data(self, limit: int) -> List[Dict]:
+    async def _fetch_av_data(self, limit: int) -> list[dict]:
         """Helper to fetch from Alpha Vantage"""
         indices = []
         symbols_to_fetch = list(self.INDICES_MAP.keys())[:limit]
@@ -168,7 +169,7 @@ class IndicesService:
         
         return indices
     
-    async def _fetch_from_yahoo_finance(self, limit: int) -> List[Dict]:
+    async def _fetch_from_yahoo_finance(self, limit: int) -> list[dict]:
         """Fetch indices from Yahoo Finance (public API, no key needed)"""
         indices = []
         symbols_to_fetch = list(self.INDICES_MAP.keys())[:limit]
@@ -180,7 +181,7 @@ class IndicesService:
         
         return await self._fetch_yahoo_data(symbols_to_fetch)
     
-    async def _fetch_yahoo_data(self, symbols: List[str]) -> List[Dict]:
+    async def _fetch_yahoo_data(self, symbols: list[str]) -> list[dict]:
         """Helper to fetch from Yahoo Finance"""
         indices = []
         
@@ -232,7 +233,7 @@ class IndicesService:
         
         return indices
     
-    def _get_fallback_indices(self, limit: int) -> List[Dict]:
+    def _get_fallback_indices(self, limit: int) -> list[dict]:
         """
         Fallback data with realistic prices (updated October 2025)
         Only used when all APIs fail
@@ -258,7 +259,7 @@ class IndicesService:
         logger.warning(f"⚠️ Using fallback data for {limit} indices")
         return fallback[:limit]
     
-    async def get_index_by_symbol(self, symbol: str) -> Optional[Dict]:
+    async def get_index_by_symbol(self, symbol: str) -> dict | None:
         """Get a single index by symbol"""
         cache_key = f"indices:{symbol}"
         

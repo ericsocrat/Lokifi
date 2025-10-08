@@ -76,7 +76,8 @@ const createInitialState = () => ({
 
 export const useMultiChartStore = create<MultiChartStore>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       setLayout: (layout: any) => {
@@ -128,7 +129,7 @@ export const useMultiChartStore = create<MultiChartStore>()(
         if (!FLAGS.multiChart) return;
         
         set((state: any) => ({
-          charts: state.charts.filter(chart => chart.id !== chartId),
+          charts: state.charts.filter((chart: any) => chart.id !== chartId),
           activeChart: state.activeChart === chartId ? null : state.activeChart,
         }));
       },

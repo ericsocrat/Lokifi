@@ -42,7 +42,7 @@ export function savePortfolio(sections: PortfolioSection[]): void {
 // Add assets to a section
 export function addAssets(sectionTitle: string, assets: Asset[]): void {
   const sections = loadPortfolio();
-  const sectionIndex = sections.findIndex(s => s.title === sectionTitle);
+  const sectionIndex = sections.findIndex((s: any) => s.title === sectionTitle);
   
   if (sectionIndex >= 0) {
     sections[sectionIndex].assets.push(...assets);
@@ -75,6 +75,6 @@ export function deleteAsset(sectionTitle: string, assetId: string): void {
 export function totalValue(): number {
   const sections = loadPortfolio();
   return sections.reduce((total: any, section: any) => {
-    return total + section.assets.reduce((sum, asset) => sum + asset.value, 0);
+    return total + section.assets.reduce((sum: any, asset: any) => sum + asset.value, 0);
   }, 0);
 }

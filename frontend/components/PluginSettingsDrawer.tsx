@@ -81,7 +81,7 @@ export default function PluginSettingsDrawer({
                   const vals = e.target.value
                     .split(',')
                     .map((x: any) => parseFloat(x.trim()))
-                    .filter((n) => !Number.isNaN(n));
+                    .filter((n: any) => !Number.isNaN(n));
                   pluginSettingsStore.set('fibCustomLevels', vals);
                 }}
                 className="w-full px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"

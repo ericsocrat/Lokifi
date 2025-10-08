@@ -177,7 +177,7 @@ function IndicatorModal({ isOpen, onClose }: IndicatorModalProps) {
         <div className="overflow-y-auto flex-1" style={{ maxHeight: 'calc(80vh - 200px)' }}>
           <div className="p-4 space-y-2">
             {filteredIndicators.map((indicator: any) => {
-              const IconComponent = CATEGORY_ICONS[indicator.category];
+              const IconComponent = CATEGORY_ICONS[indicator.category as keyof typeof CATEGORY_ICONS];
               
               return (
                 <div

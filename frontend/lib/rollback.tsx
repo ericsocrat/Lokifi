@@ -657,7 +657,8 @@ const createInitialState = (): RollbackState => ({
 // Create Store
 export const useRollbackStore = create<RollbackState & RollbackActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Snapshot Management
@@ -792,7 +793,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         if (!FLAGS.rollback) return;
         
         set((state: any) => {
-          state.plans = state.plans.filter(p => p.id !== planId);
+          state.plans = state.plans.filter((p: any) => p.id !== planId);
           if (state.activePlan === planId) {
             state.activePlan = null;
           }
@@ -874,7 +875,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         set((state: any) => {
           const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
-            const reorderedSteps = stepIds.map(id => plan.rollbackSteps.find((s: any) => s.id === id)!).filter(Boolean);
+            const reorderedSteps = stepIds.map((id: any) => plan.rollbackSteps.find((s: any) => s.id === id)!).filter(Boolean);
             plan.rollbackSteps = reorderedSteps;
             plan.updatedAt = new Date();
           }
@@ -909,7 +910,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
         set((state: any) => {
           const plan = state.plans.find((p: any) => p.id === planId);
           if (plan) {
-            const trigger = plan.triggers.find(t => t.id === triggerId);
+            const trigger = plan.triggers.find((t: any) => t.id === triggerId);
             if (trigger) {
               Object.assign(trigger, updates);
               plan.updatedAt = new Date();
@@ -990,7 +991,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
             set((state: any) => {
               const exec = state.executions.find((e: any) => e.id === executionId);
               if (exec) {
-                const result = exec.stepsExecuted.find(r => r.stepId === step.id);
+                const result = exec.stepsExecuted.find((r: any) => r.stepId === step.id);
                 if (result) {
                   result.completedAt = endTime;
                   result.duration = (endTime.getTime() - result.startedAt.getTime()) / 1000;

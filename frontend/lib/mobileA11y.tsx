@@ -379,8 +379,9 @@ interface MobileAccessibilityActions {
 // Create Store
 export const useMobileAccessibilityStore = create<MobileAccessibilityState & MobileAccessibilityActions>()(
   persist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     subscribeWithSelector(
-      immer<any>((set: any, get: any) => ({
+      immer((set, get, _store) => ({
         // Initial State
         deviceInfo: null,
         isMobile: false,
@@ -713,7 +714,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const index = state.gestures.findIndex(g => g.id === gestureId);
+            const index = state.gestures.findIndex((g: any) => g.id === gestureId);
             if (index !== -1) {
               state.gestures.splice(index, 1);
             }
@@ -763,7 +764,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           if (!FLAGS.mobileA11y) return;
           
           set((state: any) => {
-            const index = state.keyboardShortcuts.findIndex(s => s.id === shortcutId);
+            const index = state.keyboardShortcuts.findIndex((s: any) => s.id === shortcutId);
             if (index !== -1) {
               state.keyboardShortcuts.splice(index, 1);
             }
@@ -1172,7 +1173,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             info: 500
           };
           
-          oscillator.frequency.setValueAtTime(frequencies[soundType] || 500, context.currentTime);
+          oscillator.frequency.setValueAtTime(frequencies[soundType as keyof typeof frequencies] || 500, context.currentTime);
           oscillator.type = 'sine';
           
           gainNode.gain.setValueAtTime(0.1, context.currentTime);
@@ -1290,7 +1291,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             const shortcuts = get().keyboardShortcuts.filter((s: any) => s.enabled);
             
             for (const shortcut of shortcuts) {
-              const modifiersMatch = shortcut.modifiers.every(mod => {
+              const modifiersMatch = shortcut.modifiers.every((mod: any) => {
                 switch (mod) {
                   case 'ctrl': return event.ctrlKey;
                   case 'alt': return event.altKey;

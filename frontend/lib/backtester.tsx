@@ -383,7 +383,8 @@ const defaultBacktestConfig: BacktestConfig = {
 // Create Store
 export const useBacktesterStore = create<BacktesterState & BacktesterActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       // Initial State
       strategies: [],
       activeStrategy: null,

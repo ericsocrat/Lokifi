@@ -273,7 +273,8 @@ interface SocialActions {
 // Create Store
 export const useSocialStore = create<SocialState & SocialActions>()(
   persist(
-      immer<any>((set: any, get: any) => ({
+      // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+      immer((set, get, _store) => ({
         // Initial State
         currentUser: null,
         isAuthenticated: false,
@@ -434,7 +435,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             const savedPost = await response.json();
             
             set((state: any) => {
-              const index = state.feed.findIndex(p => p.id === postId);
+              const index = state.feed.findIndex((p: any) => p.id === postId);
               if (index !== -1) {
                 state.feed[index] = savedPost;
               }
@@ -445,7 +446,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           } catch (error) {
             // Revert optimistic update
             set((state: any) => {
-              const index = state.feed.findIndex(p => p.id === postId);
+              const index = state.feed.findIndex((p: any) => p.id === postId);
               if (index !== -1) {
                 state.feed.splice(index, 1);
               }
@@ -473,7 +474,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             const updatedPost = await response.json();
             
             set((state: any) => {
-              const index = state.feed.findIndex(p => p.id === postId);
+              const index = state.feed.findIndex((p: any) => p.id === postId);
               if (index !== -1) {
                 state.feed[index] = updatedPost;
               }
@@ -500,7 +501,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             if (!response.ok) throw new Error('Failed to delete post');
             
             set((state: any) => {
-              const index = state.feed.findIndex(p => p.id === postId);
+              const index = state.feed.findIndex((p: any) => p.id === postId);
               if (index !== -1) {
                 state.feed.splice(index, 1);
               }
@@ -999,7 +1000,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
             set((state: any) => {
               state.copyTradingPositions = state.copyTradingPositions.filter(
-                ct => ct.id !== copyTradingId
+                (ct: any) => ct.id !== copyTradingId
               );
             });
             
@@ -1028,7 +1029,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             const updatedCopyTrading = await response.json();
             
             set((state: any) => {
-              const index = state.copyTradingPositions.findIndex(ct => ct.id === copyTradingId);
+              const index = state.copyTradingPositions.findIndex((ct: any) => ct.id === copyTradingId);
               if (index !== -1) {
                 state.copyTradingPositions[index] = updatedCopyTrading;
               }
@@ -1091,7 +1092,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
           if (!FLAGS.social || !get().isAuthenticated) return;
           
           set((state: any) => {
-            const notification = state.notifications.find(n => n.id === notificationId);
+            const notification = state.notifications.find((n: any) => n.id === notificationId);
             if (notification) {
               notification.isRead = true;
             }
@@ -1109,7 +1110,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
             
           } catch (error) {
             set((state: any) => {
-              const notification = state.notifications.find(n => n.id === notificationId);
+              const notification = state.notifications.find((n: any) => n.id === notificationId);
               if (notification) {
                 notification.isRead = false;
               }
@@ -1271,7 +1272,7 @@ export const useSocialStore = create<SocialState & SocialActions>()(
 // Selectors
 export const useUnreadNotificationsCount = () =>
   useSocialStore((state: any) => 
-    state.notifications.filter(n => !n.isRead).length
+    state.notifications.filter((n: any) => !n.isRead).length
   );
 
 export const useIsFollowing = (userId: string) =>
@@ -1293,8 +1294,8 @@ if (typeof window !== 'undefined' && FLAGS.social) {
     fetch('/api/social/verify', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    .then(response => response.ok ? response.json() : null)
-    .then(user => {
+    .then((response: any) => response.ok ? response.json() : null)
+    .then((user: any) => {
       if (user) {
         store.currentUser = user;
         store.isAuthenticated = true;

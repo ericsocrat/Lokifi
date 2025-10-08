@@ -188,7 +188,7 @@ function normalizeCandle(obj: any): Candle | null {
   const low   = toNum(obj.low  ?? obj.l ?? obj[3])
   const close = toNum(obj.close?? obj.c ?? obj[4])
   const vol   = toNum(obj.volume?? obj.v ?? obj[5] ?? 0)
-  if (t == null || [open,high,low,close].some(n => typeof n !== 'number' || Number.isNaN(n))) return null
+  if (t == null || [open,high,low,close].some((n: any) => typeof n !== 'number' || Number.isNaN(n))) return null
   const time = typeof t === 'number' && t > 10_000_000_000 ? Math.floor(t/1000) : t
   return { time, open, high, low, close, volume: vol }
 }

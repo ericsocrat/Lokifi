@@ -17,7 +17,7 @@ export function timeToX(t:number|Date|string): number|null { return _mappers.tim
 /** OHLC magnet infrastructure (from earlier phases; keep) */
 let _lastKnownPriceLevels: number[] = []
 export function setVisiblePriceLevels(levels: number[]) {
-  _lastKnownPriceLevels = Array.from(new Set(levels)).sort((a,b)=>a-b)
+  _lastKnownPriceLevels = Array.from(new Set(levels)).sort((a: any, b: any) =>a-b)
 }
 export function magnetYToOHLC(yPx: number, tolerancePx: number): number {
   if (_lastKnownPriceLevels.length === 0 || !_mappers.priceToY) return yPx
@@ -38,7 +38,7 @@ export function snapYToPriceLevels(y: number, step: number): number { return Mat
 
 /** --- Bar/X snap support --- */
 let _visibleBarXs: number[] = []  // device CSS pixels (pre-DPR scale), sorted
-export function setVisibleBarCoords(xs:number[]) { _visibleBarXs = xs.slice().sort((a,b)=>a-b) }
+export function setVisibleBarCoords(xs:number[]) { _visibleBarXs = xs.slice().sort((a: any, b: any) =>a-b) }
 
 /** Snap X to nearest bar coordinate within tolerance (px). If mapping unknown, returns x unchanged. */
 export function magnetXToBars(x:number, tolerancePx:number): number {
@@ -50,7 +50,7 @@ export function magnetXToBars(x:number, tolerancePx:number): number {
     if (_visibleBarXs[mid] < x) lo = mid + 1; else hi = mid
   }
   const idx = lo
-  const cands = [idx-1, idx, idx+1].filter((i: any) => i>=0 && i<_visibleBarXs.length).map(i => _visibleBarXs[i])
+  const cands = [idx-1, idx, idx+1].filter((i: any) => i>=0 && i<_visibleBarXs.length).map((i: any) => _visibleBarXs[i])
   let best = x, dBest = Number.POSITIVE_INFINITY
   for (const cx of cands) { const d = Math.abs(cx - x); if (d < dBest) { dBest = d; best = cx } }
   return dBest <= tolerancePx ? best : x

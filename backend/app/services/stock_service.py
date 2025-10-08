@@ -6,9 +6,9 @@ using Alpha Vantage's Global Quote endpoint.
 """
 
 import logging
-from typing import List, Dict, Optional
+from datetime import datetime
+
 import httpx
-from datetime import datetime, timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class StockService:
             "PM": "Philip Morris International Inc."
         }
     
-    async def get_stocks(self, limit: int = 50) -> List[Dict]:
+    async def get_stocks(self, limit: int = 50) -> list[dict]:
         """
         Get real-time stock data for major stocks
         
@@ -142,7 +142,7 @@ class StockService:
             # Return empty list on error
             return []
     
-    async def _fetch_stock_quote(self, client: httpx.AsyncClient, symbol: str) -> Optional[Dict]:
+    async def _fetch_stock_quote(self, client: httpx.AsyncClient, symbol: str) -> dict | None:
         """
         Fetch a single stock quote from Alpha Vantage
         

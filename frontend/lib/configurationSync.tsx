@@ -671,7 +671,8 @@ const createInitialState = (): ConfigurationSyncState => ({
 // Create Store
 export const useConfigurationSyncStore = create<ConfigurationSyncState & ConfigurationSyncActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Configuration Management
@@ -1054,7 +1055,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         set((state: any) => {
           const request = state.changeRequests.find((r: any) => r.id === requestId);
           if (request) {
-            const existingApproval = request.approvals.find(a => a.reviewerId === reviewerId);
+            const existingApproval = request.approvals.find((a: any) => a.reviewerId === reviewerId);
             if (existingApproval) {
               existingApproval.status = 'approved';
               existingApproval.comment = comment;
@@ -1086,7 +1087,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         set((state: any) => {
           const request = state.changeRequests.find((r: any) => r.id === requestId);
           if (request) {
-            const existingApproval = request.approvals.find(a => a.reviewerId === reviewerId);
+            const existingApproval = request.approvals.find((a: any) => a.reviewerId === reviewerId);
             if (existingApproval) {
               existingApproval.status = 'rejected';
               existingApproval.comment = comment;
@@ -1187,7 +1188,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          state.syncJobs = state.syncJobs.filter(j => j.id !== jobId);
+          state.syncJobs = state.syncJobs.filter((j: any) => j.id !== jobId);
         });
       },
 
@@ -1425,7 +1426,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         if (!FLAGS.configurationSync) return;
         
         set((state: any) => {
-          state.backups = state.backups.filter(b => b.id !== backupId);
+          state.backups = state.backups.filter((b: any) => b.id !== backupId);
         });
       },
 
@@ -1484,8 +1485,8 @@ export const useConfigurationSyncStore = create<ConfigurationSyncState & Configu
         
         const configurations = get().configurations.filter((c: any) => configIds.includes(c.id));
         
-        let content: string;
-        let mimeType: string;
+        let content: string = '';
+        let mimeType: string = 'text/plain';
         
         switch (format) {
           case 'json':

@@ -59,7 +59,7 @@ export function macd(values: number[], fast=12, slow=26, signal=9) {
     if (emaFast[i] == null || emaSlow[i] == null) return null;
     return (emaFast[i] as number) - (emaSlow[i] as number);
   });
-  const signalLine = ema(macdLine.map(v => v ?? 0), signal).map((v: any, i: any) => macdLine[i] == null ? null : v);
+  const signalLine = ema(macdLine.map((v: any) => v ?? 0), signal).map((v: any, i: any) => macdLine[i] == null ? null : v);
   const hist: (number | null)[] = macdLine.map((v: any, i: any) => (v == null || signalLine[i] == null) ? null : (v as number) - (signalLine[i] as number));
   return { macdLine, signalLine, hist };
 }

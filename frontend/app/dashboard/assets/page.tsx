@@ -4,6 +4,7 @@ import { useToast } from '@/components/dashboard/ToastProvider';
 import {
   loadPortfolio,
   PortfolioSection,
+  Asset as PortfolioAsset,
   addAssets as storageAddAssets,
   addSection as storageAddSection,
   deleteAsset as storageDeleteAsset,
@@ -109,7 +110,7 @@ export default function AssetsPage() {
       setConnectingBanks(JSON.parse(storedBanks));
     }
     const portfolio = loadPortfolio();
-    setSections(portfolio.sections);
+    setSections(portfolio);
   };
 
   const openAddAssetModal = () => {
@@ -119,38 +120,38 @@ export default function AssetsPage() {
 
   const handleDone = () => {
     const items = modal.selectedItems.map((item: any) => ({
+      id: Math.random().toString(36).substring(2, 9),
       name: item.name,
       symbol: item.symbol,
-      type: modal.step === 'metals' ? 'metal' : 'stock',
       shares: parseInt(shares[item.symbol] || '0'),
       value: Math.floor(Math.random() * 10000) + 1000,
+      change: 0,
     }));
-    const updated = storageAddAssets(items as any);
-    setSections(updated.sections);
+    storageAddAssets('Default', items);
+    setSections(loadPortfolio());
     setModal({ show: false, step: 'stocks', selectedItems: [] });
     setShares({});
-    toast.push({
-      type: 'success',
-      title: 'Assets Added',
-      message: `${items.length} item(s) added.`,
-    });
+    toast.success(`${items.length} item(s) added.`);
   };
 
-  const formatCurrencyHook = useCurrencyFormatter('EUR');
-  const formatCurrency = (amount: number) => formatCurrencyHook(amount);
+  const { formatCurrency } = useCurrencyFormatter();
 
   const getTotalValue = () =>
     storageTotalValue() + connectingBanks.reduce((s: any, b: any) => s + b.value, 0);
 
   const addNewSection = () => {
-    const updated = storageAddSection();
-    setSections(updated.sections);
+    const newSection: PortfolioSection = {
+      title: 'New Section',
+      assets: []
+    };
+    storageAddSection(newSection);
+    setSections(loadPortfolio());
   };
 
-  const removeAsset = (id: string) => {
-    const updated = storageDeleteAsset(id);
-    setSections(updated.sections);
-    toast.push({ type: 'info', title: 'Asset Removed', message: 'Asset deleted.' });
+  const removeAsset = (sectionTitle: string, id: string) => {
+    storageDeleteAsset(sectionTitle, id);
+    setSections(loadPortfolio());
+    toast.info('Asset deleted.');
   };
 
   const hasAnyAssets = sections.some((s: any) => s.assets.length > 0);
@@ -246,11 +247,9 @@ export default function AssetsPage() {
             </button>
             <button
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
-              title="Cycle Theme"
+              title="Toggle Theme"
               onClick={() => {
-                const order = ['off', 'on', 'oled', 'off'];
-                const next = order[(order.indexOf(darkMode) + 1) % order.length] as any;
-                setDarkMode(next);
+                setDarkMode(!darkMode);
               }}
             >
               <Settings className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -260,11 +259,11 @@ export default function AssetsPage() {
               {getFirstName()}
             </span>
             <ProfileDropdown
-              user={user}
-              onSignOut={() => {
+              userName={user?.name}
+              userEmail={user?.email}
+              onLogout={() => {
                 setUser(null);
               }}
-              onUpdateUser={(u: any) => setUser((prev: any) => ({ ...prev, ...u }) as any)}
             />
           </div>
         </div>
@@ -378,13 +377,13 @@ export default function AssetsPage() {
               </button>
             </div>
 
-            {sections.map((section: any, idx: any) => {
-              const sectionValue = section.assets.reduce((s, a) => s + a.value, 0);
+            {sections.map((section: PortfolioSection, idx: number) => {
+              const sectionValue = section.assets.reduce((s: number, a: PortfolioAsset) => s + a.value, 0);
               return (
-                <section className="mb-8" key={section.id}>
+                <section className="mb-8" key={idx}>
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      {section.name}
+                      {section.title}
                     </h2>
                     <span className="text-sm text-gray-600 dark:text-gray-400 font-medium">
                       {formatCurrency(sectionValue)}
@@ -400,11 +399,11 @@ export default function AssetsPage() {
                       connectingBanks.map((bank: any) => (
                         <ConnectingBankItem key={bank.id} bank={bank} />
                       ))}
-                    {section.assets.map((asset: Asset) => (
+                    {section.assets.map((asset: PortfolioAsset) => (
                       <AssetItem
                         key={asset.id}
-                        asset={asset}
-                        onDelete={() => removeAsset(asset.id)}
+                        asset={asset as any}
+                        onDelete={() => removeAsset(section.title, asset.id)}
                       />
                     ))}
                     <div className="bg-gray-700 hover:bg-gray-600 rounded-lg p-4 cursor-pointer transition-colors group dark:bg-gray-800 dark:hover:bg-gray-700">
@@ -454,7 +453,7 @@ export default function AssetsPage() {
 // Animated Connecting Bank Component
 function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
   const [animatedValue, setAnimatedValue] = useState(bank.value);
-  const fmt = useCurrencyFormatter('EUR');
+  const { formatCurrency } = useCurrencyFormatter();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -484,7 +483,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
       <div className="flex items-center space-x-4">
         <div className="text-right">
           <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 tabular-nums">
-            {fmt(animatedValue)}
+            {formatCurrency(animatedValue)}
           </p>
         </div>
         <button
@@ -500,7 +499,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
 
 // Asset Item Component
 function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void }) {
-  const fmt = useCurrencyFormatter('EUR');
+  const { formatCurrency } = useCurrencyFormatter();
   return (
     <div className="bg-white dark:bg-bg-secondary border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between hover:shadow-md transition-shadow group">
       <div className="flex items-center space-x-4 flex-1">
@@ -512,7 +511,7 @@ function AssetItem({ asset, onDelete }: { asset: Asset; onDelete?: () => void })
       <div className="flex items-center space-x-4 relative">
         <div className="text-right">
           <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            {fmt(asset.value)}
+            {formatCurrency(asset.value)}
           </p>
         </div>
         <button

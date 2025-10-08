@@ -22,7 +22,7 @@ export default function SnapshotsPanel() {
         <div className='font-semibold text-sm'>Snapshots</div>
         <div className='flex gap-2'>
           <input className='bg-transparent border border-white/15 rounded px-2 py-1 text-xs w-32'
-            value={name} onChange={e=>setName(e.target.value)} placeholder='Name' />
+            value={name} onChange={(e: any) =>setName(e.target.value)} placeholder='Name' />
           <button className='px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10'
             onClick={()=>{ if (name.trim()) s.saveSnapshot(name.trim()) }}>Save</button>
         </div>

@@ -14,7 +14,7 @@ export default function LabelsLayer() {
     <div className="pointer-events-none absolute inset-0 select-none">
       {drawings.map((d: any) => {
         // respect hidden layers
-        const layer = s.layers?.find(l=>l.id === (d as any).layerId) || { visible:true, opacity:1 }
+        const layer = s.layers?.find((l: any) =>l.id === (d as any).layerId) || { visible:true, opacity:1 }
         if (!layer.visible || (layer.opacity ?? 1) === 0) return null
         const info = describeDrawing(d as any, cfg)
         if (!info) return null

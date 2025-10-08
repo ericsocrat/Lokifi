@@ -33,7 +33,7 @@ export default function DrawToolbar(){
       ))}
       <div className="w-px h-5 bg-neutral-800 mx-1" />
       <label className="flex items-center gap-1 text-xs">
-        <input type="checkbox" checked={snap} onChange={e=> drawStore.setSnap(e.target.checked)} /> Snap
+        <input type="checkbox" checked={snap} onChange={(e: any) => drawStore.setSnap(e.target.checked)} /> Snap
       </label>
       <div className="w-px h-5 bg-neutral-800 mx-1" />
       <button className="text-xs px-2 py-1 border border-neutral-700 rounded hover:bg-neutral-800" onClick={()=> drawStore.undo()}>Undo</button>

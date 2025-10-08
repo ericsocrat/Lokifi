@@ -200,7 +200,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
               {/* Asset List */}
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {filteredAssets.map((asset: any) => {
-                  const isSelected = selectedAssets.some(a => a.symbol === asset.symbol);
+                  const isSelected = selectedAssets.some((a: any) => a.symbol === asset.symbol);
                   return (
                     <button
                       key={asset.symbol}

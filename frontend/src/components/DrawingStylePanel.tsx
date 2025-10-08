@@ -37,14 +37,14 @@ export default function DrawingStylePanel() {
         <label className='flex items-center justify-between'>
           <span>Width</span>
           <input type='range' min={1} max={8} value={width}
-            onChange={e => { const v = parseInt(e.target.value,10); setWidth(v); apply({ width: v }) }}
+            onChange={(e: any) => { const v = parseInt(e.target.value,10); setWidth(v); apply({ width: v }) }}
           />
         </label>
 
         <label className='flex items-center justify-between'>
           <span>Opacity</span>
           <input type='range' min={0} max={1} step={0.05} value={opacity}
-            onChange={e => { const v = parseFloat(e.target.value); setOpacity(v); apply({ opacity: v }) }}
+            onChange={(e: any) => { const v = parseFloat(e.target.value); setOpacity(v); apply({ opacity: v }) }}
           />
         </label>
 
@@ -52,7 +52,7 @@ export default function DrawingStylePanel() {
           <span>Line style</span>
           <select className='bg-transparent border px-2 py-1 rounded'
             value={lineStyle}
-            onChange={e => { const v = e.target.value as any; setLineStyle(v); apply({ lineStyle: v }) }}>
+            onChange={(e: any) => { const v = e.target.value as any; setLineStyle(v); apply({ lineStyle: v }) }}>
             <option value='solid'>Solid</option>
             <option value='dash'>Dash</option>
             <option value='dot'>Dot</option>
@@ -64,7 +64,7 @@ export default function DrawingStylePanel() {
           <input className='ml-2 bg-transparent border px-2 py-1 rounded w-28'
             placeholder='transparent or #hex'
             value={fill}
-            onChange={e => { const v = e.target.value || 'transparent'; setFill(v); apply({ fill: v }) }}
+            onChange={(e: any) => { const v = e.target.value || 'transparent'; setFill(v); apply({ fill: v }) }}
           />
         </label>
 
@@ -73,7 +73,7 @@ export default function DrawingStylePanel() {
           <input className='w-full bg-transparent border px-2 py-1 rounded'
             placeholder='Edit text...'
             value={textValue}
-            onChange={e => setTextValue(e.target.value)}
+            onChange={(e: any) => setTextValue(e.target.value)}
             onBlur={()=> setText(textValue)}
           />
         </div>

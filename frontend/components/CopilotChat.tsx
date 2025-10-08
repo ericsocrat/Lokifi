@@ -55,13 +55,13 @@ export default function CopilotChat() {
           )}
         </div>
         <label className="flex items-center gap-2 text-sm opacity-90">
-          <input type="checkbox" checked={useChartCtx} onChange={e => setUseChartCtx(e.target.checked)} />
+          <input type="checkbox" checked={useChartCtx} onChange={(e: any) => setUseChartCtx(e.target.checked)} />
           Use chart as context (send active symbol)
         </label>
         <div className="flex gap-2">
           <input
             value={q}
-            onChange={e => setQ(e.target.value)}
+            onChange={(e: any) => setQ(e.target.value)}
             className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             placeholder="Ask about BTC, AAPL, RSI, news..."
           />

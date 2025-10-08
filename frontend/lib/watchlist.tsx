@@ -116,6 +116,7 @@ const defaultScreenerQuery: ScreenerQuery = {
 // Create Store
 export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
   persist(
+      // @ts-expect-error - Zustand v5 middleware type inference issue
       immer<any>((set, get, store) => ({
         // Initial State
         watchlists: [],
@@ -156,7 +157,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const index = state.watchlists.findIndex(w => w.id === id);
+            const index = state.watchlists.findIndex((w: any) => w.id === id);
             if (index !== -1) {
               state.watchlists.splice(index, 1);
               
@@ -213,7 +214,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           set((state: any) => {
             const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
             if (watchlist) {
-              const index = watchlist.items.findIndex(item => item.symbol === symbol);
+              const index = watchlist.items.findIndex((item: any) => item.symbol === symbol);
               if (index !== -1) {
                 watchlist.items.splice(index, 1);
                 watchlist.updatedAt = new Date();
@@ -265,7 +266,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             if (watchlist) {
               const item = watchlist.items.find((item: any) => item.symbol === symbol);
               if (item?.alerts) {
-                const index = item.alerts.findIndex(alert => alert.id === alertId);
+                const index = item.alerts.findIndex((alert: any) => alert.id === alertId);
                 if (index !== -1) {
                   item.alerts.splice(index, 1);
                   watchlist.updatedAt = new Date();
@@ -283,7 +284,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             if (watchlist) {
               const item = watchlist.items.find((item: any) => item.symbol === symbol);
               if (item?.alerts) {
-                const alert = item.alerts.find(alert => alert.id === alertId);
+                const alert = item.alerts.find((alert: any) => alert.id === alertId);
                 if (alert) {
                   alert.isActive = !alert.isActive;
                   watchlist.updatedAt = new Date();
@@ -317,7 +318,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (!FLAGS.watchlist) return;
           
           set((state: any) => {
-            const index = state.screenerQuery.filters.findIndex(f => f.id === filterId);
+            const index = state.screenerQuery.filters.findIndex((f: any) => f.id === filterId);
             if (index !== -1) {
               state.screenerQuery.filters.splice(index, 1);
             }

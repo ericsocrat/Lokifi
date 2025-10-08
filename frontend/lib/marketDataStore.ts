@@ -41,16 +41,17 @@ interface MarketDataState {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const useMarketDataStore = create<MarketDataState>()(
+  // @ts-expect-error - Zustand v5 middleware type inference issue
   persist(
     (set: any, get: any) => ({
       // Initial state
-      ohlcData: {},
-      lastUpdate: {},
-      isConnected: true,
-      isLoading: false,
-      error: null,
-      autoRefresh: true,
-      refreshInterval: 30,
+      ohlcData: {} as Record<string, OHLCData[]>,
+      lastUpdate: {} as Record<string, number>,
+      isConnected: true as boolean,
+      isLoading: false as boolean,
+      error: null as string | null,
+      autoRefresh: true as boolean,
+      refreshInterval: 30 as number,
 
       // Fetch OHLC data from API
       fetchOHLCData: async (symbol: string, timeframe: string = '1D', limit: number = 100) => {

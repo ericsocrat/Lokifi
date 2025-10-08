@@ -1,14 +1,14 @@
 """
 Simple script to initialize the database tables using SQLAlchemy models.
 """
-import asyncio
-import sys
 import os
+import sys
 
 # Add the backend directory to the path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from sqlalchemy import create_engine, inspect
+
 from app.models.user import Base
 
 # Database path (must match the DATABASE_URL in settings)

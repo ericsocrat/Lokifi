@@ -508,8 +508,9 @@ interface ObservabilityActions {
 // Create Store
 export const useObservabilityStore = create<ObservabilityState & ObservabilityActions>()(
   persist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     subscribeWithSelector(
-      immer<any>((set: any, get: any) => ({
+      immer((set, get, _store) => ({
         // Initial State
         metrics: [],
         metricValues: [],
@@ -590,7 +591,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const index = state.metrics.findIndex(m => m.id === metricId);
+            const index = state.metrics.findIndex((m: any) => m.id === metricId);
             if (index !== -1) {
               state.metrics.splice(index, 1);
             }
@@ -665,7 +666,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const index = state.alertRules.findIndex(r => r.id === ruleId);
+            const index = state.alertRules.findIndex((r: any) => r.id === ruleId);
             if (index !== -1) {
               state.alertRules.splice(index, 1);
             }
@@ -966,7 +967,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const error = state.errors.find(e => e.id === errorId);
+            const error = state.errors.find((e: any) => e.id === errorId);
             if (error) {
               error.status = status;
               if (assignedTo) error.assignedTo = assignedTo;
@@ -1165,7 +1166,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           if (!FLAGS.observability) return;
           
           set((state: any) => {
-            const index = state.dashboards.findIndex(d => d.id === dashboardId);
+            const index = state.dashboards.findIndex((d: any) => d.id === dashboardId);
             if (index !== -1) {
               state.dashboards.splice(index, 1);
             }
@@ -1220,7 +1221,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           set((state: any) => {
             const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
             if (dashboard) {
-              const widget = dashboard.widgets.find(w => w.id === widgetId);
+              const widget = dashboard.widgets.find((w: any) => w.id === widgetId);
               if (widget) {
                 Object.assign(widget, updates);
                 dashboard.updatedAt = new Date();
@@ -1235,7 +1236,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           set((state: any) => {
             const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
             if (dashboard) {
-              const index = dashboard.widgets.findIndex(w => w.id === widgetId);
+              const index = dashboard.widgets.findIndex((w: any) => w.id === widgetId);
               if (index !== -1) {
                 dashboard.widgets.splice(index, 1);
                 dashboard.updatedAt = new Date();
@@ -1382,7 +1383,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             state.userEvents = state.userEvents.filter((e: any) => e.timestamp >= beforeDate);
             state.errors = state.errors.filter((e: any) => e.timestamp >= beforeDate);
             state.performanceTraces = state.performanceTraces.filter((t: any) => t.timestamp >= beforeDate);
-            state.logs = state.logs.filter(l => l.timestamp >= beforeDate);
+            state.logs = state.logs.filter((l: any) => l.timestamp >= beforeDate);
             state.systemMetrics = state.systemMetrics.filter((m: any) => m.timestamp >= beforeDate);
           });
         },

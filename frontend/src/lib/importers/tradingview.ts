@@ -63,14 +63,14 @@ type HeaderMap = {
 
 function mapHeader(cols: string[]): HeaderMap | null {
   const idx = (want: RegExp) =>
-    cols.findIndex(c => want.test(c.trim().toLowerCase()));
+    cols.findIndex((c: any) => want.test(c.trim().toLowerCase()));
   const time = idx(/^(time|timestamp|date)$/);
   const open = idx(/^open($|[^a-z])/);
   const high = idx(/^high($|[^a-z])/);
   const low  = idx(/^low($|[^a-z])/);
   const close = idx(/^close($|[^a-z])/); // matches "close", "close*"
   const volume = idx(/^(volume|vol)($|[^a-z])/);
-  if ([time, open, high, low, close, volume].some(i => i < 0)) return null;
+  if ([time, open, high, low, close, volume].some((i: any) => i < 0)) return null;
   return { time, open, high, low, close, volume };
 }
 

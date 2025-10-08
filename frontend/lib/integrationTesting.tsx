@@ -889,7 +889,8 @@ const createInitialState = (): IntegrationTestingState => ({
 // Create Store
 export const useIntegrationTestingStore = create<IntegrationTestingState & IntegrationTestingActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Test Suite Management
@@ -1113,7 +1114,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
             
             // Update execution with test result
             set((state: any) => {
-              const exec = state.executions.find(e => e.id === executionId);
+              const exec = state.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 exec.results.push(testResult);
                 exec.summary.passedTests = passedTests;
@@ -1129,7 +1130,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           
           // Complete execution
           set((state: any) => {
-            const exec = state.executions.find(e => e.id === executionId);
+            const exec = state.executions.find((e: any) => e.id === executionId);
             if (exec) {
               exec.completedAt = endTime;
               exec.duration = totalDuration;
@@ -1148,7 +1149,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           
         } catch (error) {
           set((state: any) => {
-            const exec = state.executions.find(e => e.id === executionId);
+            const exec = state.executions.find((e: any) => e.id === executionId);
             if (exec) {
               exec.completedAt = new Date();
               exec.status = 'failed';
@@ -1206,7 +1207,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          const exec = state.executions.find(e => e.id === executionId);
+          const exec = state.executions.find((e: any) => e.id === executionId);
           if (exec && exec.status === 'running') {
             exec.status = 'cancelled';
             exec.completedAt = new Date();
@@ -1255,7 +1256,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         if (!FLAGS.integrationTesting) return;
         
         set((state: any) => {
-          state.pipelines = state.pipelines.filter(p => p.id !== pipelineId);
+          state.pipelines = state.pipelines.filter((p: any) => p.id !== pipelineId);
           if (state.selectedPipeline === pipelineId) {
             state.selectedPipeline = null;
           }
@@ -1318,7 +1319,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           set((state: any) => {
             const p = state.pipelines.find((p: any) => p.id === pipelineId);
             if (p) {
-              const exec = p.executions.find(e => e.id === executionId);
+              const exec = p.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = 'completed';
@@ -1335,7 +1336,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           set((state: any) => {
             const p = state.pipelines.find((p: any) => p.id === pipelineId);
             if (p) {
-              const exec = p.executions.find(e => e.id === executionId);
+              const exec = p.executions.find((e: any) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = 'failed';
@@ -1352,10 +1353,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         
         set((state: any) => {
           const pipeline = state.pipelines.find((p: any) => 
-            p.executions.some(e => e.id === executionId)
+            p.executions.some((e: any) => e.id === executionId)
           );
           if (pipeline) {
-            const execution = pipeline.executions.find(e => e.id === executionId);
+            const execution = pipeline.executions.find((e: any) => e.id === executionId);
             if (execution) {
               execution.approvals.push({
                 id: `approval_${Date.now()}`,
@@ -1375,10 +1376,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         
         set((state: any) => {
           const pipeline = state.pipelines.find((p: any) => 
-            p.executions.some(e => e.id === executionId)
+            p.executions.some((e: any) => e.id === executionId)
           );
           if (pipeline) {
-            const execution = pipeline.executions.find(e => e.id === executionId);
+            const execution = pipeline.executions.find((e: any) => e.id === executionId);
             if (execution) {
               execution.approvals.push({
                 id: `approval_${Date.now()}`,
@@ -1497,7 +1498,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           const suite = state.testSuites.find((s: any) => s.id === suiteId);
           if (suite) {
             suite.tests.forEach((test: any) => {
-              const data = test.testData?.find(d => d.id === dataId);
+              const data = test.testData?.find((d: any) => d.id === dataId);
               if (data) {
                 Object.assign(data, updates);
               }
@@ -1527,7 +1528,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       generateReport: async (executionId: any, format: any) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
-        const execution = get().executions.find(e => e.id === executionId);
+        const execution = get().executions.find((e: any) => e.id === executionId);
         if (!execution) throw new Error('Execution not found');
         
         // Simulate report generation
@@ -1562,8 +1563,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         
         const executions = get().executions.filter((e: any) => executionIds.includes(e.id));
         
-        let content: string;
-        let mimeType: string;
+        let content: string = '';
+        let mimeType: string = 'text/plain';
         
         switch (format) {
           case 'json':

@@ -800,7 +800,8 @@ const createInitialState = (): EnvironmentManagementState => ({
 // Create Store
 export const useEnvironmentManagementStore = create<EnvironmentManagementState & EnvironmentManagementActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Environment Management
@@ -1014,7 +1015,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         set((state: any) => {
           const environment = state.environments.find((e: any) => e.id === environmentId);
           if (environment) {
-            const service = environment.services.find(s => s.id === serviceId);
+            const service = environment.services.find((s: any) => s.id === serviceId);
             if (service) {
               Object.assign(service, updates);
               environment.updatedAt = new Date();
@@ -1041,7 +1042,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         set((state: any) => {
           const environment = state.environments.find((e: any) => e.id === environmentId);
           if (environment) {
-            const service = environment.services.find(s => s.id === serviceId);
+            const service = environment.services.find((s: any) => s.id === serviceId);
             if (service) {
               service.status = 'starting';
             }
@@ -1054,7 +1055,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         set((state: any) => {
           const environment = state.environments.find((e: any) => e.id === environmentId);
           if (environment) {
-            const service = environment.services.find(s => s.id === serviceId);
+            const service = environment.services.find((s: any) => s.id === serviceId);
             if (service) {
               service.status = 'running';
               service.instances.forEach((instance: any) => {
@@ -1100,7 +1101,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         if (!FLAGS.environmentManagement) return;
         
         set((state: any) => {
-          state.templates = state.templates.filter(t => t.id !== templateId);
+          state.templates = state.templates.filter((t: any) => t.id !== templateId);
         });
       },
 
@@ -1228,7 +1229,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         if (!FLAGS.environmentManagement) return;
         
         set((state: any) => {
-          state.syncJobs = state.syncJobs.filter(j => j.id !== jobId);
+          state.syncJobs = state.syncJobs.filter((j: any) => j.id !== jobId);
         });
       },
 
@@ -1376,7 +1377,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         set((state: any) => {
           const environment = state.environments.find((e: any) => e.id === environmentId);
           if (environment) {
-            const credentials = environment.credentials.find(c => c.id === credentialsId);
+            const credentials = environment.credentials.find((c: any) => c.id === credentialsId);
             if (credentials) {
               Object.assign(credentials, updates);
               environment.updatedAt = new Date();
@@ -1406,7 +1407,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         set((state: any) => {
           const environment = state.environments.find((e: any) => e.id === environmentId);
           if (environment) {
-            const credentials = environment.credentials.find(c => c.id === credentialsId);
+            const credentials = environment.credentials.find((c: any) => c.id === credentialsId);
             if (credentials) {
               credentials.lastRotated = new Date();
               environment.updatedAt = new Date();

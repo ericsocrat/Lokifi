@@ -3,9 +3,9 @@ Quick test script for Tasks 6, 7, 8 implementation
 Tests all new endpoints to verify they're working
 """
 import asyncio
-import httpx
-import json
 from datetime import datetime
+
+import httpx
 
 API_BASE = "http://localhost:8000/api/v1"
 
@@ -171,7 +171,7 @@ async def main():
             await client.get(f"{API_BASE}/health")
             print("✅ Server is running!")
     except Exception as e:
-        print(f"❌ Server is not running! Please start the backend first.")
+        print("❌ Server is not running! Please start the backend first.")
         print(f"   Error: {e}")
         return
     

@@ -18,7 +18,7 @@ export default function DrawingSettings() {
         <label className="flex items-center justify-between">
           <span>Snap step (px)</span>
           <input className="ml-2 bg-transparent border px-2 py-1 rounded w-24" type="number" min={2} max={100} step={1}
-            value={snapStep} onChange={e => setDrawingSettings({ snapStep: parseInt(e.target.value || '10', 10) })} />
+            value={snapStep} onChange={(e: any) => setDrawingSettings({ snapStep: parseInt(e.target.value || '10', 10) })} />
         </label>
         <label className="flex items-center justify-between">
           <span>Show handles</span>

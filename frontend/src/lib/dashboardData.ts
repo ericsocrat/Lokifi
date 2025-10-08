@@ -129,7 +129,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
   const total = totalValue();
 
   portfolio.forEach((section: any) => {
-    section.assets.forEach(asset => {
+    section.assets.forEach((asset: any) => {
       // Group by symbol or name
       const key = asset.symbol || asset.name;
       const currentValue = typeMap.get(key) || 0;
@@ -170,7 +170,7 @@ export function getTopHoldings(limit: number = 5): TopHolding[] {
   const total = totalValue();
 
   portfolio.forEach((section: any) => {
-    section.assets.forEach(asset => {
+    section.assets.forEach((asset: any) => {
       holdings.push({
         symbol: asset.symbol,
         name: asset.name,
@@ -248,7 +248,7 @@ export function getNetWorthChange(period: '1d' | '7d' | '30d' | '1y' | 'all' = '
  */
 export function hasAssets(): boolean {
   const portfolio = loadPortfolio();
-  return portfolio.some(section => section.assets.length > 0);
+  return portfolio.some((section: any) => section.assets.length > 0);
 }
 
 /**

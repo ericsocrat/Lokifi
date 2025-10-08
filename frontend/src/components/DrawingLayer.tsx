@@ -17,7 +17,7 @@ export default function DrawingLayer() {
   const s = useChartStore();
   const layerOf = (id: string) =>
     s.layers.find((l) => l.id === id) || { visible: true, locked: false, opacity: 1 };
-  const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings);
+  const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings as any);
   const [hoverId, setHoverId] = React.useState<string | null>(null);
   const [dragId, setDragId] = React.useState<string | null>(null);
 
@@ -402,7 +402,7 @@ export default function DrawingLayer() {
       return;
     }
     if (dragId) {
-      s.updateDrawing(dragId, (dr: any) => updateDrawingGeometry(dr, p));
+      s.updateDrawing(dragId, (dr: any) => updateDrawingGeometry(dr, p) as any);
       invalidate();
       return;
     }

@@ -106,8 +106,8 @@ def validate_password_strength(password: str) -> bool:
     - Not a common password
     - Sufficient entropy
     """
-    import re
     import math
+    import re
     
     # Length check
     if len(password) < 8:
@@ -137,10 +137,14 @@ def validate_password_strength(password: str) -> bool:
     # Calculate password entropy (information theory)
     # Higher entropy = more unpredictable password
     char_set_size = 0
-    if has_lower: char_set_size += 26
-    if has_upper: char_set_size += 26
-    if has_digit: char_set_size += 10
-    if has_special: char_set_size += 32  # approximate
+    if has_lower:
+        char_set_size += 26
+    if has_upper:
+        char_set_size += 26
+    if has_digit:
+        char_set_size += 10
+    if has_special:
+        char_set_size += 32  # approximate
     
     entropy = len(password) * math.log2(char_set_size) if char_set_size > 0 else 0
     

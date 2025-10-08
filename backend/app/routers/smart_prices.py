@@ -1,23 +1,22 @@
 """Smart Prices Router"""
 import logging
 from datetime import datetime
-from typing import Dict, List, Literal
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
-from app.services.smart_price_service import SmartPriceService, PriceData
+
 from app.services.historical_price_service import (
-    HistoricalPriceService, 
-    HistoricalPricePoint, 
-    OHLCVData,
-    PeriodType
+    HistoricalPriceService,
+    PeriodType,
 )
+from app.services.smart_price_service import SmartPriceService
 from app.services.unified_asset_service import UnifiedAssetService
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1/prices", tags=["prices"])
 
 class BatchPriceRequest(BaseModel):
-    symbols: List[str] = Field(..., min_length=1, max_length=100)
+    symbols: list[str] = Field(..., min_length=1, max_length=100)
 
 class PriceResponse(BaseModel):
     symbol: str
@@ -34,21 +33,21 @@ class PriceResponse(BaseModel):
 
 class BatchPriceResponse(BaseModel):
     success: bool
-    data: Dict[str, PriceResponse]
-    failed: List[str] = []
+    data: dict[str, PriceResponse]
+    failed: list[str] = []
     cache_hits: int = 0
     api_calls: int = 0
 
 class HealthResponse(BaseModel):
     status: str
     redis_connected: bool
-    providers: List[str]
+    providers: list[str]
 
 class UnifiedAssetsResponse(BaseModel):
     """Response model for unified multi-type assets"""
     success: bool
-    types: List[str]
-    data: Dict[str, List[Dict]]  # e.g., {"crypto": [...], "stocks": [...]}
+    types: list[str]
+    data: dict[str, list[dict]]  # e.g., {"crypto": [...], "stocks": [...]}
     total_count: int
     cached: bool
 
@@ -151,7 +150,7 @@ async def get_all_assets(
                 cached_data = await advanced_redis_client.get(cache_key)
                 if cached_data:
                     is_cached = True
-                    logger.info(f"✅ Cache HIT: Unified assets")
+                    logger.info("✅ Cache HIT: Unified assets")
             except Exception as e:
                 logger.debug(f"Cache check failed: {e}")
         
@@ -167,7 +166,7 @@ async def get_all_assets(
             # Cache the result for 30 seconds
             try:
                 await advanced_redis_client.set(cache_key, data, expire=30)
-                logger.debug(f"💾 Cached unified assets for 30s")
+                logger.debug("💾 Cached unified assets for 30s")
             except Exception as e:
                 logger.debug(f"Cache set failed: {e}")
         else:
@@ -237,8 +236,8 @@ async def get_batch_prices(request: BatchPriceRequest, force_refresh: bool = Que
 async def get_performance_stats():
     """Get comprehensive performance statistics for monitoring"""
     try:
-        from app.services.historical_price_service import performance_metrics
         from app.services.crypto_discovery_service import crypto_metrics
+        from app.services.historical_price_service import performance_metrics
         
         return {
             "status": "ok",
@@ -273,14 +272,14 @@ class HistoricalPriceResponse(BaseModel):
     """Response model for historical prices"""
     symbol: str
     period: str
-    data: List[Dict]  # List of {timestamp: int, price: float}
+    data: list[dict]  # List of {timestamp: int, price: float}
     count: int
 
 class OHLCVResponse(BaseModel):
     """Response model for OHLCV data"""
     symbol: str
     period: str
-    data: List[Dict]  # List of {timestamp, open, high, low, close, volume}
+    data: list[dict]  # List of {timestamp, open, high, low, close, volume}
     count: int
 
 @router.get("/{symbol}/history", response_model=HistoricalPriceResponse)
@@ -380,7 +379,8 @@ async def get_ohlcv_data(
 # 🪙 CRYPTO DISCOVERY ENDPOINTS
 # ============================================================================
 
-from app.services.crypto_discovery_service import CryptoDiscoveryService, CryptoAsset
+from app.services.crypto_discovery_service import CryptoDiscoveryService
+
 
 async def get_crypto_service():
     async with CryptoDiscoveryService() as service:
@@ -390,14 +390,14 @@ class CryptoListResponse(BaseModel):
     """Response model for crypto list"""
     success: bool
     count: int
-    cryptos: List[Dict]
+    cryptos: list[dict]
 
 class CryptoSearchResponse(BaseModel):
     """Response model for crypto search"""
     success: bool
     query: str
     count: int
-    results: List[Dict]
+    results: list[dict]
 
 @router.get("/crypto/top", response_model=CryptoListResponse)
 async def get_top_cryptocurrencies(
@@ -461,7 +461,7 @@ async def search_cryptocurrencies(
         logger.error(f"Error searching cryptos: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/crypto/mapping", response_model=Dict[str, str])
+@router.get("/crypto/mapping", response_model=dict[str, str])
 async def get_crypto_symbol_mapping(
     service: CryptoDiscoveryService = Depends(get_crypto_service)
 ):

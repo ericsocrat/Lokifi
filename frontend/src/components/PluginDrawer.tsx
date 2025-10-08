@@ -48,7 +48,7 @@ export default function PluginDrawer() {
                   <span>{k}</span>
                   <input className="ml-2 bg-transparent border px-2 py-1 rounded"
                     value={String((cfg[p.meta.id]?.[k] ?? v))}
-                    onChange={e => update(p.meta.id, k, e.target.value)} />
+                    onChange={(e: any) => update(p.meta.id, k, e.target.value)} />
                 </label>
               ))}
             </div>
@@ -59,7 +59,7 @@ export default function PluginDrawer() {
       <div className="mt-4 flex gap-2">
         <button className="px-3 py-2 rounded-2xl border border-neutral-700 hover:border-neutral-500" onClick={exportJSON}>Export</button>
         <input ref={fileRef} type="file" accept="application/json" className="hidden"
-          onChange={e => e.target.files && importJSON(e.target.files[0])} />
+          onChange={(e: any) => e.target.files && importJSON(e.target.files[0])} />
         <button className="px-3 py-2 rounded-2xl border border-neutral-700 hover:border-neutral-500" onClick={() => fileRef.current?.click()}>Import</button>
       </div>
     </div>

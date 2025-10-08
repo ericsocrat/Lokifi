@@ -2,6 +2,7 @@
 import asyncio
 import sys
 
+
 async def test_crypto_discovery():
     """Test crypto discovery service"""
     print("🧪 Testing Crypto Discovery Service...")

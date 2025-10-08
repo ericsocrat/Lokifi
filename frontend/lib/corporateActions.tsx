@@ -179,6 +179,7 @@ const defaultSessions: TradingSession[] = [
 // Create Store
 export const useCorporateActionsStore = create<CorporateActionsState & CorporateActionsActions>()(
   persist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     immer<any>((set, get, store) => ({
       // Initial State
       actions: [],
@@ -305,7 +306,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
             // Remove duplicates by date
             const uniqueHolidays = allHolidays.filter((holiday, index, array) =>
-              array.findIndex(h =>
+              array.findIndex((h: any) =>
                 h.date.getTime() === holiday.date.getTime() && h.market === holiday.market
               ) === index
             );
@@ -333,7 +334,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
         // Check if it's a holiday
         const dateString = date.toDateString();
-        return !holidays.some(holiday =>
+        return !holidays.some((holiday: any) =>
           holiday.date.toDateString() === dateString &&
           holiday.type === 'full_close'
         );
@@ -528,7 +529,7 @@ export const useMarketHolidays = (market?: string) =>
 
 export const useActiveSessions = () =>
   useCorporateActionsStore((state: any) =>
-    state.sessions.filter(s => s.isActive)
+    state.sessions.filter((s: any) => s.isActive)
   );
 
 export const useUpcomingActions = (days = 7) =>

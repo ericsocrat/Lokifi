@@ -187,7 +187,7 @@ function PortfolioPageContent() {
   };
 
   const toggleSection = (sectionTitle: string) => {
-    setCollapsedSections((prev: any) => {
+    setCollapsedSections((prev: Set<string>) => {
       const next = new Set(prev);
       if (next.has(sectionTitle)) {
         next.delete(sectionTitle);

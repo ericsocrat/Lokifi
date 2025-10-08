@@ -21,7 +21,7 @@ const ChartContainer = ({ children, ...props }: any) => {
 
 // Dynamic import with loading state
 const Chart = dynamic(
-  () => import('lightweight-charts').then(mod => ({
+  () => import('lightweight-charts').then((mod: any) => ({
     default: ChartContainer
   })),
   {

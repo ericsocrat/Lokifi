@@ -63,7 +63,7 @@ export default function ChatPage() {
         </div>
       </div>
       <p className="text-sm text-neutral-400">
-        {user ? <>Logged in as <b>@{user.handle}</b>. You can use <code>/portfolio</code> and create alerts.</> : <>Not logged in. <Link href="/login" className="underline">Login</Link> to access portfolio tools.</>}
+        {user ? <>Logged in as <b>@{user.username || user.email}</b>. You can use <code>/portfolio</code> and create alerts.</> : <>Not logged in. <Link href="/login" className="underline">Login</Link> to access portfolio tools.</>}
       </p>
     </div>
   );

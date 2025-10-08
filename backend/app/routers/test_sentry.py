@@ -1,5 +1,5 @@
-from fastapi import APIRouter
 import sentry_sdk
+from fastapi import APIRouter
 
 router = APIRouter(prefix="/test-sentry", tags=["testing"])
 

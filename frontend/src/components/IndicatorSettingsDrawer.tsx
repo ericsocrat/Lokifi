@@ -15,11 +15,11 @@ export default function IndicatorSettingsDrawer() {
           <div className="grid grid-cols-2 gap-2 text-sm">
             <label className="flex items-center justify-between">Period
               <input className="ml-2 bg-transparent border px-2 py-1 rounded" type="number" value={s.indicatorSettings.bbPeriod}
-                onChange={e => s.updateIndicatorSettings({ bbPeriod: parseInt(e.target.value||'0') })} />
+                onChange={(e: any) => s.updateIndicatorSettings({ bbPeriod: parseInt(e.target.value||'0') })} />
             </label>
             <label className="flex items-center justify-between">Mult
               <input className="ml-2 bg-transparent border px-2 py-1 rounded" type="number" value={s.indicatorSettings.bbMult}
-                onChange={e => s.updateIndicatorSettings({ bbMult: parseFloat(e.target.value||'0') })} />
+                onChange={(e: any) => s.updateIndicatorSettings({ bbMult: parseFloat(e.target.value||'0') })} />
             </label>
             <label className="flex items-center justify-between col-span-2">Band Fill
               <input type="checkbox" checked={s.indicators.bandFill} onChange={() => s.toggleIndicator('bandFill')} />
@@ -40,7 +40,7 @@ export default function IndicatorSettingsDrawer() {
           <div className="text-sm">
             <label className="flex items-center justify-between">VWMA Period
               <input className="ml-2 bg-transparent border px-2 py-1 rounded" type="number" value={s.indicatorSettings.vwmaPeriod}
-                onChange={e => s.updateIndicatorSettings({ vwmaPeriod: parseInt(e.target.value||'0') })} />
+                onChange={(e: any) => s.updateIndicatorSettings({ vwmaPeriod: parseInt(e.target.value||'0') })} />
             </label>
           </div>
         )}
@@ -53,11 +53,11 @@ export default function IndicatorSettingsDrawer() {
           <div className="grid grid-cols-2 gap-2 text-sm">
             <label className="flex items-center justify-between">Period
               <input className="ml-2 bg-transparent border px-2 py-1 rounded" type="number" value={s.indicatorSettings.stdChannelPeriod}
-                onChange={e => s.updateIndicatorSettings({ stdChannelPeriod: parseInt(e.target.value||'0') })} />
+                onChange={(e: any) => s.updateIndicatorSettings({ stdChannelPeriod: parseInt(e.target.value||'0') })} />
             </label>
             <label className="flex items-center justify-between">Mult
               <input className="ml-2 bg-transparent border px-2 py-1 rounded" type="number" value={s.indicatorSettings.stdChannelMult}
-                onChange={e => s.updateIndicatorSettings({ stdChannelMult: parseFloat(e.target.value||'0') })} />
+                onChange={(e: any) => s.updateIndicatorSettings({ stdChannelMult: parseFloat(e.target.value||'0') })} />
             </label>
           </div>
         )}

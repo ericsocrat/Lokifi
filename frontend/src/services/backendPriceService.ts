@@ -349,7 +349,7 @@ export class WebSocketPriceService {
         if (message.data) {
           // Notify all subscribers
           this.subscribers.forEach((callbacks: any) => {
-            callbacks.forEach((callback) => {
+            callbacks.forEach((callback: any) => {
               callback(message.data!);
             });
           });

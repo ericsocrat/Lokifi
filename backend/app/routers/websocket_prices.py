@@ -1,11 +1,12 @@
 """WebSocket Router for Real-Time Price Updates"""
-import logging
 import asyncio
 import json
+import logging
 import uuid
-from typing import Set, Dict, List
 from datetime import datetime
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Query
+
+from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.services.smart_price_service import SmartPriceService
 
@@ -38,8 +39,8 @@ class PriceWebSocketManager:
     """Manage WebSocket connections for price updates"""
     
     def __init__(self):
-        self.active_connections: Dict[str, WebSocket] = {}
-        self.subscriptions: Dict[str, Set[str]] = {}
+        self.active_connections: dict[str, WebSocket] = {}
+        self.subscriptions: dict[str, set[str]] = {}
         self.update_task: asyncio.Task | None = None
         self.update_interval = 30  # 30 seconds
         
@@ -77,7 +78,7 @@ class PriceWebSocketManager:
             self.update_task.cancel()
             logger.info("⏹️ Stopped price update loop (no active connections)")
     
-    async def subscribe(self, client_id: str, symbols: List[str]):
+    async def subscribe(self, client_id: str, symbols: list[str]):
         """Subscribe to price updates for symbols"""
         if client_id in self.subscriptions:
             symbols_upper = [s.upper() for s in symbols]
@@ -86,7 +87,7 @@ class PriceWebSocketManager:
             return True
         return False
     
-    async def unsubscribe(self, client_id: str, symbols: List[str]):
+    async def unsubscribe(self, client_id: str, symbols: list[str]):
         """Unsubscribe from symbols"""
         if client_id in self.subscriptions:
             self.subscriptions[client_id].difference_update([s.upper() for s in symbols])

@@ -19,6 +19,8 @@ backend_path = Path(__file__).parent
 sys.path.insert(0, str(backend_path))
 
 try:
+    from ci_smoke_tests import SmokeTestSuite
+
     from app.analytics.cross_database_compatibility import (
         AnalyticsQueryBuilder,
         CompatibilityTester,
@@ -32,7 +34,6 @@ try:
         startup_dependency_checks,
     )
     from app.websockets.jwt_websocket_auth import AuthenticatedWebSocketManager, WebSocketJWTAuth
-    from ci_smoke_tests import SmokeTestSuite
 except ImportError as e:
     print(f"Warning: Could not import Phase K components: {e}")
     print("Running basic integration tests without full Phase K components")

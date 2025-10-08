@@ -39,7 +39,7 @@ export function wireLightweightChartsMappings(chart: IChartApi | any, series: IS
       // light price levels (sample a few Y -> price)
       const h = chart?.chartElement?.clientHeight ?? 600
       const sampleYs = [0.1, 0.3, 0.5, 0.7, 0.9].map((p: any) => p * h)
-      const prices = sampleYs.map(y => series?.coordinateToPrice?.(y)).filter((p): p is number => typeof p === 'number')
+      const prices = sampleYs.map((y: any) => series?.coordinateToPrice?.(y)).filter((p): p is number => typeof p === 'number')
       const levels = new Set<number>()
       prices.forEach((p: any) => {
         const tick = Math.pow(10, Math.floor(Math.log10(Math.max(1e-9, Math.abs(p)))) - 2)

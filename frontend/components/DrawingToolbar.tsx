@@ -231,7 +231,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {tools.map((tool: any) => (
+              {(tools as any[]).map((tool: any) => (
                 <button
                   key={tool.id}
                   onClick={() => handleToolSelect(tool.id)}

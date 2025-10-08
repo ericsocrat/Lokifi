@@ -49,7 +49,7 @@ export const drawStore = {
     listeners.forEach((l: any) => l(_state));
   },
   updateShape(id: string, updater: (s: Shape) => Shape) {
-    const idx = _state.shapes.findIndex(s => s.id === id);
+    const idx = _state.shapes.findIndex((s: any) => s.id === id);
     if (idx < 0) return;
     undoStack.push(_state.shapes.map((s: any) => ({ ...(s as any) }))); redoStack = [];
     const copy = _state.shapes.slice();

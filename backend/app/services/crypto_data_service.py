@@ -5,9 +5,9 @@ All pages (Markets, Charts, Portfolio, Alerts, AI Research) can use this service
 
 import logging
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional
 
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -25,8 +25,8 @@ class CryptoDataService:
     """Centralized service for fetching cryptocurrency data"""
     
     def __init__(self):
-        self.client: Optional[httpx.AsyncClient] = None
-        self._last_request_time: Optional[datetime] = None
+        self.client: httpx.AsyncClient | None = None
+        self._last_request_time: datetime | None = None
         self._request_count = 0
         self._rate_limit_reset = datetime.now()
     
@@ -82,14 +82,14 @@ class CryptoDataService:
         
         self._request_count += 1
     
-    async def _fetch_from_api(self, endpoint: str, params: Dict | None = None) -> Dict:
+    async def _fetch_from_api(self, endpoint: str, params: dict | None = None) -> dict:
         """Fetch data from CoinGecko API with rate limiting"""
         if not self.client:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 return await self._do_fetch(client, endpoint, params)
         return await self._do_fetch(self.client, endpoint, params)
     
-    async def _do_fetch(self, client: httpx.AsyncClient, endpoint: str, params: Dict | None = None) -> Dict:
+    async def _do_fetch(self, client: httpx.AsyncClient, endpoint: str, params: dict | None = None) -> dict:
         """Actually perform the API fetch"""
         await self._check_rate_limit()
         
@@ -120,7 +120,7 @@ class CryptoDataService:
         limit: int = 100, 
         vs_currency: str = "usd",
         force_refresh: bool = False
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Get top cryptocurrencies by market cap
         Used by: Markets page
@@ -130,7 +130,7 @@ class CryptoDataService:
         if not force_refresh:
             cached = await self._get_cached(cache_key)
             if cached:
-                logger.info(f"Returning cached top coins data")
+                logger.info("Returning cached top coins data")
                 return cached
         
         params = {
@@ -147,7 +147,7 @@ class CryptoDataService:
         
         return data
     
-    async def get_global_market_data(self, force_refresh: bool = False) -> Dict:
+    async def get_global_market_data(self, force_refresh: bool = False) -> dict:
         """
         Get global market overview
         Used by: Markets page, Dashboard
@@ -157,7 +157,7 @@ class CryptoDataService:
         if not force_refresh:
             cached = await self._get_cached(cache_key)
             if cached:
-                logger.info(f"Returning cached global market data")
+                logger.info("Returning cached global market data")
                 return cached
         
         data = await self._fetch_from_api("global", {})
@@ -179,7 +179,7 @@ class CryptoDataService:
         
         return {}
     
-    async def get_coin_details(self, coin_id: str, force_refresh: bool = False) -> Dict:
+    async def get_coin_details(self, coin_id: str, force_refresh: bool = False) -> dict:
         """
         Get detailed coin information
         Used by: Charts page, Portfolio page, AI Research
@@ -211,7 +211,7 @@ class CryptoDataService:
         vs_currency: str = "usd", 
         days: int = 7,
         force_refresh: bool = False
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """
         Get OHLC data for charting
         Used by: Charts page
@@ -248,10 +248,10 @@ class CryptoDataService:
     
     async def get_simple_price(
         self, 
-        coin_ids: List[str], 
-        vs_currencies: List[str] | None = None,
+        coin_ids: list[str], 
+        vs_currencies: list[str] | None = None,
         force_refresh: bool = False
-    ) -> Dict:
+    ) -> dict:
         """
         Get simple price for multiple coins
         Used by: Portfolio page, Alerts page
@@ -267,7 +267,7 @@ class CryptoDataService:
         if not force_refresh:
             cached = await self._get_cached(cache_key)
             if cached:
-                logger.info(f"Returning cached simple price data")
+                logger.info("Returning cached simple price data")
                 return cached
         
         params = {
@@ -283,7 +283,7 @@ class CryptoDataService:
         
         return data
     
-    async def search_coins(self, query: str) -> Dict:
+    async def search_coins(self, query: str) -> dict:
         """
         Search for coins by name or symbol
         Used by: All pages with search functionality
@@ -293,7 +293,7 @@ class CryptoDataService:
         data = await self._fetch_from_api("search", params)
         return data
     
-    async def get_trending(self, force_refresh: bool = False) -> Dict:
+    async def get_trending(self, force_refresh: bool = False) -> dict:
         """
         Get trending coins
         Used by: Markets page, Dashboard
@@ -303,7 +303,7 @@ class CryptoDataService:
         if not force_refresh:
             cached = await self._get_cached(cache_key)
             if cached:
-                logger.info(f"Returning cached trending data")
+                logger.info("Returning cached trending data")
                 return cached
         
         data = await self._fetch_from_api("search/trending", {})

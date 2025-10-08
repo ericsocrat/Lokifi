@@ -251,7 +251,8 @@ interface AlertsActions {
 // Create Store
 export const useAlertsStore = create<AlertsState & AlertsActions>()(
   persist(
-      immer<any>((set, get, store) => ({
+      // @ts-expect-error - Zustand v5 middleware type inference issue
+      immer((set, get, _store) => ({
         // Initial State
         alerts: [],
         alertsBySymbol: new Map(),

@@ -1,9 +1,10 @@
 """Crypto Discovery Service - Fetch and manage cryptocurrency list from CoinGecko"""
 import logging
 import time
-from typing import Dict, List, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
+
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -58,7 +59,7 @@ class CryptoDiscoveryService:
     """Service for discovering and managing cryptocurrency assets"""
     
     def __init__(self):
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
         self.coingecko_base = "https://api.coingecko.com/api/v3"
         self.cache_ttl = 3600  # 1 hour cache for crypto list
     
@@ -87,7 +88,7 @@ class CryptoDiscoveryService:
         self, 
         limit: int = 300,
         force_refresh: bool = False
-    ) -> List[CryptoAsset]:
+    ) -> list[CryptoAsset]:
         """
         Get top cryptocurrencies by market cap
         
@@ -128,7 +129,7 @@ class CryptoDiscoveryService:
                 logger.info(f"📊 Fetched {len(cryptos)} cryptocurrencies - {duration*1000:.1f}ms")
             else:
                 crypto_metrics.record_fetch(cached=False, success=False)
-                logger.warning(f"⚠️ No cryptocurrencies returned")
+                logger.warning("⚠️ No cryptocurrencies returned")
             
             return cryptos
         except Exception as e:
@@ -140,7 +141,7 @@ class CryptoDiscoveryService:
         self, 
         client: httpx.AsyncClient, 
         limit: int
-    ) -> List[CryptoAsset]:
+    ) -> list[CryptoAsset]:
         """Fetch top cryptocurrencies from CoinGecko"""
         try:
             # CoinGecko allows fetching up to 250 per page
@@ -200,7 +201,7 @@ class CryptoDiscoveryService:
             logger.error(f"Error fetching cryptos from CoinGecko: {e}")
             return []
     
-    async def get_crypto_by_symbol(self, symbol: str) -> Optional[CryptoAsset]:
+    async def get_crypto_by_symbol(self, symbol: str) -> CryptoAsset | None:
         """Get specific crypto by symbol"""
         cryptos = await self.get_top_cryptos(limit=300)
         symbol_upper = symbol.upper()
@@ -211,7 +212,7 @@ class CryptoDiscoveryService:
         
         return None
     
-    async def search_cryptos(self, query: str, limit: int = 50) -> List[CryptoAsset]:
+    async def search_cryptos(self, query: str, limit: int = 50) -> list[CryptoAsset]:
         """
         Search cryptocurrencies by name or symbol
         
@@ -264,7 +265,7 @@ class CryptoDiscoveryService:
         client: httpx.AsyncClient, 
         query: str,
         limit: int
-    ) -> List[CryptoAsset]:
+    ) -> list[CryptoAsset]:
         """Search for cryptocurrencies"""
         try:
             url = f"{self.coingecko_base}/search"
@@ -326,7 +327,7 @@ class CryptoDiscoveryService:
             logger.error(f"Error in crypto search: {e}")
             return []
     
-    async def get_symbol_to_id_mapping(self) -> Dict[str, str]:
+    async def get_symbol_to_id_mapping(self) -> dict[str, str]:
         """Get mapping of symbol to CoinGecko ID for all top cryptos"""
         cryptos = await self.get_top_cryptos(limit=300)
         return {crypto.symbol: crypto.id for crypto in cryptos}

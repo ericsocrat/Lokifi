@@ -446,8 +446,9 @@ interface PerformanceActions {
 // Create Store
 export const usePerformanceStore = create<PerformanceState & PerformanceActions>()(
   persist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     subscribeWithSelector(
-      immer<any>((set: any, get: any) => ({
+      immer((set, get, _store) => ({
         // Initial State
         activeProfile: null,
         profiles: [],
@@ -535,7 +536,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const index = state.profiles.findIndex(p => p.id === profileId);
+            const index = state.profiles.findIndex((p: any) => p.id === profileId);
             if (index !== -1) {
               state.profiles.splice(index, 1);
               
@@ -771,7 +772,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const index = state.benchmarks.findIndex(b => b.id === benchmarkId);
+            const index = state.benchmarks.findIndex((b: any) => b.id === benchmarkId);
             if (index !== -1) {
               state.benchmarks.splice(index, 1);
               
@@ -837,7 +838,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           set((state: any) => {
             // Add new issues
             issues.forEach((issue: any) => {
-              if (!state.activeIssues.some(existing => existing.type === issue.type && existing.affectedMetric === issue.affectedMetric)) {
+              if (!state.activeIssues.some((existing: any) => existing.type === issue.type && existing.affectedMetric === issue.affectedMetric)) {
                 state.activeIssues.push(issue);
               }
             });
@@ -867,7 +868,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const issueIndex = state.activeIssues.findIndex(i => i.id === issueId);
+            const issueIndex = state.activeIssues.findIndex((i: any) => i.id === issueId);
             if (issueIndex !== -1) {
               const issue = state.activeIssues[issueIndex];
               issue.status = 'fixed';
@@ -885,7 +886,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const issueIndex = state.activeIssues.findIndex(i => i.id === issueId);
+            const issueIndex = state.activeIssues.findIndex((i: any) => i.id === issueId);
             if (issueIndex !== -1) {
               const issue = state.activeIssues[issueIndex];
               issue.status = 'ignored';
@@ -999,7 +1000,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           
           // Clear caches
           if ('caches' in window) {
-            caches.keys().then(names => {
+            caches.keys().then((names: any) => {
               names.forEach((name: any) => {
                 if (name.includes('temp') || name.includes('old')) {
                   caches.delete(name);
@@ -1045,7 +1046,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const index = state.optimizationRules.findIndex(r => r.id === ruleId);
+            const index = state.optimizationRules.findIndex((r: any) => r.id === ruleId);
             if (index !== -1) {
               state.optimizationRules.splice(index, 1);
             }
@@ -1120,7 +1121,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const alert = state.alerts.find(a => a.id === alertId);
+            const alert = state.alerts.find((a: any) => a.id === alertId);
             if (alert && !alert.acknowledged) {
               alert.acknowledged = true;
               state.unreadAlerts = Math.max(0, state.unreadAlerts - 1);
@@ -1132,7 +1133,7 @@ export const usePerformanceStore = create<PerformanceState & PerformanceActions>
           if (!FLAGS.performance) return;
           
           set((state: any) => {
-            const alert = state.alerts.find(a => a.id === alertId);
+            const alert = state.alerts.find((a: any) => a.id === alertId);
             if (alert) {
               alert.resolved = true;
               

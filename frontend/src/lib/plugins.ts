@@ -36,5 +36,5 @@ export function setPluginEnabled(id: string, enabled: boolean) {
 }
 
 export function getHooks(): PluginHooks[] {
-  return Array.from(registry.values()).filter(r=>r.enabled).map(r=>r.hooks)
+  return Array.from(registry.values()).filter((r: any) =>r.enabled).map((r: any) =>r.hooks)
 }

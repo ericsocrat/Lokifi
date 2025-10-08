@@ -533,7 +533,8 @@ const createInitialState = (): ProgressiveDeploymentState => ({
 // Create Store
 export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState & ProgressiveDeploymentActions>()(
   persist(
-    immer<any>((set: any, get: any) => ({
+    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Strategy Management
@@ -849,7 +850,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
         set((state: any) => {
           const deployment = state.deployments.find((d: any) => d.id === deploymentId);
           if (deployment) {
-            const execution = deployment.phaseHistory.find(e => e.phaseId === phaseId);
+            const execution = deployment.phaseHistory.find((e: any) => e.phaseId === phaseId);
             if (execution) {
               execution.status = 'skipped';
               execution.completedAt = new Date();

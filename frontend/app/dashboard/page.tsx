@@ -53,7 +53,7 @@ export default function DashboardPage() {
   // Get live portfolio data from master market data service
   const portfolio = loadPortfolio();
   const holdings = portfolio.flatMap((section: any) =>
-    section.assets.map((asset) => ({
+    section.assets.map((asset: any) => ({
       symbol: asset.symbol,
       shares: asset.shares,
     }))

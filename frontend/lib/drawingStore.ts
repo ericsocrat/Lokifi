@@ -281,7 +281,7 @@ export const useDrawingStore = create<DrawingState>()(
         const { objects } = get();
         const objectInRect = objects.find((obj: any) => 
           obj.paneId === rect.paneId &&
-          obj.points.some(point => 
+          obj.points.some((point: any) => 
             point.x >= Math.min(rect.x1, rect.x2) &&
             point.x <= Math.max(rect.x1, rect.x2) &&
             point.y >= Math.min(rect.y1, rect.y2) &&

@@ -1,9 +1,10 @@
 """Smart Price Service with Redis caching - No duplicate asset fetching"""
 import logging
-from datetime import datetime
-from typing import Dict, List, Optional
 from dataclasses import dataclass
+from datetime import datetime
+
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -23,19 +24,19 @@ async def get_unified_service():
 class PriceData:
     symbol: str
     price: float
-    change: Optional[float] = None
-    change_percent: Optional[float] = None
-    volume: Optional[float] = None
-    market_cap: Optional[float] = None
-    high: Optional[float] = None
-    low: Optional[float] = None
+    change: float | None = None
+    change_percent: float | None = None
+    volume: float | None = None
+    market_cap: float | None = None
+    high: float | None = None
+    low: float | None = None
     last_updated: datetime = None
     source: str = "unknown"
     cached: bool = False
 
 class SmartPriceService:
     def __init__(self):
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
         self.providers = {"coingecko": "https://api.coingecko.com/api/v3", "finnhub": "https://finnhub.io/api/v1"}
     
     async def __aenter__(self):
@@ -70,7 +71,7 @@ class SmartPriceService:
         except:
             pass
     
-    async def get_price(self, symbol: str, force_refresh: bool = False) -> Optional[PriceData]:
+    async def get_price(self, symbol: str, force_refresh: bool = False) -> PriceData | None:
         cache_key = f"price:{symbol}"
         if not force_refresh:
             cached = await self._get_cached(cache_key)
@@ -91,7 +92,7 @@ class SmartPriceService:
             logger.error(f"Error fetching price for {symbol}: {e}")
             return None
     
-    async def _fetch_price(self, client: httpx.AsyncClient, symbol: str) -> Optional[PriceData]:
+    async def _fetch_price(self, client: httpx.AsyncClient, symbol: str) -> PriceData | None:
         """Fetch price from correct provider (no duplicates)"""
         try:
             # Get unified service to determine asset type
@@ -155,7 +156,7 @@ class SmartPriceService:
             logger.error(f"Error fetching {symbol}: {e}")
         return None
     
-    async def get_batch_prices(self, symbols: list, force_refresh: bool = False) -> Dict[str, PriceData]:
+    async def get_batch_prices(self, symbols: list, force_refresh: bool = False) -> dict[str, PriceData]:
         """
         Batch-optimized price fetching:
         - Groups cryptos and stocks separately
@@ -217,7 +218,7 @@ class SmartPriceService:
         
         return results
     
-    async def _fetch_batch_cryptos(self, symbols: List[str]) -> Dict[str, PriceData]:
+    async def _fetch_batch_cryptos(self, symbols: list[str]) -> dict[str, PriceData]:
         """Fetch multiple cryptos in ONE CoinGecko API call"""
         if not symbols:
             return {}

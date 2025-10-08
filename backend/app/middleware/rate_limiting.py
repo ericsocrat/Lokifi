@@ -6,12 +6,13 @@ Implements sliding window rate limiting with Redis backend
 import logging
 import time
 
-from app.core.security_config import security_config
-from app.services.enhanced_rate_limiter import EnhancedRateLimiter
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
+
+from app.core.security_config import security_config
+from app.services.enhanced_rate_limiter import EnhancedRateLimiter
 
 logger = logging.getLogger(__name__)
 

@@ -6,14 +6,14 @@ export default function LayersPanel() {
   const s = useChartStore()
   const [name, setName] = React.useState('Layer')
 
-  const layers = [...s.layers].sort((a,b)=>a.order-b.order)
+  const layers = [...s.layers].sort((a: any, b: any) =>a.order-b.order)
 
   return (
     <div className='rounded-2xl border border-white/15 p-3 space-y-3'>
       <div className='flex items-center justify-between'>
         <div className='font-semibold text-sm'>Layers</div>
         <div className='flex gap-2'>
-          <input className='bg-transparent border border-white/15 rounded px-2 py-1 text-xs w-28' value={name} onChange={e=>setName(e.target.value)} />
+          <input className='bg-transparent border border-white/15 rounded px-2 py-1 text-xs w-28' value={name} onChange={(e: any) =>setName(e.target.value)} />
           <button className='px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10' onClick={()=>s.addLayer(name||'Layer')}>+ Add</button>
         </div>
       </div>
@@ -42,16 +42,16 @@ function LayerRow({ layer }: { layer: Layer }) {
 
       {editing ? (
         <input autoFocus className='flex-1 bg-transparent border border-white/15 rounded px-2 py-0.5'
-               value={tmp} onChange={e=>setTmp(e.target.value)}
+               value={tmp} onChange={(e: any) =>setTmp(e.target.value)}
                onBlur={()=>{ s.renameLayer(layer.id, tmp||layer.name); setEditing(false) }}
-               onKeyDown={e=>{ if (e.key==='Enter') { (e.target as HTMLInputElement).blur() } }} />
+               onKeyDown={(e: any) =>{ if (e.key==='Enter') { (e.target as HTMLInputElement).blur() } }} />
       ) : (
         <div className='flex-1 truncate cursor-text' onClick={()=>setEditing(true)}>{layer.name}</div>
       )}
 
       <div className='flex items-center gap-2 w-28'>
         <input type='range' min={0} max={100} value={Math.round(layer.opacity*100)}
-               onChange={e=>s.setLayerOpacity(layer.id, parseInt(e.target.value,10)/100)} title='Opacity' />
+               onChange={(e: any) =>s.setLayerOpacity(layer.id, parseInt(e.target.value,10)/100)} title='Opacity' />
         <button className='px-1 rounded border border-white/15 text-xs' onClick={()=>s.moveLayer(layer.id,'up')} title='Up'>↑</button>
         <button className='px-1 rounded border border-white/15 text-xs' onClick={()=>s.moveLayer(layer.id,'down')} title='Down'>↓</button>
       </div>

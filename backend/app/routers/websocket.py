@@ -8,13 +8,14 @@ import logging
 import uuid
 from typing import Any
 
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+
 from app.db.database import AsyncSessionLocal
 from app.models.conversation import ConversationParticipant
 from app.schemas.conversation import MarkReadRequest
 from app.services.conversation_service import ConversationService
 from app.services.websocket_manager import authenticate_websocket, connection_manager
 from app.websockets.notifications import NotificationWebSocketManager
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 logger = logging.getLogger(__name__)
 

@@ -2,7 +2,6 @@
 Authentication router with login, register, and OAuth endpoints.
 """
 
-import traceback
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status

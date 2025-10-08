@@ -2,7 +2,16 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
+# Sentry error tracking
+import sentry_sdk
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
+
 from app.api.j6_2_endpoints import j6_2_router
+from app.api.market.routes import router as realtime_market_router
 from app.api.routes import security
 from app.api.routes.monitoring import router as monitoring_router
 
@@ -12,22 +21,9 @@ from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 from app.core.database import db_manager
 
-# Sentry error tracking
-import sentry_sdk
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.starlette import StarletteIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
-from app.middleware.rate_limiting import (
-    RateLimitingMiddleware,
-    RequestSizeLimitMiddleware,
-    SecurityMonitoringMiddleware,
-)
-
 # Security middleware imports
-from app.middleware.security import RequestLoggingMiddleware, SecurityHeadersMiddleware
+from app.middleware.security import RequestLoggingMiddleware
 from app.routers import (
-    smart_prices,
-    websocket_prices,
     admin_messaging,
     ai,
     ai_websocket,
@@ -45,17 +41,14 @@ from app.routers import (
     ohlc,
     portfolio,
     profile,
+    smart_prices,
     social,
-    websocket,
     test_sentry,
+    websocket,
+    websocket_prices,
 )
-from app.api.market.routes import router as realtime_market_router
 from app.routers.profile_enhanced import router as profile_enhanced_router
-from app.services.advanced_monitoring import monitoring_system
-from app.services.data_service import shutdown_data_services, startup_data_services
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 

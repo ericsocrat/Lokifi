@@ -3,9 +3,10 @@ Unified Asset Service - Single source of truth for all assets
 Prevents duplicates and manages crypto/stock/index discovery
 """
 import logging
-from typing import Dict, List, Optional, Set
 from dataclasses import dataclass
+
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -18,9 +19,9 @@ class UnifiedAsset:
     name: str  # Full name
     type: str  # crypto, stock, etf, index
     provider: str  # coingecko, finnhub
-    provider_id: Optional[str] = None  # CoinGecko ID or Finnhub symbol
-    icon: Optional[str] = None
-    market_cap_rank: Optional[int] = None
+    provider_id: str | None = None  # CoinGecko ID or Finnhub symbol
+    icon: str | None = None
+    market_cap_rank: int | None = None
 
 class UnifiedAssetService:
     """
@@ -31,10 +32,10 @@ class UnifiedAssetService:
     """
     
     def __init__(self):
-        self.client: Optional[httpx.AsyncClient] = None
-        self._asset_registry: Dict[str, UnifiedAsset] = {}
-        self._crypto_symbols: Set[str] = set()
-        self._stock_symbols: Set[str] = set()
+        self.client: httpx.AsyncClient | None = None
+        self._asset_registry: dict[str, UnifiedAsset] = {}
+        self._crypto_symbols: set[str] = set()
+        self._stock_symbols: set[str] = set()
         
     async def __aenter__(self):
         self.client = httpx.AsyncClient(timeout=30.0)
@@ -141,7 +142,7 @@ class UnifiedAssetService:
         
         return False
     
-    def get_asset_info(self, symbol: str) -> Optional[UnifiedAsset]:
+    def get_asset_info(self, symbol: str) -> UnifiedAsset | None:
         """Get asset information from registry"""
         return self._asset_registry.get(symbol.upper())
     
@@ -152,18 +153,18 @@ class UnifiedAssetService:
         else:
             return "finnhub"
     
-    def get_coingecko_id(self, symbol: str) -> Optional[str]:
+    def get_coingecko_id(self, symbol: str) -> str | None:
         """Get CoinGecko ID for a crypto symbol"""
         asset = self._asset_registry.get(symbol.upper())
         if asset and asset.type == "crypto":
             return asset.provider_id
         return None
     
-    async def get_all_cryptos(self) -> List[str]:
+    async def get_all_cryptos(self) -> list[str]:
         """Get all known crypto symbols"""
         return list(self._crypto_symbols)
     
-    async def get_all_stocks(self) -> List[str]:
+    async def get_all_stocks(self) -> list[str]:
         """Get all known stock symbols"""
         return list(self._stock_symbols)
     
@@ -183,9 +184,9 @@ class UnifiedAssetService:
     async def get_all_assets(
         self,
         limit_per_type: int = 10,
-        types: List[str] = ["crypto", "stocks", "indices", "forex"],
+        types: list[str] = ["crypto", "stocks", "indices", "forex"],
         force_refresh: bool = False
-    ) -> Dict[str, List[Dict]]:
+    ) -> dict[str, list[dict]]:
         """
         Get unified assets from all requested types
         
@@ -197,10 +198,9 @@ class UnifiedAssetService:
         Returns:
             Dict with keys matching requested types, each containing list of assets
         """
-        import asyncio
         from app.services.crypto_discovery_service import CryptoDiscoveryService
-        from app.services.stock_service import StockService
         from app.services.forex_service import ForexService
+        from app.services.stock_service import StockService
         
         logger.info(f"🔄 Fetching unified assets: {types} (limit: {limit_per_type})")
         
@@ -233,7 +233,7 @@ class UnifiedAssetService:
                 logger.error(f"❌ Error fetching stocks: {e}")
                 # Fallback to mock data if API fails
                 result["stocks"] = self._get_mock_stocks(limit_per_type)
-                logger.warning(f"⚠️ Using mock stock data as fallback")
+                logger.warning("⚠️ Using mock stock data as fallback")
         
         # Fetch indices if requested - REAL API
         if "indices" in types:
@@ -247,7 +247,7 @@ class UnifiedAssetService:
                 logger.error(f"❌ Error fetching indices: {e}")
                 # Fallback to mock data if API fails
                 result["indices"] = self._get_mock_indices()
-                logger.warning(f"⚠️ Using mock indices data as fallback")
+                logger.warning("⚠️ Using mock indices data as fallback")
         
         # Fetch forex if requested - REAL API
         if "forex" in types:
@@ -260,11 +260,11 @@ class UnifiedAssetService:
                 logger.error(f"❌ Error fetching forex: {e}")
                 # Fallback to mock data if API fails
                 result["forex"] = self._get_mock_forex(limit_per_type)
-                logger.warning(f"⚠️ Using mock forex data as fallback")
+                logger.warning("⚠️ Using mock forex data as fallback")
         
         return result
     
-    def _get_mock_stocks(self, limit: int) -> List[Dict]:
+    def _get_mock_stocks(self, limit: int) -> list[dict]:
         """Get mock stock data - TODO: Implement real API"""
         stocks = [
             {"id": "AAPL", "symbol": "AAPL", "name": "Apple Inc.", "type": "stocks", "current_price": 178.72, "price_change_percentage_24h": 1.22, "market_cap": 2800000000000, "volume_24h": 52000000, "rank": 1},
@@ -280,7 +280,7 @@ class UnifiedAssetService:
         ]
         return stocks[:limit]
     
-    def _get_mock_indices(self) -> List[Dict]:
+    def _get_mock_indices(self) -> list[dict]:
         """Get mock indices data - TODO: Implement real API"""
         return [
             {"id": "SPX", "symbol": "SPX", "name": "S&P 500", "type": "indices", "current_price": 5751.13, "price_change_percentage_24h": 0.50},
@@ -295,7 +295,7 @@ class UnifiedAssetService:
             {"id": "STOXX50E", "symbol": "STOXX50E", "name": "Euro Stoxx 50", "type": "indices", "current_price": 4912.34, "price_change_percentage_24h": 0.48},
         ]
     
-    def _get_mock_forex(self, limit: int) -> List[Dict]:
+    def _get_mock_forex(self, limit: int) -> list[dict]:
         """Get mock forex data - TODO: Implement real API"""
         forex = [
             {"id": "EURUSD", "symbol": "EUR/USD", "name": "Euro / US Dollar", "type": "forex", "current_price": 1.0945, "price_change_percentage_24h": 0.21},
@@ -312,7 +312,7 @@ class UnifiedAssetService:
         return forex[:limit]
 
 # Global singleton
-_unified_service: Optional[UnifiedAssetService] = None
+_unified_service: UnifiedAssetService | None = None
 
 async def get_unified_service() -> UnifiedAssetService:
     """Get or create unified asset service singleton"""

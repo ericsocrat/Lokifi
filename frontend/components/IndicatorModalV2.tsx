@@ -174,7 +174,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
         {/* Indicators List */}
         <div className="flex-1 overflow-y-auto p-4">
           {filteredIndicators.map((indicator: any) => {
-            const IconComponent = CATEGORY_ICONS[indicator.category];
+            const IconComponent = CATEGORY_ICONS[indicator.category as keyof typeof CATEGORY_ICONS];
             const isActive = isIndicatorActive(indicator.id);
 
             return (

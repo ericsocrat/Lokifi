@@ -3,11 +3,11 @@ Cryptocurrency Market Data Router
 Provides endpoints for fetching crypto market data, prices, and market overview
 """
 
-from typing import Dict, List, Optional
 
 import httpx
-from app.core.config import settings
 from fastapi import APIRouter, HTTPException, Query
+
+from app.core.config import settings
 
 router = APIRouter(prefix="/crypto", tags=["crypto"])
 
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/crypto", tags=["crypto"])
 COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
 
 
-async def fetch_from_coingecko(endpoint: str, params: Dict | None = None) -> dict:
+async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dict:
     """Fetch data from CoinGecko API"""
     url = f"{COINGECKO_BASE_URL}/{endpoint}"
     
@@ -109,7 +109,7 @@ async def get_market_overview():
         
     except HTTPException:
         raise
-    except Exception as e:
+    except Exception:
         raise HTTPException(status_code=500, detail="Failed to fetch market overview")
 
 

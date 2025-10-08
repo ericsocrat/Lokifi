@@ -1,10 +1,12 @@
 """Historical Price Service - OHLCV and Time Series Data"""
 import logging
 import time
+from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Literal
-from dataclasses import dataclass, asdict
+from typing import Literal
+
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -69,7 +71,7 @@ class HistoricalPriceService:
     """Service for fetching historical price data"""
     
     def __init__(self):
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
         self.coingecko_base = "https://api.coingecko.com/api/v3"
         self.finnhub_base = "https://finnhub.io/api/v1"
         
@@ -142,7 +144,7 @@ class HistoricalPriceService:
         symbol: str, 
         period: PeriodType = "1m",
         force_refresh: bool = False
-    ) -> List[HistoricalPricePoint]:
+    ) -> list[HistoricalPricePoint]:
         """Get historical price data for a symbol"""
         
         start_time = time.time()
@@ -196,7 +198,7 @@ class HistoricalPriceService:
         client: httpx.AsyncClient, 
         symbol: str, 
         period: PeriodType
-    ) -> List[HistoricalPricePoint]:
+    ) -> list[HistoricalPricePoint]:
         """Fetch historical data from appropriate provider"""
         
         # Check if crypto
@@ -210,7 +212,7 @@ class HistoricalPriceService:
         client: httpx.AsyncClient, 
         symbol: str, 
         period: PeriodType
-    ) -> List[HistoricalPricePoint]:
+    ) -> list[HistoricalPricePoint]:
         """Fetch crypto historical data from CoinGecko"""
         try:
             coin_id = self.coin_ids.get(symbol, symbol.lower())
@@ -257,7 +259,7 @@ class HistoricalPriceService:
         client: httpx.AsyncClient, 
         symbol: str, 
         period: PeriodType
-    ) -> List[HistoricalPricePoint]:
+    ) -> list[HistoricalPricePoint]:
         """Fetch stock historical data from Finnhub"""
         try:
             if not settings.FINNHUB_KEY:
@@ -318,7 +320,7 @@ class HistoricalPriceService:
         symbol: str, 
         period: PeriodType = "1m",
         force_refresh: bool = False
-    ) -> List[OHLCVData]:
+    ) -> list[OHLCVData]:
         """Get OHLCV (candlestick) data for a symbol"""
         
         cache_key = f"ohlcv:{symbol}:{period}"
@@ -354,7 +356,7 @@ class HistoricalPriceService:
         client: httpx.AsyncClient, 
         symbol: str, 
         period: PeriodType
-    ) -> List[OHLCVData]:
+    ) -> list[OHLCVData]:
         """Fetch OHLCV data from appropriate provider"""
         
         # Check if crypto
@@ -368,7 +370,7 @@ class HistoricalPriceService:
         client: httpx.AsyncClient, 
         symbol: str, 
         period: PeriodType
-    ) -> List[OHLCVData]:
+    ) -> list[OHLCVData]:
         """Fetch crypto OHLCV from CoinGecko"""
         try:
             coin_id = self.coin_ids.get(symbol, symbol.lower())
@@ -409,7 +411,7 @@ class HistoricalPriceService:
         client: httpx.AsyncClient, 
         symbol: str, 
         period: PeriodType
-    ) -> List[OHLCVData]:
+    ) -> list[OHLCVData]:
         """Fetch stock OHLCV from Finnhub"""
         try:
             if not settings.FINNHUB_KEY:
