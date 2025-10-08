@@ -6461,23 +6461,37 @@ switch ($Action.ToLower()) {
     'health' {
         Write-LokifiHeader "System Health Check"
         
+        # OPTIMIZATION: Run codebase analyzer FIRST for better caching and perceived performance
+        Write-Host "`n⚡ Initializing health analysis..." -ForegroundColor Cyan
+        Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+        
+        $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+        $health = $null
+        
+        if (Test-Path $analyzerPath) {
+            . $analyzerPath
+            Write-Host "  📊 Running codebase analysis (cached: ~5s, first run: ~70s)..." -ForegroundColor Gray
+            $health = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+            Write-Host "  ✅ Codebase analysis complete!" -ForegroundColor Green
+        } else {
+            Write-Warning "Codebase analyzer not found at: $analyzerPath"
+        }
+        
         # 1. Infrastructure Health
         Write-Host "`n🔧 Infrastructure Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         Get-ServiceStatus
         
+        # 2. API Health
         Write-Host "`n🌐 API Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         Test-LokifiAPI
         
-        # 2. Codebase Health
+        # 3. Codebase Health (using cached analyzer results)
         Write-Host "`n📊 Codebase Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         
-        $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-        if (Test-Path $analyzerPath) {
-            . $analyzerPath
-            $health = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+        if ($health) {
             
             # Health indicators
             $indicators = @(
