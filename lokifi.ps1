@@ -53,23 +53,23 @@
     TOTAL CAPABILITIES: 25+ actions across all DevOps domains
     
 .EXAMPLE
-    .\lokifi-manager-enhanced.ps1 servers
+    .\lokifi.ps1 servers
     Start all servers (Docker Compose preferred, local fallback)
     
 .EXAMPLE
-    .\lokifi-manager-enhanced.ps1 backup -IncludeDatabase -Compress
+    .\lokifi.ps1 backup -IncludeDatabase -Compress
     Create compressed backup including database
     
 .EXAMPLE
-    .\lokifi-manager-enhanced.ps1 monitor -Duration 300
+    .\lokifi.ps1 monitor -Duration 300
     Monitor system performance for 5 minutes
     
 .EXAMPLE
-    .\lokifi-manager-enhanced.ps1 git -Component commit
+    .\lokifi.ps1 git -Component commit
     Git commit with pre-commit validation
     
 .EXAMPLE
-    .\lokifi-manager-enhanced.ps1 security -Force
+    .\lokifi.ps1 security -Force
     Run comprehensive security scan
 #>
 
@@ -1460,7 +1460,7 @@ function Test-LokifiAPI {
     } catch {
         Write-Error "Health check failed: $_"
         $tests += @{ Name = "Health Check"; Status = "FAIL"; Details = $_.Exception.Message }
-        Write-Warning "Make sure backend is running: .\lokifi-manager-enhanced.ps1 dev be"
+        Write-Warning "Make sure backend is running: .\lokifi.ps1 dev be"
         return $tests
     }
     
@@ -1820,7 +1820,7 @@ function Invoke-UltimateDocumentOrganization {
         Write-Step "💡" "Recommendations"
         if ($rootMdFiles.Count -gt 5) {
             Write-Host "   📋 Consider organizing $($rootMdFiles.Count) root files" -ForegroundColor Yellow
-            Write-Host "      Run: .\lokifi-manager-enhanced.ps1 docs -Component organize" -ForegroundColor Gray
+            Write-Host "      Run: .\lokifi.ps1 docs -Component organize" -ForegroundColor Gray
         } else {
             Write-Host "   ✅ Root directory well organized" -ForegroundColor Green
         }
@@ -2133,7 +2133,7 @@ function Start-AllServers {
             Write-Info "  🎨 Frontend App: http://localhost:3000"
             Write-Host ""
             Write-Info "💡 Docker Compose provides the best development experience!"
-            Write-Info "💡 Use '.\lokifi-manager-enhanced.ps1 stop' to stop all services"
+            Write-Info "💡 Use '.\lokifi.ps1 stop' to stop all services"
             Write-Info "💡 Use 'docker-compose logs -f' to view all service logs"
             return
         } else {
@@ -2202,7 +2202,7 @@ function Start-AllServers {
             Write-Success "Frontend server starting in new window on http://localhost:3000"
         } else {
             Write-Info "Frontend will be started in a new window"
-            Write-Info "For current window mode, use: .\lokifi-manager-enhanced.ps1 -Action dev -Component fe"
+            Write-Info "For current window mode, use: .\lokifi.ps1 -Action dev -Component fe"
             Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$($Global:LokifiConfig.ProjectRoot)'; Push-Location frontend; npm run dev"
             Write-Success "Frontend server starting in new window"
         }
@@ -2223,8 +2223,8 @@ function Start-AllServers {
         Write-Info "💻 Running locally (Docker not available)"
     }
     Write-Info "💡 Use 'servers -Mode auto' for fully automated background startup"
-    Write-Info "💡 Use '.\lokifi-manager-enhanced.ps1 stop' to stop all services"
-    Write-Info "💡 Use '.\lokifi-manager-enhanced.ps1 status' to see container vs local status"
+    Write-Info "💡 Use '.\lokifi.ps1 stop' to stop all services"
+    Write-Info "💡 Use '.\lokifi.ps1 status' to see container vs local status"
 }
 
 function Stop-AllServices {
@@ -2286,7 +2286,7 @@ function Restart-AllServers {
     
     Write-Host ""
     Write-Success "✅ All services restarted successfully!"
-    Write-Info "💡 Use '.\lokifi-manager-enhanced.ps1 status' to verify service status"
+    Write-Info "💡 Use '.\lokifi.ps1 status' to verify service status"
 }
 
 # ============================================
@@ -2604,7 +2604,7 @@ function Invoke-QuickAnalysis {
     if ($analysisResults.TypeScriptErrors -gt 0 -or $analysisResults.ConsoleLogs -gt 10) {
         Write-Host "💡 Recommendations:" -ForegroundColor Yellow
         if ($analysisResults.TypeScriptErrors -gt 0) {
-            Write-Host "   - Run: .\lokifi-manager-enhanced.ps1 fix ts" -ForegroundColor Gray
+            Write-Host "   - Run: .\lokifi.ps1 fix ts" -ForegroundColor Gray
         }
         if ($analysisResults.ConsoleLogs -gt 10) {
             Write-Host "   - Consider removing excessive console.log statements" -ForegroundColor Gray
@@ -2704,7 +2704,7 @@ function Invoke-QuickFix {
     
     if (-not $TypeScript -and -not $Cleanup -and -not $All) {
         Write-Info "No specific fix target specified. Use -TypeScript, -Cleanup, or -All"
-        Write-Info "Example: .\lokifi-manager-enhanced.ps1 fix ts"
+        Write-Info "Example: .\lokifi.ps1 fix ts"
     }
 }
 
@@ -2718,7 +2718,7 @@ function Show-EnhancedHelp {
 🚀 LOKIFI ULTIMATE MANAGER - Phase 2C Enterprise Edition
 
 USAGE:
-    .\lokifi-manager-enhanced.ps1 [ACTION] [-Mode MODE] [-Component COMPONENT] [OPTIONS]
+    .\lokifi.ps1 [ACTION] [-Mode MODE] [-Component COMPONENT] [OPTIONS]
 
 🔥 MAIN ACTIONS:
     servers     Start ALL servers (Full Docker stack with local fallback)
@@ -2798,119 +2798,119 @@ USAGE:
     both        Frontend + Backend
 
 🔧 DEVELOPMENT EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 dev -Component be
+    .\lokifi.ps1 dev -Component be
         Start backend development server
 
-    .\lokifi-manager-enhanced.ps1 dev -Component both
+    .\lokifi.ps1 dev -Component both
         Start both frontend and backend servers
 
-    .\lokifi-manager-enhanced.ps1 validate -Quick
+    .\lokifi.ps1 validate -Quick
         Quick pre-commit validation
 
-    .\lokifi-manager-enhanced.ps1 format
+    .\lokifi.ps1 format
         Format all code (Python + TypeScript)
 
-    .\lokifi-manager-enhanced.ps1 launch
+    .\lokifi.ps1 launch
         Open interactive development menu
 
-    .\lokifi-manager-enhanced.ps1 docs
+    .\lokifi.ps1 docs
         Ultimate document organization system
 
-    .\lokifi-manager-enhanced.ps1 analyze
+    .\lokifi.ps1 analyze
         Run quick health check and analysis
 
-    .\lokifi-manager-enhanced.ps1 fix
+    .\lokifi.ps1 fix
         Run all common fixes (TypeScript + cleanup)
 
 💾 BACKUP & RESTORE EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 backup -IncludeDatabase -Compress
+    .\lokifi.ps1 backup -IncludeDatabase -Compress
         Create compressed backup with database
 
-    .\lokifi-manager-enhanced.ps1 backup -BackupName "pre-deploy"
+    .\lokifi.ps1 backup -BackupName "pre-deploy"
         Create named backup
 
-    .\lokifi-manager-enhanced.ps1 restore
+    .\lokifi.ps1 restore
         Restore from backup (interactive selection)
 
-    .\lokifi-manager-enhanced.ps1 restore -BackupName "pre-deploy"
+    .\lokifi.ps1 restore -BackupName "pre-deploy"
         Restore specific backup
 
 🔒 SECURITY & MONITORING EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 security
+    .\lokifi.ps1 security
         Quick security scan
 
-    .\lokifi-manager-enhanced.ps1 security -Force
+    .\lokifi.ps1 security -Force
         Full security audit
 
-    .\lokifi-manager-enhanced.ps1 monitor -Duration 300
+    .\lokifi.ps1 monitor -Duration 300
         Monitor performance for 5 minutes
 
-    .\lokifi-manager-enhanced.ps1 logs
+    .\lokifi.ps1 logs
         View recent logs
 
-    .\lokifi-manager-enhanced.ps1 watch
+    .\lokifi.ps1 watch
         Start watch mode with auto-reload
 
 🗄️ DATABASE EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 migrate -Component status
+    .\lokifi.ps1 migrate -Component status
         Check current migration status
 
-    .\lokifi-manager-enhanced.ps1 migrate -Component up
+    .\lokifi.ps1 migrate -Component up
         Run pending migrations
 
-    .\lokifi-manager-enhanced.ps1 migrate -Component create
+    .\lokifi.ps1 migrate -Component create
         Create new migration
 
-    .\lokifi-manager-enhanced.ps1 migrate -Component history
+    .\lokifi.ps1 migrate -Component history
         View migration history
 
 ⚡ TESTING & PERFORMANCE EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 loadtest -Duration 120
+    .\lokifi.ps1 loadtest -Duration 120
         Run 2-minute load test
 
-    .\lokifi-manager-enhanced.ps1 loadtest -Duration 60 -Report
+    .\lokifi.ps1 loadtest -Duration 60 -Report
         Load test with detailed report
 
 🔀 GIT EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 git -Component status
+    .\lokifi.ps1 git -Component status
         Show git status
 
-    .\lokifi-manager-enhanced.ps1 git -Component commit
+    .\lokifi.ps1 git -Component commit
         Commit with validation
 
-    .\lokifi-manager-enhanced.ps1 git -Component push
+    .\lokifi.ps1 git -Component push
         Push to remote
 
-    .\lokifi-manager-enhanced.ps1 git -Component log
+    .\lokifi.ps1 git -Component log
         View commit history
 
 🌍 ENVIRONMENT EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 env -Component list
+    .\lokifi.ps1 env -Component list
         List available environments
 
-    .\lokifi-manager-enhanced.ps1 env -Component switch -Environment production
+    .\lokifi.ps1 env -Component switch -Environment production
         Switch to production environment
 
-    .\lokifi-manager-enhanced.ps1 env -Component create -Environment staging
+    .\lokifi.ps1 env -Component create -Environment staging
         Create new environment
 
-    .\lokifi-manager-enhanced.ps1 env -Component validate
+    .\lokifi.ps1 env -Component validate
         Validate current environment
 
 🏗️ SERVER EXAMPLES:
-    .\lokifi-manager-enhanced.ps1 servers
+    .\lokifi.ps1 servers
         Start ALL servers (Full Docker stack with intelligent local fallback)
 
-    .\lokifi-manager-enhanced.ps1 servers -Mode auto
+    .\lokifi.ps1 servers -Mode auto
         Start all servers automatically (Docker containers preferred, local fallback)
 
-    .\lokifi-manager-enhanced.ps1 -Action test -Mode verbose
+    .\lokifi.ps1 -Action test -Mode verbose
         Run API tests with detailed output
 
-    .\lokifi-manager-enhanced.ps1 -Action servers -Component backend
+    .\lokifi.ps1 -Action servers -Component backend
         Start only backend server
 
-    .\lokifi-manager-enhanced.ps1 status
+    .\lokifi.ps1 status
         Check status of all services
 
 🛡️ VALIDATION OPTIONS:
@@ -3337,7 +3337,7 @@ function Invoke-LoadTest {
     
     # Check if backend is running
     if (-not (Test-ServiceRunning -Url "$($Global:LokifiConfig.API.BackendUrl)/health")) {
-        Write-Error "Backend server is not running. Start it first with: .\lokifi-manager-enhanced.ps1 dev be"
+        Write-Error "Backend server is not running. Start it first with: .\lokifi.ps1 dev be"
         return
     }
     
@@ -4380,7 +4380,7 @@ switch ($Action.ToLower()) {
 
 Write-Host ""
 Write-Host "🎉 Lokifi Ultimate Manager Phase 2D - Enterprise Edition w/ Audit" -ForegroundColor Green
-Write-Host "   For help: .\lokifi-manager-enhanced.ps1 help" -ForegroundColor Gray
+Write-Host "   For help: .\lokifi.ps1 help" -ForegroundColor Gray
 Write-Host "   📦 26+ Actions | 3,800+ Lines | Enterprise-Grade Features" -ForegroundColor Cyan
 Write-Host "   🚀 Production Ready | Full DevOps Integration | Comprehensive Analysis" -ForegroundColor Magenta
 Write-Host ""

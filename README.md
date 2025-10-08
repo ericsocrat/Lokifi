@@ -87,19 +87,19 @@ lokifi/
 **All-in-One Command:**
 ```bash
 # Quick start (servers + setup)
-.\lokifi-manager-enhanced.ps1 servers
+.\lokifi.ps1 servers
 
 # Quick analysis & health check
-.\lokifi-manager-enhanced.ps1 analyze
+.\lokifi.ps1 analyze
 
 # Fix common issues automatically
-.\lokifi-manager-enhanced.ps1 fix
+.\lokifi.ps1 fix
 
 # Interactive development menu
-.\lokifi-manager-enhanced.ps1 launch
+.\lokifi.ps1 launch
 
 # Development workflow
-.\lokifi-manager-enhanced.ps1 dev -Component both
+.\lokifi.ps1 dev -Component both
 ```
 
 **Traditional Setup:**
@@ -325,3 +325,4 @@ GitHub Actions workflows:
 - Use `npm run typecheck` before commits
 - Run tests with `npm test` (frontend) and `pytest` (backend)
 - Health endpoints should always be accessible for monitoring
+

@@ -36,7 +36,7 @@ The Lokifi Manager includes an intelligent file organization system that automat
 
 **Command:**
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -SaveReport -JsonExport
+.\lokifi.ps1 audit -SaveReport -JsonExport
 ```
 
 **Files Created:**
@@ -70,7 +70,7 @@ The Lokifi Manager includes an intelligent file organization system that automat
 
 **Command:**
 ```powershell
-.\lokifi-manager-enhanced.ps1 backup -IncludeDatabase -Compress
+.\lokifi.ps1 backup -IncludeDatabase -Compress
 ```
 
 **Structure Created:**
@@ -142,7 +142,7 @@ These files are **never** moved by the organization system:
 
 ```powershell
 # Full audit with both markdown and JSON exports
-.\lokifi-manager-enhanced.ps1 audit -SaveReport -JsonExport
+.\lokifi.ps1 audit -SaveReport -JsonExport
 
 # Result:
 # ✅ CODEBASE_AUDIT_2025-10-08_143025.md (created in root)
@@ -153,7 +153,7 @@ These files are **never** moved by the organization system:
 
 ```powershell
 # Compressed backup with database
-.\lokifi-manager-enhanced.ps1 backup -IncludeDatabase -Compress
+.\lokifi.ps1 backup -IncludeDatabase -Compress
 
 # Result:
 # ✅ backups/backup_2025-10-08_143025/ (folder created)
@@ -164,7 +164,7 @@ These files are **never** moved by the organization system:
 
 ```powershell
 # Load the manager functions
-. .\lokifi-manager-enhanced.ps1
+. .\lokifi.ps1
 
 # Create a new report (auto-organized)
 New-OrganizedDocument "PERFORMANCE_OPTIMIZATION_REPORT.md" -Content "# Performance Report"
@@ -177,7 +177,7 @@ New-OrganizedDocument "PERFORMANCE_OPTIMIZATION_REPORT.md" -Content "# Performan
 
 ```powershell
 # Organize all markdown files in root
-.\lokifi-manager-enhanced.ps1 docs
+.\lokifi.ps1 docs
 
 # Result:
 # Files automatically moved to correct folders based on patterns
@@ -230,7 +230,7 @@ $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
 **A:** Root directory with timestamp: `CODEBASE_AUDIT_YYYY-MM-DD_HHMMSS.md`
 
 ### Q: How do I get JSON export?
-**A:** Add `-JsonExport` flag: `.\lokifi-manager-enhanced.ps1 audit -SaveReport -JsonExport`
+**A:** Add `-JsonExport` flag: `.\lokifi.ps1 audit -SaveReport -JsonExport`
 
 ### Q: Where are backups stored?
 **A:** `backups/` folder, organized by timestamp
@@ -238,7 +238,7 @@ $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
 ### Q: Can I customize backup location?
 **A:** Use `-BackupName` parameter for custom naming:
 ```powershell
-.\lokifi-manager-enhanced.ps1 backup -BackupName "pre-deployment"
+.\lokifi.ps1 backup -BackupName "pre-deployment"
 # Creates: backups/pre-deployment_2025-10-08_143025/
 ```
 
@@ -248,7 +248,7 @@ $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
 ### Q: How do I restore a backup?
 **A:** Use the restore command:
 ```powershell
-.\lokifi-manager-enhanced.ps1 restore
+.\lokifi.ps1 restore
 # Interactive: Select from list of available backups
 ```
 
@@ -258,26 +258,26 @@ $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
 
 ```powershell
 # Audit with exports
-.\lokifi-manager-enhanced.ps1 audit -SaveReport -JsonExport
+.\lokifi.ps1 audit -SaveReport -JsonExport
 
 # Full backup
-.\lokifi-manager-enhanced.ps1 backup -IncludeDatabase -Compress
+.\lokifi.ps1 backup -IncludeDatabase -Compress
 
 # Named backup
-.\lokifi-manager-enhanced.ps1 backup -BackupName "pre-deploy" -IncludeDatabase
+.\lokifi.ps1 backup -BackupName "pre-deploy" -IncludeDatabase
 
 # Organize files
-.\lokifi-manager-enhanced.ps1 docs
+.\lokifi.ps1 docs
 
 # Create organized doc
-. .\lokifi-manager-enhanced.ps1
+. .\lokifi.ps1
 New-OrganizedDocument "MY_REPORT.md" -Content "# Report Content"
 
 # Check organization status
-.\lokifi-manager-enhanced.ps1 docs -Component status
+.\lokifi.ps1 docs -Component status
 
 # Restore backup
-.\lokifi-manager-enhanced.ps1 restore
+.\lokifi.ps1 restore
 ```
 
 ---
@@ -304,3 +304,4 @@ The Lokifi file organization and export system is **complete and fully operation
 ✅ Zero manual folder management needed  
 
 **Result:** Clean, organized, maintainable repository structure! 🚀
+

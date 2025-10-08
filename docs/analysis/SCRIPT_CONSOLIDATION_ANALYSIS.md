@@ -10,7 +10,7 @@
 
 ## 🎯 **CONSOLIDATION OPPORTUNITIES**
 
-### **1. ✅ ALREADY IN LOKIFI-MANAGER-ENHANCED.PS1**
+### **1. ✅ ALREADY IN lokifi.ps1**
 
 The main script already includes most functionality:
 - ✅ Docker Compose management 
@@ -32,7 +32,7 @@ The main script already includes most functionality:
 - `backend/start-backend.ps1` (37 lines)
 
 **Integration Plan:**
-- These are already covered by lokifi-manager-enhanced.ps1
+- These are already covered by lokifi.ps1
 - Can be kept as convenience scripts for local development
 - **RECOMMENDATION:** Keep as-is for developer convenience
 
@@ -44,7 +44,7 @@ The main script already includes most functionality:
 - `scripts/analysis/check-dependencies.ps1`
 
 **Integration Plan:**
-- Add `-Analysis` action to lokifi-manager-enhanced.ps1
+- Add `-Analysis` action to lokifi.ps1
 - Keep specialized scripts for detailed analysis
 - **RECOMMENDATION:** Add shortcuts in main script, keep detailed scripts
 
@@ -76,7 +76,7 @@ docs/archive/old-scripts/start-*.ps1 (8 files)
 ├── start-all-servers.ps1
 └── ... (all WSL variants)
 ```
-**Reason:** Functionality integrated into lokifi-manager-enhanced.ps1
+**Reason:** Functionality integrated into lokifi.ps1
 
 #### **B. Docker Compose Scripts** (CONSOLIDATE)
 ```
@@ -135,7 +135,7 @@ infrastructure/ssl/ (configs)
 
 #### **A. Add Quick Analysis to Main Script**
 ```powershell
-# Add to lokifi-manager-enhanced.ps1
+# Add to lokifi.ps1
 function Invoke-QuickAnalysis {
     Write-Step "🔍" "Running Quick Health Check..."
     
@@ -159,7 +159,7 @@ function Invoke-QuickAnalysis {
 
 #### **B. Add Quick Fix to Main Script**
 ```powershell
-# Add to lokifi-manager-enhanced.ps1
+# Add to lokifi.ps1
 function Invoke-QuickFix {
     param([switch]$TypeScript, [switch]$Cleanup, [switch]$All)
     
@@ -212,7 +212,7 @@ Total PowerShell Scripts: 94 files
 ├── Archived Scripts: 45 files
 └── Obsolete Scripts: 9 files
 
-Root-level Scripts: 1 file (lokifi-manager-enhanced.ps1)
+Root-level Scripts: 1 file (lokifi.ps1)
 Individual Startup Scripts: 8 files
 Specialized Scripts: 12 files
 ```
@@ -231,7 +231,7 @@ Specialized Scripts: Integrated shortcuts added
 
 ### **BENEFITS:**
 - ✅ **Reduced Complexity:** 34 fewer active script files
-- ✅ **Single Entry Point:** lokifi-manager-enhanced.ps1 as primary interface
+- ✅ **Single Entry Point:** lokifi.ps1 as primary interface
 - ✅ **Preserved Functionality:** All features accessible
 - ✅ **Better Organization:** Clear separation of active vs archived
 - ✅ **Maintained Flexibility:** Specialized scripts still available
@@ -292,7 +292,7 @@ if (Test-Path $infraDocker) {
 
 ### **3. Enhancement Integration (Low Risk)**
 ```powershell
-# Add to lokifi-manager-enhanced.ps1 help section
+# Add to lokifi.ps1 help section
 "
 🔍 ANALYSIS & FIXES:
     analyze            Run quick health check and analysis

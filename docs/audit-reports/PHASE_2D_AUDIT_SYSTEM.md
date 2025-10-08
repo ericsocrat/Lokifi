@@ -29,16 +29,16 @@ The audit system provides:
 
 ### Basic Audit
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit
+.\lokifi.ps1 audit
 ```
 
 ### Full Analysis with Report
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -Full -SaveReport
+.\lokifi.ps1 audit -Full -SaveReport
 ```
 
 ### From Interactive Launcher
-1. Run `.\lokifi-manager-enhanced.ps1 launch`
+1. Run `.\lokifi.ps1 launch`
 2. Select **"2) 💻 Development Tools"**
 3. Select **"9) 🔍 Comprehensive Codebase Audit"**
 4. Choose whether to save report (Y/N)
@@ -282,26 +282,26 @@ CODEBASE_AUDIT_REPORT_2025-10-08_154329.md
 
 ### 1. Pre-Deployment Audit
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -Full -SaveReport
+.\lokifi.ps1 audit -Full -SaveReport
 ```
 Review the report before deploying to production.
 
 ### 2. Weekly Health Check
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit
+.\lokifi.ps1 audit
 ```
 Quick weekly check to monitor project health.
 
 ### 3. Performance Investigation
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -Full
+.\lokifi.ps1 audit -Full
 ```
 Deep dive into performance issues.
 
 ### 4. CI/CD Integration
 ```powershell
 # In your CI pipeline
-$auditResult = .\lokifi-manager-enhanced.ps1 audit
+$auditResult = .\lokifi.ps1 audit
 if ($auditResult.Summary.Grade -in @('D', 'F')) {
     exit 1  # Fail the build
 }
@@ -309,7 +309,7 @@ if ($auditResult.Summary.Grade -in @('D', 'F')) {
 
 ### 5. Documentation Day
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -SaveReport
+.\lokifi.ps1 audit -SaveReport
 # Review documentation coverage and add missing docs
 ```
 
@@ -374,7 +374,7 @@ for .+ in .+:\s+.*for .+ in  # Python
 
 1. Run initial audit:
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -SaveReport
+.\lokifi.ps1 audit -SaveReport
 ```
 
 2. Save report as `BASELINE_AUDIT.md`
@@ -385,7 +385,7 @@ for .+ in .+:\s+.*for .+ in  # Python
 
 Run audits after fixes:
 ```powershell
-.\lokifi-manager-enhanced.ps1 audit -SaveReport
+.\lokifi.ps1 audit -SaveReport
 ```
 
 Compare scores over time to track improvements.
@@ -455,26 +455,26 @@ Compare scores over time to track improvements.
 
 1. **Pre-commit Validation** - Run audit before commits
    ```powershell
-   .\lokifi-manager-enhanced.ps1 validate
-   .\lokifi-manager-enhanced.ps1 audit -Quick
+   .\lokifi.ps1 validate
+   .\lokifi.ps1 audit -Quick
    ```
 
 2. **Security Scan** - Combined with security audit
    ```powershell
-   .\lokifi-manager-enhanced.ps1 security -Force
-   .\lokifi-manager-enhanced.ps1 audit -SaveReport
+   .\lokifi.ps1 security -Force
+   .\lokifi.ps1 audit -SaveReport
    ```
 
 3. **Performance Monitoring** - Real-time + static analysis
    ```powershell
-   .\lokifi-manager-enhanced.ps1 monitor
-   .\lokifi-manager-enhanced.ps1 audit
+   .\lokifi.ps1 monitor
+   .\lokifi.ps1 audit
    ```
 
 4. **Documentation Organization** - Verify doc coverage
    ```powershell
-   .\lokifi-manager-enhanced.ps1 organize
-   .\lokifi-manager-enhanced.ps1 audit
+   .\lokifi.ps1 organize
+   .\lokifi.ps1 audit
    ```
 
 ---
@@ -494,13 +494,13 @@ The **Phase 2D Comprehensive Audit System** is your **ultimate codebase health m
 ### Quick Commands
 ```powershell
 # Quick audit
-.\lokifi-manager-enhanced.ps1 audit
+.\lokifi.ps1 audit
 
 # Full audit with report
-.\lokifi-manager-enhanced.ps1 audit -Full -SaveReport
+.\lokifi.ps1 audit -Full -SaveReport
 
 # Interactive launcher
-.\lokifi-manager-enhanced.ps1 launch
+.\lokifi.ps1 launch
 # → Development Tools → Comprehensive Codebase Audit
 ```
 
@@ -511,3 +511,4 @@ The **Phase 2D Comprehensive Audit System** is your **ultimate codebase health m
 **Version:** 1.0.0  
 **Author:** GitHub Copilot + User  
 **Last Updated:** October 8, 2025
+
