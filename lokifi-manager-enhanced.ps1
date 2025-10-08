@@ -1574,6 +1574,85 @@ function Invoke-RepositoryOrganization {
     return $moveCount
 }
 
+function Get-OptimalDocumentLocation {
+    <#
+    .SYNOPSIS
+    Determines the optimal location for a document based on its name pattern
+    
+    .DESCRIPTION
+    Uses the same organization rules as Invoke-UltimateDocumentOrganization
+    to determine where a file should be created
+    
+    .PARAMETER FileName
+    The name of the file (e.g., "TYPESCRIPT_FIX_REPORT.md")
+    
+    .EXAMPLE
+    Get-OptimalDocumentLocation "TYPESCRIPT_FIX_REPORT.md"
+    Returns: "docs\reports\"
+    
+    .EXAMPLE
+    Get-OptimalDocumentLocation "API_DOCUMENTATION.md"
+    Returns: "docs\api\"
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$FileName
+    )
+    
+    # Same organization rules as document organization
+    $organizationRules = @{
+        # Status and completion documents
+        "PROJECT_STATUS*.md" = "docs\project-management\"
+        "*STATUS*.md" = "docs\project-management\"
+        "*COMPLETE*.md" = "docs\reports\"
+        "*SUCCESS*.md" = "docs\reports\"
+        "*REPORT*.md" = "docs\reports\"
+        
+        # Development and implementation
+        "*SETUP*.md" = "docs\guides\"
+        "*GUIDE*.md" = "docs\guides\"
+        "*IMPLEMENTATION*.md" = "docs\implementation\"
+        "*DEVELOPMENT*.md" = "docs\development\"
+        
+        # Technical documentation
+        "API_*.md" = "docs\api\"
+        "DATABASE_*.md" = "docs\database\"
+        "DEPLOYMENT_*.md" = "docs\deployment\"
+        "ARCHITECTURE*.md" = "docs\design\"
+        
+        # Process and workflow
+        "*FIX*.md" = "docs\fixes\"
+        "*ERROR*.md" = "docs\fixes\"
+        "*OPTIMIZATION*.md" = "docs\optimization-reports\"
+        "*SESSION*.md" = "docs\optimization-reports\"
+        
+        # Planning and analysis
+        "*ANALYSIS*.md" = "docs\analysis\"
+        "*PLAN*.md" = "docs\plans\" 
+        "*STRATEGY*.md" = "docs\plans\"
+        
+        # Security and audit
+        "*SECURITY*.md" = "docs\security\"
+        "*AUDIT*.md" = "docs\audit-reports\"
+        "*VULNERABILITY*.md" = "docs\security\"
+        
+        # Testing and validation
+        "*TEST*.md" = "docs\testing\"
+        "*VALIDATION*.md" = "docs\testing\"
+        "*QA*.md" = "docs\testing\"
+    }
+    
+    # Check each pattern
+    foreach ($pattern in $organizationRules.Keys) {
+        if ($FileName -like $pattern) {
+            return $organizationRules[$pattern]
+        }
+    }
+    
+    # Default to root if no pattern matches (for README.md, START_HERE.md, etc.)
+    return ""
+}
+
 function Invoke-UltimateDocumentOrganization {
     param([string]$OrgMode = "status")
     
@@ -1688,6 +1767,7 @@ function Invoke-UltimateDocumentOrganization {
         Write-Host ""
         
         $organizedCount = 0
+        $consolidatedCount = 0
         foreach ($file in $rootFiles) {
             $fileName = $file.Name
             
@@ -1698,7 +1778,41 @@ function Invoke-UltimateDocumentOrganization {
                     $targetPath = Join-Path $fullTargetDir $fileName
                     
                     if (Test-Path $targetPath) {
-                        Write-Host "   ⏭️  Skipping: $fileName (already exists in $targetDir)" -ForegroundColor Gray
+                        # CONSOLIDATION: Check if files are different before skipping
+                        $rootContent = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
+                        $targetContent = Get-Content $targetPath -Raw -ErrorAction SilentlyContinue
+                        
+                        if ($rootContent -ne $targetContent) {
+                            Write-Host "   ⚠️  Duplicate found with DIFFERENT content: $fileName" -ForegroundColor Yellow
+                            Write-Host "      Root file: $($file.FullName)" -ForegroundColor Gray
+                            Write-Host "      Existing: $targetPath" -ForegroundColor Gray
+                            
+                            # Compare timestamps and sizes
+                            $rootFile = Get-Item $file.FullName
+                            $targetFile = Get-Item $targetPath
+                            
+                            Write-Host "      Root: Modified $($rootFile.LastWriteTime), Size $($rootFile.Length) bytes" -ForegroundColor Gray
+                            Write-Host "      Existing: Modified $($targetFile.LastWriteTime), Size $($targetFile.Length) bytes" -ForegroundColor Gray
+                            
+                            # Keep the newer file, backup the older one
+                            if ($rootFile.LastWriteTime -gt $targetFile.LastWriteTime) {
+                                $backupPath = $targetPath -replace '\.md$', '_backup.md'
+                                Move-Item -Path $targetPath -Destination $backupPath -Force
+                                Write-Host "      → Backed up older version to: $backupPath" -ForegroundColor Cyan
+                                Move-Item -Path $file.FullName -Destination $targetPath -Force
+                                Write-Host "      → Moved newer version from root" -ForegroundColor Green
+                                $consolidatedCount++
+                            } else {
+                                $backupPath = $file.FullName -replace '\.md$', '_backup.md'
+                                Move-Item -Path $file.FullName -Destination $backupPath -Force
+                                Write-Host "      → Kept existing (newer), backed up root version to: $backupPath" -ForegroundColor Cyan
+                                $consolidatedCount++
+                            }
+                        } else {
+                            Write-Host "   ⏭️  Skipping: $fileName (identical copy already exists in $targetDir)" -ForegroundColor Gray
+                            # Remove duplicate root file since it's identical
+                            Remove-Item $file.FullName -Force
+                        }
                         break
                     }
                     
@@ -1717,7 +1831,11 @@ function Invoke-UltimateDocumentOrganization {
         }
         
         Write-Host ""
-        Write-Step "📊" "Organization completed: $organizedCount files moved"
+        Write-Step "📊" "Organization completed"
+        Write-Host "   ✅ Files moved: $organizedCount" -ForegroundColor Green
+        if ($consolidatedCount -gt 0) {
+            Write-Host "   🔄 Files consolidated: $consolidatedCount" -ForegroundColor Cyan
+        }
         return $organizedCount
     }
 }
