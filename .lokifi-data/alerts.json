@@ -16,7 +16,9 @@
         "password": ""
       },
       "from": "lokifi@example.com",
-      "to": ["admin@example.com"],
+      "to": [
+        "admin@example.com"
+      ],
       "minSeverity": "error"
     },
     "slack": {

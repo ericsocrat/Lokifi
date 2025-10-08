@@ -126,8 +126,9 @@ param(
 $Global:LokifiConfig = @{
     Version = "3.1.0-alpha"  # Phase 3.2: Monitoring & Telemetry
     ProjectRoot = $PSScriptRoot
-    BackendDir = Join-Path $PSScriptRoot "backend"
-    FrontendDir = Join-Path $PSScriptRoot "frontend"
+    AppRoot = Join-Path $PSScriptRoot "lokifi-app"
+    BackendDir = Join-Path $PSScriptRoot "lokifi-app\backend"
+    FrontendDir = Join-Path $PSScriptRoot "lokifi-app\frontend"
     LogsDir = Join-Path $PSScriptRoot "logs"
     BackupsDir = Join-Path $PSScriptRoot "backups"
     CacheDir = Join-Path $PSScriptRoot ".lokifi-cache"
@@ -639,12 +640,14 @@ function Start-DockerComposeStack {
         return $false
     }
     
-    if (-not (Test-Path "docker-compose.yml")) {
-        Write-Warning "docker-compose.yml not found - Cannot start containerized stack"
+    $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
+    if (-not (Test-Path $composeFile)) {
+        Write-Warning "docker-compose.yml not found in lokifi-app directory - Cannot start containerized stack"
         return $false
     }
     
     try {
+        Push-Location $Global:LokifiConfig.AppRoot
         Write-Step "   🚀" "Starting all services with Docker Compose..."
         docker-compose up -d
         
@@ -666,6 +669,8 @@ function Start-DockerComposeStack {
     } catch {
         Write-Error "Error starting Docker Compose: $_"
         return $false
+    } finally {
+        Pop-Location
     }
 }
 
@@ -677,12 +682,14 @@ function Stop-DockerComposeStack {
         return
     }
     
-    if (-not (Test-Path "docker-compose.yml")) {
-        Write-Warning "docker-compose.yml not found"
+    $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
+    if (-not (Test-Path $composeFile)) {
+        Write-Warning "docker-compose.yml not found in lokifi-app directory"
         return
     }
     
     try {
+        Push-Location $Global:LokifiConfig.AppRoot
         docker-compose down
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Docker Compose stack stopped successfully"
@@ -691,6 +698,8 @@ function Stop-DockerComposeStack {
         }
     } catch {
         Write-Error "Error stopping Docker Compose: $_"
+    } finally {
+        Pop-Location
     }
 }
 
@@ -702,7 +711,8 @@ function Get-DockerComposeStatus {
         }
     }
     
-    if (-not (Test-Path "docker-compose.yml")) {
+    $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
+    if (-not (Test-Path $composeFile)) {
         return @{
             Available = $false
             Services = @()
@@ -710,7 +720,9 @@ function Get-DockerComposeStatus {
     }
     
     try {
+        Push-Location $Global:LokifiConfig.AppRoot
         $services = docker-compose ps --format json 2>$null | ConvertFrom-Json
+        Pop-Location
         return @{
             Available = $true
             Services = $services
@@ -2273,7 +2285,8 @@ function Get-ServiceStatus {
     $responseTime = ([int]((Get-Date) - $startTime).TotalMilliseconds)
     
     # Check Docker Compose status first (RECOMMENDED APPROACH)
-    if ($status.Docker -and (Test-Path "docker-compose.yml")) {
+    $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
+    if ($status.Docker -and (Test-Path $composeFile)) {
         $status.DockerCompose = Get-DockerComposeStatus
     }
     
@@ -2542,7 +2555,8 @@ function Stop-AllServices {
     Write-LokifiHeader "Stopping All Services"
     
     # Try Docker Compose first (RECOMMENDED)
-    if ((Test-Path "docker-compose.yml") -and (Test-DockerAvailable)) {
+    $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
+    if ((Test-Path $composeFile) -and (Test-DockerAvailable)) {
         Write-Step "🐳" "Stopping Docker Compose stack..."
         Stop-DockerComposeStack
         Write-Host ""
@@ -2874,8 +2888,11 @@ function Invoke-QuickAnalysis {
         
         # Check running services
         Write-Step "   🚀" "Checking running services..."
-        if (Test-DockerAvailable -and (Test-Path "docker-compose.yml")) {
+        $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
+        if (Test-DockerAvailable -and (Test-Path $composeFile)) {
+            Push-Location $Global:LokifiConfig.AppRoot
             $composeStatus = docker-compose ps --format json 2>$null | ConvertFrom-Json -ErrorAction SilentlyContinue
+            Pop-Location
             $analysisResults.ServicesRunning = ($composeStatus | Where-Object { $_.State -eq "running" }).Count
         }
         

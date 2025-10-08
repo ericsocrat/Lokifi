@@ -1,6 +1,20 @@
 # 🚀 Lokifi
 
-**Market + Social + AI Super-App**
+**Market + Social + AI ├── 🎯 lokifi-app/           # Main application code
+│   ├── backend/            # FastAPI Python backend
+│   ├── frontend/           # Next.js React application
+│   ├── infrastructure/     # Infrastructure as Code (IaC)
+│   ├── redis/              # Redis configuration
+│   └── docker-compose.yml  # Docker orchestration
+│
+├── 🛠️ lokifi.ps1            # Master DevOps automation tool
+│
+├── 📊 monitoring/           # System monitoring and observability
+├── 🔒 security/             # Security configs and audit tools
+└── 🧪 performance-tests/    # Performance testing suite
+```
+
+### 📖 **Navigation Guide***
 
 A comprehensive financial platform combining advanced market analysis with social features and AI-powered insights.
 
