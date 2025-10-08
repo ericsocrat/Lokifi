@@ -81,8 +81,9 @@ param(
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
                  'dashboard', 'metrics',  # Phase 3.2: Monitoring & Telemetry
                  'ai',                     # Phase 3.4: AI/ML Features
+                 'estimate',               # Phase 3.5: Codebase Analysis & Estimation
                  # Quick Aliases
-                 's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk')]
+                 's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk', 'est', 'cost')]
     [string]$Action = 'help',
     
     [ValidateSet('interactive', 'auto', 'force', 'verbose', 'quiet')]
@@ -196,6 +197,8 @@ $Global:LokifiConfig = @{
         'st' = 'status'
         'rs' = 'restore'
         'bk' = 'backup'
+        'est' = 'estimate'
+        'cost' = 'estimate'
     }
     Profiles = @{
         Active = "default"
@@ -6394,6 +6397,15 @@ switch ($Action.ToLower()) {
     'analyze' {
         Write-LokifiHeader "Quick Analysis"
         Invoke-QuickAnalysis
+    }
+    'estimate' {
+        Write-LokifiHeader "Codebase Estimation"
+        if (Test-Path (Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1")) {
+            . (Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1")
+            Invoke-CodebaseAnalysis
+        } else {
+            Write-Error "Codebase analyzer not found. Please run: .\lokifi.ps1 setup"
+        }
     }
     'fix' {
         Write-LokifiHeader "Quick Fixes"
