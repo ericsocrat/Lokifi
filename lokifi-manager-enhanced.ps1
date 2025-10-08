@@ -2019,8 +2019,24 @@ function Get-ServiceStatus {
         # Update status if Docker Compose containers are running
         if ($composeRedis) { $status.Redis = $true }
         if ($composePostgres) { $status.PostgreSQL = $true }
-        if ($composeBackend) { $status.BackendContainer = $true }
-        if ($composeFrontend) { $status.FrontendContainer = $true }
+        if ($composeBackend) { 
+            $status.BackendContainer = $true
+            # Also update Backend status to match container status
+            $status.Backend = $true
+        }
+        if ($composeFrontend) { 
+            $status.FrontendContainer = $true
+            # Also update Frontend status to match container status
+            $status.Frontend = $true
+        }
+    }
+    
+    # Sync Backend/Frontend status with container status if containers are running
+    if ($status.BackendContainer) {
+        $status.Backend = $true
+    }
+    if ($status.FrontendContainer) {
+        $status.Frontend = $true
     }
     
     # Display status
