@@ -3066,7 +3066,10 @@ USAGE:
     status      Show service status
 
 🔍 ANALYSIS & FIXES:
-    analyze     Quick health check and repository analysis
+    analyze     Comprehensive codebase analysis (use -Quick for fast health check)
+                -Quick: Fast health check only
+                -Full: Detailed analysis with all metrics
+                -SaveReport: Save report to file
     fix         Run common fixes (ts/cleanup/all)
     fix ts      Fix TypeScript issues with backup
     fix cleanup Clean repository artifacts
@@ -3110,12 +3113,22 @@ USAGE:
     env         Environment configuration
                 Components: list, switch, create, validate
 
-� COMPREHENSIVE AUDIT (NEW):
+📋 COMPREHENSIVE AUDIT (NEW):
     audit       Complete codebase analysis
                 -SaveReport: Save detailed report
                 -Full: Deep analysis mode
 
-�📋 MODES:
+📊 CODEBASE ESTIMATION (V2.0):
+    estimate    World-class codebase analysis with ground-up estimates
+                Outputs: LOC metrics, complexity, quality scores, technical debt,
+                         ground-up estimates, regional pricing, Git insights
+                -Full: Detailed analysis mode
+                -Quick: Use cached results
+                -SaveReport: Save report to file
+                Target regions: us (default), eu, asia, remote
+                Target formats: markdown (default), json, csv
+
+📋📋 MODES:
     interactive Default mode with prompts (default)
     auto        Automated mode, minimal prompts
     force       Force operations without confirmation
@@ -6395,35 +6408,84 @@ switch ($Action.ToLower()) {
         Upgrade-DevelopmentDependencies
     }
     'analyze' {
-        Write-LokifiHeader "Quick Analysis"
-        Invoke-QuickAnalysis
+        # Enhanced analyze command with quick and full modes
+        if ($Quick) {
+            # Quick mode: Fast health check (existing behavior)
+            Write-LokifiHeader "Quick Analysis"
+            Invoke-QuickAnalysis
+        }
+        else {
+            # Full mode: Comprehensive codebase analysis (new behavior)
+            Write-LokifiHeader "Comprehensive Codebase Analysis"
+            
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            
+            if (Test-Path $analyzerPath) {
+                Write-Info "Running comprehensive codebase analyzer..."
+                Write-Host ""
+                
+                # Dot-source and invoke the analyzer
+                . $analyzerPath
+                
+                # Prepare analyzer arguments
+                $analyzerArgs = @{
+                    ProjectRoot = $Global:LokifiConfig.AppRoot
+                    OutputFormat = 'Markdown'
+                    Region = 'US'
+                    UseCache = $true
+                }
+                
+                # Add optional flags
+                if ($Full) { $analyzerArgs.Detailed = $true }
+                
+                # Run the analyzer function
+                $result = Invoke-CodebaseAnalysis @analyzerArgs
+                
+                Write-Host ""
+                Write-Success "Analysis complete! 🎉"
+                Write-Host ""
+                Write-Info "💡 Tip: Use '-Quick' flag for fast health check only"
+                Write-Info "💡 Tip: Use '-Full' flag for detailed analysis with all metrics"
+                Write-Info "💡 Tip: Use '-SaveReport' to save report to file"
+            }
+            else {
+                Write-Error "Codebase analyzer not found at: $analyzerPath"
+                Write-Info "The analyzer should be available. Please check your installation."
+            }
+        }
     }
     'estimate' {
         Write-LokifiHeader "Codebase Estimation V2.0"
         
-        # Try V2 first, fallback to V1
-        $analyzerV2 = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer-v2.ps1"
-        $analyzerV1 = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+        # Use the enhanced analyzer (V2 is now the primary version)
+        $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
         
-        if (Test-Path $analyzerV2) {
+        if (Test-Path $analyzerPath) {
             Write-Host "🚀 Using Enhanced Analyzer V2.0..." -ForegroundColor Cyan
-            . $analyzerV2
+            . $analyzerPath
             
             # Parse options from Target parameter
-            $options = @{}
+            $options = @{
+                ProjectRoot = $Global:LokifiConfig.AppRoot
+            }
+            
             if ($Target -match 'json|csv|html|all') { $options.OutputFormat = $Target }
-            if ($Target -match 'eu|asia|remote') { $options.Region = $Target }
-            if ($Target -eq 'detailed') { $options.Detailed = $true }
+            if ($Target -match 'eu|asia|remote') { 
+                $options.Region = switch -Regex ($Target) {
+                    'eu' { 'EU' }
+                    'asia' { 'Asia' }
+                    'remote' { 'Remote' }
+                    default { 'US' }
+                }
+            }
+            if ($Target -eq 'detailed' -or $Full) { $options.Detailed = $true }
+            if ($Quick) { $options.UseCache = $true }
             
             Invoke-CodebaseAnalysis @options
         }
-        elseif (Test-Path $analyzerV1) {
-            Write-Host "📊 Using Standard Analyzer V1.0..." -ForegroundColor Yellow
-            . $analyzerV1
-            Invoke-CodebaseAnalysis
-        }
         else {
-            Write-Error "Codebase analyzer not found. Please run: .\lokifi.ps1 setup"
+            Write-Error "Codebase analyzer not found at: $analyzerPath"
+            Write-Info "Please ensure the analyzer script exists in scripts/analysis/"
         }
     }
     'fix' {
