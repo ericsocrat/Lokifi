@@ -3057,9 +3057,14 @@ USAGE:
     servers     Start ALL servers (Full Docker stack with local fallback)
     redis       Manage Redis container only  
     postgres    Setup PostgreSQL container
-    test        Run comprehensive API tests
+    test        🆕 Comprehensive testing suite with coverage context
+                Components: all, api, backend/be, frontend/fe
+                -Quick: Skip coverage analysis
+                Shows: Current coverage, test files, lines needed for 70%
     organize    Organize repository files
-    health      Full system health check
+    health      🆕 Enhanced system health check (Infrastructure + Codebase)
+                Shows: Services, API, Maintainability, Security, Tech Debt
+                Overall health score: 0-100
     stop        Stop all running services
     restart     Restart all services (stop + start)
     clean       Clean development artifacts
@@ -3080,9 +3085,15 @@ USAGE:
 🚀 DEVELOPMENT ACTIONS:
     dev         Development workflow (be/fe/both)
     launch      Interactive launcher menu
-    validate    Pre-commit validation checks
-    format      Format all code (Python + TypeScript)
-    lint        Lint code files
+    validate    🆕 Pre-commit validation with quality gates
+                -Full: Enable strict quality gates (fail on violations)
+                Quality gates: Maintainability ≥60, Security ≥60, Tests ≥30%
+    format      🆕 Format code with before/after quality tracking
+                -Quick: Skip quality tracking
+                Shows: Technical debt ↓, Maintainability ↑, Security ↑
+    lint        🆕 Lint code with quality change tracking
+                -Quick: Skip quality tracking
+                Shows: Quality improvements after linting
     setup       Setup development environment
     install     Install/update dependencies
     upgrade     Upgrade all dependencies
@@ -3093,7 +3104,10 @@ USAGE:
     restore     Restore from backup
     
 🔒 SECURITY & MONITORING (NEW):
-    security    Run comprehensive security scan
+    security    🆕 Enhanced security scan with codebase context
+                Components: scan, secrets, vulnerabilities, licenses, audit, init
+                Shows: Complexity, Tech Debt, Security Score baseline
+                -Quick: Skip baseline metrics
     monitor     Real-time performance monitoring
     logs        View and filter system logs
     watch       Watch mode with auto-reload
@@ -6343,8 +6357,100 @@ switch ($Action.ToLower()) {
         Start-PostgreSQLContainer | Out-Null
     }
     'test' {
-        Write-LokifiHeader "API Testing"
-        Test-LokifiAPI | Out-Null
+        Write-LokifiHeader "Comprehensive Testing Suite"
+        
+        # Show test coverage context first
+        if (-not $Quick) {
+            Write-Step "📊" "Analyzing test coverage..."
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $analysis = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+                
+                Write-Host "`n📈 Test Coverage Context:" -ForegroundColor Cyan
+                Write-Host "  Current Coverage: ~$($analysis.TestCoverage)%" -ForegroundColor $(if ($analysis.TestCoverage -ge 70) { 'Green' } elseif ($analysis.TestCoverage -ge 50) { 'Yellow' } else { 'Red' })
+                Write-Host "  Test Files: $($analysis.Metrics.Tests.Files)" -ForegroundColor Gray
+                Write-Host "  Test Lines: $($analysis.Metrics.Tests.Lines.ToString('N0'))" -ForegroundColor Gray
+                Write-Host "  Production Code: $($analysis.Metrics.Total.Effective.ToString('N0')) lines" -ForegroundColor Gray
+                Write-Host "  Industry Target: 70% coverage" -ForegroundColor Gray
+                
+                $coverageGap = 70 - $analysis.TestCoverage
+                if ($coverageGap -gt 0) {
+                    $linesNeeded = [math]::Ceiling(($analysis.Metrics.Total.Effective * 0.70) - $analysis.Metrics.Tests.Lines)
+                    Write-Host "`n💡 To reach 70% coverage:" -ForegroundColor Yellow
+                    Write-Host "  Need ~$($linesNeeded.ToString('N0')) more lines of tests" -ForegroundColor Gray
+                    Write-Host "  That's ~$([math]::Ceiling($linesNeeded / 50)) test files (avg 50 lines each)" -ForegroundColor Gray
+                }
+                Write-Host ""
+            }
+        }
+        
+        # Run the tests
+        if ($Component -eq 'all' -or $Component -eq 'full') {
+            Write-Step "🧪" "Running all tests..."
+            
+            # Backend tests
+            Write-Host "`n=== Backend Tests ===" -ForegroundColor Cyan
+            if (Test-Path "backend/tests") {
+                Push-Location backend
+                if (Test-Path "venv/Scripts/Activate.ps1") {
+                    & "venv/Scripts/Activate.ps1"
+                    python -m pytest tests/ -v
+                } else {
+                    Write-Warning "Backend virtual environment not found. Run: .\lokifi.ps1 setup"
+                }
+                Pop-Location
+            } else {
+                Write-Info "No backend tests found"
+            }
+            
+            # Frontend tests
+            Write-Host "`n=== Frontend Tests ===" -ForegroundColor Cyan
+            if (Test-Path "frontend/package.json") {
+                Push-Location frontend
+                npm test -- --passWithNoTests
+                Pop-Location
+            } else {
+                Write-Info "No frontend tests configured"
+            }
+            
+            # API tests
+            Write-Host "`n=== API Integration Tests ===" -ForegroundColor Cyan
+            Test-LokifiAPI
+        }
+        elseif ($Component -eq 'api') {
+            Write-Step "🌐" "Running API tests..."
+            Test-LokifiAPI
+        }
+        elseif ($Component -eq 'backend' -or $Component -eq 'be') {
+            Write-Step "🐍" "Running backend tests..."
+            if (Test-Path "backend/tests") {
+                Push-Location backend
+                if (Test-Path "venv/Scripts/Activate.ps1") {
+                    & "venv/Scripts/Activate.ps1"
+                    python -m pytest tests/ -v
+                } else {
+                    Write-Warning "Backend virtual environment not found. Run: .\lokifi.ps1 setup"
+                }
+                Pop-Location
+            }
+        }
+        elseif ($Component -eq 'frontend' -or $Component -eq 'fe') {
+            Write-Step "⚛️" "Running frontend tests..."
+            if (Test-Path "frontend/package.json") {
+                Push-Location frontend
+                npm test -- --passWithNoTests
+                Pop-Location
+            }
+        }
+        else {
+            # Default: API tests only
+            Test-LokifiAPI
+        }
+        
+        Write-Host ""
+        Write-Success "Testing complete! 🎉"
     }
     'organize' {
         Write-LokifiHeader "Repository Organization"
@@ -6352,9 +6458,79 @@ switch ($Action.ToLower()) {
     }
     'health' {
         Write-LokifiHeader "System Health Check"
-        Get-ServiceStatus | Out-Null
+        
+        # 1. Infrastructure Health
+        Write-Host "`n🔧 Infrastructure Health:" -ForegroundColor Cyan
+        Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+        Get-ServiceStatus
+        
+        Write-Host "`n🌐 API Health:" -ForegroundColor Cyan
+        Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+        Test-LokifiAPI
+        
+        # 2. Codebase Health (new!)
+        Write-Host "`n📊 Codebase Health:" -ForegroundColor Cyan
+        Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+        
+        $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+        if (Test-Path $analyzerPath) {
+            . $analyzerPath
+            $health = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+            
+            # Health indicators
+            $indicators = @(
+                @{ Name = "Maintainability"; Value = $health.Metrics.Quality.Maintainability; Good = 70; Warning = 50; Inverse = $false; Unit = "/100" }
+                @{ Name = "Security Score"; Value = $health.Metrics.Quality.SecurityScore; Good = 80; Warning = 60; Inverse = $false; Unit = "/100" }
+                @{ Name = "Technical Debt"; Value = $health.Metrics.Quality.TechnicalDebt; Good = 30; Warning = 60; Inverse = $true; Unit = " days" }
+                @{ Name = "Test Coverage"; Value = $health.TestCoverage; Good = 70; Warning = 50; Inverse = $false; Unit = "%" }
+            )
+            
+            foreach ($indicator in $indicators) {
+                $status = if ($indicator.Inverse) {
+                    if ($indicator.Value -le $indicator.Good) { "✅" } 
+                    elseif ($indicator.Value -le $indicator.Warning) { "⚠️" } 
+                    else { "❌" }
+                } else {
+                    if ($indicator.Value -ge $indicator.Good) { "✅" } 
+                    elseif ($indicator.Value -ge $indicator.Warning) { "⚠️" } 
+                    else { "❌" }
+                }
+                
+                $color = if ($status -eq "✅") { 'Green' } elseif ($status -eq "⚠️") { 'Yellow' } else { 'Red' }
+                $value = if ($indicator.Unit -eq "/100") { "$($indicator.Value)$($indicator.Unit)" } 
+                        elseif ($indicator.Unit -eq "%") { "~$($indicator.Value)$($indicator.Unit)" }
+                        else { "$($indicator.Value)$($indicator.Unit)" }
+                
+                Write-Host "  $status " -NoNewline -ForegroundColor $color
+                Write-Host "$($indicator.Name): " -NoNewline -ForegroundColor White
+                Write-Host $value -ForegroundColor $color
+            }
+            
+            # Overall health assessment
+            $healthScore = 0
+            foreach ($indicator in $indicators) {
+                if ($indicator.Inverse) {
+                    if ($indicator.Value -le $indicator.Good) { $healthScore += 25 }
+                    elseif ($indicator.Value -le $indicator.Warning) { $healthScore += 15 }
+                } else {
+                    if ($indicator.Value -ge $indicator.Good) { $healthScore += 25 }
+                    elseif ($indicator.Value -ge $indicator.Warning) { $healthScore += 15 }
+                }
+            }
+            
+            Write-Host "`n📊 Overall Health: " -NoNewline -ForegroundColor Cyan
+            if ($healthScore -ge 80) {
+                Write-Host "$healthScore/100 🎉 Excellent!" -ForegroundColor Green
+            } elseif ($healthScore -ge 60) {
+                Write-Host "$healthScore/100 ⚡ Good" -ForegroundColor Yellow
+            } else {
+                Write-Host "$healthScore/100 ⚠️ Needs Attention" -ForegroundColor Red
+            }
+        } else {
+            Write-Warning "Codebase analyzer not found. Skipping code health check."
+        }
+        
         Write-Host ""
-        Test-LokifiAPI | Out-Null
     }
     'stop' { Stop-AllServices }
     'restart' { Restart-AllServers }
@@ -6384,16 +6560,196 @@ switch ($Action.ToLower()) {
         Show-InteractiveLauncher
     }
     'validate' {
-        Invoke-PreCommitValidation | Out-Null
+        Write-LokifiHeader "Pre-Commit Validation"
+        
+        # Run existing validations
+        $validationPassed = Invoke-PreCommitValidation
+        
+        # Quality gate check (enabled with -Full flag for strict mode)
+        if ($Full) {
+            Write-Host "`n🚦 Quality Gates:" -ForegroundColor Cyan
+            Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+            Write-Step "📊" "Checking quality thresholds..."
+            
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $metrics = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+                
+                # Define quality gates
+                $qualityGates = @(
+                    @{ Name = "Maintainability"; Value = $metrics.Metrics.Quality.Maintainability; Min = 60; Recommended = 70 }
+                    @{ Name = "Security Score"; Value = $metrics.Metrics.Quality.SecurityScore; Min = 60; Recommended = 80 }
+                    @{ Name = "Test Coverage"; Value = $metrics.TestCoverage; Min = 30; Recommended = 70 }
+                )
+                
+                $gatesFailed = 0
+                $gatesWarning = 0
+                
+                foreach ($gate in $qualityGates) {
+                    Write-Host "  " -NoNewline
+                    
+                    if ($gate.Value -ge $gate.Recommended) {
+                        Write-Host "✅" -NoNewline -ForegroundColor Green
+                        Write-Host " $($gate.Name): " -NoNewline
+                        Write-Host "$($gate.Value)" -NoNewline -ForegroundColor Green
+                        Write-Host " (excellent)" -ForegroundColor Gray
+                    }
+                    elseif ($gate.Value -ge $gate.Min) {
+                        Write-Host "⚠️" -NoNewline -ForegroundColor Yellow
+                        Write-Host " $($gate.Name): " -NoNewline
+                        Write-Host "$($gate.Value)" -NoNewline -ForegroundColor Yellow
+                        Write-Host " (passing, but below recommended: $($gate.Recommended))" -ForegroundColor Gray
+                        $gatesWarning++
+                    }
+                    else {
+                        Write-Host "❌" -NoNewline -ForegroundColor Red
+                        Write-Host " $($gate.Name): " -NoNewline
+                        Write-Host "$($gate.Value)" -NoNewline -ForegroundColor Red
+                        Write-Host " (below minimum: $($gate.Min))" -ForegroundColor Gray
+                        $gatesFailed++
+                    }
+                }
+                
+                Write-Host ""
+                
+                if ($gatesFailed -gt 0) {
+                    Write-Host "❌ $gatesFailed quality gate(s) failed!" -ForegroundColor Red
+                    Write-Warning "Fix quality issues before committing (or remove -Full flag for warnings only)"
+                    if (-not $Force) {
+                        exit 1
+                    }
+                }
+                elseif ($gatesWarning -gt 0) {
+                    Write-Host "⚠️ $gatesWarning quality gate(s) below recommended levels" -ForegroundColor Yellow
+                    Write-Info "Consider improving these metrics"
+                }
+                else {
+                    Write-Host "✅ All quality gates passed!" -ForegroundColor Green
+                }
+            }
+        }
+        
+        Write-Host ""
+        if ($validationPassed -and ($Full -eq $false -or $gatesFailed -eq 0 -or $Force)) {
+            Write-Success "All validations passed! 🎉"
+            Write-Host ""
+            Write-Info "💡 Tip: Use '-Full' flag to enable strict quality gates"
+        }
     }
     'format' {  
         Write-LokifiHeader "Code Formatting"
+        
+        # Before/After tracking (unless quick mode)
+        $before = $null
+        if (-not $Quick) {
+            Write-Step "📊" "Analyzing current state..."
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $before = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+            }
+        }
+        
+        # Format code
+        Write-Host ""
         Format-DevelopmentCode
+        
+        # After analysis
+        if ($before) {
+            Write-Step "📊" "Re-analyzing after formatting..."
+            Start-Sleep -Seconds 2  # Give file system a moment
+            $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
+            
+            # Show improvements
+            Write-Host "`n✨ Quality Improvements:" -ForegroundColor Green
+            Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+            
+            $techDebtChange = [math]::Round($before.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
+            $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $before.Metrics.Quality.Maintainability, 1)
+            $securityChange = [math]::Round($after.Metrics.Quality.SecurityScore - $before.Metrics.Quality.SecurityScore, 1)
+            
+            if ($techDebtChange -gt 0) {
+                Write-Host "  ↓ Technical Debt: -$techDebtChange days" -ForegroundColor Green
+            } elseif ($techDebtChange -lt 0) {
+                Write-Host "  ↑ Technical Debt: +$([math]::Abs($techDebtChange)) days" -ForegroundColor Red
+            } else {
+                Write-Host "  → Technical Debt: No change" -ForegroundColor Gray
+            }
+            
+            if ($maintChange -gt 0) {
+                Write-Host "  ↑ Maintainability: +$maintChange points" -ForegroundColor Green
+            } elseif ($maintChange -lt 0) {
+                Write-Host "  ↓ Maintainability: $maintChange points" -ForegroundColor Red
+            } else {
+                Write-Host "  → Maintainability: No change" -ForegroundColor Gray
+            }
+            
+            if ($securityChange -gt 0) {
+                Write-Host "  ↑ Security Score: +$securityChange points" -ForegroundColor Green
+            } elseif ($securityChange -lt 0) {
+                Write-Host "  ↓ Security Score: $securityChange points" -ForegroundColor Red
+            } else {
+                Write-Host "  → Security Score: No change" -ForegroundColor Gray
+            }
+            
+            if ($techDebtChange -gt 0 -or $maintChange -gt 0 -or $securityChange -gt 0) {
+                Write-Host "`n🎉 Code quality improved!" -ForegroundColor Green
+            }
+        }
     }
     'lint' {
         Write-LokifiHeader "Code Linting"
+        
+        # Before/After tracking (unless quick mode)
+        $before = $null
+        if (-not $Quick) {
+            Write-Step "📊" "Analyzing current state..."
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $before = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+            }
+        }
+        
+        # Lint code
+        Write-Host ""
         Write-Info "Running comprehensive linting..."
         Format-DevelopmentCode
+        
+        # After analysis
+        if ($before) {
+            Write-Step "📊" "Re-analyzing after linting..."
+            Start-Sleep -Seconds 2
+            $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
+            
+            # Show improvements
+            Write-Host "`n✨ Code Quality Changes:" -ForegroundColor Cyan
+            Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+            
+            $techDebtChange = [math]::Round($before.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
+            $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $before.Metrics.Quality.Maintainability, 1)
+            
+            Write-Host "  Technical Debt: " -NoNewline
+            if ($techDebtChange -gt 0) {
+                Write-Host "$($before.Metrics.Quality.TechnicalDebt) → $($after.Metrics.Quality.TechnicalDebt) days (-$techDebtChange)" -ForegroundColor Green
+            } elseif ($techDebtChange -lt 0) {
+                Write-Host "$($before.Metrics.Quality.TechnicalDebt) → $($after.Metrics.Quality.TechnicalDebt) days (+$([math]::Abs($techDebtChange)))" -ForegroundColor Red
+            } else {
+                Write-Host "$($after.Metrics.Quality.TechnicalDebt) days (no change)" -ForegroundColor Gray
+            }
+            
+            Write-Host "  Maintainability: " -NoNewline
+            if ($maintChange -gt 0) {
+                Write-Host "$($before.Metrics.Quality.Maintainability) → $($after.Metrics.Quality.Maintainability)/100 (+$maintChange)" -ForegroundColor Green
+            } elseif ($maintChange -lt 0) {
+                Write-Host "$($before.Metrics.Quality.Maintainability) → $($after.Metrics.Quality.Maintainability)/100 ($maintChange)" -ForegroundColor Red
+            } else {
+                Write-Host "$($after.Metrics.Quality.Maintainability)/100 (no change)" -ForegroundColor Gray
+            }
+        }
     }
     'setup' {
         Write-LokifiHeader "Development Environment Setup"
@@ -6542,6 +6898,27 @@ switch ($Action.ToLower()) {
     }
     'security' {
         Write-LokifiHeader "Advanced Security Scan"
+        
+        # Show baseline metrics for context (unless quick mode)
+        if (-not $Quick -and $Component -ne 'secrets' -and $Component -ne 'vulnerabilities' -and $Component -ne 'licenses') {
+            Write-Step "📊" "Gathering baseline metrics..."
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+                
+                Write-Host "`n📈 Security Context:" -ForegroundColor Cyan
+                Write-Host "  Codebase Size: $($baseline.Metrics.Total.Effective.ToString('N0')) effective lines" -ForegroundColor Gray
+                Write-Host "  Code Complexity: $($baseline.Complexity.Overall)/10" -ForegroundColor $(if ($baseline.Complexity.Overall -le 5) { 'Green' } elseif ($baseline.Complexity.Overall -le 7) { 'Yellow' } else { 'Red' })
+                Write-Host "  Technical Debt: $($baseline.Metrics.Quality.TechnicalDebt) days" -ForegroundColor $(if ($baseline.Metrics.Quality.TechnicalDebt -lt 30) { 'Green' } elseif ($baseline.Metrics.Quality.TechnicalDebt -lt 60) { 'Yellow' } else { 'Red' })
+                Write-Host "  Security Score: $($baseline.Metrics.Quality.SecurityScore)/100" -ForegroundColor $(if ($baseline.Metrics.Quality.SecurityScore -ge 80) { 'Green' } elseif ($baseline.Metrics.Quality.SecurityScore -ge 60) { 'Yellow' } else { 'Red' })
+                Write-Host "  Maintainability: $($baseline.Metrics.Quality.Maintainability)/100" -ForegroundColor $(if ($baseline.Metrics.Quality.Maintainability -ge 70) { 'Green' } elseif ($baseline.Metrics.Quality.Maintainability -ge 50) { 'Yellow' } else { 'Red' })
+                Write-Host ""
+                Write-Info "💡 High complexity and low maintainability increase security risk"
+                Write-Host ""
+            }
+        }
         
         switch ($Component.ToLower()) {
             'scan' {
