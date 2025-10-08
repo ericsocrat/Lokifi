@@ -129,7 +129,20 @@ function Invoke-CodebaseAnalysis {
         Documentation = @{ Files = 0; Lines = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
         Total = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0 }
         Quality = @{ Maintainability = 0; TechnicalDebt = 0; SecurityScore = 0 }
-        Git = @{ Commits = 0; Contributors = 0; LastCommit = $null; Churn = 0 }
+        Git = @{ 
+            Commits = 0
+            Contributors = 0
+            LastCommit = $null
+            Churn = 0
+            StartDate = $null
+            EndDate = $null
+            TotalDays = 0
+            WorkingDays = 0
+            ActiveDays = 0
+            EstimatedWorkHours = 0
+            EstimatedWorkDays = 0
+            AvgCommitsPerDay = 0
+        }
     }
 
     # Enhanced file patterns
@@ -162,7 +175,50 @@ function Invoke-CodebaseAnalysis {
             $thirtyDaysAgo = (Get-Date).AddDays(-30).ToString("yyyy-MM-dd")
             $metrics.Git.Churn = [int](git log --since="$thirtyDaysAgo" --name-only --pretty=format: 2>$null | Sort-Object -Unique | Measure-Object).Count
             
+            # Real-world timeline analysis
+            $firstCommitDate = git log --reverse --format="%ai" 2>$null | Select-Object -First 1
+            $lastCommitDate = git log --format="%ai" 2>$null | Select-Object -First 1
+            
+            if ($firstCommitDate -and $lastCommitDate) {
+                $startDate = [datetime]::Parse($firstCommitDate)
+                $endDate = [datetime]::Parse($lastCommitDate)
+                
+                $metrics.Git.StartDate = $startDate.ToString("yyyy-MM-dd")
+                $metrics.Git.EndDate = $endDate.ToString("yyyy-MM-dd")
+                $metrics.Git.TotalDays = ($endDate - $startDate).Days
+                
+                # Calculate working days (excluding weekends)
+                $workingDays = 0
+                for ($d = $startDate; $d -le $endDate; $d = $d.AddDays(1)) {
+                    if ($d.DayOfWeek -ne 'Saturday' -and $d.DayOfWeek -ne 'Sunday') {
+                        $workingDays++
+                    }
+                }
+                $metrics.Git.WorkingDays = $workingDays
+                
+                # Get active development days (days with commits)
+                $activeDays = (git log --format="%ai" 2>$null | ForEach-Object { ($_ -split ' ')[0] } | Sort-Object -Unique | Measure-Object).Count
+                $metrics.Git.ActiveDays = $activeDays
+                
+                # Estimate actual work hours (assuming 8-hour days, with variation based on commits per day)
+                $avgCommitsPerDay = [math]::Round($metrics.Git.Commits / [math]::Max($activeDays, 1), 1)
+                
+                # Heuristic: More commits per day suggests more intensive work
+                # 1-5 commits/day = 4 hours, 6-15 = 6 hours, 16-30 = 8 hours, 30+ = 10+ hours
+                $hoursPerActiveDay = if ($avgCommitsPerDay -le 5) { 4 } `
+                    elseif ($avgCommitsPerDay -le 15) { 6 } `
+                    elseif ($avgCommitsPerDay -le 30) { 8 } `
+                    else { 10 }
+                
+                $metrics.Git.EstimatedWorkHours = $activeDays * $hoursPerActiveDay
+                $metrics.Git.EstimatedWorkDays = [math]::Round($metrics.Git.EstimatedWorkHours / 8, 1)
+                $metrics.Git.AvgCommitsPerDay = $avgCommitsPerDay
+            }
+            
             Write-Host "   ✓ Git: $($metrics.Git.Commits) commits, $($metrics.Git.Contributors) contributors" -ForegroundColor Gray
+            if ($metrics.Git.TotalDays) {
+                Write-Host "   ✓ Timeline: $($metrics.Git.TotalDays) days ($($metrics.Git.ActiveDays) active)" -ForegroundColor Gray
+            }
         } else {
             Write-Host "   ⚠ Not a Git repository - skipping Git analysis" -ForegroundColor Yellow
         }
@@ -621,6 +677,71 @@ $(if ($Metrics.Git.Commits -gt 0) {@"
 
 **Health Indicator**: $(if ($Metrics.Git.Commits -gt 500 -and $Metrics.Git.Contributors -gt 2) { '✅ Mature project with active development' } elseif ($Metrics.Git.Commits -gt 100) { '⚠️ Growing project' } else { '🆕 Early stage project' })
 "@} else { "Not a Git repository or Git analysis unavailable." })
+
+---
+
+## ⏱️ Real-World Development Timeline
+
+$(if ($Metrics.Git.TotalDays -gt 0) {@"
+### Actual Project Timeline
+
+| Metric | Value | Details |
+|--------|-------|---------|
+| **Start Date** | $($Metrics.Git.StartDate) | First commit |
+| **End Date** | $($Metrics.Git.EndDate) | Latest commit |
+| **Calendar Duration** | $($Metrics.Git.TotalDays) days | ~$([math]::Round($Metrics.Git.TotalDays / 7, 1)) weeks (~$([math]::Round($Metrics.Git.TotalDays / 30.44, 1)) months) |
+| **Working Days** | $($Metrics.Git.WorkingDays) days | Excluding weekends |
+| **Active Dev Days** | $($Metrics.Git.ActiveDays) days | Days with commits |
+| **Activity Rate** | $([math]::Round(($Metrics.Git.ActiveDays / $Metrics.Git.TotalDays) * 100, 1))% | Active days / Total days |
+| **Avg Commits/Day** | $($Metrics.Git.AvgCommitsPerDay) | On active days |
+| **Estimated Work Hours** | $($Metrics.Git.EstimatedWorkHours) hours | ~$($Metrics.Git.EstimatedWorkDays) work days |
+
+### 💰 Real-World Cost Analysis
+
+**What Actually Happened:**
+- **Team Size**: $($Metrics.Git.Contributors) contributor$(if ($Metrics.Git.Contributors -gt 1) { 's' } else { '' })
+- **Actual Calendar Time**: $($Metrics.Git.TotalDays) days (~$([math]::Round($Metrics.Git.TotalDays / 30.44, 1)) months)
+- **Actual Work Time**: ~$($Metrics.Git.EstimatedWorkHours) hours (~$($Metrics.Git.EstimatedWorkDays) work days)
+- **Code Written**: $($Metrics.Total.Effective.ToString('N0')) effective lines
+- **Productivity**: ~$([math]::Round($Metrics.Total.Effective / $Metrics.Git.EstimatedWorkHours)) LOC/hour
+
+#### Cost by Developer Type ($($RegionInfo.Name) Rates)
+
+| Developer Level | Experience | Hourly Rate | Actual Hours | **Total Cost** |
+|----------------|------------|-------------|--------------|----------------|
+| **Junior** | 1-2 years | `$$([math]::Round(35 * $RegionInfo.Multiplier, 2))/hr | ~$($Metrics.Git.EstimatedWorkHours) hrs | **`$$([math]::Round(35 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))** |
+| **Mid-Level** | 3-5 years | `$$([math]::Round(70 * $RegionInfo.Multiplier, 2))/hr | ~$($Metrics.Git.EstimatedWorkHours) hrs | **`$$([math]::Round(70 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))** |
+| **Senior** | 5+ years | `$$([math]::Round(100 * $RegionInfo.Multiplier, 2))/hr | ~$($Metrics.Git.EstimatedWorkHours) hrs | **`$$([math]::Round(100 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))** |
+
+### 📊 Efficiency Insights
+
+- **Development Efficiency**: $([math]::Round(($Metrics.Git.ActiveDays / $Metrics.Git.WorkingDays) * 100, 1))% (active days vs working days)
+- **Lines Per Hour**: ~$([math]::Round($Metrics.Total.Effective / $Metrics.Git.EstimatedWorkHours)) LOC/hour
+- **Commits Per Active Day**: ~$($Metrics.Git.AvgCommitsPerDay)
+- **Activity Pattern**: $(if (($Metrics.Git.ActiveDays / $Metrics.Git.WorkingDays) -gt 0.8) { '🔥 Very intense/focused development' } elseif (($Metrics.Git.ActiveDays / $Metrics.Git.WorkingDays) -gt 0.5) { '⚡ Consistent active development' } elseif (($Metrics.Git.ActiveDays / $Metrics.Git.WorkingDays) -gt 0.3) { '📅 Regular part-time work' } else { '🌙 Intermittent/sporadic development' })
+
+### 💡 Real vs Theoretical Comparison
+
+| Metric | Theoretical Estimate | Actual Reality | Difference |
+|--------|---------------------|----------------|------------|
+| **Timeline** | $($Estimates.SmallTeam.Days.Likely) days (likely) | $($Metrics.Git.TotalDays) calendar days | $(if ($Metrics.Git.TotalDays -lt $Estimates.SmallTeam.Days.Likely) { "$([math]::Round((1 - ($Metrics.Git.TotalDays / $Estimates.SmallTeam.Days.Likely)) * 100))% faster ⚡" } else { "$([math]::Round((($Metrics.Git.TotalDays / $Estimates.SmallTeam.Days.Likely) - 1) * 100))% over ⚠️" }) |
+| **Work Intensity** | Standard 8hr/day | ~$([math]::Round($Metrics.Git.EstimatedWorkHours / $Metrics.Git.ActiveDays, 1))hrs/active day | $(if (($Metrics.Git.EstimatedWorkHours / $Metrics.Git.ActiveDays) -gt 8) { 'Above average intensity 🔥' } else { 'Below average intensity 📊' }) |
+| **Code Output** | $($Estimates.SmallTeam.LinesPerDay) LOC/day | ~$([math]::Round($Metrics.Total.Effective / $Metrics.Git.ActiveDays)) LOC/active day | $(if (($Metrics.Total.Effective / $Metrics.Git.ActiveDays) -gt $Estimates.SmallTeam.LinesPerDay) { "$(([math]::Round((($Metrics.Total.Effective / $Metrics.Git.ActiveDays) / $Estimates.SmallTeam.LinesPerDay - 1) * 100)))% higher output ⚡" } else { "$(([math]::Round((1 - ($Metrics.Total.Effective / $Metrics.Git.ActiveDays) / $Estimates.SmallTeam.LinesPerDay) * 100)))% lower 📉" }) |
+
+### 🎯 Key Takeaways
+
+1. **Actual Duration**: Project took **$($Metrics.Git.TotalDays) calendar days** with **$($Metrics.Git.ActiveDays) active development days**
+2. **Team Composition**: $($Metrics.Git.Contributors) contributor$(if ($Metrics.Git.Contributors -gt 1) { 's' } else { '' }) working on the project
+3. **Development Pace**: ~$([math]::Round($Metrics.Total.Effective / $Metrics.Git.ActiveDays)) lines of effective code per active day
+4. **Estimated Real Cost** ($($RegionInfo.Name) rates): 
+   - Junior: ~`$$([math]::Round(35 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
+   - Mid-Level: ~`$$([math]::Round(70 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
+   - Senior: ~`$$([math]::Round(100 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
+5. **Productivity**: $(if ($Metrics.Git.AvgCommitsPerDay -gt 20) { 'Very high commit frequency suggests rapid iteration' } elseif ($Metrics.Git.AvgCommitsPerDay -gt 10) { 'Healthy commit frequency with good progress' } else { 'Lower commit frequency, possibly larger changes per commit' })
+
+"@} else { @"
+**Timeline analysis unavailable** - Not a Git repository or insufficient commit history.
+"@ })
 
 ---
 
