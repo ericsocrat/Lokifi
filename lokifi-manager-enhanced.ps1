@@ -1045,7 +1045,7 @@ function Invoke-PreCommitValidation {
         $todoCount = 0
         if ($stagedFiles) {
             foreach ($file in $stagedFiles) {
-                if (Test-Path $file -and $file -match '\.(ts|tsx|py|js|jsx)$') {
+                if ((Test-Path $file) -and ($file -match '\.(ts|tsx|py|js|jsx)$')) {
                     $todos = Select-String -Path $file -Pattern "TODO|FIXME|XXX|HACK" -ErrorAction SilentlyContinue
                     if ($todos) {
                         $todoCount += $todos.Count
@@ -2215,7 +2215,7 @@ function Stop-AllServices {
     Write-LokifiHeader "Stopping All Services"
     
     # Try Docker Compose first (RECOMMENDED)
-    if (Test-Path "docker-compose.yml" -and (Test-DockerAvailable)) {
+    if ((Test-Path "docker-compose.yml") -and (Test-DockerAvailable)) {
         Write-Step "🐳" "Stopping Docker Compose stack..."
         Stop-DockerComposeStack
         Write-Host ""
