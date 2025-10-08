@@ -86,7 +86,7 @@ function Backup-File {
     
     if (-not $Backup) { return }
     
-    $backupDir = ".backups/$(Get-Date -Format 'yyyy-MM-dd')"
+    $backupDir = "infra/backups/$(Get-Date -Format 'yyyy-MM-dd')"
     if (-not (Test-Path $backupDir)) {
         New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
     }
@@ -419,7 +419,7 @@ if ($Stats.FixesApplied -gt 0) {
     
     if ($Backup) {
         Write-Host ""
-        Write-Host "  ⚠️  If issues occur, backups are in '.backups/$(Get-Date -Format 'yyyy-MM-dd')'" -ForegroundColor $Colors.Warning
+        Write-Host "  ⚠️  If issues occur, backups are in 'infra/backups/$(Get-Date -Format 'yyyy-MM-dd')'" -ForegroundColor $Colors.Warning
     }
 }
 
