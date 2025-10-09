@@ -1,24 +1,29 @@
-import path from 'path';
-import { defineConfig } from 'vitest/config';
+/// <reference types="vitest" />
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import path from 'path'
 
 export default defineConfig({
+  plugins: [react()],
   test: {
-    environment: 'jsdom',
     globals: true,
-    setupFiles: './setupTests.ts'
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    coverage: {
+      reporter: ['text', 'html', 'json'],
+      threshold: {
+        global: {
+          branches: 17.5,
+          functions: 17.5,  
+          lines: 17.5,
+          statements: 17.5
+        }
+      }
+    }
   },
   resolve: {
-    alias: [
-      { find: '@', replacement: path.resolve(__dirname) },
-      { find: '@/app', replacement: path.resolve(__dirname, 'app') },
-      { find: '@/components', replacement: path.resolve(__dirname, 'components') },
-      { find: '@/src/components', replacement: path.resolve(__dirname, 'src/components') },
-      { find: '@/lib', replacement: path.resolve(__dirname, 'lib') },
-      { find: '@/src/lib', replacement: path.resolve(__dirname, 'src/lib') },
-      { find: '@/state', replacement: path.resolve(__dirname, 'state') },
-      { find: '@/src/state', replacement: path.resolve(__dirname, 'src/state') },
-      { find: '@/plugins', replacement: path.resolve(__dirname, 'plugins') },
-      { find: '@/types', replacement: path.resolve(__dirname, 'src/types') }
-    ]
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
   }
-});
+})
