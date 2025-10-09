@@ -6984,12 +6984,58 @@ switch ($Action.ToLower()) {
     }
     'fix' {
         Write-LokifiHeader "Quick Fixes"
+        
+        # OPTIMIZATION: Get baseline metrics first (unless quick mode)
+        $baseline = $null
+        if (-not $Quick) {
+            Write-Host "`n⚡ Analyzing current state..." -ForegroundColor Cyan
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+                
+                Write-Host "`n📊 Current Metrics:" -ForegroundColor Cyan
+                Write-Host "  Technical Debt: $($baseline.Metrics.Quality.TechnicalDebt) days" -ForegroundColor $(if ($baseline.Metrics.Quality.TechnicalDebt -gt 60) { 'Red' } elseif ($baseline.Metrics.Quality.TechnicalDebt -gt 30) { 'Yellow' } else { 'Green' })
+                Write-Host "  Maintainability: $($baseline.Metrics.Quality.Maintainability)/100" -ForegroundColor $(if ($baseline.Metrics.Quality.Maintainability -lt 60) { 'Red' } elseif ($baseline.Metrics.Quality.Maintainability -lt 70) { 'Yellow' } else { 'Green' })
+                Write-Host "  Security Score: $($baseline.Metrics.Quality.SecurityScore)/100" -ForegroundColor $(if ($baseline.Metrics.Quality.SecurityScore -lt 60) { 'Red' } elseif ($baseline.Metrics.Quality.SecurityScore -lt 80) { 'Yellow' } else { 'Green' })
+                Write-Host ""
+            }
+        }
+        
+        # Run the fixes
         if ($Component -eq "ts") {
             Invoke-QuickFix -TypeScript
         } elseif ($Component -eq "cleanup") {
             Invoke-QuickFix -Cleanup
         } else {
             Invoke-QuickFix -All
+        }
+        
+        # Show improvements if we had baseline
+        if ($baseline -and -not $Quick) {
+            Write-Host "`n📊 Re-analyzing..." -ForegroundColor Cyan
+            Start-Sleep -Seconds 2
+            $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
+                
+                $debtChange = [math]::Round($baseline.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
+                $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $baseline.Metrics.Quality.Maintainability, 1)
+                
+                Write-Host "`n✨ Improvements:" -ForegroundColor Green
+                if ($debtChange -gt 0) {
+                    Write-Host "  ↓ Technical Debt: -$debtChange days" -ForegroundColor Green
+                }
+                if ($maintChange -gt 0) {
+                    Write-Host "  ↑ Maintainability: +$maintChange points" -ForegroundColor Green
+                }
+                
+                if ($debtChange -le 0 -and $maintChange -le 0) {
+                    Write-Host "  No measurable improvements (fixes may need more analysis)" -ForegroundColor Gray
+                }
+            }
         }
     }
     'docs' {
@@ -7037,14 +7083,19 @@ switch ($Action.ToLower()) {
     'security' {
         Write-LokifiHeader "Advanced Security Scan"
         
-        # Show baseline metrics for context (unless quick mode)
-        if (-not $Quick -and $Component -ne 'secrets' -and $Component -ne 'vulnerabilities' -and $Component -ne 'licenses') {
-            Write-Step "📊" "Gathering baseline metrics..."
+        # OPTIMIZATION: Run analyzer FIRST for baseline metrics (unless quick mode or specific component)
+        $baseline = $null
+        if (-not $Quick -and $Component -ne 'secrets' -and $Component -ne 'vulnerabilities' -and $Component -ne 'licenses' -and $Component -ne 'audit' -and $Component -ne 'init') {
+            Write-Host "`n⚡ Initializing security context..." -ForegroundColor Cyan
+            Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+            
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
             
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
+                Write-Host "  📊 Running codebase analysis (cached: ~5s)..." -ForegroundColor Gray
                 $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+                Write-Host "  ✅ Analysis complete!" -ForegroundColor Green
                 
                 Write-Host "`n📈 Security Context:" -ForegroundColor Cyan
                 Write-Host "  Codebase Size: $($baseline.Metrics.Total.Effective.ToString('N0')) effective lines" -ForegroundColor Gray
@@ -7250,20 +7301,97 @@ SELECT
         Start-WatchMode
     }
     'audit' {
+        Write-LokifiHeader "Comprehensive Codebase Audit"
+        
+        # OPTIMIZATION: Use codebase analyzer as foundation
+        Write-Host "`n⚡ Initializing comprehensive audit..." -ForegroundColor Cyan
+        Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+        
+        $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+        $analyzerData = $null
+        
+        if (Test-Path $analyzerPath) {
+            . $analyzerPath
+            Write-Host "  📊 Running codebase analysis (cached: ~5s, first run: ~70s)..." -ForegroundColor Gray
+            $analyzerData = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache:(-not $Full)
+            Write-Host "  ✅ Codebase analysis complete!" -ForegroundColor Green
+            Write-Host ""
+        }
+        
+        # Run the audit
         $auditParams = @{}
         if ($Full) { $auditParams.Full = $true }
         if ($SaveReport) { $auditParams.SaveReport = $true }
         if ($Quick) { $auditParams.Quick = $true }
         if ($Report) { $auditParams.JsonExport = $true }
         
-        Invoke-ComprehensiveCodebaseAudit @auditParams
+        $auditResult = Invoke-ComprehensiveCodebaseAudit @auditParams
+        
+        # Enhance audit with analyzer insights
+        if ($analyzerData -and $auditResult) {
+            Write-Host "`n📊 Analyzer Insights Integration:" -ForegroundColor Cyan
+            Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
+            Write-Host "  Effective Code Lines: $($analyzerData.Metrics.Total.Effective.ToString('N0'))" -ForegroundColor Gray
+            Write-Host "  Estimated Rebuild Cost: `$$($analyzerData.Estimates.RecommendedTeam.Cost.ToString('N0'))" -ForegroundColor Gray
+            Write-Host "  Estimated Timeline: $($analyzerData.Estimates.RecommendedTeam.Time) months" -ForegroundColor Gray
+            Write-Host "  Project Complexity: $($analyzerData.Complexity.Overall)/10" -ForegroundColor Gray
+            Write-Host ""
+        }
     }
     'autofix' {
+        Write-LokifiHeader "Automated TypeScript Auto-Fix"
+        
+        # OPTIMIZATION: Get baseline from analyzer first
+        Write-Host "`n⚡ Analyzing current state..." -ForegroundColor Cyan
+        $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
+        $baseline = $null
+        
+        if (Test-Path $analyzerPath) {
+            . $analyzerPath
+            $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
+            
+            Write-Host "`n📊 Baseline Metrics:" -ForegroundColor Cyan
+            Write-Host "  Codebase Size: $($baseline.Metrics.Total.Effective.ToString('N0')) lines" -ForegroundColor Gray
+            Write-Host "  Technical Debt: $($baseline.Metrics.Quality.TechnicalDebt) days" -ForegroundColor Gray
+            Write-Host "  Maintainability: $($baseline.Metrics.Quality.Maintainability)/100" -ForegroundColor Gray
+            Write-Host ""
+        }
+        
+        # Run autofix
         $autofixParams = @{}
         if ($DryRun) { $autofixParams.DryRun = $true }
         if ($ShowDetails) { $autofixParams.ShowDetails = $true }
         
         Invoke-AutomatedTypeScriptFix @autofixParams
+        
+        # Show impact if not dry run and we have baseline
+        if (-not $DryRun -and $baseline) {
+            Write-Host "`n📊 Measuring impact..." -ForegroundColor Cyan
+            Start-Sleep -Seconds 3
+            
+            if (Test-Path $analyzerPath) {
+                . $analyzerPath
+                $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
+                
+                $debtChange = [math]::Round($baseline.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
+                $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $baseline.Metrics.Quality.Maintainability, 1)
+                
+                Write-Host "`n💹 Impact on Metrics:" -ForegroundColor Green
+                Write-Host "  Technical Debt: " -NoNewline
+                if ($debtChange -gt 0) {
+                    Write-Host "$($baseline.Metrics.Quality.TechnicalDebt) → $($after.Metrics.Quality.TechnicalDebt) days (-$debtChange)" -ForegroundColor Green
+                } else {
+                    Write-Host "$($after.Metrics.Quality.TechnicalDebt) days (no change)" -ForegroundColor Gray
+                }
+                
+                Write-Host "  Maintainability: " -NoNewline
+                if ($maintChange -gt 0) {
+                    Write-Host "$($baseline.Metrics.Quality.Maintainability) → $($after.Metrics.Quality.Maintainability)/100 (+$maintChange)" -ForegroundColor Green
+                } else {
+                    Write-Host "$($after.Metrics.Quality.Maintainability)/100 (no change)" -ForegroundColor Gray
+                }
+            }
+        }
     }
     'profile' {
         Write-LokifiHeader "Profile Management"

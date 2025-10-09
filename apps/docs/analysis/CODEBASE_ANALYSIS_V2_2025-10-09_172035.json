@@ -1,0 +1,316 @@
+{
+  "analysis_id": "20251009_171934",
+  "estimates": {
+    "MediumTeam": {
+      "Weeks": {
+        "Best": 23.0,
+        "Likely": 30.0,
+        "Worst": 34.6
+      },
+      "Cost": {
+        "Best": 287500.0,
+        "Likely": 375000.0,
+        "Worst": 432500.0
+      },
+      "Months": {
+        "Best": 5.2,
+        "Likely": 6.8,
+        "Worst": 7.9
+      },
+      "Rate": 2500.0,
+      "LinesPerDay": 700,
+      "Name": "MediumTeam",
+      "Days": {
+        "Best": 115.0,
+        "Likely": 150.0,
+        "Worst": 173.0
+      },
+      "Hours": {
+        "Best": 920.0,
+        "Likely": 1200.0,
+        "Worst": 1384.0
+      }
+    },
+    "Mid": {
+      "Weeks": {
+        "Best": 80.4,
+        "Likely": 104.6,
+        "Worst": 120.6
+      },
+      "Cost": {
+        "Best": 160800.0,
+        "Likely": 209200.0,
+        "Worst": 241200.0
+      },
+      "Months": {
+        "Best": 18.3,
+        "Likely": 23.8,
+        "Worst": 27.4
+      },
+      "Rate": 50.0,
+      "LinesPerDay": 200,
+      "Name": "Mid Developer",
+      "Days": {
+        "Best": 402.0,
+        "Likely": 523.0,
+        "Worst": 603.0
+      },
+      "Hours": {
+        "Best": 3216.0,
+        "Likely": 4184.0,
+        "Worst": 4824.0
+      }
+    },
+    "Junior": {
+      "Weeks": {
+        "Best": 160.8,
+        "Likely": 209.2,
+        "Worst": 241.2
+      },
+      "Cost": {
+        "Best": 160800.0,
+        "Likely": 209200.0,
+        "Worst": 241200.0
+      },
+      "Months": {
+        "Best": 36.5,
+        "Likely": 47.5,
+        "Worst": 54.8
+      },
+      "Rate": 25.0,
+      "LinesPerDay": 100,
+      "Name": "Junior Developer",
+      "Days": {
+        "Best": 804.0,
+        "Likely": 1046.0,
+        "Worst": 1206.0
+      },
+      "Hours": {
+        "Best": 6432.0,
+        "Likely": 8368.0,
+        "Worst": 9648.0
+      }
+    },
+    "LargeTeam": {
+      "Weeks": {
+        "Best": 16.2,
+        "Likely": 21.2,
+        "Worst": 24.4
+      },
+      "Cost": {
+        "Best": 405000.0,
+        "Likely": 530000.0,
+        "Worst": 610000.0
+      },
+      "Months": {
+        "Best": 3.7,
+        "Likely": 4.8,
+        "Worst": 5.5
+      },
+      "Rate": 5000.0,
+      "LinesPerDay": 1000,
+      "Name": "LargeTeam",
+      "Days": {
+        "Best": 81.0,
+        "Likely": 106.0,
+        "Worst": 122.0
+      },
+      "Hours": {
+        "Best": 648.0,
+        "Likely": 848.0,
+        "Worst": 976.0
+      }
+    },
+    "SmallTeam": {
+      "Weeks": {
+        "Best": 40.2,
+        "Likely": 52.4,
+        "Worst": 60.4
+      },
+      "Cost": {
+        "Best": 241200.0,
+        "Likely": 314400.0,
+        "Worst": 362400.0
+      },
+      "Months": {
+        "Best": 9.1,
+        "Likely": 11.9,
+        "Worst": 13.7
+      },
+      "Rate": 1200.0,
+      "LinesPerDay": 400,
+      "Name": "SmallTeam",
+      "Days": {
+        "Best": 201.0,
+        "Likely": 262.0,
+        "Worst": 302.0
+      },
+      "Hours": {
+        "Best": 1608.0,
+        "Likely": 2096.0,
+        "Worst": 2416.0
+      }
+    },
+    "Senior": {
+      "Weeks": {
+        "Best": 53.6,
+        "Likely": 69.8,
+        "Worst": 80.4
+      },
+      "Cost": {
+        "Best": 214400.0,
+        "Likely": 279200.0,
+        "Worst": 321600.0
+      },
+      "Months": {
+        "Best": 12.2,
+        "Likely": 15.9,
+        "Worst": 18.3
+      },
+      "Rate": 100.0,
+      "LinesPerDay": 300,
+      "Name": "Senior Developer",
+      "Days": {
+        "Best": 268.0,
+        "Likely": 349.0,
+        "Worst": 402.0
+      },
+      "Hours": {
+        "Best": 2144.0,
+        "Likely": 2792.0,
+        "Worst": 3216.0
+      }
+    }
+  },
+  "metrics": {
+    "Documentation": {
+      "Effective": 1250,
+      "Comments": 507,
+      "Blank": 494,
+      "LargestFile": {
+        "Name": "CODEBASE_ANALYSIS_V2_2025-10-09_013449.md",
+        "Path": "docs\\analysis\\CODEBASE_ANALYSIS_V2_2025-10-09_013449.md",
+        "Lines": 392
+      },
+      "Files": 10,
+      "Lines": 2251,
+      "Extensions": {
+        ".md": 9,
+        ".txt": 1
+      }
+    },
+    "Quality": {
+      "TechnicalDebt": 89.1,
+      "Maintainability": 75,
+      "SecurityScore": 85
+    },
+    "Frontend": {
+      "Files": 237,
+      "Effective": 54022,
+      "Comments": 4092,
+      "Extensions": {
+        ".tsx": 125,
+        ".ts": 108,
+        ".css": 1,
+        ".js": 3
+      },
+      "Blank": 6750,
+      "Lines": 64864,
+      "LargestFile": {
+        "Name": "generated-market-data.ts",
+        "Path": "frontend\\src\\data\\generated-market-data.ts",
+        "Lines": 11989
+      }
+    },
+    "Git": {
+      "EstimatedWorkDays": 13.0,
+      "Contributors": 2,
+      "EndDate": "2025-10-09",
+      "LastCommit": "15 hours ago",
+      "ActiveDays": 13,
+      "EstimatedWorkHours": 104,
+      "WorkingDays": 10,
+      "StartDate": "2025-09-25",
+      "Commits": 250,
+      "TotalDays": 13,
+      "AvgCommitsPerDay": 19.2,
+      "Churn": 15906
+    },
+    "Tests": {
+      "Files": 25,
+      "Effective": 4219,
+      "Comments": 225,
+      "Extensions": {
+        ".tsx": 8,
+        ".ts": 17
+      },
+      "Blank": 930,
+      "Lines": 5374,
+      "LargestFile": {
+        "Name": "features-g2-g4.test.tsx",
+        "Path": "frontend\\tests\\features-g2-g4.test.tsx",
+        "Lines": 535
+      }
+    },
+    "Infrastructure": {
+      "Files": 36,
+      "Effective": 18181,
+      "Comments": 144,
+      "Extensions": {
+        ".json": 15,
+        ".ps1": 7,
+        ".yml": 5,
+        "": 2,
+        ".toml": 2,
+        ".dev": 2,
+        ".sh": 1,
+        ".prod": 2
+      },
+      "Blank": 236,
+      "Lines": 18561,
+      "LargestFile": {
+        "Name": "package-lock.json",
+        "Path": "frontend\\package-lock.json",
+        "Lines": 13788
+      }
+    },
+    "Total": {
+      "Blank": 18711,
+      "Comments": 50891,
+      "Effective": 80396,
+      "Files": 556,
+      "Lines": 149998
+    },
+    "Backend": {
+      "Files": 248,
+      "Effective": 2724,
+      "Comments": 45923,
+      "Extensions": {
+        ".py": 247,
+        ".sql": 1
+      },
+      "Blank": 10301,
+      "Lines": 58948,
+      "LargestFile": {
+        "Name": "production_deployment_suite.py",
+        "Path": "backend\\scripts\\production_deployment_suite.py",
+        "Lines": 973
+      }
+    }
+  },
+  "complexity": {
+    "Frontend": 10,
+    "Infrastructure": 10,
+    "Overall": 10.0,
+    "Backend": 10
+  },
+  "timestamp": "2025-10-09T17:20:35",
+  "version": "2.0.0",
+  "region": "us",
+  "maintenance_costs": {
+    "Year1": 31380.0,
+    "Year3": 94140.0,
+    "Year5": 156900.0
+  },
+  "test_coverage": 3.6
+}
