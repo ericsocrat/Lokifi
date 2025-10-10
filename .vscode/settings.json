@@ -1,0 +1,393 @@
+{
+  // ============================================
+  // LOKIFI WORKSPACE SETTINGS - OPTIMIZED
+  // Optimized for: Next.js + FastAPI + Testing
+  // Updated: October 10, 2025
+  // ============================================
+
+  // ===== EDITOR - PERFORMANCE & UX =====
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.rulers": [80, 120],
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "first",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.snippetSuggestions": "top",
+  "editor.wordWrap": "off",
+  "editor.minimap.enabled": true,
+  "editor.minimap.renderCharacters": false,
+  "editor.minimap.maxColumn": 120,
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.smoothScrolling": true,
+  "editor.mouseWheelZoom": true,
+  "editor.linkedEditing": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+
+  // ===== FILES - AUTO-SAVE & EXCLUSIONS =====
+  "files.autoSave": "onFocusChange",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.eol": "\n",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.next": true,
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/node_modules": true,
+    "**/.pytest_cache": true,
+    "**/.coverage": true,
+    "**/coverage": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true
+  },
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.next/**": true,
+    "**/node_modules/**": true,
+    "**/__pycache__/**": true,
+    "**/.lokifi-cache/**": true,
+    "**/dist/**": true,
+    "**/build/**": true
+  },
+
+  // ===== SEARCH - SMART EXCLUSIONS =====
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.next": true,
+    "**/__pycache__": true,
+    "**/coverage": true,
+    "**/.pytest_cache": true,
+    "**/dist": true,
+    "**/.lokifi-cache": true,
+    "**/package-lock.json": true,
+    "**/yarn.lock": true,
+    "**/*.log": true,
+    "**/.venv": true,
+    "**/venv": true
+  },
+  "search.useIgnoreFiles": true,
+  "search.smartCase": true,
+  "search.followSymlinks": false,
+
+  // ===== TYPESCRIPT / JAVASCRIPT - FORMATTING =====
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit",
+      "source.organizeImports": "explicit"
+    }
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    }
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.tsdk": "apps/frontend/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "javascript.suggest.autoImports": true,
+  "typescript.suggest.autoImports": true,
+  "javascript.suggest.paths": true,
+  "typescript.suggest.paths": true,
+
+  // ===== PYTHON - BACKEND CONFIGURATION =====
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.tabSize": 4,
+    "editor.rulers": [100]
+  },
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.analysis.inlayHints.variableTypes": false,
+  "python.analysis.diagnosticMode": "workspace",
+  "python.defaultInterpreterPath": "${workspaceFolder}/apps/backend/venv/Scripts/python.exe",
+  "python.envFile": "${workspaceFolder}/apps/backend/.env",
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+  "python.testing.pytestArgs": [
+    "apps/backend/tests"
+  ],
+  "python.languageServer": "Pylance",
+  "python.linting.enabled": false,
+  "isort.args": ["--profile", "black"],
+  "black-formatter.args": ["--line-length", "100"],
+
+  // ===== VITEST (NEW!) =====
+  "vitest.enable": true,
+  "vitest.commandLine": "npm run test",
+  "vitest.include": ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+  "vitest.exclude": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/cypress/**",
+    "**/.{idea,git,cache,output,temp}/**"
+  ],
+
+  // ===== PLAYWRIGHT (NEW!) =====
+  "playwright.reuseBrowser": false,
+  "playwright.showTrace": false,
+
+  // ===== COVERAGE GUTTERS (NEW!) =====
+  "coverage-gutters.coverageFileNames": [
+    "coverage/lcov.info",
+    "coverage/coverage.json",
+    "apps/frontend/coverage/lcov.info"
+  ],
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  "coverage-gutters.highlightdark": "rgba(16, 185, 129, 0.15)",
+  "coverage-gutters.highlightlight": "rgba(16, 185, 129, 0.15)",
+
+  // ===== CONSOLE NINJA (NEW!) =====
+  "console-ninja.featureSet": "Community",
+  "console-ninja.toolsToEnableSupportAutomaticallyFor": {
+    "live-server-extension": true,
+    "live-preview-extension": true
+  },
+
+  // ===== IMPORT COST (NEW!) =====
+  "importCost.bundleSizeDecoration": "both",
+  "importCost.showCalculatingDecoration": true,
+  "importCost.smallPackageSize": 50,
+  "importCost.mediumPackageSize": 100,
+  "importCost.largePackageColor": "#ff6b6b",
+  "importCost.mediumPackageColor": "#feca57",
+  "importCost.smallPackageColor": "#48dbfb",
+
+  // ===== ESLINT - LINTING =====
+  "eslint.enable": true,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.workingDirectories": [
+    { "directory": "./apps/frontend", "changeProcessCWD": true }
+  ],
+  "eslint.format.enable": false,
+  "eslint.codeActionsOnSave.mode": "all",
+
+  // ===== PRETTIER =====
+  "prettier.enable": true,
+  "prettier.requireConfig": true,
+
+  // ===== ERROR LENS - INLINE ERRORS =====
+  "errorLens.enabledDiagnosticLevels": [
+    "error",
+    "warning"
+  ],
+  "errorLens.excludeBySource": [
+    "cSpell"
+  ],
+  "errorLens.fontWeight": "normal",
+  "errorLens.fontSize": "0.9em",
+  "errorLens.delay": 500,
+  "errorLens.followCursor": "activeLine",
+
+  // ===== TAILWIND CSS =====
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+  "tailwindCSS.includeLanguages": {
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+
+  // ===== GIT & GITLENS - VERSION CONTROL =====
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+  "git.autofetchPeriod": 180,
+  "git.pruneOnFetch": true,
+  "git.untrackedChanges": "separate",
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.codeLens.enabled": false,
+  "gitlens.currentLine.enabled": false,
+  "gitlens.hovers.enabled": true,
+  "gitlens.statusBar.enabled": true,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "diffEditor.renderSideBySide": true,
+
+  // ===== DOCKER =====
+  "docker.showExplorer": true,
+
+  // ===== TODO TREE =====
+  "todo-tree.general.tags": [
+    "TODO",
+    "FIXME",
+    "BUG",
+    "HACK",
+    "NOTE",
+    "XXX",
+    "[ ]",
+    "[x]"
+  ],
+  "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\*))\\s*($TAGS)",
+  "todo-tree.highlights.defaultHighlight": {
+    "icon": "alert",
+    "type": "text",
+    "foreground": "#ffffff",
+    "iconColour": "#feca57"
+  },
+  "todo-tree.highlights.customHighlight": {
+    "TODO": {
+      "icon": "check",
+      "iconColour": "#48dbfb"
+    },
+    "FIXME": {
+      "icon": "alert",
+      "iconColour": "#ff6b6b"
+    },
+    "BUG": {
+      "icon": "bug",
+      "iconColour": "#ff6b6b"
+    }
+  },
+
+  // ===== TERMINAL =====
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    }
+  },
+  "terminal.integrated.cwd": "${workspaceFolder}",
+
+  // ===== PERFORMANCE - OPTIMIZATIONS =====
+  "files.maxMemoryForLargeFilesMB": 4096,
+  "extensions.ignoreRecommendations": false,
+  "extensions.autoUpdate": false,
+  "extensions.autoCheckUpdates": false,
+  "workbench.enableExperiments": false,
+  "workbench.settings.enableNaturalLanguageSearch": false,
+
+  // ===== GITHUB COPILOT - AI ASSISTANCE =====
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": false,
+    "markdown": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+
+  // ===== WORKBENCH - UI PREFERENCES =====
+  "workbench.colorTheme": "Default Dark+",
+  "workbench.iconTheme": "vs-seti",
+  "workbench.startupEditor": "none",
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.limit.enabled": true,
+  "workbench.editor.limit.value": 10,
+  "workbench.editor.limit.perEditorGroup": true,
+  "workbench.tree.indent": 20,
+  "workbench.list.smoothScrolling": true,
+  "workbench.activityBar.location": "default",
+
+  // ===== NPM - PACKAGE MANAGEMENT =====
+  "npm.packageManager": "npm",
+  "npm.fetchOnlinePackageInfo": false,
+
+  // ===== BREADCRUMBS =====
+  "breadcrumbs.enabled": true,
+  "breadcrumbs.filePath": "on",
+  "breadcrumbs.symbolPath": "on",
+
+  // ===== SECURITY =====
+  "security.workspace.trust.untrustedFiles": "prompt",
+
+  // ===== EMMET - HTML/CSS SHORTCUTS =====
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact",
+    "typescript": "typescriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+
+  // ===== PATH INTELLISENSE =====
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "path-intellisense.extensionOnImport": true,
+
+  // ===== MARKDOWN =====
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "off",
+      "strings": "off",
+      "other": "off"
+    }
+  },
+
+  // ===== YAML =====
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.tabSize": 2,
+    "editor.autoIndent": "advanced"
+  },
+
+  // ===== SQL =====
+  "[sql]": {
+    "editor.defaultFormatter": "mtxr.sqltools",
+    "editor.tabSize": 2
+  },
+
+  // ===== POWERSHELL =====
+  "[powershell]": {
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "files.encoding": "utf8bom"
+  },
+
+  // ===== VERSION LENS =====
+  "versionlens.suggestions.showOnStartup": false,
+  "versionlens.npm.caching.duration": 3600,
+  "versionlens.pip.caching.duration": 3600,
+  "versionlens.suggestions.showPrerelease": false
+}
