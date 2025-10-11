@@ -145,7 +145,7 @@ function Invoke-CodebaseAnalysis {
         }
     }
 
-    # Enhanced file patterns
+    # Enhanced file patterns (ACTIVE CODE ONLY)
     $patterns = @{
         Frontend = @('*.ts', '*.tsx', '*.js', '*.jsx', '*.css', '*.scss', '*.sass', '*.less', '*.vue', '*.svelte', '*.html')
         Backend = @('*.py', '*.sql', '*.prisma', '*.rb', '*.php', '*.java', '*.cs', '*.go', '*.rs')
@@ -154,12 +154,87 @@ function Invoke-CodebaseAnalysis {
         Documentation = @('*.md', '*.txt', '*.rst', '*.adoc', '*.wiki')
     }
 
-    # Enhanced exclusions
+    # COMPREHENSIVE EXCLUSIONS - Skip legacy/archived/generated content
     $excludeDirs = @(
+        # Dependencies & Build Artifacts
         'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next', 
-        'coverage', 'logs', 'uploads', '.backups', 'infra\backups', 'out', 
-        '.cache', 'tmp', 'temp', 'vendor', 'packages', '.turbo', '.vscode',
-        'target', 'bin', 'obj', '.nuxt', '.output'
+        'coverage', 'out', '.cache', 'tmp', 'temp', 'vendor', 'packages', '.turbo',
+        'target', 'bin', 'obj', '.nuxt', '.output', '.pytest_cache', '.mypy_cache',
+        
+        # IDE & Tools
+        '.vscode', '.idea', '.vs', '*.egg-info', '.ruff_cache',
+        
+        # Logs & Uploads
+        'logs', 'uploads', '.backups', 'backups',
+        
+        # ARCHIVES & LEGACY (Performance Critical!)
+        'archive',           # All archived content
+        'archives',          # Alternative archive folder
+        'legacy',            # Legacy scripts/code
+        'old',               # Old versions
+        'deprecated',        # Deprecated files
+        'obsolete',          # Obsolete code
+        '_archive',          # Underscore prefix archives
+        '.archive',          # Hidden archives
+        
+        # SPECIFIC PATHS (Lokifi Project)
+        'docs\archive',                    # Archived documentation (major speedup!)
+        'docs\old-root-docs',              # Old documentation
+        'docs\auto-archive-*',             # Auto-archived docs
+        'tools\scripts\archive',           # Archived scripts
+        'tools\scripts\legacy',            # Legacy scripts
+        'infra\backups',                   # Infrastructure backups
+        'apps\backend\old',                # Old backend code
+        'apps\frontend\old',               # Old frontend code
+        
+        # DOCUMENTATION ARCHIVES (Skip old reports)
+        'docs\archive\analysis',           # Old analysis reports
+        'docs\archive\domain-research',    # Old research
+        'docs\archive\old-root-docs',      # Old root docs
+        'docs\archive\old-scripts',        # Old script docs
+        'docs\archive\old-status-docs',    # Old status reports
+        'docs\archive\phase-reports',      # Old phase reports
+        'docs\archive\auto-archive-2025-10-08',  # Specific archive dates
+        
+        # REPORT ARCHIVES (Only scan latest)
+        'docs\audit-reports\archive',      # Old audit reports
+        'docs\optimization-reports\archive', # Old optimization reports
+        
+        # DATABASE BACKUPS
+        '*.db-journal',                    # SQLite journals
+        '*.sqlite-wal',                    # Write-ahead logs
+        'backups\*.db',                    # Database backups
+        
+        # MIGRATION ARTIFACTS
+        'migrations\archive',              # Old migrations
+        'alembic\versions\archive'         # Old Alembic versions
+    )
+    
+    # FILE-LEVEL EXCLUSIONS (Skip specific patterns)
+    $excludeFilePatterns = @(
+        '*_ARCHIVE_*',                     # Archived files
+        '*_OLD_*',                         # Old versions
+        '*_DEPRECATED_*',                  # Deprecated files
+        '*_BACKUP_*',                      # Backup files
+        '*.bak',                           # Backup extensions
+        '*.old',                           # Old extensions
+        '*~',                              # Editor temp files
+        '*.swp',                           # Vim swap files
+        '*.tmp',                           # Temp files
+        '*.log.*',                         # Rotated logs
+        '*-backup.*',                      # Backup suffix
+        '*-old.*',                         # Old suffix
+        '*_v[0-9]*.*',                     # Versioned files (e.g., script_v1.ps1)
+        'ARCHIVE_*',                       # Archive prefix
+        'OLD_*',                           # Old prefix
+        'DEPRECATED_*',                    # Deprecated prefix
+        '*COMPLETE*.md',                   # Old completion docs (keep latest in parent)
+        '*SUMMARY*.md',                    # Old summary docs (too many!)
+        '*TRANSFORMATION_COMPLETE*.md',    # Specific archived docs
+        '*CONSOLIDATION_*.md',             # Old consolidation docs
+        '*ORGANIZATION_COMPLETE*.md',      # Old organization docs
+        '*_CHECKLIST*.md',                 # Old checklists
+        'protection_report_*.md'           # Old protection reports (keep in archive folder)
     )
 
     # Step 1: Git Analysis (if available)
@@ -227,24 +302,40 @@ function Invoke-CodebaseAnalysis {
     }
     Write-Host ""
 
-    # Step 2: Parallel File Discovery & Analysis
-    Write-Host "🔎 Discovering & analyzing files (parallel)..." -ForegroundColor Cyan
+    # Step 2: Optimized File Discovery & Analysis
+    Write-Host "🔎 Discovering & analyzing files (optimized, skipping archives)..." -ForegroundColor Cyan
     
     $discoveryStart = Get-Date
     $allFiles = @()
+    $skippedCount = 0
     
     foreach ($category in $patterns.Keys) {
         foreach ($pattern in $patterns[$category]) {
             $files = Get-ChildItem -Path $ProjectRoot -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue | 
                 Where-Object { 
                     $path = $_.FullName
+                    $fileName = $_.Name
                     $excluded = $false
+                    
+                    # Check directory exclusions (FAST - path check)
                     foreach ($excludeDir in $excludeDirs) {
                         if ($path -like "*\$excludeDir\*" -or $path -like "*/$excludeDir/*") {
                             $excluded = $true
                             break
                         }
                     }
+                    
+                    # Check file-level exclusions (FAST - filename patterns)
+                    if (-not $excluded) {
+                        foreach ($filePattern in $excludeFilePatterns) {
+                            if ($fileName -like $filePattern) {
+                                $excluded = $true
+                                $skippedCount++
+                                break
+                            }
+                        }
+                    }
+                    
                     -not $excluded
                 }
 
@@ -260,6 +351,11 @@ function Invoke-CodebaseAnalysis {
                 }
             }
         }
+    }
+    
+    # Report optimization
+    if ($skippedCount -gt 0) {
+        Write-Host "   ⚡ Optimized: Skipped $skippedCount archived/legacy files" -ForegroundColor Gray
     }
 
     # Process files with progress
@@ -613,15 +709,38 @@ function Invoke-CodebaseAnalysis {
     }
     Write-Host ""
 
-    Write-Host "✅ Analysis completed in " -NoNewline -ForegroundColor Green
-    Write-Host "$([math]::Round($duration, 2))s" -NoNewline -ForegroundColor White
-    Write-Host " ($(([math]::Round($discoveryTime / $duration * 100)))% scanning, $(100 - [math]::Round($discoveryTime / $duration * 100))% processing)" -ForegroundColor Gray
+    # Enhanced Performance Summary
+    Write-Host "⚡ PERFORMANCE SUMMARY:" -ForegroundColor Cyan
+    Write-Host "   • Total Time: " -NoNewline; Write-Host "$([math]::Round($duration, 2))s" -ForegroundColor $(if ($duration -lt 60) { 'Green' } elseif ($duration -lt 120) { 'Yellow' } else { 'Red' })
+    Write-Host "   • Files Analyzed: " -NoNewline; Write-Host "$($metrics.Total.Files)" -ForegroundColor White
+    Write-Host "   • Files Skipped: " -NoNewline; Write-Host "$skippedCount (archives/legacy)" -ForegroundColor Gray
+    Write-Host "   • Analysis Speed: " -NoNewline; Write-Host "$([math]::Round($metrics.Total.Files / $duration, 1)) files/sec" -ForegroundColor Cyan
+    Write-Host "   • Phase Breakdown:" -ForegroundColor Gray
+    Write-Host "     └─ File Discovery: $(([math]::Round($discoveryTime / $duration * 100)))%" -ForegroundColor Gray
+    Write-Host "     └─ Code Analysis: $(100 - [math]::Round($discoveryTime / $duration * 100))%" -ForegroundColor Gray
+    
+    if ($UseCache) {
+        Write-Host "   • Cache: " -NoNewline; Write-Host "Enabled" -ForegroundColor Green
+    }
+    
+    # Performance rating
+    $perfRating = if ($duration -lt 30) { "⚡ Blazing Fast" }
+                  elseif ($duration -lt 60) { "✅ Fast" }
+                  elseif ($duration -lt 120) { "⚠️  Normal" }
+                  else { "❌ Slow (consider optimizing exclusions)" }
+    Write-Host "   • Rating: " -NoNewline; Write-Host $perfRating -ForegroundColor $(if ($duration -lt 60) { 'Green' } else { 'Yellow' })
+    Write-Host ""
+    
+    Write-Host "✅ Analysis complete!" -ForegroundColor Green
     Write-Host ""
 
     # Return summary object for programmatic use
     return @{
         AnalysisId = $analysisId
         Duration = $duration
+        FilesAnalyzed = $metrics.Total.Files
+        FilesSkipped = $skippedCount
+        PerformanceRating = $perfRating
         Metrics = $metrics
         Estimates = $estimates
         Complexity = $complexity
