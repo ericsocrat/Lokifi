@@ -20,7 +20,7 @@ export default function ShareBar() {
         timeframe: snap.timeframe || s.timeframe,
       });
       try {
-        window.__fynix_toast?.('Loaded from share link');
+        window.__lokifi_toast?.('Loaded from share link');
       } catch {}
       // clear hash to avoid repeat
       history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -39,7 +39,7 @@ export default function ShareBar() {
     });
     navigator.clipboard.writeText(url);
     try {
-      window.__fynix_toast?.('Share link copied');
+      window.__lokifi_toast?.('Share link copied');
     } catch {}
   };
 
@@ -48,12 +48,12 @@ export default function ShareBar() {
       collab.stop();
       setCollab(null);
       try {
-        window.__fynix_toast?.('Collab stopped');
+        window.__lokifi_toast?.('Collab stopped');
       } catch {}
     } else if (room.trim()) {
       setCollab(startCollab(room.trim()));
       try {
-        window.__fynix_toast?.('Collab started');
+        window.__lokifi_toast?.('Collab started');
       } catch {}
     }
   };
@@ -96,3 +96,4 @@ export default function ShareBar() {
     </div>
   );
 }
+

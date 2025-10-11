@@ -6,8 +6,8 @@ export {}; // Make this a module
 
 declare global {
   interface Window {
-    __fynix_toast?: (message: string) => void;
-    __fynix_lastSnapshotPng?: string;
+    __lokifi_toast?: (message: string) => void;
+    __lokifi_lastSnapshotPng?: string;
     _bbSeries?: unknown[];
     _vwap?: unknown;
     _vwma?: unknown;

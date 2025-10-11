@@ -285,3 +285,4 @@ describe('Drawing Type Definitions', () => {
     });
   });
 });
+

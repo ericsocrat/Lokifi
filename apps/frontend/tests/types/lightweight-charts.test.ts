@@ -304,3 +304,4 @@ describe('Lightweight Charts Type Definitions', () => {
     });
   });
 });
+

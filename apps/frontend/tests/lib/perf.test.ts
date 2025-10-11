@@ -200,3 +200,4 @@ describe('Performance Utilities', () => {
     });
   });
 });
+

@@ -8,7 +8,7 @@ import { symbolStore } from '@/lib/symbolStore';
 import { timeframeStore } from '@/lib/timeframeStore';
 import type { OHLCResponse } from '@/lib/types';
 import { pluginManager } from '@/plugins/registry';
-import type { FynixGlobalThis, FynixWindow } from '@/types/lokifi';
+import type { LokifiGlobalThis, LokifiWindow } from '@/types/lokifi';
 import { createChart, IChartApi, ISeriesApi, Time } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
@@ -111,9 +111,9 @@ export default function ChartPanel() {
 
   // Bind per-symbol apply/clear functions for the settings drawer (guarded)
   useEffect(() => {
-    const pss = (globalThis as any as FynixGlobalThis).pluginSettingsStore;
-    const pssym = (globalThis as any as FynixGlobalThis).pluginSymbolSettings;
-    (window as FynixWindow).__fynixApplySymbolSettings = () => {
+    const pss = (globalThis as any as LokifiGlobalThis).pluginSettingsStore;
+    const pssym = (globalThis as any as LokifiGlobalThis).pluginSymbolSettings;
+    (window as LokifiWindow).__lokifiApplySymbolSettings = () => {
       try {
         const s = pss?.get?.();
         if (!s || !pssym?.set) return;
@@ -125,14 +125,14 @@ export default function ChartPanel() {
         });
       } catch {}
     };
-    (window as any).__fynixClearSymbolSettings = () => {
+    (window as any).__lokifiClearSymbolSettings = () => {
       try {
         pssym?.clear?.(sym, tf);
       } catch {}
     };
     return () => {
-      delete (window as any).__fynixApplySymbolSettings;
-      delete (window as any).__fynixClearSymbolSettings;
+      delete (window as any).__lokifiApplySymbolSettings;
+      delete (window as any).__lokifiClearSymbolSettings;
     };
   }, [sym, tf]);
 
@@ -279,8 +279,8 @@ export default function ChartPanel() {
     resize();
     window.addEventListener('resize', resize);
 
-    (window as any).__fynixChart = chart;
-    (window as any).__fynixCandle = candle;
+    (window as any).__lokifiChart = chart;
+    (window as any).__lokifiCandle = candle;
 
     // Plugin env: snap + optional settings override
     const nearestSnap = (t: number, p: number) => {
@@ -353,8 +353,8 @@ export default function ChartPanel() {
     ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
     ctx.clearRect(0, 0, width, height);
 
-    const chart = (window as any).__fynixChart as IChartApi;
-    const candle = (window as any).__fynixCandle as ISeriesApi<'Candlestick'>;
+    const chart = (window as any).__lokifiChart as IChartApi;
+    const candle = (window as any).__lokifiCandle as ISeriesApi<'Candlestick'>;
     if (!chart || !candle) return;
 
     const ts = chart.timeScale();
@@ -499,12 +499,12 @@ export default function ChartPanel() {
         const k = intersect(lines[i], lines[j]);
         if (k) inters.push(k);
       }
-    (window as any).__fynixIntersections = inters;
+    (window as any).__lokifiIntersections = inters;
 
     const selectedIds = new Set(drawStore.get().selectedIds);
 
     // marquee box if present
-    const mq: any = (window as any).__fynixMarquee;
+    const mq: any = (window as any).__lokifiMarquee;
     if (mq) {
       ctx.save();
       ctx.strokeStyle = 'rgba(59,130,246,0.9)';
@@ -519,7 +519,7 @@ export default function ChartPanel() {
     }
 
     // HUD box (cursor deltas)
-    const hud: any = (window as any).__fynixHUD;
+    const hud: any = (window as any).__lokifiHUD;
     if (hud) {
       const bx = Math.min(canvas.width - 8 - 160, Math.max(8, hud.x || canvas.width - 170));
       const by = Math.min(canvas.height - 8 - 56, Math.max(8, hud.y || 8));
@@ -546,7 +546,7 @@ export default function ChartPanel() {
     }
 
     // Hover tooltip on intersection
-    const hov: any = (window as any).__fynixHover;
+    const hov: any = (window as any).__lokifiHover;
     if (hov?.type === 'intersection') {
       const tx = hov.x + 10,
         ty = hov.y - 10;
@@ -571,7 +571,7 @@ export default function ChartPanel() {
     }
 
     // Ghost overlay (draw preview of shape being created) — fixed structure
-    const ghost: any = (window as any).__fynixGhost;
+    const ghost: any = (window as any).__lokifiGhost;
     if (ghost) {
       ctx.save();
       ctx.globalAlpha = 0.55;
@@ -876,7 +876,7 @@ export default function ChartPanel() {
       if (marquee) {
         marquee.x1 = x;
         marquee.y1 = y;
-        (window as any).__fynixMarquee = marquee;
+        (window as any).__lokifiMarquee = marquee;
         canvas.style.cursor = 'crosshair';
         return;
       }
@@ -938,7 +938,7 @@ export default function ChartPanel() {
           drawStore.setSelection(Array.from(new Set([...drawStore.get().selectedIds, ...ids])));
         else drawStore.setSelection(ids);
         marquee = null;
-        (window as any).__fynixMarquee = null;
+        (window as any).__lokifiMarquee = null;
         if (canvas) canvas.style.cursor = 'default';
         return;
       }
@@ -983,7 +983,7 @@ export default function ChartPanel() {
         marquee = null;
         drawStore.setTool('cursor');
         drawStore.clearSelection();
-        (window as any).__fynixMarquee = null;
+        (window as any).__lokifiMarquee = null;
       }
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         e.preventDefault();
@@ -1062,3 +1062,5 @@ export default function ChartPanel() {
     </div>
   );
 }
+
+

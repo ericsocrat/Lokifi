@@ -32,3 +32,4 @@ export interface ToolPlugin {
 }
 
 export type FynixPlugin = ToolPlugin; // extend later
+

@@ -19,3 +19,4 @@ describe('chartUtils', () => {
     expect(barsFromTimes(a, b, '1m')).toBeCloseTo(60);
   });
 });
+

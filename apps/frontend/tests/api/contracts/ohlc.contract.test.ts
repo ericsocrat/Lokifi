@@ -101,3 +101,4 @@ describe('OHLC API Contract', () => {
     });
   });
 });
+

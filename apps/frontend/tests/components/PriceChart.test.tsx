@@ -447,3 +447,4 @@ describe('PriceChart Component', () => {
     });
   });
 });
+

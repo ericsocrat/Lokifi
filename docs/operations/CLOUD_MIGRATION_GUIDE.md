@@ -4,7 +4,7 @@
 
 ### **Phase 1: Local Development (FREE)**
 - ✅ **PostgreSQL** (Local installation - completely free)
-- ✅ **Redis** (Local installation - completely free)  
+- ✅ **Redis** (Local installation - completely free)
 - ✅ **File Storage** (Local disk with cloud-ready structure)
 - ✅ **Automated Archival** (Keep storage manageable)
 
@@ -111,7 +111,7 @@ DATABASE_URL=postgresql+asyncpg://postgres.[project-id]:[password]@db.[project-i
 
 **Setup Steps:**
 1. **Sign up**: https://redis.com/redis-enterprise-cloud/
-2. **Create Database**: New database → Choose region  
+2. **Create Database**: New database → Choose region
 3. **Get Endpoint**: Database → Connect → Copy endpoint
 4. **Configure**: Update REDIS_URL in .env
 
@@ -223,7 +223,7 @@ python manage_db.py test-connection
 python manage_db.py metrics
 python start_server.py
 
-# Phase 2: Cloud testing  
+# Phase 2: Cloud testing
 # Update .env with cloud credentials
 python manage_db.py test-connection
 python manage_db.py info
@@ -241,7 +241,7 @@ python start_server.py
 
 ### **Week 1: Local PostgreSQL + Redis**
 - ✅ Install PostgreSQL locally
-- ✅ Install Redis locally  
+- ✅ Install Redis locally
 - ✅ Test all database operations
 - ✅ Run archival and maintenance
 - ✅ Verify server performance

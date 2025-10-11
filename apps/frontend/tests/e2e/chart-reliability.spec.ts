@@ -36,8 +36,8 @@ test.describe('Chart Reliability - Part A', () => {
     
     // Check that chart data is loaded by verifying global chart instance
     const candleCount = await page.evaluate(() => {
-      const chart = (window as any).__fynixChart;
-      const candle = (window as any).__fynixCandle;
+      const chart = (window as any).__lokifiChart;
+      const candle = (window as any).__lokifiCandle;
       if (!chart || !candle) return 0;
       
       // Get the data from the candlestick series

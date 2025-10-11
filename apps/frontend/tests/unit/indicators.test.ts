@@ -60,3 +60,4 @@ describe("indicators", () => {
     expect(typeof ch.lower[4]).toBe("number");
   });
 });
+

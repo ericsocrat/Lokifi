@@ -66,7 +66,7 @@ class DatabaseConfig:
             pool_recycle=settings.DATABASE_POOL_RECYCLE,
             echo=False  # Disable SQL logging in production
         )
-        
+
         # Read replica (read-only queries)
         if settings.DATABASE_REPLICA_URL:
             self.replica_engine = create_async_engine(
@@ -95,7 +95,7 @@ BEGIN
     start_date := date_trunc('month', CURRENT_DATE);
     end_date := start_date + interval '1 month';
     table_name := 'ai_messages_' || to_char(start_date, 'YYYY_MM');
-    
+
     EXECUTE format('CREATE TABLE IF NOT EXISTS %I PARTITION OF ai_messages
                     FOR VALUES FROM (%L) TO (%L)',
                    table_name, start_date, end_date);
@@ -112,7 +112,7 @@ SELECT cron.schedule('create-partitions', '0 0 1 * *', 'SELECT create_monthly_pa
 CREATE TABLE ai_messages_users_0_999999 PARTITION OF ai_messages
     FOR VALUES FROM (0) TO (1000000);
 
-CREATE TABLE ai_messages_users_1000000_1999999 PARTITION OF ai_messages  
+CREATE TABLE ai_messages_users_1000000_1999999 PARTITION OF ai_messages
     FOR VALUES FROM (1000000) TO (2000000);
 ```
 
@@ -125,34 +125,34 @@ class DataArchivalService:
     def __init__(self):
         self.archive_threshold_days = 365  # 1 year
         self.delete_threshold_days = 2555  # 7 years (legal compliance)
-    
+
     async def archive_old_conversations(self):
         """Move old conversations to cold storage"""
         cutoff_date = datetime.now() - timedelta(days=self.archive_threshold_days)
-        
+
         # Move to archive table
         archive_query = """
-        INSERT INTO ai_messages_archive 
-        SELECT * FROM ai_messages 
+        INSERT INTO ai_messages_archive
+        SELECT * FROM ai_messages
         WHERE created_at < :cutoff_date
         """
-        
+
         # Delete from main table
         delete_query = """
-        DELETE FROM ai_messages 
+        DELETE FROM ai_messages
         WHERE created_at < :cutoff_date
         """
-        
+
         async with self.db.begin() as transaction:
             await transaction.execute(text(archive_query), {"cutoff_date": cutoff_date})
             await transaction.execute(text(delete_query), {"cutoff_date": cutoff_date})
-    
+
     async def compress_old_messages(self):
         """Compress message content using zlib"""
         compress_query = """
-        UPDATE ai_messages_archive 
+        UPDATE ai_messages_archive
         SET content = compress(content)
-        WHERE created_at < :compress_date 
+        WHERE created_at < :compress_date
         AND content_compressed = FALSE
         """
 ```
@@ -169,14 +169,14 @@ def daily_cleanup():
     """Daily cleanup task"""
     # Archive conversations older than 1 year
     archival_service.archive_old_conversations()
-    
+
     # Compress messages older than 2 years
     archival_service.compress_old_messages()
-    
+
     # Delete conversations older than 7 years
     archival_service.delete_expired_conversations()
 
-@app.task  
+@app.task
 def weekly_vacuum():
     """Weekly database maintenance"""
     # PostgreSQL VACUUM and ANALYZE
@@ -194,7 +194,7 @@ class FileStorageService:
         self.s3_client = boto3.client('s3')
         self.bucket_name = settings.AWS_S3_BUCKET
         self.cloudfront_url = settings.AWS_CLOUDFRONT_URL
-    
+
     async def upload_file(self, file_content: bytes, file_key: str) -> str:
         """Upload file to S3 and return CDN URL"""
         await self.s3_client.put_object(
@@ -203,9 +203,9 @@ class FileStorageService:
             Body=file_content,
             StorageClass='STANDARD_IA'  # Infrequent Access for cost savings
         )
-        
+
         return f"{self.cloudfront_url}/{file_key}"
-    
+
     async def archive_old_files(self):
         """Move old files to Glacier for long-term storage"""
         # Files older than 1 year → Glacier
@@ -253,22 +253,22 @@ class DistributedCacheManager:
         self.redis_cluster = redis.RedisCluster(
             startup_nodes=[
                 {"host": "redis-1", "port": 7000},
-                {"host": "redis-2", "port": 7000}, 
+                {"host": "redis-2", "port": 7000},
                 {"host": "redis-3", "port": 7000}
             ],
             decode_responses=True,
             skip_full_coverage_check=True
         )
-    
+
     async def cache_conversation_context(self, thread_id: int, context: dict):
         """Cache conversation context with TTL"""
         cache_key = f"context:{thread_id}"
         await self.redis_cluster.setex(
-            cache_key, 
+            cache_key,
             3600,  # 1 hour TTL
             json.dumps(context)
         )
-    
+
     async def get_cached_context(self, thread_id: int) -> dict:
         """Retrieve cached conversation context"""
         cache_key = f"context:{thread_id}"
@@ -279,15 +279,15 @@ class DistributedCacheManager:
 #### **B. Database Query Optimization**
 ```sql
 -- Optimized indexes for large datasets
-CREATE INDEX CONCURRENTLY idx_ai_messages_user_thread_time 
+CREATE INDEX CONCURRENTLY idx_ai_messages_user_thread_time
 ON ai_messages (user_id, thread_id, created_at DESC);
 
-CREATE INDEX CONCURRENTLY idx_ai_messages_content_search 
+CREATE INDEX CONCURRENTLY idx_ai_messages_content_search
 ON ai_messages USING GIN(to_tsvector('english', content));
 
 -- Partial indexes for active conversations
-CREATE INDEX CONCURRENTLY idx_active_threads 
-ON ai_threads (user_id, updated_at) 
+CREATE INDEX CONCURRENTLY idx_active_threads
+ON ai_threads (user_id, updated_at)
 WHERE is_archived = FALSE;
 ```
 
@@ -300,30 +300,30 @@ class StorageMonitor:
     async def check_database_size(self):
         """Monitor database size and growth rate"""
         size_query = """
-        SELECT 
+        SELECT
             schemaname,
             tablename,
             pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size,
             pg_total_relation_size(schemaname||'.'||tablename) AS size_bytes
-        FROM pg_tables 
+        FROM pg_tables
         WHERE schemaname = 'public'
         ORDER BY size_bytes DESC;
         """
-        
+
         result = await self.db.execute(text(size_query))
         total_size = sum(row.size_bytes for row in result)
-        
+
         # Alert if database > 80% of available space
         if total_size > (0.8 * self.max_storage_bytes):
             await self.send_alert("Database approaching storage limit")
-    
+
     async def check_partition_health(self):
         """Ensure partitions are created and balanced"""
         partition_query = """
-        SELECT 
-            schemaname, tablename, 
+        SELECT
+            schemaname, tablename,
             pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size
-        FROM pg_tables 
+        FROM pg_tables
         WHERE tablename LIKE 'ai_messages_%'
         ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
         """
@@ -333,7 +333,7 @@ class StorageMonitor:
 
 ### **Phase 1: Immediate (Low Cost)**
 1. ✅ **Migrate to PostgreSQL**: Free, immediate scalability
-2. ✅ **Add database connection pooling**: Better resource utilization  
+2. ✅ **Add database connection pooling**: Better resource utilization
 3. ✅ **Implement basic archival**: Move old data to separate tables
 4. ✅ **Add monitoring**: Track database growth and performance
 

@@ -1763,7 +1763,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
                 name: 'User Test Data',
                 type: 'sql',
                 source: 'test_users.sql',
-                targetDatabase: 'fynix_test',
+                targetDatabase: 'lokifi_test',
                 targetTable: 'users',
                 cleanupAfter: true
               }
@@ -1883,4 +1883,5 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
 if (typeof window !== 'undefined' && FLAGS.integrationTesting) {
   useIntegrationTestingStore.getState().initialize();
 }
+
 

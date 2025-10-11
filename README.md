@@ -353,4 +353,3 @@ GitHub Actions workflows:
 - Use `npm run typecheck` before commits
 - Run tests with `npm test` (frontend) and `pytest` (backend)
 - Health endpoints should always be accessible for monitoring
-

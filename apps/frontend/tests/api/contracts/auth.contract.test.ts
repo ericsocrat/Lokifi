@@ -89,3 +89,4 @@ describe('Authentication API Contract', () => {
     });
   });
 });
+

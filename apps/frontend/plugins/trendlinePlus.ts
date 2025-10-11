@@ -1,5 +1,5 @@
 import type { ToolPlugin } from './types';
-const ghostKey = '__fynixGhost';
+const ghostKey = '__lokifiGhost';
 
 function uuid() {
   return globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
@@ -43,3 +43,4 @@ export const trendlinePlus: ToolPlugin = {
     return !!(trendlinePlus as any)._state?.a;
   },
 };
+

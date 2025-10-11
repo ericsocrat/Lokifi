@@ -1,7 +1,7 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? 'http://localhost:8000/api';
 
 // Lightweight token store (localStorage). In a production app, consider httpOnly cookies.
-const KEY = 'fynix_token';
+const KEY = 'lokifi_token';
 
 export function setToken(token: string | null) {
   if (typeof window === 'undefined') return;
@@ -18,20 +18,20 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
   const url = `${API_BASE}${input}`;
   console.log('🌐 apiFetch: Making request to:', url);
   console.log('🌐 apiFetch: Method:', init.method || 'GET');
-  
+
   const headers = new Headers(init.headers || {});
   // Using HTTP-only cookies for auth, no need for Authorization header
   headers.set('Content-Type', headers.get('Content-Type') || 'application/json');
-  
+
   try {
-    const res = await fetch(url, { 
-      ...init, 
+    const res = await fetch(url, {
+      ...init,
       headers,
-      credentials: 'include' // Enable sending/receiving cookies
+      credentials: 'include', // Enable sending/receiving cookies
     });
-    
+
     console.log('🌐 apiFetch: Response status:', res.status);
-    
+
     if (!res.ok) {
       const text = await res.text().catch(() => '');
       console.log('❌ apiFetch: Error response:', text);
@@ -45,7 +45,7 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
         throw new Error(text || res.statusText);
       }
     }
-    
+
     return res;
   } catch (error) {
     console.error('❌ apiFetch: Request failed:', error);

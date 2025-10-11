@@ -1325,7 +1325,7 @@ export const useRollbackStore = create<RollbackState & RollbackActions>()(
               config: {
                 database: {
                   connectionString: 'postgresql://localhost:5432/lokifi',
-                  backupPath: '/backups/fynix_backup.sql',
+                  backupPath: '/backups/lokifi_backup.sql',
                   schema: 'public'
                 }
               },
@@ -1423,4 +1423,5 @@ function generateChecksum(data: any): string {
 if (typeof window !== 'undefined' && FLAGS.rollback) {
   useRollbackStore.getState().initialize();
 }
+
 

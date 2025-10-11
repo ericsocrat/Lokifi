@@ -13,7 +13,7 @@
 #### Backend Configuration
 - `backend/app/core/config.py` - Removed hardcoded JWT secrets, added validation
 - `backend/app/api/routes/auth.py` - Updated to use secure settings
-- `backend/app/services/auth.py` - Updated to use secure settings  
+- `backend/app/services/auth.py` - Updated to use secure settings
 - `backend/app/api/deps.py` - Updated to use secure settings
 - `backend/app/core/security.py` - Updated JWT functions to use secure configuration
 
@@ -46,7 +46,7 @@
 
 #### Required (Critical)
 - `LOKIFI_JWT_SECRET` - JWT token signing secret
-- `JWT_SECRET_KEY` - Alternative JWT secret (fallback)  
+- `JWT_SECRET_KEY` - Alternative JWT secret (fallback)
 - `SECRET_KEY` - Application secret key
 
 #### Infrastructure (Recommended)
@@ -102,7 +102,7 @@
 ### 🚨 **Security Improvements Implemented**
 
 1. **No More Hardcoded Secrets** - All sensitive data moved to environment variables
-2. **Secure Secret Generation** - Cryptographically strong random secrets  
+2. **Secure Secret Generation** - Cryptographically strong random secrets
 3. **Configuration Validation** - Server won't start without proper secrets
 4. **Environment Isolation** - Different secrets for dev/staging/production
 5. **Docker Security** - Container secrets via environment variables

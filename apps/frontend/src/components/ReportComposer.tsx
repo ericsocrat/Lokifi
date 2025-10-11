@@ -22,7 +22,7 @@ export default function ReportComposer({ open, onClose }: { open: boolean; onClo
       // Add snapshot thumbnails if any
       for (const sn of snapshots) {
         // Expect plugin or chart to expose last PNG; if not, skip gracefully
-        const png = window.__fynix_lastSnapshotPng || '';
+        const png = window.__lokifi_lastSnapshotPng || '';
         if (png) blocks.push({ kind: 'snapshot', title: sn.name, pngDataUrl: png });
       }
       if (includeRecent && s.alertEvents?.length) {
@@ -109,3 +109,4 @@ ${lines.join('\n')}`,
     </div>
   );
 }
+
