@@ -1,0 +1,71 @@
+{
+  "include": [
+    "app"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/node_modules",
+    ".venv",
+    "venv"
+  ],
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "pythonVersion": "3.12",
+  "pythonPlatform": "All",
+  
+  // Strict Type Checking Rules
+  "typeCheckingMode": "strict",
+  
+  // Additional Strict Options
+  "strictListInference": true,
+  "strictDictionaryInference": true,
+  "strictSetInference": true,
+  "strictParameterNoneValue": true,
+  
+  // Error Reporting (all enabled for maximum strictness)
+  "reportGeneralTypeIssues": "error",
+  "reportPropertyTypeMismatch": "error",
+  "reportFunctionMemberAccess": "error",
+  "reportMissingParameterType": "error",
+  "reportUnnecessaryIsInstance": "warning",
+  "reportUnnecessaryCast": "warning",
+  "reportUnnecessaryComparison": "warning",
+  "reportUnnecessaryContains": "warning",
+  "reportAssertAlwaysTrue": "warning",
+  "reportSelfClsParameterName": "warning",
+  "reportImplicitStringConcatenation": "none",
+  "reportUnusedVariable": "warning",
+  "reportUnusedImport": "warning",
+  "reportUnusedClass": "information",
+  "reportUnusedFunction": "information",
+  "reportDuplicateImport": "warning",
+  "reportOptionalSubscript": "error",
+  "reportOptionalMemberAccess": "error",
+  "reportOptionalCall": "error",
+  "reportOptionalIterable": "error",
+  "reportOptionalContextManager": "error",
+  "reportOptionalOperand": "error",
+  "reportUntypedFunctionDecorator": "warning",
+  "reportUntypedClassDecorator": "warning",
+  "reportUntypedBaseClass": "error",
+  "reportUntypedNamedTuple": "warning",
+  "reportPrivateUsage": "warning",
+  "reportConstantRedefinition": "error",
+  "reportIncompatibleMethodOverride": "error",
+  "reportIncompatibleVariableOverride": "error",
+  "reportInconsistentConstructor": "error",
+  "reportOverlappingOverload": "error",
+  "reportMissingSuperCall": "none",
+  "reportUninitializedInstanceVariable": "warning",
+  "reportInvalidStringEscapeSequence": "error",
+  "reportUnknownParameterType": "warning",
+  "reportUnknownArgumentType": "warning",
+  "reportUnknownLambdaType": "warning",
+  "reportUnknownVariableType": "warning",
+  "reportUnknownMemberType": "none",
+  "reportMissingTypeArgument": "error",
+  "reportInvalidTypeVarUse": "error",
+  "reportCallInDefaultInitializer": "none",
+  "reportUnnecessaryTypeIgnoreComment": "warning",
+  "reportImplicitOverride": "warning"
+}

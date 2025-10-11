@@ -18,6 +18,13 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
+    
+    // Additional strict checks
+    "noUncheckedIndexedAccess": true,  // Array/object access returns T | undefined
+    "exactOptionalPropertyTypes": true, // Distinguish undefined vs missing properties
+    "noImplicitOverride": true,         // Require 'override' keyword in subclasses
+    "noPropertyAccessFromIndexSignature": true, // Use bracket notation for index signatures
+    "strictPropertyInitialization": true, // Ensure class properties are initialized
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",

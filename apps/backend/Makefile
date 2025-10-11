@@ -55,6 +55,8 @@ help: ## 🎯 Show available commands
 	@Write-Host "Quality:" -ForegroundColor Green
 	@Write-Host "  make lint       - Run linting" -ForegroundColor Yellow
 	@Write-Host "  make format     - Format code" -ForegroundColor Yellow
+	@Write-Host "  make type-check - Run mypy type checking" -ForegroundColor Yellow
+	@Write-Host "  make type-check-strict - Run Pyright strict checking" -ForegroundColor Yellow
 	@Write-Host "  make check      - Run all checks" -ForegroundColor Yellow
 	@Write-Host ""
 	@Write-Host "Database:" -ForegroundColor Green
@@ -156,8 +158,25 @@ format: setup ## 🎨 Format code with black and ruff
 	@Write-Host "✅ Code formatted" -ForegroundColor Green
 
 type-check: setup ## 🔬 Run type checking with mypy
-	@Write-Host "🔬 Running type checker..." -ForegroundColor Cyan
-	$(VENV_PYTHON) -m mypy app/ --ignore-missing-imports
+	@Write-Host "🔬 Running mypy type checker..." -ForegroundColor Cyan
+	$(VENV_PYTHON) -m mypy app/
+	@Write-Host "✅ Type checking complete" -ForegroundColor Green
+
+type-check-strict: setup ## 🔬 Run strict type checking with Pyright
+	@Write-Host "🔬 Running Pyright strict type checker..." -ForegroundColor Cyan
+	npx pyright app/
+	@Write-Host "✅ Strict type checking complete" -ForegroundColor Green
+
+type-check-all: setup ## 🔬 Run all type checkers (mypy + Pyright)
+	@Write-Host "🔬 Running all type checkers..." -ForegroundColor Cyan
+	@Write-Host "" 
+	@Write-Host "=== Mypy ===" -ForegroundColor Yellow
+	$(VENV_PYTHON) -m mypy app/
+	@Write-Host ""
+	@Write-Host "=== Pyright ===" -ForegroundColor Yellow
+	npx pyright app/
+	@Write-Host ""
+	@Write-Host "✅ All type checking complete" -ForegroundColor Green
 
 check: lint type-check test ## ✅ Run all checks (lint, type-check, test)
 	@Write-Host "✅ All checks passed!" -ForegroundColor Green
