@@ -1353,6 +1353,41 @@ function Invoke-PreCommitValidation {
         Write-Host ""
     }
     
+    # Check 1b: Python Type Check with Pyright (unless skipped)
+    if (-not $SkipTypeCheck -and -not $Quick) {
+        Write-Host "🐍 Python Type Check (Pyright)..." -ForegroundColor Yellow
+        Push-Location $Global:LokifiConfig.BackendDir
+        try {
+            # Check if pyright is available
+            $pyrightAvailable = Get-Command pyright -ErrorAction SilentlyContinue
+            if ($pyrightAvailable) {
+                $result = pyright app 2>&1
+                if ($LASTEXITCODE -eq 0) {
+                    Write-Host "  ✅ Python type check passed" -ForegroundColor Green
+                } else {
+                    # Extract error count
+                    $errorLine = $result | Select-String -Pattern "(\d+) errors?" | Select-Object -First 1
+                    if ($errorLine) {
+                        Write-Host "  ⚠️  Python type errors found: $($errorLine.Line)" -ForegroundColor Yellow
+                    } else {
+                        Write-Host "  ⚠️  Python type errors found" -ForegroundColor Yellow
+                    }
+                    # Don't fail commit for type warnings in development
+                    if ($env:LOKIFI_STRICT_TYPES -eq "true") {
+                        $allPassed = $false
+                    }
+                }
+            } else {
+                Write-Host "  ℹ️  Pyright not installed (optional)" -ForegroundColor Cyan
+            }
+        } catch {
+            Write-Host "  ⚠️  Python type check failed to run" -ForegroundColor Yellow
+        } finally {
+            Pop-Location
+        }
+        Write-Host ""
+    }
+    
     # Check 2: Lint Staged Files (always)
     Write-Host "🧹 Linting Staged Files..." -ForegroundColor Yellow
     Push-Location $Global:LokifiConfig.FrontendDir
@@ -1698,9 +1733,10 @@ function Show-InteractiveLauncher {
         Write-Host " 1. 🎨 Format All Code" -ForegroundColor White
         Write-Host " 2. 🧹 Clean Cache" -ForegroundColor White
         Write-Host " 3. 🔧 Fix TypeScript Issues" -ForegroundColor White
-        Write-Host " 4. 🧪 Run Linter" -ForegroundColor White
-        Write-Host " 5. 🗂️  Organize Documents" -ForegroundColor White
-        Write-Host " 6. 📊 Full Analysis" -ForegroundColor White
+        Write-Host " 4. 🐍 Fix Python Type Annotations" -ForegroundColor White
+        Write-Host " 5. 🧪 Run Linter" -ForegroundColor White
+        Write-Host " 6. 🗂️  Organize Documents" -ForegroundColor White
+        Write-Host " 7. 📊 Full Analysis" -ForegroundColor White
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
         
@@ -1709,13 +1745,14 @@ function Show-InteractiveLauncher {
             "1" { Format-DevelopmentCode }
             "2" { Clean-DevelopmentCache }
             "3" { Invoke-QuickFix -TypeScript }
-            "4" { 
+            "4" { Invoke-PythonTypeFix }
+            "5" { 
                 Push-Location $Global:LokifiConfig.FrontendDir
                 npm run lint
                 Pop-Location
             }
-            "5" { Invoke-UltimateDocumentOrganization "organize" }
-            "6" { Invoke-QuickAnalysis }
+            "6" { Invoke-UltimateDocumentOrganization "organize" }
+            "7" { Invoke-QuickAnalysis }
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
@@ -3109,6 +3146,120 @@ function Invoke-QuickFix {
         Write-Info "No specific fix target specified. Use -TypeScript, -Cleanup, or -All"
         Write-Info "Example: .\lokifi.ps1 fix ts"
     }
+}
+
+function Invoke-PythonTypeFix {
+    <#
+    .SYNOPSIS
+        Automatically fix Python type annotations using Pyright
+    .DESCRIPTION
+        Scans Python code with Pyright and applies common type annotation patterns
+    #>
+    
+    Write-LokifiHeader "Python Type Annotation Fixer"
+    
+    Push-Location $Global:LokifiConfig.BackendDir
+    try {
+        # Check if pyright is available
+        $pyrightAvailable = Get-Command pyright -ErrorAction SilentlyContinue
+        if (-not $pyrightAvailable) {
+            Write-Host "❌ Pyright not installed" -ForegroundColor Red
+            Write-Host "   Install: npm install -g pyright" -ForegroundColor Yellow
+            return
+        }
+        
+        # Check if Python script exists
+        $scriptPath = "scripts/auto_fix_type_annotations.py"
+        if (-not (Test-Path $scriptPath)) {
+            Write-Host "❌ Type annotation fixer script not found" -ForegroundColor Red
+            Write-Host "   Expected: $scriptPath" -ForegroundColor Yellow
+            return
+        }
+        
+        Write-Host ""
+        Write-Host "🔍 Step 1: Scanning with Pyright..." -ForegroundColor Cyan
+        $scanResult = pyright app --outputjson 2>&1 | ConvertFrom-Json
+        
+        $totalErrors = $scanResult.summary.errorCount
+        $filesAnalyzed = $scanResult.summary.filesAnalyzed
+        
+        Write-Host "  📊 Analyzed: $filesAnalyzed files" -ForegroundColor White
+        Write-Host "  📊 Errors: $totalErrors" -ForegroundColor $(if ($totalErrors -gt 0) { "Yellow" } else { "Green" })
+        Write-Host ""
+        
+        if ($totalErrors -eq 0) {
+            Write-Host "✅ No type errors found!" -ForegroundColor Green
+            return
+        }
+        
+        # Preview fixes
+        Write-Host "🔍 Step 2: Analyzing fixable errors..." -ForegroundColor Cyan
+        $previewResult = python $scriptPath --scan 2>&1
+        Write-Host $previewResult
+        Write-Host ""
+        
+        # Ask for confirmation
+        Write-Host "💡 This will automatically add type annotations to fix common errors" -ForegroundColor Cyan
+        Write-Host "   - FastAPI dependencies (current_user, db, redis_client)" -ForegroundColor White
+        Write-Host "   - Middleware parameters (call_next, request, response)" -ForegroundColor White
+        Write-Host "   - Common patterns (data, config, etc.)" -ForegroundColor White
+        Write-Host ""
+        
+        $confirm = Read-Host "Apply fixes? (y/N)"
+        if ($confirm -ne "y" -and $confirm -ne "Y") {
+            Write-Host "❌ Cancelled" -ForegroundColor Yellow
+            return
+        }
+        
+        # Apply fixes
+        Write-Host ""
+        Write-Host "✍️  Step 3: Applying fixes..." -ForegroundColor Cyan
+        $fixResult = python $scriptPath --scan --fix 2>&1
+        Write-Host $fixResult
+        Write-Host ""
+        
+        # Re-scan to show improvement
+        Write-Host "🔍 Step 4: Verifying fixes..." -ForegroundColor Cyan
+        $verifyResult = pyright app --outputjson 2>&1 | ConvertFrom-Json
+        
+        $newErrors = $verifyResult.summary.errorCount
+        $fixed = $totalErrors - $newErrors
+        
+        Write-Host ""
+        Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+        Write-Host "📊 RESULTS" -ForegroundColor Magenta
+        Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+        Write-Host "  Before:  $totalErrors errors" -ForegroundColor Yellow
+        Write-Host "  After:   $newErrors errors" -ForegroundColor $(if ($newErrors -eq 0) { "Green" } else { "Yellow" })
+        Write-Host "  Fixed:   $fixed errors" -ForegroundColor Green
+        
+        if ($fixed -gt 0) {
+            $percent = [math]::Round(($fixed / $totalErrors) * 100, 1)
+            Write-Host "  Progress: $percent% reduction" -ForegroundColor Green
+        }
+        Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+        Write-Host ""
+        
+        if ($newErrors -gt 0) {
+            Write-Host "💡 Some errors remain. These may require manual fixes:" -ForegroundColor Cyan
+            Write-Host "   - Complex return types" -ForegroundColor White
+            Write-Host "   - Custom class types" -ForegroundColor White
+            Write-Host "   - Generic type parameters" -ForegroundColor White
+            Write-Host ""
+            Write-Host "💡 Run 'pyright app' to see remaining errors" -ForegroundColor Cyan
+        } else {
+            Write-Host "🎉 All type errors fixed!" -ForegroundColor Green
+        }
+        
+    } catch {
+        Write-Host "❌ Error running type fixer: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host $_.ScriptStackTrace -ForegroundColor Gray
+    } finally {
+        Pop-Location
+    }
+    
+    Write-Host ""
+    Read-Host "Press Enter to continue"
 }
 
 # ============================================
