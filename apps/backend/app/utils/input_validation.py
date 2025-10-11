@@ -7,6 +7,9 @@ import logging
 import re
 
 from fastapi import HTTPException, status
+from collections.abc import Callable
+from typing import Any
+
 
 logger = logging.getLogger(__name__)
 
@@ -102,8 +105,8 @@ class InputValidator:
 # Validation decorators
 def validate_json_input(max_size: int = 1024*1024):  # 1MB default
     """Decorator to validate JSON input size"""
-    def decorator(func):
-        async def wrapper(*args, **kwargs):
+    def decorator(func: Callable[..., Any]):
+        async def wrapper(*args: Any, **kwargs: Any):
             # This would be implemented with FastAPI dependency injection
             return await func(*args, **kwargs)
         return wrapper

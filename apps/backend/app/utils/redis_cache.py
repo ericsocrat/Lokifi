@@ -24,7 +24,7 @@ def redis_cache(expire: int = 300, key_prefix: str = None):
     """
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
-        async def wrapper(*args, **kwargs) -> Any:
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
             # Generate cache key
             key_data = f"{func.__name__}:{args}:{sorted(kwargs.items())}"
             cache_key = hashlib.md5(key_data.encode()).hexdigest()

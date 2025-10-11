@@ -33,7 +33,7 @@ class RedisCache:
             self._client = redis.from_url(self.redis_url)
         return self._client
     
-    def _generate_cache_key(self, prefix: str, *args, **kwargs) -> str:
+    def _generate_cache_key(self, prefix: str, *args: Any, **kwargs: Any) -> str:
         """Generate unique cache key from function arguments"""
         
         # Create a string representation of arguments
@@ -148,7 +148,7 @@ def redis_cache(
     def decorator(func: Callable) -> Callable:
         
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        async def wrapper(*args: Any, **kwargs: Any):
             # Extract request from arguments
             request = None
             for arg in args:

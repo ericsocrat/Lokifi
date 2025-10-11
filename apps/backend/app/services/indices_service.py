@@ -9,6 +9,8 @@ import httpx
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
+from app.core.redis_client import RedisClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +45,7 @@ class IndicesService:
         "ASX200": {"av": "AXJO", "yahoo": "^AXJO", "name": "ASX 200"},
     }
     
-    def __init__(self, redis_client=None):
+    def __init__(self, redis_client: RedisClient =None):
         self.redis_client = redis_client or advanced_redis_client
         self.client: httpx.AsyncClient | None = None
         self.cache_ttl = 60  # 60 seconds for indices

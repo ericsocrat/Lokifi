@@ -12,6 +12,9 @@ import bleach
 from pydantic import BaseModel, validator
 
 from app.core.security_config import security_config
+from collections.abc import Callable
+from typing import Any
+
 
 
 class InputSanitizer:
@@ -242,8 +245,8 @@ def create_input_validator(field_type: str):
 # Security validation decorators
 def validate_input(field_type: str = 'string'):
     """Decorator to validate function arguments"""
-    def decorator(func):
-        def wrapper(*args, **kwargs):
+    def decorator(func: Callable[..., Any]):
+        def wrapper(*args: Any, **kwargs: Any):
             validator_func = create_input_validator(field_type)
             
             # Validate string arguments

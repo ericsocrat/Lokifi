@@ -7,6 +7,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
+from collections.abc import Callable
+
 
 
 class ProviderErrorCode(Enum):
@@ -163,7 +165,7 @@ class CircuitBreaker:
         self._last_failure_time = 0
         self._state = "closed"  # closed, open, half_open
     
-    async def call(self, func, *args, **kwargs):
+    async def call(self, func: Callable[..., Any], *args: Any, **kwargs: Any):
         """Execute function with circuit breaker protection"""
         if self._state == "open":
             if time.time() - self._last_failure_time > self.recovery_timeout:
@@ -204,7 +206,7 @@ class SingleFlightCache:
         key: str,
         fetch_func,
         ttl: int = 300,
-        *args,
+        *args: Any,
         **kwargs
     ):
         """Get from cache or fetch with single-flight protection"""

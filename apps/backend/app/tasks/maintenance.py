@@ -346,7 +346,7 @@ def emergency_cleanup_task(force_delete_days: int = None) -> dict[str, Any]:
 
 
 # Utility function to run tasks manually
-def run_task_now(task_name: str, **kwargs):
+def run_task_now(task_name: str, **kwargs: Any):
     """Run a maintenance task immediately (for testing/manual execution)"""
     task_map = {
         "daily_archival": daily_archival_task,

@@ -8,6 +8,8 @@ from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from functools import wraps
 from typing import Any
+from collections.abc import Callable
+
 
 logger = logging.getLogger(__name__)
 
@@ -72,9 +74,9 @@ async def measure_async(operation: str) -> AsyncGenerator[None, None]:
 def measure_sync(operation: str):
     """Decorator for measuring sync operations"""
     
-    def decorator(func):
+    def decorator(func: Callable[..., Any]):
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any):
             start_time = time.time()
             success = True
             

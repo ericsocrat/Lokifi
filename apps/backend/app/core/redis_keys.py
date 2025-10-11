@@ -5,6 +5,8 @@ Provides consistent Redis key patterns and centralized management
 
 import hashlib
 from enum import Enum
+from typing import Any
+
 
 
 class RedisKeyspace(str, Enum):
@@ -234,7 +236,7 @@ def get_user_cache_key(user_id: str, data_type: str) -> str:
     """Get user cache key for any data type"""
     return redis_keys._build_key(RedisKeyspace.CACHE, "users", data_type, user_id)
 
-def get_api_cache_key(endpoint: str, **params) -> str:
+def get_api_cache_key(endpoint: str, **params: dict[str, Any]) -> str:
     """Get API cache key with parameter hashing"""
     params_str = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
     params_hash = redis_keys._hash_key(params_str)

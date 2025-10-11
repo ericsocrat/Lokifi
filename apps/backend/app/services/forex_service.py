@@ -9,6 +9,8 @@ import logging
 from datetime import datetime, timezone
 
 import httpx
+from app.core.redis_client import RedisClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,7 @@ logger = logging.getLogger(__name__)
 class ForexService:
     """Service for fetching real-time forex exchange rates"""
     
-    def __init__(self, redis_client=None):
+    def __init__(self, redis_client: RedisClient =None):
         self.redis_client = redis_client
         self.api_key = "8f135e4396d9ef31264e34f0"
         self.base_url = f"https://v6.exchangerate-api.com/v6/{self.api_key}"

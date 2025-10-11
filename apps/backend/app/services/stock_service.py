@@ -9,6 +9,8 @@ import logging
 from datetime import datetime, timezone
 
 import httpx
+from app.core.redis_client import RedisClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +18,7 @@ logger = logging.getLogger(__name__)
 class StockService:
     """Service for fetching real-time stock market data from Alpha Vantage"""
     
-    def __init__(self, redis_client=None):
+    def __init__(self, redis_client: RedisClient =None):
         self.redis_client = redis_client
         self.api_key = "D8RDSS583XDQ1DIA"
         self.base_url = "https://www.alphavantage.co/query"

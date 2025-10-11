@@ -10,6 +10,8 @@ import httpx
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
+from typing import Any
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +40,7 @@ class CryptoDataService:
         if self.client:
             await self.client.aclose()
     
-    def _get_cache_key(self, prefix: str, **kwargs) -> str:
+    def _get_cache_key(self, prefix: str, **kwargs: Any) -> str:
         """Generate cache key from prefix and parameters"""
         params_str = ":".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
         return f"crypto:{prefix}:{params_str}"
@@ -52,7 +54,7 @@ class CryptoDataService:
             logger.warning(f"Cache get failed: {e}")
         return None
     
-    async def _set_cache(self, cache_key: str, data, ttl: int):
+    async def _set_cache(self, cache_key: str, data: dict[str, Any], ttl: int):
         """Set data in cache"""
         try:
             if advanced_redis_client.client:
@@ -103,7 +105,7 @@ class CryptoDataService:
             params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
         
         try:
-            response = await client.get(url, params=params)
+            response = await client.get(url, params=params: dict[str, Any])
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:
