@@ -45,7 +45,7 @@ Method: Use GitHub account (easier integration)
 
 # 2. Import your repository
 Click: "Add New Project"
-Select: Your GitHub repository (fynix)
+Select: Your GitHub repository (lokifi)
 Framework: Next.js (auto-detected)
 Root Directory: frontend/ (if your frontend is in subfolder)
 
@@ -78,7 +78,7 @@ NEXT_PUBLIC_CLOUDFLARE_ZONE_ID=fdab5eebf164ca317a76d3a6dd66fecf
 # 5. Deploy
 Click: "Deploy"
 Wait: 2-3 minutes for build
-Result: You'll get a URL like: fynix.vercel.app
+Result: You'll get a URL like: lokifi.vercel.app
 
 # 6. Add Custom Domain
 Go to: Project Settings → Domains
@@ -141,7 +141,7 @@ Click: "Login with GitHub"
 # 2. Create New Project
 Click: "New Project"
 Select: "Deploy from GitHub repo"
-Choose: Your fynix repository
+Choose: Your lokifi repository
 Root Directory: backend/ (if backend is in subfolder)
 
 # 3. Add Services
@@ -156,7 +156,7 @@ Name it: lokifi-cache
 # 4. Configure Backend Service
 Click: "+ New"
 Select: "GitHub Repo"
-Choose: fynix/backend
+Choose: lokifi/backend
 ```
 
 **Required Environment Variables for Backend:**

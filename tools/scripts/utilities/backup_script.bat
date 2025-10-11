@@ -13,7 +13,7 @@ if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 REM Database backup
 if exist "backend\lokifi.sqlite" (
     echo Backing up database...
-    copy "backend\lokifi.sqlite" "%BACKUP_DIR%\fynix_%DATE%.sqlite"
+    copy "backend\lokifi.sqlite" "%BACKUP_DIR%\lokifi_%DATE%.sqlite"
     echo Database backup completed
 )
 

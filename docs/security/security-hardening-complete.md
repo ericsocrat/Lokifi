@@ -45,7 +45,7 @@
 ### 🔐 **Current Environment Variables Required:**
 
 #### Required (Critical)
-- `FYNIX_JWT_SECRET` - JWT token signing secret
+- `LOKIFI_JWT_SECRET` - JWT token signing secret
 - `JWT_SECRET_KEY` - Alternative JWT secret (fallback)  
 - `SECRET_KEY` - Application secret key
 

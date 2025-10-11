@@ -26,7 +26,7 @@
 
 4. ❓ **`redis/redis.conf`** - Contains Redis password
 
-   - `requirepass fynix_redis_pass`
+   - `requirepass lokifi_redis_pass`
 
 5. ❓ **Potentially `.env` files** (need to verify)
 

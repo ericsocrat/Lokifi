@@ -36,13 +36,13 @@
 choco install postgresql
 
 # Option 3: Using Docker
-docker run --name lokifi-postgres -e POSTGRES_PASSWORD=fynix123 -e POSTGRES_DB=lokifi -p 5432:5432 -d postgres:15
+docker run --name lokifi-postgres -e POSTGRES_PASSWORD=lokifi123 -e POSTGRES_DB=lokifi -p 5432:5432 -d postgres:15
 ```
 
 **Environment Configuration:**
 ```bash
 # Update .env for PostgreSQL
-DATABASE_URL=postgresql+asyncpg://postgres:fynix123@localhost:5432/lokifi
+DATABASE_URL=postgresql+asyncpg://postgres:lokifi123@localhost:5432/lokifi
 ENABLE_DATA_ARCHIVAL=true
 ARCHIVE_THRESHOLD_DAYS=365
 DELETE_THRESHOLD_DAYS=2555

@@ -42,8 +42,8 @@ With 100,000 users: ~17TB/month
 **A. Update Environment Configuration**
 ```bash
 # .env.production
-DATABASE_URL=postgresql+asyncpg://fynix_user:secure_password@db-server:5432/fynix_prod
-DATABASE_REPLICA_URL=postgresql+asyncpg://fynix_user:secure_password@db-replica:5432/fynix_prod
+DATABASE_URL=postgresql+asyncpg://lokifi_user:secure_password@db-server:5432/lokifi_prod
+DATABASE_REPLICA_URL=postgresql+asyncpg://lokifi_user:secure_password@db-replica:5432/lokifi_prod
 
 # Connection pooling
 DATABASE_POOL_SIZE=20
@@ -162,7 +162,7 @@ class DataArchivalService:
 # app/tasks/cleanup.py
 from celery import Celery
 
-app = Celery('fynix_cleanup')
+app = Celery('lokifi_cleanup')
 
 @app.task
 def daily_cleanup():
@@ -233,13 +233,13 @@ class FileStorageService:
 # scripts/backup_database.sh
 
 # Daily backup to S3
-pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/daily/fynix_$(date +%Y%m%d).sql.gz
+pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/daily/lokifi_$(date +%Y%m%d).sql.gz
 
 # Weekly full backup
-pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/weekly/fynix_$(date +%Y%m%d).sql.gz
+pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/weekly/lokifi_$(date +%Y%m%d).sql.gz
 
 # Monthly archive
-pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/monthly/fynix_$(date +%Y%m%d).sql.gz \
+pg_dump $DATABASE_URL | gzip | aws s3 cp - s3://lokifi-backups/monthly/lokifi_$(date +%Y%m%d).sql.gz \
   --storage-class GLACIER
 ```
 

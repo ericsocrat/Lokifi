@@ -104,7 +104,7 @@ install: setup ## 📦 Install/update dependencies
 
 # === SERVER COMMANDS ===
 run: setup ## 🚀 Start FastAPI development server
-	@echo -e "$(CYAN)🚀 Starting Fynix backend server...$(NC)"
+	@echo -e "$(CYAN)🚀 Starting Lokifi backend server...$(NC)"
 	$(VENV_PYTHON) -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 run-prod: setup ## 🏭 Start production server
@@ -173,17 +173,17 @@ db-migrate: setup ## 🔄 Run database migrations
 
 db-reset: setup ## 🗑️ Reset database (WARNING: deletes all data)
 	@echo -e "$(RED)🗑️ Resetting database...$(NC)"
-	rm -f fynix.sqlite
+	rm -f lokifi.sqlite
 	$(MAKE) db-init
 
 # === DOCKER ===
 docker-build: ## 🐳 Build Docker image
 	@echo -e "$(CYAN)🐳 Building Docker image...$(NC)"
-	docker build -t fynix-backend -f Dockerfile .
+	docker build -t lokifi-backend -f Dockerfile .
 
 docker-run: ## 🐳 Run Docker container
 	@echo -e "$(CYAN)🐳 Running Docker container...$(NC)"
-	docker run -p 8000:8000 --env-file .env fynix-backend
+	docker run -p 8000:8000 --env-file .env lokifi-backend
 
 docker-dev: ## 🐳 Run with development compose
 	@echo -e "$(CYAN)🐳 Starting development containers...$(NC)"
@@ -267,7 +267,7 @@ fullstack-dev: ## 🌐 Start both backend and frontend (requires terminal multip
 
 # Production builds
 prod-build: ## 🏭 Build production Docker image
-	docker build -t fynix-backend:prod -f Dockerfile.prod .
+	docker build -t lokifi-backend:prod -f Dockerfile.prod .
 
 prod-run: ## 🏭 Run production container
-	docker run -p 8000:8000 --env-file .env fynix-backend:prod
+	docker run -p 8000:8000 --env-file .env lokifi-backend:prod
