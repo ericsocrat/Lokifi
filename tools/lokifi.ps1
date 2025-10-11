@@ -107,6 +107,17 @@ param(
     [string]$LogLevel = "info",
     [int]$Duration = 60,
     [int]$Hours = 24,  # For metrics percentiles
+    
+    # Test-specific parameters
+    [string]$TestFile = "",
+    [string]$TestMatch = "",
+    [switch]$TestSmart,
+    [switch]$TestCoverage,
+    [switch]$TestGate,
+    [switch]$TestPreCommit,
+    [switch]$TestVerbose,
+    
+    # General flags
     [switch]$SkipTypeCheck,
     [switch]$SkipAnalysis,
     [switch]$Quick,
@@ -1154,34 +1165,93 @@ function Start-DevelopmentWorkflow {
 }
 
 function Run-DevelopmentTests {
-    param([string]$Type = "all")
+    param(
+        [string]$Type = "all",
+        [string]$Category,
+        [string]$File,
+        [string]$Match,
+        [switch]$Smart,
+        [switch]$Quick,
+        [switch]$Coverage,
+        [switch]$Gate,
+        [switch]$PreCommit,
+        [switch]$Verbose,
+        [switch]$Watch
+    )
     
-    switch ($Type) {
-        "all" {
-            Write-ColoredText "🧪 Running all tests..." "Cyan"
-            Run-DevelopmentTests "backend"
-            Run-DevelopmentTests "frontend"
-        }
-        "backend" {
-            Write-ColoredText "🧪 Running backend tests..." "Cyan"
-            Push-Location $Global:LokifiConfig.BackendDir
-            try {
-                $env:PYTHONPATH = $PWD.Path
-                & .\venv\Scripts\python.exe -m pytest tests/ -v --tb=short
-            } finally {
-                Pop-Location
+    # Use the comprehensive test runner
+    $testRunnerPath = Join-Path $PSScriptRoot "test-runner.ps1"
+    
+    if (-not (Test-Path $testRunnerPath)) {
+        Write-Warning "Enhanced test runner not found at: $testRunnerPath"
+        Write-Info "Falling back to simple test execution..."
+        
+        # Fallback to simple execution
+        switch ($Type) {
+            "all" {
+                Write-ColoredText "🧪 Running all tests..." "Cyan"
+                Run-DevelopmentTests "backend"
+                Run-DevelopmentTests "frontend"
+            }
+            "backend" {
+                Write-ColoredText "🧪 Running backend tests..." "Cyan"
+                Push-Location $Global:LokifiConfig.BackendDir
+                try {
+                    $env:PYTHONPATH = $PWD.Path
+                    & .\venv\Scripts\python.exe -m pytest tests/ -v --tb=short
+                } finally {
+                    Pop-Location
+                }
+            }
+            "frontend" {
+                Write-ColoredText "🧪 Running frontend tests..." "Cyan"
+                Push-Location $Global:LokifiConfig.FrontendDir
+                try {
+                    npm run test:ci
+                } finally {
+                    Pop-Location
+                }
             }
         }
-        "frontend" {
-            Write-ColoredText "🧪 Running frontend tests..." "Cyan"
-            Push-Location $Global:LokifiConfig.FrontendDir
-            try {
-                npm run test:ci
-            } finally {
-                Pop-Location
-            }
-        }
+        return
     }
+    
+    # Build arguments for test runner
+    $testRunnerArgs = @()
+    
+    # Map Type to Category
+    if ($Type -and $Type -ne "all") {
+        $testRunnerArgs += "-Category"
+        $testRunnerArgs += $Type
+    } elseif ($Category) {
+        $testRunnerArgs += "-Category"
+        $testRunnerArgs += $Category
+    }
+    
+    # File selection
+    if ($File) {
+        $testRunnerArgs += "-File"
+        $testRunnerArgs += $File
+    }
+    
+    # Match pattern
+    if ($Match) {
+        $testRunnerArgs += "-Match"
+        $testRunnerArgs += $Match
+    }
+    
+    # Switches
+    if ($Smart) { $testRunnerArgs += "-Smart" }
+    if ($Quick) { $testRunnerArgs += "-Quick" }
+    if ($Coverage) { $testRunnerArgs += "-Coverage" }
+    if ($Gate) { $testRunnerArgs += "-Gate" }
+    if ($PreCommit) { $testRunnerArgs += "-PreCommit" }
+    if ($Verbose) { $testRunnerArgs += "-Verbose" }
+    if ($Watch) { $testRunnerArgs += "-Watch" }
+    
+    # Execute enhanced test runner
+    Write-ColoredText "🧪 Running tests with enhanced test runner..." "Cyan"
+    & $testRunnerPath @testRunnerArgs
 }
 
 function Format-DevelopmentCode {
@@ -3057,8 +3127,17 @@ USAGE:
     servers     Start ALL servers (Full Docker stack with local fallback)
     redis       Manage Redis container only  
     postgres    Setup PostgreSQL container
-    test        🆕 Comprehensive testing suite with coverage context
-                Components: all, api, backend/be, frontend/fe
+    test        🆕 Enhanced testing suite with smart selection
+                Components: all, api, unit, integration, e2e, security, backend/be, frontend/fe
+                -TestSmart: Run only affected tests (based on git changes)
+                -TestQuick: Fast tests only (<10s per test)
+                -TestCoverage: Generate coverage reports
+                -TestPreCommit: Essential pre-commit tests
+                -TestGate: Quality gate validation
+                -TestFile: Run specific test file
+                -TestMatch: Run tests matching pattern
+                -TestVerbose: Detailed test output
+                -Watch: Watch mode for frontend tests
                 -Quick: Skip coverage analysis
                 Shows: Current coverage, test files, lines needed for 70%
     organize    Organize repository files
@@ -3227,6 +3306,30 @@ USAGE:
         View migration history
 
 ⚡ TESTING & PERFORMANCE EXAMPLES:
+    .\lokifi.ps1 test -Component all -TestCoverage
+        Run all tests with coverage report
+
+    .\lokifi.ps1 test -Component api -TestVerbose
+        Run API tests with verbose output
+
+    .\lokifi.ps1 test -TestSmart
+        Smart test selection (only affected tests)
+
+    .\lokifi.ps1 test -TestPreCommit
+        Quick pre-commit test suite
+
+    .\lokifi.ps1 test -TestGate
+        Quality gate validation
+
+    .\lokifi.ps1 test -Component backend -TestFile test_auth.py
+        Run specific test file
+
+    .\lokifi.ps1 test -TestMatch "user"
+        Run tests matching pattern
+
+    .\lokifi.ps1 test -Component frontend -Watch
+        Run frontend tests in watch mode
+
     .\lokifi.ps1 loadtest -Duration 120
         Run 2-minute load test
 
@@ -6388,68 +6491,10 @@ switch ($Action.ToLower()) {
             }
         }
         
-        # Run the tests
-        if ($Component -eq 'all' -or $Component -eq 'full') {
-            Write-Step "🧪" "Running all tests..."
-            
-            # Backend tests
-            Write-Host "`n=== Backend Tests ===" -ForegroundColor Cyan
-            if (Test-Path "backend/tests") {
-                Push-Location backend
-                if (Test-Path "venv/Scripts/Activate.ps1") {
-                    & "venv/Scripts/Activate.ps1"
-                    python -m pytest tests/ -v
-                } else {
-                    Write-Warning "Backend virtual environment not found. Run: .\lokifi.ps1 setup"
-                }
-                Pop-Location
-            } else {
-                Write-Info "No backend tests found"
-            }
-            
-            # Frontend tests
-            Write-Host "`n=== Frontend Tests ===" -ForegroundColor Cyan
-            if (Test-Path "frontend/package.json") {
-                Push-Location frontend
-                npm test -- --passWithNoTests
-                Pop-Location
-            } else {
-                Write-Info "No frontend tests configured"
-            }
-            
-            # API tests
-            Write-Host "`n=== API Integration Tests ===" -ForegroundColor Cyan
-            Test-LokifiAPI
-        }
-        elseif ($Component -eq 'api') {
-            Write-Step "🌐" "Running API tests..."
-            Test-LokifiAPI
-        }
-        elseif ($Component -eq 'backend' -or $Component -eq 'be') {
-            Write-Step "🐍" "Running backend tests..."
-            if (Test-Path "backend/tests") {
-                Push-Location backend
-                if (Test-Path "venv/Scripts/Activate.ps1") {
-                    & "venv/Scripts/Activate.ps1"
-                    python -m pytest tests/ -v
-                } else {
-                    Write-Warning "Backend virtual environment not found. Run: .\lokifi.ps1 setup"
-                }
-                Pop-Location
-            }
-        }
-        elseif ($Component -eq 'frontend' -or $Component -eq 'fe') {
-            Write-Step "⚛️" "Running frontend tests..."
-            if (Test-Path "frontend/package.json") {
-                Push-Location frontend
-                npm test -- --passWithNoTests
-                Pop-Location
-            }
-        }
-        else {
-            # Default: API tests only
-            Test-LokifiAPI
-        }
+        # Use the enhanced test runner with new capabilities
+        Run-DevelopmentTests -Type $Component -File $TestFile -Match $TestMatch `
+            -Smart:$TestSmart -Quick:$Quick -Coverage:$TestCoverage -Gate:$TestGate `
+            -PreCommit:$TestPreCommit -Verbose:$TestVerbose -Watch:$Watch
         
         Write-Host ""
         Write-Success "Testing complete! 🎉"

@@ -1,0 +1,197 @@
+{
+  "React Functional Component": {
+    "prefix": "rfc",
+    "body": [
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export function ${1:ComponentName}({ $3 }: ${1:ComponentName}Props) {",
+      "  return (",
+      "    <div>",
+      "      $0",
+      "    </div>",
+      "  )",
+      "}"
+    ],
+    "description": "React functional component with TypeScript"
+  },
+
+  "React Component with State": {
+    "prefix": "rfcs",
+    "body": [
+      "import { useState } from 'react'",
+      "",
+      "interface ${1:ComponentName}Props {",
+      "  $2",
+      "}",
+      "",
+      "export function ${1:ComponentName}({ $3 }: ${1:ComponentName}Props) {",
+      "  const [${4:state}, set${4/(.*)/${1:/capitalize}/}] = useState($5)",
+      "",
+      "  return (",
+      "    <div>",
+      "      $0",
+      "    </div>",
+      "  )",
+      "}"
+    ],
+    "description": "React functional component with state"
+  },
+
+  "Vitest Test Suite": {
+    "prefix": "vtest",
+    "body": [
+      "import { describe, it, expect, vi } from 'vitest'",
+      "import { render, screen } from '@testing-library/react'",
+      "import { ${1:ComponentName} } from './${1:ComponentName}'",
+      "",
+      "describe('${1:ComponentName}', () => {",
+      "  it('renders correctly', () => {",
+      "    render(<${1:ComponentName} />)",
+      "    expect(screen.getByRole('${2:button}')).toBeInTheDocument()",
+      "  })",
+      "",
+      "  it('${3:test description}', () => {",
+      "    $0",
+      "  })",
+      "})"
+    ],
+    "description": "Vitest test suite with React Testing Library"
+  },
+
+  "Custom React Hook": {
+    "prefix": "hook",
+    "body": [
+      "import { useState, useEffect } from 'react'",
+      "",
+      "export function use${1:HookName}($2) {",
+      "  const [${3:value}, set${3/(.*)/${1:/capitalize}/}] = useState($4)",
+      "",
+      "  useEffect(() => {",
+      "    $0",
+      "  }, [])",
+      "",
+      "  return { ${3:value}, set${3/(.*)/${1:/capitalize}/} }",
+      "}"
+    ],
+    "description": "Custom React Hook"
+  },
+
+  "Zustand Store": {
+    "prefix": "zustand",
+    "body": [
+      "import { create } from 'zustand'",
+      "",
+      "interface ${1:StoreName}State {",
+      "  ${2:property}: ${3:string}",
+      "  set${2/(.*)/${1:/capitalize}/}: (${2:property}: ${3:string}) => void",
+      "}",
+      "",
+      "export const use${1:StoreName} = create<${1:StoreName}State>((set) => ({",
+      "  ${2:property}: ${4:''},",
+      "  set${2/(.*)/${1:/capitalize}/}: (${2:property}) => set({ ${2:property} }),",
+      "}))"
+    ],
+    "description": "Zustand store with TypeScript"
+  },
+
+  "API Fetch with Error Handling": {
+    "prefix": "apifetch",
+    "body": [
+      "try {",
+      "  const response = await fetch('${1:url}', {",
+      "    method: '${2:GET}',",
+      "    headers: {",
+      "      'Content-Type': 'application/json',",
+      "    },",
+      "    ${3:body: JSON.stringify(data),}",
+      "  })",
+      "",
+      "  if (!response.ok) {",
+      "    throw new Error('Request failed')",
+      "  }",
+      "",
+      "  const data = await response.json()",
+      "  $0",
+      "} catch (error) {",
+      "  console.error('API Error:', error)",
+      "  throw error",
+      "}"
+    ],
+    "description": "API fetch with error handling"
+  },
+
+  "Console Log with Label": {
+    "prefix": "clog",
+    "body": [
+      "console.log('🔍 ${1:label}:', $0)"
+    ],
+    "description": "Console log with emoji label"
+  },
+
+  "TypeScript Interface": {
+    "prefix": "interface",
+    "body": [
+      "interface ${1:InterfaceName} {",
+      "  ${2:property}: ${3:string}",
+      "  $0",
+      "}"
+    ],
+    "description": "TypeScript interface"
+  },
+
+  "TypeScript Type": {
+    "prefix": "type",
+    "body": [
+      "type ${1:TypeName} = {",
+      "  ${2:property}: ${3:string}",
+      "  $0",
+      "}"
+    ],
+    "description": "TypeScript type alias"
+  },
+
+  "Arrow Function": {
+    "prefix": "af",
+    "body": [
+      "const ${1:functionName} = (${2:params}) => {",
+      "  $0",
+      "}"
+    ],
+    "description": "Arrow function"
+  },
+
+  "Async Arrow Function": {
+    "prefix": "aaf",
+    "body": [
+      "const ${1:functionName} = async (${2:params}) => {",
+      "  $0",
+      "}"
+    ],
+    "description": "Async arrow function"
+  },
+
+  "UseEffect Hook": {
+    "prefix": "ue",
+    "body": [
+      "useEffect(() => {",
+      "  $0",
+      "}, [${1:dependencies}])"
+    ],
+    "description": "useEffect hook"
+  },
+
+  "Try Catch Block": {
+    "prefix": "try",
+    "body": [
+      "try {",
+      "  $0",
+      "} catch (error) {",
+      "  console.error('Error:', error)",
+      "  ${1:// Handle error}",
+      "}"
+    ],
+    "description": "Try catch block"
+  }
+}

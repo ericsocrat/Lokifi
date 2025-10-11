@@ -1,0 +1,181 @@
+{
+  "FastAPI Route": {
+    "prefix": "route",
+    "body": [
+      "@router.${1|get,post,put,delete,patch|}(\"/${2:endpoint}\")",
+      "async def ${3:function_name}(",
+      "    ${4:param}: ${5:str},",
+      "    db: AsyncSession = Depends(get_db),",
+      "    current_user: User = Depends(get_current_user)",
+      ") -> ${6:dict}:",
+      "    \"\"\"${7:Description}\"\"\"",
+      "    $0",
+      "    return {\"message\": \"Success\"}"
+    ],
+    "description": "FastAPI route with dependencies"
+  },
+
+  "Pydantic Model": {
+    "prefix": "model",
+    "body": [
+      "class ${1:ModelName}(BaseModel):",
+      "    ${2:field}: ${3:str}",
+      "    ${4:field2}: ${5:int | None} = None",
+      "",
+      "    class Config:",
+      "        from_attributes = True",
+      "        $0"
+    ],
+    "description": "Pydantic model with Config"
+  },
+
+  "SQLAlchemy Model": {
+    "prefix": "dbmodel",
+    "body": [
+      "class ${1:ModelName}(Base):",
+      "    __tablename__ = \"${2:table_name}\"",
+      "",
+      "    id: Mapped[int] = mapped_column(primary_key=True)",
+      "    ${3:field}: Mapped[${4:str}] = mapped_column(${5:String(255)})",
+      "    created_at: Mapped[datetime] = mapped_column(default=func.now())",
+      "    updated_at: Mapped[datetime] = mapped_column(default=func.now(), onupdate=func.now())",
+      "    $0"
+    ],
+    "description": "SQLAlchemy 2.0 model with Mapped columns"
+  },
+
+  "Pytest Test Function": {
+    "prefix": "test",
+    "body": [
+      "@pytest.mark.asyncio",
+      "async def test_${1:function_name}(${2:client: TestClient}):",
+      "    \"\"\"${3:Test description}\"\"\"",
+      "    # Arrange",
+      "    ${4:data = {\"key\": \"value\"\\}}",
+      "",
+      "    # Act",
+      "    response = await ${2:client}.${5:get}(\"${6:/endpoint}\"${7:, json=data})",
+      "",
+      "    # Assert",
+      "    assert response.status_code == ${8:200}",
+      "    $0"
+    ],
+    "description": "Pytest async test function"
+  },
+
+  "Pytest Fixture": {
+    "prefix": "fixture",
+    "body": [
+      "@pytest.fixture",
+      "async def ${1:fixture_name}():",
+      "    \"\"\"${2:Fixture description}\"\"\"",
+      "    ${3:# Setup}",
+      "    $0",
+      "    yield ${4:value}",
+      "    ${5:# Teardown}"
+    ],
+    "description": "Pytest async fixture"
+  },
+
+  "Async Function": {
+    "prefix": "async",
+    "body": [
+      "async def ${1:function_name}(${2:params}) -> ${3:None}:",
+      "    \"\"\"${4:Description}\"\"\"",
+      "    $0"
+    ],
+    "description": "Async function with type hints"
+  },
+
+  "Database Session Dependency": {
+    "prefix": "dbdep",
+    "body": [
+      "async def get_db() -> AsyncGenerator[AsyncSession, None]:",
+      "    \"\"\"Database session dependency\"\"\"",
+      "    async with async_session_maker() as session:",
+      "        try:",
+      "            yield session",
+      "            await session.commit()",
+      "        except Exception:",
+      "            await session.rollback()",
+      "            raise",
+      "        finally:",
+      "            await session.close()"
+    ],
+    "description": "Database session dependency"
+  },
+
+  "Try Except Block": {
+    "prefix": "try",
+    "body": [
+      "try:",
+      "    $0",
+      "except ${1:Exception} as e:",
+      "    ${2:logger.error(f\"Error: {e\"})}",
+      "    raise"
+    ],
+    "description": "Try except block"
+  },
+
+  "Logger Setup": {
+    "prefix": "logger",
+    "body": [
+      "import logging",
+      "",
+      "logger = logging.getLogger(__name__)",
+      "logger.setLevel(logging.${1|DEBUG,INFO,WARNING,ERROR|})"
+    ],
+    "description": "Python logger setup"
+  },
+
+  "Dataclass": {
+    "prefix": "dc",
+    "body": [
+      "@dataclass",
+      "class ${1:ClassName}:",
+      "    ${2:field}: ${3:str}",
+      "    ${4:field2}: ${5:int} = ${6:0}",
+      "    $0"
+    ],
+    "description": "Python dataclass"
+  },
+
+  "Type Hints Function": {
+    "prefix": "def",
+    "body": [
+      "def ${1:function_name}(${2:param}: ${3:str}) -> ${4:str}:",
+      "    \"\"\"${5:Description}\"\"\"",
+      "    $0",
+      "    return ${6:result}"
+    ],
+    "description": "Function with type hints"
+  },
+
+  "Redis Cache Decorator": {
+    "prefix": "cache",
+    "body": [
+      "@cache(expire=${1:300})",
+      "async def ${2:function_name}(${3:params}):",
+      "    \"\"\"${4:Cached function}\"\"\"",
+      "    $0"
+    ],
+    "description": "Redis cache decorator"
+  },
+
+  "Main Guard": {
+    "prefix": "main",
+    "body": [
+      "if __name__ == \"__main__\":",
+      "    $0"
+    ],
+    "description": "Main guard"
+  },
+
+  "Print Debug": {
+    "prefix": "plog",
+    "body": [
+      "print(f\"🔍 ${1:label}: {${2:variable}=}\")"
+    ],
+    "description": "Debug print with emoji"
+  }
+}

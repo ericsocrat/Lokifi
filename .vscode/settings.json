@@ -10,7 +10,8 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
-    "source.organizeImports": "explicit"
+    "source.organizeImports": "explicit",
+    "source.addMissingImports": "explicit"
   },
   "editor.rulers": [80, 120],
   "editor.tabSize": 2,
@@ -32,6 +33,13 @@
   "editor.linkedEditing": true,
   "editor.stickyScroll.enabled": true,
   "editor.unicodeHighlight.ambiguousCharacters": false,
+  "editor.quickSuggestionsDelay": 0,
+  "editor.parameterHints.enabled": true,
+  "editor.renderWhitespace": "selection",
+  "editor.occurrencesHighlight": "singleFile",
+  "editor.selectionHighlight": true,
+  "editor.semanticHighlighting.enabled": true,
+  "editor.maxTokenizationLineLength": 20000,
 
   // ===== FILES - AUTO-SAVE & EXCLUSIONS =====
   "files.autoSave": "onFocusChange",
@@ -39,6 +47,24 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.eol": "\n",
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/node_modules/**": true,
+    "**/.next/**": true,
+    "**/__pycache__/**": true,
+    "**/coverage/**": true,
+    "**/.lokifi-cache/**": true,
+    "**/dist/**": true,
+    "**/build/**": true,
+    "**/venv/**": true,
+    "**/.venv/**": true,
+    "**/site-packages/**": true,
+    "**/.pytest_cache/**": true,
+    "**/htmlcov/**": true,
+    "**/*.log": true,
+    "**/logs/**": true
+  },
   "files.exclude": {
     "**/.git": true,
     "**/.next": true,
@@ -50,15 +76,6 @@
     "**/coverage": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true
-  },
-  "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.next/**": true,
-    "**/node_modules/**": true,
-    "**/__pycache__/**": true,
-    "**/.lokifi-cache/**": true,
-    "**/dist/**": true,
-    "**/build/**": true
   },
 
   // ===== SEARCH - SMART EXCLUSIONS =====
@@ -117,7 +134,10 @@
   },
   "[jsonc]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "editor.quickSuggestions": {
+      "strings": true
+    }
   },
   "typescript.updateImportsOnFileMove.enabled": "always",
   "javascript.updateImportsOnFileMove.enabled": "always",
@@ -128,6 +148,17 @@
   "typescript.suggest.autoImports": true,
   "javascript.suggest.paths": true,
   "typescript.suggest.paths": true,
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.watchOptions": {
+    "watchFile": "useFsEvents",
+    "watchDirectory": "useFsEvents",
+    "fallbackPolling": "dynamicPriorityPolling"
+  },
+  "typescript.suggest.completeFunctionCalls": true,
+  "javascript.suggest.completeFunctionCalls": true,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.tsserver.log": "off",
+  "typescript.surveys.enabled": false,
 
   // ===== PYTHON - BACKEND CONFIGURATION =====
   "[python]": {
@@ -143,7 +174,9 @@
   "python.analysis.autoImportCompletions": true,
   "python.analysis.inlayHints.functionReturnTypes": true,
   "python.analysis.inlayHints.variableTypes": false,
-  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.diagnosticMode": "openFilesOnly",
+  "python.analysis.memory.keepLibraryAst": false,
+  "python.analysis.persistAllIndices": false,
   "python.defaultInterpreterPath": "${workspaceFolder}/apps/backend/venv/Scripts/python.exe",
   "python.envFile": "${workspaceFolder}/apps/backend/.env",
   "python.testing.pytestEnabled": true,
@@ -154,6 +187,7 @@
   ],
   "python.languageServer": "Pylance",
   "python.linting.enabled": false,
+  "python.analysis.indexing": false,
   "isort.args": ["--profile", "black"],
   "black-formatter.args": ["--line-length", "100"],
 
@@ -245,14 +279,25 @@
   "git.autofetch": true,
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
+  "git.postCommitCommand": "push",
   "git.autofetchPeriod": 180,
   "git.pruneOnFetch": true,
   "git.untrackedChanges": "separate",
   "gitlens.hovers.currentLine.over": "line",
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
-  "gitlens.hovers.enabled": true,
+  "gitlens.hovers.enabled": false,
   "gitlens.statusBar.enabled": true,
+  "gitlens.blame.avatars": false,
+  "gitlens.blame.format": "${message|40?} ${agoOrDate|14-}",
+  "gitlens.blame.highlight.enabled": false,
+  "gitlens.changes.locations": ["line"],
+  "gitlens.heatmap.toggleMode": "file",
+  "gitlens.views.repositories.avatars": false,
+  "gitlens.views.fileHistory.avatars": false,
+  "gitlens.views.lineHistory.avatars": false,
+  "gitlens.views.commits.avatars": false,
+  "gitlens.views.contributors.avatars": false,
   "diffEditor.ignoreTrimWhitespace": false,
   "diffEditor.renderSideBySide": true,
 
@@ -301,14 +346,26 @@
     }
   },
   "terminal.integrated.cwd": "${workspaceFolder}",
+  "terminal.integrated.persistentSessionReviveProcess": "onExit",
+  "terminal.integrated.enablePersistentSessions": true,
 
   // ===== PERFORMANCE - OPTIMIZATIONS =====
   "files.maxMemoryForLargeFilesMB": 4096,
-  "extensions.ignoreRecommendations": false,
+  "extensions.ignoreRecommendations": true,
   "extensions.autoUpdate": false,
   "extensions.autoCheckUpdates": false,
+  "extensions.experimental.useAutoProfilingMode": true,
   "workbench.enableExperiments": false,
   "workbench.settings.enableNaturalLanguageSearch": false,
+  "telemetry.telemetryLevel": "off",
+  "update.mode": "manual",
+  "update.showReleaseNotes": false,
+  "git.decorations.enabled": true,
+  "git.timeline.showUncommitted": false,
+  "scm.diffDecorations": "gutter",
+  "scm.diffDecorationsGutterWidth": 3,
+  "editor.codeLens": true,
+  "diffEditor.codeLens": false,
 
   // ===== GITHUB COPILOT - AI ASSISTANCE =====
   "github.copilot.enable": {
@@ -318,22 +375,45 @@
     "markdown": true
   },
   "github.copilot.editor.enableAutoCompletions": true,
+  "github.copilot.editor.enableCodeActions": false,
+  "github.copilot.chat.useProjectTemplates": false,
 
   // ===== WORKBENCH - UI PREFERENCES =====
   "workbench.colorTheme": "Default Dark+",
   "workbench.iconTheme": "vs-seti",
   "workbench.startupEditor": "none",
   "workbench.editor.enablePreview": false,
+  "workbench.editor.closeEmptyGroups": false,
+  "workbench.editor.revealIfOpen": true,
   "workbench.editor.limit.enabled": true,
   "workbench.editor.limit.value": 10,
   "workbench.editor.limit.perEditorGroup": true,
   "workbench.tree.indent": 20,
   "workbench.list.smoothScrolling": true,
   "workbench.activityBar.location": "default",
+  "problems.autoReveal": false,
+
+  // ===== FILE EXPLORER - FILE NESTING =====
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.ts": "${capture}.js, ${capture}.d.ts, ${capture}.map",
+    "*.tsx": "${capture}.test.tsx, ${capture}.module.css, ${capture}.stories.tsx",
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+    "*.jsx": "${capture}.test.jsx",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, .npmrc, .yarnrc",
+    ".env": ".env.*, .envrc",
+    "tsconfig.json": "tsconfig.*.json",
+    "vite.config.*": "vitest.config.*",
+    "tailwind.config.*": "postcss.config.*",
+    "README.md": "README.*, LICENSE, CHANGELOG.md"
+  },
 
   // ===== NPM - PACKAGE MANAGEMENT =====
   "npm.packageManager": "npm",
   "npm.fetchOnlinePackageInfo": false,
+  "npm.autoDetect": "on",
+  "npm.runSilent": false,
 
   // ===== BREADCRUMBS =====
   "breadcrumbs.enabled": true,

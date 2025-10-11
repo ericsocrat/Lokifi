@@ -1,0 +1,111 @@
+[
+  // ============================================
+  // LOKIFI CUSTOM KEYBOARD SHORTCUTS
+  // Optimized for: Next.js + FastAPI + Testing
+  // ============================================
+
+  // ===== GIT OPERATIONS =====
+  {
+    "key": "ctrl+shift+enter",
+    "command": "git.commitAll",
+    "when": "!inDebugMode"
+  },
+  {
+    "key": "ctrl+shift+g ctrl+shift+p",
+    "command": "git.push"
+  },
+  {
+    "key": "ctrl+shift+g ctrl+shift+s",
+    "command": "git.sync"
+  },
+
+  // ===== TESTING =====
+  {
+    "key": "ctrl+shift+t",
+    "command": "testing.runCurrentFile",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+shift+a",
+    "command": "testing.runAll"
+  },
+  {
+    "key": "ctrl+shift+d",
+    "command": "testing.debugCurrentFile",
+    "when": "editorTextFocus"
+  },
+
+  // ===== TERMINAL =====
+  {
+    "key": "ctrl+`",
+    "command": "workbench.action.terminal.toggleTerminal"
+  },
+  {
+    "key": "ctrl+shift+`",
+    "command": "workbench.action.terminal.new"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "workbench.action.terminal.kill"
+  },
+
+  // ===== EDITOR =====
+  {
+    "key": "ctrl+shift+f",
+    "command": "editor.action.formatDocument",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+o",
+    "command": "editor.action.organizeImports",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+
+  // ===== NAVIGATION =====
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.quickOpen"
+  },
+  {
+    "key": "ctrl+shift+p",
+    "command": "workbench.action.showCommands"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+
+  // ===== TASKS =====
+  {
+    "key": "ctrl+shift+r",
+    "command": "workbench.action.tasks.runTask"
+  },
+  {
+    "key": "ctrl+shift+b",
+    "command": "workbench.action.tasks.build"
+  },
+
+  // ===== COVERAGE =====
+  {
+    "key": "ctrl+shift+c ctrl+shift+w",
+    "command": "coverage-gutters.watchCoverageAndVisibleEditors"
+  },
+  {
+    "key": "ctrl+shift+c ctrl+shift+d",
+    "command": "coverage-gutters.displayCoverage"
+  },
+
+  // ===== COPILOT =====
+  {
+    "key": "ctrl+shift+i",
+    "command": "github.copilot.generate",
+    "when": "editorTextFocus"
+  },
+
+  // ===== CUSTOM LOKIFI COMMANDS =====
+  {
+    "key": "ctrl+shift+l ctrl+shift+s",
+    "command": "workbench.action.tasks.runTask",
+    "args": "🚀 Start All Servers"
+  }
+]
