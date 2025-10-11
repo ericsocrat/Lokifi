@@ -336,7 +336,7 @@ async def update_user_notification_preferences(
         current_prefs = await smart_notification_processor.get_user_notification_preferences(user_id)
         
         # Update with new preferences
-        for key, value in preferences.dict(exclude_unset=True).items():
+        for key, value in preferences.model_dump(exclude_unset=True).items():
             if value is not None:
                 current_prefs[key] = value
         

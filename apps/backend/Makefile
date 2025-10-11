@@ -169,7 +169,7 @@ type-check-strict: setup ## 🔬 Run strict type checking with Pyright
 
 type-check-all: setup ## 🔬 Run all type checkers (mypy + Pyright)
 	@Write-Host "🔬 Running all type checkers..." -ForegroundColor Cyan
-	@Write-Host "" 
+	@Write-Host ""
 	@Write-Host "=== Mypy ===" -ForegroundColor Yellow
 	$(VENV_PYTHON) -m mypy app/
 	@Write-Host ""

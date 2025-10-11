@@ -357,7 +357,7 @@ async def update_notification_preferences(
         return JSONResponse(content={
             "message": "Notification preferences updated",
             "user_id": current_user.id,
-            "updated_fields": [k for k, v in request.dict().items() if v is not None]
+            "updated_fields": [k for k, v in request.model_dump().items() if v is not None]
         })
         
     except Exception as e:

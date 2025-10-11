@@ -154,7 +154,7 @@ async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> di
         ]
 
         # inject system prompt
-        msgs = [{"role":"system","content": SYSTEM_PROMPT}] + [m.dict() for m in req.messages]
+        msgs = [{"role":"system","content": SYSTEM_PROMPT}] + [m.model_dump() for m in req.messages]
         try:
             first = await openai_chat(msgs, tools)
         except Exception:

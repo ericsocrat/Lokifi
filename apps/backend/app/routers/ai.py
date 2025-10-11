@@ -145,7 +145,7 @@ async def send_message(
                     # Final message
                     yield f"data: {json.dumps({
                         'type': 'complete',
-                        'message': AIMessageResponse.from_orm(chunk).dict()
+                        'message': AIMessageResponse.from_orm(chunk).model_dump()
                     })}\n\n"
 
                     # J6.1 Notification Integration: Trigger AI response notification

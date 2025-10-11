@@ -12,16 +12,16 @@
   "reportMissingTypeStubs": false,
   "pythonVersion": "3.12",
   "pythonPlatform": "All",
-  
+
   // Strict Type Checking Rules
   "typeCheckingMode": "strict",
-  
+
   // Additional Strict Options
   "strictListInference": true,
   "strictDictionaryInference": true,
   "strictSetInference": true,
   "strictParameterNoneValue": true,
-  
+
   // Error Reporting (all enabled for maximum strictness)
   "reportGeneralTypeIssues": "error",
   "reportPropertyTypeMismatch": "error",

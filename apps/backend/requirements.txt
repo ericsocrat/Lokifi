@@ -34,8 +34,9 @@ httpx==0.28.1
 certifi==2024.12.14
 backoff==2.2.1
 
-# WebSockets
+# WebSockets & SSE
 websockets==15.0.1
+sse-starlette==2.2.1
 
 # Background Tasks & CLI
 celery==5.5.3

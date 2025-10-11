@@ -13,12 +13,13 @@ from app.services.prices import fetch_ohlc
 
 AlertType = Literal["price_threshold", "pct_change"]
 
+
 @dataclass
 class Alert:
     id: str
     type: AlertType
     symbol: str
-    timeframe: str   # canonical: 1m,5m,15m,1h,4h,1d
+    timeframe: str  # canonical: 1m,5m,15m,1h,4h,1d
     active: bool
     created_at: float
     # debouncing
@@ -26,7 +27,10 @@ class Alert:
     last_triggered_at: float | None
     # free-form config per type
     config: dict[str, Any]
-    owner_handle: str | None = None  # e.g., { "direction":"above","price":42000 } or { "window_minutes":60,"direction":"down","threshold_pct":-3 }
+    owner_handle: str | None = (
+        None  # e.g., { "direction":"above","price":42000 } or { "window_minutes":60,"direction":"down","threshold_pct":-3 }
+    )
+
 
 class AlertStore:
     def __init__(self, path: str):
@@ -84,6 +88,7 @@ class AlertStore:
         await self.save()
         return a
 
+
 # Simple SSE hub
 class SSEHub:
     def __init__(self):
@@ -107,6 +112,7 @@ class SSEHub:
                     q.put_nowait(event)
                 except asyncio.QueueFull:
                     pass
+
 
 # Evaluator
 class AlertEvaluator:
@@ -157,12 +163,14 @@ class AlertEvaluator:
                 continue
             a.last_triggered_at = now
             await self.store.save()
-            await self.hub.broadcast({
-                "type": "alert.triggered",
-                "alert": asdict(a),
-                "payload": payload,
-                "ts": now,
-            })
+            await self.hub.broadcast(
+                {
+                    "type": "alert.triggered",
+                    "alert": asdict(a),
+                    "payload": payload,
+                    "ts": now,
+                }
+            )
 
     async def _evaluate(self, a: Alert) -> tuple[bool, dict[str, Any]]:
         # Reuse OHLC endpoint logic via services.prices
@@ -194,7 +202,11 @@ class AlertEvaluator:
             if direction == "up" and pct >= thresh:
                 return True, {"pct_change": pct, "threshold_pct": thresh, "direction": direction}
             if direction == "down" and pct <= -abs(thresh):
-                return True, {"pct_change": pct, "threshold_pct": -abs(thresh), "direction": direction}
+                return True, {
+                    "pct_change": pct,
+                    "threshold_pct": -abs(thresh),
+                    "direction": direction,
+                }
             if direction == "abs" and abs(pct) >= abs(thresh):
                 return True, {"pct_change": pct, "threshold_pct": thresh, "direction": direction}
             return False, {"pct_change": pct, "threshold_pct": thresh, "direction": direction}
@@ -202,9 +214,14 @@ class AlertEvaluator:
         else:
             return False, {"reason": "unknown_type"}
 
+
 # Singleton-like module state
-STORE_PATH = os.getenv("LOKIFI_ALERTS_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "data", "alerts.json"))
+STORE_PATH = os.getenv(
+    "LOKIFI_ALERTS_PATH",
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "data", "alerts.json"),
+)
 store = AlertStore(STORE_PATH)
 hub = SSEHub()
-evaluator = AlertEvaluator(store=store, hub=hub, interval_sec=int(os.getenv("LOKIFI_ALERTS_INTERVAL", "15")))
-
+evaluator = AlertEvaluator(
+    store=store, hub=hub, interval_sec=int(os.getenv("LOKIFI_ALERTS_INTERVAL", "15"))
+)

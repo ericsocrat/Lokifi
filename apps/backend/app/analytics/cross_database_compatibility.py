@@ -4,13 +4,14 @@ Provides cross-database compatibility for analytics queries with fallback strate
 """
 
 import logging
-from datetime import datetime, timedelta
-from typing import Any
+from datetime import datetime, timedelta, timezone
+from typing import Any, Optional
 
 from sqlalchemy import String, func, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import ClauseElement
+from sqlalchemy.sql.elements import ColumnElement
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +42,7 @@ class CrossDatabaseQuery:
         self.is_sqlite = dialect == DatabaseDialect.SQLITE
         self.is_postgresql = dialect == DatabaseDialect.POSTGRESQL
     
-    def json_extract(self, column, path: str) -> ClauseElement:
+    def json_extract(self, column: ColumnElement[Any], path: str) -> ClauseElement:
         """Extract JSON field with cross-database compatibility"""
         
         if self.is_postgresql:
@@ -57,7 +58,7 @@ class CrossDatabaseQuery:
             logger.warning(f"JSON extraction fallback for dialect: {self.dialect}")
             return func.cast(column, String)
     
-    def json_object_keys(self, column) -> ClauseElement:
+    def json_object_keys(self, column: ColumnElement[Any]) -> ClauseElement:
         """Get JSON object keys with cross-database compatibility"""
         
         if self.is_postgresql:
@@ -72,7 +73,7 @@ class CrossDatabaseQuery:
         else:
             return text("'[]'")
     
-    def date_trunc(self, field: str, column) -> ClauseElement:
+    def date_trunc(self, field: str, column: ColumnElement[Any]) -> ClauseElement:
         """Date truncation with cross-database compatibility"""
         
         if self.is_postgresql:
@@ -98,7 +99,7 @@ class CrossDatabaseQuery:
         else:
             return column
     
-    def window_function_row_number(self, partition_by=None, order_by=None) -> ClauseElement:
+    def window_function_row_number(self, partition_by: Optional[ColumnElement[Any]] = None, order_by: Optional[ColumnElement[Any]] = None) -> ClauseElement:
         """ROW_NUMBER() window function with compatibility"""
         
         if self.is_sqlite:
@@ -114,7 +115,7 @@ class CrossDatabaseQuery:
             logger.warning("Window functions not supported, using fallback")
             return text("1")
     
-    def aggregate_array(self, column) -> ClauseElement:
+    def aggregate_array(self, column: ColumnElement[Any]) -> ClauseElement:
         """Array aggregation with cross-database compatibility"""
         
         if self.is_postgresql:
@@ -128,7 +129,7 @@ class CrossDatabaseQuery:
         else:
             return func.group_concat(column)
     
-    def regex_match(self, column, pattern: str) -> ClauseElement:
+    def regex_match(self, column: ColumnElement[Any], pattern: str) -> ClauseElement:
         """Regex matching with cross-database compatibility"""
         
         if self.is_postgresql:
@@ -157,7 +158,7 @@ class AnalyticsQueryBuilder:
         
         try:
             # Get cutoff date
-            cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
             
             # Build query with dialect-specific date truncation
             if self.dialect == DatabaseDialect.POSTGRESQL:
@@ -205,7 +206,7 @@ class AnalyticsQueryBuilder:
         """Get notification analytics with cross-database compatibility"""
         
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
             
             # Base query that works on both databases
             base_query = text("""
@@ -287,7 +288,7 @@ class AnalyticsQueryBuilder:
         """Get user engagement metrics with cross-database compatibility"""
         
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
             
             # Simplified query that works on both databases
             engagement_query = text("""
@@ -342,7 +343,7 @@ class AnalyticsQueryBuilder:
         """Get message analytics with cross-database compatibility"""
         
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
             
             # Check if messages table exists
             if self.dialect == DatabaseDialect.POSTGRESQL:
@@ -402,7 +403,7 @@ class AnalyticsQueryBuilder:
         logger.info("Using fallback user activity query")
         
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
             
             simple_query = text("""
                 SELECT 
@@ -434,7 +435,7 @@ class AnalyticsQueryBuilder:
         logger.info("Using fallback notification analytics")
         
         try:
-            cutoff_date = datetime.utcnow() - timedelta(days=days_back)
+            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
             
             simple_query = text("""
                 SELECT COUNT(*) as total_count
