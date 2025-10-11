@@ -130,21 +130,22 @@ class J53PerformanceMonitor:
                 health_data["table_statistics"] = table_stats
                 
                 # Recent activity check (requires AIMessage import)
-                try:
-                    from app.models.ai_models import AIMessage
-                    
-                    messages_last_hour = await session.scalar(
-                        select(func.count(AIMessage.id)).where(
-                            AIMessage.created_at >= datetime.now() - timedelta(hours=1)
-                        )
-                    ) or 0
-                    
-                    health_data["messages_last_hour"] = messages_last_hour
-                    health_data["activity_healthy"] = messages_last_hour < MetricThreshold.DAILY_GROWTH_WARNING.value / 24
-                except ImportError:
-                    logger.debug("AIMessage model not available for activity check")
-                    health_data["messages_last_hour"] = 0
-                    health_data["activity_healthy"] = True
+                # TODO: Implement app.models.ai_models.AIMessage or remove this feature
+                # try:
+                #     from app.models.ai_models import AIMessage
+                #     
+                #     messages_last_hour = await session.scalar(
+                #         select(func.count(AIMessage.id)).where(
+                #             AIMessage.created_at >= datetime.now() - timedelta(hours=1)
+                #         )
+                #     ) or 0
+                #     
+                #     health_data["messages_last_hour"] = messages_last_hour
+                #     health_data["activity_healthy"] = messages_last_hour < MetricThreshold.DAILY_GROWTH_WARNING.value / 24
+                # except ImportError:
+                #     logger.debug("AIMessage model not available for activity check")
+                health_data["messages_last_hour"] = 0
+                health_data["activity_healthy"] = True
                 
                 # Index health (PostgreSQL only)
                 if not self.settings.DATABASE_URL.startswith("sqlite"):

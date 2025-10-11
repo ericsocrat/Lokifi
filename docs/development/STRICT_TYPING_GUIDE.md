@@ -128,7 +128,7 @@ npx tsc --noEmit
   "strictDictionaryInference": true,
   "strictSetInference": true,
   "strictParameterNoneValue": true,
-  
+
   // All type errors are now ERRORS (not warnings)
   "reportGeneralTypeIssues": "error",
   "reportOptionalMemberAccess": "error",
@@ -266,7 +266,7 @@ function greetUser(data: unknown) {
 
 ```typescript
 // Instead of optional fields
-type Result = 
+type Result =
   | { status: 'success'; data: User }
   | { status: 'error'; error: string };
 
@@ -369,7 +369,7 @@ Add to `.vscode/settings.json`:
   // TypeScript
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  
+
   // Python
   "python.analysis.typeCheckingMode": "strict",
   "python.analysis.diagnosticMode": "workspace",

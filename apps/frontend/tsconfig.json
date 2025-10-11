@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -18,11 +14,11 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    
+
     // Additional strict checks
-    "noUncheckedIndexedAccess": true,  // Array/object access returns T | undefined
+    "noUncheckedIndexedAccess": true, // Array/object access returns T | undefined
     "exactOptionalPropertyTypes": true, // Distinguish undefined vs missing properties
-    "noImplicitOverride": true,         // Require 'override' keyword in subclasses
+    "noImplicitOverride": true, // Require 'override' keyword in subclasses
     "noPropertyAccessFromIndexSignature": true, // Use bracket notation for index signatures
     "strictPropertyInitialization": true, // Ensure class properties are initialized
     "noEmit": true,
@@ -35,49 +31,20 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*",
-        "*"
-      ],
-      "@/app/*": [
-        "app/*",
-        "src/app/*"
-      ],
-      "@/components/*": [
-        "components/*",
-        "src/components/*"
-      ],
-      "@/lib/*": [
-        "src/lib/*",
-        "lib/*"
-      ],
-      "@/state/*": [
-        "src/state/*",
-        "state/*"
-      ],
-      "@/plugins/*": [
-        "src/plugins/*",
-        "plugins/*"
-      ]
+      "@/*": ["src/*", "*"],
+      "@/app/*": ["app/*", "src/app/*"],
+      "@/components/*": ["components/*", "src/components/*"],
+      "@/lib/*": ["src/lib/*", "lib/*"],
+      "@/state/*": ["src/state/*", "state/*"],
+      "@/plugins/*": ["src/plugins/*", "plugins/*"]
     },
-    "types": [
-      "vitest",
-      "node"
-    ],
+    "types": ["vitest", "node"],
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
-    "types/**/*.d.ts",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", "types/**/*.d.ts", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

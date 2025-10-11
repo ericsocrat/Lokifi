@@ -11,7 +11,7 @@ import logging
 import mimetypes
 import uuid
 from collections.abc import AsyncGenerator
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -87,7 +87,7 @@ class MultiModalAIService:
             "file_hash": file_hash,
             "file_size": len(content),
             "mime_type": mime_type,
-            "processed_at": str(datetime.utcnow()),
+            "processed_at": str(datetime.now(timezone.utc)),
             "processing_type": processed_data["type"]
         }
         

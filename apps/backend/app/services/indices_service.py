@@ -3,7 +3,7 @@ Indices Service - Real data from Alpha Vantage and Yahoo Finance
 Replaces mock data with actual market indices
 """
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 
 import httpx
 
@@ -152,7 +152,7 @@ class IndicesService:
                         "current_price": current_price,
                         "price_change_percentage_24h": change_percent,
                         "provider": "alpha_vantage",
-                        "last_updated": datetime.utcnow().isoformat()
+                        "last_updated": datetime.now(timezone.utc).isoformat()
                     })
                     
                     logger.info(f"✅ Fetched {symbol} from Alpha Vantage: ${current_price:,.2f}")
@@ -223,7 +223,7 @@ class IndicesService:
                             "current_price": item.get("regularMarketPrice", 0),
                             "price_change_percentage_24h": item.get("regularMarketChangePercent", 0),
                             "provider": "yahoo_finance",
-                            "last_updated": datetime.utcnow().isoformat()
+                            "last_updated": datetime.now(timezone.utc).isoformat()
                         })
                 
                 logger.info(f"✅ Yahoo Finance: Fetched {len(indices)} indices successfully")

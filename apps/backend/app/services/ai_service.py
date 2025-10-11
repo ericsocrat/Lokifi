@@ -9,7 +9,7 @@ import re
 import time
 from collections import defaultdict, deque
 from collections.abc import AsyncGenerator
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from sqlalchemy.exc import IntegrityError
@@ -183,13 +183,13 @@ class AIService:
         with get_session() as db:
             # Generate title if not provided
             if not title:
-                title = f"Chat {datetime.utcnow().strftime('%Y-%m-%d %H:%M')}"
+                title = f"Chat {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')}"
             
             thread = AIThread(
                 user_id=user_id,
                 title=title[:255],  # Limit title length
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc)
             )
             
             try:
@@ -280,7 +280,7 @@ class AIService:
                 thread_id=thread_id,
                 role="user",
                 content=message,
-                created_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc)
             )
             
             db.add(user_message)
@@ -319,7 +319,7 @@ class AIService:
                 content="",
                 model=model or await provider.get_default_model(),
                 provider=provider.name,
-                created_at=datetime.utcnow()
+                created_at=datetime.now(timezone.utc)
             )
             
             db.add(ai_message)
@@ -366,10 +366,10 @@ class AIService:
                 # Update the message with final content
                 ai_message.content = response_content
                 ai_message.token_count = token_count
-                ai_message.completed_at = datetime.utcnow()
+                ai_message.completed_at = datetime.now(timezone.utc)
                 
                 # Update thread timestamp
-                thread.updated_at = datetime.utcnow()
+                thread.updated_at = datetime.now(timezone.utc)
                 
                 db.commit()
                 db.refresh(ai_message)
@@ -383,7 +383,7 @@ class AIService:
                 # Update message with error
                 ai_message.content = "I apologize, but I encountered an error while generating a response."
                 ai_message.error = str(e)
-                ai_message.completed_at = datetime.utcnow()
+                ai_message.completed_at = datetime.now(timezone.utc)
                 
                 db.commit()
                 db.refresh(ai_message)
@@ -424,7 +424,7 @@ class AIService:
                 return None
             
             thread.title = title[:255]
-            thread.updated_at = datetime.utcnow()
+            thread.updated_at = datetime.now(timezone.utc)
             
             db.commit()
             db.refresh(thread)

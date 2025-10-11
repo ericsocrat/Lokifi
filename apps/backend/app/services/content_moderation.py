@@ -7,7 +7,7 @@ Enhanced safety and moderation capabilities beyond basic filtering.
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Any
 
@@ -228,7 +228,7 @@ class ContentModerator:
             self.user_violations[user_id] = []
         
         # Add violation
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(timezone.utc)
         for category in categories:
             self.user_violations[user_id].append((timestamp, category))
         

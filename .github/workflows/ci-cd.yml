@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '18.x'
-  PYTHON_VERSION: '3.11'
+  NODE_VERSION: "18.x"
+  PYTHON_VERSION: "3.11"
   REGISTRY: ghcr.io
   IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
   IMAGE_NAME_BACKEND: ${{ github.repository }}/backend
@@ -31,7 +31,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
@@ -62,7 +62,7 @@ jobs:
           path: frontend/.next/
           retention-days: 7
 
-  # Backend Tests & Build  
+  # Backend Tests & Build
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
@@ -127,7 +127,7 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -135,16 +135,16 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+          scan-type: "fs"
+          scan-ref: "."
+          format: "sarif"
+          output: "trivy-results.sarif"
 
       - name: Upload Trivy scan results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: "trivy-results.sarif"
 
       - name: Frontend security audit
         continue-on-error: true
@@ -294,10 +294,10 @@ jobs:
           echo "Deploying to staging environment..."
           # In a real setup, this would deploy to your staging environment
           # Examples: kubectl, terraform, AWS CLI, etc.
-          
+
           # Example with docker-compose
           # docker-compose -f docker-compose.staging.yml up -d
-          
+
           echo "Deployment completed"
 
       - name: Run smoke tests
@@ -305,11 +305,11 @@ jobs:
           echo "Running smoke tests against staging..."
           # Wait for deployment
           sleep 60
-          
+
           # Basic health checks
           curl -f http://staging.fynix.example.com/api/health || exit 1
           curl -f http://staging.fynix.example.com/ || exit 1
-          
+
           echo "Smoke tests passed"
 
   # Deploy to Production
