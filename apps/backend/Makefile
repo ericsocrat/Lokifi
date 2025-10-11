@@ -1,4 +1,6 @@
-SHELL := /bin/bash
+SHELL := pwsh.exe
+.SHELLFLAGS := -NoProfile -Command
+
 PYTHON := python
 PIP := pip
 VENV := venv
@@ -8,44 +10,72 @@ VENV_PIP := $(VENV_BIN)/pip
 
 # Windows detection and path adjustments
 ifeq ($(OS),Windows_NT)
+    SHELL := pwsh.exe
+    .SHELLFLAGS := -NoProfile -Command
     VENV_BIN := $(VENV)/Scripts
     VENV_PYTHON := $(VENV_BIN)/python.exe
     VENV_PIP := $(VENV_BIN)/pip.exe
     PYTHONPATH := $(shell pwd)
     export PYTHONPATH
+    RM := Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+    MKDIR := New-Item -ItemType Directory -Force -Path
 else
     export PYTHONPATH := $(shell pwd)
+    RM := rm -rf
+    MKDIR := mkdir -p
 endif
-
-# Colors for output
-RED := \033[0;31m
-GREEN := \033[0;32m
-YELLOW := \033[0;33m
-BLUE := \033[0;34m
-PURPLE := \033[0;35m
-CYAN := \033[0;36m
-NC := \033[0m # No Color
 
 .PHONY: help setup install dev test lint format type-check clean run docker-build docker-run
 
 help: ## 🎯 Show available commands
-	@echo -e "$(CYAN)🚀 Fynix Backend Development Commands$(NC)"
-	@echo -e "$(CYAN)=====================================$(NC)"
-	@echo ""
-	@echo -e "$(GREEN)Quick Start:$(NC)"
-	@echo -e "  $(YELLOW)make start$(NC)     - Setup everything and start server"
-	@echo -e "  $(YELLOW)make dev$(NC)       - Start development server"
-	@echo -e "  $(YELLOW)make test$(NC)      - Run all tests"
-	@echo ""
-	@echo -e "$(GREEN)Available Commands:$(NC)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  $(YELLOW)%-15s$(NC) %s\n", $$1, $$2}'
+	@Write-Host ""
+	@Write-Host "🚀 Lokifi Backend Development Commands" -ForegroundColor Cyan
+	@Write-Host "=======================================" -ForegroundColor Cyan
+	@Write-Host ""
+	@Write-Host "Quick Start:" -ForegroundColor Green
+	@Write-Host "  make start      - Setup everything and start server" -ForegroundColor Yellow
+	@Write-Host "  make dev        - Start development server" -ForegroundColor Yellow
+	@Write-Host "  make test       - Run all tests" -ForegroundColor Yellow
+	@Write-Host ""
+	@Write-Host "Development:" -ForegroundColor Green
+	@Write-Host "  make s          - Super short dev server alias" -ForegroundColor Yellow
+	@Write-Host "  make t          - Quick test alias" -ForegroundColor Yellow
+	@Write-Host "  make l          - Quick lint and fix" -ForegroundColor Yellow
+	@Write-Host "  make f          - Quick format" -ForegroundColor Yellow
+	@Write-Host ""
+	@Write-Host "Setup:" -ForegroundColor Green
+	@Write-Host "  make setup      - Create venv and install deps" -ForegroundColor Yellow
+	@Write-Host "  make install    - Install/update dependencies" -ForegroundColor Yellow
+	@Write-Host ""
+	@Write-Host "Testing:" -ForegroundColor Green
+	@Write-Host "  make test       - Run all tests" -ForegroundColor Yellow
+	@Write-Host "  make test-fast  - Run tests in parallel" -ForegroundColor Yellow
+	@Write-Host "  make test-cov   - Run with coverage" -ForegroundColor Yellow
+	@Write-Host ""
+	@Write-Host "Quality:" -ForegroundColor Green
+	@Write-Host "  make lint       - Run linting" -ForegroundColor Yellow
+	@Write-Host "  make format     - Format code" -ForegroundColor Yellow
+	@Write-Host "  make check      - Run all checks" -ForegroundColor Yellow
+	@Write-Host ""
+	@Write-Host "Database:" -ForegroundColor Green
+	@Write-Host "  make db-init    - Initialize database" -ForegroundColor Yellow
+	@Write-Host "  make db-migrate - Run migrations" -ForegroundColor Yellow
+	@Write-Host "  make db-reset   - Reset database (⚠️ deletes data)" -ForegroundColor Yellow
+	@Write-Host ""
+	@Write-Host "Maintenance:" -ForegroundColor Green
+	@Write-Host "  make clean      - Remove cache files" -ForegroundColor Yellow
+	@Write-Host "  make health     - Check system health" -ForegroundColor Yellow
+	@Write-Host "  make version    - Show versions" -ForegroundColor Yellow
+	@Write-Host ""
 
 # === QUICK COMMANDS ===
 start: setup run ## 🚀 Quick start: setup + run server
-	@echo -e "$(GREEN)✅ Fynix backend started!$(NC)"
+	@Write-Host "✅ Lokifi backend started!" -ForegroundColor Green
 
 dev: setup ## 🔧 Start development server (short alias for run)
-	@echo -e "$(CYAN)🔥 Starting development server...$(NC)"
+	@Write-Host "🔥 Starting development server..." -ForegroundColor Cyan
+	@Write-Host "📡 Server: http://127.0.0.1:8000" -ForegroundColor Blue
+	@Write-Host "📖 API Docs: http://127.0.0.1:8000/docs" -ForegroundColor Blue
 	$(VENV_PYTHON) -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 s: dev ## ⚡ Super short alias for dev server
@@ -61,15 +91,16 @@ setup: $(VENV_BIN)/activate ## 🔧 Create virtual environment and install depen
 	@echo -e "$(GREEN)✅ Environment setup complete$(NC)"
 
 $(VENV_BIN)/activate: requirements.txt
-	@echo -e "$(CYAN)📦 Creating virtual environment...$(NC)"
-	$(PYTHON) -m venv $(VENV)
+	@Write-Host "📦 Creating virtual environment..." -ForegroundColor Cyan
+	@if (-not (Test-Path $(VENV))) { $(PYTHON) -m venv $(VENV) }
 	$(VENV_PIP) install --upgrade pip setuptools wheel
 	$(VENV_PIP) install -r requirements.txt
-	@echo -e "$(GREEN)✅ Dependencies installed$(NC)"
+	@Write-Host "✅ Dependencies installed" -ForegroundColor Green
 
 install: setup ## 📦 Install/update dependencies
+	@Write-Host "📦 Installing dependencies..." -ForegroundColor Cyan
 	$(VENV_PIP) install -r requirements.txt
-	@echo -e "$(GREEN)✅ Dependencies updated$(NC)"
+	@Write-Host "✅ Dependencies updated" -ForegroundColor Green
 
 # === SERVER COMMANDS ===
 run: setup ## 🚀 Start FastAPI development server
@@ -86,16 +117,17 @@ run-debug: setup ## 🐛 Start server with debug logging
 
 # === TESTING ===
 test: setup ## 🧪 Run all tests
-	@echo -e "$(CYAN)🧪 Running tests...$(NC)"
+	@Write-Host "🧪 Running tests..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m pytest tests/ -v --tb=short
 
 test-fast: setup ## ⚡ Run tests in parallel (faster)
-	@echo -e "$(CYAN)⚡ Running fast tests...$(NC)"
+	@Write-Host "⚡ Running fast tests..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m pytest tests/ -v -n auto
 
 test-cov: setup ## 📊 Run tests with coverage report
-	@echo -e "$(CYAN)📊 Running tests with coverage...$(NC)"
+	@Write-Host "📊 Running tests with coverage..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m pytest tests/ -v --cov=app --cov-report=html --cov-report=term-missing
+	@Write-Host "📄 Coverage report: htmlcov/index.html" -ForegroundColor Blue
 
 test-security: setup ## 🔒 Run security tests
 	@echo -e "$(CYAN)🔒 Running security tests...$(NC)"
@@ -109,25 +141,26 @@ test-all: test test-security ## 🎯 Run comprehensive test suite
 
 # === CODE QUALITY ===
 lint: setup ## 🔍 Run linting (ruff)
-	@echo -e "$(CYAN)🔍 Running linter...$(NC)"
+	@Write-Host "🔍 Running linter..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m ruff check .
 
 lint-fix: setup ## 🔧 Run linting with auto-fix
-	@echo -e "$(CYAN)🔧 Running linter with auto-fix...$(NC)"
+	@Write-Host "🔧 Running linter with auto-fix..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m ruff check . --fix
+	@Write-Host "✅ Linting complete" -ForegroundColor Green
 
 format: setup ## 🎨 Format code with black and ruff
-	@echo -e "$(CYAN)🎨 Formatting code...$(NC)"
+	@Write-Host "🎨 Formatting code..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m black .
 	$(VENV_PYTHON) -m ruff check . --fix
-	@echo -e "$(GREEN)✅ Code formatted$(NC)"
+	@Write-Host "✅ Code formatted" -ForegroundColor Green
 
 type-check: setup ## 🔬 Run type checking with mypy
-	@echo -e "$(CYAN)🔬 Running type checker...$(NC)"
+	@Write-Host "🔬 Running type checker..." -ForegroundColor Cyan
 	$(VENV_PYTHON) -m mypy app/ --ignore-missing-imports
 
 check: lint type-check test ## ✅ Run all checks (lint, type-check, test)
-	@echo -e "$(GREEN)✅ All checks passed!$(NC)"
+	@Write-Host "✅ All checks passed!" -ForegroundColor Green
 
 # === DATABASE ===
 db-init: setup ## 🗄️ Initialize database
@@ -171,22 +204,18 @@ redis: ## 🔴 Start Redis server
 
 # === MAINTENANCE ===
 clean: ## 🧹 Remove cache files and build artifacts
-	@echo -e "$(CYAN)🧹 Cleaning cache files...$(NC)"
-	find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name ".coverage" -delete 2>/dev/null || true
-	find . -type d -name "htmlcov" -exec rm -rf {} + 2>/dev/null || true
-	@echo -e "$(GREEN)✅ Cache cleaned$(NC)"
+	@Write-Host "🧹 Cleaning cache files..." -ForegroundColor Cyan
+	@Get-ChildItem -Recurse -Include "*.pyc" -ErrorAction SilentlyContinue | Remove-Item -Force
+	@Get-ChildItem -Recurse -Include "__pycache__","*.egg-info",".pytest_cache",".mypy_cache",".coverage","htmlcov",".ruff_cache" -Directory -ErrorAction SilentlyContinue | Remove-Item -Recurse -Force
+	@Write-Host "✅ Cache cleaned" -ForegroundColor Green
 
 clean-venv: ## 🗑️ Remove virtual environment
-	@echo -e "$(CYAN)🗑️ Removing virtual environment...$(NC)"
-	rm -rf $(VENV)
+	@Write-Host "🗑️ Removing virtual environment..." -ForegroundColor Cyan
+	@if (Test-Path $(VENV)) { Remove-Item -Recurse -Force $(VENV) }
+	@Write-Host "✅ Virtual environment removed" -ForegroundColor Green
 
 reset: clean-venv setup ## 🔄 Reset environment (clean + setup)
-	@echo -e "$(GREEN)✅ Environment reset complete$(NC)"
+	@Write-Host "✅ Environment reset complete" -ForegroundColor Green
 
 # === UTILITIES ===
 deps-update: ## 📦 Update requirements.txt with latest versions
