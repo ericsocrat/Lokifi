@@ -1,4 +1,4 @@
-name: Fynix Trading Platform CI/CD
+name: Lokifi Trading Platform CI/CD
 
 on:
   push:
@@ -37,9 +37,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check
-        continue-on-error: true
-        run: npm run type-check || echo "Type checking completed with warnings"
+      - name: Type check (TypeScript Strict)
+        run: |
+          echo "Running TypeScript strict type checking..."
+          npm run type-check
+          echo "Running Next.js build type checking..."
+          npm run build
 
       - name: Lint
         continue-on-error: true
@@ -96,8 +99,16 @@ jobs:
         run: ruff check .
 
       - name: Type check with mypy
-        continue-on-error: true
-        run: mypy app/ || echo "Type checking completed with warnings"
+        run: |
+          echo "Running mypy type checker..."
+          python -m mypy app/
+
+      - name: Type check with Pyright
+        run: |
+          echo "Installing Pyright..."
+          npm install -g pyright
+          echo "Running Pyright strict type checker..."
+          pyright app/
 
       - name: Run tests
         run: |
