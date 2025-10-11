@@ -33,7 +33,7 @@ class NotificationIntegration:
         try:
             # Create mock user objects (in real integration, these would be actual User objects)
             class MockUser:
-                def __init__(self, data):
+                def __init__(self, data: dict[str, Any]):
                     self.id = data.get('id')
                     self.username = data.get('username')
                     self.display_name = data.get('display_name')
@@ -67,7 +67,7 @@ class NotificationIntegration:
         try:
             # Create mock user objects
             class MockUser:
-                def __init__(self, data):
+                def __init__(self, data: dict[str, Any]):
                     self.id = data.get('id')
                     self.username = data.get('username')
                     self.display_name = data.get('display_name')
@@ -105,7 +105,7 @@ class NotificationIntegration:
         try:
             # Create mock user object
             class MockUser:
-                def __init__(self, data):
+                def __init__(self, data: dict[str, Any]):
                     self.id = data.get('id')
                     self.username = data.get('username')
                     self.display_name = data.get('display_name')
