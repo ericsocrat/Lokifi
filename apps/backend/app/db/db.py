@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.db.models import Base
 
-DB_PATH = os.getenv("FYNIX_DB_PATH", os.path.join(os.path.dirname(__file__), "..", "..", "data", "lokifi.sqlite"))
+DB_PATH = os.getenv("LOKIFI_DB_PATH", os.path.join(os.path.dirname(__file__), "..", "..", "data", "lokifi.sqlite"))
 DB_URI = f"sqlite:///{DB_PATH}"
 
 os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)

@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     API_PREFIX: str = Field(default="/api", alias="API_PREFIX")
 
     # Auth / JWT - Must be set via environment variable
-    fynix_jwt_secret: str | None = Field(default=None, alias="FYNIX_JWT_SECRET")
-    fynix_jwt_ttl_min: int = Field(default=1440, alias="FYNIX_JWT_TTL_MIN")
+    lokifi_jwt_secret: str | None = Field(default=None, alias="LOKIFI_JWT_SECRET")
+    lokifi_jwt_ttl_min: int = Field(default=1440, alias="LOKIFI_JWT_TTL_MIN")
 
     # Phase J: Database Configuration
     DATABASE_URL: str = Field(
@@ -26,17 +26,13 @@ class Settings(BaseSettings):
     # Storage and Archival Settings
     ENABLE_DATA_ARCHIVAL: bool = Field(default=False, alias="ENABLE_DATA_ARCHIVAL")
     ARCHIVE_THRESHOLD_DAYS: int = Field(default=365, alias="ARCHIVE_THRESHOLD_DAYS")
-    DELETE_THRESHOLD_DAYS: int = Field(
-        default=2555, alias="DELETE_THRESHOLD_DAYS"
-    )  # 7 years
+    DELETE_THRESHOLD_DAYS: int = Field(default=2555, alias="DELETE_THRESHOLD_DAYS")  # 7 years
 
     # Cloud Storage Settings (Optional)
     AWS_S3_BUCKET: str | None = Field(default=None, alias="AWS_S3_BUCKET")
     AWS_CLOUDFRONT_URL: str | None = Field(default=None, alias="AWS_CLOUDFRONT_URL")
     AWS_ACCESS_KEY_ID: str | None = Field(default=None, alias="AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: str | None = Field(
-        default=None, alias="AWS_SECRET_ACCESS_KEY"
-    )
+    AWS_SECRET_ACCESS_KEY: str | None = Field(default=None, alias="AWS_SECRET_ACCESS_KEY")
 
     # Phase J: Authentication - Must be set via environment variable
     JWT_SECRET_KEY: str | None = Field(default=None, alias="JWT_SECRET_KEY")
@@ -64,17 +60,11 @@ class Settings(BaseSettings):
     # Phase J: AI Providers
     OPENROUTER_API_KEY: str | None = Field(default=None, alias="OPENROUTER_API_KEY")
     HUGGING_FACE_API_KEY: str | None = Field(default=None, alias="HUGGING_FACE_API_KEY")
-    OLLAMA_BASE_URL: str = Field(
-        default="http://localhost:11434", alias="OLLAMA_BASE_URL"
-    )
+    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434", alias="OLLAMA_BASE_URL")
 
     # Frontend origin and CORS settings
-    frontend_origin: str = Field(
-        default="http://localhost:3000", alias="FRONTEND_ORIGIN"
-    )
-    CORS_ORIGINS: list[str] = Field(
-        default=["http://localhost:3000"], alias="CORS_ORIGINS"
-    )
+    frontend_origin: str = Field(default="http://localhost:3000", alias="FRONTEND_ORIGIN")
+    CORS_ORIGINS: list[str] = Field(default=["http://localhost:3000"], alias="CORS_ORIGINS")
 
     # Redis (for caching, pub/sub, etc.)
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
@@ -82,9 +72,7 @@ class Settings(BaseSettings):
     redis_port: int = Field(default=6379, alias="REDIS_PORT")
     redis_password: str | None = Field(default=None, alias="REDIS_PASSWORD")
     redis_sentinel_hosts: list[str] = Field(default=[], alias="REDIS_SENTINEL_HOSTS")
-    redis_sentinel_service: str = Field(
-        default="mymaster", alias="REDIS_SENTINEL_SERVICE"
-    )
+    redis_sentinel_service: str = Field(default="mymaster", alias="REDIS_SENTINEL_SERVICE")
 
     # OpenAI / LLM integration
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
@@ -101,31 +89,27 @@ class Settings(BaseSettings):
     MARKETAUX_KEY: str | None = Field(default=None, alias="MARKETAUX_KEY")
     FMP_KEY: str | None = Field(default=None, alias="FMP_KEY")
 
-    model_config = SettingsConfigDict(
-        env_file=".env", extra="ignore"  # allow harmless extra vars
-    )
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")  # allow harmless extra vars
 
     def validate_required_secrets(self) -> None:
         """Validate that required secrets are set"""
         missing = []
-        if not self.fynix_jwt_secret:
-            missing.append("FYNIX_JWT_SECRET")
+        if not self.lokifi_jwt_secret:
+            missing.append("LOKIFI_JWT_SECRET")
         if not self.JWT_SECRET_KEY:
             missing.append("JWT_SECRET_KEY")
 
         if missing:
-            raise ValueError(
-                f"Missing required environment variables: {', '.join(missing)}"
-            )
+            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
 
     def get_jwt_secret(self) -> str:
         """Get JWT secret with fallback validation"""
-        if self.fynix_jwt_secret:
-            return self.fynix_jwt_secret
+        if self.lokifi_jwt_secret:
+            return self.lokifi_jwt_secret
         if self.JWT_SECRET_KEY:
             return self.JWT_SECRET_KEY
         raise ValueError(
-            "No JWT secret configured. Set FYNIX_JWT_SECRET or JWT_SECRET_KEY environment variable."
+            "No JWT secret configured. Set LOKIFI_JWT_SECRET or JWT_SECRET_KEY environment variable."
         )
 
 

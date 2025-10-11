@@ -203,8 +203,8 @@ class AlertEvaluator:
             return False, {"reason": "unknown_type"}
 
 # Singleton-like module state
-STORE_PATH = os.getenv("FYNIX_ALERTS_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "data", "alerts.json"))
+STORE_PATH = os.getenv("LOKIFI_ALERTS_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "data", "alerts.json"))
 store = AlertStore(STORE_PATH)
 hub = SSEHub()
-evaluator = AlertEvaluator(store=store, hub=hub, interval_sec=int(os.getenv("FYNIX_ALERTS_INTERVAL", "15")))
+evaluator = AlertEvaluator(store=store, hub=hub, interval_sec=int(os.getenv("LOKIFI_ALERTS_INTERVAL", "15")))
 

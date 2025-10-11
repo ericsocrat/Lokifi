@@ -20,7 +20,7 @@ init_db()
 settings = get_settings()
 JWT_SECRET = settings.get_jwt_secret()  # Will raise error if not set
 JWT_ALG = "HS256"
-JWT_TTL_MIN = settings.fynix_jwt_ttl_min
+JWT_TTL_MIN = settings.lokifi_jwt_ttl_min
 
 class RegisterPayload(BaseModel):
     handle: str = Field(..., min_length=2, max_length=32)

@@ -31,5 +31,6 @@ export interface ToolPlugin {
   onPointerUp?(e: PointerEvent, ctx: PluginCtx): boolean | void;
 }
 
-export type FynixPlugin = ToolPlugin; // extend later
+export type LokifiPlugin = ToolPlugin; // extend later
+
 

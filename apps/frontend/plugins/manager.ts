@@ -1,6 +1,6 @@
 
 "use client";
-import type { FynixPlugin, PluginCtx, ToolPlugin } from "./types";
+import type { LokifiPlugin, PluginCtx, ToolPlugin } from "./types";
 import type { IChartApi, ISeriesApi } from "lightweight-charts";
 import { drawStore, type Shape } from "@/lib/drawStore";
 import { symbolStore } from "@/lib/symbolStore";
@@ -20,17 +20,17 @@ type SafeEnv = {
 };
 
 class PluginManager {
-  private plugins: FynixPlugin[] = [];
+  private plugins: LokifiPlugin[] = [];
   private env: Env | null = null;
   private _activeToolId: string | null = null;
 
-  register(p: FynixPlugin){
+  register(p: LokifiPlugin){
     if (this.plugins.find((x: any) => x.id === p.id)) return;
     this.plugins.push(p);
     if (this.env) p.mount?.(this.ctx());
   }
 
-  list(): FynixPlugin[] {
+  list(): LokifiPlugin[] {
     return this.plugins.slice();
   }
 
@@ -193,4 +193,5 @@ class PluginManager {
 }
 
 export const pluginManager = new PluginManager();
+
 

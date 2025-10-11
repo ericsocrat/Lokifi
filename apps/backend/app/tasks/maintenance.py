@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # Initialize Celery app
 settings = Settings()
 celery_app = Celery(
-    "fynix_maintenance",
+    "lokifi_maintenance",
     broker=settings.redis_url,
     backend=settings.redis_url
 )

@@ -1,12 +1,12 @@
-import type { FynixPlugin } from './types';
+import type { LokifiPlugin } from './types';
 
-export interface PluginMetadata extends FynixPlugin {
+export interface PluginMetadata extends LokifiPlugin {
     name: string;
     description?: string;
     defaults: Record<string, any>;
 }
 
-export function getPluginMetadata(plugin: FynixPlugin): PluginMetadata {
+export function getPluginMetadata(plugin: LokifiPlugin): PluginMetadata {
     return {
         ...plugin,
         name: plugin.label || plugin.id,
@@ -14,3 +14,4 @@ export function getPluginMetadata(plugin: FynixPlugin): PluginMetadata {
         defaults: {}
     };
 }
+
