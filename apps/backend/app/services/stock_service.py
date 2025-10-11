@@ -9,35 +9,75 @@ import logging
 from datetime import datetime, timezone
 
 import httpx
-from app.core.redis_client import RedisClient
 
+from app.core.redis_client import RedisClient
 
 logger = logging.getLogger(__name__)
 
 
 class StockService:
     """Service for fetching real-time stock market data from Alpha Vantage"""
-    
-    def __init__(self, redis_client: RedisClient =None):
+
+    def __init__(self, redis_client: RedisClient = None):
         self.redis_client = redis_client
         self.api_key = "D8RDSS583XDQ1DIA"
         self.base_url = "https://www.alphavantage.co/query"
         self.cache_ttl = 30  # 30 seconds cache
-        
+
         # Major stock symbols to track
         self.stock_symbols = [
-            "AAPL", "MSFT", "GOOGL", "AMZN", "TSLA",
-            "META", "NVDA", "JPM", "V", "WMT",
-            "JNJ", "PG", "MA", "UNH", "HD",
-            "DIS", "PYPL", "NFLX", "ADBE", "CRM",
-            "CSCO", "PFE", "INTC", "AMD", "ORCL",
-            "NKE", "MCD", "COST", "PEP", "KO",
-            "ABBV", "TMO", "ABT", "ACN", "TXN",
-            "AVGO", "QCOM", "DHR", "BMY", "NEE",
-            "CVX", "LLY", "UPS", "MDT", "HON",
-            "RTX", "LIN", "UNP", "LOW", "PM"
+            "AAPL",
+            "MSFT",
+            "GOOGL",
+            "AMZN",
+            "TSLA",
+            "META",
+            "NVDA",
+            "JPM",
+            "V",
+            "WMT",
+            "JNJ",
+            "PG",
+            "MA",
+            "UNH",
+            "HD",
+            "DIS",
+            "PYPL",
+            "NFLX",
+            "ADBE",
+            "CRM",
+            "CSCO",
+            "PFE",
+            "INTC",
+            "AMD",
+            "ORCL",
+            "NKE",
+            "MCD",
+            "COST",
+            "PEP",
+            "KO",
+            "ABBV",
+            "TMO",
+            "ABT",
+            "ACN",
+            "TXN",
+            "AVGO",
+            "QCOM",
+            "DHR",
+            "BMY",
+            "NEE",
+            "CVX",
+            "LLY",
+            "UPS",
+            "MDT",
+            "HON",
+            "RTX",
+            "LIN",
+            "UNP",
+            "LOW",
+            "PM",
         ]
-        
+
         # Stock name mapping
         self.stock_names = {
             "AAPL": "Apple Inc.",
@@ -89,16 +129,16 @@ class StockService:
             "LIN": "Linde plc",
             "UNP": "Union Pacific Corporation",
             "LOW": "Lowe's Companies Inc.",
-            "PM": "Philip Morris International Inc."
+            "PM": "Philip Morris International Inc.",
         }
-    
+
     async def get_stocks(self, limit: int = 50) -> list[dict]:
         """
         Get real-time stock data for major stocks
-        
+
         Args:
             limit: Maximum number of stocks to return
-            
+
         Returns:
             List of stock data dictionaries
         """
@@ -113,11 +153,11 @@ class StockService:
                         return cached_data
                 except Exception as e:
                     logger.warning(f"Redis cache read failed: {e}")
-            
+
             # Limit to available symbols
             symbols_to_fetch = self.stock_symbols[:limit]
             stocks = []
-            
+
             async with httpx.AsyncClient(timeout=30.0) as client:
                 for symbol in symbols_to_fetch:
                     try:
@@ -127,7 +167,7 @@ class StockService:
                     except Exception as e:
                         logger.error(f"Error fetching stock {symbol}: {e}")
                         continue
-            
+
             # Cache the results
             if self.redis_client and stocks:
                 try:
@@ -135,63 +175,59 @@ class StockService:
                     logger.info(f"Cached {len(stocks)} stocks for {self.cache_ttl}s")
                 except Exception as e:
                     logger.warning(f"Redis cache write failed: {e}")
-            
+
             logger.info(f"Successfully fetched {len(stocks)} stocks from Alpha Vantage")
             return stocks
-            
+
         except Exception as e:
             logger.error(f"Error in get_stocks: {e}")
             # Return empty list on error
             return []
-    
+
     async def _fetch_stock_quote(self, client: httpx.AsyncClient, symbol: str) -> dict | None:
         """
         Fetch a single stock quote from Alpha Vantage
-        
+
         Args:
             client: HTTP client
             symbol: Stock symbol
-            
+
         Returns:
             Stock data dictionary or None
         """
         try:
-            params = {
-                "function": "GLOBAL_QUOTE",
-                "symbol": symbol,
-                "apikey": self.api_key
-            }
-            
+            params = {"function": "GLOBAL_QUOTE", "symbol": symbol, "apikey": self.api_key}
+
             response = await client.get(self.base_url, params=params)
             response.raise_for_status()
             data = response.json()
-            
+
             # Check for API error or rate limit
             if "Error Message" in data:
                 logger.error(f"Alpha Vantage API error for {symbol}: {data['Error Message']}")
                 return None
-            
+
             if "Note" in data:
                 logger.warning(f"Alpha Vantage API rate limit: {data['Note']}")
                 return None
-            
+
             # Parse the quote data
             quote = data.get("Global Quote", {})
             if not quote:
                 logger.warning(f"No quote data for {symbol}")
                 return None
-            
+
             # Extract values
             price = float(quote.get("05. price", 0))
             change = float(quote.get("09. change", 0))
             change_percent = quote.get("10. change percent", "0%").replace("%", "")
             volume = int(quote.get("06. volume", 0))
             previous_close = float(quote.get("08. previous close", 0))
-            
+
             # Calculate market cap (simplified - would need separate API call for accurate data)
             # Using price * estimated shares outstanding (very rough estimate)
             market_cap = price * 1000000000  # Placeholder
-            
+
             return {
                 "id": symbol.lower(),
                 "symbol": symbol,
@@ -202,12 +238,12 @@ class StockService:
                 "market_cap": market_cap,
                 "total_volume": volume,
                 "high_24h": previous_close * 1.05,  # Estimate
-                "low_24h": previous_close * 0.95,   # Estimate
+                "low_24h": previous_close * 0.95,  # Estimate
                 "image": f"https://logo.clearbit.com/{symbol.lower()}.com",  # Company logo
                 "last_updated": datetime.now(timezone.utc).isoformat(),
-                "asset_type": "stock"
+                "asset_type": "stock",
             }
-            
+
         except httpx.HTTPError as e:
             logger.error(f"HTTP error fetching {symbol}: {e}")
             return None

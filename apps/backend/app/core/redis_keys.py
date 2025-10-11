@@ -8,7 +8,6 @@ from enum import Enum
 from typing import Any
 
 
-
 class RedisKeyspace(str, Enum):
     """Redis keyspace prefixes for different domains"""
     

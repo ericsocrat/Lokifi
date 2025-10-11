@@ -2,7 +2,7 @@
 <#
 .SYNOPSIS
     Lokifi Ultimate Manager - Phase 2C Enterprise Edition
-    
+
 .DESCRIPTION
     Enterprise-grade master control script consolidating ALL Lokifi operations:
     - Server management (Docker Compose + individual containers)
@@ -15,7 +15,7 @@
     - Environment management (dev, staging, production)
     - Security scanning (secrets, vulnerabilities, audit)
     - Logging system (structured, filterable, timestamped)
-    
+
     PHASE 2C ENTERPRISE FEATURES:
     - backup/restore → Full system backup with compression
     - monitor → Real-time performance monitoring
@@ -26,21 +26,21 @@
     - env → Environment configuration management
     - security → Security scanning and audit
     - watch → File watching with auto-reload
-    
+
 .NOTES
     Author: GitHub Copilot + User
     Created: October 8, 2025 (Phase 1)
     Enhanced: October 2025 (Phase 2B - Development Integration)
     Enterprise: October 2025 (Phase 2C - Enterprise Features)
-    
+
     CONSOLIDATION HISTORY:
     ✓ Phase 1: 5 root scripts → lokifi-manager.ps1 (749 lines)
     ✓ Phase 2B: +3 development scripts → Enhanced (1,200+ lines)
     ✓ Phase 2C: +10 enterprise features → Enterprise Edition (2,800+ lines)
-    
+
     ELIMINATED SCRIPTS (All Phases):
     - start-servers.ps1 → -Action servers
-    - manage-redis.ps1 → -Action redis  
+    - manage-redis.ps1 → -Action redis
     - test-api.ps1 → -Action test
     - setup-postgres.ps1 → -Action postgres
     - organize-repository.ps1 → -Action organize
@@ -49,25 +49,25 @@
     - launch.ps1 → -Action launch
     - backup-repository.ps1 → -Action backup
     - master-health-check.ps1 → -Action monitor/analyze
-    
+
     TOTAL CAPABILITIES: 25+ actions across all DevOps domains
-    
+
 .EXAMPLE
     .\lokifi.ps1 servers
     Start all servers (Docker Compose preferred, local fallback)
-    
+
 .EXAMPLE
     .\lokifi.ps1 backup -IncludeDatabase -Compress
     Create compressed backup including database
-    
+
 .EXAMPLE
     .\lokifi.ps1 monitor -Duration 300
     Monitor system performance for 5 minutes
-    
+
 .EXAMPLE
     .\lokifi.ps1 git -Component commit
     Git commit with pre-commit validation
-    
+
 .EXAMPLE
     .\lokifi.ps1 security -Force
     Run comprehensive security scan
@@ -75,9 +75,9 @@
 
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'restart', 'clean', 'status', 
-                 'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs', 
-                 'analyze', 'fix', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest', 
+    [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
+                 'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs',
+                 'analyze', 'fix', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
                  'dashboard', 'metrics',  # Phase 3.2: Monitoring & Telemetry
                  'ai',                     # Phase 3.4: AI/ML Features
@@ -85,10 +85,10 @@ param(
                  # Quick Aliases
                  's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk', 'est', 'cost')]
     [string]$Action = 'help',
-    
+
     [ValidateSet('interactive', 'auto', 'force', 'verbose', 'quiet')]
     [string]$Mode = 'interactive',
-    
+
     [ValidateSet('redis', 'backend', 'frontend', 'postgres', 'all', 'be', 'fe', 'both', 'organize', 'ts', 'cleanup', 'db', 'full',
                  'up', 'down', 'status', 'create', 'history',  # Database migration components
                  'list', 'switch', 'validate',                 # Environment components
@@ -97,7 +97,7 @@ param(
                  'scan', 'secrets', 'vulnerabilities', 'licenses', 'audit',  # Security components (Phase 3.3)
                  'autofix', 'predict', 'forecast', 'recommendations', 'learn')]  # AI/ML components (Phase 3.4)
     [string]$Component = 'all',
-    
+
     # Development-specific parameters
     [string]$DevCommand = "",
     [string]$Package = "",
@@ -107,7 +107,7 @@ param(
     [string]$LogLevel = "info",
     [int]$Duration = 60,
     [int]$Hours = 24,  # For metrics percentiles
-    
+
     # Test-specific parameters
     [string]$TestFile = "",
     [string]$TestMatch = "",
@@ -116,7 +116,7 @@ param(
     [switch]$TestGate,
     [switch]$TestPreCommit,
     [switch]$TestVerbose,
-    
+
     # General flags
     [switch]$SkipTypeCheck,
     [switch]$SkipAnalysis,
@@ -175,7 +175,7 @@ $Global:LokifiConfig = @{
     }
     Colors = @{
         Red     = "Red"
-        Green   = "Green" 
+        Green   = "Green"
         Yellow  = "Yellow"
         Blue    = "Blue"
         Cyan    = "Cyan"
@@ -236,47 +236,47 @@ function Get-CachedValue {
     <#
     .SYNOPSIS
     Intelligent caching system with TTL support
-    
+
     .DESCRIPTION
     Caches expensive operations (Docker calls, file system scans, API checks)
     to dramatically improve performance. 50-80% speed improvement on repeated operations.
-    
+
     .EXAMPLE
     Get-CachedValue -Key "docker-status" -ValueGenerator { docker ps } -TTL 30
     #>
     param(
         [Parameter(Mandatory)]
         [string]$Key,
-        
+
         [Parameter(Mandatory)]
         [scriptblock]$ValueGenerator,
-        
+
         [int]$TTL = $Global:LokifiConfig.Cache.TTL
     )
-    
+
     if (-not $Global:LokifiConfig.Cache.Enabled) {
         return & $ValueGenerator
     }
-    
+
     $now = [DateTime]::UtcNow
-    
+
     # Check if cached value exists and is still valid
     if ($Global:LokifiCache.Data.ContainsKey($Key)) {
         $timestamp = $Global:LokifiCache.Timestamps[$Key]
         $age = ($now - $timestamp).TotalSeconds
-        
+
         if ($age -lt $TTL) {
             Write-Verbose "⚡ Cache HIT: $Key (age: $([math]::Round($age, 1))s)"
             return $Global:LokifiCache.Data[$Key]
         }
     }
-    
+
     # Cache miss - generate new value
     Write-Verbose "💾 Cache MISS: $Key - Generating..."
     $value = & $ValueGenerator
     $Global:LokifiCache.Data[$Key] = $value
     $Global:LokifiCache.Timestamps[$Key] = $now
-    
+
     return $value
 }
 
@@ -284,13 +284,13 @@ function Clear-LokifiCache {
     <#
     .SYNOPSIS
     Clear cache entries
-    
+
     .EXAMPLE
     Clear-LokifiCache -Key "docker-status"
     Clear-LokifiCache  # Clear all
     #>
     param([string]$Key)
-    
+
     if ($Key) {
         $Global:LokifiCache.Data.Remove($Key) | Out-Null
         $Global:LokifiCache.Timestamps.Remove($Key) | Out-Null
@@ -310,7 +310,7 @@ function Show-Progress {
     <#
     .SYNOPSIS
     Display progress bar for long-running operations
-    
+
     .DESCRIPTION
     Provides visual feedback during operations, making them feel faster
     and giving users confidence the system is working.
@@ -321,7 +321,7 @@ function Show-Progress {
         [int]$PercentComplete = 0,
         [int]$Id = 1
     )
-    
+
     Write-Progress -Activity $Activity -Status $Status -PercentComplete $PercentComplete -Id $Id
 }
 
@@ -334,7 +334,7 @@ function Invoke-WithProgress {
     <#
     .SYNOPSIS
     Execute a script block with automatic progress tracking
-    
+
     .EXAMPLE
     Invoke-WithProgress -Activity "Backing up files" -ScriptBlock {
         param($UpdateProgress)
@@ -348,7 +348,7 @@ function Invoke-WithProgress {
         [scriptblock]$ScriptBlock,
         [int]$TotalSteps = 100
     )
-    
+
     try {
         & $ScriptBlock {
             param([string]$Status, [int]$Step)
@@ -365,7 +365,7 @@ function Invoke-WithProgress {
 # ============================================
 function Write-LokifiHeader {
     param([string]$Title, [string]$Color = "Cyan")
-    
+
     Clear-Host
     Write-Host ""
     Write-Host "🚀 Lokifi Ultimate Manager - $Title" -ForegroundColor $Color
@@ -397,24 +397,24 @@ function Write-ErrorWithSuggestion {
     <#
     .SYNOPSIS
     Write error with smart recovery suggestions
-    
+
     .DESCRIPTION
     World-Class Feature #4: When things fail, suggest how to fix them.
     Makes troubleshooting 10x faster.
-    
+
     .EXAMPLE
     Write-ErrorWithSuggestion "Docker not available" -Context "docker"
     #>
     param(
         [Parameter(Mandatory)]
         [string]$Message,
-        
+
         [string]$Context = "general"
     )
-    
+
     Write-Host "   ❌ $Message" -ForegroundColor Red
     Write-Host ""
-    
+
     # Smart suggestions based on context
     $suggestions = switch ($Context.ToLower()) {
         "docker" {
@@ -473,7 +473,7 @@ function Write-ErrorWithSuggestion {
             )
         }
     }
-    
+
     foreach ($suggestion in $suggestions) {
         Write-Host $suggestion -ForegroundColor Yellow
     }
@@ -494,7 +494,7 @@ function Test-DockerAvailable {
     <#
     .SYNOPSIS
     Check if Docker is available and running (with caching)
-    
+
     .DESCRIPTION
     Uses intelligent caching to avoid repeated `docker ps` calls.
     Dramatically speeds up status checks and other Docker operations.
@@ -503,7 +503,7 @@ function Test-DockerAvailable {
         if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
             return $false
         }
-        
+
         try {
             docker ps 2>$null | Out-Null
             return $LASTEXITCODE -eq 0
@@ -515,7 +515,7 @@ function Test-DockerAvailable {
 
 function Test-ServiceRunning {
     param([string]$Url, [int]$TimeoutSeconds = 5)
-    
+
     try {
         $response = Invoke-WebRequest -Uri $Url -TimeoutSec $TimeoutSeconds -ErrorAction Stop
         return $response.StatusCode -eq 200
@@ -529,25 +529,25 @@ function Test-ServiceRunning {
 # ============================================
 function Start-RedisContainer {
     Write-Step "🔴" "Managing Redis Container..."
-    
+
     if (-not (Test-DockerAvailable)) {
         Write-Warning "Docker not available - Redis will be skipped"
         return $false
     }
-    
+
     $containerName = $Global:LokifiConfig.Redis.ContainerName
     $password = $Global:LokifiConfig.Redis.Password
     $port = $Global:LokifiConfig.Redis.Port
-    
+
     # Check if container exists
     $existingContainer = docker ps -a --filter "name=$containerName" --format "{{.Names}}" 2>$null
-    
+
     if ($existingContainer -eq $containerName) {
         Write-Info "Found existing Redis container"
-        
+
         # Check if running
         $runningContainer = docker ps --filter "name=$containerName" --format "{{.Names}}" 2>$null
-        
+
         if ($runningContainer -eq $containerName) {
             Write-Success "Redis container already running"
         } else {
@@ -563,7 +563,7 @@ function Start-RedisContainer {
     } else {
         Write-Step "   🚀" "Creating new Redis container..."
         docker run -d --name $containerName -p "${port}:6379" -e REDIS_PASSWORD=$password --restart unless-stopped redis:latest redis-server --requirepass $password | Out-Null
-        
+
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Redis container created and started"
         } else {
@@ -571,14 +571,14 @@ function Start-RedisContainer {
             return $false
         }
     }
-    
+
     Write-Info "Connection: redis://:$password@localhost:$port/0"
     return $true
 }
 
 function Stop-RedisContainer {
     $containerName = $Global:LokifiConfig.Redis.ContainerName
-    
+
     if (Test-DockerAvailable) {
         $runningContainer = docker ps --filter "name=$containerName" --format "{{.Names}}" 2>$null
         if ($runningContainer -eq $containerName) {
@@ -589,24 +589,24 @@ function Stop-RedisContainer {
 }
 
 # ============================================
-# POSTGRESQL MANAGEMENT (FROM ORIGINAL)  
+# POSTGRESQL MANAGEMENT (FROM ORIGINAL)
 # ============================================
 function Start-PostgreSQLContainer {
     Write-Step "🐘" "Managing PostgreSQL Container..."
-    
+
     if (-not (Test-DockerAvailable)) {
         Write-Warning "Docker not available - PostgreSQL setup skipped"
         return $false
     }
-    
+
     $config = $Global:LokifiConfig.PostgreSQL
-    
+
     # Check if container exists
     $existingContainer = docker ps -a --filter "name=$($config.ContainerName)" --format "{{.Names}}" 2>$null
-    
+
     if ($existingContainer -eq $config.ContainerName) {
         $runningContainer = docker ps --filter "name=$($config.ContainerName)" --format "{{.Names}}" 2>$null
-        
+
         if ($runningContainer -eq $config.ContainerName) {
             Write-Success "PostgreSQL container already running"
         } else {
@@ -616,9 +616,9 @@ function Start-PostgreSQLContainer {
         }
     } else {
         Write-Step "   🚀" "Creating PostgreSQL container..."
-        
+
         docker run -d --name $config.ContainerName -e POSTGRES_USER=$config.User -e POSTGRES_PASSWORD=$config.Password -e POSTGRES_DB=$config.Database -p "$($config.Port):5432" --restart unless-stopped postgres:16-alpine | Out-Null
-        
+
         if ($LASTEXITCODE -eq 0) {
             Write-Success "PostgreSQL created and started"
             Write-Info "Waiting for PostgreSQL to be ready..."
@@ -628,14 +628,14 @@ function Start-PostgreSQLContainer {
             return $false
         }
     }
-    
+
     Write-Info "Connection: postgresql://$($config.User):$($config.Password)@localhost:$($config.Port)/$($config.Database)"
     return $true
 }
 
 function Stop-PostgreSQLContainer {
     $containerName = $Global:LokifiConfig.PostgreSQL.ContainerName
-    
+
     if (Test-DockerAvailable) {
         $runningContainer = docker ps --filter "name=$containerName" --format "{{.Names}}" 2>$null
         if ($runningContainer -eq $containerName) {
@@ -650,33 +650,33 @@ function Stop-PostgreSQLContainer {
 # ============================================
 function Start-DockerComposeStack {
     Write-Step "🐳" "Starting Docker Compose Stack..."
-    
+
     if (-not (Test-DockerAvailable)) {
         Write-Warning "Docker not available - Cannot start containerized stack"
         return $false
     }
-    
+
     $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
     if (-not (Test-Path $composeFile)) {
         Write-Warning "docker-compose.yml not found in lokifi-app directory - Cannot start containerized stack"
         return $false
     }
-    
+
     try {
         Push-Location $Global:LokifiConfig.AppRoot
         Write-Step "   🚀" "Starting all services with Docker Compose..."
         docker-compose up -d
-        
+
         if ($LASTEXITCODE -eq 0) {
             Write-Success "Docker Compose stack started successfully"
-            
+
             # Wait a moment for services to initialize
             Start-Sleep -Seconds 3
-            
+
             # Show running services
             Write-Step "   📊" "Services status:"
             docker-compose ps
-            
+
             return $true
         } else {
             Write-Error "Failed to start Docker Compose stack"
@@ -692,18 +692,18 @@ function Start-DockerComposeStack {
 
 function Stop-DockerComposeStack {
     Write-Step "🐳" "Stopping Docker Compose Stack..."
-    
+
     if (-not (Test-DockerAvailable)) {
         Write-Warning "Docker not available"
         return
     }
-    
+
     $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
     if (-not (Test-Path $composeFile)) {
         Write-Warning "docker-compose.yml not found in lokifi-app directory"
         return
     }
-    
+
     try {
         Push-Location $Global:LokifiConfig.AppRoot
         docker-compose down
@@ -726,7 +726,7 @@ function Get-DockerComposeStatus {
             Services = @()
         }
     }
-    
+
     $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
     if (-not (Test-Path $composeFile)) {
         return @{
@@ -734,7 +734,7 @@ function Get-DockerComposeStatus {
             Services = @()
         }
     }
-    
+
     try {
         Push-Location $Global:LokifiConfig.AppRoot
         $services = docker-compose ps --format json 2>$null | ConvertFrom-Json
@@ -756,21 +756,21 @@ function Get-DockerComposeStatus {
 # ============================================
 function Start-BackendContainer {
     Write-Step "🔧" "Managing Backend Docker Container..."
-    
+
     if (-not (Test-DockerAvailable)) {
         Write-Warning "Docker not available - Backend will run locally"
         return $false
     }
-    
+
     $config = $Global:LokifiConfig.Backend
     $backendDir = $Global:LokifiConfig.BackendDir
-    
+
     # Check if container exists
     $existingContainer = docker ps -a --filter "name=$($config.ContainerName)" --format "{{.Names}}" 2>$null
-    
+
     if ($existingContainer -eq $config.ContainerName) {
         $runningContainer = docker ps --filter "name=$($config.ContainerName)" --format "{{.Names}}" 2>$null
-        
+
         if ($runningContainer -eq $config.ContainerName) {
             Write-Success "Backend container already running"
         } else {
@@ -780,7 +780,7 @@ function Start-BackendContainer {
         }
     } else {
         Write-Step "   🚀" "Creating Backend Docker container..."
-        
+
         # Create Dockerfile for backend if it doesn't exist
         $dockerfilePath = Join-Path $backendDir "Dockerfile"
         if (-not (Test-Path $dockerfilePath)) {
@@ -814,17 +814,17 @@ CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "
             Set-Content -Path $dockerfilePath -Value $dockerfileContent
             Write-Info "Created Dockerfile for backend"
         }
-        
+
         # Build and run container
         Push-Location $backendDir
         try {
             Write-Step "   🔨" "Building Backend Docker image..."
             docker build -t lokifi-backend . | Out-Null
-            
+
             if ($LASTEXITCODE -eq 0) {
                 Write-Step "   🚀" "Starting Backend container..."
                 docker run -d --name $config.ContainerName -p "$($config.Port):8000" --restart unless-stopped lokifi-backend | Out-Null
-                
+
                 if ($LASTEXITCODE -eq 0) {
                     Write-Success "Backend container created and started"
                 } else {
@@ -839,14 +839,14 @@ CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "
             Pop-Location
         }
     }
-    
+
     Write-Info "Backend API: http://localhost:$($config.Port)"
     return $true
 }
 
 function Stop-BackendContainer {
     $containerName = $Global:LokifiConfig.Backend.ContainerName
-    
+
     if (Test-DockerAvailable) {
         $runningContainer = docker ps --filter "name=$containerName" --format "{{.Names}}" 2>$null
         if ($runningContainer -eq $containerName) {
@@ -861,21 +861,21 @@ function Stop-BackendContainer {
 # ============================================
 function Start-FrontendContainer {
     Write-Step "🎨" "Managing Frontend Docker Container..."
-    
+
     if (-not (Test-DockerAvailable)) {
         Write-Warning "Docker not available - Frontend will run locally"
         return $false
     }
-    
+
     $config = $Global:LokifiConfig.Frontend
     $frontendDir = $Global:LokifiConfig.FrontendDir
-    
+
     # Check if container exists
     $existingContainer = docker ps -a --filter "name=$($config.ContainerName)" --format "{{.Names}}" 2>$null
-    
+
     if ($existingContainer -eq $config.ContainerName) {
         $runningContainer = docker ps --filter "name=$($config.ContainerName)" --format "{{.Names}}" 2>$null
-        
+
         if ($runningContainer -eq $config.ContainerName) {
             Write-Success "Frontend container already running"
         } else {
@@ -885,7 +885,7 @@ function Start-FrontendContainer {
         }
     } else {
         Write-Step "   🚀" "Creating Frontend Docker container..."
-        
+
         # Create Dockerfile for frontend if it doesn't exist
         $dockerfilePath = Join-Path $frontendDir "Dockerfile"
         if (-not (Test-Path $dockerfilePath)) {
@@ -913,17 +913,17 @@ CMD ["npm", "start"]
             Set-Content -Path $dockerfilePath -Value $dockerfileContent
             Write-Info "Created Dockerfile for frontend"
         }
-        
+
         # Build and run container
         Push-Location $frontendDir
         try {
             Write-Step "   🔨" "Building Frontend Docker image..."
             docker build -t lokifi-frontend . | Out-Null
-            
+
             if ($LASTEXITCODE -eq 0) {
                 Write-Step "   🚀" "Starting Frontend container..."
                 docker run -d --name $config.ContainerName -p "$($config.Port):3000" --restart unless-stopped lokifi-frontend | Out-Null
-                
+
                 if ($LASTEXITCODE -eq 0) {
                     Write-Success "Frontend container created and started"
                 } else {
@@ -938,14 +938,14 @@ CMD ["npm", "start"]
             Pop-Location
         }
     }
-    
+
     Write-Info "Frontend App: http://localhost:$($config.Port)"
     return $true
 }
 
 function Stop-FrontendContainer {
     $containerName = $Global:LokifiConfig.Frontend.ContainerName
-    
+
     if (Test-DockerAvailable) {
         $runningContainer = docker ps --filter "name=$containerName" --format "{{.Names}}" 2>$null
         if ($runningContainer -eq $containerName) {
@@ -960,7 +960,7 @@ function Stop-FrontendContainer {
 # ============================================
 function Setup-DevelopmentEnvironment {
     Write-Step "📦" "Setting up Lokifi development environment..."
-    
+
     # Backend setup
     Write-Step "   🔧" "Setting up backend..."
     Push-Location $Global:LokifiConfig.BackendDir
@@ -974,7 +974,7 @@ function Setup-DevelopmentEnvironment {
     } finally {
         Pop-Location
     }
-    
+
     # Frontend setup
     Write-Step "   🌐" "Setting up frontend..."
     Push-Location $Global:LokifiConfig.FrontendDir
@@ -984,7 +984,7 @@ function Setup-DevelopmentEnvironment {
     } finally {
         Pop-Location
     }
-    
+
     Write-Success "Development environment setup complete!"
 }
 
@@ -993,7 +993,7 @@ function Setup-DevelopmentEnvironment {
 # ============================================
 function Start-BackendServer {
     Write-Step "🔧" "Starting Backend Server..."
-    
+
     # Try Docker first if available
     if (Test-DockerAvailable) {
         Write-Info "Docker available - starting Backend in container..."
@@ -1005,17 +1005,17 @@ function Start-BackendServer {
     } else {
         Write-Info "Docker not available - starting Backend locally..."
     }
-    
+
     # Local development fallback
     $backendDir = $Global:LokifiConfig.BackendDir
-    
+
     if (-not (Test-Path $backendDir)) {
         Write-Error "Backend directory not found: $backendDir"
         return $false
     }
-    
+
     Push-Location $backendDir
-    
+
     try {
         # Check/create virtual environment
         if (-not (Test-Path "venv/Scripts/Activate.ps1")) {
@@ -1026,33 +1026,33 @@ function Start-BackendServer {
                 return $false
             }
         }
-        
+
         # Activate virtual environment
         Write-Step "   🔌" "Activating virtual environment..."
         & "./venv/Scripts/Activate.ps1"
-        
+
         # Install requirements
         if (Test-Path "requirements.txt") {
             Write-Step "   📥" "Installing Python dependencies..."
             pip install -r requirements.txt --quiet
         }
-        
+
         # Set Python path and start server
         $env:PYTHONPATH = (Get-Location).Path
         Write-Success "Backend starting locally on http://localhost:8000"
         Write-Info "Use Ctrl+C to stop the server"
-        
+
         if ($Mode -eq "auto") {
             Start-Process -FilePath "python" -ArgumentList "-m", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000" -WindowStyle Hidden
             Start-Sleep -Seconds 3
         } else {
             python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
         }
-        
+
     } finally {
         Pop-Location
     }
-    
+
     return $true
 }
 
@@ -1061,7 +1061,7 @@ function Start-BackendServer {
 # ============================================
 function Start-FrontendServer {
     Write-Step "🎨" "Starting Frontend Server..."
-    
+
     # Try Docker first if available
     if (Test-DockerAvailable) {
         Write-Info "Docker available - starting Frontend in container..."
@@ -1073,17 +1073,17 @@ function Start-FrontendServer {
     } else {
         Write-Info "Docker not available - starting Frontend locally..."
     }
-    
+
     # Local development fallback
     $frontendDir = $Global:LokifiConfig.FrontendDir
-    
+
     if (-not (Test-Path $frontendDir)) {
         Write-Error "Frontend directory not found: $frontendDir"
         return $false
     }
-    
+
     Push-Location $frontendDir
-    
+
     try {
         # Install dependencies if needed
         if (-not (Test-Path "node_modules")) {
@@ -1094,21 +1094,21 @@ function Start-FrontendServer {
                 return $false
             }
         }
-        
+
         Write-Success "Frontend starting locally on http://localhost:3000"
         Write-Info "Use Ctrl+C to stop the server"
-        
+
         if ($Mode -eq "auto") {
             Start-Process -FilePath "npm" -ArgumentList "run", "dev" -WindowStyle Hidden
             Start-Sleep -Seconds 3
         } else {
             npm run dev
         }
-        
+
     } finally {
         Pop-Location
     }
-    
+
     return $true
 }
 
@@ -1117,11 +1117,11 @@ function Start-FrontendServer {
 # ============================================
 function Start-DevelopmentWorkflow {
     param([string]$SubCommand = "both")
-    
+
     switch ($SubCommand.ToLower()) {
         "both" {
             Write-ColoredText "🔥 Starting Lokifi development environment..." "Cyan"
-            
+
             # Start backend in background
             Write-ColoredText "Starting backend server..." "Yellow"
             $backendJob = Start-Job -ScriptBlock {
@@ -1130,9 +1130,9 @@ function Start-DevelopmentWorkflow {
                 $env:PYTHONPATH = $PWD.Path
                 & .\venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
             }
-            
+
             Start-Sleep -Seconds 3
-            
+
             # Start frontend in background
             Write-ColoredText "Starting frontend server..." "Yellow"
             $frontendJob = Start-Job -ScriptBlock {
@@ -1140,12 +1140,12 @@ function Start-DevelopmentWorkflow {
                 Set-Location frontend
                 npm run dev
             }
-            
+
             Write-ColoredText "✅ Both servers starting..." "Green"
             Write-ColoredText "🌐 Frontend: http://localhost:3000" "Blue"
             Write-ColoredText "🔧 Backend:  http://localhost:8000" "Blue"
             Write-ColoredText "Press Ctrl+C to stop..." "Yellow"
-            
+
             # Wait for user interrupt
             try {
                 Wait-Job -Job $backendJob, $frontendJob
@@ -1157,7 +1157,7 @@ function Start-DevelopmentWorkflow {
         }
         "be" { Start-BackendServer }
         "fe" { Start-FrontendServer }
-        default { 
+        default {
             Write-Warning "Unknown dev command: $SubCommand"
             Write-Info "Available: both, be, fe"
         }
@@ -1178,14 +1178,14 @@ function Run-DevelopmentTests {
         [switch]$Verbose,
         [switch]$Watch
     )
-    
+
     # Use the comprehensive test runner
     $testRunnerPath = Join-Path $PSScriptRoot "test-runner.ps1"
-    
+
     if (-not (Test-Path $testRunnerPath)) {
         Write-Warning "Enhanced test runner not found at: $testRunnerPath"
         Write-Info "Falling back to simple test execution..."
-        
+
         # Fallback to simple execution
         switch ($Type) {
             "all" {
@@ -1215,10 +1215,10 @@ function Run-DevelopmentTests {
         }
         return
     }
-    
+
     # Build arguments for test runner
     $testRunnerArgs = @()
-    
+
     # Map Type to Category
     if ($Type -and $Type -ne "all") {
         $testRunnerArgs += "-Category"
@@ -1227,19 +1227,19 @@ function Run-DevelopmentTests {
         $testRunnerArgs += "-Category"
         $testRunnerArgs += $Category
     }
-    
+
     # File selection
     if ($File) {
         $testRunnerArgs += "-File"
         $testRunnerArgs += $File
     }
-    
+
     # Match pattern
     if ($Match) {
         $testRunnerArgs += "-Match"
         $testRunnerArgs += $Match
     }
-    
+
     # Switches
     if ($Smart) { $testRunnerArgs += "-Smart" }
     if ($Quick) { $testRunnerArgs += "-Quick" }
@@ -1248,7 +1248,7 @@ function Run-DevelopmentTests {
     if ($PreCommit) { $testRunnerArgs += "-PreCommit" }
     if ($Verbose) { $testRunnerArgs += "-Verbose" }
     if ($Watch) { $testRunnerArgs += "-Watch" }
-    
+
     # Execute enhanced test runner
     Write-ColoredText "🧪 Running tests with enhanced test runner..." "Cyan"
     & $testRunnerPath @testRunnerArgs
@@ -1256,19 +1256,26 @@ function Run-DevelopmentTests {
 
 function Format-DevelopmentCode {
     Write-ColoredText "🎨 Formatting code..." "Cyan"
-    
+
     # Backend formatting
     Write-ColoredText "Formatting backend..." "Yellow"
     Push-Location $Global:LokifiConfig.BackendDir
     try {
         $env:PYTHONPATH = $PWD.Path
-        & .\venv\Scripts\python.exe -m black .
-        & .\venv\Scripts\python.exe -m ruff check . --fix
+        Write-Host "  📝 Black formatting..." -ForegroundColor Gray
+        & .\venv\Scripts\python.exe -m black app
+
+        Write-Host "  🔧 Ruff auto-fixing..." -ForegroundColor Gray
+        if (Test-Path ".\venv\Scripts\ruff.exe") {
+            & .\venv\Scripts\ruff.exe check app --fix --select E,F,I,UP
+        } else {
+            Write-Warning "Ruff not found in venv, skipping"
+        }
     } finally {
         Pop-Location
     }
-    
-    # Frontend formatting  
+
+    # Frontend formatting
     Write-ColoredText "Formatting frontend..." "Yellow"
     Push-Location $Global:LokifiConfig.FrontendDir
     try {
@@ -1276,31 +1283,31 @@ function Format-DevelopmentCode {
     } finally {
         Pop-Location
     }
-    
+
     Write-ColoredText "✅ Code formatted!" "Green"
 }
 
 function Clean-DevelopmentCache {
     Write-ColoredText "🧹 Cleaning cache files..." "Cyan"
-    
+
     # Backend cleanup
-    Get-ChildItem -Path "backend" -Recurse -Name "__pycache__" -ErrorAction SilentlyContinue | ForEach-Object { 
-        Remove-Item "backend\$_" -Recurse -Force -ErrorAction SilentlyContinue 
+    Get-ChildItem -Path "backend" -Recurse -Name "__pycache__" -ErrorAction SilentlyContinue | ForEach-Object {
+        Remove-Item "backend\$_" -Recurse -Force -ErrorAction SilentlyContinue
     }
-    Get-ChildItem -Path "backend" -Recurse -Name "*.pyc" -ErrorAction SilentlyContinue | ForEach-Object { 
-        Remove-Item "backend\$_" -Force -ErrorAction SilentlyContinue 
+    Get-ChildItem -Path "backend" -Recurse -Name "*.pyc" -ErrorAction SilentlyContinue | ForEach-Object {
+        Remove-Item "backend\$_" -Force -ErrorAction SilentlyContinue
     }
-    
+
     # Frontend cleanup
     if (Test-Path "frontend\.next") { Remove-Item "frontend\.next" -Recurse -Force -ErrorAction SilentlyContinue }
     if (Test-Path "frontend\node_modules\.cache") { Remove-Item "frontend\node_modules\.cache" -Recurse -Force -ErrorAction SilentlyContinue }
-    
+
     Write-ColoredText "✅ Cache cleaned!" "Green"
 }
 
 function Upgrade-DevelopmentDependencies {
     Write-ColoredText "⬆️ Upgrading all dependencies..." "Cyan"
-    
+
     # Backend upgrade
     Write-ColoredText "Upgrading backend dependencies..." "Yellow"
     Push-Location $Global:LokifiConfig.BackendDir
@@ -1309,7 +1316,7 @@ function Upgrade-DevelopmentDependencies {
     } finally {
         Pop-Location
     }
-    
+
     # Frontend upgrade
     Write-ColoredText "Upgrading frontend dependencies..." "Yellow"
     Push-Location $Global:LokifiConfig.FrontendDir
@@ -1319,8 +1326,231 @@ function Upgrade-DevelopmentDependencies {
     } finally {
         Pop-Location
     }
-    
+
     Write-ColoredText "✅ All dependencies upgraded!" "Green"
+}
+
+function Invoke-Linter {
+    <#
+    .SYNOPSIS
+        Run all linters (Python + TypeScript)
+    .DESCRIPTION
+        Runs linting checks on both Python and TypeScript code
+    #>
+
+    Write-LokifiHeader "Code Linting"
+
+    $allPassed = $true
+
+    # Python Linting
+    Write-Host ""
+    Write-Host "🐍 Python Linting (Black + Ruff)" -ForegroundColor Yellow
+    Write-Host "═══════════════════════════════════════" -ForegroundColor Blue
+
+    Push-Location $Global:LokifiConfig.BackendDir
+    try {
+        # Black check (formatting)
+        Write-Host "  📝 Checking Black formatting..." -ForegroundColor Cyan
+        $blackResult = & .\venv\Scripts\python.exe -m black --check app 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "    ✅ Black formatting: PASSED" -ForegroundColor Green
+        } else {
+            Write-Host "    ⚠️  Black formatting: NEEDS FORMATTING" -ForegroundColor Yellow
+            $reformatCount = ($blackResult | Select-String "would reformat").Count
+            if ($reformatCount -gt 0) {
+                Write-Host "    📊 $reformatCount files need formatting" -ForegroundColor Gray
+            }
+            $allPassed = $false
+        }
+
+        # Ruff check (linting)
+        Write-Host "  🔧 Checking Ruff linting..." -ForegroundColor Cyan
+        if (Test-Path ".\venv\Scripts\ruff.exe") {
+            $ruffResult = & .\venv\Scripts\ruff.exe check app --statistics 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-Host "    ✅ Ruff linting: PASSED" -ForegroundColor Green
+            } else {
+                Write-Host "    ⚠️  Ruff linting: ISSUES FOUND" -ForegroundColor Yellow
+                $errorLine = $ruffResult | Select-String "Found \d+ error" | Select-Object -First 1
+                if ($errorLine) {
+                    Write-Host "    📊 $($errorLine.Line)" -ForegroundColor Gray
+                }
+                $fixableLine = $ruffResult | Select-String "\d+ fixable with" | Select-Object -First 1
+                if ($fixableLine) {
+                    Write-Host "    💡 $($fixableLine.Line)" -ForegroundColor Cyan
+                }
+                $allPassed = $false
+            }
+        } else {
+            Write-Host "    ℹ️  Ruff not available" -ForegroundColor Gray
+        }
+    } finally {
+        Pop-Location
+    }
+
+    # TypeScript Linting
+    Write-Host ""
+    Write-Host "📘 TypeScript Linting (ESLint)" -ForegroundColor Yellow
+    Write-Host "═══════════════════════════════════════" -ForegroundColor Blue
+
+    Push-Location $Global:LokifiConfig.FrontendDir
+    try {
+        Write-Host "  📝 Checking ESLint..." -ForegroundColor Cyan
+        $eslintResult = npm run lint 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "    ✅ ESLint: PASSED" -ForegroundColor Green
+        } else {
+            Write-Host "    ⚠️  ESLint: ISSUES FOUND" -ForegroundColor Yellow
+            $allPassed = $false
+        }
+    } finally {
+        Pop-Location
+    }
+
+    # Summary
+    Write-Host ""
+    Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+    if ($allPassed) {
+        Write-Host "🎉 All linting checks PASSED!" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  Some linting issues found" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "💡 Quick fixes:" -ForegroundColor Cyan
+        Write-Host "   .\lokifi.ps1 → Code Quality → Format All Code" -ForegroundColor Gray
+        Write-Host "   Or run: .\tools\lokifi.ps1 -Action format" -ForegroundColor Gray
+    }
+    Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+    Write-Host ""
+
+    Read-Host "Press Enter to continue"
+}
+
+function Invoke-PythonImportFix {
+    <#
+    .SYNOPSIS
+        Fix Python imports (remove unused, sort, organize)
+    .DESCRIPTION
+        Uses Ruff to remove unused imports and organize import statements
+    #>
+
+    Write-LokifiHeader "Python Import Fixer"
+
+    Push-Location $Global:LokifiConfig.BackendDir
+    try {
+        if (-not (Test-Path ".\venv\Scripts\ruff.exe")) {
+            Write-Host "❌ Ruff not found in venv" -ForegroundColor Red
+            Write-Host "   Run: pip install ruff" -ForegroundColor Yellow
+            return
+        }
+
+        Write-Host ""
+        Write-Host "🔍 Step 1: Analyzing imports..." -ForegroundColor Cyan
+
+        # Check for issues
+        $unusedResult = & .\venv\Scripts\ruff.exe check app --select F401 --statistics 2>&1
+        $unsortedResult = & .\venv\Scripts\ruff.exe check app --select I001 --statistics 2>&1
+
+        $unusedCount = 0
+        $unsortedCount = 0
+
+        $unusedLine = $unusedResult | Select-String "F401.*unused-import"
+        if ($unusedLine -and $unusedLine.Line -match "(\d+)\s+F401") {
+            $unusedCount = [int]$matches[1]
+        }
+
+        $unsortedLine = $unsortedResult | Select-String "I001.*unsorted-imports"
+        if ($unsortedLine -and $unsortedLine.Line -match "(\d+)\s+I001") {
+            $unsortedCount = [int]$matches[1]
+        }
+
+        Write-Host "  📊 Found:" -ForegroundColor Yellow
+        Write-Host "     • $unusedCount unused imports" -ForegroundColor $(if($unusedCount -gt 0){'Yellow'}else{'Green'})
+        Write-Host "     • $unsortedCount unsorted import blocks" -ForegroundColor $(if($unsortedCount -gt 0){'Yellow'}else{'Green'})
+
+        if ($unusedCount -eq 0 -and $unsortedCount -eq 0) {
+            Write-Host ""
+            Write-Host "✅ All imports are clean and organized!" -ForegroundColor Green
+            Write-Host ""
+            Read-Host "Press Enter to continue"
+            return
+        }
+
+        Write-Host ""
+        Write-Host "💡 This will:" -ForegroundColor Cyan
+        if ($unusedCount -gt 0) {
+            Write-Host "   • Remove $unusedCount unused imports" -ForegroundColor White
+        }
+        if ($unsortedCount -gt 0) {
+            Write-Host "   • Sort and organize $unsortedCount import blocks" -ForegroundColor White
+        }
+        Write-Host ""
+
+        $confirm = Read-Host "Apply fixes? (y/N)"
+        if ($confirm -ne "y" -and $confirm -ne "Y") {
+            Write-Host "❌ Cancelled" -ForegroundColor Yellow
+            return
+        }
+
+        Write-Host ""
+        Write-Host "✍️  Step 2: Applying fixes..." -ForegroundColor Cyan
+
+        # Remove unused imports
+        if ($unusedCount -gt 0) {
+            Write-Host "  🗑️  Removing unused imports..." -ForegroundColor Yellow
+            & .\venv\Scripts\ruff.exe check app --select F401 --fix --silent
+        }
+
+        # Sort imports
+        if ($unsortedCount -gt 0) {
+            Write-Host "  📋 Sorting imports..." -ForegroundColor Yellow
+            & .\venv\Scripts\ruff.exe check app --select I001 --fix --silent
+        }
+
+        Write-Host ""
+        Write-Host "🔍 Step 3: Verifying fixes..." -ForegroundColor Cyan
+
+        # Re-check
+        $verifyResult = & .\venv\Scripts\ruff.exe check app --select F401,I001 --statistics 2>&1
+        $remainingIssues = $verifyResult | Select-String "Found \d+ error"
+
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "  ✅ All import issues fixed!" -ForegroundColor Green
+        } else {
+            if ($remainingIssues -and $remainingIssues.Line -match "Found (\d+) error") {
+                $remaining = [int]$matches[1]
+                Write-Host "  ⚠️  $remaining issues remain (may need manual fixes)" -ForegroundColor Yellow
+            }
+        }
+
+        Write-Host ""
+        Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+        Write-Host "📊 RESULTS" -ForegroundColor Magenta
+        Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+
+        $totalFixed = $unusedCount + $unsortedCount
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "  ✅ Fixed: $totalFixed import issues" -ForegroundColor Green
+            Write-Host "  ✅ Status: All imports clean!" -ForegroundColor Green
+        } else {
+            $fixed = $totalFixed
+            if ($remainingIssues -and $remainingIssues.Line -match "Found (\d+) error") {
+                $fixed = $totalFixed - [int]$matches[1]
+            }
+            Write-Host "  ✅ Fixed: $fixed import issues" -ForegroundColor Green
+            if ($remaining -gt 0) {
+                Write-Host "  ⚠️  Remaining: $remaining issues" -ForegroundColor Yellow
+            }
+        }
+        Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
+
+    } catch {
+        Write-Host "❌ Error: $($_.Exception.Message)" -ForegroundColor Red
+    } finally {
+        Pop-Location
+    }
+
+    Write-Host ""
+    Read-Host "Press Enter to continue"
 }
 
 # ============================================
@@ -1328,9 +1558,9 @@ function Upgrade-DevelopmentDependencies {
 # ============================================
 function Invoke-PreCommitValidation {
     Write-LokifiHeader "Pre-Commit Validation"
-    
+
     $allPassed = $true
-    
+
     # Check 1: TypeScript Type Check (unless skipped)
     if (-not $SkipTypeCheck -and -not $Quick) {
         Write-Host "📘 TypeScript Type Check..." -ForegroundColor Yellow
@@ -1352,7 +1582,7 @@ function Invoke-PreCommitValidation {
         }
         Write-Host ""
     }
-    
+
     # Check 1b: Python Type Check with Pyright (unless skipped)
     if (-not $SkipTypeCheck -and -not $Quick) {
         Write-Host "🐍 Python Type Check (Pyright)..." -ForegroundColor Yellow
@@ -1387,7 +1617,7 @@ function Invoke-PreCommitValidation {
         }
         Write-Host ""
     }
-    
+
     # Check 2: Lint Staged Files (always)
     Write-Host "🧹 Linting Staged Files..." -ForegroundColor Yellow
     Push-Location $Global:LokifiConfig.FrontendDir
@@ -1405,12 +1635,12 @@ function Invoke-PreCommitValidation {
         Pop-Location
     }
     Write-Host ""
-    
+
     # Check 3: Security Scan for Sensitive Data (always)
     Write-Host "🔒 Security Scan..." -ForegroundColor Yellow
     $stagedFiles = git diff --cached --name-only 2>$null
     $securityIssues = @()
-    
+
     if ($stagedFiles) {
         foreach ($file in $stagedFiles) {
             if (Test-Path $file) {
@@ -1428,7 +1658,7 @@ function Invoke-PreCommitValidation {
             }
         }
     }
-    
+
     if ($securityIssues.Count -gt 0) {
         Write-Host "  ❌ Security issues detected:" -ForegroundColor Red
         $securityIssues | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
@@ -1437,7 +1667,7 @@ function Invoke-PreCommitValidation {
         Write-Host "  ✅ No security issues detected" -ForegroundColor Green
     }
     Write-Host ""
-    
+
     # Check 4: TODO Tracking (informational only)
     if (-not $Quick) {
         Write-Host "📝 TODO Tracking..." -ForegroundColor Yellow
@@ -1452,7 +1682,7 @@ function Invoke-PreCommitValidation {
                 }
             }
         }
-        
+
         if ($todoCount -gt 0) {
             Write-Host "  📋 Found $todoCount TODO comments in staged files" -ForegroundColor Yellow
             Write-Host "  💡 Consider addressing before commit or adding to backlog" -ForegroundColor Gray
@@ -1461,11 +1691,11 @@ function Invoke-PreCommitValidation {
         }
         Write-Host ""
     }
-    
+
     # Check 5: Quick Analysis (if not skipped)
     if (-not $SkipAnalysis -and -not $Quick) {
         Write-Host "📊 Quick Code Analysis..." -ForegroundColor Yellow
-        
+
         # Check for console.log in staged TypeScript files
         $consoleLogFiles = @()
         if ($stagedFiles) {
@@ -1478,7 +1708,7 @@ function Invoke-PreCommitValidation {
                 }
             }
         }
-        
+
         if ($consoleLogFiles.Count -gt 0) {
             Write-Host "  ⚠️  console.log found in:" -ForegroundColor Yellow
             $consoleLogFiles | ForEach-Object { Write-Host "     $_" -ForegroundColor Gray }
@@ -1488,7 +1718,7 @@ function Invoke-PreCommitValidation {
         }
         Write-Host ""
     }
-    
+
     # Summary
     Write-Host "=" * 50 -ForegroundColor Gray
     if ($allPassed) {
@@ -1512,12 +1742,12 @@ function Show-InteractiveLauncher {
     function Show-Banner {
         Clear-Host
         Write-Host "╔═══════════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "║     🚀 LOKIFI ULTIMATE LAUNCHER - PHASE 2C       ║" -ForegroundColor Cyan  
+        Write-Host "║     🚀 LOKIFI ULTIMATE LAUNCHER - PHASE 2C       ║" -ForegroundColor Cyan
         Write-Host "║        Enterprise Development Control             ║" -ForegroundColor Cyan
         Write-Host "╚═══════════════════════════════════════════════════╝" -ForegroundColor Cyan
         Write-Host ""
     }
-    
+
     function Show-MainMenu {
         Show-Banner
         Write-Host "╔═══════════════════════════════════════════════════╗" -ForegroundColor Gray
@@ -1533,7 +1763,7 @@ function Show-InteractiveLauncher {
         Write-Host " 0. 🚪 Exit" -ForegroundColor Red
         Write-Host ""
     }
-    
+
     function Show-ServerMenu {
         Show-Banner
         Write-Host "🚀 SERVER MANAGEMENT" -ForegroundColor Green
@@ -1547,7 +1777,7 @@ function Show-InteractiveLauncher {
         Write-Host " 6. � Stop All Services" -ForegroundColor Red
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
-        
+
         $choice = Read-Host "Enter your choice"
         switch ($choice) {
             "1" { Start-BackendServer }
@@ -1559,13 +1789,13 @@ function Show-InteractiveLauncher {
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
-        
+
         if ($choice -ne "0") {
             Read-Host "`nPress Enter to continue"
             Show-ServerMenu
         }
     }
-    
+
     function Show-DevelopmentMenu {
         Show-Banner
         Write-Host "💻 DEVELOPMENT TOOLS" -ForegroundColor Cyan
@@ -1582,7 +1812,7 @@ function Show-InteractiveLauncher {
         Write-Host " 9. 🔍 Comprehensive Codebase Audit" -ForegroundColor Magenta
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
-        
+
         $choice = Read-Host "Enter your choice"
         switch ($choice) {
             "1" { Run-DevelopmentTests }
@@ -1591,7 +1821,7 @@ function Show-InteractiveLauncher {
             "4" { Upgrade-DevelopmentDependencies }
             "5" { Invoke-GitOperations "status" }
             "6" { Invoke-GitOperations "commit" }
-            "7" { 
+            "7" {
                 Write-Host ""
                 Write-Host "Available environments:" -ForegroundColor Cyan
                 Write-Host "  1. development" -ForegroundColor White
@@ -1606,10 +1836,10 @@ function Show-InteractiveLauncher {
                 }
                 Invoke-EnvironmentManagement "switch" $envName
             }
-            "8" { 
+            "8" {
                 Write-Host "`n⚠️  Watch mode will run continuously. Press Ctrl+C to stop." -ForegroundColor Yellow
                 Start-Sleep 2
-                Start-WatchMode 
+                Start-WatchMode
             }
             "9" {
                 Write-Host "`n🔍 Running comprehensive codebase audit..." -ForegroundColor Cyan
@@ -1619,13 +1849,13 @@ function Show-InteractiveLauncher {
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
-        
+
         if ($choice -ne "0" -and $choice -ne "8") {
             Read-Host "`nPress Enter to continue"
             Show-DevelopmentMenu
         }
     }
-    
+
     function Show-SecurityMenu {
         Show-Banner
         Write-Host "🔒 SECURITY & MONITORING" -ForegroundColor Yellow
@@ -1640,10 +1870,10 @@ function Show-InteractiveLauncher {
         Write-Host " 7. 🔥 Load Test" -ForegroundColor White
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
-        
+
         $choice = Read-Host "Enter your choice"
         switch ($choice) {
-            "1" { 
+            "1" {
                 $full = Read-Host "Run full audit? (y/n)"
                 if ($full -eq "y") {
                     Invoke-SecurityScan -Full
@@ -1652,27 +1882,27 @@ function Show-InteractiveLauncher {
                 }
             }
             "2" { Invoke-QuickAnalysis }
-            "3" { 
+            "3" {
                 $duration = Read-Host "Monitor duration in seconds (default: 60)"
                 if ([string]::IsNullOrWhiteSpace($duration)) { $duration = 60 }
                 Start-PerformanceMonitoring -Duration ([int]$duration)
             }
             "4" { Get-LogsView -Lines 50 }
-            "5" { 
+            "5" {
                 Write-Host ""
                 $name = Read-Host "Backup name (optional, press Enter to skip)"
                 $includeDb = Read-Host "Include database? (y/n)"
                 $compress = Read-Host "Compress backup? (y/n)"
-                
+
                 $params = @{}
                 if (-not [string]::IsNullOrWhiteSpace($name)) { $params['BackupName'] = $name }
                 if ($includeDb -eq "y") { $params['IncludeDatabase'] = $true }
                 if ($compress -eq "y") { $params['Compress'] = $true }
-                
+
                 Invoke-BackupOperation @params
             }
             "6" { Invoke-RestoreOperation }
-            "7" { 
+            "7" {
                 $duration = Read-Host "Test duration in seconds (default: 60)"
                 if ([string]::IsNullOrWhiteSpace($duration)) { $duration = 60 }
                 Invoke-LoadTest -Duration ([int]$duration)
@@ -1680,13 +1910,13 @@ function Show-InteractiveLauncher {
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
-        
+
         if ($choice -ne "0" -and $choice -ne "3" -and $choice -ne "7") {
             Read-Host "`nPress Enter to continue"
             Show-SecurityMenu
         }
     }
-    
+
     function Show-DatabaseMenu {
         Show-Banner
         Write-Host "🗄️  DATABASE OPERATIONS" -ForegroundColor Blue
@@ -1700,12 +1930,12 @@ function Show-InteractiveLauncher {
         Write-Host " 6. 💾 Backup Database" -ForegroundColor White
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
-        
+
         $choice = Read-Host "Enter your choice"
         switch ($choice) {
             "1" { Invoke-DatabaseMigration "status" }
             "2" { Invoke-DatabaseMigration "up" }
-            "3" { 
+            "3" {
                 Write-Host "`n⚠️  This will rollback the last migration!" -ForegroundColor Yellow
                 $confirm = Read-Host "Continue? (yes/no)"
                 if ($confirm -eq "yes") {
@@ -1718,13 +1948,13 @@ function Show-InteractiveLauncher {
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
-        
+
         if ($choice -ne "0") {
             Read-Host "`nPress Enter to continue"
             Show-DatabaseMenu
         }
     }
-    
+
     function Show-CodeQualityMenu {
         Show-Banner
         Write-Host "🎨 CODE QUALITY" -ForegroundColor Magenta
@@ -1735,34 +1965,32 @@ function Show-InteractiveLauncher {
         Write-Host " 3. 🔧 Fix TypeScript Issues" -ForegroundColor White
         Write-Host " 4. 🐍 Fix Python Type Annotations" -ForegroundColor White
         Write-Host " 5. 🧪 Run Linter" -ForegroundColor White
-        Write-Host " 6. 🗂️  Organize Documents" -ForegroundColor White
-        Write-Host " 7. 📊 Full Analysis" -ForegroundColor White
+        Write-Host " 6. � Fix Python Imports" -ForegroundColor White
+        Write-Host " 7. �🗂️  Organize Documents" -ForegroundColor White
+        Write-Host " 8. 📊 Full Analysis" -ForegroundColor White
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
-        
+
         $choice = Read-Host "Enter your choice"
         switch ($choice) {
             "1" { Format-DevelopmentCode }
             "2" { Clean-DevelopmentCache }
             "3" { Invoke-QuickFix -TypeScript }
             "4" { Invoke-PythonTypeFix }
-            "5" { 
-                Push-Location $Global:LokifiConfig.FrontendDir
-                npm run lint
-                Pop-Location
-            }
-            "6" { Invoke-UltimateDocumentOrganization "organize" }
-            "7" { Invoke-QuickAnalysis }
+            "5" { Invoke-Linter }
+            "6" { Invoke-PythonImportFix }
+            "7" { Invoke-UltimateDocumentOrganization "organize" }
+            "8" { Invoke-QuickAnalysis }
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
-        
+
         if ($choice -ne "0") {
             Read-Host "`nPress Enter to continue"
             Show-CodeQualityMenu
         }
     }
-    
+
     function Show-HelpMenu {
         Show-Banner
         Write-Host "❓ HELP & DOCUMENTATION" -ForegroundColor White
@@ -1775,11 +2003,11 @@ function Show-InteractiveLauncher {
         Write-Host " 5. 📋 Feature List" -ForegroundColor White
         Write-Host " 0. ⬅️  Back to Main Menu" -ForegroundColor Gray
         Write-Host ""
-        
+
         $choice = Read-Host "Enter your choice"
         switch ($choice) {
             "1" { Show-EnhancedHelp }
-            "2" { 
+            "2" {
                 if (Test-Path "QUICK_COMMAND_REFERENCE.md") {
                     Get-Content "QUICK_COMMAND_REFERENCE.md" | Select-Object -First 50
                 } else {
@@ -1787,14 +2015,14 @@ function Show-InteractiveLauncher {
                 }
             }
             "3" { Get-ServiceStatus }
-            "4" { 
+            "4" {
                 Write-Host "`n📋 Available Actions:" -ForegroundColor Cyan
                 Write-Host "servers, redis, postgres, test, organize, health, stop, clean, status," -ForegroundColor White
                 Write-Host "dev, launch, validate, format, lint, setup, install, upgrade, docs," -ForegroundColor White
                 Write-Host "analyze, fix, backup, restore, logs, monitor, migrate, loadtest," -ForegroundColor White
                 Write-Host "git, env, security, watch, help" -ForegroundColor White
             }
-            "5" { 
+            "5" {
                 Write-Host "`n✨ Phase 2C Enterprise Features:" -ForegroundColor Cyan
                 Write-Host "  ✓ Automated backup & restore" -ForegroundColor Green
                 Write-Host "  ✓ Real-time performance monitoring" -ForegroundColor Green
@@ -1809,18 +2037,18 @@ function Show-InteractiveLauncher {
             "0" { return }
             default { Write-Host "Invalid choice!" -ForegroundColor Red; Start-Sleep 2 }
         }
-        
+
         if ($choice -ne "0") {
             Read-Host "`nPress Enter to continue"
             Show-HelpMenu
         }
     }
-    
+
     # Main launcher loop
     do {
         Show-MainMenu
         $mainChoice = Read-Host "Enter your choice (0-6)"
-        
+
         switch ($mainChoice) {
             "1" { Show-ServerMenu }
             "2" { Show-DevelopmentMenu }
@@ -1828,12 +2056,12 @@ function Show-InteractiveLauncher {
             "4" { Show-DatabaseMenu }
             "5" { Show-CodeQualityMenu }
             "6" { Show-HelpMenu }
-            "0" { 
+            "0" {
                 Write-Host "`n👋 Thank you for using Lokifi Ultimate Manager!" -ForegroundColor Green
                 Write-Host "🚀 Phase 2C Enterprise Edition" -ForegroundColor Cyan
-                exit 
+                exit
             }
-            default { 
+            default {
                 Write-Host "`n❌ Invalid choice! Please enter 0-6." -ForegroundColor Red
                 Start-Sleep 2
             }
@@ -1846,10 +2074,10 @@ function Show-InteractiveLauncher {
 # ============================================
 function Test-LokifiAPI {
     Write-Step "🧪" "Testing Lokifi Backend API..."
-    
+
     $baseUrl = $Global:LokifiConfig.API.BackendUrl
     $tests = @()
-    
+
     # Test 1: Health Check
     Write-Step "1️⃣" "Testing Health Endpoint..."
     try {
@@ -1864,7 +2092,7 @@ function Test-LokifiAPI {
         Write-Warning "Make sure backend is running: .\lokifi.ps1 dev be"
         return $tests
     }
-    
+
     # Test 2: Crypto Discovery
     Write-Step "2️⃣" "Testing Crypto Discovery..."
     try {
@@ -1881,13 +2109,13 @@ function Test-LokifiAPI {
         Write-Error "Crypto discovery failed: $_"
         $tests += @{ Name = "Crypto Discovery"; Status = "FAIL"; Details = $_.Exception.Message }
     }
-    
+
     # Test 3: Batch Price
     Write-Step "3️⃣" "Testing Batch Price API..."
     try {
         $body = @{ symbols = @("BTC", "ETH", "SOL") } | ConvertTo-Json
         $response = Invoke-RestMethod -Uri "$baseUrl/api/v1/prices/batch" -Method Post -Body $body -ContentType "application/json" -TimeoutSec 10 -ErrorAction Stop
-        
+
         if ($response.success) {
             Write-Success "Batch request successful"
             Write-Info "Prices retrieved:"
@@ -1900,7 +2128,7 @@ function Test-LokifiAPI {
         Write-Warning "Batch price test skipped (endpoint may not be available)"
         $tests += @{ Name = "Batch Price"; Status = "SKIP"; Details = "Endpoint unavailable" }
     }
-    
+
     # Test 4: Frontend Connection
     Write-Step "4️⃣" "Testing Frontend Connection..."
     if (Test-ServiceRunning -Url $Global:LokifiConfig.API.FrontendUrl) {
@@ -1910,18 +2138,18 @@ function Test-LokifiAPI {
         Write-Warning "Frontend not accessible"
         $tests += @{ Name = "Frontend"; Status = "FAIL"; Details = "Not accessible on port 3000" }
     }
-    
+
     # Summary
     Write-Host ""
     Write-Step "📊" "Test Summary:"
     $passCount = ($tests | Where-Object { $_.Status -eq "PASS" }).Count
     $failCount = ($tests | Where-Object { $_.Status -eq "FAIL" }).Count
     $skipCount = ($tests | Where-Object { $_.Status -eq "SKIP" }).Count
-    
+
     Write-Host "   ✅ Passed: $passCount" -ForegroundColor Green
     Write-Host "   ❌ Failed: $failCount" -ForegroundColor Red
     Write-Host "   ⏭️  Skipped: $skipCount" -ForegroundColor Yellow
-    
+
     return $tests
 }
 
@@ -1930,10 +2158,10 @@ function Test-LokifiAPI {
 # ============================================
 function Invoke-RepositoryOrganization {
     Write-Step "🗂️" "Organizing Repository Files..."
-    
+
     $moveCount = 0
     $projectRoot = $Global:LokifiConfig.ProjectRoot
-    
+
     # Define file movements (key organizational improvements)
     $moves = @{
         # Move scattered markdown files to organized structure
@@ -1944,16 +2172,16 @@ function Invoke-RepositoryOrganization {
         "DATABASE_*.md" = "docs\database\"
         "DEPLOYMENT_*.md" = "docs\deployment\"
     }
-    
+
     foreach ($pattern in $moves.Keys) {
         $targetDir = $moves[$pattern]
         $fullTargetDir = Join-Path $projectRoot $targetDir
-        
+
         # Create target directory if it doesn't exist
         if (-not (Test-Path $fullTargetDir)) {
             New-Item -ItemType Directory -Path $fullTargetDir -Force | Out-Null
         }
-        
+
         # Find and move matching files
         $matchingFiles = Get-ChildItem -Path $projectRoot -Filter $pattern -File -ErrorAction SilentlyContinue
         foreach ($file in $matchingFiles) {
@@ -1965,13 +2193,13 @@ function Invoke-RepositoryOrganization {
             }
         }
     }
-    
+
     if ($moveCount -gt 0) {
         Write-Success "Organized $moveCount files into proper directories"
     } else {
         Write-Info "Repository already organized"
     }
-    
+
     return $moveCount
 }
 
@@ -1979,18 +2207,18 @@ function Get-OptimalDocumentLocation {
     <#
     .SYNOPSIS
     Determines the optimal location for a document based on its name pattern
-    
+
     .DESCRIPTION
     Uses the same organization rules as Invoke-UltimateDocumentOrganization
     to determine where a file should be created
-    
+
     .PARAMETER FileName
     The name of the file (e.g., "TYPESCRIPT_FIX_REPORT.md")
-    
+
     .EXAMPLE
     Get-OptimalDocumentLocation "TYPESCRIPT_FIX_REPORT.md"
     Returns: "docs\reports\"
-    
+
     .EXAMPLE
     Get-OptimalDocumentLocation "API_DOCUMENTATION.md"
     Returns: "docs\api\"
@@ -1999,7 +2227,7 @@ function Get-OptimalDocumentLocation {
         [Parameter(Mandatory=$true)]
         [string]$FileName
     )
-    
+
     # Same organization rules as document organization
     $organizationRules = @{
         # Status and completion documents
@@ -2008,48 +2236,48 @@ function Get-OptimalDocumentLocation {
         "*COMPLETE*.md" = "docs\reports\"
         "*SUCCESS*.md" = "docs\reports\"
         "*REPORT*.md" = "docs\reports\"
-        
+
         # Development and implementation
         "*SETUP*.md" = "docs\guides\"
         "*GUIDE*.md" = "docs\guides\"
         "*IMPLEMENTATION*.md" = "docs\implementation\"
         "*DEVELOPMENT*.md" = "docs\development\"
-        
+
         # Technical documentation
         "API_*.md" = "docs\api\"
         "DATABASE_*.md" = "docs\database\"
         "DEPLOYMENT_*.md" = "docs\deployment\"
         "ARCHITECTURE*.md" = "docs\design\"
-        
+
         # Process and workflow
         "*FIX*.md" = "docs\fixes\"
         "*ERROR*.md" = "docs\fixes\"
         "*OPTIMIZATION*.md" = "docs\optimization-reports\"
         "*SESSION*.md" = "docs\optimization-reports\"
-        
+
         # Planning and analysis
         "*ANALYSIS*.md" = "docs\analysis\"
-        "*PLAN*.md" = "docs\plans\" 
+        "*PLAN*.md" = "docs\plans\"
         "*STRATEGY*.md" = "docs\plans\"
-        
+
         # Security and audit
         "*SECURITY*.md" = "docs\security\"
         "*AUDIT*.md" = "docs\audit-reports\"
         "*VULNERABILITY*.md" = "docs\security\"
-        
+
         # Testing and validation
         "*TEST*.md" = "docs\testing\"
         "*VALIDATION*.md" = "docs\testing\"
         "*QA*.md" = "docs\testing\"
     }
-    
+
     # Check each pattern
     foreach ($pattern in $organizationRules.Keys) {
         if ($FileName -like $pattern) {
             return $organizationRules[$pattern]
         }
     }
-    
+
     # Default to root if no pattern matches (for README.md, START_HERE.md, etc.)
     return ""
 }
@@ -2058,24 +2286,24 @@ function New-OrganizedDocument {
     <#
     .SYNOPSIS
     Creates a new document file in the optimal organized location
-    
+
     .DESCRIPTION
     Automatically determines the correct location based on filename pattern
     and creates the file there with optional content
-    
+
     .PARAMETER FileName
     The name of the file to create (e.g., "TYPESCRIPT_FIX_REPORT.md")
-    
+
     .PARAMETER Content
     Optional content to write to the file
-    
+
     .PARAMETER Force
     Overwrite if file already exists
-    
+
     .EXAMPLE
     New-OrganizedDocument "API_DOCUMENTATION.md" -Content "# API Docs"
     Creates file in docs\api\API_DOCUMENTATION.md
-    
+
     .EXAMPLE
     New-OrganizedDocument "OPTIMIZATION_COMPLETE.md"
     Creates empty file in docs\optimization-reports\OPTIMIZATION_COMPLETE.md
@@ -2083,17 +2311,17 @@ function New-OrganizedDocument {
     param(
         [Parameter(Mandatory=$true)]
         [string]$FileName,
-        
+
         [Parameter(Mandatory=$false)]
         [string]$Content = "",
-        
+
         [Parameter(Mandatory=$false)]
         [switch]$Force
     )
-    
+
     # Get optimal location
     $location = Get-OptimalDocumentLocation $FileName
-    
+
     # Build full path
     if ($location) {
         $fullPath = Join-Path $Global:LokifiConfig.ProjectRoot (Join-Path $location $FileName)
@@ -2102,35 +2330,35 @@ function New-OrganizedDocument {
         $fullPath = Join-Path $Global:LokifiConfig.ProjectRoot $FileName
         $displayPath = $FileName
     }
-    
+
     # Check if file exists
     if ((Test-Path $fullPath) -and -not $Force) {
         Write-Warning "File already exists: $displayPath"
         Write-Host "   Use -Force to overwrite" -ForegroundColor Gray
         return $false
     }
-    
+
     # Ensure directory exists
     $directory = Split-Path $fullPath -Parent
     if ($directory -and -not (Test-Path $directory)) {
         New-Item -ItemType Directory -Path $directory -Force | Out-Null
         Write-Host "   📁 Created directory: $(Split-Path $displayPath -Parent)" -ForegroundColor Cyan
     }
-    
+
     # Create file
     if ($Content) {
         Set-Content -Path $fullPath -Value $Content -Force
     } else {
         New-Item -Path $fullPath -ItemType File -Force | Out-Null
     }
-    
+
     Write-Host "   ✅ Created: $displayPath" -ForegroundColor Green
     return $fullPath
 }
 
 function Invoke-UltimateDocumentOrganization {
     param([string]$OrgMode = "status")
-    
+
     # Enhanced organization rules from ultimate-doc-organizer
     $organizationRules = @{
         # Status and completion documents
@@ -2139,52 +2367,52 @@ function Invoke-UltimateDocumentOrganization {
         "*COMPLETE*.md" = "docs\reports\"
         "*SUCCESS*.md" = "docs\reports\"
         "*REPORT*.md" = "docs\reports\"
-        
+
         # Development and implementation
         "*SETUP*.md" = "docs\guides\"
         "*GUIDE*.md" = "docs\guides\"
         "*IMPLEMENTATION*.md" = "docs\implementation\"
         "*DEVELOPMENT*.md" = "docs\development\"
-        
+
         # Technical documentation
         "API_*.md" = "docs\api\"
         "DATABASE_*.md" = "docs\database\"
         "DEPLOYMENT_*.md" = "docs\deployment\"
         "ARCHITECTURE*.md" = "docs\design\"
-        
+
         # Process and workflow
         "*FIX*.md" = "docs\fixes\"
         "*ERROR*.md" = "docs\fixes\"
         "*OPTIMIZATION*.md" = "docs\optimization-reports\"
         "*SESSION*.md" = "docs\optimization-reports\"
-        
+
         # Planning and analysis
         "*ANALYSIS*.md" = "docs\analysis\"
-        "*PLAN*.md" = "docs\plans\" 
+        "*PLAN*.md" = "docs\plans\"
         "*STRATEGY*.md" = "docs\plans\"
-        
+
         # Security and audit
         "*SECURITY*.md" = "docs\security\"
         "*AUDIT*.md" = "docs\audit-reports\"
         "*VULNERABILITY*.md" = "docs\security\"
-        
+
         # Testing and validation
         "*TEST*.md" = "docs\testing\"
         "*VALIDATION*.md" = "docs\testing\"
         "*QA*.md" = "docs\testing\"
     }
-    
+
     $protectedFiles = @("README.md", "START_HERE.md", "PROJECT_STATUS_CONSOLIDATED.md")
-    
+
     if ($OrgMode -eq "status") {
         # Show document status
         Write-Step "📁" "Root Directory Analysis"
         $rootMdFiles = Get-ChildItem -Path "." -Filter "*.md" -File
         Write-Host "   📄 Markdown files in root: $($rootMdFiles.Count)" -ForegroundColor Blue
-        
+
         if ($rootMdFiles.Count -gt 0) {
             Write-Host "   📋 Files by category:" -ForegroundColor Blue
-            $rootMdFiles | Group-Object { 
+            $rootMdFiles | Group-Object {
                 if ($_.Name -like "*STATUS*") { "Status" }
                 elseif ($_.Name -like "*COMPLETE*" -or $_.Name -like "*SUCCESS*") { "Completion" }
                 elseif ($_.Name -like "*GUIDE*" -or $_.Name -like "*SETUP*") { "Guide" }
@@ -2195,28 +2423,28 @@ function Invoke-UltimateDocumentOrganization {
                 Write-Host "      $($_.Name): $($_.Count) files" -ForegroundColor Gray
             }
         }
-        
+
         Write-Host ""
         Write-Step "📁" "Docs Directory Analysis"
         if (Test-Path "docs") {
             $docsDirs = Get-ChildItem -Path "docs" -Directory
             Write-Host "   📂 Total categories: $($docsDirs.Count)" -ForegroundColor Blue
-            
+
             $totalFiles = 0
             $docsDirs | ForEach-Object {
                 $fileCount = (Get-ChildItem $_.FullName -File -Recurse).Count
                 $totalFiles += $fileCount
                 Write-Host "      $($_.Name): $fileCount files" -ForegroundColor Gray
             }
-            
+
             Write-Host "   📄 Total organized files: $totalFiles" -ForegroundColor Blue
-            
+
             if (Test-Path "docs\archive") {
                 $archiveFiles = (Get-ChildItem "docs\archive" -File -Recurse).Count
                 Write-Host "   📦 Archived files: $archiveFiles" -ForegroundColor Blue
             }
         }
-        
+
         Write-Host ""
         Write-Step "💡" "Recommendations"
         if ($rootMdFiles.Count -gt 5) {
@@ -2225,65 +2453,65 @@ function Invoke-UltimateDocumentOrganization {
         } else {
             Write-Host "   ✅ Root directory well organized" -ForegroundColor Green
         }
-        
+
     } else {
         # Organize documents
         Write-Step "📋" "Scanning root directory for documents..."
-        
-        $rootFiles = Get-ChildItem -Path "." -Filter "*.md" -File | 
+
+        $rootFiles = Get-ChildItem -Path "." -Filter "*.md" -File |
             Where-Object { $_.Name -notin $protectedFiles }
-        
+
         if ($rootFiles.Count -eq 0) {
             Write-Step "✅" "No documents to organize" "Success"
             return 0
         }
-        
+
         Write-Host "   📊 Found $($rootFiles.Count) documents to process" -ForegroundColor Blue
         Write-Host ""
-        
+
         $organizedCount = 0
         $consolidatedCount = 0
         foreach ($file in $rootFiles) {
             $fileName = $file.Name
-            
+
             foreach ($pattern in $organizationRules.Keys) {
                 if ($fileName -like $pattern) {
                     $targetDir = $organizationRules[$pattern]
                     $fullTargetDir = Join-Path $Global:LokifiConfig.ProjectRoot $targetDir
                     $targetPath = Join-Path $fullTargetDir $fileName
-                    
+
                     if (Test-Path $targetPath) {
                         # CONSOLIDATION: Check if files are different before skipping
                         $rootContent = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
                         $targetContent = Get-Content $targetPath -Raw -ErrorAction SilentlyContinue
-                        
+
                         if ($rootContent -ne $targetContent) {
                             Write-Host "   ⚠️  Duplicate found with DIFFERENT content: $fileName" -ForegroundColor Yellow
                             Write-Host "      Root file: $($file.FullName)" -ForegroundColor Gray
                             Write-Host "      Existing: $targetPath" -ForegroundColor Gray
-                            
+
                             # Compare timestamps and sizes
                             $rootFile = Get-Item $file.FullName
                             $targetFile = Get-Item $targetPath
-                            
+
                             Write-Host "      Root: Modified $($rootFile.LastWriteTime), Size $($rootFile.Length) bytes" -ForegroundColor Gray
                             Write-Host "      Existing: Modified $($targetFile.LastWriteTime), Size $($targetFile.Length) bytes" -ForegroundColor Gray
-                            
+
                             # ENHANCED CONSOLIDATION: Merge content intelligently
                             # Create backup of both versions
                             $timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
                             $backupDir = Join-Path $fullTargetDir "consolidation_backup_$timestamp"
                             New-Item -ItemType Directory -Path $backupDir -Force | Out-Null
-                            
+
                             Copy-Item -Path $targetPath -Destination (Join-Path $backupDir "$($fileName).existing") -Force
                             Copy-Item -Path $file.FullName -Destination (Join-Path $backupDir "$($fileName).root") -Force
-                            
+
                             Write-Host "      📦 Created backup: $backupDir" -ForegroundColor Cyan
-                            
+
                             # Intelligent merge: combine unique content
                             $rootLines = Get-Content $file.FullName
                             $targetLines = Get-Content $targetPath
-                            
+
                             # Determine which is newer and more complete
                             $useRoot = $false
                             if ($rootFile.LastWriteTime -gt $targetFile.LastWriteTime) {
@@ -2302,7 +2530,7 @@ function Invoke-UltimateDocumentOrganization {
                                     Write-Host "      → Keeping existing, backup created for review" -ForegroundColor Cyan
                                 }
                             }
-                            
+
                             # Apply decision
                             if ($useRoot) {
                                 # Check if target has unique sections not in root
@@ -2311,7 +2539,7 @@ function Invoke-UltimateDocumentOrganization {
                                     # Small amount of unique content - try to merge
                                     Write-Host "      → Found $($uniqueInTarget.Count) unique lines in existing file" -ForegroundColor Yellow
                                     Write-Host "      → Adding merged content marker" -ForegroundColor Cyan
-                                    
+
                                     $mergedContent = $rootContent + "`n`n---`n## MERGED CONTENT FROM PREVIOUS VERSION`n" + ($uniqueInTarget -join "`n")
                                     Set-Content -Path $targetPath -Value $mergedContent -Force
                                     Remove-Item $file.FullName -Force
@@ -2327,7 +2555,7 @@ function Invoke-UltimateDocumentOrganization {
                                 if ($uniqueInRoot.Count -gt 0 -and $uniqueInRoot.Count -lt 20) {
                                     Write-Host "      → Found $($uniqueInRoot.Count) unique lines in root file" -ForegroundColor Yellow
                                     Write-Host "      → Appending to existing file" -ForegroundColor Cyan
-                                    
+
                                     $mergedContent = $targetContent + "`n`n---`n## ADDITIONAL CONTENT FROM ROOT VERSION`n" + ($uniqueInRoot -join "`n")
                                     Set-Content -Path $targetPath -Value $mergedContent -Force
                                     Remove-Item $file.FullName -Force
@@ -2338,7 +2566,7 @@ function Invoke-UltimateDocumentOrganization {
                                     Write-Host "      ✅ Kept existing version (newer/larger)" -ForegroundColor Green
                                 }
                             }
-                            
+
                             $consolidatedCount++
                         } else {
                             Write-Host "   ⏭️  Skipping: $fileName (identical copy already exists in $targetDir)" -ForegroundColor Gray
@@ -2347,12 +2575,12 @@ function Invoke-UltimateDocumentOrganization {
                         }
                         break
                     }
-                    
+
                     # Create directory if needed
                     if (-not (Test-Path $fullTargetDir)) {
                         New-Item -ItemType Directory -Path $fullTargetDir -Force | Out-Null
                     }
-                    
+
                     # Move file
                     Move-Item -Path $file.FullName -Destination $targetPath -Force
                     Write-Host "   ✅ Organized: $fileName → $targetDir" -ForegroundColor Green
@@ -2361,7 +2589,7 @@ function Invoke-UltimateDocumentOrganization {
                 }
             }
         }
-        
+
         Write-Host ""
         Write-Step "📊" "Organization completed"
         Write-Host "   ✅ Files moved: $organizedCount" -ForegroundColor Green
@@ -2377,9 +2605,9 @@ function Invoke-UltimateDocumentOrganization {
 # ============================================
 function Get-ServiceStatus {
     Write-Step "📊" "Checking Service Status..."
-    
+
     $startTime = Get-Date
-    
+
     $status = @{
         Docker = Test-DockerAvailable
         DockerCompose = @{
@@ -2393,50 +2621,50 @@ function Get-ServiceStatus {
         Backend = Test-ServiceRunning -Url "$($Global:LokifiConfig.API.BackendUrl)/health"
         Frontend = Test-ServiceRunning -Url $Global:LokifiConfig.API.FrontendUrl
     }
-    
+
     $responseTime = ([int]((Get-Date) - $startTime).TotalMilliseconds)
-    
+
     # Check Docker Compose status first (RECOMMENDED APPROACH)
     $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
     if ($status.Docker -and (Test-Path $composeFile)) {
         $status.DockerCompose = Get-DockerComposeStatus
     }
-    
+
     if ($status.Docker) {
         # Check individual containers (for fallback/legacy mode)
         $redisRunning = docker ps --filter "name=$($Global:LokifiConfig.Redis.ContainerName)" --format "{{.Names}}" 2>$null
         $status.Redis = $redisRunning -eq $Global:LokifiConfig.Redis.ContainerName
-        
+
         $pgRunning = docker ps --filter "name=$($Global:LokifiConfig.PostgreSQL.ContainerName)" --format "{{.Names}}" 2>$null
         $status.PostgreSQL = $pgRunning -eq $Global:LokifiConfig.PostgreSQL.ContainerName
-        
+
         $backendRunning = docker ps --filter "name=$($Global:LokifiConfig.Backend.ContainerName)" --format "{{.Names}}" 2>$null
         $status.BackendContainer = $backendRunning -eq $Global:LokifiConfig.Backend.ContainerName
-        
+
         $frontendRunning = docker ps --filter "name=$($Global:LokifiConfig.Frontend.ContainerName)" --format "{{.Names}}" 2>$null
         $status.FrontendContainer = $frontendRunning -eq $Global:LokifiConfig.Frontend.ContainerName
-        
+
         # Also check for Docker Compose containers
         $composeRedis = docker ps --filter "name=lokifi-redis-dev" --format "{{.Names}}" 2>$null
         $composePostgres = docker ps --filter "name=lokifi-postgres-dev" --format "{{.Names}}" 2>$null
         $composeBackend = docker ps --filter "name=lokifi-backend-dev" --format "{{.Names}}" 2>$null
         $composeFrontend = docker ps --filter "name=lokifi-frontend-dev" --format "{{.Names}}" 2>$null
-        
+
         # Update status if Docker Compose containers are running
         if ($composeRedis) { $status.Redis = $true }
         if ($composePostgres) { $status.PostgreSQL = $true }
-        if ($composeBackend) { 
+        if ($composeBackend) {
             $status.BackendContainer = $true
             # Also update Backend status to match container status
             $status.Backend = $true
         }
-        if ($composeFrontend) { 
+        if ($composeFrontend) {
             $status.FrontendContainer = $true
             # Also update Frontend status to match container status
             $status.Frontend = $true
         }
     }
-    
+
     # Sync Backend/Frontend status with container status if containers are running
     if ($status.BackendContainer) {
         $status.Backend = $true
@@ -2444,38 +2672,38 @@ function Get-ServiceStatus {
     if ($status.FrontendContainer) {
         $status.Frontend = $true
     }
-    
+
     # Display status
     Write-Host ""
     Write-Host "🐳 Docker:      " -NoNewline
     if ($status.Docker) { Write-Host "✅ Running" -ForegroundColor Green } else { Write-Host "❌ Not Available" -ForegroundColor Red }
-    
+
     Write-Host ""
     Write-Host "� CONTAINERS:" -ForegroundColor Cyan
     Write-Host "�🔴 Redis:       " -NoNewline
     if ($status.Redis) { Write-Host "✅ Running (Container)" -ForegroundColor Green } else { Write-Host "❌ Stopped" -ForegroundColor Red }
-    
+
     Write-Host "🐘 PostgreSQL:  " -NoNewline
     if ($status.PostgreSQL) { Write-Host "✅ Running (Container)" -ForegroundColor Green } else { Write-Host "❌ Stopped" -ForegroundColor Red }
-    
+
     Write-Host "🔧 Backend:     " -NoNewline
-    if ($status.BackendContainer) { 
-        Write-Host "✅ Running (Container)" -ForegroundColor Green 
-    } elseif ($status.Backend) { 
-        Write-Host "✅ Running (Local)" -ForegroundColor Yellow 
-    } else { 
-        Write-Host "❌ Stopped" -ForegroundColor Red 
+    if ($status.BackendContainer) {
+        Write-Host "✅ Running (Container)" -ForegroundColor Green
+    } elseif ($status.Backend) {
+        Write-Host "✅ Running (Local)" -ForegroundColor Yellow
+    } else {
+        Write-Host "❌ Stopped" -ForegroundColor Red
     }
-    
+
     Write-Host "🎨 Frontend:    " -NoNewline
-    if ($status.FrontendContainer) { 
-        Write-Host "✅ Running (Container)" -ForegroundColor Green 
-    } elseif ($status.Frontend) { 
-        Write-Host "✅ Running (Local)" -ForegroundColor Yellow 
-    } else { 
-        Write-Host "❌ Stopped" -ForegroundColor Red 
+    if ($status.FrontendContainer) {
+        Write-Host "✅ Running (Container)" -ForegroundColor Green
+    } elseif ($status.Frontend) {
+        Write-Host "✅ Running (Local)" -ForegroundColor Yellow
+    } else {
+        Write-Host "❌ Stopped" -ForegroundColor Red
     }
-    
+
     # Track metrics (Phase 3.2)
     @('redis', 'postgres', 'backend', 'frontend') | ForEach-Object {
         $serviceName = $_
@@ -2485,27 +2713,27 @@ function Get-ServiceStatus {
             'backend' { if ($status.Backend -or $status.BackendContainer) { 'running' } else { 'stopped' } }
             'frontend' { if ($status.Frontend -or $status.FrontendContainer) { 'running' } else { 'stopped' } }
         }
-        
+
         Save-MetricsToDatabase -Table 'service_health' -Data @{
             service_name = $serviceName
             status = $serviceStatus
             response_time_ms = $responseTime
         }
-        
+
         # Send alerts if service is down
         if ($serviceStatus -eq 'stopped') {
             Send-Alert -Severity 'critical' -Category 'service_down' -Message "Service $serviceName is down"
         }
     }
-    
+
     # Update baseline
     Update-PerformanceBaseline -MetricName 'service_response_time_ms' -Value $responseTime
-    
+
     # Check for anomalies
     if (Test-PerformanceAnomaly -MetricName 'service_response_time_ms' -CurrentValue $responseTime) {
         Send-Alert -Severity 'warning' -Category 'anomaly_detected' -Message "Slow status check detected" -Details "${responseTime}ms (baseline exceeded)"
     }
-    
+
     return $status
 }
 
@@ -2514,10 +2742,10 @@ function Get-ServiceStatus {
 # ============================================
 function Invoke-CleanupOperation {
     Write-Step "🧹" "Cleaning Development Files..."
-    
+
     $cleanedItems = 0
     $projectRoot = $Global:LokifiConfig.ProjectRoot
-    
+
     # Clean common development artifacts
     $cleanupPaths = @(
         "node_modules\.cache",
@@ -2530,7 +2758,7 @@ function Invoke-CleanupOperation {
         "frontend\.next",
         "backend\**\__pycache__"
     )
-    
+
     foreach ($path in $cleanupPaths) {
         $fullPath = Join-Path $projectRoot $path
         if (Test-Path $fullPath) {
@@ -2541,7 +2769,7 @@ function Invoke-CleanupOperation {
             }
         }
     }
-    
+
     Write-Success "Cleaned $cleanedItems items"
     return $cleanedItems
 }
@@ -2551,14 +2779,14 @@ function Invoke-CleanupOperation {
 # ============================================
 function Start-AllServers {
     Write-LokifiHeader "Starting All Servers (Docker Compose Stack)"
-    
+
     $success = $true
     $isFullLaunch = ($Component -eq "all")
-    
+
     # For full launch, try Docker Compose first (RECOMMENDED APPROACH)
     if ($isFullLaunch) {
         Write-Step "🐳" "Attempting Docker Compose stack startup (RECOMMENDED)..."
-        
+
         if (Start-DockerComposeStack) {
             Write-Host ""
             Write-Success "🚀 Complete Docker Compose stack launched successfully!"
@@ -2577,11 +2805,11 @@ function Start-AllServers {
             Write-Host ""
         }
     }
-    
+
     # Fallback to individual container management for component-specific or Docker Compose failure
     Write-Info "Using individual container management (fallback mode)..."
     Write-Host ""
-    
+
     # Start Redis - always when doing full launch or when specifically requested
     if ($isFullLaunch -or $Component -eq "redis") {
         Write-Step "🔴" "Starting Redis Server..."
@@ -2592,8 +2820,8 @@ function Start-AllServers {
         }
         Write-Host ""
     }
-    
-    # Start PostgreSQL - always when doing full launch or when specifically requested  
+
+    # Start PostgreSQL - always when doing full launch or when specifically requested
     if ($isFullLaunch -or $Component -eq "postgres") {
         Write-Step "🐘" "Starting PostgreSQL Server..."
         if (Test-DockerAvailable) {
@@ -2604,13 +2832,13 @@ function Start-AllServers {
         }
         Write-Host ""
     }
-    
+
     # Start Backend
     if ($isFullLaunch -or $Component -eq "backend" -or $Component -eq "be") {
         Write-Step "🔧" "Starting Backend Server..."
         if ($Mode -eq "auto") {
             # Start backend in background for auto mode
-            Start-Job -ScriptBlock { 
+            Start-Job -ScriptBlock {
                 param($BackendDir)
                 Set-Location $BackendDir
                 if (Test-Path "venv/Scripts/Activate.ps1") {
@@ -2628,7 +2856,7 @@ function Start-AllServers {
         }
         Write-Host ""
     }
-    
+
     # Start Frontend
     if ($isFullLaunch -or $Component -eq "frontend" -or $Component -eq "fe") {
         Write-Step "🎨" "Starting Frontend Server..."
@@ -2644,12 +2872,12 @@ function Start-AllServers {
         }
         Write-Host ""
     }
-    
+
     Write-Host ""
     Write-Success "🚀 All Lokifi servers have been launched!"
     Write-Info "Services available at:"
     Write-Info "  🔴 Redis: redis://:23233@localhost:6379/0"
-    Write-Info "  🐘 PostgreSQL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi"  
+    Write-Info "  🐘 PostgreSQL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi"
     Write-Info "  🔧 Backend API: http://localhost:8000"
     Write-Info "  🎨 Frontend App: http://localhost:3000"
     Write-Host ""
@@ -2665,7 +2893,7 @@ function Start-AllServers {
 
 function Stop-AllServices {
     Write-LokifiHeader "Stopping All Services"
-    
+
     # Try Docker Compose first (RECOMMENDED)
     $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
     if ((Test-Path $composeFile) -and (Test-DockerAvailable)) {
@@ -2673,14 +2901,14 @@ function Stop-AllServices {
         Stop-DockerComposeStack
         Write-Host ""
     }
-    
+
     # Stop individual Docker containers (fallback/cleanup)
     Write-Step "🧹" "Cleaning up individual containers..."
     Stop-RedisContainer
     Stop-PostgreSQLContainer
     Stop-BackendContainer
     Stop-FrontendContainer
-    
+
     # Stop any running local processes
     Write-Step "💻" "Stopping local processes..."
     # Stop any running Node.js processes (Frontend)
@@ -2689,38 +2917,38 @@ function Stop-AllServices {
         $nodeProcesses | Stop-Process -Force -ErrorAction SilentlyContinue
         Write-Info "Stopped local Node.js processes"
     }
-    
+
     # Stop any running Python processes (Backend)
     $pythonProcesses = Get-Process -Name "python" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like "*uvicorn*" }
     if ($pythonProcesses) {
         $pythonProcesses | Stop-Process -Force -ErrorAction SilentlyContinue
         Write-Info "Stopped local Python processes"
     }
-    
+
     Write-Host ""
     Write-Success "All services stopped (Docker Compose + containers + local processes)"
 }
 
 function Restart-AllServers {
     Write-LokifiHeader "Restarting All Services"
-    
+
     Write-Step "🔄" "Step 1: Stopping all services..."
     Write-Host ""
-    
+
     # Stop everything first
     Stop-AllServices
-    
+
     Write-Host ""
     Write-Step "⏳" "Waiting 3 seconds for cleanup..."
     Start-Sleep -Seconds 3
-    
+
     Write-Host ""
     Write-Step "🚀" "Step 2: Starting all services..."
     Write-Host ""
-    
+
     # Start everything
     Start-AllServers
-    
+
     Write-Host ""
     Write-Success "✅ All services restarted successfully!"
     Write-Info "💡 Use '.\lokifi.ps1 status' to verify service status"
@@ -2734,14 +2962,14 @@ function Invoke-AutomatedTypeScriptFix {
         [switch]$DryRun,
         [switch]$ShowDetails
     )
-    
+
     Write-LokifiHeader "Automated TypeScript Error Resolution"
-    
+
     $fixedFiles = 0
     $totalFixes = 0
     $errorsBefore = 0
     $errorsAfter = 0
-    
+
     # Step 1: Count initial errors
     Write-Step "📊" "Counting initial TypeScript errors..."
     Push-Location $Global:LokifiConfig.FrontendDir
@@ -2753,13 +2981,13 @@ function Invoke-AutomatedTypeScriptFix {
         Write-Warning "Could not run TypeScript compiler"
     }
     Pop-Location
-    
+
     # Step 2: Fix Zustand v5 Migration
     Write-Step "🔧" "Fixing Zustand v5 stores..."
     $zustandPattern = 'immer<any>\(\(set:\s*any,\s*get:\s*any\)\s*=>'
     $zustandFiles = Get-ChildItem -Path $Global:LokifiConfig.FrontendDir -Recurse -Include "*.tsx","*.ts" -ErrorAction SilentlyContinue |
                     Where-Object { $_.FullName -notmatch "node_modules|\.next" }
-    
+
     foreach ($file in $zustandFiles) {
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
         if ($content -and $content -match $zustandPattern) {
@@ -2775,38 +3003,38 @@ function Invoke-AutomatedTypeScriptFix {
             }
         }
     }
-    
+
     # Step 2b: Fix Zustand v5 middleware type errors
     Write-Step "🔧" "Suppressing Zustand v5 middleware type errors..."
     $zustandMiddlewareFiles = Get-ChildItem -Path $Global:LokifiConfig.FrontendDir -Recurse -Include "*.tsx","*.ts" -ErrorAction SilentlyContinue |
                               Where-Object { $_.FullName -notmatch "node_modules|\.next" }
-    
+
     foreach ($file in $zustandMiddlewareFiles) {
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
         if (-not $content) { continue }
-        
+
         $originalContent = $content
         $fileFixes = 0
-        
+
         # Add @ts-expect-error before immer() calls in Zustand stores that don't already have it
         # Pattern: persist(\n      immer((set, get
         if ($content -match 'persist\(\s*\r?\n\s+immer\(\(' -and $content -notmatch '@ts-expect-error.*immer\(\(') {
             $content = $content -replace '(persist\(\s*\r?\n)(\s+)(immer\(\()', '$1$2// @ts-expect-error - Zustand v5 middleware type inference issue$1$2$3'
             $fileFixes++
         }
-        
+
         # Pattern: subscribeWithSelector(\n      immer((set, get
         if ($content -match 'subscribeWithSelector\(\s*\r?\n\s+immer\(\(' -and $content -notmatch '@ts-expect-error.*immer\(\(') {
             $content = $content -replace '(subscribeWithSelector\(\s*\r?\n)(\s+)(immer\(\()', '$1$2// @ts-expect-error - Zustand v5 middleware type inference issue$1$2$3'
             $fileFixes++
         }
-        
+
         # Pattern: create<Type>()(  immer((set, get  - without persist
         if ($content -match 'create<[^>]+>\(\)\(\s*\r?\n\s+immer\(\(' -and $content -notmatch '@ts-expect-error.*immer\(\(') {
             $content = $content -replace '(create<[^>]+>\(\)\(\s*\r?\n)(\s+)(immer\(\()', '$1$2// @ts-expect-error - Zustand v5 middleware type inference issue$1$2$3'
             $fileFixes++
         }
-        
+
         if ($fileFixes -gt 0 -and $content -ne $originalContent) {
             if (-not $DryRun) {
                 Set-Content -Path $file.FullName -Value $content -NoNewline
@@ -2818,12 +3046,12 @@ function Invoke-AutomatedTypeScriptFix {
             }
         }
     }
-    
+
     # Step 3: Fix implicit 'any' in arrow functions
     Write-Step "🎯" "Fixing implicit 'any' types in callbacks..."
     $implicitAnyFiles = Get-ChildItem -Path $Global:LokifiConfig.FrontendDir -Recurse -Include "*.tsx","*.ts" -ErrorAction SilentlyContinue |
                         Where-Object { $_.FullName -notmatch "node_modules|\.next" }
-    
+
     $commonPatterns = @(
         # Array methods - single parameter (multi-char variable names)
         @{ Pattern = '\.find\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.find(($1: any) =>' }
@@ -2832,23 +3060,23 @@ function Invoke-AutomatedTypeScriptFix {
         @{ Pattern = '\.forEach\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.forEach(($1: any) =>' }
         @{ Pattern = '\.some\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.some(($1: any) =>' }
         @{ Pattern = '\.every\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.every(($1: any) =>' }
-        
+
         # Sort with two parameters
         @{ Pattern = '\.sort\(\(([a-z][a-z0-9_]*),\s*([a-z][a-z0-9_]*)\)\s*=>'; Replacement = '.sort(($1: any, $2: any) =>' }
-        
+
         # Reduce with two parameters (accumulator, current)
         @{ Pattern = '\.reduce\(\(([a-z][a-z0-9_]*),\s*([a-z][a-z0-9_]*)\)\s*=>'; Replacement = '.reduce(($1: any, $2: any) =>' }
-        
+
         # flatMap
         @{ Pattern = '\.flatMap\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.flatMap(($1: any) =>' }
-        
+
         # findIndex
         @{ Pattern = '\.findIndex\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.findIndex(($1: any) =>' }
-        
+
         # Promise callbacks
         @{ Pattern = '\.then\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.then(($1: any) =>' }
         @{ Pattern = '\.catch\(([a-z][a-z0-9_]*)\s*=>'; Replacement = '.catch(($1: any) =>' }
-        
+
         # Event handlers in JSX/TSX
         @{ Pattern = 'onChange=\{([a-z][a-z0-9_]*)\s*=>'; Replacement = 'onChange={($1: any) =>' }
         @{ Pattern = 'onClick=\{([a-z][a-z0-9_]*)\s*=>'; Replacement = 'onClick={($1: any) =>' }
@@ -2862,14 +3090,14 @@ function Invoke-AutomatedTypeScriptFix {
         @{ Pattern = 'onMouseDown=\{([a-z][a-z0-9_]*)\s*=>'; Replacement = 'onMouseDown={($1: any) =>' }
         @{ Pattern = 'onMouseUp=\{([a-z][a-z0-9_]*)\s*=>'; Replacement = 'onMouseUp={($1: any) =>' }
     )
-    
+
     foreach ($file in $implicitAnyFiles) {
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
         if (-not $content) { continue }
-        
+
         $originalContent = $content
         $fileFixes = 0
-        
+
         foreach ($pattern in $commonPatterns) {
             if ($content -match $pattern.Pattern) {
                 if (-not $DryRun) {
@@ -2878,7 +3106,7 @@ function Invoke-AutomatedTypeScriptFix {
                 }
             }
         }
-        
+
         if ($fileFixes -gt 0 -and -not $DryRun) {
             Set-Content -Path $file.FullName -Value $content -NoNewline
             $fixedFiles++
@@ -2888,7 +3116,7 @@ function Invoke-AutomatedTypeScriptFix {
             Write-Info "[DRY RUN] Would fix $fileFixes implicit 'any' in: $($file.Name)"
         }
     }
-    
+
     # Step 4: Clean and rebuild Next.js
     if (-not $DryRun) {
         Write-Step "🔨" "Rebuilding Next.js to regenerate types..."
@@ -2898,10 +3126,10 @@ function Invoke-AutomatedTypeScriptFix {
                 Remove-Item ".next" -Recurse -Force -ErrorAction SilentlyContinue
                 Write-Info "Removed .next directory"
             }
-            
+
             Write-Info "Running npm run build (this may take a minute)..."
             $buildOutput = npm run build 2>&1 | Out-String
-            
+
             if ($LASTEXITCODE -eq 0) {
                 Write-Success "Next.js build completed successfully"
             } else {
@@ -2914,7 +3142,7 @@ function Invoke-AutomatedTypeScriptFix {
     } else {
         Write-Info "[DRY RUN] Would rebuild Next.js"
     }
-    
+
     # Step 5: Count final errors
     if (-not $DryRun) {
         Write-Step "📊" "Counting remaining TypeScript errors..."
@@ -2928,14 +3156,14 @@ function Invoke-AutomatedTypeScriptFix {
         }
         Pop-Location
     }
-    
+
     # Summary
     Write-Host ""
     Write-Host "=" * 80 -ForegroundColor Cyan
     Write-Host "📊 TYPESCRIPT AUTO-FIX SUMMARY" -ForegroundColor Cyan
     Write-Host "=" * 80 -ForegroundColor Cyan
     Write-Host ""
-    
+
     if ($DryRun) {
         Write-Host "   🔍 DRY RUN MODE - No changes made" -ForegroundColor Yellow
     } else {
@@ -2945,17 +3173,17 @@ function Invoke-AutomatedTypeScriptFix {
         Write-Host "   📊 Error Reduction:" -ForegroundColor Cyan
         Write-Host "      Before: $errorsBefore errors" -ForegroundColor $(if($errorsBefore -gt 100){'Red'}else{'Yellow'})
         Write-Host "      After:  $errorsAfter errors" -ForegroundColor $(if($errorsAfter -lt 50){'Green'}elseif($errorsAfter -lt 150){'Yellow'}else{'Red'})
-        
+
         if ($errorsBefore -gt 0) {
             $reduction = [math]::Round((($errorsBefore - $errorsAfter) / $errorsBefore) * 100, 1)
             Write-Host "      Improvement: $reduction%" -ForegroundColor Green
         }
     }
-    
+
     Write-Host ""
     Write-Host "=" * 80 -ForegroundColor Cyan
     Write-Host ""
-    
+
     if (-not $DryRun -and $errorsAfter -gt 0) {
         Write-Info "To see remaining errors, run:"
         Write-Host "   cd frontend && npx tsc --noEmit | Select-Object -First 50" -ForegroundColor Gray
@@ -2967,15 +3195,15 @@ function Invoke-AutomatedTypeScriptFix {
 # ============================================
 function Invoke-QuickAnalysis {
     Write-Step "🔍" "Running Quick Health Check..."
-    
+
     $analysisResults = @{
         TypeScriptErrors = 0
-        ConsoleLogs = 0  
+        ConsoleLogs = 0
         OutdatedPackages = 0
         DockerStatus = "Unknown"
         ServicesRunning = 0
     }
-    
+
     try {
         # Check TypeScript errors (frontend)
         if (Test-Path "frontend/tsconfig.json") {
@@ -2987,17 +3215,17 @@ function Invoke-QuickAnalysis {
                 Remove-Item "ts-errors.tmp", "ts-output.tmp" -ErrorAction SilentlyContinue
             }
         }
-        
+
         # Check console.log usage
         Write-Step "   🖥️" "Checking console.log usage..."
-        $consoleUsage = Get-ChildItem -Path "frontend" -Recurse -Include "*.ts","*.tsx","*.js","*.jsx" -ErrorAction SilentlyContinue | 
+        $consoleUsage = Get-ChildItem -Path "frontend" -Recurse -Include "*.ts","*.tsx","*.js","*.jsx" -ErrorAction SilentlyContinue |
                        Select-String "console\." -ErrorAction SilentlyContinue
         $analysisResults.ConsoleLogs = ($consoleUsage | Measure-Object).Count
-        
+
         # Check Docker status
         Write-Step "   🐳" "Checking Docker status..."
         $analysisResults.DockerStatus = if (Test-DockerAvailable) { "Available" } else { "Not Available" }
-        
+
         # Check running services
         Write-Step "   🚀" "Checking running services..."
         $composeFile = Join-Path $Global:LokifiConfig.AppRoot "docker-compose.yml"
@@ -3007,7 +3235,7 @@ function Invoke-QuickAnalysis {
             Pop-Location
             $analysisResults.ServicesRunning = ($composeStatus | Where-Object { $_.State -eq "running" }).Count
         }
-        
+
         # Check outdated npm packages
         Write-Step "   📦" "Checking outdated packages..."
         if (Test-Path "frontend/package.json") {
@@ -3025,11 +3253,11 @@ function Invoke-QuickAnalysis {
                 Remove-Item "outdated.tmp" -ErrorAction SilentlyContinue
             }
         }
-        
+
     } catch {
         Write-Warning "Analysis encountered some issues: $($_.Message)"
     }
-    
+
     # Display results
     Write-Host ""
     Write-Host "📊 Analysis Results:" -ForegroundColor Cyan
@@ -3039,7 +3267,7 @@ function Invoke-QuickAnalysis {
     Write-Host "   Outdated packages: $($analysisResults.OutdatedPackages)" -ForegroundColor $(if($analysisResults.OutdatedPackages -gt 0){'Yellow'}else{'Green'})
     Write-Host "   Docker status: $($analysisResults.DockerStatus)" -ForegroundColor $(if($analysisResults.DockerStatus -eq 'Available'){'Green'}else{'Yellow'})
     Write-Host "   Services running: $($analysisResults.ServicesRunning)" -ForegroundColor $(if($analysisResults.ServicesRunning -ge 3){'Green'}else{'Yellow'})
-    
+
     Write-Host ""
     if ($analysisResults.TypeScriptErrors -gt 0 -or $analysisResults.ConsoleLogs -gt 10) {
         Write-Host "💡 Recommendations:" -ForegroundColor Yellow
@@ -3060,13 +3288,13 @@ function Invoke-QuickAnalysis {
 function Invoke-QuickFix {
     param(
         [switch]$TypeScript,
-        [switch]$Cleanup, 
+        [switch]$Cleanup,
         [switch]$All
     )
-    
+
     if ($TypeScript -or $All) {
         Write-Step "🔧" "Fixing TypeScript issues..."
-        
+
         if (Test-Path "scripts/fixes/universal-fixer.ps1") {
             try {
                 Write-Info "Running TypeScript fixer with backup..."
@@ -3078,21 +3306,21 @@ function Invoke-QuickFix {
             }
         } else {
             Write-Warning "Universal fixer not found. Attempting basic TypeScript fixes..."
-            
+
             # Basic TypeScript fix - replace common 'any' types
             $tsFiles = Get-ChildItem -Path "frontend" -Recurse -Include "*.ts","*.tsx" -ErrorAction SilentlyContinue
             $fixCount = 0
-            
+
             foreach ($file in $tsFiles) {
                 try {
                     $content = Get-Content $file.FullName -Raw
                     $originalContent = $content
-                    
+
                     # Simple fixes for common patterns
                     $content = $content -replace ': any\[\]', ': unknown[]'
                     $content = $content -replace ': any\s*=', ': unknown ='
                     $content = $content -replace '\(.*?: any\)', '(...args: unknown[])'
-                    
+
                     if ($content -ne $originalContent) {
                         Set-Content -Path $file.FullName -Value $content -NoNewline
                         $fixCount++
@@ -3101,14 +3329,14 @@ function Invoke-QuickFix {
                     Write-Warning "Could not fix file: $($file.Name)"
                 }
             }
-            
+
             Write-Info "Applied basic TypeScript fixes to $fixCount files"
         }
     }
-    
+
     if ($Cleanup -or $All) {
         Write-Step "🧹" "Running cleanup..."
-        
+
         if (Test-Path "scripts/cleanup/cleanup-master.ps1") {
             try {
                 Write-Info "Running repository cleanup..."
@@ -3120,15 +3348,15 @@ function Invoke-QuickFix {
             }
         } else {
             Write-Warning "Cleanup master not found. Running basic cleanup..."
-            
+
             # Basic cleanup operations
             $cleanupItems = @(
                 "frontend/.next",
-                "frontend/node_modules/.cache", 
+                "frontend/node_modules/.cache",
                 "backend/__pycache__",
                 "backend/.pytest_cache"
             )
-            
+
             foreach ($item in $cleanupItems) {
                 if (Test-Path $item) {
                     try {
@@ -3141,7 +3369,7 @@ function Invoke-QuickFix {
             }
         }
     }
-    
+
     if (-not $TypeScript -and -not $Cleanup -and -not $All) {
         Write-Info "No specific fix target specified. Use -TypeScript, -Cleanup, or -All"
         Write-Info "Example: .\lokifi.ps1 fix ts"
@@ -3155,9 +3383,9 @@ function Invoke-PythonTypeFix {
     .DESCRIPTION
         Scans Python code with Pyright and applies common type annotation patterns
     #>
-    
+
     Write-LokifiHeader "Python Type Annotation Fixer"
-    
+
     Push-Location $Global:LokifiConfig.BackendDir
     try {
         # Check if pyright is available
@@ -3167,7 +3395,7 @@ function Invoke-PythonTypeFix {
             Write-Host "   Install: npm install -g pyright" -ForegroundColor Yellow
             return
         }
-        
+
         # Check if Python script exists
         $scriptPath = "scripts/auto_fix_type_annotations.py"
         if (-not (Test-Path $scriptPath)) {
@@ -3175,56 +3403,56 @@ function Invoke-PythonTypeFix {
             Write-Host "   Expected: $scriptPath" -ForegroundColor Yellow
             return
         }
-        
+
         Write-Host ""
         Write-Host "🔍 Step 1: Scanning with Pyright..." -ForegroundColor Cyan
         $scanResult = pyright app --outputjson 2>&1 | ConvertFrom-Json
-        
+
         $totalErrors = $scanResult.summary.errorCount
         $filesAnalyzed = $scanResult.summary.filesAnalyzed
-        
+
         Write-Host "  📊 Analyzed: $filesAnalyzed files" -ForegroundColor White
         Write-Host "  📊 Errors: $totalErrors" -ForegroundColor $(if ($totalErrors -gt 0) { "Yellow" } else { "Green" })
         Write-Host ""
-        
+
         if ($totalErrors -eq 0) {
             Write-Host "✅ No type errors found!" -ForegroundColor Green
             return
         }
-        
+
         # Preview fixes
         Write-Host "🔍 Step 2: Analyzing fixable errors..." -ForegroundColor Cyan
         $previewResult = python $scriptPath --scan 2>&1
         Write-Host $previewResult
         Write-Host ""
-        
+
         # Ask for confirmation
         Write-Host "💡 This will automatically add type annotations to fix common errors" -ForegroundColor Cyan
         Write-Host "   - FastAPI dependencies (current_user, db, redis_client)" -ForegroundColor White
         Write-Host "   - Middleware parameters (call_next, request, response)" -ForegroundColor White
         Write-Host "   - Common patterns (data, config, etc.)" -ForegroundColor White
         Write-Host ""
-        
+
         $confirm = Read-Host "Apply fixes? (y/N)"
         if ($confirm -ne "y" -and $confirm -ne "Y") {
             Write-Host "❌ Cancelled" -ForegroundColor Yellow
             return
         }
-        
+
         # Apply fixes
         Write-Host ""
         Write-Host "✍️  Step 3: Applying fixes..." -ForegroundColor Cyan
         $fixResult = python $scriptPath --scan --fix 2>&1
         Write-Host $fixResult
         Write-Host ""
-        
+
         # Re-scan to show improvement
         Write-Host "🔍 Step 4: Verifying fixes..." -ForegroundColor Cyan
         $verifyResult = pyright app --outputjson 2>&1 | ConvertFrom-Json
-        
+
         $newErrors = $verifyResult.summary.errorCount
         $fixed = $totalErrors - $newErrors
-        
+
         Write-Host ""
         Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
         Write-Host "📊 RESULTS" -ForegroundColor Magenta
@@ -3232,14 +3460,14 @@ function Invoke-PythonTypeFix {
         Write-Host "  Before:  $totalErrors errors" -ForegroundColor Yellow
         Write-Host "  After:   $newErrors errors" -ForegroundColor $(if ($newErrors -eq 0) { "Green" } else { "Yellow" })
         Write-Host "  Fixed:   $fixed errors" -ForegroundColor Green
-        
+
         if ($fixed -gt 0) {
             $percent = [math]::Round(($fixed / $totalErrors) * 100, 1)
             Write-Host "  Progress: $percent% reduction" -ForegroundColor Green
         }
         Write-Host "═══════════════════════════════════════" -ForegroundColor Magenta
         Write-Host ""
-        
+
         if ($newErrors -gt 0) {
             Write-Host "💡 Some errors remain. These may require manual fixes:" -ForegroundColor Cyan
             Write-Host "   - Complex return types" -ForegroundColor White
@@ -3250,14 +3478,14 @@ function Invoke-PythonTypeFix {
         } else {
             Write-Host "🎉 All type errors fixed!" -ForegroundColor Green
         }
-        
+
     } catch {
         Write-Host "❌ Error running type fixer: $($_.Exception.Message)" -ForegroundColor Red
         Write-Host $_.ScriptStackTrace -ForegroundColor Gray
     } finally {
         Pop-Location
     }
-    
+
     Write-Host ""
     Read-Host "Press Enter to continue"
 }
@@ -3267,7 +3495,7 @@ function Invoke-PythonTypeFix {
 # ============================================
 function Show-EnhancedHelp {
     Write-LokifiHeader "Ultimate Help & Usage Guide"
-    
+
     Write-Host @"
 🚀 LOKIFI ULTIMATE MANAGER - Phase 2C Enterprise Edition
 
@@ -3276,7 +3504,7 @@ USAGE:
 
 🔥 MAIN ACTIONS:
     servers     Start ALL servers (Full Docker stack with local fallback)
-    redis       Manage Redis container only  
+    redis       Manage Redis container only
     postgres    Setup PostgreSQL container
     test        🆕 Enhanced testing suite with smart selection
                 Components: all, api, unit, integration, e2e, security, backend/be, frontend/fe
@@ -3334,7 +3562,7 @@ USAGE:
 💾 BACKUP & RESTORE (NEW):
     backup      Create full system backup
     restore     Restore from backup
-    
+
 🔒 SECURITY & MONITORING (NEW):
     security    🆕 Enhanced security scan with codebase context
                 Components: scan, secrets, vulnerabilities, licenses, audit, init
@@ -3347,14 +3575,14 @@ USAGE:
 🗄️ DATABASE OPERATIONS (NEW):
     migrate     Database migration management
                 Components: up, down, status, create, history
-    
+
 ⚡ PERFORMANCE & TESTING (NEW):
     loadtest    Run load tests on APIs
-    
+
 🔀 GIT INTEGRATION (NEW):
     git         Git operations with validation
                 Components: status, commit, push, pull, branch, log, diff
-    
+
 🌍 ENVIRONMENT MANAGEMENT (NEW):
     env         Environment configuration
                 Components: list, switch, create, validate
@@ -3539,7 +3767,7 @@ USAGE:
     dashboard   Launch real-time ASCII dashboard
                 .\lokifi.ps1 dashboard              # Default 5s refresh
                 .\lokifi.ps1 dashboard -Component 10  # 10s refresh
-                
+
     metrics     Analyze performance metrics
                 .\lokifi.ps1 metrics -Component percentiles  # Last 24h (default)
                 .\lokifi.ps1 metrics -Component percentiles -Hours 48  # Last 48h
@@ -3607,7 +3835,7 @@ USAGE:
 
 🗑️ ELIMINATED SCRIPTS (All Phases):
     ✓ start-servers.ps1        → -Action servers
-    ✓ manage-redis.ps1         → -Action redis  
+    ✓ manage-redis.ps1         → -Action redis
     ✓ test-api.ps1             → -Action test
     ✓ setup-postgres.ps1       → -Action postgres
     ✓ organize-repository.ps1  → -Action organize
@@ -3645,21 +3873,21 @@ function Invoke-BackupOperation {
         [switch]$IncludeDatabase,
         [switch]$Compress
     )
-    
+
     Write-Step "💾" "Creating Backup..."
-    
+
     $timestamp = Get-Date -Format "yyyy-MM-dd_HHmmss"
     $backupName = if ($BackupName) { "${BackupName}_${timestamp}" } else { "backup_${timestamp}" }
     $backupPath = Join-Path $Global:LokifiConfig.BackupsDir $backupName
-    
+
     # Create backup directory
     if (-not (Test-Path $Global:LokifiConfig.BackupsDir)) {
         New-Item -ItemType Directory -Path $Global:LokifiConfig.BackupsDir -Force | Out-Null
     }
     New-Item -ItemType Directory -Path $backupPath -Force | Out-Null
-    
+
     Write-Info "Backup location: $backupPath"
-    
+
     # Backup configuration files
     Write-Step "   ⚙️" "Backing up configuration files..."
     $configFiles = @(
@@ -3668,35 +3896,35 @@ function Invoke-BackupOperation {
         "*.toml",
         ".env.example"
     )
-    
+
     $configBackup = Join-Path $backupPath "configs"
     New-Item -ItemType Directory -Path $configBackup -Force | Out-Null
-    
+
     foreach ($pattern in $configFiles) {
-        Get-ChildItem -Path $Global:LokifiConfig.ProjectRoot -Filter $pattern -File -ErrorAction SilentlyContinue | 
+        Get-ChildItem -Path $Global:LokifiConfig.ProjectRoot -Filter $pattern -File -ErrorAction SilentlyContinue |
             ForEach-Object {
                 Copy-Item $_.FullName -Destination $configBackup -Force
             }
     }
-    
+
     # Backup critical scripts
     Write-Step "   📜" "Backing up scripts..."
     $scriptsBackup = Join-Path $backupPath "scripts"
     if (Test-Path "scripts") {
         Copy-Item "scripts" -Destination $scriptsBackup -Recurse -Force
     }
-    
+
     # Backup database
     if ($IncludeDatabase) {
         Write-Step "   🗄️" "Backing up database..."
         $dbBackup = Join-Path $backupPath "database"
         New-Item -ItemType Directory -Path $dbBackup -Force | Out-Null
-        
+
         # SQLite backup
         if (Test-Path "backend/lokifi.db") {
             Copy-Item "backend/lokifi.db" -Destination $dbBackup -Force
         }
-        
+
         # PostgreSQL backup (if running)
         if (Test-DockerAvailable) {
             $pgContainer = docker ps --filter "name=lokifi-postgres" --format "{{.Names}}" 2>$null
@@ -3705,18 +3933,18 @@ function Invoke-BackupOperation {
             }
         }
     }
-    
+
     # Backup environment files
     Write-Step "   🔐" "Backing up environment templates..."
     $envBackup = Join-Path $backupPath "env"
     New-Item -ItemType Directory -Path $envBackup -Force | Out-Null
-    Get-ChildItem -Path $Global:LokifiConfig.ProjectRoot -Filter ".env*" -File -ErrorAction SilentlyContinue | 
+    Get-ChildItem -Path $Global:LokifiConfig.ProjectRoot -Filter ".env*" -File -ErrorAction SilentlyContinue |
         ForEach-Object {
             if ($_.Name -notlike "*.local") {  # Don't backup local env files
                 Copy-Item $_.FullName -Destination $envBackup -Force
             }
         }
-    
+
     # Create backup manifest
     $manifest = @{
         Timestamp = $timestamp
@@ -3726,7 +3954,7 @@ function Invoke-BackupOperation {
         Size = (Get-ChildItem -Path $backupPath -Recurse | Measure-Object -Property Length -Sum).Sum
     }
     $manifest | ConvertTo-Json | Set-Content (Join-Path $backupPath "manifest.json")
-    
+
     # Compress if requested
     if ($Compress) {
         Write-Step "   🗜️" "Compressing backup..."
@@ -3737,51 +3965,51 @@ function Invoke-BackupOperation {
     } else {
         Write-Success "Backup created: $backupPath"
     }
-    
+
     Write-Info "Files backed up: $($manifest.Files)"
     Write-Info "Total size: $([math]::Round($manifest.Size / 1MB, 2)) MB"
 }
 
 function Invoke-RestoreOperation {
     param([string]$BackupName)
-    
+
     Write-Step "♻️" "Restoring from Backup..."
-    
+
     if (-not $BackupName) {
         # List available backups
         Write-Info "Available backups:"
         $backups = Get-ChildItem -Path $Global:LokifiConfig.BackupsDir -Directory -ErrorAction SilentlyContinue |
             Sort-Object LastWriteTime -Descending
-        
+
         if ($backups.Count -eq 0) {
             Write-Warning "No backups found"
             return
         }
-        
+
         for ($i = 0; $i -lt $backups.Count; $i++) {
             Write-Host "   $($i + 1). $($backups[$i].Name) - $($backups[$i].LastWriteTime)" -ForegroundColor Cyan
         }
-        
+
         $selection = Read-Host "Select backup number to restore (or 'q' to cancel)"
         if ($selection -eq 'q') { return }
-        
+
         $backupToRestore = $backups[[int]$selection - 1]
     } else {
-        $backupToRestore = Get-ChildItem -Path $Global:LokifiConfig.BackupsDir -Directory | 
+        $backupToRestore = Get-ChildItem -Path $Global:LokifiConfig.BackupsDir -Directory |
             Where-Object { $_.Name -like "*$BackupName*" } | Select-Object -First 1
     }
-    
+
     if (-not $backupToRestore) {
         Write-Error "Backup not found: $BackupName"
         return
     }
-    
+
     Write-Warning "This will restore files from: $($backupToRestore.Name)"
     if ($Mode -ne "force") {
         $confirm = Read-Host "Continue? (yes/no)"
         if ($confirm -ne "yes") { return }
     }
-    
+
     # Restore configurations
     $configBackup = Join-Path $backupToRestore.FullName "configs"
     if (Test-Path $configBackup) {
@@ -3790,7 +4018,7 @@ function Invoke-RestoreOperation {
             Copy-Item $_.FullName -Destination $Global:LokifiConfig.ProjectRoot -Force
         }
     }
-    
+
     Write-Success "Restore completed from: $($backupToRestore.Name)"
 }
 
@@ -3804,18 +4032,18 @@ function Write-Log {
         [string]$Level = 'INFO',
         [string]$Component = 'System'
     )
-    
+
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logMessage = "[$timestamp] [$Level] [$Component] $Message"
-    
+
     # Ensure logs directory exists
     if (-not (Test-Path $Global:LokifiConfig.LogsDir)) {
         New-Item -ItemType Directory -Path $Global:LokifiConfig.LogsDir -Force | Out-Null
     }
-    
+
     $logFile = Join-Path $Global:LokifiConfig.LogsDir "lokifi-manager_$(Get-Date -Format 'yyyy-MM-dd').log"
     Add-Content -Path $logFile -Value $logMessage
-    
+
     # Console output based on log level
     if ($LogLevel -in @('verbose', 'debug')) {
         $color = switch ($Level) {
@@ -3836,26 +4064,26 @@ function Get-LogsView {
         [ValidateSet('INFO', 'WARN', 'ERROR', 'DEBUG', 'SUCCESS', 'ALL')]
         [string]$Level = 'ALL'
     )
-    
+
     Write-Step "📋" "Viewing Logs..."
-    
+
     $logFile = Join-Path $Global:LokifiConfig.LogsDir "lokifi-manager_$(Get-Date -Format 'yyyy-MM-dd').log"
-    
+
     if (-not (Test-Path $logFile)) {
         Write-Warning "No log file found for today"
         return
     }
-    
+
     $logs = Get-Content $logFile -Tail $Lines
-    
+
     if ($Filter) {
         $logs = $logs | Where-Object { $_ -like "*$Filter*" }
     }
-    
+
     if ($Level -ne 'ALL') {
         $logs = $logs | Where-Object { $_ -like "*[$Level]*" }
     }
-    
+
     $logs | ForEach-Object {
         $color = if ($_ -like "*ERROR*") { 'Red' }
                  elseif ($_ -like "*WARN*") { 'Yellow' }
@@ -3863,7 +4091,7 @@ function Get-LogsView {
                  else { 'White' }
         Write-Host $_ -ForegroundColor $color
     }
-    
+
     Write-Info "Showing last $Lines lines"
 }
 
@@ -3875,39 +4103,39 @@ function Start-PerformanceMonitoring {
         [int]$Duration = 60,
         [switch]$Watch
     )
-    
+
     Write-Step "📊" "Starting Performance Monitor..."
-    
+
     $startTime = Get-Date
     $endTime = $startTime.AddSeconds($Duration)
-    
+
     Write-Info "Monitoring for $Duration seconds..."
     Write-Info "Press Ctrl+C to stop early"
     Write-Host ""
-    
+
     $metrics = @{
         CPU = @()
         Memory = @()
         Disk = @()
         Network = @()
     }
-    
+
     do {
         Clear-Host
         Write-Host "🔴 LOKIFI PERFORMANCE MONITOR" -ForegroundColor Cyan
         Write-Host "=" * 50 -ForegroundColor Green
         Write-Host ""
-        
+
         # System metrics
         $cpu = (Get-Counter '\Processor(_Total)\% Processor Time' -ErrorAction SilentlyContinue).CounterSamples.CookedValue
         $memory = Get-CimInstance Win32_OperatingSystem
         $memoryUsedPercent = [math]::Round(($memory.TotalVisibleMemorySize - $memory.FreePhysicalMemory) / $memory.TotalVisibleMemorySize * 100, 2)
-        
+
         Write-Host "💻 System Resources:" -ForegroundColor Yellow
         Write-Host "   CPU: $([math]::Round($cpu, 2))%" -ForegroundColor $(if($cpu -gt 80){'Red'}else{'Green'})
         Write-Host "   Memory: $memoryUsedPercent%" -ForegroundColor $(if($memoryUsedPercent -gt 80){'Red'}else{'Green'})
         Write-Host ""
-        
+
         # Docker container stats (if available)
         if (Test-DockerAvailable) {
             Write-Host "🐳 Container Stats:" -ForegroundColor Yellow
@@ -3925,24 +4153,24 @@ function Start-PerformanceMonitoring {
             }
             Write-Host ""
         }
-        
+
         # Service health
         Write-Host "🏥 Service Health:" -ForegroundColor Yellow
         $backendHealth = Test-ServiceRunning -Url "$($Global:LokifiConfig.API.BackendUrl)/health"
         $frontendHealth = Test-ServiceRunning -Url $Global:LokifiConfig.API.FrontendUrl
-        
+
         Write-Host "   Backend: " -NoNewline
         if ($backendHealth) { Write-Host "✅ Healthy" -ForegroundColor Green } else { Write-Host "❌ Down" -ForegroundColor Red }
-        
+
         Write-Host "   Frontend: " -NoNewline
         if ($frontendHealth) { Write-Host "✅ Healthy" -ForegroundColor Green } else { Write-Host "❌ Down" -ForegroundColor Red }
-        
+
         Write-Host ""
         Write-Host "⏱️  Monitoring time remaining: $([math]::Round(($endTime - (Get-Date)).TotalSeconds, 0)) seconds" -ForegroundColor Gray
-        
+
         Start-Sleep -Seconds 5
     } while ((Get-Date) -lt $endTime)
-    
+
     Write-Success "Monitoring session completed"
 }
 
@@ -3954,23 +4182,23 @@ function Invoke-DatabaseMigration {
         [ValidateSet('up', 'down', 'status', 'create', 'history')]
         [string]$Operation = 'status'
     )
-    
+
     Write-Step "🗄️" "Database Migration: $Operation"
-    
+
     $backendDir = $Global:LokifiConfig.BackendDir
-    
+
     if (-not (Test-Path $backendDir)) {
         Write-Error "Backend directory not found"
         return
     }
-    
+
     Push-Location $backendDir
     try {
         # Activate virtual environment
         if (Test-Path "venv/Scripts/Activate.ps1") {
             & "./venv/Scripts/Activate.ps1"
         }
-        
+
         switch ($Operation) {
             'up' {
                 Write-Info "Running migrations..."
@@ -4013,18 +4241,18 @@ function Invoke-LoadTest {
         [int]$Concurrency = 10,
         [switch]$Report
     )
-    
+
     Write-Step "🔥" "Starting Load Test..."
-    
+
     # Check if backend is running
     if (-not (Test-ServiceRunning -Url "$($Global:LokifiConfig.API.BackendUrl)/health")) {
         Write-Error "Backend server is not running. Start it first with: .\lokifi.ps1 dev be"
         return
     }
-    
+
     $frontendDir = $Global:LokifiConfig.FrontendDir
     $loadTestScript = Join-Path $PSScriptRoot "scripts\testing\load-test.js"
-    
+
     if (Test-Path $loadTestScript) {
         Write-Info "Running load test with $Concurrency concurrent users for $Duration seconds..."
         Push-Location $frontendDir
@@ -4039,30 +4267,30 @@ function Invoke-LoadTest {
     } else {
         Write-Warning "Load test script not found. Creating basic load test..."
         Write-Info "Duration: $Duration seconds | Concurrency: $Concurrency users"
-        
+
         # Simple PowerShell-based load test
         $urls = @(
             "$($Global:LokifiConfig.API.BackendUrl)/health",
             "$($Global:LokifiConfig.API.BackendUrl)/api/v1/prices/crypto/top?limit=5"
         )
-        
+
         $results = @{
             TotalRequests = 0
             SuccessfulRequests = 0
             FailedRequests = 0
             AverageResponseTime = 0
         }
-        
+
         $startTime = Get-Date
         $endTime = $startTime.AddSeconds($Duration)
-        
+
         while ((Get-Date) -lt $endTime) {
             foreach ($url in $urls) {
                 try {
                     $reqStart = Get-Date
                     $response = Invoke-WebRequest -Uri $url -TimeoutSec 5 -ErrorAction Stop
                     $reqTime = ((Get-Date) - $reqStart).TotalMilliseconds
-                    
+
                     $results.TotalRequests++
                     if ($response.StatusCode -eq 200) {
                         $results.SuccessfulRequests++
@@ -4074,9 +4302,9 @@ function Invoke-LoadTest {
                 }
             }
         }
-        
+
         $results.AverageResponseTime = [math]::Round($results.AverageResponseTime / $results.TotalRequests, 2)
-        
+
         Write-Host ""
         Write-Host "📊 Load Test Results:" -ForegroundColor Cyan
         Write-Host "=" * 50 -ForegroundColor Green
@@ -4096,9 +4324,9 @@ function Invoke-GitOperations {
         [ValidateSet('status', 'commit', 'push', 'pull', 'branch', 'log', 'diff')]
         [string]$Operation = 'status'
     )
-    
+
     Write-Step "🔀" "Git Operation: $Operation"
-    
+
     switch ($Operation) {
         'status' {
             git status
@@ -4147,17 +4375,17 @@ function Invoke-EnvironmentManagement {
         [string]$Operation = 'list',
         [string]$EnvironmentName = ""
     )
-    
+
     Write-Step "🌍" "Environment Management: $Operation"
-    
+
     $envFiles = @('.env.development', '.env.staging', '.env.production')
-    
+
     switch ($Operation) {
         'list' {
             Write-Info "Available environments:"
             foreach ($envFile in $envFiles) {
                 if (Test-Path $envFile) {
-                    $status = if (Test-Path '.env') { 
+                    $status = if (Test-Path '.env') {
                         if ((Get-Content '.env' -Raw) -eq (Get-Content $envFile -Raw)) { " (ACTIVE)" } else { "" }
                     } else { "" }
                     Write-Host "   ✓ $envFile$status" -ForegroundColor Green
@@ -4198,17 +4426,17 @@ function Invoke-EnvironmentManagement {
                 Write-Error "No .env file found"
                 return
             }
-            
+
             $requiredVars = @('DATABASE_URL', 'REDIS_URL', 'SECRET_KEY')
             $envContent = Get-Content '.env'
             $missing = @()
-            
+
             foreach ($var in $requiredVars) {
                 if (-not ($envContent | Where-Object { $_ -like "$var=*" })) {
                     $missing += $var
                 }
             }
-            
+
             if ($missing.Count -eq 0) {
                 Write-Success "All required environment variables are set"
             } else {
@@ -4223,11 +4451,11 @@ function Invoke-EnvironmentManagement {
 # ============================================
 function Invoke-SecurityScan {
     param([switch]$Full)
-    
+
     Write-Step "🔒" "Running Security Scan..."
-    
+
     $issues = @()
-    
+
     # Check for exposed secrets
     Write-Step "   🔍" "Scanning for exposed secrets..."
     $secretPatterns = @(
@@ -4238,16 +4466,16 @@ function Invoke-SecurityScan {
         'AKIA[0-9A-Z]{16}',  # AWS Access Key
         'sk_live_[0-9a-zA-Z]{24}'  # Stripe Secret Key
     )
-    
+
     foreach ($pattern in $secretPatterns) {
         $matches = Get-ChildItem -Path . -Recurse -Include *.py,*.js,*.ts,*.tsx,*.env* -File -ErrorAction SilentlyContinue |
             Select-String -Pattern $pattern -ErrorAction SilentlyContinue
-        
+
         if ($matches) {
             $issues += "Potential secret exposure: $($matches.Count) matches for pattern"
         }
     }
-    
+
     # Check npm vulnerabilities
     Write-Step "   📦" "Checking npm vulnerabilities..."
     if (Test-Path "frontend/package.json") {
@@ -4263,7 +4491,7 @@ function Invoke-SecurityScan {
             Pop-Location
         }
     }
-    
+
     # Check Python vulnerabilities (if safety is installed)
     Write-Step "   🐍" "Checking Python vulnerabilities..."
     if (Test-Path "backend/requirements.txt") {
@@ -4281,7 +4509,7 @@ function Invoke-SecurityScan {
             Pop-Location
         }
     }
-    
+
     # Summary
     Write-Host ""
     if ($issues.Count -eq 0) {
@@ -4303,28 +4531,28 @@ function Start-WatchMode {
     Write-Info "Monitoring for file changes..."
     Write-Info "Press Ctrl+C to stop"
     Write-Host ""
-    
+
     $watcher = New-Object System.IO.FileSystemWatcher
     $watcher.Path = $Global:LokifiConfig.ProjectRoot
     $watcher.IncludeSubdirectories = $true
     $watcher.EnableRaisingEvents = $true
     $watcher.NotifyFilter = [System.IO.NotifyFilters]::LastWrite -bor [System.IO.NotifyFilters]::FileName
-    
+
     $action = {
         $filePath = $Event.SourceEventArgs.FullPath
         $changeType = $Event.SourceEventArgs.ChangeType
         $timestamp = Get-Date -Format "HH:mm:ss"
         Write-Host "[$timestamp] $changeType - $filePath" -ForegroundColor Cyan
-        
+
         # Auto-format on save for certain files
         if ($filePath -match '\.(py|ts|tsx|js|jsx)$') {
             Write-Host "   ↻ Auto-formatting..." -ForegroundColor Gray
         }
     }
-    
+
     Register-ObjectEvent $watcher "Changed" -Action $action | Out-Null
     Register-ObjectEvent $watcher "Created" -Action $action | Out-Null
-    
+
     try {
         while ($true) { Start-Sleep -Seconds 1 }
     } finally {
@@ -4342,10 +4570,10 @@ function Initialize-MetricsDatabase {
         Initialize SQLite metrics database with schema
     #>
     param()
-    
+
     $dbPath = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
     $schemaPath = Join-Path $Global:LokifiConfig.DataDir "metrics-schema.sql"
-    
+
     # Check if SQLite is available
     $sqliteCmd = $null
     if (Get-Command sqlite3 -ErrorAction SilentlyContinue) {
@@ -4353,7 +4581,7 @@ function Initialize-MetricsDatabase {
     } elseif (Test-Path "C:\sqlite\sqlite3.exe") {
         $sqliteCmd = "C:\sqlite\sqlite3.exe"
     }
-    
+
     if (-not $sqliteCmd) {
         Write-Warning "SQLite not found. Installing via chocolatey..."
         if (Get-Command choco -ErrorAction SilentlyContinue) {
@@ -4364,7 +4592,7 @@ function Initialize-MetricsDatabase {
             return $false
         }
     }
-    
+
     # Initialize database with schema
     if (Test-Path $schemaPath) {
         & $sqliteCmd $dbPath ".read $schemaPath" 2>$null
@@ -4385,17 +4613,17 @@ function Save-MetricsToDatabase {
         [Parameter(Mandatory)]
         [ValidateSet('service_health', 'api_metrics', 'system_metrics', 'docker_metrics', 'cache_metrics', 'command_usage')]
         [string]$Table,
-        
+
         [Parameter(Mandatory)]
         [hashtable]$Data
     )
-    
+
     $dbPath = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
-    
+
     if (-not (Test-Path $dbPath)) {
         Initialize-MetricsDatabase | Out-Null
     }
-    
+
     # Build SQL INSERT statement
     $columns = $Data.Keys -join ", "
     $values = ($Data.Values | ForEach-Object {
@@ -4407,9 +4635,9 @@ function Save-MetricsToDatabase {
             "$_"
         }
     }) -join ", "
-    
+
     $sql = "INSERT INTO $Table ($columns) VALUES ($values);"
-    
+
     try {
         $sqliteCmd = if (Get-Command sqlite3 -ErrorAction SilentlyContinue) { "sqlite3" } else { "C:\sqlite\sqlite3.exe" }
         & $sqliteCmd $dbPath $sql 2>$null
@@ -4427,26 +4655,26 @@ function Get-MetricsFromDatabase {
     param(
         [Parameter(Mandatory)]
         [string]$Query,
-        
+
         [int]$Limit = 100
     )
-    
+
     $dbPath = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
-    
+
     if (-not (Test-Path $dbPath)) {
         Write-Warning "Metrics database not found. Run a monitored command first."
         return @()
     }
-    
+
     try {
         $sqliteCmd = if (Get-Command sqlite3 -ErrorAction SilentlyContinue) { "sqlite3" } else { "C:\sqlite\sqlite3.exe" }
         $result = & $sqliteCmd $dbPath -header -csv "$Query LIMIT $Limit" 2>$null
-        
+
         if ($result) {
             # Parse CSV output
             $lines = $result -split "`n"
             $headers = ($lines[0] -split ",")
-            
+
             $output = @()
             for ($i = 1; $i -lt $lines.Count; $i++) {
                 if ($lines[$i]) {
@@ -4463,7 +4691,7 @@ function Get-MetricsFromDatabase {
     } catch {
         Write-Warning "Query failed: $_"
     }
-    
+
     return @()
 }
 
@@ -4476,17 +4704,17 @@ function Get-PerformancePercentiles {
         [string]$Service = "all",
         [int]$Hours = 24
     )
-    
+
     $since = (Get-Date).AddHours(-$Hours).ToString("yyyy-MM-dd HH:mm:ss")
-    
+
     if ($Service -eq "all") {
         $query = "SELECT response_time_ms FROM service_health WHERE timestamp > '$since' AND response_time_ms IS NOT NULL ORDER BY response_time_ms"
     } else {
         $query = "SELECT response_time_ms FROM service_health WHERE service_name = '$Service' AND timestamp > '$since' AND response_time_ms IS NOT NULL ORDER BY response_time_ms"
     }
-    
+
     $data = Get-MetricsFromDatabase -Query $query -Limit 10000
-    
+
     if ($data.Count -eq 0) {
         return @{
             p50 = 0
@@ -4495,10 +4723,10 @@ function Get-PerformancePercentiles {
             count = 0
         }
     }
-    
+
     $times = $data | ForEach-Object { [int]$_.response_time_ms }
     $count = $times.Count
-    
+
     return @{
         p50 = $times[[math]::Floor($count * 0.50)]
         p95 = $times[[math]::Floor($count * 0.95)]
@@ -4518,23 +4746,23 @@ function Test-PerformanceAnomaly {
     param(
         [Parameter(Mandatory)]
         [string]$MetricName,
-        
+
         [Parameter(Mandatory)]
         [double]$CurrentValue
     )
-    
+
     $query = "SELECT baseline_value, std_deviation FROM performance_baselines WHERE metric_name = '$MetricName'"
     $baseline = Get-MetricsFromDatabase -Query $query -Limit 1
-    
+
     if ($baseline.Count -eq 0) {
         return $false
     }
-    
+
     $baselineValue = [double]$baseline[0].baseline_value
     $stdDev = [double]$baseline[0].std_deviation
-    
+
     $threshold = $baselineValue + (2 * $stdDev)
-    
+
     return $CurrentValue -gt $threshold
 }
 
@@ -4546,16 +4774,16 @@ function Update-PerformanceBaseline {
     param(
         [Parameter(Mandatory)]
         [string]$MetricName,
-        
+
         [Parameter(Mandatory)]
         [double]$Value
     )
-    
+
     $dbPath = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
-    
+
     $query = "SELECT baseline_value, sample_count FROM performance_baselines WHERE metric_name = '$MetricName'"
     $current = Get-MetricsFromDatabase -Query $query -Limit 1
-    
+
     if ($current.Count -eq 0) {
         # Insert new baseline
         $sql = "INSERT INTO performance_baselines (metric_name, baseline_value, sample_count) VALUES ('$MetricName', $Value, 1);"
@@ -4565,10 +4793,10 @@ function Update-PerformanceBaseline {
         $count = [int]$current[0].sample_count + 1
         $alpha = 0.2  # Smoothing factor
         $newValue = ($alpha * $Value) + ((1 - $alpha) * $oldValue)
-        
+
         $sql = "UPDATE performance_baselines SET baseline_value = $newValue, sample_count = $count, last_updated = datetime('now') WHERE metric_name = '$MetricName';"
     }
-    
+
     try {
         $sqliteCmd = if (Get-Command sqlite3 -ErrorAction SilentlyContinue) { "sqlite3" } else { "C:\sqlite\sqlite3.exe" }
         & $sqliteCmd $dbPath $sql 2>$null
@@ -4586,44 +4814,44 @@ function Send-Alert {
         [Parameter(Mandatory)]
         [ValidateSet('info', 'warning', 'error', 'critical')]
         [string]$Severity,
-        
+
         [Parameter(Mandatory)]
         [string]$Category,
-        
+
         [Parameter(Mandatory)]
         [string]$Message,
-        
+
         [string]$Details = ""
     )
-    
+
     $alertsPath = Join-Path $Global:LokifiConfig.DataDir "alerts.json"
-    
+
     if (-not (Test-Path $alertsPath)) {
         Write-Warning "Alerts configuration not found"
         return
     }
-    
+
     $config = Get-Content $alertsPath | ConvertFrom-Json
-    
+
     if (-not $config.enabled) {
         return
     }
-    
+
     # Check throttling
     $alertKey = "$Category-$Message"
     $lastAlert = $config.lastAlerts.$alertKey
-    
+
     if ($lastAlert) {
         $lastTime = [DateTime]::Parse($lastAlert)
         $minutesSince = ((Get-Date) - $lastTime).TotalMinutes
-        
+
         $rule = $config.rules | Where-Object { $_.category -eq $Category } | Select-Object -First 1
         if ($rule -and $minutesSince -lt $rule.throttleMinutes) {
             Write-Verbose "Alert throttled: $Message"
             return
         }
     }
-    
+
     # Save to database
     Save-MetricsToDatabase -Table 'alerts' -Data @{
         severity = $Severity
@@ -4631,12 +4859,12 @@ function Send-Alert {
         message = $Message
         details = $Details
     }
-    
+
     # Console output
     if ($config.channels.console.enabled) {
         $minSev = $config.channels.console.minSeverity
         $sevOrder = @('info', 'warning', 'error', 'critical')
-        
+
         if ($sevOrder.IndexOf($Severity) -ge $sevOrder.IndexOf($minSev)) {
             $icon = switch ($Severity) {
                 'info' { 'ℹ️' }
@@ -4656,11 +4884,11 @@ function Send-Alert {
             }
         }
     }
-    
+
     # Update throttle time
     $config.lastAlerts.$alertKey = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
     $config | ConvertTo-Json -Depth 10 | Set-Content $alertsPath
-    
+
     # Future: Email, Slack, Webhook integrations
 }
 
@@ -4672,15 +4900,15 @@ function Show-LiveDashboard {
     param(
         [int]$RefreshSeconds = 5
     )
-    
+
     Write-Host "📊 Starting Live Dashboard (Press Ctrl+C to exit)..." -ForegroundColor Cyan
     Write-Host "Refresh rate: $RefreshSeconds seconds" -ForegroundColor Gray
     Write-Host ""
-    
+
     try {
         while ($true) {
             Clear-Host
-            
+
             # Header
             Write-Host "╔════════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
             Write-Host "║" -NoNewline -ForegroundColor Cyan
@@ -4691,11 +4919,11 @@ function Show-LiveDashboard {
             Write-Host "║" -ForegroundColor Cyan
             Write-Host "╚════════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
             Write-Host ""
-            
+
             # Service Health
             Write-Host "🏥 SERVICE HEALTH" -ForegroundColor Yellow
             Write-Host "─────────────────────────────────────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $services = @('redis', 'postgres', 'backend', 'frontend')
             foreach ($service in $services) {
                 $status = if (Test-ServiceRunning $service) { "✅ RUNNING" } else { "❌ STOPPED" }
@@ -4704,11 +4932,11 @@ function Show-LiveDashboard {
                 Write-Host $status -ForegroundColor $color
             }
             Write-Host ""
-            
+
             # Performance Metrics
             Write-Host "⚡ PERFORMANCE METRICS (Last 24h)" -ForegroundColor Yellow
             Write-Host "─────────────────────────────────────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $perf = Get-PerformancePercentiles -Hours 24
             if ($perf.count -gt 0) {
                 Write-Host "  Response Times:" -ForegroundColor Cyan
@@ -4721,21 +4949,21 @@ function Show-LiveDashboard {
                 Write-Host "  No performance data yet. Run commands to collect metrics." -ForegroundColor Gray
             }
             Write-Host ""
-            
+
             # System Resources
             Write-Host "💻 SYSTEM RESOURCES" -ForegroundColor Yellow
             Write-Host "─────────────────────────────────────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $cpu = Get-CimInstance Win32_Processor | Measure-Object -Property LoadPercentage -Average
             $memory = Get-CimInstance Win32_OperatingSystem
             $memPercent = [math]::Round((($memory.TotalVisibleMemorySize - $memory.FreePhysicalMemory) / $memory.TotalVisibleMemorySize) * 100, 1)
             $disk = Get-PSDrive C | Select-Object Used, Free
             $diskPercent = [math]::Round(($disk.Used / ($disk.Used + $disk.Free)) * 100, 1)
-            
+
             $cpuColor = if ($cpu.Average -gt 80) { 'Red' } elseif ($cpu.Average -gt 60) { 'Yellow' } else { 'Green' }
             $memColor = if ($memPercent -gt 85) { 'Red' } elseif ($memPercent -gt 70) { 'Yellow' } else { 'Green' }
             $diskColor = if ($diskPercent -gt 90) { 'Red' } elseif ($diskPercent -gt 80) { 'Yellow' } else { 'Green' }
-            
+
             Write-Host "  CPU:    " -NoNewline
             Write-Host "$($cpu.Average)%" -ForegroundColor $cpuColor
             Write-Host "  Memory: " -NoNewline
@@ -4743,29 +4971,29 @@ function Show-LiveDashboard {
             Write-Host "  Disk:   " -NoNewline
             Write-Host "$diskPercent%" -ForegroundColor $diskColor
             Write-Host ""
-            
+
             # Cache Statistics
             Write-Host "🔥 CACHE STATISTICS" -ForegroundColor Yellow
             Write-Host "─────────────────────────────────────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $cacheHits = $Global:LokifiCache.hits
             $cacheMisses = $Global:LokifiCache.misses
             $cacheTotal = $cacheHits + $cacheMisses
             $hitRate = if ($cacheTotal -gt 0) { [math]::Round(($cacheHits / $cacheTotal) * 100, 1) } else { 0 }
-            
+
             $hitColor = if ($hitRate -gt 80) { 'Green' } elseif ($hitRate -gt 60) { 'Yellow' } else { 'Red' }
-            
+
             Write-Host "  Hit Rate:  " -NoNewline
             Write-Host "$hitRate%" -ForegroundColor $hitColor
             Write-Host "  Total Ops: $cacheTotal (Hits: $cacheHits, Misses: $cacheMisses)" -ForegroundColor Gray
             Write-Host ""
-            
+
             # Active Alerts
             $alerts = Get-MetricsFromDatabase -Query "SELECT * FROM v_active_alerts" -Limit 5
             if ($alerts.Count -gt 0) {
                 Write-Host "🚨 ACTIVE ALERTS ($($alerts.Count))" -ForegroundColor Red
                 Write-Host "─────────────────────────────────────────────────────────────────────────" -ForegroundColor Gray
-                
+
                 foreach ($alert in $alerts) {
                     $icon = switch ($alert.severity) {
                         'critical' { '🚨' }
@@ -4777,11 +5005,11 @@ function Show-LiveDashboard {
                 }
                 Write-Host ""
             }
-            
+
             # Footer
             Write-Host "─────────────────────────────────────────────────────────────────────────" -ForegroundColor Gray
             Write-Host "Press Ctrl+C to exit | Refreshing in $RefreshSeconds seconds..." -ForegroundColor Gray
-            
+
             Start-Sleep -Seconds $RefreshSeconds
         }
     } catch {
@@ -4802,23 +5030,23 @@ function Write-SecurityAuditLog {
         [Parameter(Mandatory)]
         [ValidateSet('info', 'warning', 'error', 'critical')]
         [string]$Severity,
-        
+
         [Parameter(Mandatory)]
         [string]$Category,
-        
+
         [Parameter(Mandatory)]
         [string]$Action,
-        
+
         [string]$Details = ""
     )
-    
+
     $auditLog = Join-Path $Global:LokifiConfig.DataDir "security-audit-trail.log"
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $entry = "[$timestamp] [$($Severity.ToUpper())] [$Category] [$Action] $Details"
-    
+
     # Append to log (append-only for tamper resistance)
     Add-Content -Path $auditLog -Value $entry -ErrorAction SilentlyContinue
-    
+
     Write-Verbose "Security audit: $entry"
 }
 
@@ -4828,11 +5056,11 @@ function Get-SecurityConfig {
         Load security configuration
     #>
     $configPath = Join-Path $Global:LokifiConfig.DataDir "security-config.json"
-    
+
     if (Test-Path $configPath) {
         return Get-Content $configPath | ConvertFrom-Json
     }
-    
+
     Write-Warning "Security config not found. Run: .\lokifi.ps1 security -Component init"
     return $null
 }
@@ -4846,50 +5074,50 @@ function Find-SecretsInCode {
         [string]$Path = $Global:LokifiConfig.ProjectRoot,
         [switch]$QuickScan
     )
-    
+
     Write-Step "🔍" "Scanning for exposed secrets..."
     Write-SecurityAuditLog -Severity 'info' -Category 'secret_scan' -Action 'started' -Details "Path: $Path"
-    
+
     $config = Get-SecurityConfig
     if (-not $config) { return @() }
-    
+
     $findings = @()
     $patterns = $config.settings.secretPatterns.patterns
-    
+
     # File extensions to scan
     $extensions = @('*.ps1', '*.py', '*.js', '*.ts', '*.tsx', '*.jsx', '*.json', '*.yaml', '*.yml', '*.env*', '*.config', '*.conf')
-    
+
     # Directories to exclude
     $excludeDirs = @('node_modules', '.git', 'venv', '__pycache__', '.next', 'dist', 'build', '.lokifi-cache', '.lokifi-data')
-    
+
     $files = Get-ChildItem -Path $Path -Include $extensions -File -Recurse -ErrorAction SilentlyContinue |
-        Where-Object { 
+        Where-Object {
             $file = $_
             -not ($excludeDirs | Where-Object { $file.FullName -like "*\$_\*" })
         }
-    
+
     if ($QuickScan) {
         $files = $files | Select-Object -First 100
     }
-    
+
     $totalFiles = $files.Count
     $currentFile = 0
-    
+
     foreach ($file in $files) {
         $currentFile++
         Write-Progress -Activity "Scanning for secrets" -Status "File $currentFile of $totalFiles" -PercentComplete (($currentFile / $totalFiles) * 100)
-        
+
         try {
             $content = Get-Content $file.FullName -Raw -ErrorAction Stop
-            
+
             foreach ($pattern in $patterns) {
                 if ($content -match $pattern.pattern) {
                     $regexMatches = [regex]::Matches($content, $pattern.pattern)
-                    
+
                     foreach ($match in $regexMatches) {
                         # Get line number
                         $lineNumber = ($content.Substring(0, $match.Index) -split "`n").Count
-                        
+
                         $findings += [PSCustomObject]@{
                             File = $file.FullName.Replace($Global:LokifiConfig.ProjectRoot, ".")
                             Line = $lineNumber
@@ -4897,7 +5125,7 @@ function Find-SecretsInCode {
                             Severity = $pattern.severity
                             Preview = $match.Value.Substring(0, [Math]::Min(50, $match.Value.Length)) + "..."
                         }
-                        
+
                         Write-SecurityAuditLog -Severity $pattern.severity -Category 'secret_detected' -Action 'found' -Details "$($pattern.name) in $($file.Name):$lineNumber"
                     }
                 }
@@ -4906,9 +5134,9 @@ function Find-SecretsInCode {
             Write-Verbose "Could not scan file: $($file.FullName)"
         }
     }
-    
+
     Write-Progress -Activity "Scanning for secrets" -Completed
-    
+
     return $findings
 }
 
@@ -4921,27 +5149,27 @@ function Test-DependencyVulnerabilities {
         [ValidateSet('all', 'python', 'node')]
         [string]$Ecosystem = 'all'
     )
-    
+
     Write-Step "🛡️" "Checking dependencies for vulnerabilities..."
     Write-SecurityAuditLog -Severity 'info' -Category 'vulnerability_scan' -Action 'started' -Details "Ecosystem: $Ecosystem"
-    
+
     $vulnerabilities = @()
-    
+
     # Python dependencies (using pip-audit if available)
     if ($Ecosystem -in @('all', 'python')) {
         if (Test-Path (Join-Path $Global:LokifiConfig.BackendDir "requirements.txt")) {
             Write-Info "Scanning Python dependencies..."
-            
+
             # Check if pip-audit is installed
             $pipAudit = Get-Command pip-audit -ErrorAction SilentlyContinue
-            
+
             if ($pipAudit) {
                 try {
                     $output = & pip-audit --format json --requirement (Join-Path $Global:LokifiConfig.BackendDir "requirements.txt") 2>&1 | Out-String
-                    
+
                     if ($output) {
                         $result = $output | ConvertFrom-Json -ErrorAction SilentlyContinue
-                        
+
                         if ($result.vulnerabilities) {
                             foreach ($vuln in $result.vulnerabilities) {
                                 $vulnerabilities += [PSCustomObject]@{
@@ -4953,7 +5181,7 @@ function Test-DependencyVulnerabilities {
                                     Description = $vuln.description
                                     FixedIn = $vuln.fix_versions -join ', '
                                 }
-                                
+
                                 Write-SecurityAuditLog -Severity 'warning' -Category 'vulnerability' -Action 'detected' -Details "Python: $($vuln.name) $($vuln.version) - $($vuln.id)"
                             }
                         }
@@ -4967,24 +5195,24 @@ function Test-DependencyVulnerabilities {
             }
         }
     }
-    
+
     # Node.js dependencies (using npm audit)
     if ($Ecosystem -in @('all', 'node')) {
         if (Test-Path (Join-Path $Global:LokifiConfig.FrontendDir "package.json")) {
             Write-Info "Scanning Node.js dependencies..."
-            
+
             Push-Location $Global:LokifiConfig.FrontendDir
-            
+
             try {
                 $output = npm audit --json 2>&1 | Out-String
-                
+
                 if ($output) {
                     $result = $output | ConvertFrom-Json -ErrorAction SilentlyContinue
-                    
+
                     if ($result.vulnerabilities) {
                         foreach ($pkg in $result.vulnerabilities.PSObject.Properties) {
                             $vuln = $pkg.Value
-                            
+
                             $vulnerabilities += [PSCustomObject]@{
                                 Ecosystem = 'Node.js'
                                 Package = $pkg.Name
@@ -4994,7 +5222,7 @@ function Test-DependencyVulnerabilities {
                                 Description = $vuln.via[0].title
                                 FixedIn = if ($vuln.fixAvailable) { "Available" } else { "None" }
                             }
-                            
+
                             Write-SecurityAuditLog -Severity $vuln.severity -Category 'vulnerability' -Action 'detected' -Details "Node: $($pkg.Name) - $($vuln.severity)"
                         }
                     }
@@ -5006,7 +5234,7 @@ function Test-DependencyVulnerabilities {
             }
         }
     }
-    
+
     return $vulnerabilities
 }
 
@@ -5016,32 +5244,32 @@ function Test-LicenseCompliance {
         Check dependencies for license compliance
     #>
     param()
-    
+
     Write-Step "⚖️" "Checking license compliance..."
     Write-SecurityAuditLog -Severity 'info' -Category 'license_scan' -Action 'started'
-    
+
     $config = Get-SecurityConfig
     if (-not $config) { return @() }
-    
+
     $issues = @()
-    
+
     # Check Python packages
     if (Test-Path (Join-Path $Global:LokifiConfig.BackendDir "requirements.txt")) {
         Write-Info "Checking Python package licenses..."
-        
+
         try {
             $packages = & pip list --format json 2>$null | ConvertFrom-Json
-            
+
             foreach ($pkg in $packages) {
                 # Get license info (requires pip-licenses)
                 $licenseCmd = Get-Command pip-licenses -ErrorAction SilentlyContinue
-                
+
                 if ($licenseCmd) {
                     $licenseInfo = & pip-licenses --packages $pkg.name --format json 2>$null | ConvertFrom-Json
-                    
+
                     if ($licenseInfo) {
                         $license = $licenseInfo[0].License
-                        
+
                         if ($license -in $config.settings.blockedLicenses) {
                             $issues += [PSCustomObject]@{
                                 Ecosystem = 'Python'
@@ -5051,7 +5279,7 @@ function Test-LicenseCompliance {
                                 Status = 'BLOCKED'
                                 Reason = 'License not allowed'
                             }
-                            
+
                             Write-SecurityAuditLog -Severity 'error' -Category 'license_violation' -Action 'detected' -Details "Python: $($pkg.name) uses blocked license: $license"
                         } elseif ($license -notin $config.settings.allowedLicenses -and $license -ne 'UNKNOWN') {
                             $issues += [PSCustomObject]@{
@@ -5070,24 +5298,24 @@ function Test-LicenseCompliance {
             Write-Verbose "License check failed: $_"
         }
     }
-    
+
     # Check Node.js packages
     if (Test-Path (Join-Path $Global:LokifiConfig.FrontendDir "package.json")) {
         Write-Info "Checking Node.js package licenses..."
-        
+
         Push-Location $Global:LokifiConfig.FrontendDir
-        
+
         try {
             # Use license-checker if available
             $licenseChecker = Get-Command license-checker -ErrorAction SilentlyContinue
-            
+
             if ($licenseChecker) {
                 $output = & npx license-checker --json 2>$null | ConvertFrom-Json
-                
+
                 foreach ($pkg in $output.PSObject.Properties) {
                     $info = $pkg.Value
                     $license = $info.licenses
-                    
+
                     if ($license -in $config.settings.blockedLicenses) {
                         $issues += [PSCustomObject]@{
                             Ecosystem = 'Node.js'
@@ -5097,7 +5325,7 @@ function Test-LicenseCompliance {
                             Status = 'BLOCKED'
                             Reason = 'License not allowed'
                         }
-                        
+
                         Write-SecurityAuditLog -Severity 'error' -Category 'license_violation' -Action 'detected' -Details "Node: $($pkg.Name) uses blocked license: $license"
                     } elseif ($license -notin $config.settings.allowedLicenses -and $license -ne 'UNKNOWN') {
                         $issues += [PSCustomObject]@{
@@ -5117,7 +5345,7 @@ function Test-LicenseCompliance {
             Pop-Location
         }
     }
-    
+
     return $issues
 }
 
@@ -5130,12 +5358,12 @@ function Invoke-ComprehensiveSecurityScan {
         [switch]$QuickScan,
         [switch]$SaveReport
     )
-    
+
     $startTime = Get-Date
-    
+
     Write-LokifiHeader "Comprehensive Security Scan"
     Write-SecurityAuditLog -Severity 'info' -Category 'security_scan' -Action 'started' -Details "Full scan initiated"
-    
+
     $results = @{
         Timestamp = $startTime
         Secrets = @()
@@ -5148,19 +5376,19 @@ function Invoke-ComprehensiveSecurityScan {
             Low = 0
         }
     }
-    
+
     # 1. Scan for exposed secrets
     Write-Host ""
     $results.Secrets = Find-SecretsInCode -QuickScan:$QuickScan
-    
+
     # 2. Check for vulnerabilities
     Write-Host ""
     $results.Vulnerabilities = Test-DependencyVulnerabilities -Ecosystem 'all'
-    
+
     # 3. Check license compliance
     Write-Host ""
     $results.Licenses = Test-LicenseCompliance
-    
+
     # Calculate summary
     foreach ($secret in $results.Secrets) {
         switch ($secret.Severity) {
@@ -5170,7 +5398,7 @@ function Invoke-ComprehensiveSecurityScan {
             'low' { $results.Summary.Low++ }
         }
     }
-    
+
     foreach ($vuln in $results.Vulnerabilities) {
         switch ($vuln.Severity) {
             'critical' { $results.Summary.Critical++ }
@@ -5180,21 +5408,21 @@ function Invoke-ComprehensiveSecurityScan {
             'low' { $results.Summary.Low++ }
         }
     }
-    
+
     # Display results
     Write-Host ""
     Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
     Write-Host "                   SECURITY SCAN RESULTS" -ForegroundColor White
     Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
     Write-Host ""
-    
+
     # Summary
     Write-Host "📊 SUMMARY" -ForegroundColor Yellow
     Write-Host "─────────────────────────────────────────────────────────────" -ForegroundColor Gray
     $criticalColor = if ($results.Summary.Critical -gt 0) { 'Red' } else { 'Green' }
     $highColor = if ($results.Summary.High -gt 0) { 'Red' } else { 'Green' }
     $mediumColor = if ($results.Summary.Medium -gt 0) { 'Yellow' } else { 'Green' }
-    
+
     Write-Host "  Critical Issues:  " -NoNewline -ForegroundColor White
     Write-Host $results.Summary.Critical -ForegroundColor $criticalColor
     Write-Host "  High Issues:      " -NoNewline -ForegroundColor White
@@ -5204,12 +5432,12 @@ function Invoke-ComprehensiveSecurityScan {
     Write-Host "  Low Issues:       " -NoNewline -ForegroundColor White
     Write-Host $results.Summary.Low -ForegroundColor Green
     Write-Host ""
-    
+
     # Secrets
     if ($results.Secrets.Count -gt 0) {
         Write-Host "🔐 EXPOSED SECRETS ($($results.Secrets.Count))" -ForegroundColor Red
         Write-Host "─────────────────────────────────────────────────────────────" -ForegroundColor Gray
-        
+
         $results.Secrets | Sort-Object Severity | ForEach-Object {
             $icon = switch ($_.Severity) {
                 'critical' { '🚨' }
@@ -5226,12 +5454,12 @@ function Invoke-ComprehensiveSecurityScan {
         Write-Host "✅ No exposed secrets found" -ForegroundColor Green
         Write-Host ""
     }
-    
+
     # Vulnerabilities
     if ($results.Vulnerabilities.Count -gt 0) {
         Write-Host "🛡️ VULNERABILITIES ($($results.Vulnerabilities.Count))" -ForegroundColor Red
         Write-Host "─────────────────────────────────────────────────────────────" -ForegroundColor Gray
-        
+
         $results.Vulnerabilities | Sort-Object Severity | ForEach-Object {
             $icon = switch ($_.Severity) {
                 'critical' { '🚨' }
@@ -5249,16 +5477,16 @@ function Invoke-ComprehensiveSecurityScan {
         Write-Host "✅ No vulnerabilities found" -ForegroundColor Green
         Write-Host ""
     }
-    
+
     # License issues
     if ($results.Licenses.Count -gt 0) {
         Write-Host "⚖️ LICENSE ISSUES ($($results.Licenses.Count))" -ForegroundColor Yellow
         Write-Host "─────────────────────────────────────────────────────────────" -ForegroundColor Gray
-        
+
         $results.Licenses | Sort-Object Status | ForEach-Object {
             $icon = if ($_.Status -eq 'BLOCKED') { '🚫' } else { '⚠️' }
             $color = if ($_.Status -eq 'BLOCKED') { 'Red' } else { 'Yellow' }
-            
+
             Write-Host "  $icon [$($_.Status)] $($_.Package)" -ForegroundColor $color
             Write-Host "     License: $($_.License)" -ForegroundColor Gray
             Write-Host "     Reason: $($_.Reason)" -ForegroundColor DarkGray
@@ -5268,20 +5496,20 @@ function Invoke-ComprehensiveSecurityScan {
         Write-Host "✅ All licenses compliant" -ForegroundColor Green
         Write-Host ""
     }
-    
+
     $duration = (Get-Date) - $startTime
     Write-Host "Scan completed in $([math]::Round($duration.TotalSeconds, 2)) seconds" -ForegroundColor Gray
     Write-Host ""
-    
+
     Write-SecurityAuditLog -Severity 'info' -Category 'security_scan' -Action 'completed' -Details "Critical: $($results.Summary.Critical), High: $($results.Summary.High)"
-    
+
     # Save report if requested
     if ($SaveReport) {
         $reportPath = Join-Path $Global:LokifiConfig.DataDir "security-scan-$(Get-Date -Format 'yyyyMMdd-HHmmss').json"
         $results | ConvertTo-Json -Depth 10 | Set-Content $reportPath
         Write-Success "Report saved: $reportPath"
     }
-    
+
     return $results
 }
 
@@ -5296,7 +5524,7 @@ function Get-LokifiAIDatabase {
     Initialize or retrieve AI/ML database for learning and predictions
     #>
     $aiDbPath = Join-Path $Global:LokifiConfig.DataDir "ai-learning.db"
-    
+
     if (-not (Test-Path $aiDbPath)) {
         # Create AI database schema
         $schema = @"
@@ -5365,11 +5593,11 @@ CREATE INDEX IF NOT EXISTS idx_component ON error_patterns(component);
 CREATE INDEX IF NOT EXISTS idx_baseline_component ON performance_baselines(component, metric_name);
 CREATE INDEX IF NOT EXISTS idx_predictions_type ON predictions(prediction_type, component);
 "@
-        
+
         # Initialize database
         $null = Invoke-Expression "sqlite3 '$aiDbPath' '$schema'" 2>$null
     }
-    
+
     return $aiDbPath
 }
 
@@ -5382,14 +5610,14 @@ function Get-ErrorFingerprint {
         [string]$ErrorMessage,
         [string]$Component
     )
-    
+
     # Normalize error message (remove dynamic parts like line numbers, timestamps, paths)
     $normalized = $ErrorMessage -replace '\d+', 'N' `
                                 -replace '[a-zA-Z]:\\[^\\s]+', 'PATH' `
                                 -replace 'https?://[^\s]+', 'URL' `
                                 -replace '\d{4}-\d{2}-\d{2}', 'DATE' `
                                 -replace '\d{2}:\d{2}:\d{2}', 'TIME'
-    
+
     # Create hash
     $stringAsStream = [System.IO.MemoryStream]::new()
     $writer = [System.IO.StreamWriter]::new($stringAsStream)
@@ -5398,7 +5626,7 @@ function Get-ErrorFingerprint {
     $stringAsStream.Position = 0
     $hash = Get-FileHash -InputStream $stringAsStream -Algorithm SHA256
     $writer.Close()
-    
+
     return $hash.Hash.Substring(0, 16)
 }
 
@@ -5413,10 +5641,10 @@ function Register-ErrorPattern {
         [string]$Solution = "",
         [bool]$Success = $false
     )
-    
+
     $aiDb = Get-LokifiAIDatabase
     $errorHash = Get-ErrorFingerprint -ErrorMessage $ErrorMessage -Component $Component
-    
+
     # Determine error type
     $errorType = switch -Regex ($ErrorMessage) {
         'connection.*refused|ECONNREFUSED' { 'connection_error' }
@@ -5429,7 +5657,7 @@ function Register-ErrorPattern {
         'memory|out of memory' { 'memory_error' }
         default { 'general_error' }
     }
-    
+
     # Update or insert error pattern
     $updateQuery = @"
 INSERT INTO error_patterns (error_hash, error_type, error_message, component, solution, success_count, failure_count, confidence_score)
@@ -5438,18 +5666,18 @@ ON CONFLICT(error_hash) DO UPDATE SET
     success_count = success_count + $(if ($Success) { 1 } else { 0 }),
     failure_count = failure_count + $(if (-not $Success) { 1 } else { 0 }),
     last_seen = CURRENT_TIMESTAMP,
-    confidence_score = CASE 
-        WHEN (success_count + $(if ($Success) { 1 } else { 0 })) > 0 
-        THEN CAST((success_count + $(if ($Success) { 1 } else { 0 })) AS REAL) / 
+    confidence_score = CASE
+        WHEN (success_count + $(if ($Success) { 1 } else { 0 })) > 0
+        THEN CAST((success_count + $(if ($Success) { 1 } else { 0 })) AS REAL) /
              (success_count + failure_count + 1)
         ELSE 0.5
     END,
-    solution = CASE 
+    solution = CASE
         WHEN '$($Solution -replace "'", "''")' != '' THEN '$($Solution -replace "'", "''")'
         ELSE solution
     END;
 "@
-    
+
     try {
         $null = Invoke-Expression "sqlite3 '$aiDb' `"$updateQuery`"" 2>$null
     } catch {
@@ -5466,16 +5694,16 @@ function Get-IntelligentFix {
         [string]$ErrorMessage,
         [string]$Component
     )
-    
+
     $aiDb = Get-LokifiAIDatabase
     $errorHash = Get-ErrorFingerprint -ErrorMessage $ErrorMessage -Component $Component
-    
+
     # Query for known solution
     $query = "SELECT error_type, solution, confidence_score, success_count FROM error_patterns WHERE error_hash = '$errorHash' AND solution IS NOT NULL AND solution != '';"
-    
+
     try {
         $result = Invoke-Expression "sqlite3 -json '$aiDb' `"$query`"" 2>$null | ConvertFrom-Json
-        
+
         if ($result -and $result.solution) {
             return @{
                 HasSolution = $true
@@ -5488,7 +5716,7 @@ function Get-IntelligentFix {
     } catch {
         Write-Verbose "No intelligent fix found: $_"
     }
-    
+
     # Fallback: Pattern-based suggestions
     $suggestions = switch -Regex ($ErrorMessage) {
         'connection.*refused|ECONNREFUSED' {
@@ -5528,7 +5756,7 @@ function Get-IntelligentFix {
             }
         }
     }
-    
+
     return $suggestions
 }
 
@@ -5540,24 +5768,24 @@ function Invoke-PredictiveMaintenance {
     param(
         [int]$LookAheadHours = 24
     )
-    
+
     Write-LokifiHeader "Predictive Maintenance Analysis"
-    
+
     $aiDb = Get-LokifiAIDatabase
     $metricsDb = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
     $predictions = @()
-    
+
     if (-not (Test-Path $metricsDb)) {
         Write-Warning "No metrics database found. Run dashboard first to collect data."
         return
     }
-    
+
     Write-Host "🔮 Analyzing historical patterns..." -ForegroundColor Cyan
     Write-Host ""
-    
+
     # Analyze performance trends
     $trendQuery = @"
-SELECT 
+SELECT
     component,
     AVG(response_time_ms) as avg_time,
     MAX(response_time_ms) as max_time,
@@ -5567,10 +5795,10 @@ WHERE timestamp >= datetime('now', '-7 days')
 GROUP BY component
 HAVING sample_count > 10;
 "@
-    
+
     try {
         $trends = Invoke-Expression "sqlite3 -json '$metricsDb' `"$trendQuery`"" 2>$null | ConvertFrom-Json
-        
+
         foreach ($trend in $trends) {
             # Predict if performance will degrade
             if ($trend.max_time -gt ($trend.avg_time * 3)) {
@@ -5583,7 +5811,7 @@ HAVING sample_count > 10;
                     Recommendation = "Consider optimizing $($trend.component) or scaling resources"
                 }
             }
-            
+
             # Check for memory trends
             if ($trend.avg_time -gt 1000) {
                 $predictions += @{
@@ -5599,13 +5827,13 @@ HAVING sample_count > 10;
     } catch {
         Write-Verbose "Trend analysis failed: $_"
     }
-    
+
     # Analyze error patterns
     $errorQuery = "SELECT error_type, component, COUNT(*) as frequency FROM error_patterns GROUP BY error_type, component ORDER BY frequency DESC LIMIT 5;"
-    
+
     try {
         $errorPatterns = Invoke-Expression "sqlite3 -json '$aiDb' `"$errorQuery`"" 2>$null | ConvertFrom-Json
-        
+
         foreach ($errorPattern in $errorPatterns) {
             if ($errorPattern.frequency -gt 3) {
                 $predictions += @{
@@ -5621,7 +5849,7 @@ HAVING sample_count > 10;
     } catch {
         Write-Verbose "Error pattern analysis failed: $_"
     }
-    
+
     # Display predictions
     if ($predictions.Count -eq 0) {
         Write-Success "✅ No issues predicted in the next $LookAheadHours hours!"
@@ -5630,7 +5858,7 @@ HAVING sample_count > 10;
     } else {
         Write-Host "⚠️  Predicted Issues ($($predictions.Count)):" -ForegroundColor Yellow
         Write-Host ""
-        
+
         foreach ($pred in $predictions) {
             $icon = switch ($pred.Severity) {
                 'critical' { '🔴' }
@@ -5638,7 +5866,7 @@ HAVING sample_count > 10;
                 'medium' { '🟡' }
                 default { '🔵' }
             }
-            
+
             Write-Host "$icon [$($pred.Severity.ToUpper())] $($pred.Type) - $($pred.Component)" -ForegroundColor $(
                 switch ($pred.Severity) {
                     'critical' { 'Red' }
@@ -5653,7 +5881,7 @@ HAVING sample_count > 10;
             Write-Host ""
         }
     }
-    
+
     # Save predictions to database
     foreach ($pred in $predictions) {
         $insertQuery = @"
@@ -5664,7 +5892,7 @@ VALUES ('$($pred.Type)', '$($pred.Component)', $($pred.Confidence / 100.0));
             $null = Invoke-Expression "sqlite3 '$aiDb' `"$insertQuery`"" 2>$null
         } catch {}
     }
-    
+
     return $predictions
 }
 
@@ -5676,21 +5904,21 @@ function Get-SmartRecommendations {
     param(
         [switch]$IncludeDismissed
     )
-    
+
     Write-LokifiHeader "Smart Recommendations"
-    
+
     $recommendations = @()
     $aiDb = Get-LokifiAIDatabase
-    
+
     Write-Host "🧠 Analyzing codebase and generating recommendations..." -ForegroundColor Cyan
     Write-Host ""
-    
+
     # Check for security issues
     $securityConfigPath = Join-Path $Global:LokifiConfig.DataDir "security-config.json"
     if (Test-Path $securityConfigPath) {
         $lastScan = (Get-Item $securityConfigPath).LastWriteTime
         $daysSinceScan = ((Get-Date) - $lastScan).TotalDays
-        
+
         if ($daysSinceScan -gt 7) {
             $recommendations += @{
                 Type = "security"
@@ -5702,7 +5930,7 @@ function Get-SmartRecommendations {
             }
         }
     }
-    
+
     # Check for outdated dependencies
     if (Test-Path "backend/requirements.txt") {
         $requirementsAge = ((Get-Date) - (Get-Item "backend/requirements.txt").LastWriteTime).TotalDays
@@ -5717,7 +5945,7 @@ function Get-SmartRecommendations {
             }
         }
     }
-    
+
     if (Test-Path "frontend/package.json") {
         $packageAge = ((Get-Date) - (Get-Item "frontend/package.json").LastWriteTime).TotalDays
         if ($packageAge -gt 30) {
@@ -5731,7 +5959,7 @@ function Get-SmartRecommendations {
             }
         }
     }
-    
+
     # Check metrics database for performance insights
     $metricsDb = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
     if (Test-Path $metricsDb) {
@@ -5750,14 +5978,14 @@ function Get-SmartRecommendations {
             }
         } catch {}
     }
-    
+
     # Check for large log files
     $logDir = $Global:LokifiConfig.LogDir
     if (Test-Path $logDir) {
-        $largeLogFiles = Get-ChildItem $logDir -Recurse -File -ErrorAction SilentlyContinue | 
+        $largeLogFiles = Get-ChildItem $logDir -Recurse -File -ErrorAction SilentlyContinue |
                         Where-Object { $_.Length -gt 50MB } |
                         Select-Object -First 5
-        
+
         if ($largeLogFiles) {
             $totalSize = ($largeLogFiles | Measure-Object -Property Length -Sum).Sum / 1MB
             $recommendations += @{
@@ -5770,12 +5998,12 @@ function Get-SmartRecommendations {
             }
         }
     }
-    
+
     # Check disk space
     $drive = (Get-Location).Drive.Name + ":"
     $diskInfo = Get-PSDrive -Name (Get-Location).Drive.Name
     $freeSpacePercent = ($diskInfo.Free / ($diskInfo.Used + $diskInfo.Free)) * 100
-    
+
     if ($freeSpacePercent -lt 10) {
         $recommendations += @{
             Type = "system"
@@ -5786,7 +6014,7 @@ function Get-SmartRecommendations {
             ImpactScore = 9.5
         }
     }
-    
+
     # Display recommendations
     if ($recommendations.Count -eq 0) {
         Write-Success "✅ No recommendations at this time!"
@@ -5794,7 +6022,7 @@ function Get-SmartRecommendations {
         Write-Host "Your system is well-maintained and optimized." -ForegroundColor Green
     } else {
         $sortedRecs = $recommendations | Sort-Object -Property Priority, { -$_.ImpactScore }
-        
+
         foreach ($rec in $sortedRecs) {
             $icon = switch ($rec.Type) {
                 'security' { '🔒' }
@@ -5804,13 +6032,13 @@ function Get-SmartRecommendations {
                 'system' { '💻' }
                 default { '💡' }
             }
-            
+
             $priorityText = switch ($rec.Priority) {
                 1 { 'HIGH' }
                 2 { 'MEDIUM' }
                 default { 'LOW' }
             }
-            
+
             Write-Host "$icon [$priorityText] $($rec.Title)" -ForegroundColor $(
                 switch ($rec.Priority) {
                     1 { 'Red' }
@@ -5823,10 +6051,10 @@ function Get-SmartRecommendations {
             Write-Host "   Action: $($rec.Action)" -ForegroundColor DarkCyan
             Write-Host ""
         }
-        
+
         Write-Host "💡 TIP: Run recommendations regularly with: .\lokifi.ps1 ai -Component recommendations" -ForegroundColor DarkGray
     }
-    
+
     # Save recommendations to database
     foreach ($rec in $recommendations) {
         $insertQuery = @"
@@ -5837,7 +6065,7 @@ VALUES ('$($rec.Type)', '$($rec.Title -replace "'", "''")', '$($rec.Description 
             $null = Invoke-Expression "sqlite3 '$aiDb' `"$insertQuery`"" 2>$null
         } catch {}
     }
-    
+
     return $recommendations
 }
 
@@ -5850,22 +6078,22 @@ function Invoke-PerformanceForecast {
         [string]$Component = "all",
         [int]$ForecastDays = 7
     )
-    
+
     Write-LokifiHeader "Performance Forecasting"
-    
+
     $metricsDb = Join-Path $Global:LokifiConfig.DataDir "metrics.db"
-    
+
     if (-not (Test-Path $metricsDb)) {
         Write-Warning "No metrics database found. Collect data first using dashboard."
         return
     }
-    
+
     Write-Host "📈 Forecasting performance trends for next $ForecastDays days..." -ForegroundColor Cyan
     Write-Host ""
-    
+
     # Query historical data for trend analysis
     $query = @"
-SELECT 
+SELECT
     component,
     DATE(timestamp) as date,
     AVG(response_time_ms) as avg_response_time,
@@ -5883,62 +6111,62 @@ FROM (
 GROUP BY component, DATE(timestamp)
 ORDER BY component, date;
 "@
-    
+
     try {
         $historicalData = Invoke-Expression "sqlite3 -json '$metricsDb' `"$query`"" 2>$null | ConvertFrom-Json
-        
+
         if (-not $historicalData -or $historicalData.Count -lt 7) {
             Write-Warning "Insufficient data for forecasting (need at least 7 days of metrics)"
             return
         }
-        
+
         # Group by component
         $components = $historicalData | Group-Object -Property component
-        
+
         foreach ($comp in $components) {
             if ($Component -ne "all" -and $comp.Name -ne $Component) { continue }
-            
+
             Write-Host "📊 Component: $($comp.Name)" -ForegroundColor Cyan
-            
+
             # Simple linear regression for response time
             $dataPoints = $comp.Group | Where-Object { $_.avg_response_time -gt 0 }
             if ($dataPoints.Count -ge 5) {
                 $x = 1..$dataPoints.Count
                 $y = $dataPoints.avg_response_time
-                
+
                 # Calculate trend (slope)
                 $n = $x.Count
                 $sumX = ($x | Measure-Object -Sum).Sum
                 $sumY = ($y | Measure-Object -Sum).Sum
                 $sumXY = ($x | ForEach-Object { $i = $_; $x[$i-1] * $y[$i-1] } | Measure-Object -Sum).Sum
                 $sumX2 = ($x | ForEach-Object { $_ * $_ } | Measure-Object -Sum).Sum
-                
+
                 $slope = ($n * $sumXY - $sumX * $sumY) / ($n * $sumX2 - $sumX * $sumX)
                 $intercept = ($sumY - $slope * $sumX) / $n
-                
+
                 # Forecast
                 $currentAvg = $dataPoints[-1].avg_response_time
                 $forecastValue = $slope * ($n + $ForecastDays) + $intercept
                 $trend = if ($slope -gt 1) { "📈 Increasing" } elseif ($slope -lt -1) { "📉 Decreasing" } else { "➡️  Stable" }
                 $trendPercent = [math]::Round((($forecastValue - $currentAvg) / $currentAvg) * 100, 1)
-                
+
                 Write-Host "   Response Time:" -ForegroundColor Gray
                 Write-Host "     Current: $([math]::Round($currentAvg, 1))ms" -ForegroundColor White
                 Write-Host "     Forecast ($ForecastDays days): $([math]::Round($forecastValue, 1))ms ($trendPercent%)" -ForegroundColor $(
                     if ($trendPercent -gt 20) { 'Red' } elseif ($trendPercent -gt 10) { 'Yellow' } else { 'Green' }
                 )
                 Write-Host "     Trend: $trend" -ForegroundColor Gray
-                
+
                 if ([math]::Abs($slope) -gt 5) {
                     Write-Host "     ⚠️  Significant trend detected!" -ForegroundColor Yellow
                 }
             }
-            
+
             Write-Host ""
         }
-        
+
         Write-Host "💡 TIP: Keep monitoring with: .\lokifi.ps1 dashboard" -ForegroundColor DarkGray
-        
+
     } catch {
         Write-Error "Forecasting failed: $_"
     }
@@ -5955,14 +6183,14 @@ function Invoke-ComprehensiveCodebaseAudit {
         [switch]$Quick,
         [switch]$JsonExport
     )
-    
+
     Write-LokifiHeader "Comprehensive Codebase Audit & Analysis"
-    
+
     if ($Quick) {
         Write-Host "⚡ Quick Mode - Skipping expensive checks..." -ForegroundColor Yellow
         Write-Host ""
     }
-    
+
     $startTime = Get-Date
     $auditResults = @{
         Timestamp = $startTime
@@ -5971,16 +6199,16 @@ function Invoke-ComprehensiveCodebaseAudit {
         Issues = @()
         Recommendations = @()
     }
-    
+
     Write-Host "🔍 Starting comprehensive codebase analysis..." -ForegroundColor Cyan
     Write-Host "   This may take a few minutes..." -ForegroundColor Yellow
     Write-Host ""
-    
+
     # ============================================
     # 1. CODE QUALITY ANALYSIS
     # ============================================
     Write-Step "📊" "Analyzing Code Quality..."
-    
+
     $codeQuality = @{
         BackendFiles = 0
         FrontendFiles = 0
@@ -5991,13 +6219,13 @@ function Invoke-ComprehensiveCodebaseAudit {
         LintWarnings = 0
         ComplexityScore = 0
     }
-    
+
     # Backend analysis (Python) - Exclude third-party dependencies
     if (Test-Path $Global:LokifiConfig.BackendDir) {
         $pyFiles = Get-ChildItem -Path $Global:LokifiConfig.BackendDir -Recurse -Filter "*.py" -ErrorAction SilentlyContinue |
                    Where-Object { $_.FullName -notmatch "venv|__pycache__|\.egg-info|site-packages|dist-info" }
         $codeQuality.BackendFiles = $pyFiles.Count
-        
+
         foreach ($file in $pyFiles) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
             if ($content) {
@@ -6007,7 +6235,7 @@ function Invoke-ComprehensiveCodebaseAudit {
                 $codeQuality.Comments += $comments
             }
         }
-        
+
         # Check for Python issues with ruff (if available)
         Push-Location $Global:LokifiConfig.BackendDir
         try {
@@ -6022,13 +6250,13 @@ function Invoke-ComprehensiveCodebaseAudit {
             Pop-Location
         }
     }
-    
+
     # Frontend analysis (TypeScript/JavaScript)
     if (Test-Path $Global:LokifiConfig.FrontendDir) {
-        $tsFiles = Get-ChildItem -Path $Global:LokifiConfig.FrontendDir -Recurse -Include "*.ts","*.tsx","*.js","*.jsx" -ErrorAction SilentlyContinue | 
+        $tsFiles = Get-ChildItem -Path $Global:LokifiConfig.FrontendDir -Recurse -Include "*.ts","*.tsx","*.js","*.jsx" -ErrorAction SilentlyContinue |
                    Where-Object { $_.FullName -notmatch "node_modules|\.next" }
         $codeQuality.FrontendFiles = $tsFiles.Count
-        
+
         foreach ($file in $tsFiles) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
             if ($content) {
@@ -6038,7 +6266,7 @@ function Invoke-ComprehensiveCodebaseAudit {
                 $codeQuality.Comments += $comments
             }
         }
-        
+
         # TypeScript type check
         Push-Location $Global:LokifiConfig.FrontendDir
         try {
@@ -6052,25 +6280,25 @@ function Invoke-ComprehensiveCodebaseAudit {
             Pop-Location
         }
     }
-    
+
     # Calculate complexity score (0-100, lower is better)
     $avgLinesPerFile = if ($codeQuality.BackendFiles + $codeQuality.FrontendFiles -gt 0) {
         $codeQuality.TotalLines / ($codeQuality.BackendFiles + $codeQuality.FrontendFiles)
     } else { 0 }
-    
+
     $commentRatio = if ($codeQuality.TotalLines -gt 0) {
         ($codeQuality.Comments / $codeQuality.TotalLines) * 100
     } else { 0 }
-    
+
     $codeQuality.ComplexityScore = [Math]::Min(100, [int](
-        ($avgLinesPerFile / 5) + 
-        ($codeQuality.TypeScriptErrors) + 
-        ($codeQuality.PythonErrors) + 
+        ($avgLinesPerFile / 5) +
+        ($codeQuality.TypeScriptErrors) +
+        ($codeQuality.PythonErrors) +
         (100 - $commentRatio)
     ))
-    
+
     $auditResults.Categories.CodeQuality = $codeQuality
-    
+
     Write-Success "Code Quality Analysis Complete"
     Write-Host "   📁 Backend files: $($codeQuality.BackendFiles)" -ForegroundColor White
     Write-Host "   📁 Frontend files: $($codeQuality.FrontendFiles)" -ForegroundColor White
@@ -6080,12 +6308,12 @@ function Invoke-ComprehensiveCodebaseAudit {
     Write-Host "   ⚠️  Python errors: $($codeQuality.PythonErrors)" -ForegroundColor $(if($codeQuality.PythonErrors -gt 0){'Red'}else{'Green'})
     Write-Host "   🎯 Complexity score: $($codeQuality.ComplexityScore)/100" -ForegroundColor $(if($codeQuality.ComplexityScore -gt 50){'Red'}elseif($codeQuality.ComplexityScore -gt 25){'Yellow'}else{'Green'})
     Write-Host ""
-    
+
     # ============================================
     # 2. PERFORMANCE ANALYSIS
     # ============================================
     Write-Step "⚡" "Analyzing Performance Patterns..."
-    
+
     $performance = @{
         BlockingIOCalls = 0
         N1QueryPatterns = 0
@@ -6096,38 +6324,38 @@ function Invoke-ComprehensiveCodebaseAudit {
         MemoryLeakPatterns = 0
         HotspotFiles = @()
     }
-    
+
     # Scan backend for performance issues - Exclude third-party dependencies
     if (Test-Path $Global:LokifiConfig.BackendDir) {
         $pyFiles = Get-ChildItem -Path $Global:LokifiConfig.BackendDir -Recurse -Filter "*.py" -ErrorAction SilentlyContinue |
                    Where-Object { $_.FullName -notmatch "venv|__pycache__|\.egg-info|site-packages|dist-info" }
-        
+
         foreach ($file in $pyFiles) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
             if ($content) {
                 $issueCount = 0
-                
+
                 # Check for blocking I/O
                 $blockingIO = ([regex]::Matches($content, "open\(|\.read\(|\.write\(")).Count
                 $performance.BlockingIOCalls += $blockingIO
                 $issueCount += $blockingIO
-                
+
                 # Check for N+1 queries
                 $n1Queries = ([regex]::Matches($content, "for .+ in .+:\s+.*\.query\(")).Count
                 $performance.N1QueryPatterns += $n1Queries
                 $issueCount += ($n1Queries * 3)  # Weight N+1 higher
-                
+
                 # Check for nested loops
                 $nestedLoops = ([regex]::Matches($content, "for .+ in .+:\s+.*for .+ in")).Count
                 $performance.NestedLoops += $nestedLoops
                 $issueCount += $nestedLoops
-                
+
                 # Check for caching opportunities
                 if ($content -match "\.query\(" -and $content -notmatch "cache") {
                     $performance.CachingOpportunities++
                     $issueCount++
                 }
-                
+
                 # Check for memory leak patterns (unless Quick mode)
                 if (-not $Quick) {
                     if ($content -match "global\s+\w+\s*=|\.append\(.*\)|\.extend\(") {
@@ -6135,7 +6363,7 @@ function Invoke-ComprehensiveCodebaseAudit {
                         $issueCount++
                     }
                 }
-                
+
                 # Check file size
                 $lines = ($content -split "`n").Count
                 if ($lines -gt 500) {
@@ -6145,7 +6373,7 @@ function Invoke-ComprehensiveCodebaseAudit {
                         Type = "Backend"
                     }
                 }
-                
+
                 # Track hotspot files (files with most issues)
                 if ($issueCount -gt 5) {
                     $performance.HotspotFiles += @{
@@ -6157,29 +6385,29 @@ function Invoke-ComprehensiveCodebaseAudit {
             }
         }
     }
-    
+
     # Scan frontend for performance issues
     if (Test-Path $Global:LokifiConfig.FrontendDir) {
         $tsFiles = Get-ChildItem -Path $Global:LokifiConfig.FrontendDir -Recurse -Include "*.ts","*.tsx" -ErrorAction SilentlyContinue |
                    Where-Object { $_.FullName -notmatch "node_modules|\.next" }
-        
+
         foreach ($file in $tsFiles) {
             $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
             if ($content) {
                 $issueCount = 0
-                
+
                 # Check for nested loops
                 $nestedLoops = ([regex]::Matches($content, "\.map\(.*\.map\(|\.forEach\(.*\.forEach\(")).Count
                 $performance.NestedLoops += $nestedLoops
                 $issueCount += $nestedLoops
-                
+
                 # Check for unnecessary re-renders (unless Quick mode)
                 if (-not $Quick) {
                     if ($content -match "useEffect\(\s*\(\)\s*=>\s*\{[\s\S]*?\},\s*\[\s*\]\s*\)") {
                         $issueCount++
                     }
                 }
-                
+
                 # Check file size
                 $lines = ($content -split "`n").Count
                 if ($lines -gt 500) {
@@ -6189,7 +6417,7 @@ function Invoke-ComprehensiveCodebaseAudit {
                         Type = "Frontend"
                     }
                 }
-                
+
                 # Track hotspot files
                 if ($issueCount -gt 3) {
                     $performance.HotspotFiles += @{
@@ -6201,9 +6429,9 @@ function Invoke-ComprehensiveCodebaseAudit {
             }
         }
     }
-    
+
     $auditResults.Categories.Performance = $performance
-    
+
     Write-Success "Performance Analysis Complete"
     Write-Host "   🚫 Blocking I/O calls: $($performance.BlockingIOCalls)" -ForegroundColor $(if($performance.BlockingIOCalls -gt 5){'Red'}elseif($performance.BlockingIOCalls -gt 0){'Yellow'}else{'Green'})
     Write-Host "   🔄 N+1 query patterns: $($performance.N1QueryPatterns)" -ForegroundColor $(if($performance.N1QueryPatterns -gt 5){'Red'}elseif($performance.N1QueryPatterns -gt 0){'Yellow'}else{'Green'})
@@ -6215,12 +6443,12 @@ function Invoke-ComprehensiveCodebaseAudit {
     }
     Write-Host "   🔥 Hotspot files: $($performance.HotspotFiles.Count)" -ForegroundColor $(if($performance.HotspotFiles.Count -gt 10){'Red'}elseif($performance.HotspotFiles.Count -gt 5){'Yellow'}else{'Green'})
     Write-Host ""
-    
+
     # ============================================
     # 3. SYSTEM HEALTH CHECK
     # ============================================
     Write-Step "🏥" "Checking System Health..."
-    
+
     $health = @{
         Docker = Test-DockerAvailable
         Services = @{
@@ -6233,7 +6461,7 @@ function Invoke-ComprehensiveCodebaseAudit {
         Memory = 0
         CPU = 0
     }
-    
+
     # Check services
     if ($health.Docker) {
         $health.Services.Redis = (docker ps --filter "name=lokifi-redis" --format "{{.Names}}" 2>$null) -eq "lokifi-redis"
@@ -6241,7 +6469,7 @@ function Invoke-ComprehensiveCodebaseAudit {
         $health.Services.Backend = (docker ps --filter "name=lokifi-backend" --format "{{.Names}}" 2>$null) -eq "lokifi-backend"
         $health.Services.Frontend = (docker ps --filter "name=lokifi-frontend" --format "{{.Names}}" 2>$null) -eq "lokifi-frontend"
     }
-    
+
     # Check disk space
     try {
         $drive = Get-PSDrive -PSProvider FileSystem | Where-Object { $_.Root -eq (Split-Path $PSScriptRoot -Qualifier) + "\" }
@@ -6251,7 +6479,7 @@ function Invoke-ComprehensiveCodebaseAudit {
     } catch {
         $health.DiskSpace = 0
     }
-    
+
     # Check memory
     try {
         $mem = Get-CimInstance Win32_OperatingSystem -ErrorAction SilentlyContinue
@@ -6261,61 +6489,61 @@ function Invoke-ComprehensiveCodebaseAudit {
     } catch {
         $health.Memory = 0
     }
-    
+
     $auditResults.Categories.Health = $health
-    
+
     $servicesRunning = ($health.Services.Values | Where-Object { $_ -eq $true }).Count
-    
+
     Write-Success "System Health Check Complete"
     Write-Host "   🐳 Docker: $(if($health.Docker){'✅ Available'}else{'❌ Not Available'})" -ForegroundColor $(if($health.Docker){'Green'}else{'Red'})
     Write-Host "   🔧 Services running: $servicesRunning/4" -ForegroundColor $(if($servicesRunning -ge 3){'Green'}elseif($servicesRunning -ge 2){'Yellow'}else{'Red'})
     Write-Host "   💾 Free disk space: $($health.DiskSpace) GB" -ForegroundColor $(if($health.DiskSpace -gt 10){'Green'}elseif($health.DiskSpace -gt 5){'Yellow'}else{'Red'})
     Write-Host "   🧠 Free memory: $($health.Memory) GB" -ForegroundColor Cyan
     Write-Host ""
-    
+
     # ============================================
     # GENERATE RECOMMENDATIONS
     # ============================================
     Write-Step "💡" "Generating Recommendations..."
-    
+
     if ($codeQuality.TypeScriptErrors -gt 0) {
         $auditResults.Recommendations += "🔴 HIGH: Fix $($codeQuality.TypeScriptErrors) TypeScript errors"
     }
-    
+
     if ($codeQuality.PythonErrors -gt 0) {
         $auditResults.Recommendations += "🔴 HIGH: Fix $($codeQuality.PythonErrors) Python linting errors"
     }
-    
+
     if ($performance.BlockingIOCalls -gt 5) {
         $auditResults.Recommendations += "🟠 MEDIUM: Convert $($performance.BlockingIOCalls) blocking I/O calls to async"
     }
-    
+
     if ($performance.N1QueryPatterns -gt 0) {
         $auditResults.Recommendations += "🔴 HIGH: Optimize $($performance.N1QueryPatterns) N+1 query patterns"
     }
-    
+
     if ($performance.CachingOpportunities -gt 10) {
         $auditResults.Recommendations += "🟡 LOW: Consider adding caching to $($performance.CachingOpportunities) queries"
     }
-    
+
     if ($commentRatio -lt 10) {
         $auditResults.Recommendations += "🟡 LOW: Increase code documentation (current: $([math]::Round($commentRatio, 2))%)"
     }
-    
+
     if ($servicesRunning -lt 4) {
         $auditResults.Recommendations += "🟠 MEDIUM: Start all services ($servicesRunning/4 running)"
     }
-    
+
     if ($health.DiskSpace -lt 5) {
         $auditResults.Recommendations += "🟠 MEDIUM: Low disk space: $($health.DiskSpace) GB remaining"
     }
-    
+
     # ============================================
     # FINAL SUMMARY
     # ============================================
     $endTime = Get-Date
     $duration = ($endTime - $startTime).TotalSeconds
-    
+
     $auditResults.Summary = @{
         Duration = $duration
         TotalFiles = $codeQuality.BackendFiles + $codeQuality.FrontendFiles
@@ -6327,14 +6555,14 @@ function Invoke-ComprehensiveCodebaseAudit {
         MediumIssues = 0
         LowIssues = 0
     }
-    
+
     # Calculate overall score (0-100, higher is better)
     $qualityScore = 100 - $codeQuality.ComplexityScore
     $performanceScore = [math]::Max(0, 100 - ($performance.BlockingIOCalls * 5) - ($performance.N1QueryPatterns * 10))
     $healthScore = ($servicesRunning / 4) * 100
-    
+
     $auditResults.Summary.OverallScore = [math]::Round(($qualityScore + $performanceScore + $healthScore) / 3, 2)
-    
+
     # Assign grade
     $score = $auditResults.Summary.OverallScore
     $auditResults.Summary.Grade = if ($score -ge 90) { "A" }
@@ -6342,7 +6570,7 @@ function Invoke-ComprehensiveCodebaseAudit {
                                   elseif ($score -ge 70) { "C" }
                                   elseif ($score -ge 60) { "D" }
                                   else { "F" }
-    
+
     # Count issues by severity
     foreach ($rec in $auditResults.Recommendations) {
         if ($rec -match "CRITICAL") { $auditResults.Summary.CriticalIssues++ }
@@ -6350,7 +6578,7 @@ function Invoke-ComprehensiveCodebaseAudit {
         elseif ($rec -match "MEDIUM") { $auditResults.Summary.MediumIssues++ }
         elseif ($rec -match "LOW") { $auditResults.Summary.LowIssues++ }
     }
-    
+
     # Display final summary
     Write-Host ""
     Write-Host "=" * 80 -ForegroundColor Cyan
@@ -6372,7 +6600,7 @@ function Invoke-ComprehensiveCodebaseAudit {
     Write-Host "      Performance: $performanceScore/100" -ForegroundColor White
     Write-Host "      Health: $healthScore/100" -ForegroundColor White
     Write-Host ""
-    
+
     if ($auditResults.Recommendations.Count -gt 0) {
         Write-Host "   ⚠️  Issues Found:" -ForegroundColor Yellow
         if ($auditResults.Summary.CriticalIssues -gt 0) {
@@ -6387,13 +6615,13 @@ function Invoke-ComprehensiveCodebaseAudit {
         if ($auditResults.Summary.LowIssues -gt 0) {
             Write-Host "      🟢 Low: $($auditResults.Summary.LowIssues)" -ForegroundColor Green
         }
-        
+
         Write-Host ""
         Write-Host "   💡 Top Recommendations:" -ForegroundColor Cyan
         foreach ($rec in ($auditResults.Recommendations | Select-Object -First 10)) {
             Write-Host "      $rec" -ForegroundColor White
         }
-        
+
         # Show top hotspot files if any
         if ($performance.HotspotFiles.Count -gt 0) {
             Write-Host ""
@@ -6406,19 +6634,19 @@ function Invoke-ComprehensiveCodebaseAudit {
     } else {
         Write-Host "   ✅ No critical recommendations - Great job!" -ForegroundColor Green
     }
-    
+
     Write-Host ""
     Write-Host "=" * 80 -ForegroundColor Cyan
-    
+
     # Save report if requested
     if ($SaveReport) {
         $reportPath = Join-Path $Global:LokifiConfig.ProjectRoot "CODEBASE_AUDIT_REPORT_$(Get-Date -Format 'yyyy-MM-dd_HHmmss').md"
-        
+
         $reportContent = @"
 # 🔍 LOKIFI CODEBASE AUDIT REPORT
 
-**Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")  
-**Duration:** $([math]::Round($duration, 2)) seconds  
+**Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+**Duration:** $([math]::Round($duration, 2)) seconds
 **Overall Score:** $($auditResults.Summary.OverallScore)/100 (Grade: $($auditResults.Summary.Grade))
 
 ---
@@ -6491,12 +6719,12 @@ $(if($auditResults.Recommendations.Count -eq 0){
 
 **Report generated by Lokifi Ultimate Manager - Comprehensive Audit System**
 "@
-        
+
         Set-Content -Path $reportPath -Value $reportContent
         Write-Host ""
         Write-Success "Detailed report saved to: $reportPath"
     }
-    
+
     # Export JSON if requested
     if ($JsonExport) {
         $jsonPath = Join-Path $Global:LokifiConfig.ProjectRoot "CODEBASE_AUDIT_$(Get-Date -Format 'yyyy-MM-dd_HHmmss').json"
@@ -6504,7 +6732,7 @@ $(if($auditResults.Recommendations.Count -eq 0){
         Write-Host ""
         Write-Success "JSON export saved to: $jsonPath"
     }
-    
+
     return $auditResults
 }
 
@@ -6513,11 +6741,11 @@ $(if($auditResults.Recommendations.Count -eq 0){
 # ============================================
 function Get-LokifiProfiles {
     $profilesPath = Join-Path $Global:LokifiConfig.Profiles.Path "profiles.json"
-    
+
     if (Test-Path $profilesPath) {
         return Get-Content $profilesPath -Raw | ConvertFrom-Json
     }
-    
+
     # Default profiles
     return @{
         active = "default"
@@ -6549,16 +6777,16 @@ function Get-LokifiProfiles {
 
 function Save-LokifiProfiles {
     param($Profiles)
-    
+
     $profilesPath = Join-Path $Global:LokifiConfig.Profiles.Path "profiles.json"
     $Profiles | ConvertTo-Json -Depth 10 | Set-Content $profilesPath
 }
 
 function Switch-LokifiProfile {
     param([string]$ProfileName)
-    
+
     $profiles = Get-LokifiProfiles
-    
+
     if ($profiles.profiles.PSObject.Properties.Name -notcontains $ProfileName) {
         Write-ErrorWithSuggestion "Profile '$ProfileName' not found" -Context "general"
         Write-Host "Available profiles:" -ForegroundColor Cyan
@@ -6568,10 +6796,10 @@ function Switch-LokifiProfile {
         }
         return $false
     }
-    
+
     $profiles.active = $ProfileName
     Save-LokifiProfiles $profiles
-    
+
     Write-Success "Switched to profile: $ProfileName"
     return $true
 }
@@ -6604,7 +6832,7 @@ if ($Global:LokifiConfig.Aliases.ContainsKey($Action.ToLower())) {
 switch ($Action.ToLower()) {
     # Original actions
     'servers' { Start-AllServers }
-    'redis' { 
+    'redis' {
         Write-LokifiHeader "Redis Management"
         Start-RedisContainer | Out-Null
     }
@@ -6614,23 +6842,23 @@ switch ($Action.ToLower()) {
     }
     'test' {
         Write-LokifiHeader "Comprehensive Testing Suite"
-        
+
         # Show test coverage context first
         if (-not $Quick) {
             Write-Step "📊" "Analyzing test coverage..."
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-            
+
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $analysis = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
-                
+
                 Write-Host "`n📈 Test Coverage Context:" -ForegroundColor Cyan
                 Write-Host "  Current Coverage: ~$($analysis.TestCoverage)%" -ForegroundColor $(if ($analysis.TestCoverage -ge 70) { 'Green' } elseif ($analysis.TestCoverage -ge 50) { 'Yellow' } else { 'Red' })
                 Write-Host "  Test Files: $($analysis.Metrics.Tests.Files)" -ForegroundColor Gray
                 Write-Host "  Test Lines: $($analysis.Metrics.Tests.Lines.ToString('N0'))" -ForegroundColor Gray
                 Write-Host "  Production Code: $($analysis.Metrics.Total.Effective.ToString('N0')) lines" -ForegroundColor Gray
                 Write-Host "  Industry Target: 70% coverage" -ForegroundColor Gray
-                
+
                 $coverageGap = 70 - $analysis.TestCoverage
                 if ($coverageGap -gt 0) {
                     $linesNeeded = [math]::Ceiling(($analysis.Metrics.Total.Effective * 0.70) - $analysis.Metrics.Tests.Lines)
@@ -6641,12 +6869,12 @@ switch ($Action.ToLower()) {
                 Write-Host ""
             }
         }
-        
+
         # Use the enhanced test runner with new capabilities
         Run-DevelopmentTests -Type $Component -File $TestFile -Match $TestMatch `
             -Smart:$TestSmart -Quick:$Quick -Coverage:$TestCoverage -Gate:$TestGate `
             -PreCommit:$TestPreCommit -Verbose:$TestVerbose -Watch:$Watch
-        
+
         Write-Host ""
         Write-Success "Testing complete! 🎉"
     }
@@ -6656,14 +6884,14 @@ switch ($Action.ToLower()) {
     }
     'health' {
         Write-LokifiHeader "System Health Check"
-        
+
         # OPTIMIZATION: Run codebase analyzer FIRST for better caching and perceived performance
         Write-Host "`n⚡ Initializing health analysis..." -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-        
+
         $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
         $health = $null
-        
+
         if (Test-Path $analyzerPath) {
             . $analyzerPath
             Write-Host "  📊 Running codebase analysis (cached: ~5s, first run: ~70s)..." -ForegroundColor Gray
@@ -6672,23 +6900,23 @@ switch ($Action.ToLower()) {
         } else {
             Write-Warning "Codebase analyzer not found at: $analyzerPath"
         }
-        
+
         # 1. Infrastructure Health
         Write-Host "`n🔧 Infrastructure Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         Get-ServiceStatus
-        
+
         # 2. API Health
         Write-Host "`n🌐 API Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
         Test-LokifiAPI
-        
+
         # 3. Codebase Health (using cached analyzer results)
         Write-Host "`n📊 Codebase Health:" -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-        
+
         if ($health) {
-            
+
             # Health indicators
             $indicators = @(
                 @{ Name = "Maintainability"; Value = $health.Metrics.Quality.Maintainability; Good = 70; Warning = 50; Inverse = $false; Unit = "/100" }
@@ -6696,28 +6924,28 @@ switch ($Action.ToLower()) {
                 @{ Name = "Technical Debt"; Value = $health.Metrics.Quality.TechnicalDebt; Good = 30; Warning = 60; Inverse = $true; Unit = " days" }
                 @{ Name = "Test Coverage"; Value = $health.TestCoverage; Good = 70; Warning = 50; Inverse = $false; Unit = "%" }
             )
-            
+
             foreach ($indicator in $indicators) {
                 $status = if ($indicator.Inverse) {
-                    if ($indicator.Value -le $indicator.Good) { "✅" } 
-                    elseif ($indicator.Value -le $indicator.Warning) { "⚠️" } 
+                    if ($indicator.Value -le $indicator.Good) { "✅" }
+                    elseif ($indicator.Value -le $indicator.Warning) { "⚠️" }
                     else { "❌" }
                 } else {
-                    if ($indicator.Value -ge $indicator.Good) { "✅" } 
-                    elseif ($indicator.Value -ge $indicator.Warning) { "⚠️" } 
+                    if ($indicator.Value -ge $indicator.Good) { "✅" }
+                    elseif ($indicator.Value -ge $indicator.Warning) { "⚠️" }
                     else { "❌" }
                 }
-                
+
                 $color = if ($status -eq "✅") { 'Green' } elseif ($status -eq "⚠️") { 'Yellow' } else { 'Red' }
-                $value = if ($indicator.Unit -eq "/100") { "$($indicator.Value)$($indicator.Unit)" } 
+                $value = if ($indicator.Unit -eq "/100") { "$($indicator.Value)$($indicator.Unit)" }
                         elseif ($indicator.Unit -eq "%") { "~$($indicator.Value)$($indicator.Unit)" }
                         else { "$($indicator.Value)$($indicator.Unit)" }
-                
+
                 Write-Host "  $status " -NoNewline -ForegroundColor $color
                 Write-Host "$($indicator.Name): " -NoNewline -ForegroundColor White
                 Write-Host $value -ForegroundColor $color
             }
-            
+
             # Overall health assessment
             $healthScore = 0
             foreach ($indicator in $indicators) {
@@ -6729,7 +6957,7 @@ switch ($Action.ToLower()) {
                     elseif ($indicator.Value -ge $indicator.Warning) { $healthScore += 15 }
                 }
             }
-            
+
             Write-Host "`n📊 Overall Code Health: " -NoNewline -ForegroundColor Cyan
             if ($healthScore -ge 80) {
                 Write-Host "$healthScore/100 🎉 Excellent!" -ForegroundColor Green
@@ -6741,12 +6969,12 @@ switch ($Action.ToLower()) {
         } else {
             Write-Warning "Codebase analyzer not found. Skipping code health check."
         }
-        
+
         # 3. Detailed Quality Checks (from master-health-check)
         if (-not $Quick) {
             Write-Host "`n🔍 Detailed Quality Analysis:" -ForegroundColor Cyan
             Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-            
+
             # TypeScript Health
             if (Test-Path "frontend") {
                 Write-Step "🎯" "TypeScript Type Safety..."
@@ -6754,7 +6982,7 @@ switch ($Action.ToLower()) {
                 try {
                     $tsOutput = npm run typecheck 2>&1 | Out-String
                     $errorCount = ([regex]::Matches($tsOutput, "error TS\d+:")).Count
-                    
+
                     if ($errorCount -eq 0) {
                         Write-Host "  ✅ No TypeScript errors" -ForegroundColor Green
                     } elseif ($errorCount -lt 10) {
@@ -6768,11 +6996,11 @@ switch ($Action.ToLower()) {
                     Pop-Location
                 }
             }
-            
+
             # Dependency Security
             Write-Step "📦" "Dependency Security..."
             $vulnCount = 0
-            
+
             if (Test-Path "frontend/package.json") {
                 Push-Location frontend
                 try {
@@ -6782,7 +7010,7 @@ switch ($Action.ToLower()) {
                         $critical = if ($vulns.critical) { $vulns.critical } else { 0 }
                         $high = if ($vulns.high) { $vulns.high } else { 0 }
                         $vulnCount = $critical + $high
-                        
+
                         if ($vulnCount -eq 0) {
                             Write-Host "  ✅ No critical/high vulnerabilities (Frontend)" -ForegroundColor Green
                         } else {
@@ -6795,15 +7023,15 @@ switch ($Action.ToLower()) {
                     Pop-Location
                 }
             }
-            
+
             # Console.log Detection
             Write-Step "🔍" "Console Logging Quality..."
             $consoleUsage = Get-ChildItem -Path "frontend/src" -Recurse -Include "*.tsx", "*.ts" -ErrorAction SilentlyContinue |
                 Select-String -Pattern "console\.(log|warn|error|debug)" |
                 Group-Object Path
-            
+
             $totalConsoleStatements = if ($consoleUsage) { ($consoleUsage | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum } else { 0 }
-            
+
             if ($totalConsoleStatements -eq 0) {
                 Write-Host "  ✅ Using proper logger utility" -ForegroundColor Green
             } elseif ($totalConsoleStatements -lt 20) {
@@ -6811,15 +7039,15 @@ switch ($Action.ToLower()) {
             } else {
                 Write-Host "  ❌ $totalConsoleStatements console.log statements (replace with logger)" -ForegroundColor Red
             }
-            
+
             # Technical Debt (TODOs/FIXMEs)
             Write-Step "📝" "Technical Debt Comments..."
             $todoComments = Get-ChildItem -Path "." -Recurse -Include "*.tsx", "*.ts", "*.py", "*.ps1" -Exclude "node_modules", ".next", "venv", ".git" -ErrorAction SilentlyContinue |
                 Select-String -Pattern "TODO|FIXME|XXX|HACK" |
                 Group-Object Path
-            
+
             $totalTodos = if ($todoComments) { ($todoComments | ForEach-Object { $_.Count } | Measure-Object -Sum).Sum } else { 0 }
-            
+
             if ($totalTodos -eq 0) {
                 Write-Host "  ✅ No TODO/FIXME comments" -ForegroundColor Green
             } elseif ($totalTodos -lt 20) {
@@ -6827,25 +7055,25 @@ switch ($Action.ToLower()) {
             } else {
                 Write-Host "  ❌ $totalTodos TODO/FIXME comments (consider creating issues)" -ForegroundColor Red
             }
-            
+
             # Git Hygiene
             Write-Step "🔄" "Git Repository Hygiene..."
             $gitStatus = git status --porcelain 2>$null
             $uncommittedFiles = if ($gitStatus) { ($gitStatus | Measure-Object).Count } else { 0 }
-            
+
             if ($uncommittedFiles -eq 0) {
                 Write-Host "  ✅ Clean working directory" -ForegroundColor Green
             } else {
                 Write-Host "  ⚠️  $uncommittedFiles uncommitted changes" -ForegroundColor Yellow
             }
-            
+
             # Large Files Check
             Write-Step "📦" "Large Files..."
             $largeFiles = Get-ChildItem -Path "." -Recurse -File -Exclude "node_modules", ".next", "venv", ".git", "*.db", "*.sqlite" -ErrorAction SilentlyContinue |
                 Where-Object { $_.Length -gt 1MB } |
                 Sort-Object Length -Descending |
                 Select-Object -First 3
-            
+
             if (-not $largeFiles) {
                 Write-Host "  ✅ No large files (>1MB) detected" -ForegroundColor Green
             } else {
@@ -6861,7 +7089,7 @@ switch ($Action.ToLower()) {
                 }
             }
         }
-        
+
         Write-Host ""
         Write-Host "💡 Tip: Use -Quick to skip detailed analysis, -ShowDetails for more info" -ForegroundColor Gray
         Write-Host ""
@@ -6876,7 +7104,7 @@ switch ($Action.ToLower()) {
         Write-LokifiHeader "Service Status"
         Get-ServiceStatus | Out-Null
     }
-    
+
     # NEW Phase 2B Development Actions
     'dev' {
         Write-LokifiHeader "Development Workflow"
@@ -6885,7 +7113,7 @@ switch ($Action.ToLower()) {
         } elseif ($Component -eq "be" -or $Component -eq "backend") {
             Start-DevelopmentWorkflow "be"
         } elseif ($Component -eq "fe" -or $Component -eq "frontend") {
-            Start-DevelopmentWorkflow "fe" 
+            Start-DevelopmentWorkflow "fe"
         } else {
             Start-DevelopmentWorkflow "both"
         }
@@ -6895,34 +7123,34 @@ switch ($Action.ToLower()) {
     }
     'validate' {
         Write-LokifiHeader "Pre-Commit Validation"
-        
+
         # Run existing validations
         $validationPassed = Invoke-PreCommitValidation
-        
+
         # Quality gate check (enabled with -Full flag for strict mode)
         if ($Full) {
             Write-Host "`n🚦 Quality Gates:" -ForegroundColor Cyan
             Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
             Write-Step "📊" "Checking quality thresholds..."
-            
+
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $metrics = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
-                
+
                 # Define quality gates
                 $qualityGates = @(
                     @{ Name = "Maintainability"; Value = $metrics.Metrics.Quality.Maintainability; Min = 60; Recommended = 70 }
                     @{ Name = "Security Score"; Value = $metrics.Metrics.Quality.SecurityScore; Min = 60; Recommended = 80 }
                     @{ Name = "Test Coverage"; Value = $metrics.TestCoverage; Min = 30; Recommended = 70 }
                 )
-                
+
                 $gatesFailed = 0
                 $gatesWarning = 0
-                
+
                 foreach ($gate in $qualityGates) {
                     Write-Host "  " -NoNewline
-                    
+
                     if ($gate.Value -ge $gate.Recommended) {
                         Write-Host "✅" -NoNewline -ForegroundColor Green
                         Write-Host " $($gate.Name): " -NoNewline
@@ -6944,9 +7172,9 @@ switch ($Action.ToLower()) {
                         $gatesFailed++
                     }
                 }
-                
+
                 Write-Host ""
-                
+
                 if ($gatesFailed -gt 0) {
                     Write-Host "❌ $gatesFailed quality gate(s) failed!" -ForegroundColor Red
                     Write-Warning "Fix quality issues before committing (or remove -Full flag for warnings only)"
@@ -6963,7 +7191,7 @@ switch ($Action.ToLower()) {
                 }
             }
         }
-        
+
         Write-Host ""
         if ($validationPassed -and ($Full -eq $false -or $gatesFailed -eq 0 -or $Force)) {
             Write-Success "All validations passed! 🎉"
@@ -6971,39 +7199,39 @@ switch ($Action.ToLower()) {
             Write-Info "💡 Tip: Use '-Full' flag to enable strict quality gates"
         }
     }
-    'format' {  
+    'format' {
         Write-LokifiHeader "Code Formatting"
-        
+
         # Before/After tracking (unless quick mode)
         $before = $null
         if (-not $Quick) {
             Write-Step "📊" "Analyzing current state..."
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-            
+
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $before = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
             }
         }
-        
+
         # Format code
         Write-Host ""
         Format-DevelopmentCode
-        
+
         # After analysis
         if ($before) {
             Write-Step "📊" "Re-analyzing after formatting..."
             Start-Sleep -Seconds 2  # Give file system a moment
             $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
-            
+
             # Show improvements
             Write-Host "`n✨ Quality Improvements:" -ForegroundColor Green
             Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $techDebtChange = [math]::Round($before.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
             $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $before.Metrics.Quality.Maintainability, 1)
             $securityChange = [math]::Round($after.Metrics.Quality.SecurityScore - $before.Metrics.Quality.SecurityScore, 1)
-            
+
             if ($techDebtChange -gt 0) {
                 Write-Host "  ↓ Technical Debt: -$techDebtChange days" -ForegroundColor Green
             } elseif ($techDebtChange -lt 0) {
@@ -7011,7 +7239,7 @@ switch ($Action.ToLower()) {
             } else {
                 Write-Host "  → Technical Debt: No change" -ForegroundColor Gray
             }
-            
+
             if ($maintChange -gt 0) {
                 Write-Host "  ↑ Maintainability: +$maintChange points" -ForegroundColor Green
             } elseif ($maintChange -lt 0) {
@@ -7019,7 +7247,7 @@ switch ($Action.ToLower()) {
             } else {
                 Write-Host "  → Maintainability: No change" -ForegroundColor Gray
             }
-            
+
             if ($securityChange -gt 0) {
                 Write-Host "  ↑ Security Score: +$securityChange points" -ForegroundColor Green
             } elseif ($securityChange -lt 0) {
@@ -7027,7 +7255,7 @@ switch ($Action.ToLower()) {
             } else {
                 Write-Host "  → Security Score: No change" -ForegroundColor Gray
             }
-            
+
             if ($techDebtChange -gt 0 -or $maintChange -gt 0 -or $securityChange -gt 0) {
                 Write-Host "`n🎉 Code quality improved!" -ForegroundColor Green
             }
@@ -7035,37 +7263,37 @@ switch ($Action.ToLower()) {
     }
     'lint' {
         Write-LokifiHeader "Code Linting"
-        
+
         # Before/After tracking (unless quick mode)
         $before = $null
         if (-not $Quick) {
             Write-Step "📊" "Analyzing current state..."
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-            
+
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $before = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
             }
         }
-        
+
         # Lint code
         Write-Host ""
         Write-Info "Running comprehensive linting..."
         Format-DevelopmentCode
-        
+
         # After analysis
         if ($before) {
             Write-Step "📊" "Re-analyzing after linting..."
             Start-Sleep -Seconds 2
             $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
-            
+
             # Show improvements
             Write-Host "`n✨ Code Quality Changes:" -ForegroundColor Cyan
             Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $techDebtChange = [math]::Round($before.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
             $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $before.Metrics.Quality.Maintainability, 1)
-            
+
             Write-Host "  Technical Debt: " -NoNewline
             if ($techDebtChange -gt 0) {
                 Write-Host "$($before.Metrics.Quality.TechnicalDebt) → $($after.Metrics.Quality.TechnicalDebt) days (-$techDebtChange)" -ForegroundColor Green
@@ -7074,7 +7302,7 @@ switch ($Action.ToLower()) {
             } else {
                 Write-Host "$($after.Metrics.Quality.TechnicalDebt) days (no change)" -ForegroundColor Gray
             }
-            
+
             Write-Host "  Maintainability: " -NoNewline
             if ($maintChange -gt 0) {
                 Write-Host "$($before.Metrics.Quality.Maintainability) → $($after.Metrics.Quality.Maintainability)/100 (+$maintChange)" -ForegroundColor Green
@@ -7107,16 +7335,16 @@ switch ($Action.ToLower()) {
         else {
             # Full mode: Comprehensive codebase analysis (new behavior)
             Write-LokifiHeader "Comprehensive Codebase Analysis"
-            
+
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-            
+
             if (Test-Path $analyzerPath) {
                 Write-Info "Running comprehensive codebase analyzer..."
                 Write-Host ""
-                
+
                 # Dot-source and invoke the analyzer
                 . $analyzerPath
-                
+
                 # Prepare analyzer arguments
                 $analyzerArgs = @{
                     ProjectRoot = $Global:LokifiConfig.AppRoot
@@ -7124,13 +7352,13 @@ switch ($Action.ToLower()) {
                     Region = 'US'
                     UseCache = $true
                 }
-                
+
                 # Add optional flags
                 if ($Full) { $analyzerArgs.Detailed = $true }
-                
+
                 # Run the analyzer function
                 $result = Invoke-CodebaseAnalysis @analyzerArgs
-                
+
                 Write-Host ""
                 Write-Success "Analysis complete! 🎉"
                 Write-Host ""
@@ -7146,21 +7374,21 @@ switch ($Action.ToLower()) {
     }
     'estimate' {
         Write-LokifiHeader "Codebase Estimation V2.0"
-        
+
         # Use the enhanced analyzer (V2 is now the primary version)
         $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-        
+
         if (Test-Path $analyzerPath) {
             Write-Host "🚀 Using Enhanced Analyzer V2.0..." -ForegroundColor Cyan
             . $analyzerPath
-            
+
             # Parse options from Target parameter
             $options = @{
                 ProjectRoot = $Global:LokifiConfig.AppRoot
             }
-            
+
             if ($Target -match 'json|csv|html|all') { $options.OutputFormat = $Target }
-            if ($Target -match 'eu|asia|remote') { 
+            if ($Target -match 'eu|asia|remote') {
                 $options.Region = switch -Regex ($Target) {
                     'eu' { 'EU' }
                     'asia' { 'Asia' }
@@ -7170,7 +7398,7 @@ switch ($Action.ToLower()) {
             }
             if ($Target -eq 'detailed' -or $Full) { $options.Detailed = $true }
             if ($Quick) { $options.UseCache = $true }
-            
+
             Invoke-CodebaseAnalysis @options
         }
         else {
@@ -7180,17 +7408,17 @@ switch ($Action.ToLower()) {
     }
     'fix' {
         Write-LokifiHeader "Quick Fixes"
-        
+
         # OPTIMIZATION: Get baseline metrics first (unless quick mode)
         $baseline = $null
         if (-not $Quick) {
             Write-Host "`n⚡ Analyzing current state..." -ForegroundColor Cyan
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-            
+
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
-                
+
                 Write-Host "`n📊 Current Metrics:" -ForegroundColor Cyan
                 Write-Host "  Technical Debt: $($baseline.Metrics.Quality.TechnicalDebt) days" -ForegroundColor $(if ($baseline.Metrics.Quality.TechnicalDebt -gt 60) { 'Red' } elseif ($baseline.Metrics.Quality.TechnicalDebt -gt 30) { 'Yellow' } else { 'Green' })
                 Write-Host "  Maintainability: $($baseline.Metrics.Quality.Maintainability)/100" -ForegroundColor $(if ($baseline.Metrics.Quality.Maintainability -lt 60) { 'Red' } elseif ($baseline.Metrics.Quality.Maintainability -lt 70) { 'Yellow' } else { 'Green' })
@@ -7198,7 +7426,7 @@ switch ($Action.ToLower()) {
                 Write-Host ""
             }
         }
-        
+
         # Run the fixes
         if ($Component -eq "ts") {
             Invoke-QuickFix -TypeScript
@@ -7207,7 +7435,7 @@ switch ($Action.ToLower()) {
         } else {
             Invoke-QuickFix -All
         }
-        
+
         # Show improvements if we had baseline
         if ($baseline -and -not $Quick) {
             Write-Host "`n📊 Re-analyzing..." -ForegroundColor Cyan
@@ -7216,10 +7444,10 @@ switch ($Action.ToLower()) {
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
-                
+
                 $debtChange = [math]::Round($baseline.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
                 $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $baseline.Metrics.Quality.Maintainability, 1)
-                
+
                 Write-Host "`n✨ Improvements:" -ForegroundColor Green
                 if ($debtChange -gt 0) {
                     Write-Host "  ↓ Technical Debt: -$debtChange days" -ForegroundColor Green
@@ -7227,7 +7455,7 @@ switch ($Action.ToLower()) {
                 if ($maintChange -gt 0) {
                     Write-Host "  ↑ Maintainability: +$maintChange points" -ForegroundColor Green
                 }
-                
+
                 if ($debtChange -le 0 -and $maintChange -le 0) {
                     Write-Host "  No measurable improvements (fixes may need more analysis)" -ForegroundColor Gray
                 }
@@ -7242,7 +7470,7 @@ switch ($Action.ToLower()) {
             Invoke-UltimateDocumentOrganization "status"
         }
     }
-    
+
     # NEW Phase 2C Enterprise Features
     'backup' {
         Write-LokifiHeader "Backup System"
@@ -7278,21 +7506,21 @@ switch ($Action.ToLower()) {
     }
     'security' {
         Write-LokifiHeader "Advanced Security Scan"
-        
+
         # OPTIMIZATION: Run analyzer FIRST for baseline metrics (unless quick mode or specific component)
         $baseline = $null
         if (-not $Quick -and $Component -ne 'secrets' -and $Component -ne 'vulnerabilities' -and $Component -ne 'licenses' -and $Component -ne 'audit' -and $Component -ne 'init') {
             Write-Host "`n⚡ Initializing security context..." -ForegroundColor Cyan
             Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-            
+
             $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
-            
+
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 Write-Host "  📊 Running codebase analysis (cached: ~5s)..." -ForegroundColor Gray
                 $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
                 Write-Host "  ✅ Analysis complete!" -ForegroundColor Green
-                
+
                 Write-Host "`n📈 Security Context:" -ForegroundColor Cyan
                 Write-Host "  Codebase Size: $($baseline.Metrics.Total.Effective.ToString('N0')) effective lines" -ForegroundColor Gray
                 Write-Host "  Code Complexity: $($baseline.Complexity.Overall)/10" -ForegroundColor $(if ($baseline.Complexity.Overall -le 5) { 'Green' } elseif ($baseline.Complexity.Overall -le 7) { 'Yellow' } else { 'Red' })
@@ -7304,7 +7532,7 @@ switch ($Action.ToLower()) {
                 Write-Host ""
             }
         }
-        
+
         switch ($Component.ToLower()) {
             'scan' {
                 Invoke-ComprehensiveSecurityScan -QuickScan:$Quick -SaveReport:$SaveReport
@@ -7349,19 +7577,19 @@ switch ($Action.ToLower()) {
             'init' {
                 $configPath = Join-Path $Global:LokifiConfig.DataDir "security-config.json"
                 $auditPath = Join-Path $Global:LokifiConfig.DataDir "security-audit-trail.log"
-                
+
                 if (Test-Path $configPath) {
                     Write-Info "Security config already exists: $configPath"
                 } else {
                     Write-Success "Security config initialized: $configPath"
                 }
-                
+
                 if (Test-Path $auditPath) {
                     Write-Info "Audit trail already exists: $auditPath"
                 } else {
                     Write-Success "Audit trail initialized: $auditPath"
                 }
-                
+
                 Write-Info "Security system ready!"
             }
             default {
@@ -7372,18 +7600,18 @@ switch ($Action.ToLower()) {
     }
     'ai' {
         Write-LokifiHeader "AI/ML Features"
-        
+
         switch ($Component.ToLower()) {
             'autofix' {
                 Write-Host "🤖 Intelligent Auto-Fix System" -ForegroundColor Cyan
                 Write-Host ""
                 Write-Info "This feature analyzes errors and suggests fixes based on learned patterns."
                 Write-Host ""
-                
+
                 # Example usage
                 $exampleError = "Connection refused on port 3000"
                 $fix = Get-IntelligentFix -ErrorMessage $exampleError -Component "frontend"
-                
+
                 if ($fix.HasSolution) {
                     Write-Host "📋 Example Fix Suggestion:" -ForegroundColor Green
                     Write-Host "   Error: $exampleError" -ForegroundColor Gray
@@ -7391,7 +7619,7 @@ switch ($Action.ToLower()) {
                     Write-Host "   Solution:" -ForegroundColor Yellow
                     Write-Host "   $($fix.Solution)" -ForegroundColor White
                 }
-                
+
                 Write-Host ""
                 Write-Info "Auto-fix learns from your actions and improves over time."
             }
@@ -7407,22 +7635,22 @@ switch ($Action.ToLower()) {
             'learn' {
                 Write-Host "🧠 Machine Learning System" -ForegroundColor Cyan
                 Write-Host ""
-                
+
                 $aiDb = Get-LokifiAIDatabase
-                
+
                 # Display learning stats
                 $statsQuery = @"
-SELECT 
+SELECT
     (SELECT COUNT(*) FROM error_patterns) as total_patterns,
     (SELECT COUNT(*) FROM error_patterns WHERE confidence_score > 0.7) as high_confidence,
     (SELECT COUNT(*) FROM fix_history WHERE success = 1) as successful_fixes,
     (SELECT COUNT(*) FROM predictions) as total_predictions,
     (SELECT COUNT(*) FROM smart_recommendations WHERE applied = 1) as applied_recommendations;
 "@
-                
+
                 try {
                     $stats = Invoke-Expression "sqlite3 -json '$aiDb' `"$statsQuery`"" 2>$null | ConvertFrom-Json
-                    
+
                     Write-Host "📊 Learning Statistics:" -ForegroundColor Yellow
                     Write-Host "   Error Patterns Learned: $($stats.total_patterns)" -ForegroundColor White
                     Write-Host "   High Confidence Patterns: $($stats.high_confidence)" -ForegroundColor Green
@@ -7430,7 +7658,7 @@ SELECT
                     Write-Host "   Predictions Made: $($stats.total_predictions)" -ForegroundColor White
                     Write-Host "   Recommendations Applied: $($stats.applied_recommendations)" -ForegroundColor White
                     Write-Host ""
-                    
+
                     if ($stats.total_patterns -gt 0) {
                         $learningRate = [math]::Round(($stats.high_confidence / $stats.total_patterns) * 100, 1)
                         Write-Host "🎯 Learning Effectiveness: $learningRate%" -ForegroundColor $(
@@ -7442,7 +7670,7 @@ SELECT
                 } catch {
                     Write-Warning "Could not retrieve learning statistics"
                 }
-                
+
                 Write-Host ""
                 Write-Info "The AI system learns from every operation and improves automatically."
             }
@@ -7462,32 +7690,32 @@ SELECT
                 # Default: Show all AI features
                 Write-Host "🤖 AI/ML Features Overview" -ForegroundColor Cyan
                 Write-Host ""
-                
+
                 Write-Host "1. 🔧 Intelligent Auto-Fix" -ForegroundColor Yellow
                 Write-Host "   Learns from errors and suggests fixes with confidence scores" -ForegroundColor Gray
                 Write-Host "   Usage: .\lokifi.ps1 ai -Component autofix" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 Write-Host "2. 🔮 Predictive Maintenance" -ForegroundColor Yellow
                 Write-Host "   Predicts potential issues before they occur" -ForegroundColor Gray
                 Write-Host "   Usage: .\lokifi.ps1 ai -Component predict" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 Write-Host "3. 📈 Performance Forecasting" -ForegroundColor Yellow
                 Write-Host "   Forecasts performance trends using linear regression" -ForegroundColor Gray
                 Write-Host "   Usage: .\lokifi.ps1 ai -Component forecast" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 Write-Host "4. 💡 Smart Recommendations" -ForegroundColor Yellow
                 Write-Host "   Analyzes codebase and provides actionable recommendations" -ForegroundColor Gray
                 Write-Host "   Usage: .\lokifi.ps1 ai -Component recommendations" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 Write-Host "5. 🧠 Machine Learning System" -ForegroundColor Yellow
                 Write-Host "   Tracks learning progress and confidence scores" -ForegroundColor Gray
                 Write-Host "   Usage: .\lokifi.ps1 ai -Component learn" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 Write-Info "💡 TIP: All AI features improve automatically as you use Lokifi!"
             }
         }
@@ -7498,14 +7726,14 @@ SELECT
     }
     'audit' {
         Write-LokifiHeader "Comprehensive Codebase Audit"
-        
+
         # OPTIMIZATION: Use codebase analyzer as foundation
         Write-Host "`n⚡ Initializing comprehensive audit..." -ForegroundColor Cyan
         Write-Host "─────────────────────────────────────────" -ForegroundColor Gray
-        
+
         $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
         $analyzerData = $null
-        
+
         if (Test-Path $analyzerPath) {
             . $analyzerPath
             Write-Host "  📊 Running codebase analysis (cached: ~5s, first run: ~70s)..." -ForegroundColor Gray
@@ -7513,16 +7741,16 @@ SELECT
             Write-Host "  ✅ Codebase analysis complete!" -ForegroundColor Green
             Write-Host ""
         }
-        
+
         # Run the audit
         $auditParams = @{}
         if ($Full) { $auditParams.Full = $true }
         if ($SaveReport) { $auditParams.SaveReport = $true }
         if ($Quick) { $auditParams.Quick = $true }
         if ($Report) { $auditParams.JsonExport = $true }
-        
+
         $auditResult = Invoke-ComprehensiveCodebaseAudit @auditParams
-        
+
         # Enhance audit with analyzer insights
         if ($analyzerData -and $auditResult) {
             Write-Host "`n📊 Analyzer Insights Integration:" -ForegroundColor Cyan
@@ -7536,42 +7764,42 @@ SELECT
     }
     'autofix' {
         Write-LokifiHeader "Automated TypeScript Auto-Fix"
-        
+
         # OPTIMIZATION: Get baseline from analyzer first
         Write-Host "`n⚡ Analyzing current state..." -ForegroundColor Cyan
         $analyzerPath = Join-Path $PSScriptRoot "scripts\analysis\codebase-analyzer.ps1"
         $baseline = $null
-        
+
         if (Test-Path $analyzerPath) {
             . $analyzerPath
             $baseline = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON' -UseCache
-            
+
             Write-Host "`n📊 Baseline Metrics:" -ForegroundColor Cyan
             Write-Host "  Codebase Size: $($baseline.Metrics.Total.Effective.ToString('N0')) lines" -ForegroundColor Gray
             Write-Host "  Technical Debt: $($baseline.Metrics.Quality.TechnicalDebt) days" -ForegroundColor Gray
             Write-Host "  Maintainability: $($baseline.Metrics.Quality.Maintainability)/100" -ForegroundColor Gray
             Write-Host ""
         }
-        
+
         # Run autofix
         $autofixParams = @{}
         if ($DryRun) { $autofixParams.DryRun = $true }
         if ($ShowDetails) { $autofixParams.ShowDetails = $true }
-        
+
         Invoke-AutomatedTypeScriptFix @autofixParams
-        
+
         # Show impact if not dry run and we have baseline
         if (-not $DryRun -and $baseline) {
             Write-Host "`n📊 Measuring impact..." -ForegroundColor Cyan
             Start-Sleep -Seconds 3
-            
+
             if (Test-Path $analyzerPath) {
                 . $analyzerPath
                 $after = Invoke-CodebaseAnalysis -ProjectRoot $Global:LokifiConfig.AppRoot -OutputFormat 'JSON'
-                
+
                 $debtChange = [math]::Round($baseline.Metrics.Quality.TechnicalDebt - $after.Metrics.Quality.TechnicalDebt, 1)
                 $maintChange = [math]::Round($after.Metrics.Quality.Maintainability - $baseline.Metrics.Quality.Maintainability, 1)
-                
+
                 Write-Host "`n💹 Impact on Metrics:" -ForegroundColor Green
                 Write-Host "  Technical Debt: " -NoNewline
                 if ($debtChange -gt 0) {
@@ -7579,7 +7807,7 @@ SELECT
                 } else {
                     Write-Host "$($after.Metrics.Quality.TechnicalDebt) days (no change)" -ForegroundColor Gray
                 }
-                
+
                 Write-Host "  Maintainability: " -NoNewline
                 if ($maintChange -gt 0) {
                     Write-Host "$($baseline.Metrics.Quality.Maintainability) → $($after.Metrics.Quality.Maintainability)/100 (+$maintChange)" -ForegroundColor Green
@@ -7591,7 +7819,7 @@ SELECT
     }
     'profile' {
         Write-LokifiHeader "Profile Management"
-        
+
         switch ($Component.ToLower()) {
             'list' {
                 $profiles = Get-LokifiProfiles
@@ -7600,21 +7828,21 @@ SELECT
                 Write-Host ""
                 Write-Host "Available Profiles:" -ForegroundColor Cyan
                 Write-Host ""
-                
+
                 # Default profile
                 $marker = if ("default" -eq $profiles.active) { "✓" } else { " " }
                 Write-Host "  $marker default" -ForegroundColor $(if("default" -eq $profiles.active){"Green"}else{"White"})
                 Write-Host "      Description: Default development profile" -ForegroundColor Gray
                 Write-Host "      Environment: development, Cache TTL: 30s" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 # Production profile
                 $marker = if ("production" -eq $profiles.active) { "✓" } else { " " }
                 Write-Host "  $marker production" -ForegroundColor $(if("production" -eq $profiles.active){"Green"}else{"White"})
                 Write-Host "      Description: Production environment profile" -ForegroundColor Gray
                 Write-Host "      Environment: production, Cache TTL: 60s" -ForegroundColor DarkGray
                 Write-Host ""
-                
+
                 # Staging profile
                 $marker = if ("staging" -eq $profiles.active) { "✓" } else { " " }
                 Write-Host "  $marker staging" -ForegroundColor $(if("staging" -eq $profiles.active){"Green"}else{"White"})
@@ -7642,11 +7870,11 @@ SELECT
     }
     'metrics' {
         Write-LokifiHeader "Metrics Analysis"
-        
+
         switch ($Component.ToLower()) {
             'percentiles' {
                 $perf = Get-PerformancePercentiles -Hours $Hours
-                
+
                 Write-Host "Performance Metrics (Last $Hours hours):" -ForegroundColor Cyan
                 Write-Host ""
                 Write-Host "Response Times:" -ForegroundColor Yellow

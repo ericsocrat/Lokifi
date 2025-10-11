@@ -6,15 +6,14 @@ Comprehensive security-focused validation for all user inputs
 import html
 import re
 import unicodedata
+from collections.abc import Callable
+from typing import Any
 from urllib.parse import urlparse
 
 import bleach
 from pydantic import BaseModel, validator
 
 from app.core.security_config import security_config
-from collections.abc import Callable
-from typing import Any
-
 
 
 class InputSanitizer:

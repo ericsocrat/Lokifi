@@ -10,6 +10,10 @@ import json
 import logging
 from datetime import datetime, timezone
 
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import Response, StreamingResponse
+from sqlalchemy.orm import Session
+
 from app.api.deps import get_current_user, get_db
 from app.db.models import AIMessage, User
 from app.schemas.ai_schemas import (
@@ -35,12 +39,9 @@ from app.services.multimodal_ai_service import (
     UnsupportedFileTypeError,
     multimodal_ai_service,
 )
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import Response, StreamingResponse
 
 # J6.1 Notification Integration
 from scripts.setup_j6_integration import trigger_ai_response_notification
-from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 

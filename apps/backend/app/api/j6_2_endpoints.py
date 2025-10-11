@@ -11,6 +11,10 @@ Advanced API endpoints for J6.2 notification system including:
 from datetime import UTC, datetime
 from typing import Any
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+
 from app.core.security import get_current_user
 from app.models.notification_models import NotificationPriority, NotificationType
 from app.models.user import User
@@ -24,9 +28,6 @@ from app.services.smart_notifications import (
     send_rich_notification,
     smart_notification_processor,
 )
-from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 
 router = APIRouter(prefix="/api/v1/notifications", tags=["notifications-j6.2"])
 analytics_service = NotificationAnalytics()

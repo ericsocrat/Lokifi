@@ -46,7 +46,9 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
         }
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         """Apply rate limiting before processing request"""
 
         # Skip rate limiting for exempted paths
@@ -62,9 +64,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
         limit_type = self._get_limit_type(request.url.path)
 
         # Check rate limit
-        is_allowed, retry_after = await self.rate_limiter.check_rate_limit(
-            client_id, limit_type
-        )
+        is_allowed, retry_after = await self.rate_limiter.check_rate_limit(client_id, limit_type)
 
         if not is_allowed:
             logger.warning(
@@ -91,16 +91,12 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
         response = await call_next(request)
 
         # Get current usage for headers
-        limit_config = self.rate_limiter.limits.get(
-            limit_type, self.rate_limiter.limits["api"]
-        )
+        limit_config = self.rate_limiter.limits.get(limit_type, self.rate_limiter.limits["api"])
         remaining = await self._get_remaining_requests(client_id, limit_type)
 
         response.headers["X-RateLimit-Limit"] = str(limit_config["requests"])
         response.headers["X-RateLimit-Remaining"] = str(remaining)
-        response.headers["X-RateLimit-Reset"] = str(
-            int(time.time() + limit_config["window"])
-        )
+        response.headers["X-RateLimit-Reset"] = str(int(time.time() + limit_config["window"]))
 
         return response
 
@@ -130,9 +126,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
 
     async def _get_remaining_requests(self, client_id: str, limit_type: str) -> int:
         """Get remaining requests for rate limit headers"""
-        limit_config = self.rate_limiter.limits.get(
-            limit_type, self.rate_limiter.limits["api"]
-        )
+        limit_config = self.rate_limiter.limits.get(limit_type, self.rate_limiter.limits["api"])
         max_requests = limit_config["requests"]
 
         # Get current request count
@@ -154,7 +148,9 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.max_size = max_size or security_config.MAX_REQUEST_SIZE
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         """Check request size before processing"""
 
         # Check Content-Length header
@@ -195,7 +191,9 @@ class SecurityMonitoringMiddleware(BaseHTTPMiddleware):
 
         self.blocked_user_agents = ["sqlmap", "nikto", "nmap", "masscan", "zap"]
 
-    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
+    async def dispatch(
+        self, request: Request, call_next: Callable[[Request], Awaitable[Response]]
+    ) -> Response:
         """Monitor requests for security threats"""
 
         # Check for suspicious user agents

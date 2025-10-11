@@ -3,10 +3,11 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from app.core.config import Settings
-from app.services.data_archival_service import DataArchivalService
 from celery import Celery
 from celery.schedules import crontab
+
+from app.core.config import Settings
+from app.services.data_archival_service import DataArchivalService
 
 logger = logging.getLogger(__name__)
 

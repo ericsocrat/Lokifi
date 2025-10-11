@@ -4,11 +4,10 @@ Provider abstraction layer with resilience patterns
 import asyncio
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any
-from collections.abc import Callable
-
 
 
 class ProviderErrorCode(Enum):

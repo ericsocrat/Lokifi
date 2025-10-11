@@ -3,15 +3,16 @@ import logging
 from datetime import UTC, datetime
 from typing import Any
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+
 from app.core.auth_deps import get_current_user
 from app.core.redis_cache import cache_notifications
 from app.models.notification_models import NotificationPriority
 from app.models.user import User
 from app.services.notification_emitter import notification_emitter
 from app.services.notification_service import notification_service
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 

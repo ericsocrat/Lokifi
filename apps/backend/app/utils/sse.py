@@ -1,6 +1,6 @@
-from fastapi.responses import StreamingResponse
 from typing import Any
 
+from fastapi.responses import StreamingResponse
 
 
 class EventSourceResponse(StreamingResponse):

@@ -5,11 +5,10 @@ Input Validation and Sanitization Utilities
 import html
 import logging
 import re
-
-from fastapi import HTTPException, status
 from collections.abc import Callable
 from typing import Any
 
+from fastapi import HTTPException, status
 
 logger = logging.getLogger(__name__)
 

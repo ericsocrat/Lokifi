@@ -4,12 +4,10 @@ Performance monitoring utilities for Phase K
 
 import logging
 import time
-from collections.abc import AsyncGenerator
+from collections.abc import AsyncGenerator, Callable
 from contextlib import asynccontextmanager
 from functools import wraps
 from typing import Any
-from collections.abc import Callable
-
 
 logger = logging.getLogger(__name__)
 

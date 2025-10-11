@@ -2,15 +2,16 @@
 
 from datetime import UTC, datetime, timedelta
 
-from app.core.config import get_settings
-from app.db.db import get_session, init_db
-from app.db.models import User
 from fastapi import APIRouter, Header, HTTPException
 from jose import JWTError, jwt
 from passlib.hash import bcrypt
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from app.core.config import get_settings
+from app.db.db import get_session, init_db
+from app.db.models import User
 
 router = APIRouter()
 init_db()
