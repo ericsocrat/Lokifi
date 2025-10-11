@@ -1,6 +1,7 @@
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+from fastapi.security import HTTPAuthorizationCredentials
 import jwt
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
@@ -14,7 +15,7 @@ reusable_oauth2 = HTTPBearer(auto_error=False)
 # Phase J: Password hasher instance
 ph = PasswordHasher()
 
-async def get_current_user(token=Depends(reusable_oauth2)):
+async def get_current_user(token: HTTPAuthorizationCredentials | None = Depends(reusable_oauth2)) -> dict[str, Any]:
     if token is None:
         return {"id": 0, "email": "anon@local", "handle": "anon"}
     try:

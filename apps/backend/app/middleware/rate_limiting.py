@@ -5,8 +5,9 @@ Implements sliding window rate limiting with Redis backend
 
 import logging
 import time
+from collections.abc import Awaitable, Callable
 
-from fastapi import Request
+from fastapi import Request, Response
 from fastapi.responses import JSONResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
@@ -45,7 +46,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
             "/openapi.json",
         }
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         """Apply rate limiting before processing request"""
 
         # Skip rate limiting for exempted paths
@@ -153,7 +154,7 @@ class RequestSizeLimitMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.max_size = max_size or security_config.MAX_REQUEST_SIZE
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         """Check request size before processing"""
 
         # Check Content-Length header
@@ -194,7 +195,7 @@ class SecurityMonitoringMiddleware(BaseHTTPMiddleware):
 
         self.blocked_user_agents = ["sqlmap", "nikto", "nmap", "masscan", "zap"]
 
-    async def dispatch(self, request: Request, call_next):
+    async def dispatch(self, request: Request, call_next: Callable[[Request], Awaitable[Response]]) -> Response:
         """Monitor requests for security threats"""
 
         # Check for suspicious user agents

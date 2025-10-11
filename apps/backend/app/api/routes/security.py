@@ -32,7 +32,7 @@ async def get_security_status():
     }
 
 @router.get("/security/dashboard")
-async def get_security_dashboard(current_user=Depends(get_current_user)):
+async def get_security_dashboard(current_user: dict[str, Any] = Depends(get_current_user)):
     """Get comprehensive security dashboard (requires authentication)"""
     
     # Only allow admin users to access detailed security info
@@ -59,7 +59,7 @@ async def get_security_dashboard(current_user=Depends(get_current_user)):
     }
 
 @router.post("/security/ip/{ip_address}/block")
-async def block_ip_address(ip_address: str, current_user=Depends(get_current_user)):
+async def block_ip_address(ip_address: str, current_user: dict[str, Any] = Depends(get_current_user)):
     """Manually block an IP address (admin only)"""
     
     # TODO: Add proper admin role checking
@@ -82,7 +82,7 @@ async def block_ip_address(ip_address: str, current_user=Depends(get_current_use
     }
 
 @router.delete("/security/ip/{ip_address}/unblock")
-async def unblock_ip_address(ip_address: str, current_user=Depends(get_current_user)):
+async def unblock_ip_address(ip_address: str, current_user: dict[str, Any] = Depends(get_current_user)):
     """Manually unblock an IP address (admin only)"""
     
     # TODO: Add proper admin role checking
@@ -107,7 +107,7 @@ async def unblock_ip_address(ip_address: str, current_user=Depends(get_current_u
 @router.get("/security/events/summary")
 async def get_security_events_summary(
     hours: int = 24,
-    current_user=Depends(get_current_user)
+    current_user: dict[str, Any] = Depends(get_current_user)
 ):
     """Get summary of security events in the last N hours"""
     
@@ -190,7 +190,7 @@ async def security_health_check():
 
 # Additional security configuration endpoint
 @router.get("/security/config")
-async def get_security_config(current_user=Depends(get_current_user)):
+async def get_security_config(current_user: dict[str, Any] = Depends(get_current_user)):
     """Get current security configuration (admin only)"""
     
     from app.core.security_config import security_config
@@ -213,7 +213,7 @@ async def get_security_config(current_user=Depends(get_current_user)):
     }
 
 @router.get("/security/alerts/config")
-async def get_alert_configuration(current_user=Depends(get_current_user)):
+async def get_alert_configuration(current_user: dict[str, Any] = Depends(get_current_user)):
     """Get current alert configuration (admin only)"""
     
     stats = security_alert_manager.get_alert_statistics()
@@ -235,7 +235,7 @@ async def get_alert_configuration(current_user=Depends(get_current_user)):
     }
 
 @router.post("/security/alerts/test")
-async def test_security_alerts(current_user=Depends(get_current_user)):
+async def test_security_alerts(current_user: dict[str, Any] = Depends(get_current_user)):
     """Send a test security alert (admin only)"""
     
     from app.utils.security_alerts import send_medium_alert
@@ -267,7 +267,7 @@ async def test_security_alerts(current_user=Depends(get_current_user)):
 async def get_alert_history(
     hours: int = 24,
     severity: str | None = None,
-    current_user=Depends(get_current_user)
+    current_user: dict[str, Any] = Depends(get_current_user)
 ):
     """Get recent alert history (admin only)"""
     

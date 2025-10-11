@@ -10,14 +10,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
 from app.core.performance_monitor import performance_metrics
-from app.core.redis_client import get_redis_client
+from app.core.redis_client import RedisClient, redis_client as _redis_client
 
 router = APIRouter(prefix="/health", tags=["health"])
+
+def get_redis_client() -> RedisClient:
+    """Dependency to get Redis client instance"""
+    return _redis_client
 
 @router.get("/comprehensive")
 async def comprehensive_health_check(
     db: AsyncSession = Depends(get_db_session),
-    redis_client = Depends(get_redis_client)
+    redis_client: RedisClient = Depends(get_redis_client)
 ) -> dict[str, Any]:
     """Comprehensive health check for all Phase K components"""
     
@@ -100,7 +104,7 @@ async def get_performance_metrics() -> dict[str, Any]:
 async def check_component_health(
     component_name: str,
     db: AsyncSession = Depends(get_db_session),
-    redis_client = Depends(get_redis_client)
+    redis_client: RedisClient = Depends(get_redis_client)
 ) -> dict[str, Any]:
     """Check health of specific component"""
     
