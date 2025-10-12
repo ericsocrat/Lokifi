@@ -320,13 +320,13 @@ function Invoke-CodebaseAnalysis {
     # ============================================
     Write-Host "⚙️  Configuring scan mode: " -NoNewline -ForegroundColor Cyan
     Write-Host $ScanMode -ForegroundColor Yellow
-    
+
     # Configure patterns and exclusions based on scan mode
     $activePatternsCategories = @()
     $activeExcludeDirs = $excludeDirs.Clone()
     $activeExcludeFiles = $excludeFilePatterns.Clone()
     $scanDescription = ""
-    
+
     switch ($ScanMode) {
         'Full' {
             # Full scan - everything including documentation
@@ -342,7 +342,7 @@ function Invoke-CodebaseAnalysis {
             )
             $activeExcludeFiles = @('*.log.*', '*.swp', '*.tmp', '*~')
         }
-        
+
         'CodeOnly' {
             # Code only - excludes all documentation
             $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests')
@@ -350,7 +350,7 @@ function Invoke-CodebaseAnalysis {
             # Use full exclusions including all archives and docs folders
             Write-Host "   📝 Excluding: All .md, .txt, docs folders, archives" -ForegroundColor Gray
         }
-        
+
         'DocsOnly' {
             # Documentation only - only markdown, text, and doc files
             $activePatternsCategories = @('Documentation')
@@ -368,7 +368,7 @@ function Invoke-CodebaseAnalysis {
             $activeExcludeFiles = @('*.log.*', '*.swp', '*.tmp', '*~')
             Write-Host "   � Including: docs/, *.md, *.txt, README files" -ForegroundColor Gray
         }
-        
+
         'Quick' {
             # Quick scan - only main source files, no tests or detailed analysis
             $activePatternsCategories = @('Frontend', 'Backend')
@@ -376,7 +376,7 @@ function Invoke-CodebaseAnalysis {
             $Detailed = $false  # Force quick mode
             Write-Host "   ⚡ Fast mode: Skipping tests, docs, detailed analysis" -ForegroundColor Gray
         }
-        
+
         'Search' {
             # Search mode - scan everything but filter results by keywords
             if ($SearchKeywords.Count -eq 0) {
@@ -390,7 +390,7 @@ function Invoke-CodebaseAnalysis {
             Write-Host "   🔍 Searching for: " -NoNewline -ForegroundColor Gray
             Write-Host ($SearchKeywords -join ', ') -ForegroundColor Yellow
         }
-        
+
         'Custom' {
             # Custom mode - user defines exact patterns
             if ($CustomIncludePatterns.Count -eq 0) {
@@ -401,13 +401,13 @@ function Invoke-CodebaseAnalysis {
             }
             $scanDescription = "Custom scan: $($CustomIncludePatterns -join ', ')"
             Write-Host "   📋 Custom patterns: $($CustomIncludePatterns -join ', ')" -ForegroundColor Gray
-            
+
             # Override patterns with custom
             $patterns = @{ Custom = $CustomIncludePatterns }
             $activePatternsCategories = @('Custom')
-            
+
             # Initialize Custom category in metrics
-            $metrics['Custom'] = @{ 
+            $metrics['Custom'] = @{
                 Files = 0
                 Lines = 0
                 Comments = 0
@@ -416,14 +416,14 @@ function Invoke-CodebaseAnalysis {
                 Extensions = @{}
                 LargestFile = @{ Name = ''; Lines = 0 }
             }
-            
+
             if ($CustomExcludePatterns.Count -gt 0) {
                 $activeExcludeFiles += $CustomExcludePatterns
                 Write-Host "   🚫 Excluding: $($CustomExcludePatterns -join ', ')" -ForegroundColor Gray
             }
         }
     }
-    
+
     Write-Host "   📊 Scope: $scanDescription" -ForegroundColor Gray
     Write-Host ""
 
@@ -440,7 +440,7 @@ function Invoke-CodebaseAnalysis {
         if ($ScanMode -ne 'Custom' -and $activePatternsCategories -notcontains $category) {
             continue
         }
-        
+
         foreach ($pattern in $patterns[$category]) {
             $files = Get-ChildItem -Path $ProjectRoot -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue |
                 Where-Object {
@@ -515,7 +515,7 @@ function Invoke-CodebaseAnalysis {
                     $matchedKeywords += $keyword
                 }
             }
-            
+
             if ($matchedKeywords.Count -gt 0) {
                 # Find line numbers for each match
                 $lineMatches = @()
@@ -532,7 +532,7 @@ function Invoke-CodebaseAnalysis {
                         }
                     }
                 }
-                
+
                 $searchMatches += [PSCustomObject]@{
                     File = $file.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
                     Category = $category
@@ -778,12 +778,12 @@ function Invoke-CodebaseAnalysis {
         Write-Host " files with matches for keywords: " -NoNewline
         Write-Host ($SearchKeywords -join ', ') -ForegroundColor Yellow
         Write-Host ""
-        
+
         $totalMatches = ($searchMatches | Measure-Object -Property TotalMatches -Sum).Sum
         Write-Host "Total matches: " -NoNewline
         Write-Host $totalMatches -ForegroundColor Yellow
         Write-Host ""
-        
+
         # Group by keyword
         $keywordStats = @{}
         foreach ($match in $searchMatches) {
@@ -794,14 +794,14 @@ function Invoke-CodebaseAnalysis {
                 $keywordStats[$keyword] += ($match.Matches | Where-Object { $_.Keyword -eq $keyword }).Count
             }
         }
-        
+
         Write-Host "Keyword breakdown:" -ForegroundColor Cyan
         foreach ($keyword in ($keywordStats.Keys | Sort-Object)) {
             Write-Host "  • $keyword" -NoNewline -ForegroundColor White
             Write-Host ": $($keywordStats[$keyword]) matches" -ForegroundColor Gray
         }
         Write-Host ""
-        
+
         # Display detailed results
         Write-Host "Detailed results:" -ForegroundColor Cyan
         foreach ($match in ($searchMatches | Sort-Object -Property TotalMatches -Descending | Select-Object -First 20)) {
@@ -812,7 +812,7 @@ function Invoke-CodebaseAnalysis {
             Write-Host $match.Category -NoNewline -ForegroundColor Cyan
             Write-Host " | Matches: " -NoNewline -ForegroundColor Gray
             Write-Host $match.TotalMatches -ForegroundColor Yellow
-            
+
             # Show first 5 matches per file
             foreach ($lineMatch in ($match.Matches | Select-Object -First 5)) {
                 Write-Host "     Line $($lineMatch.LineNumber): " -NoNewline -ForegroundColor Gray
@@ -822,17 +822,17 @@ function Invoke-CodebaseAnalysis {
                 }
                 Write-Host $highlightedLine -ForegroundColor White
             }
-            
+
             if ($match.Matches.Count -gt 5) {
                 Write-Host "     ... and $($match.Matches.Count - 5) more matches" -ForegroundColor Gray
             }
         }
-        
+
         if ($searchMatches.Count -gt 20) {
             Write-Host ""
             Write-Host "  ... and $($searchMatches.Count - 20) more files" -ForegroundColor Gray
         }
-        
+
         Write-Host ""
         Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Blue
         Write-Host ""

@@ -1,10 +1,10 @@
-
 import backoff
 import httpx
 
 
 class RateLimit(Exception):
     pass
+
 
 @backoff.on_exception(backoff.expo, (httpx.HTTPError, RateLimit), max_time=30)
 async def _get(url: str, params: dict):

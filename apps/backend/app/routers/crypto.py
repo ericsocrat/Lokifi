@@ -3,12 +3,9 @@ Cryptocurrency Market Data Router
 Provides endpoints for fetching crypto market data, prices, and market overview
 """
 
-
-
 import httpx
-from fastapi import APIRouter, HTTPException, Query
-
 from app.core.config import settings
+from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter(prefix="/crypto", tags=["crypto"])
 
@@ -19,14 +16,14 @@ COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3"
 async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dict:
     """Fetch data from CoinGecko API"""
     url = f"{COINGECKO_BASE_URL}/{endpoint}"
-    
+
     # Add API key if available
     if params is None:
         params = {}
-    
+
     if settings.COINGECKO_KEY:
         params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
-    
+
     try:
         # Use proper SSL verification (removed verify=False security issue)
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -35,36 +32,29 @@ async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dic
             return response.json()
     except httpx.HTTPStatusError as e:
         raise HTTPException(
-            status_code=503, 
-            detail=f"CoinGecko API error: {e.response.status_code}"
+            status_code=503, detail=f"CoinGecko API error: {e.response.status_code}"
         )
     except httpx.TimeoutException:
-        raise HTTPException(
-            status_code=504, 
-            detail="CoinGecko API request timed out"
-        )
+        raise HTTPException(status_code=504, detail="CoinGecko API request timed out")
     except Exception as e:
         # Log error for debugging without exposing internal details
         import logging
+
         logging.error(f"CoinGecko API error: {type(e).__name__}: {e}")
-        raise HTTPException(
-            status_code=500, 
-            detail="Failed to fetch cryptocurrency data"
-        )
+        raise HTTPException(status_code=500, detail="Failed to fetch cryptocurrency data")
 
 
 @router.get("/top")
 async def get_top_cryptocurrencies(
-    limit: int = Query(default=100, ge=1, le=250),
-    vs_currency: str = Query(default="usd")
+    limit: int = Query(default=100, ge=1, le=250), vs_currency: str = Query(default="usd")
 ):
     """
     Get top cryptocurrencies by market cap
-    
+
     Args:
         limit: Number of cryptocurrencies to return (1-250)
         vs_currency: Currency to use for prices (default: usd)
-    
+
     Returns:
         List of cryptocurrency data with prices, market cap, volume, etc.
     """
@@ -74,9 +64,9 @@ async def get_top_cryptocurrencies(
         "per_page": limit,
         "page": 1,
         "sparkline": False,
-        "price_change_percentage": "1h,24h,7d"
+        "price_change_percentage": "1h,24h,7d",
     }
-    
+
     data = await fetch_from_coingecko("coins/markets", params)
     return data
 
@@ -85,29 +75,33 @@ async def get_top_cryptocurrencies(
 async def get_market_overview():
     """
     Get global cryptocurrency market overview
-    
+
     Returns:
         Global market data including total market cap, volume, BTC dominance, etc.
     """
     try:
         data = await fetch_from_coingecko("global", {})
-        
+
         if "data" in data:
             global_data = data["data"]
-            
+
             return {
                 "total_market_cap": global_data.get("total_market_cap", {}).get("usd", 0),
                 "total_volume_24h": global_data.get("total_volume", {}).get("usd", 0),
-                "bitcoin_dominance": round(global_data.get("market_cap_percentage", {}).get("btc", 0), 2),
-                "ethereum_dominance": round(global_data.get("market_cap_percentage", {}).get("eth", 0), 2),
+                "bitcoin_dominance": round(
+                    global_data.get("market_cap_percentage", {}).get("btc", 0), 2
+                ),
+                "ethereum_dominance": round(
+                    global_data.get("market_cap_percentage", {}).get("eth", 0), 2
+                ),
                 "market_sentiment": 70,  # Placeholder - CoinGecko doesn't provide this in free tier
                 "active_coins": global_data.get("active_cryptocurrencies", 0),
                 "markets": global_data.get("markets", 0),
                 "market_cap_change_24h": global_data.get("market_cap_change_percentage_24h_usd", 0),
             }
-        
+
         raise HTTPException(status_code=500, detail="Invalid response from CoinGecko")
-        
+
     except HTTPException:
         raise
     except Exception:
@@ -121,11 +115,11 @@ async def get_coin_details(
     tickers: bool = Query(default=False),
     market_data: bool = Query(default=True),
     community_data: bool = Query(default=False),
-    developer_data: bool = Query(default=False)
+    developer_data: bool = Query(default=False),
 ):
     """
     Get detailed information about a specific cryptocurrency
-    
+
     Args:
         coin_id: CoinGecko coin ID (e.g., 'bitcoin', 'ethereum')
         localization: Include localized data
@@ -133,7 +127,7 @@ async def get_coin_details(
         market_data: Include market data
         community_data: Include community data
         developer_data: Include developer data
-    
+
     Returns:
         Detailed coin information
     """
@@ -142,9 +136,9 @@ async def get_coin_details(
         "tickers": str(tickers).lower(),
         "market_data": str(market_data).lower(),
         "community_data": str(community_data).lower(),
-        "developer_data": str(developer_data).lower()
+        "developer_data": str(developer_data).lower(),
     }
-    
+
     data = await fetch_from_coingecko(f"coins/{coin_id}", params)
     return data
 
@@ -152,15 +146,15 @@ async def get_coin_details(
 @router.get("/price")
 async def get_simple_price(
     ids: str = Query(..., description="Comma-separated coin IDs (e.g., 'bitcoin,ethereum')"),
-    vs_currencies: str = Query(default="usd", description="Comma-separated currencies")
+    vs_currencies: str = Query(default="usd", description="Comma-separated currencies"),
 ):
     """
     Get simple price data for multiple cryptocurrencies
-    
+
     Args:
         ids: Comma-separated coin IDs
         vs_currencies: Comma-separated currencies
-    
+
     Returns:
         Price data for specified coins
     """
@@ -169,9 +163,9 @@ async def get_simple_price(
         "vs_currencies": vs_currencies,
         "include_24hr_change": "true",
         "include_24hr_vol": "true",
-        "include_market_cap": "true"
+        "include_market_cap": "true",
     }
-    
+
     data = await fetch_from_coingecko("simple/price", params)
     return data
 
@@ -180,7 +174,7 @@ async def get_simple_price(
 async def get_trending_coins():
     """
     Get trending cryptocurrencies (most searched on CoinGecko)
-    
+
     Returns:
         List of trending coins
     """
@@ -192,7 +186,7 @@ async def get_trending_coins():
 async def get_categories():
     """
     Get all cryptocurrency categories (DeFi, NFT, Gaming, etc.)
-    
+
     Returns:
         List of categories with market data
     """
@@ -204,26 +198,23 @@ async def get_categories():
 async def get_ohlc_data(
     coin_id: str,
     vs_currency: str = Query(default="usd"),
-    days: int = Query(default=7, ge=1, le=365)
+    days: int = Query(default=7, ge=1, le=365),
 ):
     """
     Get OHLC (Open, High, Low, Close) candle data for a cryptocurrency
-    
+
     Args:
         coin_id: CoinGecko coin ID
         vs_currency: Currency to use
         days: Number of days of data (1, 7, 14, 30, 90, 180, 365)
-    
+
     Returns:
         OHLC candle data
     """
-    params = {
-        "vs_currency": vs_currency,
-        "days": days
-    }
-    
+    params = {"vs_currency": vs_currency, "days": days}
+
     data = await fetch_from_coingecko(f"coins/{coin_id}/ohlc", params)
-    
+
     # Transform to consistent format
     formatted_data = [
         {
@@ -231,11 +222,11 @@ async def get_ohlc_data(
             "open": candle[1],
             "high": candle[2],
             "low": candle[3],
-            "close": candle[4]
+            "close": candle[4],
         }
         for candle in data
     ]
-    
+
     return formatted_data
 
 
@@ -243,10 +234,10 @@ async def get_ohlc_data(
 async def search_coins(query: str = Query(..., min_length=1)):
     """
     Search for cryptocurrencies by name or symbol
-    
+
     Args:
         query: Search query
-    
+
     Returns:
         List of matching coins
     """
@@ -258,18 +249,15 @@ async def search_coins(query: str = Query(..., min_length=1)):
 async def get_exchanges(per_page: int = Query(default=100, ge=1, le=250)):
     """
     Get list of cryptocurrency exchanges
-    
+
     Args:
         per_page: Number of exchanges to return
-    
+
     Returns:
         List of exchanges
     """
-    params = {
-        "per_page": per_page,
-        "page": 1
-    }
-    
+    params = {"per_page": per_page, "page": 1}
+
     data = await fetch_from_coingecko("exchanges", params)
     return data
 
@@ -278,19 +266,15 @@ async def get_exchanges(per_page: int = Query(default=100, ge=1, le=250)):
 async def get_nft_list(per_page: int = Query(default=100, ge=1, le=250)):
     """
     Get list of NFT collections
-    
+
     Args:
         per_page: Number of NFTs to return
-    
+
     Returns:
         List of NFT collections
     """
-    params = {
-        "per_page": per_page,
-        "page": 1,
-        "order": "market_cap_usd_desc"
-    }
-    
+    params = {"per_page": per_page, "page": 1, "order": "market_cap_usd_desc"}
+
     data = await fetch_from_coingecko("nfts/list", params)
     return data
 
@@ -305,12 +289,12 @@ async def crypto_api_health():
         return {
             "status": "healthy",
             "provider": "CoinGecko",
-            "api_key_configured": bool(settings.COINGECKO_KEY)
+            "api_key_configured": bool(settings.COINGECKO_KEY),
         }
     except Exception as e:
         return {
             "status": "unhealthy",
             "provider": "CoinGecko",
             "error": str(e),
-            "api_key_configured": bool(settings.COINGECKO_KEY)
+            "api_key_configured": bool(settings.COINGECKO_KEY),
         }

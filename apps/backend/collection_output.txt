@@ -1,0 +1,1647 @@
+tests/api/test_admin_messaging.py::Testadminmessaging::test_module_imports
+tests/api/test_admin_messaging.py::Testadminmessaging::test_basic_functionality
+tests/api/test_admin_messaging.py::TestadminmessagingIntegration::test_integration_scenario
+tests/api/test_admin_messaging.py::TestadminmessagingEdgeCases::test_null_input_handling
+tests/api/test_admin_messaging.py::TestadminmessagingEdgeCases::test_invalid_input_handling
+tests/api/test_admin_messaging.py::TestadminmessagingEdgeCases::test_error_conditions
+tests/api/test_admin_messaging.py::TestadminmessagingPerformance::test_performance_under_load
+tests/api/test_ai.py::Testai::test_module_imports
+tests/api/test_ai.py::Testai::test_basic_functionality
+tests/api/test_ai.py::TestaiIntegration::test_integration_scenario
+tests/api/test_ai.py::TestaiEdgeCases::test_null_input_handling
+tests/api/test_ai.py::TestaiEdgeCases::test_invalid_input_handling
+tests/api/test_ai.py::TestaiEdgeCases::test_error_conditions
+tests/api/test_ai.py::TestaiPerformance::test_performance_under_load
+tests/api/test_ai_websocket.py::Testaiwebsocket::test_module_imports
+tests/api/test_ai_websocket.py::Testaiwebsocket::test_basic_functionality
+tests/api/test_ai_websocket.py::TestaiwebsocketIntegration::test_integration_scenario
+tests/api/test_ai_websocket.py::TestaiwebsocketEdgeCases::test_null_input_handling
+tests/api/test_ai_websocket.py::TestaiwebsocketEdgeCases::test_invalid_input_handling
+tests/api/test_ai_websocket.py::TestaiwebsocketEdgeCases::test_error_conditions
+tests/api/test_ai_websocket.py::TestaiwebsocketPerformance::test_performance_under_load
+tests/api/test_alerts.py::Testalerts::test_module_imports
+tests/api/test_alerts.py::Testalerts::test_basic_functionality
+tests/api/test_alerts.py::TestalertsIntegration::test_integration_scenario
+tests/api/test_alerts.py::TestalertsEdgeCases::test_null_input_handling
+tests/api/test_alerts.py::TestalertsEdgeCases::test_invalid_input_handling
+tests/api/test_alerts.py::TestalertsEdgeCases::test_error_conditions
+tests/api/test_alerts.py::TestalertsPerformance::test_performance_under_load
+tests/api/test_api.py::TestHealthEndpoints::test_health_check
+tests/api/test_api.py::TestSymbolsAPI::test_get_symbols
+tests/api/test_api.py::TestSymbolsAPI::test_search_symbols
+tests/api/test_api.py::TestSymbolsAPI::test_filter_symbols_by_type
+tests/api/test_api.py::TestOHLCAPI::test_get_ohlc_data
+tests/api/test_api.py::TestOHLCAPI::test_ohlc_with_timeframe
+tests/api/test_api.py::TestOHLCAPI::test_ohlc_with_limit
+tests/api/test_api.py::TestOHLCAPI::test_invalid_symbol
+tests/api/test_api.py::TestErrorHandling::test_nonexistent_endpoint
+tests/api/test_api.py::TestErrorHandling::test_invalid_parameters
+tests/api/test_api.py::TestCORS::test_cors_headers
+tests/api/test_auth_endpoints.py::test_auth_endpoints
+tests/api/test_chat.py::Testchat::test_module_imports
+tests/api/test_chat.py::Testchat::test_basic_functionality
+tests/api/test_chat.py::TestchatIntegration::test_integration_scenario
+tests/api/test_chat.py::TestchatEdgeCases::test_null_input_handling
+tests/api/test_chat.py::TestchatEdgeCases::test_invalid_input_handling
+tests/api/test_chat.py::TestchatEdgeCases::test_error_conditions
+tests/api/test_chat.py::TestchatPerformance::test_performance_under_load
+tests/api/test_conversations.py::Testconversations::test_module_imports
+tests/api/test_conversations.py::Testconversations::test_basic_functionality
+tests/api/test_conversations.py::TestconversationsIntegration::test_integration_scenario
+tests/api/test_conversations.py::TestconversationsEdgeCases::test_null_input_handling
+tests/api/test_conversations.py::TestconversationsEdgeCases::test_invalid_input_handling
+tests/api/test_conversations.py::TestconversationsEdgeCases::test_error_conditions
+tests/api/test_conversations.py::TestconversationsPerformance::test_performance_under_load
+tests/api/test_crypto.py::Testcrypto::test_module_imports
+tests/api/test_crypto.py::Testcrypto::test_basic_functionality
+tests/api/test_crypto.py::TestcryptoIntegration::test_integration_scenario
+tests/api/test_crypto.py::TestcryptoEdgeCases::test_null_input_handling
+tests/api/test_crypto.py::TestcryptoEdgeCases::test_invalid_input_handling
+tests/api/test_crypto.py::TestcryptoEdgeCases::test_error_conditions
+tests/api/test_crypto.py::TestcryptoPerformance::test_performance_under_load
+tests/api/test_endpoints.py::test_endpoints
+tests/api/test_fmp.py::Testfmp::test_module_imports
+tests/api/test_fmp.py::Testfmp::test_basic_functionality
+tests/api/test_fmp.py::TestfmpIntegration::test_integration_scenario
+tests/api/test_fmp.py::TestfmpEdgeCases::test_null_input_handling
+tests/api/test_fmp.py::TestfmpEdgeCases::test_invalid_input_handling
+tests/api/test_fmp.py::TestfmpEdgeCases::test_error_conditions
+tests/api/test_fmp.py::TestfmpPerformance::test_performance_under_load
+tests/api/test_follow_endpoints.py::test_follow_graph
+tests/api/test_health.py::test_health_endpoint
+tests/api/test_market_data.py::Testmarketdata::test_module_imports
+tests/api/test_market_data.py::Testmarketdata::test_basic_functionality
+tests/api/test_market_data.py::TestmarketdataIntegration::test_integration_scenario
+tests/api/test_market_data.py::TestmarketdataEdgeCases::test_null_input_handling
+tests/api/test_market_data.py::TestmarketdataEdgeCases::test_invalid_input_handling
+tests/api/test_market_data.py::TestmarketdataEdgeCases::test_error_conditions
+tests/api/test_market_data.py::TestmarketdataPerformance::test_performance_under_load
+tests/api/test_mock_ohlc.py::Testmockohlc::test_module_imports
+tests/api/test_mock_ohlc.py::Testmockohlc::test_basic_functionality
+tests/api/test_mock_ohlc.py::TestmockohlcIntegration::test_integration_scenario
+tests/api/test_mock_ohlc.py::TestmockohlcEdgeCases::test_null_input_handling
+tests/api/test_mock_ohlc.py::TestmockohlcEdgeCases::test_invalid_input_handling
+tests/api/test_mock_ohlc.py::TestmockohlcEdgeCases::test_error_conditions
+tests/api/test_mock_ohlc.py::TestmockohlcPerformance::test_performance_under_load
+tests/api/test_news.py::Testnews::test_module_imports
+tests/api/test_news.py::Testnews::test_basic_functionality
+tests/api/test_news.py::TestnewsIntegration::test_integration_scenario
+tests/api/test_news.py::TestnewsEdgeCases::test_null_input_handling
+tests/api/test_news.py::TestnewsEdgeCases::test_invalid_input_handling
+tests/api/test_news.py::TestnewsEdgeCases::test_error_conditions
+tests/api/test_news.py::TestnewsPerformance::test_performance_under_load
+tests/api/test_notifications.py::Testnotifications::test_module_imports
+tests/api/test_notifications.py::Testnotifications::test_basic_functionality
+tests/api/test_notifications.py::TestnotificationsIntegration::test_integration_scenario
+tests/api/test_notifications.py::TestnotificationsEdgeCases::test_null_input_handling
+tests/api/test_notifications.py::TestnotificationsEdgeCases::test_invalid_input_handling
+tests/api/test_notifications.py::TestnotificationsEdgeCases::test_error_conditions
+tests/api/test_notifications.py::TestnotificationsPerformance::test_performance_under_load
+tests/api/test_ohlc.py::Testohlc::test_module_imports
+tests/api/test_ohlc.py::Testohlc::test_basic_functionality
+tests/api/test_ohlc.py::TestohlcIntegration::test_integration_scenario
+tests/api/test_ohlc.py::TestohlcEdgeCases::test_null_input_handling
+tests/api/test_ohlc.py::TestohlcEdgeCases::test_invalid_input_handling
+tests/api/test_ohlc.py::TestohlcEdgeCases::test_error_conditions
+tests/api/test_ohlc.py::TestohlcPerformance::test_performance_under_load
+tests/api/test_portfolio.py::Testportfolio::test_module_imports
+tests/api/test_portfolio.py::Testportfolio::test_basic_functionality
+tests/api/test_portfolio.py::TestportfolioIntegration::test_integration_scenario
+tests/api/test_portfolio.py::TestportfolioEdgeCases::test_null_input_handling
+tests/api/test_portfolio.py::TestportfolioEdgeCases::test_invalid_input_handling
+tests/api/test_portfolio.py::TestportfolioEdgeCases::test_error_conditions
+tests/api/test_portfolio.py::TestportfolioPerformance::test_performance_under_load
+tests/api/test_profile.py::Testprofile::test_module_imports
+tests/api/test_profile.py::Testprofile::test_basic_functionality
+tests/api/test_profile.py::TestprofileIntegration::test_integration_scenario
+tests/api/test_profile.py::TestprofileEdgeCases::test_null_input_handling
+tests/api/test_profile.py::TestprofileEdgeCases::test_invalid_input_handling
+tests/api/test_profile.py::TestprofileEdgeCases::test_error_conditions
+tests/api/test_profile.py::TestprofilePerformance::test_performance_under_load
+tests/api/test_profile_endpoints.py::test_profile_endpoints
+tests/api/test_profile_enhanced.py::Testprofileenhanced::test_module_imports
+tests/api/test_profile_enhanced.py::Testprofileenhanced::test_basic_functionality
+tests/api/test_profile_enhanced.py::TestprofileenhancedIntegration::test_integration_scenario
+tests/api/test_profile_enhanced.py::TestprofileenhancedEdgeCases::test_null_input_handling
+tests/api/test_profile_enhanced.py::TestprofileenhancedEdgeCases::test_invalid_input_handling
+tests/api/test_profile_enhanced.py::TestprofileenhancedEdgeCases::test_error_conditions
+tests/api/test_profile_enhanced.py::TestprofileenhancedPerformance::test_performance_under_load
+tests/api/test_smart_prices.py::Testsmartprices::test_module_imports
+tests/api/test_smart_prices.py::Testsmartprices::test_basic_functionality
+tests/api/test_smart_prices.py::TestsmartpricesIntegration::test_integration_scenario
+tests/api/test_smart_prices.py::TestsmartpricesEdgeCases::test_null_input_handling
+tests/api/test_smart_prices.py::TestsmartpricesEdgeCases::test_invalid_input_handling
+tests/api/test_smart_prices.py::TestsmartpricesEdgeCases::test_error_conditions
+tests/api/test_smart_prices.py::TestsmartpricesPerformance::test_performance_under_load
+tests/api/test_social.py::Testsocial::test_module_imports
+tests/api/test_social.py::Testsocial::test_basic_functionality
+tests/api/test_social.py::TestsocialIntegration::test_integration_scenario
+tests/api/test_social.py::TestsocialEdgeCases::test_null_input_handling
+tests/api/test_social.py::TestsocialEdgeCases::test_invalid_input_handling
+tests/api/test_social.py::TestsocialEdgeCases::test_error_conditions
+tests/api/test_social.py::TestsocialPerformance::test_performance_under_load
+tests/api/test_websocket.py::Testwebsocket::test_module_imports
+tests/api/test_websocket.py::Testwebsocket::test_basic_functionality
+tests/api/test_websocket.py::TestwebsocketIntegration::test_integration_scenario
+tests/api/test_websocket.py::TestwebsocketEdgeCases::test_null_input_handling
+tests/api/test_websocket.py::TestwebsocketEdgeCases::test_invalid_input_handling
+tests/api/test_websocket.py::TestwebsocketEdgeCases::test_error_conditions
+tests/api/test_websocket.py::TestwebsocketPerformance::test_performance_under_load
+tests/api/test_websocket_prices.py::Testwebsocketprices::test_module_imports
+tests/api/test_websocket_prices.py::Testwebsocketprices::test_basic_functionality
+tests/api/test_websocket_prices.py::TestwebsocketpricesIntegration::test_integration_scenario
+tests/api/test_websocket_prices.py::TestwebsocketpricesEdgeCases::test_null_input_handling
+tests/api/test_websocket_prices.py::TestwebsocketpricesEdgeCases::test_invalid_input_handling
+tests/api/test_websocket_prices.py::TestwebsocketpricesEdgeCases::test_error_conditions
+tests/api/test_websocket_prices.py::TestwebsocketpricesPerformance::test_performance_under_load
+tests/e2e/test_j6_e2e_notifications.py::TestE2ENotificationFlow::test_follow_notification_complete_flow
+tests/e2e/test_j6_e2e_notifications.py::TestE2ENotificationFlow::test_dm_notification_to_thread_clearing_flow
+tests/e2e/test_j6_e2e_notifications.py::TestE2ENotificationFlow::test_ai_response_notification_flow
+tests/e2e/test_j6_e2e_notifications.py::TestE2ENotificationFlow::test_bulk_notifications_and_mark_all_read
+tests/e2e/test_j6_e2e_notifications.py::TestE2ENotificationFlow::test_notification_preferences_flow
+tests/e2e/test_j6_e2e_notifications.py::TestNotificationSystemStress::test_high_volume_notification_creation
+tests/e2e/test_j6_e2e_notifications.py::TestNotificationSystemStress::test_concurrent_websocket_connections
+tests/integration/test_new_features.py::test_health
+tests/integration/test_new_features.py::test_current_price
+tests/integration/test_new_features.py::test_historical_data
+tests/integration/test_new_features.py::test_ohlcv_data
+tests/integration/test_new_features.py::test_crypto_discovery
+tests/integration/test_new_features.py::test_batch_prices
+tests/integration/test_phase_j2_quick.py::test_basic_functionality
+tests/integration/test_phases_j0_j1.py::test_server_health
+tests/integration/test_phases_j0_j1.py::test_security_functions
+tests/integration/test_phases_j0_j1.py::test_basic_api_endpoints
+tests/integration/test_phases_j0_j1.py::test_database_models
+tests/integration/test_phases_j0_j1.py::test_file_structure
+tests/integration/test_phases_j0_j1.py::test_configuration
+tests/integration/test_phases_j0_j1.py::test_imports
+tests/integration/test_sentry_integration.py::test_error
+tests/integration/test_sentry_integration.py::test_message
+tests/security/test_alert_system.py::test_alert_system
+tests/security/test_infra_enhanced_security.py::test_enhanced_security
+tests/security/test_infra_security_enhancements.py::test_input_validation
+tests/security/test_infra_security_enhancements.py::test_rate_limiter
+tests/security/test_infra_security_enhancements.py::test_security_logger
+tests/security/test_infra_security_enhancements.py::test_security_config
+tests/security/test_infra_security_enhancements.py::test_csp_builder
+tests/security/test_security_features.py::test_bleach_integration
+tests/security/test_security_features.py::test_security_alerts
+tests/security/test_security_features.py::test_input_validation
+tests/security/test_security_features.py::test_security_logger
+tests/services/test_advanced_monitoring.py::Testadvancedmonitoring::test_module_imports
+tests/services/test_advanced_monitoring.py::Testadvancedmonitoring::test_basic_functionality
+tests/services/test_advanced_monitoring.py::TestadvancedmonitoringIntegration::test_integration_scenario
+tests/services/test_advanced_monitoring.py::TestadvancedmonitoringEdgeCases::test_null_input_handling
+tests/services/test_advanced_monitoring.py::TestadvancedmonitoringEdgeCases::test_invalid_input_handling
+tests/services/test_advanced_monitoring.py::TestadvancedmonitoringEdgeCases::test_error_conditions
+tests/services/test_advanced_monitoring.py::TestadvancedmonitoringPerformance::test_performance_under_load
+tests/services/test_advanced_storage_analytics.py::Testadvancedstorageanalytics::test_module_imports
+tests/services/test_advanced_storage_analytics.py::Testadvancedstorageanalytics::test_basic_functionality
+tests/services/test_advanced_storage_analytics.py::TestadvancedstorageanalyticsIntegration::test_integration_scenario
+tests/services/test_advanced_storage_analytics.py::TestadvancedstorageanalyticsEdgeCases::test_null_input_handling
+tests/services/test_advanced_storage_analytics.py::TestadvancedstorageanalyticsEdgeCases::test_invalid_input_handling
+tests/services/test_advanced_storage_analytics.py::TestadvancedstorageanalyticsEdgeCases::test_error_conditions
+tests/services/test_advanced_storage_analytics.py::TestadvancedstorageanalyticsPerformance::test_performance_under_load
+tests/services/test_ai_analytics.py::Testaianalytics::test_module_imports
+tests/services/test_ai_analytics.py::Testaianalytics::test_basic_functionality
+tests/services/test_ai_analytics.py::TestaianalyticsIntegration::test_integration_scenario
+tests/services/test_ai_analytics.py::TestaianalyticsEdgeCases::test_null_input_handling
+tests/services/test_ai_analytics.py::TestaianalyticsEdgeCases::test_invalid_input_handling
+tests/services/test_ai_analytics.py::TestaianalyticsEdgeCases::test_error_conditions
+tests/services/test_ai_analytics.py::TestaianalyticsPerformance::test_performance_under_load
+tests/services/test_ai_chatbot.py::TestAIService::test_rate_limiter_allows_normal_usage
+tests/services/test_ai_chatbot.py::TestAIService::test_rate_limiter_blocks_excessive_usage
+tests/services/test_ai_chatbot.py::TestAIService::test_safety_filter_blocks_harmful_content
+tests/services/test_ai_chatbot.py::TestAIService::test_safety_filter_allows_safe_content
+tests/services/test_ai_chatbot.py::TestAIService::test_create_thread_success
+tests/services/test_ai_chatbot.py::TestAIService::test_get_user_threads
+tests/services/test_ai_chatbot.py::TestContentModeration::test_detect_harmful_content
+tests/services/test_ai_chatbot.py::TestContentModeration::test_allow_safe_content
+tests/services/test_ai_chatbot.py::TestContentModeration::test_detect_personal_info
+tests/services/test_ai_chatbot.py::TestContentModeration::test_user_tracking
+tests/services/test_ai_chatbot.py::TestConversationExportImport::test_export_json_format
+tests/services/test_ai_chatbot.py::TestConversationExportImport::test_export_csv_format
+tests/services/test_ai_chatbot.py::TestConversationExportImport::test_export_markdown_format
+tests/services/test_ai_chatbot.py::TestConversationExportImport::test_compression
+tests/services/test_ai_chatbot.py::TestConversationExportImport::test_import_json_success
+tests/services/test_ai_chatbot.py::TestAIProviders::test_mock_provider_stream
+tests/services/test_ai_chatbot.py::TestAIProviders::test_openrouter_provider_initialization
+tests/services/test_ai_chatbot.py::TestAIAPI::test_create_thread_endpoint
+tests/services/test_ai_chatbot.py::TestAIAPI::test_get_provider_status_endpoint
+tests/services/test_ai_chatbot.py::TestAIAPI::test_export_conversations_endpoint
+tests/services/test_ai_context_manager.py::Testaicontextmanager::test_module_imports
+tests/services/test_ai_context_manager.py::Testaicontextmanager::test_basic_functionality
+tests/services/test_ai_context_manager.py::TestaicontextmanagerIntegration::test_integration_scenario
+tests/services/test_ai_context_manager.py::TestaicontextmanagerEdgeCases::test_null_input_handling
+tests/services/test_ai_context_manager.py::TestaicontextmanagerEdgeCases::test_invalid_input_handling
+tests/services/test_ai_context_manager.py::TestaicontextmanagerEdgeCases::test_error_conditions
+tests/services/test_ai_context_manager.py::TestaicontextmanagerPerformance::test_performance_under_load
+tests/services/test_ai_provider.py::Testaiprovider::test_module_imports
+tests/services/test_ai_provider.py::Testaiprovider::test_basic_functionality
+tests/services/test_ai_provider.py::TestaiproviderIntegration::test_integration_scenario
+tests/services/test_ai_provider.py::TestaiproviderEdgeCases::test_null_input_handling
+tests/services/test_ai_provider.py::TestaiproviderEdgeCases::test_invalid_input_handling
+tests/services/test_ai_provider.py::TestaiproviderEdgeCases::test_error_conditions
+tests/services/test_ai_provider.py::TestaiproviderPerformance::test_performance_under_load
+tests/services/test_ai_provider_manager.py::Testaiprovidermanager::test_module_imports
+tests/services/test_ai_provider_manager.py::Testaiprovidermanager::test_basic_functionality
+tests/services/test_ai_provider_manager.py::TestaiprovidermanagerIntegration::test_integration_scenario
+tests/services/test_ai_provider_manager.py::TestaiprovidermanagerEdgeCases::test_null_input_handling
+tests/services/test_ai_provider_manager.py::TestaiprovidermanagerEdgeCases::test_invalid_input_handling
+tests/services/test_ai_provider_manager.py::TestaiprovidermanagerEdgeCases::test_error_conditions
+tests/services/test_ai_provider_manager.py::TestaiprovidermanagerPerformance::test_performance_under_load
+tests/services/test_ai_service.py::Testaiservice::test_module_imports
+tests/services/test_ai_service.py::Testaiservice::test_basic_functionality
+tests/services/test_ai_service.py::TestaiserviceIntegration::test_integration_scenario
+tests/services/test_ai_service.py::TestaiserviceEdgeCases::test_null_input_handling
+tests/services/test_ai_service.py::TestaiserviceEdgeCases::test_invalid_input_handling
+tests/services/test_ai_service.py::TestaiserviceEdgeCases::test_error_conditions
+tests/services/test_ai_service.py::TestaiservicePerformance::test_performance_under_load
+tests/services/test_alphavantage.py::Testalphavantage::test_module_imports
+tests/services/test_alphavantage.py::Testalphavantage::test_basic_functionality
+tests/services/test_alphavantage.py::TestalphavantageIntegration::test_integration_scenario
+tests/services/test_alphavantage.py::TestalphavantageEdgeCases::test_null_input_handling
+tests/services/test_alphavantage.py::TestalphavantageEdgeCases::test_invalid_input_handling
+tests/services/test_alphavantage.py::TestalphavantageEdgeCases::test_error_conditions
+tests/services/test_alphavantage.py::TestalphavantagePerformance::test_performance_under_load
+tests/services/test_auth_service.py::TestAuthServiceRegistration::test_register_user_success
+tests/services/test_auth_service.py::TestAuthServiceRegistration::test_register_user_invalid_email
+tests/services/test_auth_service.py::TestAuthServiceRegistration::test_register_user_weak_password
+tests/services/test_auth_service.py::TestAuthServiceRegistration::test_register_user_duplicate_email
+tests/services/test_auth_service.py::TestAuthServiceRegistration::test_register_user_duplicate_username
+tests/services/test_auth_service.py::TestAuthServiceLogin::test_login_user_success
+tests/services/test_auth_service.py::TestAuthServiceLogin::test_login_user_not_found
+tests/services/test_auth_service.py::TestAuthServiceLogin::test_login_user_wrong_password
+tests/services/test_auth_service.py::TestAuthServiceLogin::test_login_user_inactive_account
+tests/services/test_auth_service.py::TestAuthServiceLogin::test_login_user_no_password_hash
+tests/services/test_auth_service.py::TestAuthServiceIntegration::test_full_registration_flow
+tests/services/test_auth_service.py::TestAuthServiceIntegration::test_login_after_registration
+tests/services/test_auth_service.py::TestAuthServiceEdgeCases::test_register_with_empty_username
+tests/services/test_auth_service.py::TestAuthServiceEdgeCases::test_login_with_special_characters_in_email
+tests/services/test_auth_service.py::TestAuthServiceEdgeCases::test_database_error_during_registration
+tests/services/test_auth_service.py::TestAuthServiceEdgeCases::test_database_error_during_login
+tests/services/test_auth_service.py::TestAuthServiceEdgeCases::test_token_generation_failure
+tests/services/test_base.py::Testbase::test_module_imports
+tests/services/test_base.py::Testbase::test_basic_functionality
+tests/services/test_base.py::TestbaseIntegration::test_integration_scenario
+tests/services/test_base.py::TestbaseEdgeCases::test_null_input_handling
+tests/services/test_base.py::TestbaseEdgeCases::test_invalid_input_handling
+tests/services/test_base.py::TestbaseEdgeCases::test_error_conditions
+tests/services/test_base.py::TestbasePerformance::test_performance_under_load
+tests/services/test_cmc.py::Testcmc::test_module_imports
+tests/services/test_cmc.py::Testcmc::test_basic_functionality
+tests/services/test_cmc.py::TestcmcIntegration::test_integration_scenario
+tests/services/test_cmc.py::TestcmcEdgeCases::test_null_input_handling
+tests/services/test_cmc.py::TestcmcEdgeCases::test_invalid_input_handling
+tests/services/test_cmc.py::TestcmcEdgeCases::test_error_conditions
+tests/services/test_cmc.py::TestcmcPerformance::test_performance_under_load
+tests/services/test_coingecko.py::Testcoingecko::test_module_imports
+tests/services/test_coingecko.py::Testcoingecko::test_basic_functionality
+tests/services/test_coingecko.py::TestcoingeckoIntegration::test_integration_scenario
+tests/services/test_coingecko.py::TestcoingeckoEdgeCases::test_null_input_handling
+tests/services/test_coingecko.py::TestcoingeckoEdgeCases::test_invalid_input_handling
+tests/services/test_coingecko.py::TestcoingeckoEdgeCases::test_error_conditions
+tests/services/test_coingecko.py::TestcoingeckoPerformance::test_performance_under_load
+tests/services/test_content_moderation.py::Testcontentmoderation::test_module_imports
+tests/services/test_content_moderation.py::Testcontentmoderation::test_basic_functionality
+tests/services/test_content_moderation.py::TestcontentmoderationIntegration::test_integration_scenario
+tests/services/test_content_moderation.py::TestcontentmoderationEdgeCases::test_null_input_handling
+tests/services/test_content_moderation.py::TestcontentmoderationEdgeCases::test_invalid_input_handling
+tests/services/test_content_moderation.py::TestcontentmoderationEdgeCases::test_error_conditions
+tests/services/test_content_moderation.py::TestcontentmoderationPerformance::test_performance_under_load
+tests/services/test_conversation_export.py::Testconversationexport::test_module_imports
+tests/services/test_conversation_export.py::Testconversationexport::test_basic_functionality
+tests/services/test_conversation_export.py::TestconversationexportIntegration::test_integration_scenario
+tests/services/test_conversation_export.py::TestconversationexportEdgeCases::test_null_input_handling
+tests/services/test_conversation_export.py::TestconversationexportEdgeCases::test_invalid_input_handling
+tests/services/test_conversation_export.py::TestconversationexportEdgeCases::test_error_conditions
+tests/services/test_conversation_export.py::TestconversationexportPerformance::test_performance_under_load
+tests/services/test_conversation_service.py::Testconversationservice::test_module_imports
+tests/services/test_conversation_service.py::Testconversationservice::test_basic_functionality
+tests/services/test_conversation_service.py::TestconversationserviceIntegration::test_integration_scenario
+tests/services/test_conversation_service.py::TestconversationserviceEdgeCases::test_null_input_handling
+tests/services/test_conversation_service.py::TestconversationserviceEdgeCases::test_invalid_input_handling
+tests/services/test_conversation_service.py::TestconversationserviceEdgeCases::test_error_conditions
+tests/services/test_conversation_service.py::TestconversationservicePerformance::test_performance_under_load
+tests/services/test_crypto_data.py::Testcryptodata::test_module_imports
+tests/services/test_crypto_data.py::Testcryptodata::test_basic_functionality
+tests/services/test_crypto_data.py::TestcryptodataIntegration::test_integration_scenario
+tests/services/test_crypto_data.py::TestcryptodataEdgeCases::test_null_input_handling
+tests/services/test_crypto_data.py::TestcryptodataEdgeCases::test_invalid_input_handling
+tests/services/test_crypto_data.py::TestcryptodataEdgeCases::test_error_conditions
+tests/services/test_crypto_data.py::TestcryptodataPerformance::test_performance_under_load
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_service_initialization
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_context_manager_lifecycle
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_cache_key_generation
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_get_cached_data_success
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_get_cached_data_miss
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_set_cached_data
+tests/services/test_crypto_data_service.py::TestCryptoDataService::test_fetch_market_data
+tests/services/test_crypto_data_service.py::TestCryptoDataServiceIntegration::test_fetch_with_cache_cycle
+tests/services/test_crypto_data_service.py::TestCryptoDataServiceEdgeCases::test_fetch_with_network_error
+tests/services/test_crypto_data_service.py::TestCryptoDataServiceEdgeCases::test_fetch_with_timeout
+tests/services/test_crypto_data_service.py::TestCryptoDataServiceEdgeCases::test_cache_with_invalid_json
+tests/services/test_crypto_data_service.py::TestCryptoDataServiceEdgeCases::test_redis_unavailable
+tests/services/test_crypto_discovery_service.py::Testcryptodiscoveryservice::test_module_imports
+tests/services/test_crypto_discovery_service.py::Testcryptodiscoveryservice::test_basic_functionality
+tests/services/test_crypto_discovery_service.py::TestcryptodiscoveryserviceIntegration::test_integration_scenario
+tests/services/test_crypto_discovery_service.py::TestcryptodiscoveryserviceEdgeCases::test_null_input_handling
+tests/services/test_crypto_discovery_service.py::TestcryptodiscoveryserviceEdgeCases::test_invalid_input_handling
+tests/services/test_crypto_discovery_service.py::TestcryptodiscoveryserviceEdgeCases::test_error_conditions
+tests/services/test_crypto_discovery_service.py::TestcryptodiscoveryservicePerformance::test_performance_under_load
+tests/services/test_data_archival_service.py::Testdataarchivalservice::test_module_imports
+tests/services/test_data_archival_service.py::Testdataarchivalservice::test_basic_functionality
+tests/services/test_data_archival_service.py::TestdataarchivalserviceIntegration::test_integration_scenario
+tests/services/test_data_archival_service.py::TestdataarchivalserviceEdgeCases::test_null_input_handling
+tests/services/test_data_archival_service.py::TestdataarchivalserviceEdgeCases::test_invalid_input_handling
+tests/services/test_data_archival_service.py::TestdataarchivalserviceEdgeCases::test_error_conditions
+tests/services/test_data_archival_service.py::TestdataarchivalservicePerformance::test_performance_under_load
+tests/services/test_data_service.py::Testdataservice::test_module_imports
+tests/services/test_data_service.py::Testdataservice::test_basic_functionality
+tests/services/test_data_service.py::TestdataserviceIntegration::test_integration_scenario
+tests/services/test_data_service.py::TestdataserviceEdgeCases::test_null_input_handling
+tests/services/test_data_service.py::TestdataserviceEdgeCases::test_invalid_input_handling
+tests/services/test_data_service.py::TestdataserviceEdgeCases::test_error_conditions
+tests/services/test_data_service.py::TestdataservicePerformance::test_performance_under_load
+tests/services/test_database_migration.py::Testdatabasemigration::test_module_imports
+tests/services/test_database_migration.py::Testdatabasemigration::test_basic_functionality
+tests/services/test_database_migration.py::TestdatabasemigrationIntegration::test_integration_scenario
+tests/services/test_database_migration.py::TestdatabasemigrationEdgeCases::test_null_input_handling
+tests/services/test_database_migration.py::TestdatabasemigrationEdgeCases::test_invalid_input_handling
+tests/services/test_database_migration.py::TestdatabasemigrationEdgeCases::test_error_conditions
+tests/services/test_database_migration.py::TestdatabasemigrationPerformance::test_performance_under_load
+tests/services/test_direct_messages.py::TestConversationService::test_create_dm_conversation
+tests/services/test_direct_messages.py::TestConversationService::test_send_message_with_rate_limiting
+tests/services/test_direct_messages.py::TestConversationService::test_mark_messages_read
+tests/services/test_direct_messages.py::TestRateLimitService::test_rate_limit_allows_under_limit
+tests/services/test_direct_messages.py::TestRateLimitService::test_rate_limit_blocks_over_limit
+tests/services/test_direct_messages.py::TestWebSocketManager::test_connect_and_disconnect
+tests/services/test_direct_messages.py::TestWebSocketManager::test_broadcast_message
+tests/services/test_direct_messages.py::TestWebSocketManager::test_typing_indicator_broadcast
+tests/services/test_direct_messages.py::TestConversationEndpoints::test_create_dm_conversation_endpoint
+tests/services/test_direct_messages.py::TestConversationEndpoints::test_send_message_endpoint
+tests/services/test_direct_messages.py::TestConversationEndpoints::test_rate_limited_send_message
+tests/services/test_direct_messages.py::TestMessageModeration::test_content_filtering
+tests/services/test_direct_messages.py::TestMessageModeration::test_message_length_validation
+tests/services/test_direct_messages.py::TestMessageSearch::test_search_messages_by_content
+tests/services/test_direct_messages.py::TestMessageSearch::test_search_messages_by_date_range
+tests/services/test_direct_messages.py::TestMessageSearchEnhanced::test_search_messages
+tests/services/test_direct_messages.py::TestMessageModerationService::test_moderate_clean_message
+tests/services/test_direct_messages.py::TestMessageModerationService::test_moderate_spam_message
+tests/services/test_direct_messages.py::TestMessageAnalytics::test_user_message_stats
+tests/services/test_direct_messages.py::TestMessageAnalytics::test_platform_statistics
+tests/services/test_direct_messages.py::TestEnhancedEndpoints::test_search_endpoint
+tests/services/test_direct_messages.py::TestEnhancedEndpoints::test_analytics_endpoint
+tests/services/test_enhanced_performance_monitor.py::Testenhancedperformancemonitor::test_module_imports
+tests/services/test_enhanced_performance_monitor.py::Testenhancedperformancemonitor::test_basic_functionality
+tests/services/test_enhanced_performance_monitor.py::TestenhancedperformancemonitorIntegration::test_integration_scenario
+tests/services/test_enhanced_performance_monitor.py::TestenhancedperformancemonitorEdgeCases::test_null_input_handling
+tests/services/test_enhanced_performance_monitor.py::TestenhancedperformancemonitorEdgeCases::test_invalid_input_handling
+tests/services/test_enhanced_performance_monitor.py::TestenhancedperformancemonitorEdgeCases::test_error_conditions
+tests/services/test_enhanced_performance_monitor.py::TestenhancedperformancemonitorPerformance::test_performance_under_load
+tests/services/test_enhanced_rate_limiter.py::Testenhancedratelimiter::test_module_imports
+tests/services/test_enhanced_rate_limiter.py::Testenhancedratelimiter::test_basic_functionality
+tests/services/test_enhanced_rate_limiter.py::TestenhancedratelimiterIntegration::test_integration_scenario
+tests/services/test_enhanced_rate_limiter.py::TestenhancedratelimiterEdgeCases::test_null_input_handling
+tests/services/test_enhanced_rate_limiter.py::TestenhancedratelimiterEdgeCases::test_invalid_input_handling
+tests/services/test_enhanced_rate_limiter.py::TestenhancedratelimiterEdgeCases::test_error_conditions
+tests/services/test_enhanced_rate_limiter.py::TestenhancedratelimiterPerformance::test_performance_under_load
+tests/services/test_errors.py::Testerrors::test_module_imports
+tests/services/test_errors.py::Testerrors::test_basic_functionality
+tests/services/test_errors.py::TesterrorsIntegration::test_integration_scenario
+tests/services/test_errors.py::TesterrorsEdgeCases::test_null_input_handling
+tests/services/test_errors.py::TesterrorsEdgeCases::test_invalid_input_handling
+tests/services/test_errors.py::TesterrorsEdgeCases::test_error_conditions
+tests/services/test_errors.py::TesterrorsPerformance::test_performance_under_load
+tests/services/test_finnhub.py::Testfinnhub::test_module_imports
+tests/services/test_finnhub.py::Testfinnhub::test_basic_functionality
+tests/services/test_finnhub.py::TestfinnhubIntegration::test_integration_scenario
+tests/services/test_finnhub.py::TestfinnhubEdgeCases::test_null_input_handling
+tests/services/test_finnhub.py::TestfinnhubEdgeCases::test_invalid_input_handling
+tests/services/test_finnhub.py::TestfinnhubEdgeCases::test_error_conditions
+tests/services/test_finnhub.py::TestfinnhubPerformance::test_performance_under_load
+tests/services/test_follow_service.py::Testfollowservice::test_module_imports
+tests/services/test_follow_service.py::Testfollowservice::test_basic_functionality
+tests/services/test_follow_service.py::TestfollowserviceIntegration::test_integration_scenario
+tests/services/test_follow_service.py::TestfollowserviceEdgeCases::test_null_input_handling
+tests/services/test_follow_service.py::TestfollowserviceEdgeCases::test_invalid_input_handling
+tests/services/test_follow_service.py::TestfollowserviceEdgeCases::test_error_conditions
+tests/services/test_follow_service.py::TestfollowservicePerformance::test_performance_under_load
+tests/services/test_forex_service.py::Testforexservice::test_module_imports
+tests/services/test_forex_service.py::Testforexservice::test_basic_functionality
+tests/services/test_forex_service.py::TestforexserviceIntegration::test_integration_scenario
+tests/services/test_forex_service.py::TestforexserviceEdgeCases::test_null_input_handling
+tests/services/test_forex_service.py::TestforexserviceEdgeCases::test_invalid_input_handling
+tests/services/test_forex_service.py::TestforexserviceEdgeCases::test_error_conditions
+tests/services/test_forex_service.py::TestforexservicePerformance::test_performance_under_load
+tests/services/test_historical_price_service.py::Testhistoricalpriceservice::test_module_imports
+tests/services/test_historical_price_service.py::Testhistoricalpriceservice::test_basic_functionality
+tests/services/test_historical_price_service.py::TesthistoricalpriceserviceIntegration::test_integration_scenario
+tests/services/test_historical_price_service.py::TesthistoricalpriceserviceEdgeCases::test_null_input_handling
+tests/services/test_historical_price_service.py::TesthistoricalpriceserviceEdgeCases::test_invalid_input_handling
+tests/services/test_historical_price_service.py::TesthistoricalpriceserviceEdgeCases::test_error_conditions
+tests/services/test_historical_price_service.py::TesthistoricalpriceservicePerformance::test_performance_under_load
+tests/services/test_huggingface_provider.py::Testhuggingfaceprovider::test_module_imports
+tests/services/test_huggingface_provider.py::Testhuggingfaceprovider::test_basic_functionality
+tests/services/test_huggingface_provider.py::TesthuggingfaceproviderIntegration::test_integration_scenario
+tests/services/test_huggingface_provider.py::TesthuggingfaceproviderEdgeCases::test_null_input_handling
+tests/services/test_huggingface_provider.py::TesthuggingfaceproviderEdgeCases::test_invalid_input_handling
+tests/services/test_huggingface_provider.py::TesthuggingfaceproviderEdgeCases::test_error_conditions
+tests/services/test_huggingface_provider.py::TesthuggingfaceproviderPerformance::test_performance_under_load
+tests/services/test_indicators.py::Testindicators::test_module_imports
+tests/services/test_indicators.py::Testindicators::test_basic_functionality
+tests/services/test_indicators.py::TestindicatorsIntegration::test_integration_scenario
+tests/services/test_indicators.py::TestindicatorsEdgeCases::test_null_input_handling
+tests/services/test_indicators.py::TestindicatorsEdgeCases::test_invalid_input_handling
+tests/services/test_indicators.py::TestindicatorsEdgeCases::test_error_conditions
+tests/services/test_indicators.py::TestindicatorsPerformance::test_performance_under_load
+tests/services/test_indices_service.py::Testindicesservice::test_module_imports
+tests/services/test_indices_service.py::Testindicesservice::test_basic_functionality
+tests/services/test_indices_service.py::TestindicesserviceIntegration::test_integration_scenario
+tests/services/test_indices_service.py::TestindicesserviceEdgeCases::test_null_input_handling
+tests/services/test_indices_service.py::TestindicesserviceEdgeCases::test_invalid_input_handling
+tests/services/test_indices_service.py::TestindicesserviceEdgeCases::test_error_conditions
+tests/services/test_indices_service.py::TestindicesservicePerformance::test_performance_under_load
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitor::test_module_imports
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitor::test_basic_functionality
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitorIntegration::test_integration_scenario
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitorEdgeCases::test_null_input_handling
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitorEdgeCases::test_invalid_input_handling
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitorEdgeCases::test_error_conditions
+tests/services/test_j53_performance_monitor.py::Testj53performancemonitorPerformance::test_performance_under_load
+tests/services/test_j53_scheduler.py::Testj53scheduler::test_module_imports
+tests/services/test_j53_scheduler.py::Testj53scheduler::test_basic_functionality
+tests/services/test_j53_scheduler.py::Testj53schedulerIntegration::test_integration_scenario
+tests/services/test_j53_scheduler.py::Testj53schedulerEdgeCases::test_null_input_handling
+tests/services/test_j53_scheduler.py::Testj53schedulerEdgeCases::test_invalid_input_handling
+tests/services/test_j53_scheduler.py::Testj53schedulerEdgeCases::test_error_conditions
+tests/services/test_j53_scheduler.py::Testj53schedulerPerformance::test_performance_under_load
+tests/services/test_marketaux.py::Testmarketaux::test_module_imports
+tests/services/test_marketaux.py::Testmarketaux::test_basic_functionality
+tests/services/test_marketaux.py::TestmarketauxIntegration::test_integration_scenario
+tests/services/test_marketaux.py::TestmarketauxEdgeCases::test_null_input_handling
+tests/services/test_marketaux.py::TestmarketauxEdgeCases::test_invalid_input_handling
+tests/services/test_marketaux.py::TestmarketauxEdgeCases::test_error_conditions
+tests/services/test_marketaux.py::TestmarketauxPerformance::test_performance_under_load
+tests/services/test_message_analytics_service.py::Testmessageanalyticsservice::test_module_imports
+tests/services/test_message_analytics_service.py::Testmessageanalyticsservice::test_basic_functionality
+tests/services/test_message_analytics_service.py::TestmessageanalyticsserviceIntegration::test_integration_scenario
+tests/services/test_message_analytics_service.py::TestmessageanalyticsserviceEdgeCases::test_null_input_handling
+tests/services/test_message_analytics_service.py::TestmessageanalyticsserviceEdgeCases::test_invalid_input_handling
+tests/services/test_message_analytics_service.py::TestmessageanalyticsserviceEdgeCases::test_error_conditions
+tests/services/test_message_analytics_service.py::TestmessageanalyticsservicePerformance::test_performance_under_load
+tests/services/test_message_moderation_service.py::Testmessagemoderationservice::test_module_imports
+tests/services/test_message_moderation_service.py::Testmessagemoderationservice::test_basic_functionality
+tests/services/test_message_moderation_service.py::TestmessagemoderationserviceIntegration::test_integration_scenario
+tests/services/test_message_moderation_service.py::TestmessagemoderationserviceEdgeCases::test_null_input_handling
+tests/services/test_message_moderation_service.py::TestmessagemoderationserviceEdgeCases::test_invalid_input_handling
+tests/services/test_message_moderation_service.py::TestmessagemoderationserviceEdgeCases::test_error_conditions
+tests/services/test_message_moderation_service.py::TestmessagemoderationservicePerformance::test_performance_under_load
+tests/services/test_message_search_service.py::Testmessagesearchservice::test_module_imports
+tests/services/test_message_search_service.py::Testmessagesearchservice::test_basic_functionality
+tests/services/test_message_search_service.py::TestmessagesearchserviceIntegration::test_integration_scenario
+tests/services/test_message_search_service.py::TestmessagesearchserviceEdgeCases::test_null_input_handling
+tests/services/test_message_search_service.py::TestmessagesearchserviceEdgeCases::test_invalid_input_handling
+tests/services/test_message_search_service.py::TestmessagesearchserviceEdgeCases::test_error_conditions
+tests/services/test_message_search_service.py::TestmessagesearchservicePerformance::test_performance_under_load
+tests/services/test_multimodal_ai_service.py::Testmultimodalaiservice::test_module_imports
+tests/services/test_multimodal_ai_service.py::Testmultimodalaiservice::test_basic_functionality
+tests/services/test_multimodal_ai_service.py::TestmultimodalaiserviceIntegration::test_integration_scenario
+tests/services/test_multimodal_ai_service.py::TestmultimodalaiserviceEdgeCases::test_null_input_handling
+tests/services/test_multimodal_ai_service.py::TestmultimodalaiserviceEdgeCases::test_invalid_input_handling
+tests/services/test_multimodal_ai_service.py::TestmultimodalaiserviceEdgeCases::test_error_conditions
+tests/services/test_multimodal_ai_service.py::TestmultimodalaiservicePerformance::test_performance_under_load
+tests/services/test_new_services.py::test_crypto_discovery
+tests/services/test_new_services.py::test_smart_price
+tests/services/test_new_services.py::test_unified_service
+tests/services/test_newsapi.py::Testnewsapi::test_module_imports
+tests/services/test_newsapi.py::Testnewsapi::test_basic_functionality
+tests/services/test_newsapi.py::TestnewsapiIntegration::test_integration_scenario
+tests/services/test_newsapi.py::TestnewsapiEdgeCases::test_null_input_handling
+tests/services/test_newsapi.py::TestnewsapiEdgeCases::test_invalid_input_handling
+tests/services/test_newsapi.py::TestnewsapiEdgeCases::test_error_conditions
+tests/services/test_newsapi.py::TestnewsapiPerformance::test_performance_under_load
+tests/services/test_notification_analytics.py::Testnotificationanalytics::test_module_imports
+tests/services/test_notification_analytics.py::Testnotificationanalytics::test_basic_functionality
+tests/services/test_notification_analytics.py::TestnotificationanalyticsIntegration::test_integration_scenario
+tests/services/test_notification_analytics.py::TestnotificationanalyticsEdgeCases::test_null_input_handling
+tests/services/test_notification_analytics.py::TestnotificationanalyticsEdgeCases::test_invalid_input_handling
+tests/services/test_notification_analytics.py::TestnotificationanalyticsEdgeCases::test_error_conditions
+tests/services/test_notification_analytics.py::TestnotificationanalyticsPerformance::test_performance_under_load
+tests/services/test_notification_emitter.py::Testnotificationemitter::test_module_imports
+tests/services/test_notification_emitter.py::Testnotificationemitter::test_basic_functionality
+tests/services/test_notification_emitter.py::TestnotificationemitterIntegration::test_integration_scenario
+tests/services/test_notification_emitter.py::TestnotificationemitterEdgeCases::test_null_input_handling
+tests/services/test_notification_emitter.py::TestnotificationemitterEdgeCases::test_invalid_input_handling
+tests/services/test_notification_emitter.py::TestnotificationemitterEdgeCases::test_error_conditions
+tests/services/test_notification_emitter.py::TestnotificationemitterPerformance::test_performance_under_load
+tests/services/test_notification_service.py::Testnotificationservice::test_module_imports
+tests/services/test_notification_service.py::Testnotificationservice::test_basic_functionality
+tests/services/test_notification_service.py::TestnotificationserviceIntegration::test_integration_scenario
+tests/services/test_notification_service.py::TestnotificationserviceEdgeCases::test_null_input_handling
+tests/services/test_notification_service.py::TestnotificationserviceEdgeCases::test_invalid_input_handling
+tests/services/test_notification_service.py::TestnotificationserviceEdgeCases::test_error_conditions
+tests/services/test_notification_service.py::TestnotificationservicePerformance::test_performance_under_load
+tests/services/test_ollama_provider.py::Testollamaprovider::test_module_imports
+tests/services/test_ollama_provider.py::Testollamaprovider::test_basic_functionality
+tests/services/test_ollama_provider.py::TestollamaproviderIntegration::test_integration_scenario
+tests/services/test_ollama_provider.py::TestollamaproviderEdgeCases::test_null_input_handling
+tests/services/test_ollama_provider.py::TestollamaproviderEdgeCases::test_invalid_input_handling
+tests/services/test_ollama_provider.py::TestollamaproviderEdgeCases::test_error_conditions
+tests/services/test_ollama_provider.py::TestollamaproviderPerformance::test_performance_under_load
+tests/services/test_openrouter_provider.py::Testopenrouterprovider::test_module_imports
+tests/services/test_openrouter_provider.py::Testopenrouterprovider::test_basic_functionality
+tests/services/test_openrouter_provider.py::TestopenrouterproviderIntegration::test_integration_scenario
+tests/services/test_openrouter_provider.py::TestopenrouterproviderEdgeCases::test_null_input_handling
+tests/services/test_openrouter_provider.py::TestopenrouterproviderEdgeCases::test_invalid_input_handling
+tests/services/test_openrouter_provider.py::TestopenrouterproviderEdgeCases::test_error_conditions
+tests/services/test_openrouter_provider.py::TestopenrouterproviderPerformance::test_performance_under_load
+tests/services/test_performance_monitor.py::Testperformancemonitor::test_module_imports
+tests/services/test_performance_monitor.py::Testperformancemonitor::test_basic_functionality
+tests/services/test_performance_monitor.py::TestperformancemonitorIntegration::test_integration_scenario
+tests/services/test_performance_monitor.py::TestperformancemonitorEdgeCases::test_null_input_handling
+tests/services/test_performance_monitor.py::TestperformancemonitorEdgeCases::test_invalid_input_handling
+tests/services/test_performance_monitor.py::TestperformancemonitorEdgeCases::test_error_conditions
+tests/services/test_performance_monitor.py::TestperformancemonitorPerformance::test_performance_under_load
+tests/services/test_polygon.py::Testpolygon::test_module_imports
+tests/services/test_polygon.py::Testpolygon::test_basic_functionality
+tests/services/test_polygon.py::TestpolygonIntegration::test_integration_scenario
+tests/services/test_polygon.py::TestpolygonEdgeCases::test_null_input_handling
+tests/services/test_polygon.py::TestpolygonEdgeCases::test_invalid_input_handling
+tests/services/test_polygon.py::TestpolygonEdgeCases::test_error_conditions
+tests/services/test_polygon.py::TestpolygonPerformance::test_performance_under_load
+tests/services/test_prices.py::Testprices::test_module_imports
+tests/services/test_prices.py::Testprices::test_basic_functionality
+tests/services/test_prices.py::TestpricesIntegration::test_integration_scenario
+tests/services/test_prices.py::TestpricesEdgeCases::test_null_input_handling
+tests/services/test_prices.py::TestpricesEdgeCases::test_invalid_input_handling
+tests/services/test_prices.py::TestpricesEdgeCases::test_error_conditions
+tests/services/test_prices.py::TestpricesPerformance::test_performance_under_load
+tests/services/test_profile_service.py::Testprofileservice::test_module_imports
+tests/services/test_profile_service.py::Testprofileservice::test_basic_functionality
+tests/services/test_profile_service.py::TestprofileserviceIntegration::test_integration_scenario
+tests/services/test_profile_service.py::TestprofileserviceEdgeCases::test_null_input_handling
+tests/services/test_profile_service.py::TestprofileserviceEdgeCases::test_invalid_input_handling
+tests/services/test_profile_service.py::TestprofileserviceEdgeCases::test_error_conditions
+tests/services/test_profile_service.py::TestprofileservicePerformance::test_performance_under_load
+tests/services/test_rate_limit_service.py::Testratelimitservice::test_module_imports
+tests/services/test_rate_limit_service.py::Testratelimitservice::test_basic_functionality
+tests/services/test_rate_limit_service.py::TestratelimitserviceIntegration::test_integration_scenario
+tests/services/test_rate_limit_service.py::TestratelimitserviceEdgeCases::test_null_input_handling
+tests/services/test_rate_limit_service.py::TestratelimitserviceEdgeCases::test_invalid_input_handling
+tests/services/test_rate_limit_service.py::TestratelimitserviceEdgeCases::test_error_conditions
+tests/services/test_rate_limit_service.py::TestratelimitservicePerformance::test_performance_under_load
+tests/services/test_smart_notifications.py::Testsmartnotifications::test_module_imports
+tests/services/test_smart_notifications.py::Testsmartnotifications::test_basic_functionality
+tests/services/test_smart_notifications.py::TestsmartnotificationsIntegration::test_integration_scenario
+tests/services/test_smart_notifications.py::TestsmartnotificationsEdgeCases::test_null_input_handling
+tests/services/test_smart_notifications.py::TestsmartnotificationsEdgeCases::test_invalid_input_handling
+tests/services/test_smart_notifications.py::TestsmartnotificationsEdgeCases::test_error_conditions
+tests/services/test_smart_notifications.py::TestsmartnotificationsPerformance::test_performance_under_load
+tests/services/test_smart_price_service.py::Testsmartpriceservice::test_module_imports
+tests/services/test_smart_price_service.py::Testsmartpriceservice::test_basic_functionality
+tests/services/test_smart_price_service.py::TestsmartpriceserviceIntegration::test_integration_scenario
+tests/services/test_smart_price_service.py::TestsmartpriceserviceEdgeCases::test_null_input_handling
+tests/services/test_smart_price_service.py::TestsmartpriceserviceEdgeCases::test_invalid_input_handling
+tests/services/test_smart_price_service.py::TestsmartpriceserviceEdgeCases::test_error_conditions
+tests/services/test_smart_price_service.py::TestsmartpriceservicePerformance::test_performance_under_load
+tests/services/test_stock_service.py::Teststockservice::test_module_imports
+tests/services/test_stock_service.py::Teststockservice::test_basic_functionality
+tests/services/test_stock_service.py::TeststockserviceIntegration::test_integration_scenario
+tests/services/test_stock_service.py::TeststockserviceEdgeCases::test_null_input_handling
+tests/services/test_stock_service.py::TeststockserviceEdgeCases::test_invalid_input_handling
+tests/services/test_stock_service.py::TeststockserviceEdgeCases::test_error_conditions
+tests/services/test_stock_service.py::TeststockservicePerformance::test_performance_under_load
+tests/services/test_timeframes.py::Testtimeframes::test_module_imports
+tests/services/test_timeframes.py::Testtimeframes::test_basic_functionality
+tests/services/test_timeframes.py::TesttimeframesIntegration::test_integration_scenario
+tests/services/test_timeframes.py::TesttimeframesEdgeCases::test_null_input_handling
+tests/services/test_timeframes.py::TesttimeframesEdgeCases::test_invalid_input_handling
+tests/services/test_timeframes.py::TesttimeframesEdgeCases::test_error_conditions
+tests/services/test_timeframes.py::TesttimeframesPerformance::test_performance_under_load
+tests/services/test_unified_asset_service.py::Testunifiedassetservice::test_module_imports
+tests/services/test_unified_asset_service.py::Testunifiedassetservice::test_basic_functionality
+tests/services/test_unified_asset_service.py::TestunifiedassetserviceIntegration::test_integration_scenario
+tests/services/test_unified_asset_service.py::TestunifiedassetserviceEdgeCases::test_null_input_handling
+tests/services/test_unified_asset_service.py::TestunifiedassetserviceEdgeCases::test_invalid_input_handling
+tests/services/test_unified_asset_service.py::TestunifiedassetserviceEdgeCases::test_error_conditions
+tests/services/test_unified_asset_service.py::TestunifiedassetservicePerformance::test_performance_under_load
+tests/services/test_websocket_manager.py::Testwebsocketmanager::test_module_imports
+tests/services/test_websocket_manager.py::Testwebsocketmanager::test_basic_functionality
+tests/services/test_websocket_manager.py::TestwebsocketmanagerIntegration::test_integration_scenario
+tests/services/test_websocket_manager.py::TestwebsocketmanagerEdgeCases::test_null_input_handling
+tests/services/test_websocket_manager.py::TestwebsocketmanagerEdgeCases::test_invalid_input_handling
+tests/services/test_websocket_manager.py::TestwebsocketmanagerEdgeCases::test_error_conditions
+tests/services/test_websocket_manager.py::TestwebsocketmanagerPerformance::test_performance_under_load
+tests/unit/test_advanced_redis_client.py::Testadvancedredisclient::test_module_imports
+tests/unit/test_advanced_redis_client.py::Testadvancedredisclient::test_basic_functionality
+tests/unit/test_advanced_redis_client.py::TestadvancedredisclientIntegration::test_integration_scenario
+tests/unit/test_advanced_redis_client.py::TestadvancedredisclientEdgeCases::test_null_input_handling
+tests/unit/test_advanced_redis_client.py::TestadvancedredisclientEdgeCases::test_invalid_input_handling
+tests/unit/test_advanced_redis_client.py::TestadvancedredisclientEdgeCases::test_error_conditions
+tests/unit/test_advanced_redis_client.py::TestadvancedredisclientPerformance::test_performance_under_load
+tests/unit/test_advanced_websocket_manager.py::Testadvancedwebsocketmanager::test_module_imports
+tests/unit/test_advanced_websocket_manager.py::Testadvancedwebsocketmanager::test_basic_functionality
+tests/unit/test_advanced_websocket_manager.py::TestadvancedwebsocketmanagerIntegration::test_integration_scenario
+tests/unit/test_advanced_websocket_manager.py::TestadvancedwebsocketmanagerEdgeCases::test_null_input_handling
+tests/unit/test_advanced_websocket_manager.py::TestadvancedwebsocketmanagerEdgeCases::test_invalid_input_handling
+tests/unit/test_advanced_websocket_manager.py::TestadvancedwebsocketmanagerEdgeCases::test_error_conditions
+tests/unit/test_advanced_websocket_manager.py::TestadvancedwebsocketmanagerPerformance::test_performance_under_load
+tests/unit/test_ai_schemas.py::Testaischemas::test_module_imports
+tests/unit/test_ai_schemas.py::Testaischemas::test_basic_functionality
+tests/unit/test_ai_schemas.py::TestaischemasIntegration::test_integration_scenario
+tests/unit/test_ai_schemas.py::TestaischemasEdgeCases::test_null_input_handling
+tests/unit/test_ai_schemas.py::TestaischemasEdgeCases::test_invalid_input_handling
+tests/unit/test_ai_schemas.py::TestaischemasEdgeCases::test_error_conditions
+tests/unit/test_ai_schemas.py::TestaischemasPerformance::test_performance_under_load
+tests/unit/test_ai_thread.py::Testaithread::test_module_imports
+tests/unit/test_ai_thread.py::Testaithread::test_basic_functionality
+tests/unit/test_ai_thread.py::TestaithreadIntegration::test_integration_scenario
+tests/unit/test_ai_thread.py::TestaithreadEdgeCases::test_null_input_handling
+tests/unit/test_ai_thread.py::TestaithreadEdgeCases::test_invalid_input_handling
+tests/unit/test_ai_thread.py::TestaithreadEdgeCases::test_error_conditions
+tests/unit/test_ai_thread.py::TestaithreadPerformance::test_performance_under_load
+tests/unit/test_auth.py::test_register_user
+tests/unit/test_auth.py::test_login_invalid_credentials
+tests/unit/test_auth.py::test_check_auth_status_without_token
+tests/unit/test_auth.py::test_me_endpoint_without_token
+tests/unit/test_auth.py::test_logout
+tests/unit/test_auth_deps.py::Testauthdeps::test_module_imports
+tests/unit/test_auth_deps.py::Testauthdeps::test_basic_functionality
+tests/unit/test_auth_deps.py::TestauthdepsIntegration::test_integration_scenario
+tests/unit/test_auth_deps.py::TestauthdepsEdgeCases::test_null_input_handling
+tests/unit/test_auth_deps.py::TestauthdepsEdgeCases::test_invalid_input_handling
+tests/unit/test_auth_deps.py::TestauthdepsEdgeCases::test_error_conditions
+tests/unit/test_auth_deps.py::TestauthdepsPerformance::test_performance_under_load
+tests/unit/test_baseline_analyzer.py::Testbaselineanalyzer::test_module_imports
+tests/unit/test_baseline_analyzer.py::Testbaselineanalyzer::test_basic_functionality
+tests/unit/test_baseline_analyzer.py::TestbaselineanalyzerIntegration::test_integration_scenario
+tests/unit/test_baseline_analyzer.py::TestbaselineanalyzerEdgeCases::test_null_input_handling
+tests/unit/test_baseline_analyzer.py::TestbaselineanalyzerEdgeCases::test_invalid_input_handling
+tests/unit/test_baseline_analyzer.py::TestbaselineanalyzerEdgeCases::test_error_conditions
+tests/unit/test_baseline_analyzer.py::TestbaselineanalyzerPerformance::test_performance_under_load
+tests/unit/test_cache.py::Testcache::test_module_imports
+tests/unit/test_cache.py::Testcache::test_basic_functionality
+tests/unit/test_cache.py::TestcacheIntegration::test_integration_scenario
+tests/unit/test_cache.py::TestcacheEdgeCases::test_null_input_handling
+tests/unit/test_cache.py::TestcacheEdgeCases::test_invalid_input_handling
+tests/unit/test_cache.py::TestcacheEdgeCases::test_error_conditions
+tests/unit/test_cache.py::TestcachePerformance::test_performance_under_load
+tests/unit/test_config.py::Testconfig::test_module_imports
+tests/unit/test_config.py::Testconfig::test_basic_functionality
+tests/unit/test_config.py::TestconfigIntegration::test_integration_scenario
+tests/unit/test_config.py::TestconfigEdgeCases::test_null_input_handling
+tests/unit/test_config.py::TestconfigEdgeCases::test_invalid_input_handling
+tests/unit/test_config.py::TestconfigEdgeCases::test_error_conditions
+tests/unit/test_config.py::TestconfigPerformance::test_performance_under_load
+tests/unit/test_conversation.py::Testconversation::test_module_imports
+tests/unit/test_conversation.py::Testconversation::test_basic_functionality
+tests/unit/test_conversation.py::TestconversationIntegration::test_integration_scenario
+tests/unit/test_conversation.py::TestconversationEdgeCases::test_null_input_handling
+tests/unit/test_conversation.py::TestconversationEdgeCases::test_invalid_input_handling
+tests/unit/test_conversation.py::TestconversationEdgeCases::test_error_conditions
+tests/unit/test_conversation.py::TestconversationPerformance::test_performance_under_load
+tests/unit/test_cross_database_compatibility.py::Testcrossdatabasecompatibility::test_module_imports
+tests/unit/test_cross_database_compatibility.py::Testcrossdatabasecompatibility::test_basic_functionality
+tests/unit/test_cross_database_compatibility.py::TestcrossdatabasecompatibilityIntegration::test_integration_scenario
+tests/unit/test_cross_database_compatibility.py::TestcrossdatabasecompatibilityEdgeCases::test_null_input_handling
+tests/unit/test_cross_database_compatibility.py::TestcrossdatabasecompatibilityEdgeCases::test_invalid_input_handling
+tests/unit/test_cross_database_compatibility.py::TestcrossdatabasecompatibilityEdgeCases::test_error_conditions
+tests/unit/test_cross_database_compatibility.py::TestcrossdatabasecompatibilityPerformance::test_performance_under_load
+tests/unit/test_database.py::Testdatabase::test_module_imports
+tests/unit/test_database.py::Testdatabase::test_basic_functionality
+tests/unit/test_database.py::TestdatabaseIntegration::test_integration_scenario
+tests/unit/test_database.py::TestdatabaseEdgeCases::test_null_input_handling
+tests/unit/test_database.py::TestdatabaseEdgeCases::test_invalid_input_handling
+tests/unit/test_database.py::TestdatabaseEdgeCases::test_error_conditions
+tests/unit/test_database.py::TestdatabasePerformance::test_performance_under_load
+tests/unit/test_db.py::Testdb::test_module_imports
+tests/unit/test_db.py::Testdb::test_basic_functionality
+tests/unit/test_db.py::TestdbIntegration::test_integration_scenario
+tests/unit/test_db.py::TestdbEdgeCases::test_null_input_handling
+tests/unit/test_db.py::TestdbEdgeCases::test_invalid_input_handling
+tests/unit/test_db.py::TestdbEdgeCases::test_error_conditions
+tests/unit/test_db.py::TestdbPerformance::test_performance_under_load
+tests/unit/test_deps.py::Testdeps::test_module_imports
+tests/unit/test_deps.py::Testdeps::test_basic_functionality
+tests/unit/test_deps.py::TestdepsIntegration::test_integration_scenario
+tests/unit/test_deps.py::TestdepsEdgeCases::test_null_input_handling
+tests/unit/test_deps.py::TestdepsEdgeCases::test_invalid_input_handling
+tests/unit/test_deps.py::TestdepsEdgeCases::test_error_conditions
+tests/unit/test_deps.py::TestdepsPerformance::test_performance_under_load
+tests/unit/test_enhanced_startup.py::Testenhancedstartup::test_module_imports
+tests/unit/test_enhanced_startup.py::Testenhancedstartup::test_basic_functionality
+tests/unit/test_enhanced_startup.py::TestenhancedstartupIntegration::test_integration_scenario
+tests/unit/test_enhanced_startup.py::TestenhancedstartupEdgeCases::test_null_input_handling
+tests/unit/test_enhanced_startup.py::TestenhancedstartupEdgeCases::test_invalid_input_handling
+tests/unit/test_enhanced_startup.py::TestenhancedstartupEdgeCases::test_error_conditions
+tests/unit/test_enhanced_startup.py::TestenhancedstartupPerformance::test_performance_under_load
+tests/unit/test_enhanced_validation.py::Testenhancedvalidation::test_module_imports
+tests/unit/test_enhanced_validation.py::Testenhancedvalidation::test_basic_functionality
+tests/unit/test_enhanced_validation.py::TestenhancedvalidationIntegration::test_integration_scenario
+tests/unit/test_enhanced_validation.py::TestenhancedvalidationEdgeCases::test_null_input_handling
+tests/unit/test_enhanced_validation.py::TestenhancedvalidationEdgeCases::test_invalid_input_handling
+tests/unit/test_enhanced_validation.py::TestenhancedvalidationEdgeCases::test_error_conditions
+tests/unit/test_enhanced_validation.py::TestenhancedvalidationPerformance::test_performance_under_load
+tests/unit/test_follow.py::test_follow_flow_basic
+tests/unit/test_follow_actions.py::test_follow_action_response_and_noop
+tests/unit/test_follow_extended.py::test_mutual_follows_and_counters
+tests/unit/test_follow_extended.py::test_suggestions_basic
+tests/unit/test_health_check.py::Testhealthcheck::test_module_imports
+tests/unit/test_health_check.py::Testhealthcheck::test_basic_functionality
+tests/unit/test_health_check.py::TesthealthcheckIntegration::test_integration_scenario
+tests/unit/test_health_check.py::TesthealthcheckEdgeCases::test_null_input_handling
+tests/unit/test_health_check.py::TesthealthcheckEdgeCases::test_invalid_input_handling
+tests/unit/test_health_check.py::TesthealthcheckEdgeCases::test_error_conditions
+tests/unit/test_health_check.py::TesthealthcheckPerformance::test_performance_under_load
+tests/unit/test_input_validation.py::Testinputvalidation::test_module_imports
+tests/unit/test_input_validation.py::Testinputvalidation::test_basic_functionality
+tests/unit/test_input_validation.py::TestinputvalidationIntegration::test_integration_scenario
+tests/unit/test_input_validation.py::TestinputvalidationEdgeCases::test_null_input_handling
+tests/unit/test_input_validation.py::TestinputvalidationEdgeCases::test_invalid_input_handling
+tests/unit/test_input_validation.py::TestinputvalidationEdgeCases::test_error_conditions
+tests/unit/test_input_validation.py::TestinputvalidationPerformance::test_performance_under_load
+tests/unit/test_j52_features.py::test_j52_features
+tests/unit/test_j52_imports.py::test_j52_imports
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_database_health_check
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_performance_metrics_collection
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_alert_creation_and_management
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_alert_evaluation_database_size
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_alert_evaluation_performance
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_system_health_calculation
+tests/unit/test_j53_features.py::TestJ53PerformanceMonitor::test_monitoring_cycle_complete
+tests/unit/test_j53_features.py::TestJ53AutoOptimizer::test_database_optimization_sqlite
+tests/unit/test_j53_features.py::TestJ53AutoOptimizer::test_database_optimization_postgresql
+tests/unit/test_j53_features.py::TestJ53AutoOptimizer::test_scaling_recommendations_critical_storage
+tests/unit/test_j53_features.py::TestJ53AutoOptimizer::test_scaling_recommendations_performance_issues
+tests/unit/test_j53_features.py::TestJ53OptimizationScheduler::test_scheduler_lifecycle
+tests/unit/test_j53_features.py::TestJ53OptimizationScheduler::test_manual_optimization
+tests/unit/test_j53_features.py::TestJ53OptimizationScheduler::test_auto_resolve_alerts
+tests/unit/test_j53_features.py::TestJ53Integration::test_full_monitoring_cycle_integration
+tests/unit/test_j53_features.py::TestJ53Integration::test_alert_workflow_integration
+tests/unit/test_j53_features.py::TestJ53Performance::test_monitoring_cycle_performance
+tests/unit/test_j53_features.py::TestJ53Performance::test_alert_system_scalability
+tests/unit/test_j63_core.py::test_core_features
+tests/unit/test_j64_quality_enhanced.py::test_enhanced_system
+tests/unit/test_j6_2_endpoints.py::Testj62endpoints::test_module_imports
+tests/unit/test_j6_2_endpoints.py::Testj62endpoints::test_basic_functionality
+tests/unit/test_j6_2_endpoints.py::Testj62endpointsIntegration::test_integration_scenario
+tests/unit/test_j6_2_endpoints.py::Testj62endpointsEdgeCases::test_null_input_handling
+tests/unit/test_j6_2_endpoints.py::Testj62endpointsEdgeCases::test_invalid_input_handling
+tests/unit/test_j6_2_endpoints.py::Testj62endpointsEdgeCases::test_error_conditions
+tests/unit/test_j6_2_endpoints.py::Testj62endpointsPerformance::test_performance_under_load
+tests/unit/test_j6_notifications.py::TestNotificationService::test_create_notification_success
+tests/unit/test_j6_notifications.py::TestNotificationService::test_get_user_notifications
+tests/unit/test_j6_notifications.py::TestNotificationService::test_get_unread_count
+tests/unit/test_j6_notifications.py::TestNotificationService::test_mark_as_read_success
+tests/unit/test_j6_notifications.py::TestNotificationService::test_mark_all_as_read
+tests/unit/test_j6_notifications.py::TestNotificationService::test_create_batch_notifications
+tests/unit/test_j6_notifications.py::TestNotificationService::test_notification_stats
+tests/unit/test_j6_notifications.py::TestNotificationEmitter::test_emit_follow_notification
+tests/unit/test_j6_notifications.py::TestNotificationEmitter::test_emit_dm_notification
+tests/unit/test_j6_notifications.py::TestNotificationEmitter::test_emit_ai_reply_notification
+tests/unit/test_j6_notifications.py::TestNotificationEmitter::test_emit_mention_notification
+tests/unit/test_j6_notifications.py::TestNotificationEmitter::test_emit_bulk_follow_notifications
+tests/unit/test_j6_notifications.py::TestNotificationIntegration::test_follow_integration_hook
+tests/unit/test_j6_notifications.py::TestNotificationIntegration::test_dm_integration_hook
+tests/unit/test_j6_notifications.py::TestNotificationIntegration::test_ai_response_integration_hook
+tests/unit/test_j6_notifications.py::TestNotificationWebSocket::test_websocket_manager_initialization
+tests/unit/test_j6_notifications.py::TestNotificationWebSocket::test_websocket_connection_management
+tests/unit/test_j6_notifications.py::TestNotificationWebSocket::test_websocket_send_to_user
+tests/unit/test_j6_notifications.py::TestNotificationWebSocket::test_websocket_connection_stats
+tests/unit/test_j6_notifications.py::TestNotificationModels::test_notification_model_creation
+tests/unit/test_j6_notifications.py::TestNotificationModels::test_notification_mark_as_read
+tests/unit/test_j6_notifications.py::TestNotificationModels::test_notification_to_dict
+tests/unit/test_j6_notifications.py::TestNotificationModels::test_notification_expiration
+tests/unit/test_j6_notifications.py::TestNotificationIntegrationE2E::test_complete_notification_flow
+tests/unit/test_jwt_websocket_auth.py::Testjwtwebsocketauth::test_module_imports
+tests/unit/test_jwt_websocket_auth.py::Testjwtwebsocketauth::test_basic_functionality
+tests/unit/test_jwt_websocket_auth.py::TestjwtwebsocketauthIntegration::test_integration_scenario
+tests/unit/test_jwt_websocket_auth.py::TestjwtwebsocketauthEdgeCases::test_null_input_handling
+tests/unit/test_jwt_websocket_auth.py::TestjwtwebsocketauthEdgeCases::test_invalid_input_handling
+tests/unit/test_jwt_websocket_auth.py::TestjwtwebsocketauthEdgeCases::test_error_conditions
+tests/unit/test_jwt_websocket_auth.py::TestjwtwebsocketauthPerformance::test_performance_under_load
+tests/unit/test_main.py::Testmain::test_module_imports
+tests/unit/test_main.py::Testmain::test_basic_functionality
+tests/unit/test_main.py::TestmainIntegration::test_integration_scenario
+tests/unit/test_main.py::TestmainEdgeCases::test_null_input_handling
+tests/unit/test_main.py::TestmainEdgeCases::test_invalid_input_handling
+tests/unit/test_main.py::TestmainEdgeCases::test_error_conditions
+tests/unit/test_main.py::TestmainPerformance::test_performance_under_load
+tests/unit/test_maintenance.py::Testmaintenance::test_module_imports
+tests/unit/test_maintenance.py::Testmaintenance::test_basic_functionality
+tests/unit/test_maintenance.py::TestmaintenanceIntegration::test_integration_scenario
+tests/unit/test_maintenance.py::TestmaintenanceEdgeCases::test_null_input_handling
+tests/unit/test_maintenance.py::TestmaintenanceEdgeCases::test_invalid_input_handling
+tests/unit/test_maintenance.py::TestmaintenanceEdgeCases::test_error_conditions
+tests/unit/test_maintenance.py::TestmaintenancePerformance::test_performance_under_load
+tests/unit/test_minimal_server.py::test_minimal_server
+tests/unit/test_models.py::Testmodels::test_module_imports
+tests/unit/test_models.py::Testmodels::test_basic_functionality
+tests/unit/test_models.py::TestmodelsIntegration::test_integration_scenario
+tests/unit/test_models.py::TestmodelsEdgeCases::test_null_input_handling
+tests/unit/test_models.py::TestmodelsEdgeCases::test_invalid_input_handling
+tests/unit/test_models.py::TestmodelsEdgeCases::test_error_conditions
+tests/unit/test_models.py::TestmodelsPerformance::test_performance_under_load
+tests/unit/test_monitoring.py::Testmonitoring::test_module_imports
+tests/unit/test_monitoring.py::Testmonitoring::test_basic_functionality
+tests/unit/test_monitoring.py::TestmonitoringIntegration::test_integration_scenario
+tests/unit/test_monitoring.py::TestmonitoringEdgeCases::test_null_input_handling
+tests/unit/test_monitoring.py::TestmonitoringEdgeCases::test_invalid_input_handling
+tests/unit/test_monitoring.py::TestmonitoringEdgeCases::test_error_conditions
+tests/unit/test_monitoring.py::TestmonitoringPerformance::test_performance_under_load
+tests/unit/test_notification_helpers.py::Testnotificationhelpers::test_module_imports
+tests/unit/test_notification_helpers.py::Testnotificationhelpers::test_basic_functionality
+tests/unit/test_notification_helpers.py::TestnotificationhelpersIntegration::test_integration_scenario
+tests/unit/test_notification_helpers.py::TestnotificationhelpersEdgeCases::test_null_input_handling
+tests/unit/test_notification_helpers.py::TestnotificationhelpersEdgeCases::test_invalid_input_handling
+tests/unit/test_notification_helpers.py::TestnotificationhelpersEdgeCases::test_error_conditions
+tests/unit/test_notification_helpers.py::TestnotificationhelpersPerformance::test_performance_under_load
+tests/unit/test_notification_hooks.py::Testnotificationhooks::test_module_imports
+tests/unit/test_notification_hooks.py::Testnotificationhooks::test_basic_functionality
+tests/unit/test_notification_hooks.py::TestnotificationhooksIntegration::test_integration_scenario
+tests/unit/test_notification_hooks.py::TestnotificationhooksEdgeCases::test_null_input_handling
+tests/unit/test_notification_hooks.py::TestnotificationhooksEdgeCases::test_invalid_input_handling
+tests/unit/test_notification_hooks.py::TestnotificationhooksEdgeCases::test_error_conditions
+tests/unit/test_notification_hooks.py::TestnotificationhooksPerformance::test_performance_under_load
+tests/unit/test_notification_models.py::Testnotificationmodels::test_module_imports
+tests/unit/test_notification_models.py::Testnotificationmodels::test_basic_functionality
+tests/unit/test_notification_models.py::TestnotificationmodelsIntegration::test_integration_scenario
+tests/unit/test_notification_models.py::TestnotificationmodelsEdgeCases::test_null_input_handling
+tests/unit/test_notification_models.py::TestnotificationmodelsEdgeCases::test_invalid_input_handling
+tests/unit/test_notification_models.py::TestnotificationmodelsEdgeCases::test_error_conditions
+tests/unit/test_notification_models.py::TestnotificationmodelsPerformance::test_performance_under_load
+tests/unit/test_optimized_imports.py::Testoptimizedimports::test_module_imports
+tests/unit/test_optimized_imports.py::Testoptimizedimports::test_basic_functionality
+tests/unit/test_optimized_imports.py::TestoptimizedimportsIntegration::test_integration_scenario
+tests/unit/test_optimized_imports.py::TestoptimizedimportsEdgeCases::test_null_input_handling
+tests/unit/test_optimized_imports.py::TestoptimizedimportsEdgeCases::test_invalid_input_handling
+tests/unit/test_optimized_imports.py::TestoptimizedimportsEdgeCases::test_error_conditions
+tests/unit/test_optimized_imports.py::TestoptimizedimportsPerformance::test_performance_under_load
+tests/unit/test_performance_optimizer.py::Testperformanceoptimizer::test_module_imports
+tests/unit/test_performance_optimizer.py::Testperformanceoptimizer::test_basic_functionality
+tests/unit/test_performance_optimizer.py::TestperformanceoptimizerIntegration::test_integration_scenario
+tests/unit/test_performance_optimizer.py::TestperformanceoptimizerEdgeCases::test_null_input_handling
+tests/unit/test_performance_optimizer.py::TestperformanceoptimizerEdgeCases::test_invalid_input_handling
+tests/unit/test_performance_optimizer.py::TestperformanceoptimizerEdgeCases::test_error_conditions
+tests/unit/test_performance_optimizer.py::TestperformanceoptimizerPerformance::test_performance_under_load
+tests/unit/test_rate_limiting.py::Testratelimiting::test_module_imports
+tests/unit/test_rate_limiting.py::Testratelimiting::test_basic_functionality
+tests/unit/test_rate_limiting.py::TestratelimitingIntegration::test_integration_scenario
+tests/unit/test_rate_limiting.py::TestratelimitingEdgeCases::test_null_input_handling
+tests/unit/test_rate_limiting.py::TestratelimitingEdgeCases::test_invalid_input_handling
+tests/unit/test_rate_limiting.py::TestratelimitingEdgeCases::test_error_conditions
+tests/unit/test_rate_limiting.py::TestratelimitingPerformance::test_performance_under_load
+tests/unit/test_reaction.py::Testreaction::test_module_imports
+tests/unit/test_reaction.py::Testreaction::test_basic_functionality
+tests/unit/test_reaction.py::TestreactionIntegration::test_integration_scenario
+tests/unit/test_reaction.py::TestreactionEdgeCases::test_null_input_handling
+tests/unit/test_reaction.py::TestreactionEdgeCases::test_invalid_input_handling
+tests/unit/test_reaction.py::TestreactionEdgeCases::test_error_conditions
+tests/unit/test_reaction.py::TestreactionPerformance::test_performance_under_load
+tests/unit/test_redis.py::Testredis::test_module_imports
+tests/unit/test_redis.py::Testredis::test_basic_functionality
+tests/unit/test_redis.py::TestredisIntegration::test_integration_scenario
+tests/unit/test_redis.py::TestredisEdgeCases::test_null_input_handling
+tests/unit/test_redis.py::TestredisEdgeCases::test_invalid_input_handling
+tests/unit/test_redis.py::TestredisEdgeCases::test_error_conditions
+tests/unit/test_redis.py::TestredisPerformance::test_performance_under_load
+tests/unit/test_redis_cache.py::Testrediscache::test_module_imports
+tests/unit/test_redis_cache.py::Testrediscache::test_basic_functionality
+tests/unit/test_redis_cache.py::TestrediscacheIntegration::test_integration_scenario
+tests/unit/test_redis_cache.py::TestrediscacheEdgeCases::test_null_input_handling
+tests/unit/test_redis_cache.py::TestrediscacheEdgeCases::test_invalid_input_handling
+tests/unit/test_redis_cache.py::TestrediscacheEdgeCases::test_error_conditions
+tests/unit/test_redis_cache.py::TestrediscachePerformance::test_performance_under_load
+tests/unit/test_redis_client.py::Testredisclient::test_module_imports
+tests/unit/test_redis_client.py::Testredisclient::test_basic_functionality
+tests/unit/test_redis_client.py::TestredisclientIntegration::test_integration_scenario
+tests/unit/test_redis_client.py::TestredisclientEdgeCases::test_null_input_handling
+tests/unit/test_redis_client.py::TestredisclientEdgeCases::test_invalid_input_handling
+tests/unit/test_redis_client.py::TestredisclientEdgeCases::test_error_conditions
+tests/unit/test_redis_client.py::TestredisclientPerformance::test_performance_under_load
+tests/unit/test_redis_keys.py::Testrediskeys::test_module_imports
+tests/unit/test_redis_keys.py::Testrediskeys::test_basic_functionality
+tests/unit/test_redis_keys.py::TestrediskeysIntegration::test_integration_scenario
+tests/unit/test_redis_keys.py::TestrediskeysEdgeCases::test_null_input_handling
+tests/unit/test_redis_keys.py::TestrediskeysEdgeCases::test_invalid_input_handling
+tests/unit/test_redis_keys.py::TestrediskeysEdgeCases::test_error_conditions
+tests/unit/test_redis_keys.py::TestrediskeysPerformance::test_performance_under_load
+tests/unit/test_routes.py::Testroutes::test_module_imports
+tests/unit/test_routes.py::Testroutes::test_basic_functionality
+tests/unit/test_routes.py::TestroutesIntegration::test_integration_scenario
+tests/unit/test_routes.py::TestroutesEdgeCases::test_null_input_handling
+tests/unit/test_routes.py::TestroutesEdgeCases::test_invalid_input_handling
+tests/unit/test_routes.py::TestroutesEdgeCases::test_error_conditions
+tests/unit/test_routes.py::TestroutesPerformance::test_performance_under_load
+tests/unit/test_security.py::test_security_alerts
+tests/unit/test_security.py::Testsecurity::test_module_imports
+tests/unit/test_security.py::Testsecurity::test_basic_functionality
+tests/unit/test_security.py::TestsecurityIntegration::test_integration_scenario
+tests/unit/test_security.py::TestsecurityEdgeCases::test_null_input_handling
+tests/unit/test_security.py::TestsecurityEdgeCases::test_invalid_input_handling
+tests/unit/test_security.py::TestsecurityEdgeCases::test_error_conditions
+tests/unit/test_security.py::TestsecurityPerformance::test_performance_under_load
+tests/unit/test_security_alerts.py::Testsecurityalerts::test_module_imports
+tests/unit/test_security_alerts.py::Testsecurityalerts::test_basic_functionality
+tests/unit/test_security_alerts.py::TestsecurityalertsIntegration::test_integration_scenario
+tests/unit/test_security_alerts.py::TestsecurityalertsEdgeCases::test_null_input_handling
+tests/unit/test_security_alerts.py::TestsecurityalertsEdgeCases::test_invalid_input_handling
+tests/unit/test_security_alerts.py::TestsecurityalertsEdgeCases::test_error_conditions
+tests/unit/test_security_alerts.py::TestsecurityalertsPerformance::test_performance_under_load
+tests/unit/test_security_config.py::Testsecurityconfig::test_module_imports
+tests/unit/test_security_config.py::Testsecurityconfig::test_basic_functionality
+tests/unit/test_security_config.py::TestsecurityconfigIntegration::test_integration_scenario
+tests/unit/test_security_config.py::TestsecurityconfigEdgeCases::test_null_input_handling
+tests/unit/test_security_config.py::TestsecurityconfigEdgeCases::test_invalid_input_handling
+tests/unit/test_security_config.py::TestsecurityconfigEdgeCases::test_error_conditions
+tests/unit/test_security_config.py::TestsecurityconfigPerformance::test_performance_under_load
+tests/unit/test_security_logger.py::Testsecuritylogger::test_module_imports
+tests/unit/test_security_logger.py::Testsecuritylogger::test_basic_functionality
+tests/unit/test_security_logger.py::TestsecurityloggerIntegration::test_integration_scenario
+tests/unit/test_security_logger.py::TestsecurityloggerEdgeCases::test_null_input_handling
+tests/unit/test_security_logger.py::TestsecurityloggerEdgeCases::test_invalid_input_handling
+tests/unit/test_security_logger.py::TestsecurityloggerEdgeCases::test_error_conditions
+tests/unit/test_security_logger.py::TestsecurityloggerPerformance::test_performance_under_load
+tests/unit/test_server_startup.py::test_server_components
+tests/unit/test_session.py::Testsession::test_module_imports
+tests/unit/test_session.py::Testsession::test_basic_functionality
+tests/unit/test_session.py::TestsessionIntegration::test_integration_scenario
+tests/unit/test_session.py::TestsessionEdgeCases::test_null_input_handling
+tests/unit/test_session.py::TestsessionEdgeCases::test_invalid_input_handling
+tests/unit/test_session.py::TestsessionEdgeCases::test_error_conditions
+tests/unit/test_session.py::TestsessionPerformance::test_performance_under_load
+tests/unit/test_specific_issues.py::test_database_connection
+tests/unit/test_specific_issues.py::test_redis_connection
+tests/unit/test_specific_issues.py::test_scheduler_issues
+tests/unit/test_specific_issues.py::test_monitoring_alerts
+tests/unit/test_sse.py::Testsse::test_module_imports
+tests/unit/test_sse.py::Testsse::test_basic_functionality
+tests/unit/test_sse.py::TestsseIntegration::test_integration_scenario
+tests/unit/test_sse.py::TestsseEdgeCases::test_null_input_handling
+tests/unit/test_sse.py::TestsseEdgeCases::test_invalid_input_handling
+tests/unit/test_sse.py::TestsseEdgeCases::test_error_conditions
+tests/unit/test_sse.py::TestssePerformance::test_performance_under_load
+
+=================================== ERRORS ====================================
+_________________ ERROR collecting tests/services/test_ai.py __________________
+import file mismatch:
+imported module 'test_ai' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_ai.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ai.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______________ ERROR collecting tests/services/test_alerts.py ________________
+import file mismatch:
+imported module 'test_alerts' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_alerts.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_alerts.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/services/test_fmp.py _________________
+import file mismatch:
+imported module 'test_fmp' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_fmp.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_fmp.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+________________ ERROR collecting tests/services/test_news.py _________________
+import file mismatch:
+imported module 'test_news' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_news.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_news.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+__________ ERROR collecting tests/services/test_profile_enhanced.py ___________
+import file mismatch:
+imported module 'test_profile_enhanced' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_profile_enhanced.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_profile_enhanced.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/unit/test_alerts.py __________________
+import file mismatch:
+imported module 'test_alerts' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_alerts.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_alerts.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+__________________ ERROR collecting tests/unit/test_base.py ___________________
+import file mismatch:
+imported module 'test_base' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_base.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_base.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+__________________ ERROR collecting tests/unit/test_chat.py ___________________
+import file mismatch:
+imported module 'test_chat' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_chat.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_chat.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/unit/test_crypto.py __________________
+import file mismatch:
+imported module 'test_crypto' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_crypto.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_crypto.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+__________ ERROR collecting tests/unit/test_follow_notifications.py ___________
+ImportError while importing test module 'C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_follow_notifications.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_follow_notifications.py:4: in <module>
+    from app.models.notification import Notification, NotificationType
+E   ModuleNotFoundError: No module named 'app.models.notification'
+____________ ERROR collecting tests/unit/test_notification_old.py _____________
+tests\unit\test_notification_old.py:13: in <module>
+    from app.models.notification_old import *
+app\models\notification_old.py:33: in <module>
+    class Notification(Base):
+venv\Lib\site-packages\sqlalchemy\orm\decl_api.py:196: in __init__
+    _as_declarative(reg, cls, dict_)
+venv\Lib\site-packages\sqlalchemy\orm\decl_base.py:244: in _as_declarative
+    return _MapperConfig.setup_mapping(registry, cls, dict_, None, {})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\orm\decl_base.py:325: in setup_mapping
+    return _ClassScanMapperConfig(
+venv\Lib\site-packages\sqlalchemy\orm\decl_base.py:576: in __init__
+    self._setup_table(table)
+venv\Lib\site-packages\sqlalchemy\orm\decl_base.py:1759: in _setup_table
+    table_cls(
+<string>:2: in __new__
+    ???
+venv\Lib\site-packages\sqlalchemy\util\deprecations.py:281: in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\sql\schema.py:427: in __new__
+    return cls._new(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^
+venv\Lib\site-packages\sqlalchemy\sql\schema.py:459: in _new
+    raise exc.InvalidRequestError(
+E   sqlalchemy.exc.InvalidRequestError: Table 'notifications' is already defined for this MetaData instance.  Specify 'extend_existing=True' to redefine options and columns on an existing Table object.
+______________ ERROR collecting tests/unit/test_notifications.py ______________
+import file mismatch:
+imported module 'test_notifications' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_notifications.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_notifications.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+___________ ERROR collecting tests/unit/test_performance_monitor.py ___________
+import file mismatch:
+imported module 'test_performance_monitor' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_performance_monitor.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_performance_monitor.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+____________ ERROR collecting tests/unit/test_phase_j2_frontend.py ____________
+ImportError while importing test module 'C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_phase_j2_frontend.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+C:\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests\unit\test_phase_j2_frontend.py:9: in <module>
+    from selenium import webdriver
+E   ModuleNotFoundError: No module named 'selenium'
+________________ ERROR collecting tests/unit/test_portfolio.py ________________
+import file mismatch:
+imported module 'test_portfolio' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_portfolio.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_portfolio.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/unit/test_profile.py _________________
+import file mismatch:
+imported module 'test_profile' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_profile.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_profile.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_________________ ERROR collecting tests/unit/test_social.py __________________
+import file mismatch:
+imported module 'test_social' has this __file__ attribute:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_social.py
+which is not the same as the test file we want to collect:
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_social.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+============================== warnings summary ===============================
+venv\Lib\site-packages\pydantic\_internal\_config.py:295: 12 warnings
+  C:\Users\USER\Desktop\lokifi\apps\backend\venv\Lib\site-packages\pydantic\_internal\_config.py:295: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+app\routers\websocket.py:160
+  C:\Users\USER\Desktop\lokifi\apps\backend\app\routers\websocket.py:160: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @router.on_event("startup")
+
+app\routers\websocket.py:169
+  C:\Users\USER\Desktop\lokifi\apps\backend\app\routers\websocket.py:169: DeprecationWarning: 
+          on_event is deprecated, use lifespan event handlers instead.
+  
+          Read more about it in the
+          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+          
+    @router.on_event("shutdown")
+
+tests\api\test_admin_messaging.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_admin_messaging.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_ai.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_ai.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_ai_websocket.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_ai_websocket.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_alerts.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_alerts.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_chat.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_chat.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_conversations.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_conversations.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_crypto.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_crypto.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_fmp.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_fmp.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_follow_endpoints.py:11
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_follow_endpoints.py:11: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\api\test_follow_endpoints.py:38
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_follow_endpoints.py:38: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\api\test_market_data.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_market_data.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_mock_ohlc.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_mock_ohlc.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_news.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_news.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_notifications.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_notifications.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+app\routers\notifications.py:114
+  C:\Users\USER\Desktop\lokifi\apps\backend\app\routers\notifications.py:114: PytestCollectionWarning: cannot collect test class 'TestNotificationRequest' because it has a __init__ constructor (from: tests/api/test_notifications.py)
+    class TestNotificationRequest(BaseModel):
+
+tests\api\test_ohlc.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_ohlc.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_portfolio.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_portfolio.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_profile.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_profile.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_profile_endpoints.py:11
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_profile_endpoints.py:11: PytestUnknownMarkWarning: Unknown pytest.mark.integration - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.integration
+
+tests\api\test_profile_enhanced.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_profile_enhanced.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_smart_prices.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_smart_prices.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_social.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_social.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_websocket.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_websocket.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\api\test_websocket_prices.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\api\test_websocket_prices.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_advanced_monitoring.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_advanced_monitoring.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_advanced_storage_analytics.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_advanced_storage_analytics.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_ai_analytics.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ai_analytics.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_ai_context_manager.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ai_context_manager.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_ai_provider.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ai_provider.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_ai_provider_manager.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ai_provider_manager.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_ai_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ai_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_alphavantage.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_alphavantage.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_base.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_base.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_cmc.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_cmc.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_coingecko.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_coingecko.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_content_moderation.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_content_moderation.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_conversation_export.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_conversation_export.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_conversation_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_conversation_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_crypto_data.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_crypto_data.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_crypto_discovery_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_crypto_discovery_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_data_archival_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_data_archival_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_data_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_data_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_database_migration.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_database_migration.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_enhanced_performance_monitor.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_enhanced_performance_monitor.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_enhanced_rate_limiter.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_enhanced_rate_limiter.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_errors.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_errors.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_finnhub.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_finnhub.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_follow_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_follow_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_forex_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_forex_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_historical_price_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_historical_price_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_huggingface_provider.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_huggingface_provider.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_indicators.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_indicators.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_indices_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_indices_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_j53_performance_monitor.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_j53_performance_monitor.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_j53_scheduler.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_j53_scheduler.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_marketaux.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_marketaux.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_message_analytics_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_message_analytics_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_message_moderation_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_message_moderation_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_message_search_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_message_search_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_multimodal_ai_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_multimodal_ai_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_newsapi.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_newsapi.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_notification_analytics.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_notification_analytics.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_notification_emitter.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_notification_emitter.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_notification_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_notification_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_ollama_provider.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_ollama_provider.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_openrouter_provider.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_openrouter_provider.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_performance_monitor.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_performance_monitor.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_polygon.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_polygon.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_prices.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_prices.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_profile_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_profile_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_rate_limit_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_rate_limit_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_smart_notifications.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_smart_notifications.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_smart_price_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_smart_price_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_stock_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_stock_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_timeframes.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_timeframes.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_unified_asset_service.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_unified_asset_service.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\services\test_websocket_manager.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\services\test_websocket_manager.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_advanced_redis_client.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_advanced_redis_client.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_advanced_websocket_manager.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_advanced_websocket_manager.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_ai_schemas.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_ai_schemas.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_ai_thread.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_ai_thread.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_auth_deps.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_auth_deps.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_baseline_analyzer.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_baseline_analyzer.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_cache.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_cache.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_config.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_config.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_conversation.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_conversation.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_cross_database_compatibility.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_cross_database_compatibility.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_database.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_database.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_db.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_db.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_deps.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_deps.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_enhanced_startup.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_enhanced_startup.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_enhanced_validation.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_enhanced_validation.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_health_check.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_health_check.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_input_validation.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_input_validation.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_j6_2_endpoints.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_j6_2_endpoints.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_jwt_websocket_auth.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_jwt_websocket_auth.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_main.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_main.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_maintenance.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_maintenance.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_models.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_models.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_monitoring.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_monitoring.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_notification_helpers.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_notification_helpers.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_notification_hooks.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_notification_hooks.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_notification_models.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_notification_models.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_optimized_imports.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_optimized_imports.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_performance_optimizer.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_performance_optimizer.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_rate_limiting.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_rate_limiting.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_reaction.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_reaction.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_redis.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_redis.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_redis_cache.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_redis_cache.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_redis_client.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_redis_client.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_redis_keys.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_redis_keys.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_routes.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_routes.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_security.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_security.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_security_alerts.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_security_alerts.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_security_config.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_security_config.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_security_logger.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_security_logger.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_session.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_session.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+tests\unit\test_sse.py:109
+  C:\Users\USER\Desktop\lokifi\apps\backend\tests\unit\test_sse.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.slow - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.slow
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/services/test_ai.py
+ERROR tests/services/test_alerts.py
+ERROR tests/services/test_fmp.py
+ERROR tests/services/test_news.py
+ERROR tests/services/test_profile_enhanced.py
+ERROR tests/unit/test_alerts.py
+ERROR tests/unit/test_base.py
+ERROR tests/unit/test_chat.py
+ERROR tests/unit/test_crypto.py
+ERROR tests/unit/test_follow_notifications.py
+ERROR tests/unit/test_notification_old.py - sqlalchemy.exc.InvalidRequestErro...
+ERROR tests/unit/test_notifications.py
+ERROR tests/unit/test_performance_monitor.py
+ERROR tests/unit/test_phase_j2_frontend.py
+ERROR tests/unit/test_portfolio.py
+ERROR tests/unit/test_profile.py
+ERROR tests/unit/test_social.py
+!!!!!!!!!!!!!!!!!! Interrupted: 17 errors during collection !!!!!!!!!!!!!!!!!!!
+984 tests collected, 17 errors in 1.54s

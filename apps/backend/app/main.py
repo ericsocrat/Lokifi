@@ -4,12 +4,6 @@ from contextlib import asynccontextmanager
 
 # Sentry error tracking
 import sentry_sdk
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
-from sentry_sdk.integrations.starlette import StarletteIntegration
-
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
 from app.api.routes import security
@@ -48,6 +42,11 @@ from app.routers import (
 )
 from app.routers.profile_enhanced import router as profile_enhanced_router
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.logging import LoggingIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
 
 logger = logging.getLogger(__name__)
 

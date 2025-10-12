@@ -27,8 +27,7 @@ class FollowResponse(BaseModel):
     followee_id: UUID
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class UserFollowStatus(BaseModel):
@@ -42,8 +41,7 @@ class UserFollowStatus(BaseModel):
     mutual_follow: bool
     created_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class FollowersListResponse(BaseModel):

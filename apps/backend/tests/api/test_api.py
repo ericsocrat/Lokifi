@@ -2,9 +2,8 @@ import asyncio
 
 import pytest
 import pytest_asyncio
-from httpx import ASGITransport, AsyncClient
-
 from app.main import app
+from httpx import ASGITransport, AsyncClient
 
 
 @pytest_asyncio.fixture
@@ -14,6 +13,7 @@ async def client():
     async with AsyncClient(transport=transport, base_url="http://testserver") as ac:
         yield ac
 
+
 @pytest.fixture
 def event_loop():
     """Create an instance of the default event loop for the test session."""
@@ -21,9 +21,10 @@ def event_loop():
     yield loop
     loop.close()
 
+
 class TestHealthEndpoints:
     """Test health check endpoints"""
-    
+
     @pytest.mark.asyncio
     async def test_health_check(self, client: AsyncClient):
         """Test basic health check"""
@@ -32,9 +33,10 @@ class TestHealthEndpoints:
         data = response.json()
         assert data["ok"] == True  # Actual endpoint returns {"ok": True}
 
+
 class TestSymbolsAPI:
     """Test symbols API endpoints"""
-    
+
     @pytest.mark.skip(reason="Symbols endpoint not yet implemented - needs /api/v1/symbols")
     @pytest.mark.asyncio
     async def test_get_symbols(self, client: AsyncClient):
@@ -45,7 +47,7 @@ class TestSymbolsAPI:
         assert "symbols" in data
         assert isinstance(data["symbols"], list)
         assert len(data["symbols"]) > 0
-        
+
         # Check symbol structure
         symbol = data["symbols"][0]
         required_fields = ["symbol", "name", "type", "exchange", "currency"]
@@ -60,7 +62,7 @@ class TestSymbolsAPI:
         assert response.status_code == 200
         data = response.json()
         assert "symbols" in data
-        
+
         # Should find Apple stock
         symbols = [s for s in data["symbols"] if "AAPL" in s["symbol"]]
         assert len(symbols) > 0
@@ -73,15 +75,18 @@ class TestSymbolsAPI:
         assert response.status_code == 200
         data = response.json()
         assert "symbols" in data
-        
+
         # All returned symbols should be stocks
         for symbol in data["symbols"]:
             assert symbol["type"] == "stock"
 
+
 class TestOHLCAPI:
     """Test OHLC data endpoints"""
-    
-    @pytest.mark.skip(reason="OHLC endpoint format needs verification - check actual response structure")
+
+    @pytest.mark.skip(
+        reason="OHLC endpoint format needs verification - check actual response structure"
+    )
     @pytest.mark.asyncio
     async def test_get_ohlc_data(self, client: AsyncClient):
         """Test getting OHLC data for a symbol"""
@@ -90,35 +95,39 @@ class TestOHLCAPI:
         data = response.json()
         assert "data" in data
         assert isinstance(data["data"], list)
-        
+
         if len(data["data"]) > 0:
             ohlc_item = data["data"][0]
             required_fields = ["symbol", "timestamp", "open", "high", "low", "close", "volume"]
             for field in required_fields:
                 assert field in ohlc_item
-                
+
             # Validate OHLC relationships
             assert ohlc_item["high"] >= ohlc_item["open"]
             assert ohlc_item["high"] >= ohlc_item["close"]
             assert ohlc_item["low"] <= ohlc_item["open"]
             assert ohlc_item["low"] <= ohlc_item["close"]
 
-    @pytest.mark.skip(reason="OHLC endpoint format needs verification - check actual response structure")
+    @pytest.mark.skip(
+        reason="OHLC endpoint format needs verification - check actual response structure"
+    )
     @pytest.mark.asyncio
     async def test_ohlc_with_timeframe(self, client: AsyncClient):
         """Test OHLC data with different timeframes"""
         timeframes = ["1m", "5m", "1h", "1D"]
-        
+
         for timeframe in timeframes:
             response = await client.get(f"/api/v1/ohlc/AAPL?timeframe={timeframe}")
             assert response.status_code == 200
             data = response.json()
             assert "data" in data
-            
+
             if len(data["data"]) > 0:
                 assert data["data"][0]["timeframe"] == timeframe
 
-    @pytest.mark.skip(reason="OHLC endpoint format needs verification - check actual response structure")
+    @pytest.mark.skip(
+        reason="OHLC endpoint format needs verification - check actual response structure"
+    )
     @pytest.mark.asyncio
     async def test_ohlc_with_limit(self, client: AsyncClient):
         """Test OHLC data with limit parameter"""
@@ -129,7 +138,9 @@ class TestOHLCAPI:
         assert "data" in data
         assert len(data["data"]) <= limit
 
-    @pytest.mark.skip(reason="OHLC endpoint format needs verification - check actual response structure")
+    @pytest.mark.skip(
+        reason="OHLC endpoint format needs verification - check actual response structure"
+    )
     @pytest.mark.asyncio
     async def test_invalid_symbol(self, client: AsyncClient):
         """Test handling of invalid symbols"""
@@ -139,16 +150,19 @@ class TestOHLCAPI:
         data = response.json()
         assert "data" in data
 
+
 class TestErrorHandling:
     """Test error handling"""
-    
+
     @pytest.mark.asyncio
     async def test_nonexistent_endpoint(self, client: AsyncClient):
         """Test 404 for non-existent endpoints"""
         response = await client.get("/api/v1/nonexistent")
         assert response.status_code == 404
 
-    @pytest.mark.skip(reason="OHLC endpoint format needs verification before testing error handling")
+    @pytest.mark.skip(
+        reason="OHLC endpoint format needs verification before testing error handling"
+    )
     @pytest.mark.asyncio
     async def test_invalid_parameters(self, client: AsyncClient):
         """Test handling of invalid parameters"""
@@ -156,16 +170,17 @@ class TestErrorHandling:
         # Should handle gracefully
         assert response.status_code in [200, 422]  # 422 for validation error
 
+
 class TestCORS:
     """Test CORS configuration"""
-    
+
     @pytest.mark.asyncio
     async def test_cors_headers(self, client: AsyncClient):
         """Test CORS headers are present"""
         response = await client.options("/api/health")
         # OPTIONS may return 405 if not explicitly configured
         assert response.status_code in [200, 405]
-        
+
         # If 200, check for CORS headers
         if response.status_code == 200:
             headers = response.headers

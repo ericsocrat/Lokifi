@@ -24,20 +24,20 @@ function Test-ScanMode {
         [string[]]$CustomInclude = @(),
         [string[]]$CustomExclude = @()
     )
-    
+
     Write-Host "`n═══════════════════════════════════════════════════════════════" -ForegroundColor Yellow
     Write-Host "Testing Mode: $ModeName" -ForegroundColor Cyan
     Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Yellow
-    
+
     $startTime = Get-Date
-    
+
     # Build parameters
     $params = @{
         ProjectRoot = $projectRoot
         OutputFormat = 'json'
         ScanMode = $ScanMode
     }
-    
+
     if ($SearchKeywords.Count -gt 0) {
         $params.SearchKeywords = $SearchKeywords
     }
@@ -47,22 +47,22 @@ function Test-ScanMode {
     if ($CustomExclude.Count -gt 0) {
         $params.CustomExcludePatterns = $CustomExclude
     }
-    
+
     # Run scan
     try {
         $result = Invoke-CodebaseAnalysis @params 2>&1 | Out-String
         $duration = (Get-Date).Subtract($startTime).TotalSeconds
-        
+
         # Parse JSON output from the result
         $jsonMatch = $result | Select-String -Pattern '\{[\s\S]*"analysis_id"[\s\S]*\}' -AllMatches
         if ($jsonMatch) {
             $jsonData = $jsonMatch.Matches[0].Value | ConvertFrom-Json
-            
+
             Write-Host "`n✅ Scan completed in $([math]::Round($duration, 1))s" -ForegroundColor Green
-            
+
             # Verify metrics
             $metrics = $jsonData.metrics
-            
+
             Write-Host "`n📊 Files Analyzed:" -ForegroundColor Cyan
             Write-Host "   Frontend: $($metrics.Frontend.Files)" -ForegroundColor White
             Write-Host "   Backend: $($metrics.Backend.Files)" -ForegroundColor White
@@ -70,15 +70,15 @@ function Test-ScanMode {
             Write-Host "   Tests: $($metrics.Tests.Files)" -ForegroundColor White
             Write-Host "   Documentation: $($metrics.Documentation.Files)" -ForegroundColor White
             Write-Host "   Total: $($metrics.Total.Files)" -ForegroundColor Yellow
-            
+
             # Verify expected categories
             $passed = $true
             $issues = @()
-            
+
             foreach ($category in $ExpectedCategories.Keys) {
                 $expected = $ExpectedCategories[$category]
                 $actual = $metrics.$category.Files
-                
+
                 if ($expected -eq 0 -and $actual -gt 0) {
                     $passed = $false
                     $issues += "❌ $category should be EXCLUDED but found $actual files"
@@ -96,12 +96,12 @@ function Test-ScanMode {
                     }
                 }
             }
-            
+
             if ($issues.Count -gt 0) {
                 Write-Host "`n⚠️  Issues Found:" -ForegroundColor Yellow
                 $issues | ForEach-Object { Write-Host "   $_" -ForegroundColor Red }
             }
-            
+
             # Check file patterns
             if ($MustIncludePatterns.Count -gt 0) {
                 Write-Host "`n🔍 Verifying inclusion patterns..." -ForegroundColor Cyan
@@ -114,14 +114,14 @@ function Test-ScanMode {
                     }
                 }
             }
-            
+
             if ($MustExcludePatterns.Count -gt 0) {
                 Write-Host "`n🚫 Verifying exclusion patterns..." -ForegroundColor Cyan
                 foreach ($pattern in $MustExcludePatterns) {
                     Write-Host "   ✓ $pattern should be excluded" -ForegroundColor Gray
                 }
             }
-            
+
             # Return test result
             return @{
                 Mode = $ModeName
@@ -250,23 +250,23 @@ try {
         -OutputFormat 'json' `
         -ScanMode 'Search' `
         -SearchKeywords @('TODO', 'FIXME', 'BUG') 2>&1 | Out-String
-    
+
     $duration = (Get-Date).Subtract($startTime).TotalSeconds
-    
+
     Write-Host "`n✅ Search scan completed in $([math]::Round($duration, 1))s" -ForegroundColor Green
-    
+
     # Check if search results were displayed
     $hasResults = $searchResult -match "SEARCH RESULTS" -and $searchResult -match "Found \d+ files"
-    
+
     if ($hasResults) {
         Write-Host "✓ Search results displayed correctly" -ForegroundColor Green
-        
+
         # Extract matches count
         if ($searchResult -match "Found (\d+) files") {
             $filesFound = $matches[1]
             Write-Host "✓ Found keywords in $filesFound files" -ForegroundColor Green
         }
-        
+
         $test5 = @{
             Mode = "Search Scan"
             Passed = $true
@@ -347,17 +347,17 @@ Write-Host "──────────────────────�
 foreach ($result in $testResults) {
     $status = if ($result.Passed) { "✅ PASS" } else { "❌ FAIL" }
     $color = if ($result.Passed) { "Green" } else { "Red" }
-    
+
     Write-Host "`n$status - " -NoNewline -ForegroundColor $color
     Write-Host $result.Mode -ForegroundColor White
     Write-Host "   Duration: $([math]::Round($result.Duration, 1))s" -ForegroundColor Gray
-    
+
     if ($result.FilesAnalyzed -is [int]) {
         Write-Host "   Files: $($result.FilesAnalyzed)" -ForegroundColor Gray
     } else {
         Write-Host "   Mode: $($result.FilesAnalyzed)" -ForegroundColor Gray
     }
-    
+
     if ($result.Issues.Count -gt 0) {
         Write-Host "   Issues:" -ForegroundColor Yellow
         $result.Issues | ForEach-Object { Write-Host "     • $_" -ForegroundColor Yellow }

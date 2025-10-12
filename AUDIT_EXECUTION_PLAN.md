@@ -1,8 +1,8 @@
 # Lokifi Comprehensive Audit & Optimization Plan
 
-**Date**: October 12, 2025  
-**Version**: 3.1.0-alpha  
-**Executor**: AI Assistant  
+**Date**: October 12, 2025
+**Version**: 3.1.0-alpha
+**Executor**: AI Assistant
 **Duration Estimate**: 4-6 hours
 
 ---
@@ -36,9 +36,9 @@ This document outlines the comprehensive audit, optimization, and verification p
 5. **Coverage**: Baseline needs measurement
 
 ### Working Systems
-✅ lokifi.ps1 loads without errors  
-✅ Help system functional  
-✅ 50+ commands registered in ValidateSet  
+✅ lokifi.ps1 loads without errors
+✅ Help system functional
+✅ 50+ commands registered in ValidateSet
 ✅ 8 test files passed validation (crypto_data, auth validated)
 
 ---
@@ -46,7 +46,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 🔧 Phase 1: Testing & Validation (Priority 1)
 
 ### 1.1 Fix Test Import Errors
-**Task**: Fix fixture naming inconsistency  
+**Task**: Fix fixture naming inconsistency
 **Files**:
 - `tests/fixtures/fixture_auth.py`
 - `tests/services/test_auth_service.py`
@@ -61,7 +61,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: All test files import successfully
 
 ### 1.2 Fix Failing Tests
-**Task**: Fix 4 failing tests in test_crypto_data_service.py  
+**Task**: Fix 4 failing tests in test_crypto_data_service.py
 **Issues**:
 - `_set_cached` → `_set_cache` (method name)
 - Return type expectations (string vs dict)
@@ -89,7 +89,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: 30+ new tests created, all passing
 
 ### 1.4 Run Full Test Suite
-**Task**: Execute all 175+ tests  
+**Task**: Execute all 175+ tests
 **Actions**:
 1. Fix all collection errors
 2. Run pytest with coverage
@@ -103,7 +103,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 🧹 Phase 2: Code Hygiene & Structure (Priority 2)
 
 ### 2.1 Remove Dead Code
-**Task**: Identify and remove unused code  
+**Task**: Identify and remove unused code
 **Targets**:
 - Unused imports
 - Commented code blocks
@@ -119,7 +119,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Zero unused imports, clean linting
 
 ### 2.2 Consolidate Duplicates
-**Task**: Find and merge duplicate functions  
+**Task**: Find and merge duplicate functions
 **Actions**:
 1. Use semantic search for similar function signatures
 2. Identify duplicate utility functions
@@ -129,7 +129,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: No duplicate function definitions
 
 ### 2.3 Enforce Code Standards
-**Task**: Apply consistent style  
+**Task**: Apply consistent style
 **Actions**:
 1. Run `black` on Python (line length 100)
 2. Run `prettier` on TypeScript/JavaScript
@@ -139,7 +139,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: All files pass formatters
 
 ### 2.4 Verify Environment Variables
-**Task**: Audit .env usage  
+**Task**: Audit .env usage
 **Actions**:
 1. List all env vars used in code
 2. Verify all exist in `.env.example`
@@ -153,7 +153,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 🚀 Phase 3: Optimization & Stability (Priority 1)
 
 ### 3.1 Refactor Async Patterns
-**Task**: Optimize async/await usage  
+**Task**: Optimize async/await usage
 **Actions**:
 1. Identify blocking calls in async functions
 2. Convert to proper async patterns
@@ -163,7 +163,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: No blocking operations in async code
 
 ### 3.2 Optimize Database Queries
-**Task**: Improve query performance  
+**Task**: Improve query performance
 **Actions**:
 1. Review N+1 query patterns
 2. Add proper indexes
@@ -173,7 +173,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: 50% reduction in query count
 
 ### 3.3 Optimize lokifi.ps1
-**Task**: Improve script performance  
+**Task**: Improve script performance
 **Actions**:
 1. Profile slow functions
 2. Cache expensive operations
@@ -183,7 +183,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: 30% faster command execution
 
 ### 3.4 Fix Deprecation Warnings
-**Task**: Resolve all deprecations  
+**Task**: Resolve all deprecations
 **Actions**:
 1. Migrate Pydantic V1 → V2 validators
 2. Replace FastAPI `on_event` with lifespan
@@ -197,7 +197,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 🔒 Phase 4: Security & Compliance (Priority 1)
 
 ### 4.1 Dependency Vulnerability Scan
-**Task**: Identify and fix CVEs  
+**Task**: Identify and fix CVEs
 **Actions**:
 1. Run `pip audit` on Python dependencies
 2. Run `npm audit` on Node dependencies
@@ -207,7 +207,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Zero critical/high vulnerabilities
 
 ### 4.2 Secret Detection Scan
-**Task**: Ensure no exposed secrets  
+**Task**: Ensure no exposed secrets
 **Actions**:
 1. Run `.\lokifi.ps1 security -Component secrets`
 2. Verify no API keys, tokens in code
@@ -217,7 +217,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Zero secrets found
 
 ### 4.3 Input Validation Audit
-**Task**: Verify all inputs sanitized  
+**Task**: Verify all inputs sanitized
 **Actions**:
 1. Review all API endpoints
 2. Check SQL injection risks
@@ -227,7 +227,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: All inputs validated
 
 ### 4.4 Token & Session Security
-**Task**: Audit authentication  
+**Task**: Audit authentication
 **Actions**:
 1. Verify JWT expiration
 2. Check session timeout logic
@@ -241,7 +241,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 📈 Phase 5: Performance Benchmarking (Priority 2)
 
 ### 5.1 Command Latency Benchmark
-**Task**: Measure lokifi.ps1 performance  
+**Task**: Measure lokifi.ps1 performance
 **Actions**:
 1. Benchmark all 50+ commands
 2. Record avg, p95, p99 latency
@@ -255,7 +255,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 - `analyze`: < 60s
 
 ### 5.2 API Response Time Benchmark
-**Task**: Measure backend performance  
+**Task**: Measure backend performance
 **Actions**:
 1. Run load tests on all endpoints
 2. Record response times
@@ -269,7 +269,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 - Complex queries: < 2s
 
 ### 5.3 Memory & CPU Profiling
-**Task**: Profile resource usage  
+**Task**: Profile resource usage
 **Actions**:
 1. Run lokifi.ps1 under profiler
 2. Run backend under memory profiler
@@ -282,7 +282,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 - Backend load: < 500MB
 
 ### 5.4 Startup Time Optimization
-**Task**: Reduce initialization time  
+**Task**: Reduce initialization time
 **Actions**:
 1. Profile backend startup
 2. Optimize import statements
@@ -298,7 +298,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 📊 Phase 6: Observability & Logging (Priority 2)
 
 ### 6.1 Standardize Log Format
-**Task**: Implement structured logging  
+**Task**: Implement structured logging
 **Actions**:
 1. Define JSON log schema
 2. Add context fields (user, request_id, latency)
@@ -308,7 +308,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: All logs follow schema
 
 ### 6.2 Add Metrics Export
-**Task**: Implement metrics collection  
+**Task**: Implement metrics collection
 **Actions**:
 1. Add Prometheus metrics endpoints
 2. Export key performance indicators
@@ -318,7 +318,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Metrics exportable
 
 ### 6.3 Error Tracking Integration
-**Task**: Add centralized error tracking  
+**Task**: Add centralized error tracking
 **Actions**:
 1. Integrate Sentry (or similar)
 2. Configure error grouping
@@ -328,7 +328,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Errors tracked centrally
 
 ### 6.4 Log Rotation & Retention
-**Task**: Implement log management  
+**Task**: Implement log management
 **Actions**:
 1. Configure log rotation
 2. Set retention policies
@@ -342,7 +342,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 📝 Phase 7: Documentation & Reporting (Priority 2)
 
 ### 7.1 Update README
-**Task**: Refresh main documentation  
+**Task**: Refresh main documentation
 **Actions**:
 1. Update feature list
 2. Document all 50+ commands
@@ -352,7 +352,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: README complete and accurate
 
 ### 7.2 Create Audit Report
-**Task**: Document all findings  
+**Task**: Document all findings
 **Sections**:
 1. Executive Summary
 2. Issues Found & Fixed
@@ -365,7 +365,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Comprehensive report generated
 
 ### 7.3 Update API Documentation
-**Task**: Refresh API docs  
+**Task**: Refresh API docs
 **Actions**:
 1. Generate OpenAPI spec
 2. Update endpoint descriptions
@@ -375,7 +375,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: API docs complete
 
 ### 7.4 Create Migration Guide
-**Task**: Document breaking changes  
+**Task**: Document breaking changes
 **Actions**:
 1. List all breaking changes
 2. Provide migration steps
@@ -389,7 +389,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 ## 🎯 Phase 8: CI/CD & Green Status (Priority 1)
 
 ### 8.1 Fix GitHub Actions
-**Task**: Ensure all workflows pass  
+**Task**: Ensure all workflows pass
 **Actions**:
 1. Review all .github/workflows/*.yml
 2. Fix failing jobs
@@ -399,7 +399,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: All workflows green
 
 ### 8.2 Optimize CI Performance
-**Task**: Speed up CI pipeline  
+**Task**: Speed up CI pipeline
 **Actions**:
 1. Enable caching for dependencies
 2. Parallelize test execution
@@ -409,7 +409,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: 50% faster CI runs
 
 ### 8.3 Add Quality Gates
-**Task**: Enforce quality standards  
+**Task**: Enforce quality standards
 **Actions**:
 1. Add coverage threshold (70%)
 2. Add security scanning step
@@ -419,7 +419,7 @@ This document outlines the comprehensive audit, optimization, and verification p
 **Acceptance**: Quality gates configured
 
 ### 8.4 Create Release Pipeline
-**Task**: Automate releases  
+**Task**: Automate releases
 **Actions**:
 1. Set up semantic versioning
 2. Auto-generate changelogs
@@ -532,21 +532,21 @@ This document outlines the comprehensive audit, optimization, and verification p
    - Ensure CI green status
 
    BREAKING CHANGES: None
-   
+
    Test Results:
    - Before: 175 collected (134 errors), 26.58% coverage
    - After: 205+ tests, 100% collection, 90%+ pass rate, 70%+ coverage
-   
+
    Performance:
    - Command latency: 30% improvement
    - Memory usage: 25% reduction
    - CI duration: 50% faster
-   
+
    Security:
    - Zero critical vulnerabilities
    - All secrets scanned and removed
    - Input validation audit complete
-   
+
    See AUDIT_REPORT.md for full details.
    ```
 
@@ -562,6 +562,6 @@ This document outlines the comprehensive audit, optimization, and verification p
 
 ---
 
-**Status**: Ready for execution  
-**Estimated Completion**: 8 hours  
+**Status**: Ready for execution
+**Estimated Completion**: 8 hours
 **Risk Level**: Low (comprehensive plan, clear acceptance criteria)

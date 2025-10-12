@@ -1,7 +1,7 @@
 # 🔍 LOKIFI ANALYZER USAGE AUDIT & RECOMMENDATIONS
 
-**Date**: 2025-10-12  
-**Purpose**: Ensure all Lokifi functions use the codebase-analyzer.ps1 correctly  
+**Date**: 2025-10-12
+**Purpose**: Ensure all Lokifi functions use the codebase-analyzer.ps1 correctly
 **Status**: ⚠️ IMPROVEMENTS NEEDED
 
 ---
@@ -209,7 +209,7 @@ function Search-CodebaseForPatterns {
 
     try {
         . $Global:CodebaseAnalyzerPath
-        
+
         $results = Invoke-CodebaseAnalysis `
             -ScanMode Search `
             -SearchKeywords $Keywords `
@@ -245,10 +245,10 @@ Add to main switch statement:
 'find-todos' {
     Write-LokifiHeader "Finding TODOs/FIXMEs"
     $results = Search-CodebaseForPatterns -Keywords @('TODO', 'FIXME', 'XXX', 'HACK')
-    
+
     if ($results.SearchMatches) {
         Write-Host "`n📋 Found $($results.SearchMatches.Count) files with TODOs`n" -ForegroundColor Cyan
-        
+
         foreach ($match in ($results.SearchMatches | Sort-Object TotalMatches -Descending | Select-Object -First 10)) {
             Write-Host "  📄 $($match.File) - $($match.TotalMatches) items" -ForegroundColor White
         }
@@ -260,11 +260,11 @@ Add to main switch statement:
 'find-console' {
     Write-LokifiHeader "Finding Console Statements"
     $results = Search-CodebaseForPatterns -Keywords @('console.log', 'console.warn', 'console.error', 'console.debug')
-    
+
     if ($results.SearchMatches) {
         $total = ($results.SearchMatches | Measure-Object -Property TotalMatches -Sum).Sum
         Write-Host "`n🔍 Found $total console statements in $($results.SearchMatches.Count) files`n" -ForegroundColor Yellow
-        
+
         foreach ($match in ($results.SearchMatches | Sort-Object TotalMatches -Descending | Select-Object -First 10)) {
             Write-Host "  📄 $($match.File) - $($match.TotalMatches) statements" -ForegroundColor White
         }
@@ -276,11 +276,11 @@ Add to main switch statement:
 'find-secrets' {
     Write-LokifiHeader "Scanning for Potential Secrets"
     $results = Search-CodebaseForPatterns -Keywords @('password', 'api_key', 'secret_key', 'token', 'AKIA')
-    
+
     if ($results.SearchMatches) {
         Write-Host "`n⚠️  Found $($results.SearchMatches.Count) files with potential secrets`n" -ForegroundColor Red
         Write-Host "Review these files manually:" -ForegroundColor Yellow
-        
+
         foreach ($match in $results.SearchMatches) {
             Write-Host "  🔒 $($match.File)" -ForegroundColor Red
         }

@@ -217,7 +217,7 @@ Get-Help Invoke-DatetimeFixer -Full
 ```
 Fix deprecated datetime.utcnow() usage (UP017)
 
-Modernizes Python datetime usage by replacing datetime.utcnow() with 
+Modernizes Python datetime usage by replacing datetime.utcnow() with
 datetime.now(datetime.UTC). Fixes UP017 ruff violations.
 ```
 
@@ -263,7 +263,7 @@ The datetime fixer implementation is **complete and ready for use**. The functio
 
 ---
 
-**Implementation Date**: 2025-10-12  
-**Phase**: Phase 2 (Datetime Fixer)  
-**Status**: ✅ Complete  
-**Next Phase**: Fix test file syntax errors → Re-run datetime fixer  
+**Implementation Date**: 2025-10-12
+**Phase**: Phase 2 (Datetime Fixer)
+**Status**: ✅ Complete
+**Next Phase**: Fix test file syntax errors → Re-run datetime fixer

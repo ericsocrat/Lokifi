@@ -7,7 +7,6 @@ import logging
 from datetime import UTC, datetime
 
 import httpx
-
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 from app.core.redis_client import RedisClient

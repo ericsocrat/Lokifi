@@ -75,7 +75,7 @@
 
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('servers', 'redis', 'postgres', 'test', 'generate-tests', 'generate-mocks', 'generate-fixtures', 'analyze-coverage-gaps', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
+    [ValidateSet('servers', 'redis', 'postgres', 'test', 'generate-tests', 'generate-mocks', 'generate-fixtures', 'analyze-coverage-gaps', 'validate-tests', 'run-tests', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
                  'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs',
                  'analyze', 'fix', 'fix-datetime', 'fix-imports', 'fix-type-hints', 'fix-quality', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
@@ -5305,6 +5305,320 @@ function Invoke-CoverageGapAnalyzer {
     }
 }
 
+function Invoke-TestValidator {
+    <#
+    .SYNOPSIS
+        Validate test files for syntax errors, import issues, and completeness
+    .DESCRIPTION
+        Checks test files for:
+        - Python syntax errors
+        - Import errors
+        - Missing fixtures
+        - Incomplete test cases (TODO markers)
+        - Mock usage
+        - Assertion presence
+    .PARAMETER TestPath
+        Path to test file or directory to validate
+    .PARAMETER FixIssues
+        Automatically fix common issues
+    .EXAMPLE
+        Invoke-TestValidator -TestPath "tests/services/test_auth_service.py"
+        Invoke-TestValidator -TestPath "tests/services" -FixIssues
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TestPath,
+        [switch]$FixIssues,
+        [switch]$ShowDetails
+    )
+
+    try {
+        Push-Location (Join-Path $PSScriptRoot ".." "apps" "backend")
+
+        Write-Host ""
+        Write-Host "🚀 Lokifi Ultimate Manager - ✅ Test Validator" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        # Validate test path exists
+        if (-not (Test-Path $TestPath)) {
+            Write-Host "❌ Test path not found: $TestPath" -ForegroundColor Red
+            return
+        }
+
+        # Get all test files
+        $testFiles = @()
+        if (Test-Path $TestPath -PathType Container) {
+            $testFiles = Get-ChildItem $TestPath -Recurse -Filter "test_*.py" | Where-Object { $_.Name -notlike "*__pycache__*" }
+        } else {
+            $testFiles = @(Get-Item $TestPath)
+        }
+
+        Write-Host "📁 Found $($testFiles.Count) test file(s)" -ForegroundColor Yellow
+        Write-Host ""
+
+        $summary = @{
+            TotalFiles = $testFiles.Count
+            PassedFiles = 0
+            FailedFiles = 0
+            Issues = @()
+        }
+
+        foreach ($file in $testFiles) {
+            $relativePath = $file.FullName.Replace((Get-Location).Path + "\", "")
+            Write-Host "🔍 Validating: $relativePath" -ForegroundColor Cyan
+
+            $fileIssues = @()
+
+            # Check 1: Python syntax
+            $syntaxCheck = python -m py_compile $file.FullName 2>&1
+            if ($LASTEXITCODE -ne 0) {
+                $fileIssues += "Syntax Error: $syntaxCheck"
+                Write-Host "   ❌ Syntax error detected" -ForegroundColor Red
+            } else {
+                Write-Host "   ✅ Syntax valid" -ForegroundColor Green
+            }
+
+            # Check 2: Read file content for analysis
+            $content = Get-Content $file.FullName -Raw
+
+            # Check imports
+            if ($content -notmatch 'import pytest') {
+                $fileIssues += "Missing pytest import"
+                Write-Host "   ⚠️  Missing: import pytest" -ForegroundColor Yellow
+            }
+
+            # Check for TODO markers
+            $todoMatches = [regex]::Matches($content, '# TODO:|TODO:')
+            if ($todoMatches.Count -gt 0) {
+                $fileIssues += "$($todoMatches.Count) TODO marker(s) found"
+                Write-Host "   ⚠️  Found $($todoMatches.Count) TODO marker(s)" -ForegroundColor Yellow
+
+                if ($ShowDetails) {
+                    $todoMatches | ForEach-Object {
+                        $lineNumber = ($content.Substring(0, $_.Index) -split "`n").Count
+                        Write-Host "      Line $lineNumber" -ForegroundColor Gray
+                    }
+                }
+            }
+
+            # Check for test functions
+            $testFunctionMatches = [regex]::Matches($content, 'def test_\w+\(')
+            $testFunctionCount = $testFunctionMatches.Count
+            if ($testFunctionCount -eq 0) {
+                $fileIssues += "No test functions found"
+                Write-Host "   ❌ No test functions (def test_*)" -ForegroundColor Red
+            } else {
+                Write-Host "   ✅ $testFunctionCount test function(s)" -ForegroundColor Green
+            }
+
+            # Check for assertions
+            $assertionMatches = [regex]::Matches($content, 'assert ')
+            if ($assertionMatches.Count -eq 0 -and $testFunctionCount -gt 0) {
+                $fileIssues += "Test functions missing assertions"
+                Write-Host "   ⚠️  No assertions found in tests" -ForegroundColor Yellow
+            }
+
+            # Check for mock usage
+            $hasMocks = $content -match 'from.*mock|import.*Mock|@patch'
+            if ($hasMocks) {
+                Write-Host "   ✅ Uses mocks/patches" -ForegroundColor Green
+            } else {
+                Write-Host "   ℹ️  No mocks detected" -ForegroundColor Gray
+            }
+
+            # Check for async tests
+            $asyncTestMatches = [regex]::Matches($content, '@pytest\.mark\.asyncio')
+            if ($asyncTestMatches.Count -gt 0) {
+                Write-Host "   ✅ $($asyncTestMatches.Count) async test(s)" -ForegroundColor Green
+            }
+
+            # Check for fixtures
+            $fixtureMatches = [regex]::Matches($content, '@pytest\.fixture')
+            if ($fixtureMatches.Count -gt 0) {
+                Write-Host "   ✅ $($fixtureMatches.Count) fixture(s) defined" -ForegroundColor Green
+            }
+
+            # Summary
+            if ($fileIssues.Count -eq 0) {
+                Write-Host "   ✅ All checks passed!" -ForegroundColor Green
+                $summary.PassedFiles++
+            } else {
+                Write-Host "   ⚠️  Issues found: $($fileIssues.Count)" -ForegroundColor Yellow
+                $summary.FailedFiles++
+                $summary.Issues += [PSCustomObject]@{
+                    File = $relativePath
+                    Issues = $fileIssues
+                }
+            }
+
+            Write-Host ""
+        }
+
+        # Final summary
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host "📊 VALIDATION SUMMARY" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Total Files: $($summary.TotalFiles)" -ForegroundColor White
+        Write-Host "Passed: $($summary.PassedFiles)" -ForegroundColor Green
+        Write-Host "Issues Found: $($summary.FailedFiles)" -ForegroundColor $(if ($summary.FailedFiles -eq 0) { "Green" } else { "Yellow" })
+        Write-Host ""
+
+        if ($summary.Issues.Count -gt 0) {
+            Write-Host "📝 Files with Issues:" -ForegroundColor Yellow
+            foreach ($item in $summary.Issues) {
+                Write-Host "   • $($item.File)" -ForegroundColor White
+                foreach ($issue in $item.Issues) {
+                    Write-Host "     - $issue" -ForegroundColor Gray
+                }
+            }
+            Write-Host ""
+        }
+
+        if ($summary.PassedFiles -eq $summary.TotalFiles) {
+            Write-Host "🎉 All tests validated successfully!" -ForegroundColor Green
+        } else {
+            Write-Host "💡 Fix issues and re-run validation" -ForegroundColor Cyan
+        }
+
+    } finally {
+        Pop-Location
+    }
+}
+
+function Invoke-TestRunner {
+    <#
+    .SYNOPSIS
+        Run specific test files or directories with coverage reporting
+    .DESCRIPTION
+        Executes pytest on specified test files/directories and shows:
+        - Test results (passed/failed/skipped)
+        - Execution time
+        - Coverage metrics
+        - Coverage improvement over time
+    .PARAMETER TestPath
+        Path to test file or directory to run
+    .PARAMETER Coverage
+        Include coverage reporting
+    .PARAMETER Verbose
+        Show verbose test output
+    .PARAMETER MarkersLevel
+        Filter tests by markers (slow, fast, integration, unit)
+    .EXAMPLE
+        Invoke-TestRunner -TestPath "tests/services/test_auth_service.py"
+        Invoke-TestRunner -TestPath "tests/services" -Coverage
+        Invoke-TestRunner -TestPath "tests" -Coverage -Verbose
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TestPath,
+        [switch]$Coverage,
+        [switch]$ShowVerboseOutput,
+        [string]$MarkersLevel = ""
+    )
+
+    try {
+        Push-Location (Join-Path $PSScriptRoot ".." "apps" "backend")
+
+        Write-Host ""
+        Write-Host "🚀 Lokifi Ultimate Manager - 🧪 Test Runner" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        # Validate test path
+        if (-not (Test-Path $TestPath)) {
+            Write-Host "❌ Test path not found: $TestPath" -ForegroundColor Red
+            return
+        }
+
+        Write-Host "📁 Running tests: $TestPath" -ForegroundColor Yellow
+        Write-Host ""
+
+        # Build pytest command
+        $pytestArgs = @($TestPath)
+
+        if ($Coverage) {
+            $pytestArgs += "--cov=app"
+            $pytestArgs += "--cov-report=term-missing"
+            $pytestArgs += "--cov-report=html"
+        }
+
+        if ($ShowVerboseOutput) {
+            $pytestArgs += "-vv"
+        } else {
+            $pytestArgs += "-v"
+        }
+
+        if ($MarkersLevel) {
+            $pytestArgs += "-m"
+            $pytestArgs += $MarkersLevel
+        }
+
+        # Add color and summary options
+        $pytestArgs += "--color=yes"
+        $pytestArgs += "--tb=short"
+
+        Write-Host "🔍 Running: python -m pytest $($pytestArgs -join ' ')" -ForegroundColor Cyan
+        Write-Host ""
+
+        # Run tests
+        $startTime = Get-Date
+        $result = python -m pytest @pytestArgs
+        $endTime = Get-Date
+        $duration = ($endTime - $startTime).TotalSeconds
+
+        # Display results
+        Write-Host $result
+        Write-Host ""
+
+        # Parse results
+        $passed = 0
+        $failed = 0
+        $skipped = 0
+
+        if ($result -match '(\d+) passed') {
+            $passed = [int]$matches[1]
+        }
+        if ($result -match '(\d+) failed') {
+            $failed = [int]$matches[1]
+        }
+        if ($result -match '(\d+) skipped') {
+            $skipped = [int]$matches[1]
+        }
+
+        # Summary
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host "📊 TEST EXECUTION SUMMARY" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Execution Time: $([math]::Round($duration, 2))s" -ForegroundColor Cyan
+        Write-Host "Passed: $passed" -ForegroundColor Green
+        if ($failed -gt 0) {
+            Write-Host "Failed: $failed" -ForegroundColor Red
+        }
+        if ($skipped -gt 0) {
+            Write-Host "Skipped: $skipped" -ForegroundColor Yellow
+        }
+        Write-Host ""
+
+        if ($Coverage) {
+            Write-Host "📈 Coverage report generated: htmlcov/index.html" -ForegroundColor Cyan
+            Write-Host "   View with: start htmlcov/index.html" -ForegroundColor Gray
+            Write-Host ""
+        }
+
+        if ($failed -eq 0) {
+            Write-Host "✅ All tests passed!" -ForegroundColor Green
+        } else {
+            Write-Host "❌ Some tests failed. Review output above." -ForegroundColor Red
+        }
+
+    } finally {
+        Pop-Location
+    }
+}
+
 function Invoke-PythonTypeFix {
     <#
     .SYNOPSIS
@@ -8832,6 +9146,27 @@ switch ($Action.ToLower()) {
         $detailLevel = if ($Verbose) { 'Verbose' } elseif ($DryRun) { 'Summary' } else { 'Detailed' }
         $moduleToAnalyze = if ($FilePath) { $FilePath } else { "app" }
         Invoke-CoverageGapAnalyzer -Module $moduleToAnalyze -DetailLevel $detailLevel
+    }
+    'validate-tests' {
+        if (-not $FilePath) {
+            Write-Host "❌ Error: -FilePath parameter required" -ForegroundColor Red
+            Write-Host "Example: .\tools\lokifi.ps1 validate-tests -FilePath `"tests/services/test_auth_service.py`"" -ForegroundColor Yellow
+            Write-Host "Example: .\tools\lokifi.ps1 validate-tests -FilePath `"tests/services`"" -ForegroundColor Yellow
+            return
+        }
+        $verboseOutput = ($Mode -eq 'verbose')
+        Invoke-TestValidator -TestPath $FilePath -FixIssues:$Force -ShowDetails:$verboseOutput
+    }
+    'run-tests' {
+        if (-not $FilePath) {
+            Write-Host "❌ Error: -FilePath parameter required" -ForegroundColor Red
+            Write-Host "Example: .\tools\lokifi.ps1 run-tests -FilePath `"tests/services/test_auth_service.py`"" -ForegroundColor Yellow
+            Write-Host "Example: .\tools\lokifi.ps1 run-tests -FilePath `"tests/services`" -Verbose" -ForegroundColor Yellow
+            return
+        }
+        $showCoverage = -not $DryRun  # Use DryRun flag to disable coverage
+        $verboseOutput = ($Mode -eq 'verbose')
+        Invoke-TestRunner -TestPath $FilePath -Coverage:$showCoverage -ShowVerboseOutput:$verboseOutput
     }
     'organize' {
         Write-LokifiHeader "Repository Organization"

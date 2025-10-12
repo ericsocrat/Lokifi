@@ -56,8 +56,7 @@ class ProfileResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class UserSettingsResponse(BaseModel):
@@ -73,8 +72,7 @@ class UserSettingsResponse(BaseModel):
     updated_at: datetime
     last_login: datetime | None
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class NotificationPreferencesResponse(BaseModel):
@@ -94,8 +92,7 @@ class NotificationPreferencesResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class PublicProfileResponse(BaseModel):
@@ -111,8 +108,7 @@ class PublicProfileResponse(BaseModel):
     created_at: datetime
     is_following: bool | None = None  # Whether current user follows this profile
     
-    class Config:
-        from_attributes = True
+    model_config = {"from_attributes": True}
 
 
 class ProfileSearchResponse(BaseModel):

@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 class ProviderType(str, Enum):
     """Available AI provider types."""
+
     OPENROUTER = "openrouter"
     HUGGINGFACE = "huggingface"
     OLLAMA = "ollama"
@@ -26,34 +27,34 @@ class ProviderType(str, Enum):
 
 class AIProviderManager:
     """Manages AI providers and selects the best available one."""
-    
+
     def __init__(self):
         self.providers: dict[str, AIProvider] = {}
         self._initialize_providers()
-    
+
     def _initialize_providers(self):
         """Initialize all configured providers."""
-        
+
         # OpenRouter provider
-        if hasattr(settings, 'OPENROUTER_API_KEY') and settings.OPENROUTER_API_KEY:
+        if hasattr(settings, "OPENROUTER_API_KEY") and settings.OPENROUTER_API_KEY:
             try:
                 self.providers["openrouter"] = OpenRouterProvider(settings.OPENROUTER_API_KEY)
                 logger.info("OpenRouter provider initialized")
             except Exception as e:
                 logger.error(f"Failed to initialize OpenRouter provider: {e}")
                 sentry_sdk.capture_exception(e)
-        
+
         # Hugging Face provider
-        if hasattr(settings, 'HUGGING_FACE_API_KEY') and settings.HUGGING_FACE_API_KEY:
+        if hasattr(settings, "HUGGING_FACE_API_KEY") and settings.HUGGING_FACE_API_KEY:
             try:
                 self.providers["huggingface"] = HuggingFaceProvider(settings.HUGGING_FACE_API_KEY)
                 logger.info("Hugging Face provider initialized")
             except Exception as e:
                 logger.error(f"Failed to initialize Hugging Face provider: {e}")
                 sentry_sdk.capture_exception(e)
-        
+
         # Ollama provider
-        if hasattr(settings, 'OLLAMA_BASE_URL'):
+        if hasattr(settings, "OLLAMA_BASE_URL"):
             try:
                 self.providers["ollama"] = OllamaProvider(settings.OLLAMA_BASE_URL)
                 logger.info(f"Ollama provider initialized at {settings.OLLAMA_BASE_URL}")
@@ -68,27 +69,27 @@ class AIProviderManager:
             except Exception as e:
                 logger.warning(f"Ollama not available: {e}")
                 # Don't report to Sentry - this is expected when Ollama isn't installed
-        
+
         # Always add mock provider as fallback
         self.providers["mock"] = MockProvider()
         logger.info("Mock provider initialized as fallback")
-    
+
     async def get_available_providers(self) -> list[str]:
         """Get list of available and working providers."""
         available = []
-        
+
         for name, provider in self.providers.items():
             try:
                 if await provider.is_available():
                     available.append(name)
             except Exception as e:
                 logger.warning(f"Provider {name} availability check failed: {e}")
-        
+
         return available
-    
+
     async def get_best_provider(self, preferred_provider: str | None = None) -> AIProvider:
         """Get the best available provider, optionally preferring a specific one."""
-        
+
         # If a specific provider is requested and available, use it
         if preferred_provider and preferred_provider in self.providers:
             provider = self.providers[preferred_provider]
@@ -99,10 +100,10 @@ class AIProviderManager:
                     logger.warning(f"Preferred provider {preferred_provider} is not available")
             except Exception as e:
                 logger.error(f"Error checking provider {preferred_provider}: {e}")
-        
+
         # Provider priority order (fastest and most reliable first)
         priority_order = ["openrouter", "ollama", "huggingface", "mock"]
-        
+
         for provider_name in priority_order:
             if provider_name in self.providers:
                 provider = self.providers[provider_name]
@@ -112,50 +113,50 @@ class AIProviderManager:
                         return provider
                 except Exception as e:
                     logger.error(f"Error with provider {provider_name}: {e}")
-        
+
         # Fallback to mock if nothing else works
         logger.warning("All providers failed, falling back to mock provider")
         return self.providers["mock"]
-    
+
     def get_provider_by_name(self, name: str) -> AIProvider | None:
         """Get a specific provider by name."""
         return self.providers.get(name)
-    
+
     async def get_provider_status(self) -> dict[str, dict[str, Any]]:
         """Get status of all providers."""
         status = {}
-        
+
         for name, provider in self.providers.items():
             try:
                 is_available = await provider.is_available()
                 models = provider.get_supported_models()
                 default_model = await provider.get_default_model()
-                
+
                 status[name] = {
                     "available": is_available,
                     "models": models,
                     "default_model": default_model,
                     "name": provider.name,
-                    "type": "local" if name == "ollama" else "api"
+                    "type": "local" if name == "ollama" else "api",
                 }
             except Exception as e:
                 status[name] = {
                     "available": False,
                     "error": str(e),
                     "models": [],
-                    "default_model": None
+                    "default_model": None,
                 }
-        
+
         return status
-    
+
     def has_real_providers(self) -> bool:
         """Check if any real (non-mock) providers are configured."""
         return any(name != "mock" for name in self.providers.keys())
-    
+
     def get_provider_info(self) -> dict[str, str]:
         """Get information about configured providers for the UI."""
         info = {}
-        
+
         if "openrouter" in self.providers:
             info["openrouter"] = "OpenRouter - Access to GPT-4, Claude, and more"
         if "huggingface" in self.providers:
@@ -164,7 +165,7 @@ class AIProviderManager:
             info["ollama"] = "Ollama - Local AI models"
         if not self.has_real_providers():
             info["mock"] = "Demo mode - Configure API keys for real AI"
-        
+
         return info
 
 

@@ -29,36 +29,36 @@ switch ($choice) {
         Write-Host "`n🌍 Testing Full Scan..." -ForegroundColor Cyan
         Invoke-CodebaseAnalysis -ScanMode Full -OutputFormat markdown
     }
-    
+
     '2' {
         Write-Host "`n💻 Testing CodeOnly Scan..." -ForegroundColor Cyan
         Invoke-CodebaseAnalysis -ScanMode CodeOnly -OutputFormat markdown
     }
-    
+
     '3' {
         Write-Host "`n📚 Testing DocsOnly Scan..." -ForegroundColor Cyan
         Invoke-CodebaseAnalysis -ScanMode DocsOnly -OutputFormat markdown
     }
-    
+
     '4' {
         Write-Host "`n⚡ Testing Quick Scan..." -ForegroundColor Cyan
         Invoke-CodebaseAnalysis -ScanMode Quick -OutputFormat markdown
     }
-    
+
     '5' {
         Write-Host "`n🔎 Testing Search Scan (looking for TODO, FIXME, BUG)..." -ForegroundColor Cyan
         Invoke-CodebaseAnalysis -ScanMode Search -SearchKeywords @('TODO', 'FIXME', 'BUG') -OutputFormat markdown
     }
-    
+
     '6' {
         Write-Host "`n🎨 Testing Custom Scan (Python files only)..." -ForegroundColor Cyan
         Invoke-CodebaseAnalysis -ScanMode Custom -CustomIncludePatterns @('*.py') -OutputFormat markdown
     }
-    
+
     '7' {
         Write-Host "`n🔬 Running All Tests..." -ForegroundColor Yellow
         Write-Host ""
-        
+
         # Test 1: Full
         Write-Host "Test 1/6: Full Scan" -ForegroundColor Cyan
         $full = Measure-Command {
@@ -66,7 +66,7 @@ switch ($choice) {
         }
         Write-Host "  Time: $([math]::Round($full.TotalSeconds, 1))s" -ForegroundColor Gray
         Write-Host ""
-        
+
         # Test 2: CodeOnly
         Write-Host "Test 2/6: CodeOnly Scan" -ForegroundColor Cyan
         $codeOnly = Measure-Command {
@@ -76,7 +76,7 @@ switch ($choice) {
         $speedup = [math]::Round($full.TotalSeconds / $codeOnly.TotalSeconds, 1)
         Write-Host "  Speedup: ${speedup}x faster" -ForegroundColor Green
         Write-Host ""
-        
+
         # Test 3: DocsOnly
         Write-Host "Test 3/6: DocsOnly Scan" -ForegroundColor Cyan
         $docsOnly = Measure-Command {
@@ -86,7 +86,7 @@ switch ($choice) {
         $speedup = [math]::Round($full.TotalSeconds / $docsOnly.TotalSeconds, 1)
         Write-Host "  Speedup: ${speedup}x faster" -ForegroundColor Green
         Write-Host ""
-        
+
         # Test 4: Quick
         Write-Host "Test 4/6: Quick Scan" -ForegroundColor Cyan
         $quick = Measure-Command {
@@ -96,7 +96,7 @@ switch ($choice) {
         $speedup = [math]::Round($full.TotalSeconds / $quick.TotalSeconds, 1)
         Write-Host "  Speedup: ${speedup}x faster" -ForegroundColor Green
         Write-Host ""
-        
+
         # Test 5: Search
         Write-Host "Test 5/6: Search Scan" -ForegroundColor Cyan
         $search = Measure-Command {
@@ -104,7 +104,7 @@ switch ($choice) {
         }
         Write-Host "  Time: $([math]::Round($search.TotalSeconds, 1))s" -ForegroundColor Gray
         Write-Host ""
-        
+
         # Test 6: Custom
         Write-Host "Test 6/6: Custom Scan" -ForegroundColor Cyan
         $custom = Measure-Command {
@@ -112,7 +112,7 @@ switch ($choice) {
         }
         Write-Host "  Time: $([math]::Round($custom.TotalSeconds, 1))s" -ForegroundColor Gray
         Write-Host ""
-        
+
         # Summary
         Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Green
         Write-Host "📊 TEST RESULTS SUMMARY" -ForegroundColor Green
@@ -129,7 +129,7 @@ switch ($choice) {
         Write-Host ""
         Write-Host "✅ All tests completed successfully!" -ForegroundColor Green
     }
-    
+
     default {
         Write-Host "❌ Invalid choice" -ForegroundColor Red
     }
