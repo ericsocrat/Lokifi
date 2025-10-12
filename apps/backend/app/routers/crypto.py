@@ -4,12 +4,11 @@ Provides endpoints for fetching crypto market data, prices, and market overview
 """
 
 
+
 import httpx
 from fastapi import APIRouter, HTTPException, Query
 
 from app.core.config import settings
-from typing import Any
-
 
 router = APIRouter(prefix="/crypto", tags=["crypto"])
 
@@ -31,7 +30,7 @@ async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dic
     try:
         # Use proper SSL verification (removed verify=False security issue)
         async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(url, params=params: dict[str, Any])
+            response = await client.get(url, params=params)
             response.raise_for_status()
             return response.json()
     except httpx.HTTPStatusError as e:

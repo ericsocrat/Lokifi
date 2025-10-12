@@ -5,13 +5,12 @@ All pages (Markets, Charts, Portfolio, Alerts, AI Research) can use this service
 
 import logging
 from datetime import datetime, timedelta
+from typing import Any
 
 import httpx
 
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
-from typing import Any
-
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +104,7 @@ class CryptoDataService:
             params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
         
         try:
-            response = await client.get(url, params=params: dict[str, Any])
+            response = await client.get(url, params=params)
             response.raise_for_status()
             return response.json()
         except httpx.HTTPStatusError as e:

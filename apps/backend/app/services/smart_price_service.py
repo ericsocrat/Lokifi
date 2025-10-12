@@ -52,7 +52,7 @@ class SmartPriceService:
             if advanced_redis_client.client:
                 await advanced_redis_client.client.ping()
                 return True
-        except:
+        except Exception:
             pass
         return False
     
@@ -60,7 +60,7 @@ class SmartPriceService:
         try:
             if advanced_redis_client.client:
                 return await advanced_redis_client.get(key)
-        except:
+        except Exception:
             pass
         return None
     
@@ -68,7 +68,7 @@ class SmartPriceService:
         try:
             if advanced_redis_client.client:
                 await advanced_redis_client.set(key, value, expire=ttl)
-        except:
+        except Exception:
             pass
     
     async def get_price(self, symbol: str, force_refresh: bool = False) -> PriceData | None:

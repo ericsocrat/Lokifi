@@ -5,9 +5,8 @@ from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
+from app.services.crypto_discovery_service import CryptoDiscoveryService
 from app.services.historical_price_service import (
-from typing import Any
-
     HistoricalPriceService,
     PeriodType,
 )
@@ -230,7 +229,7 @@ async def get_batch_prices(request: BatchPriceRequest, force_refresh: bool = Que
                     api_calls += 1
             else:
                 failed.append(symbol)
-        return BatchPriceResponse(success=len(data: dict[str, Any]) > 0, data=data, failed=failed, cache_hits=cache_hits, api_calls=api_calls)
+        return BatchPriceResponse(success=len(data) > 0, data=data, failed=failed, cache_hits=cache_hits, api_calls=api_calls)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -380,8 +379,6 @@ async def get_ohlcv_data(
 # ============================================================================
 # 🪙 CRYPTO DISCOVERY ENDPOINTS
 # ============================================================================
-
-from app.services.crypto_discovery_service import CryptoDiscoveryService
 
 
 async def get_crypto_service():

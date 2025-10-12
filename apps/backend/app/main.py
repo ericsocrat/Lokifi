@@ -43,7 +43,6 @@ from app.routers import (
     profile,
     smart_prices,
     social,
-    test_sentry,
     websocket,
     websocket_prices,
 )
@@ -72,17 +71,19 @@ async def lifespan(app: FastAPI):
                     StarletteIntegration(),
                     LoggingIntegration(
                         level=logging.INFO,  # Capture info and above as breadcrumbs
-                        event_level=logging.ERROR  # Send errors as events
-                    )
+                        event_level=logging.ERROR,  # Send errors as events
+                    ),
                 ],
                 # Additional options
                 send_default_pii=False,  # Don't send personally identifiable information
                 attach_stacktrace=True,  # Attach stack traces
                 max_request_body_size="medium",  # Limit body size
-                before_send=lambda event, hint: event if event.get("level") in ["error", "fatal"] else None,  # Only send errors
+                before_send=lambda event, hint: (
+                    event if event.get("level") in ["error", "fatal"] else None
+                ),  # Only send errors
             )
             logger.info("✅ Sentry initialized successfully")
-            
+
             # Test Sentry connection (commented out to prevent startup shutdown)
             # try:
             #     sentry_sdk.capture_message("Lokifi backend started successfully", level="info")
@@ -134,7 +135,7 @@ async def lifespan(app: FastAPI):
     # logger.info("⏰ Initializing J5.3 scheduler...")
     # async with j53_lifespan_manager(app):
     logger.info("✅ All Phase K Track 3 systems initialized successfully")
-    
+
     yield
 
     # Shutdown sequence
@@ -200,28 +201,20 @@ app.add_middleware(
 # Include routers
 app.include_router(health.router, prefix=settings.API_PREFIX)
 app.include_router(auth.router, prefix=settings.API_PREFIX)  # Phase J Authentication
-app.include_router(
-    profile.router, prefix=settings.API_PREFIX
-)  # Phase J Profiles & Settings
+app.include_router(profile.router, prefix=settings.API_PREFIX)  # Phase J Profiles & Settings
 app.include_router(
     profile_enhanced_router, prefix=settings.API_PREFIX
 )  # Phase J2 Enhanced Profile Features
 app.include_router(follow.router, prefix=settings.API_PREFIX)  # Phase J Follow Graph
-app.include_router(
-    conversations.router, prefix=settings.API_PREFIX
-)  # Phase J4 Direct Messages
+app.include_router(conversations.router, prefix=settings.API_PREFIX)  # Phase J4 Direct Messages
 app.include_router(websocket.router, prefix=settings.API_PREFIX)  # Phase J4 WebSocket
 app.include_router(admin_messaging.router, prefix=settings.API_PREFIX)  # Phase J4 Admin
 app.include_router(ai.router, prefix=settings.API_PREFIX)  # Phase J5 AI Chatbot
-app.include_router(
-    ai_websocket.router, prefix=settings.API_PREFIX
-)  # Phase J5 AI WebSocket
+app.include_router(ai_websocket.router, prefix=settings.API_PREFIX)  # Phase J5 AI WebSocket
 app.include_router(
     notifications.router, prefix=settings.API_PREFIX
 )  # Phase J6 Enterprise Notifications
-app.include_router(
-    j6_2_router, prefix=settings.API_PREFIX
-)  # Phase J6.2 Advanced Features
+app.include_router(j6_2_router, prefix=settings.API_PREFIX)  # Phase J6.2 Advanced Features
 app.include_router(ohlc.router, prefix=settings.API_PREFIX)
 app.include_router(news.router, prefix=settings.API_PREFIX)
 app.include_router(social.router, prefix=settings.API_PREFIX)
@@ -233,7 +226,9 @@ app.include_router(market_data.router, prefix=settings.API_PREFIX)
 app.include_router(crypto.router, prefix=settings.API_PREFIX)  # Crypto market data
 app.include_router(realtime_market_router, prefix=settings.API_PREFIX)  # Real-time prices
 app.include_router(smart_prices.router, prefix=settings.API_PREFIX)  # 🎯 Smart Price Service
-app.include_router(websocket_prices.router, prefix=settings.API_PREFIX)  # 🔌 WebSocket Price Updates
+app.include_router(
+    websocket_prices.router, prefix=settings.API_PREFIX
+)  # 🔌 WebSocket Price Updates
 
 # Include J5.3 scheduler endpoints (temporarily disabled)
 # app.include_router(j53_router, prefix=settings.API_PREFIX)
@@ -243,9 +238,6 @@ app.include_router(monitoring_router, prefix=settings.API_PREFIX)
 
 # Include security routes
 app.include_router(security.router, prefix=settings.API_PREFIX)
-
-# Include Sentry test routes (Phase 6A)
-app.include_router(test_sentry.router, prefix=settings.API_PREFIX)
 
 
 @app.get("/")
@@ -269,4 +261,3 @@ if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
-
