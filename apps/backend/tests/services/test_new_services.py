@@ -2,7 +2,10 @@
 import asyncio
 import sys
 
+import pytest
 
+
+@pytest.mark.asyncio
 async def test_crypto_discovery():
     """Test crypto discovery service"""
     print("🧪 Testing Crypto Discovery Service...")
@@ -24,6 +27,8 @@ async def test_crypto_discovery():
         print(f"❌ Crypto Discovery failed: {e}")
         return False
 
+
+@pytest.mark.asyncio
 async def test_smart_price():
     """Test smart price service batch optimization"""
     print("\n🧪 Testing Smart Price Service (Batch Optimization)...")
@@ -49,6 +54,8 @@ async def test_smart_price():
         traceback.print_exc()
         return False
 
+
+@pytest.mark.asyncio
 async def test_unified_service():
     """Test unified asset service"""
     print("\n🧪 Testing Unified Asset Service...")
