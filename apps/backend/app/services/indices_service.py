@@ -174,7 +174,6 @@ class IndicesService:
 
     async def _fetch_from_yahoo_finance(self, limit: int) -> list[dict]:
         """Fetch indices from Yahoo Finance (public API, no key needed)"""
-        indices = []
         symbols_to_fetch = list(self.INDICES_MAP.keys())[:limit]
 
         if not self.client:

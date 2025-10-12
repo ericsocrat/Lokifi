@@ -149,14 +149,11 @@ class HistoricalPriceService:
         
         start_time = time.time()
         cache_key = f"history:{symbol}:{period}"
-        cached = False
-        error = False
         
         try:
             if not force_refresh:
                 cached_data = await self._get_cached_history(cache_key)
                 if cached_data:
-                    cached = True
                     duration = time.time() - start_time
                     performance_metrics.record_request(cached=True, duration=duration)
                     logger.info(f"✅ Cache hit for {symbol} history ({period}) - {duration*1000:.1f}ms")
@@ -180,14 +177,12 @@ class HistoricalPriceService:
                 performance_metrics.record_request(cached=False, duration=duration)
                 logger.info(f"📊 Fetched {len(data)} data points for {symbol} ({period}) - {duration*1000:.1f}ms")
             else:
-                error = True
                 duration = time.time() - start_time
                 performance_metrics.record_request(cached=False, duration=duration, error=True)
                 logger.warning(f"⚠️ No data returned for {symbol} ({period})")
             
             return data
         except Exception as e:
-            error = True
             duration = time.time() - start_time
             performance_metrics.record_request(cached=False, duration=duration, error=True)
             logger.error(f"❌ Error fetching history for {symbol}: {e}")
