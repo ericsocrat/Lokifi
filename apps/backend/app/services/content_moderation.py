@@ -7,7 +7,7 @@ Enhanced safety and moderation capabilities beyond basic filtering.
 import logging
 import re
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from typing import Any
 

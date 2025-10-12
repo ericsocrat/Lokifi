@@ -7,7 +7,7 @@ Provides comprehensive analytics and insights for AI conversations.
 import logging
 from collections import Counter
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import desc, func

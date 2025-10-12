@@ -4,7 +4,7 @@ Provides cross-database compatibility for analytics queries with fallback strate
 """
 
 import logging
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any, Optional
 
 from sqlalchemy import String, func, text

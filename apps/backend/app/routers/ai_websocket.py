@@ -6,7 +6,7 @@ Provides WebSocket endpoint for real-time bidirectional AI chat.
 
 import json
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect, status
 from fastapi.routing import APIRouter

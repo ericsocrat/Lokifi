@@ -11,7 +11,7 @@ import zipfile
 
 # import markdown  # Optional - install with: pip install markdown
 from dataclasses import dataclass
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 from io import BytesIO, StringIO
 from typing import Any
 

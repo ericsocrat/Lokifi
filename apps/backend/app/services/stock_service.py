@@ -6,7 +6,7 @@ using Alpha Vantage's Global Quote endpoint.
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 
 import httpx
 

@@ -11,7 +11,7 @@ import logging
 import mimetypes
 import uuid
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 

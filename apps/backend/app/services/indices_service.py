@@ -4,7 +4,7 @@ Replaces mock data with actual market indices
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 
 import httpx
 

@@ -6,7 +6,7 @@ ExchangeRate-API's latest rates endpoint.
 """
 
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 
 import httpx
 

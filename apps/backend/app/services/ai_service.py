@@ -9,7 +9,7 @@ import re
 import time
 from collections import defaultdict, deque
 from collections.abc import AsyncGenerator
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy.exc import IntegrityError

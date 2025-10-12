@@ -77,7 +77,7 @@ param(
     [Parameter(Position = 0)]
     [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
                  'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs',
-                 'analyze', 'fix', 'fix-datetime', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
+                 'analyze', 'fix', 'fix-datetime', 'fix-imports', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
                  'dashboard', 'metrics',  # Phase 3.2: Monitoring & Telemetry
                  'ai',                     # Phase 3.4: AI/ML Features
@@ -3694,6 +3694,145 @@ function Invoke-DatetimeFixer {
             Write-Host "   • Fixed: datetime.utcnow() → datetime.now(datetime.UTC)" -ForegroundColor White
             Write-Host "   • Code Quality: Modernized datetime handling" -ForegroundColor White
             Write-Host "   • Compatibility: Python 3.12+ best practices" -ForegroundColor White
+            Write-Host ""
+
+        } finally {
+            Pop-Location
+        }
+    }
+}
+
+function Invoke-ImportFixer {
+    <#
+    .SYNOPSIS
+        Automatically fix Python import issues (F401, I001)
+    .DESCRIPTION
+        Fixes unused imports (F401) and unsorted imports (I001) using ruff.
+        Expected to fix 24 errors: 12 unused + 12 unsorted.
+    .PARAMETER DryRun
+        Preview fixes without applying them
+    .PARAMETER Force
+        Skip confirmation prompt
+    .EXAMPLE
+        Invoke-ImportFixer
+        Invoke-ImportFixer -DryRun
+        Invoke-ImportFixer -Force
+    #>
+    param(
+        [switch]$DryRun,
+        [switch]$Force
+    )
+
+    Invoke-WithCodebaseBaseline -AutomationType "Import Cleanup (F401, I001)" -RequireConfirmation:(!$Force) -ScriptBlock {
+        Write-LokifiHeader "Python Import Cleanup"
+        
+        Write-Host "🔍 Scanning for import issues..." -ForegroundColor Cyan
+        Write-Host ""
+
+        $backendPath = $Global:LokifiConfig.BackendDir
+        Push-Location $backendPath
+        try {
+            # Check if ruff is available
+            if (-not (Test-Path "venv/Scripts/ruff.exe")) {
+                Write-Host "❌ Ruff not found in venv" -ForegroundColor Red
+                Write-Host "   Run: pip install ruff (in backend venv)" -ForegroundColor Yellow
+                return
+            }
+
+            # Scan for import issues (F401 = unused imports, I001 = unsorted imports)
+            Write-Host "📊 Current violations:" -ForegroundColor Cyan
+            $beforeCheck = & .\venv\Scripts\ruff.exe check app --select F401,I001 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
+            
+            # Count issues
+            $f401Count = ($beforeCheck | Select-String "F401" | Measure-Object).Count
+            $i001Count = ($beforeCheck | Select-String "I001" | Measure-Object).Count
+            $totalIssues = $f401Count + $i001Count
+            
+            if ($totalIssues -eq 0) {
+                Write-Host "✅ No import issues found!" -ForegroundColor Green
+                Write-Host "   All imports are clean and properly sorted." -ForegroundColor Gray
+                return
+            }
+
+            Write-Host "   Found $f401Count unused imports (F401)" -ForegroundColor Yellow
+            Write-Host "   Found $i001Count unsorted imports (I001)" -ForegroundColor Yellow
+            Write-Host "   Total: $totalIssues import issues" -ForegroundColor Magenta
+            Write-Host ""
+
+            # Show what will be fixed
+            Write-Host "💡 This will fix import issues:" -ForegroundColor Cyan
+            Write-Host "   • F401: Remove unused imports" -ForegroundColor White
+            Write-Host "   • I001: Sort imports alphabetically" -ForegroundColor White
+            Write-Host ""
+            Write-Host "   Benefits:" -ForegroundColor Cyan
+            Write-Host "   • ✅ Cleaner, more maintainable code" -ForegroundColor Gray
+            Write-Host "   • ✅ Faster import resolution" -ForegroundColor Gray
+            Write-Host "   • ✅ Consistent import ordering" -ForegroundColor Gray
+            Write-Host "   • ✅ Reduced code bloat" -ForegroundColor Gray
+            Write-Host ""
+
+            if ($DryRun) {
+                Write-Host "🔍 DRY RUN MODE - Showing what would be fixed:" -ForegroundColor Yellow
+                Write-Host ""
+                # Show issues grouped by type
+                if ($f401Count -gt 0) {
+                    Write-Host "   Unused Imports (F401):" -ForegroundColor Yellow
+                    $beforeCheck | Select-String "F401" | Select-Object -First 5 | ForEach-Object {
+                        Write-Host "   $_" -ForegroundColor Gray
+                    }
+                    if ($f401Count -gt 5) {
+                        Write-Host "   ... and $($f401Count - 5) more" -ForegroundColor DarkGray
+                    }
+                    Write-Host ""
+                }
+                if ($i001Count -gt 0) {
+                    Write-Host "   Unsorted Imports (I001):" -ForegroundColor Yellow
+                    $beforeCheck | Select-String "I001" | Select-Object -First 5 | ForEach-Object {
+                        Write-Host "   $_" -ForegroundColor Gray
+                    }
+                    if ($i001Count -gt 5) {
+                        Write-Host "   ... and $($i001Count - 5) more" -ForegroundColor DarkGray
+                    }
+                    Write-Host ""
+                }
+                Write-Host "💡 Run without -DryRun to apply fixes" -ForegroundColor Cyan
+                return
+            }
+
+            # Apply fixes
+            Write-Host "✍️  Applying fixes..." -ForegroundColor Yellow
+            $fixOutput = & .\venv\Scripts\ruff.exe check app --select F401,I001 --fix 2>&1
+            
+            Write-Host ""
+            Write-Host "🔍 Verifying fixes..." -ForegroundColor Cyan
+            $verification = & .\venv\Scripts\ruff.exe check app --select F401,I001 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
+            $remainingF401 = ($verification | Select-String "F401" | Measure-Object).Count
+            $remainingI001 = ($verification | Select-String "I001" | Measure-Object).Count
+            $remaining = $remainingF401 + $remainingI001
+            
+            if ($remaining -eq 0) {
+                Write-Host "✅ Verification passed! All import issues resolved." -ForegroundColor Green
+                Write-Host ""
+                Write-Host "📊 Fixed:" -ForegroundColor Cyan
+                Write-Host "   • Unused imports (F401): $f401Count" -ForegroundColor Green
+                Write-Host "   • Unsorted imports (I001): $i001Count" -ForegroundColor Green
+                Write-Host "   • Total fixed: $totalIssues" -ForegroundColor Magenta
+            } else {
+                $fixed = $totalIssues - $remaining
+                Write-Host "✅ Fixed $fixed out of $totalIssues import issues!" -ForegroundColor Green
+                if ($remaining -gt 0) {
+                    Write-Host "⚠️  $remaining issues may need manual review:" -ForegroundColor Yellow
+                    Write-Host "   • F401 remaining: $remainingF401" -ForegroundColor Gray
+                    Write-Host "   • I001 remaining: $remainingI001" -ForegroundColor Gray
+                }
+            }
+
+            Write-Host ""
+            Write-Host "📊 Impact Summary:" -ForegroundColor Cyan
+            Write-Host "   • Removed: $f401Count unused imports" -ForegroundColor White
+            Write-Host "   • Sorted: $i001Count import blocks" -ForegroundColor White
+            Write-Host "   • Code Quality: Improved maintainability" -ForegroundColor White
+            Write-Host "   • Performance: Faster Python startup" -ForegroundColor White
             Write-Host ""
 
         } finally {
@@ -7843,6 +7982,9 @@ switch ($Action.ToLower()) {
     }
     'fix-datetime' {
         Invoke-DatetimeFixer
+    }
+    'fix-imports' {
+        Invoke-ImportFixer
     }
     'fix' {
         Write-LokifiHeader "Quick Fixes"

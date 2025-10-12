@@ -7,7 +7,7 @@ Handles conversation context, memory, and intelligent summarization.
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone, UTC
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import desc

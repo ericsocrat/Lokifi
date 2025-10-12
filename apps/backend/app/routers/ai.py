@@ -8,7 +8,7 @@ Handles AI thread creation, messaging, and provider management.
 import base64
 import json
 import logging
-from datetime import datetime, timezone, UTC
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from fastapi.responses import Response, StreamingResponse
