@@ -77,7 +77,7 @@ param(
     [Parameter(Position = 0)]
     [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
                  'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs',
-                 'analyze', 'fix', 'fix-datetime', 'fix-imports', 'fix-type-hints', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
+                 'analyze', 'fix', 'fix-datetime', 'fix-imports', 'fix-type-hints', 'fix-quality', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
                  'dashboard', 'metrics',  # Phase 3.2: Monitoring & Telemetry
                  'ai',                     # Phase 3.4: AI/ML Features
@@ -3947,6 +3947,227 @@ function Invoke-TypeHintFixer {
             Write-Host "   • Code Quality: Python 3.10+ best practices" -ForegroundColor White
             Write-Host "   • Readability: Improved type hint clarity" -ForegroundColor White
             Write-Host ""
+
+        } finally {
+            Pop-Location
+        }
+    }
+}
+
+function Invoke-PythonQualityFix {
+    <#
+    .SYNOPSIS
+        Comprehensive Python code quality auto-fixer (Phase 3 + Phase 4)
+    .DESCRIPTION
+        Runs all automated Python code quality fixes in sequence:
+        - Import cleanup (F401 unused, I001 unsorted)
+        - Type hint modernization (UP045 Optional[X] → X | None)
+        - Import positioning (E402 move to top - unsafe fix)
+        - Datetime modernization (UP017 utcnow → now(UTC))
+        - Reports syntax errors and bare-except (E722) for manual review
+    .PARAMETER DryRun
+        Preview all fixes without applying them
+    .PARAMETER Force
+        Skip all confirmation prompts
+    .PARAMETER SkipUnsafe
+        Skip unsafe fixes like E402 (import repositioning)
+    .EXAMPLE
+        Invoke-PythonQualityFix
+        Invoke-PythonQualityFix -DryRun
+        Invoke-PythonQualityFix -Force -SkipUnsafe
+    #>
+    param(
+        [switch]$DryRun,
+        [switch]$Force,
+        [switch]$SkipUnsafe
+    )
+
+    Invoke-WithCodebaseBaseline -AutomationType "Python Quality Auto-Fix (Comprehensive)" -ScriptBlock {
+        Write-LokifiHeader "🔧 Python Quality Auto-Fix - Phase 3 & 4"
+        Write-Host ""
+        Write-Host "This will run ALL auto-fixable quality improvements:" -ForegroundColor Cyan
+        Write-Host "  ✅ Import cleanup (F401, I001)" -ForegroundColor Green
+        Write-Host "  ✅ Type hint modernization (UP045)" -ForegroundColor Green
+        Write-Host "  ✅ Datetime modernization (UP017)" -ForegroundColor Green
+        if (-not $SkipUnsafe) {
+            Write-Host "  ⚠️  Import positioning (E402 - unsafe)" -ForegroundColor Yellow
+        }
+        Write-Host "  📊 Syntax error scan (for manual review)" -ForegroundColor Magenta
+        Write-Host "  📊 Bare-except scan (E722 - for manual review)" -ForegroundColor Magenta
+        Write-Host ""
+
+        if (-not $Force -and -not $DryRun) {
+            $confirm = Read-Host "Continue? (y/n)"
+            if ($confirm -ne 'y') {
+                Write-Host "❌ Cancelled" -ForegroundColor Yellow
+                return
+            }
+        }
+
+        $backendDir = if ($Global:LokifiConfig.RootDir) {
+            Join-Path $Global:LokifiConfig.RootDir "apps\backend"
+        } else {
+            Join-Path (Get-Location) "apps\backend"
+        }
+
+        if (-not (Test-Path $backendDir)) {
+            Write-Host "❌ Backend directory not found: $backendDir" -ForegroundColor Red
+            return
+        }
+
+        Push-Location $backendDir
+        try {
+            # Check ruff availability
+            $ruffPath = ".\venv\Scripts\ruff.exe"
+            if (-not (Test-Path $ruffPath)) {
+                Write-Host "❌ Ruff not found at $ruffPath" -ForegroundColor Red
+                Write-Host "   Install: pip install ruff" -ForegroundColor Yellow
+                return
+            }
+
+            Write-Host ""
+            Write-Step "1" "📊 Scanning current violations..."
+            $beforeStats = & $ruffPath check app --statistics 2>&1 | Out-String
+            Write-Host $beforeStats -ForegroundColor Gray
+
+            $fixCount = 0
+
+            # Phase 3.1: Import Cleanup
+            Write-Host ""
+            Write-Step "2" "🔧 Fixing import issues (F401, I001)..."
+            $importCheck = & $ruffPath check app --select F401,I001 2>&1 | Out-String
+            if ($importCheck -match "Found (\d+) error") {
+                $count = [int]$matches[1]
+                if ($count -gt 0) {
+                    Write-Host "   Found $count import issues" -ForegroundColor Yellow
+                    if (-not $DryRun) {
+                        & $ruffPath check app --select F401,I001 --fix | Out-Null
+                        Write-Host "   ✅ Fixed $count import issues" -ForegroundColor Green
+                        $fixCount += $count
+                    } else {
+                        Write-Host "   [DRY RUN] Would fix $count issues" -ForegroundColor Cyan
+                    }
+                } else {
+                    Write-Host "   ✅ No import issues found" -ForegroundColor Green
+                }
+            }
+
+            # Phase 3.2: Type Hint Modernization
+            Write-Host ""
+            Write-Step "3" "🔧 Modernizing type hints (UP045)..."
+            $typeCheck = & $ruffPath check app --select UP045 2>&1 | Out-String
+            if ($typeCheck -match "Found (\d+) error") {
+                $count = [int]$matches[1]
+                if ($count -gt 0) {
+                    Write-Host "   Found $count outdated type hints" -ForegroundColor Yellow
+                    if (-not $DryRun) {
+                        & $ruffPath check app --select UP045 --fix | Out-Null
+                        Write-Host "   ✅ Modernized $count type hints" -ForegroundColor Green
+                        $fixCount += $count
+                    } else {
+                        Write-Host "   [DRY RUN] Would fix $count issues" -ForegroundColor Cyan
+                    }
+                } else {
+                    Write-Host "   ✅ All type hints are modern" -ForegroundColor Green
+                }
+            }
+
+            # Phase 2: Datetime Modernization
+            Write-Host ""
+            Write-Step "4" "🔧 Modernizing datetime usage (UP017)..."
+            $datetimeCheck = & $ruffPath check app --select UP017 2>&1 | Out-String
+            if ($datetimeCheck -match "Found (\d+) error") {
+                $count = [int]$matches[1]
+                if ($count -gt 0) {
+                    Write-Host "   Found $count datetime issues" -ForegroundColor Yellow
+                    if (-not $DryRun) {
+                        & $ruffPath check app --select UP017 --fix | Out-Null
+                        Write-Host "   ✅ Fixed $count datetime issues" -ForegroundColor Green
+                        $fixCount += $count
+                    } else {
+                        Write-Host "   [DRY RUN] Would fix $count issues" -ForegroundColor Cyan
+                    }
+                } else {
+                    Write-Host "   ✅ All datetime usage is modern" -ForegroundColor Green
+                }
+            }
+
+            # Phase 4: Import Positioning (E402 - UNSAFE)
+            if (-not $SkipUnsafe) {
+                Write-Host ""
+                Write-Step "5" "⚠️  Fixing import positioning (E402 - UNSAFE)..."
+                $importPosCheck = & $ruffPath check app --select E402 2>&1 | Out-String
+                if ($importPosCheck -match "Found (\d+) error") {
+                    $count = [int]$matches[1]
+                    if ($count -gt 0) {
+                        Write-Host "   Found $count misplaced imports" -ForegroundColor Yellow
+                        Write-Host "   ⚠️  This uses --unsafe-fixes (may change behavior)" -ForegroundColor Yellow
+                        if (-not $DryRun) {
+                            & $ruffPath check app --select E402 --unsafe-fixes --fix | Out-Null
+                            Write-Host "   ✅ Fixed $count import positions" -ForegroundColor Green
+                            $fixCount += $count
+                        } else {
+                            Write-Host "   [DRY RUN] Would fix $count issues" -ForegroundColor Cyan
+                        }
+                    } else {
+                        Write-Host "   ✅ All imports properly positioned" -ForegroundColor Green
+                    }
+                }
+            }
+
+            # Report Manual Review Items
+            Write-Host ""
+            Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+            Write-Host "📋 MANUAL REVIEW REQUIRED" -ForegroundColor Yellow
+            Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+
+            # Syntax Errors
+            Write-Host ""
+            Write-Step "📊" "Checking for syntax errors..."
+            $syntaxErrors = & $ruffPath check app 2>&1 | Select-String "invalid-syntax"
+            if ($syntaxErrors) {
+                $syntaxCount = ($syntaxErrors | Measure-Object).Count
+                Write-Host "   ⚠️  Found $syntaxCount syntax errors (require manual fix)" -ForegroundColor Yellow
+                Write-Host ""
+                & $ruffPath check app 2>&1 | Select-String "invalid-syntax" -Context 2 | ForEach-Object {
+                    Write-Host $_.ToString() -ForegroundColor Gray
+                }
+            } else {
+                Write-Host "   ✅ No syntax errors found" -ForegroundColor Green
+            }
+
+            # Bare Except (E722)
+            Write-Host ""
+            Write-Step "📊" "Checking for bare except statements (E722)..."
+            $bareExceptCheck = & $ruffPath check app --select E722 2>&1 | Out-String
+            if ($bareExceptCheck -match "Found (\d+) error") {
+                $count = [int]$matches[1]
+                if ($count -gt 0) {
+                    Write-Host "   ⚠️  Found $count bare except statements (require manual fix)" -ForegroundColor Yellow
+                    Write-Host "   💡 Replace 'except:' with 'except Exception:' or more specific" -ForegroundColor Cyan
+                    Write-Host ""
+                    & $ruffPath check app --select E722 | Write-Host -ForegroundColor Gray
+                } else {
+                    Write-Host "   ✅ No bare except statements" -ForegroundColor Green
+                }
+            }
+
+            # Final Stats
+            Write-Host ""
+            Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+            Write-Host "📊 FINAL RESULTS" -ForegroundColor Green
+            Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
+            Write-Host ""
+            
+            if (-not $DryRun) {
+                Write-Host "✅ Total fixes applied: $fixCount" -ForegroundColor Green
+                Write-Host ""
+                Write-Step "📊" "Final violation count..."
+                $afterStats = & $ruffPath check app --statistics 2>&1 | Out-String
+                Write-Host $afterStats -ForegroundColor Gray
+            } else {
+                Write-Host "🔍 DRY RUN - No changes made" -ForegroundColor Cyan
+            }
 
         } finally {
             Pop-Location
@@ -8101,6 +8322,9 @@ switch ($Action.ToLower()) {
     }
     'fix-type-hints' {
         Invoke-TypeHintFixer
+    }
+    'fix-quality' {
+        Invoke-PythonQualityFix -Force:$Force -DryRun:$DryRun
     }
     'fix' {
         Write-LokifiHeader "Quick Fixes"
