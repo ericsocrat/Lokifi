@@ -6,7 +6,7 @@ Provides WebSocket endpoint for real-time bidirectional AI chat.
 
 import json
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 from fastapi import Depends, WebSocket, WebSocketDisconnect, status
 from fastapi.routing import APIRouter
@@ -145,7 +145,7 @@ async def websocket_ai_chat(
                 await handle_chat_message(message_data, user, db)
             elif message_data["type"] == "ping":
                 await manager.send_personal_message(
-                    {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}, user.id
+                    {"type": "pong", "timestamp": datetime.now(UTC).isoformat()}, user.id
                 )
             else:
                 await manager.send_personal_message(

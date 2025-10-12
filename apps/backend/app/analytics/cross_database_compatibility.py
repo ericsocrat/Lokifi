@@ -4,7 +4,7 @@ Provides cross-database compatibility for analytics queries with fallback strate
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any, Optional
 
 from sqlalchemy import String, func, text
@@ -165,7 +165,7 @@ class AnalyticsQueryBuilder:
 
         try:
             # Get cutoff date
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+            cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
             # Build query with dialect-specific date truncation
             if self.dialect == DatabaseDialect.POSTGRESQL:
@@ -217,7 +217,7 @@ class AnalyticsQueryBuilder:
         """Get notification analytics with cross-database compatibility"""
 
         try:
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+            cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
             # Base query that works on both databases
             base_query = text(
@@ -303,7 +303,7 @@ class AnalyticsQueryBuilder:
         """Get user engagement metrics with cross-database compatibility"""
 
         try:
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+            cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
             # Simplified query that works on both databases
             engagement_query = text(
@@ -367,7 +367,7 @@ class AnalyticsQueryBuilder:
         """Get message analytics with cross-database compatibility"""
 
         try:
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+            cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
             # Check if messages table exists
             if self.dialect == DatabaseDialect.POSTGRESQL:
@@ -433,7 +433,7 @@ class AnalyticsQueryBuilder:
         logger.info("Using fallback user activity query")
 
         try:
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+            cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
             simple_query = text(
                 """
@@ -467,7 +467,7 @@ class AnalyticsQueryBuilder:
         logger.info("Using fallback notification analytics")
 
         try:
-            cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+            cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
             simple_query = text(
                 """

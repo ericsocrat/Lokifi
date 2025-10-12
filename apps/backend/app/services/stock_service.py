@@ -6,7 +6,7 @@ using Alpha Vantage's Global Quote endpoint.
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 
 import httpx
 
@@ -240,7 +240,7 @@ class StockService:
                 "high_24h": previous_close * 1.05,  # Estimate
                 "low_24h": previous_close * 0.95,  # Estimate
                 "image": f"https://logo.clearbit.com/{symbol.lower()}.com",  # Company logo
-                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "last_updated": datetime.now(UTC).isoformat(),
                 "asset_type": "stock",
             }
 

@@ -7,7 +7,7 @@ Handles conversation context, memory, and intelligent summarization.
 import json
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, UTC
 from typing import Any
 
 from sqlalchemy import desc
@@ -166,7 +166,7 @@ class AIContextManager:
                 user_preferences={},
                 conversation_tone="neutral",
                 topic_tags=[],
-                created_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
             )
 
         # Prepare conversation text
@@ -209,7 +209,7 @@ class AIContextManager:
                         user_preferences={},
                         conversation_tone=parsed_summary.get("conversation_tone", "neutral"),
                         topic_tags=parsed_summary.get("topic_tags", []),
-                        created_at=datetime.now(timezone.utc),
+                        created_at=datetime.now(UTC),
                     )
                 except json.JSONDecodeError:
                     # Fallback to simple text summary
@@ -219,7 +219,7 @@ class AIContextManager:
                         user_preferences={},
                         conversation_tone="neutral",
                         topic_tags=[],
-                        created_at=datetime.now(timezone.utc),
+                        created_at=datetime.now(UTC),
                     )
         except Exception as e:
             logger.error(f"Failed to create AI summary: {e}")
@@ -257,7 +257,7 @@ class AIContextManager:
             user_preferences={},
             conversation_tone="neutral",
             topic_tags=detected_topics,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
     async def _get_or_create_context_summary(
@@ -268,7 +268,7 @@ class AIContextManager:
         # Check cache first
         if thread_id in self.context_cache:
             memory = self.context_cache[thread_id]
-            if memory.last_updated > datetime.now(timezone.utc) - timedelta(hours=1):
+            if memory.last_updated > datetime.now(UTC) - timedelta(hours=1):
                 return memory.context_summary
 
         # Get older messages (excluding recent ones)
@@ -291,7 +291,7 @@ class AIContextManager:
                 important_facts=[],
                 user_style_notes=[],
                 preferred_response_style="adaptive",
-                last_updated=datetime.now(timezone.utc),
+                last_updated=datetime.now(UTC),
             )
             self.context_cache[thread_id] = memory
 

@@ -9,57 +9,57 @@
 
 .DESCRIPTION
     **ENHANCED FEATURES v2.0:**
-    
+
     🚀 PERFORMANCE IMPROVEMENTS:
     - Parallel processing for 3-5x faster scanning
     - Smart caching to avoid re-scanning unchanged files
     - Streaming analysis for reduced memory footprint
     - Progress bar with real-time stats
-    
+
     🧠 ADVANCED ANALYTICS:
     - Code quality scoring (maintainability index)
     - Technical debt estimation
     - Security risk assessment
     - Dependency analysis
     - Git history insights (commits, contributors, churn)
-    
+
     📊 ENHANCED REPORTING:
     - JSON export for integrations
     - CSV export for spreadsheets
     - HTML export with interactive charts
     - Trend analysis (compare with previous runs)
     - CI/CD integration support
-    
+
     💰 IMPROVED ESTIMATES:
     - Region-based cost adjustments (US, EU, Asia, Remote)
     - Project phase breakdown (Planning, Development, Testing, Deployment)
     - Risk-adjusted timelines (Best case, Likely, Worst case)
     - Maintenance cost projection (1 year, 3 years, 5 years)
-    
+
 .PARAMETER ProjectRoot
     Root directory of the project (auto-detected if not provided)
-    
+
 .PARAMETER OutputFormat
     Export format: 'markdown', 'json', 'csv', 'html', 'all' (default: 'markdown')
-    
+
 .PARAMETER Region
     Cost calculation region: 'us', 'eu', 'asia', 'remote' (default: 'us')
-    
+
 .PARAMETER UseCache
     Use cached data from previous run if available (default: $true)
-    
+
 .PARAMETER Detailed
     Include detailed file-by-file analysis (default: $false)
-    
+
 .PARAMETER CompareWith
     Compare with previous report (provide report path)
 
 .EXAMPLE
     .\lokifi.ps1 estimate
-    
+
 .EXAMPLE
     Invoke-CodebaseAnalysis -OutputFormat 'all' -Region 'eu' -Detailed
-    
+
 .EXAMPLE
     Invoke-CodebaseAnalysis -CompareWith "docs\analysis\CODEBASE_ANALYSIS_2025-10-07.md"
 
@@ -74,18 +74,31 @@ function Invoke-CodebaseAnalysis {
     [CmdletBinding()]
     param(
         [string]$ProjectRoot = $null,
-        
+
         [ValidateSet('markdown', 'json', 'csv', 'html', 'all')]
         [string]$OutputFormat = 'markdown',
-        
+
         [ValidateSet('us', 'eu', 'asia', 'remote')]
         [string]$Region = 'us',
-        
+
         [switch]$UseCache = $true,
-        
+
         [switch]$Detailed = $false,
-        
-        [string]$CompareWith = $null
+
+        [string]$CompareWith = $null,
+
+        # NEW: Scanning Modes
+        [ValidateSet('Full', 'CodeOnly', 'DocsOnly', 'Quick', 'Search', 'Custom')]
+        [string]$ScanMode = 'Full',
+
+        # NEW: Search mode parameters
+        [string[]]$SearchKeywords = @(),
+
+        # NEW: Custom mode - specify exact patterns to include
+        [string[]]$CustomIncludePatterns = @(),
+
+        # NEW: Custom mode - specify exact patterns to exclude
+        [string[]]$CustomExcludePatterns = @()
     )
 
     # Use global config if available
@@ -99,7 +112,7 @@ function Invoke-CodebaseAnalysis {
 
     $startTime = Get-Date
     $analysisId = Get-Date -Format "yyyyMMdd_HHmmss"
-    
+
     # Display enhanced header
     Write-Host "`n╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
     Write-Host "║         🚀  CODEBASE ANALYSIS V2.0 - ENHANCED EDITION        ║" -ForegroundColor Cyan
@@ -129,7 +142,7 @@ function Invoke-CodebaseAnalysis {
         Documentation = @{ Files = 0; Lines = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
         Total = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0 }
         Quality = @{ Maintainability = 0; TechnicalDebt = 0; SecurityScore = 0 }
-        Git = @{ 
+        Git = @{
             Commits = 0
             Contributors = 0
             LastCommit = $null
@@ -157,16 +170,16 @@ function Invoke-CodebaseAnalysis {
     # COMPREHENSIVE EXCLUSIONS - Skip legacy/archived/generated content
     $excludeDirs = @(
         # Dependencies & Build Artifacts
-        'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next', 
+        'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next',
         'coverage', 'out', '.cache', 'tmp', 'temp', 'vendor', 'packages', '.turbo',
         'target', 'bin', 'obj', '.nuxt', '.output', '.pytest_cache', '.mypy_cache',
-        
+
         # IDE & Tools
         '.vscode', '.idea', '.vs', '*.egg-info', '.ruff_cache',
-        
+
         # Logs & Uploads
         'logs', 'uploads', '.backups', 'backups',
-        
+
         # ARCHIVES & LEGACY (Performance Critical!)
         'archive',           # All archived content
         'archives',          # Alternative archive folder
@@ -176,7 +189,7 @@ function Invoke-CodebaseAnalysis {
         'obsolete',          # Obsolete code
         '_archive',          # Underscore prefix archives
         '.archive',          # Hidden archives
-        
+
         # SPECIFIC PATHS (Lokifi Project)
         'docs\archive',                    # Archived documentation (major speedup!)
         'docs\old-root-docs',              # Old documentation
@@ -186,7 +199,7 @@ function Invoke-CodebaseAnalysis {
         'infra\backups',                   # Infrastructure backups
         'apps\backend\old',                # Old backend code
         'apps\frontend\old',               # Old frontend code
-        
+
         # DOCUMENTATION ARCHIVES (Skip old reports)
         'docs\archive\analysis',           # Old analysis reports
         'docs\archive\domain-research',    # Old research
@@ -195,21 +208,21 @@ function Invoke-CodebaseAnalysis {
         'docs\archive\old-status-docs',    # Old status reports
         'docs\archive\phase-reports',      # Old phase reports
         'docs\archive\auto-archive-2025-10-08',  # Specific archive dates
-        
+
         # REPORT ARCHIVES (Only scan latest)
         'docs\audit-reports\archive',      # Old audit reports
         'docs\optimization-reports\archive', # Old optimization reports
-        
+
         # DATABASE BACKUPS
         '*.db-journal',                    # SQLite journals
         '*.sqlite-wal',                    # Write-ahead logs
         'backups\*.db',                    # Database backups
-        
+
         # MIGRATION ARTIFACTS
         'migrations\archive',              # Old migrations
         'alembic\versions\archive'         # Old Alembic versions
     )
-    
+
     # FILE-LEVEL EXCLUSIONS (Skip specific patterns)
     $excludeFilePatterns = @(
         '*_ARCHIVE_*',                     # Archived files
@@ -245,23 +258,23 @@ function Invoke-CodebaseAnalysis {
             $metrics.Git.Commits = [int](git rev-list --count HEAD 2>$null)
             $metrics.Git.Contributors = [int](git shortlog -sn HEAD 2>$null | Measure-Object).Count
             $metrics.Git.LastCommit = git log -1 --format="%cr" 2>$null
-            
+
             # Calculate churn (files changed in last 30 days)
             $thirtyDaysAgo = (Get-Date).AddDays(-30).ToString("yyyy-MM-dd")
             $metrics.Git.Churn = [int](git log --since="$thirtyDaysAgo" --name-only --pretty=format: 2>$null | Sort-Object -Unique | Measure-Object).Count
-            
+
             # Real-world timeline analysis
             $firstCommitDate = git log --reverse --format="%ai" 2>$null | Select-Object -First 1
             $lastCommitDate = git log --format="%ai" 2>$null | Select-Object -First 1
-            
+
             if ($firstCommitDate -and $lastCommitDate) {
                 $startDate = [datetime]::Parse($firstCommitDate)
                 $endDate = [datetime]::Parse($lastCommitDate)
-                
+
                 $metrics.Git.StartDate = $startDate.ToString("yyyy-MM-dd")
                 $metrics.Git.EndDate = $endDate.ToString("yyyy-MM-dd")
                 $metrics.Git.TotalDays = ($endDate - $startDate).Days
-                
+
                 # Calculate working days (excluding weekends)
                 $workingDays = 0
                 for ($d = $startDate; $d -le $endDate; $d = $d.AddDays(1)) {
@@ -270,26 +283,26 @@ function Invoke-CodebaseAnalysis {
                     }
                 }
                 $metrics.Git.WorkingDays = $workingDays
-                
+
                 # Get active development days (days with commits)
                 $activeDays = (git log --format="%ai" 2>$null | ForEach-Object { ($_ -split ' ')[0] } | Sort-Object -Unique | Measure-Object).Count
                 $metrics.Git.ActiveDays = $activeDays
-                
+
                 # Estimate actual work hours (assuming 8-hour days, with variation based on commits per day)
                 $avgCommitsPerDay = [math]::Round($metrics.Git.Commits / [math]::Max($activeDays, 1), 1)
-                
+
                 # Heuristic: More commits per day suggests more intensive work
                 # 1-5 commits/day = 4 hours, 6-15 = 6 hours, 16-30 = 8 hours, 30+ = 10+ hours
                 $hoursPerActiveDay = if ($avgCommitsPerDay -le 5) { 4 } `
                     elseif ($avgCommitsPerDay -le 15) { 6 } `
                     elseif ($avgCommitsPerDay -le 30) { 8 } `
                     else { 10 }
-                
+
                 $metrics.Git.EstimatedWorkHours = $activeDays * $hoursPerActiveDay
                 $metrics.Git.EstimatedWorkDays = [math]::Round($metrics.Git.EstimatedWorkHours / 8, 1)
                 $metrics.Git.AvgCommitsPerDay = $avgCommitsPerDay
             }
-            
+
             Write-Host "   ✓ Git: $($metrics.Git.Commits) commits, $($metrics.Git.Contributors) contributors" -ForegroundColor Gray
             if ($metrics.Git.TotalDays) {
                 Write-Host "   ✓ Timeline: $($metrics.Git.TotalDays) days ($($metrics.Git.ActiveDays) active)" -ForegroundColor Gray
@@ -302,32 +315,150 @@ function Invoke-CodebaseAnalysis {
     }
     Write-Host ""
 
-    # Step 2: Optimized File Discovery & Analysis
-    Write-Host "🔎 Discovering & analyzing files (optimized, skipping archives)..." -ForegroundColor Cyan
+    # ============================================
+    # SCANNING MODE CONFIGURATION (NEW!)
+    # ============================================
+    Write-Host "⚙️  Configuring scan mode: " -NoNewline -ForegroundColor Cyan
+    Write-Host $ScanMode -ForegroundColor Yellow
     
+    # Configure patterns and exclusions based on scan mode
+    $activePatternsCategories = @()
+    $activeExcludeDirs = $excludeDirs.Clone()
+    $activeExcludeFiles = $excludeFilePatterns.Clone()
+    $scanDescription = ""
+    
+    switch ($ScanMode) {
+        'Full' {
+            # Full scan - everything including documentation
+            $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests', 'Documentation')
+            $scanDescription = "Complete codebase including code, tests, docs, and configs"
+            # Use minimal exclusions (only build artifacts, dependencies)
+            $activeExcludeDirs = @(
+                'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next',
+                'coverage', 'out', '.cache', 'tmp', 'temp', 'vendor', 'packages', '.turbo',
+                'target', 'bin', 'obj', '.nuxt', '.output', '.pytest_cache', '.mypy_cache',
+                '.vscode', '.idea', '.vs', '*.egg-info', '.ruff_cache',
+                'logs', 'uploads'
+            )
+            $activeExcludeFiles = @('*.log.*', '*.swp', '*.tmp', '*~')
+        }
+        
+        'CodeOnly' {
+            # Code only - excludes all documentation
+            $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests')
+            $scanDescription = "Active code only (no documentation or archives)"
+            # Use full exclusions including all archives and docs folders
+            Write-Host "   📝 Excluding: All .md, .txt, docs folders, archives" -ForegroundColor Gray
+        }
+        
+        'DocsOnly' {
+            # Documentation only - only markdown, text, and doc files
+            $activePatternsCategories = @('Documentation')
+            $scanDescription = "Documentation only (markdown, text files, guides)"
+            # Exclude code directories, keep docs directories
+            $activeExcludeDirs = @(
+                'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next',
+                'coverage', 'out', '.cache', 'tmp', 'temp', 'vendor', 'packages', '.turbo',
+                'target', 'bin', 'obj', '.nuxt', '.output', '.pytest_cache', '.mypy_cache',
+                '.vscode', '.idea', '.vs', '*.egg-info', '.ruff_cache',
+                'apps\backend\app',  # Exclude backend code
+                'apps\frontend\src', # Exclude frontend code
+                'apps\frontend\public'
+            )
+            $activeExcludeFiles = @('*.log.*', '*.swp', '*.tmp', '*~')
+            Write-Host "   � Including: docs/, *.md, *.txt, README files" -ForegroundColor Gray
+        }
+        
+        'Quick' {
+            # Quick scan - only main source files, no tests or detailed analysis
+            $activePatternsCategories = @('Frontend', 'Backend')
+            $scanDescription = "Quick scan (main source files only, no tests/docs)"
+            $Detailed = $false  # Force quick mode
+            Write-Host "   ⚡ Fast mode: Skipping tests, docs, detailed analysis" -ForegroundColor Gray
+        }
+        
+        'Search' {
+            # Search mode - scan everything but filter results by keywords
+            if ($SearchKeywords.Count -eq 0) {
+                Write-Host ""
+                Write-Host "❌ Search mode requires -SearchKeywords parameter" -ForegroundColor Red
+                Write-Host "   Example: -ScanMode Search -SearchKeywords 'TODO','FIXME','BUG'" -ForegroundColor Yellow
+                return
+            }
+            $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests', 'Documentation')
+            $scanDescription = "Search mode: Looking for keywords: $($SearchKeywords -join ', ')"
+            Write-Host "   🔍 Searching for: " -NoNewline -ForegroundColor Gray
+            Write-Host ($SearchKeywords -join ', ') -ForegroundColor Yellow
+        }
+        
+        'Custom' {
+            # Custom mode - user defines exact patterns
+            if ($CustomIncludePatterns.Count -eq 0) {
+                Write-Host ""
+                Write-Host "❌ Custom mode requires -CustomIncludePatterns parameter" -ForegroundColor Red
+                Write-Host "   Example: -ScanMode Custom -CustomIncludePatterns '*.py','*.ts'" -ForegroundColor Yellow
+                return
+            }
+            $scanDescription = "Custom scan: $($CustomIncludePatterns -join ', ')"
+            Write-Host "   📋 Custom patterns: $($CustomIncludePatterns -join ', ')" -ForegroundColor Gray
+            
+            # Override patterns with custom
+            $patterns = @{ Custom = $CustomIncludePatterns }
+            $activePatternsCategories = @('Custom')
+            
+            # Initialize Custom category in metrics
+            $metrics['Custom'] = @{ 
+                Files = 0
+                Lines = 0
+                Comments = 0
+                Blank = 0
+                Effective = 0
+                Extensions = @{}
+                LargestFile = @{ Name = ''; Lines = 0 }
+            }
+            
+            if ($CustomExcludePatterns.Count -gt 0) {
+                $activeExcludeFiles += $CustomExcludePatterns
+                Write-Host "   🚫 Excluding: $($CustomExcludePatterns -join ', ')" -ForegroundColor Gray
+            }
+        }
+    }
+    
+    Write-Host "   📊 Scope: $scanDescription" -ForegroundColor Gray
+    Write-Host ""
+
+    # Step 2: Optimized File Discovery & Analysis
+    Write-Host "🔎 Discovering & analyzing files..." -ForegroundColor Cyan
+
     $discoveryStart = Get-Date
     $allFiles = @()
     $skippedCount = 0
-    
+    $searchMatches = @()  # For search mode
+
     foreach ($category in $patterns.Keys) {
+        # Skip categories not in active list (unless Custom mode)
+        if ($ScanMode -ne 'Custom' -and $activePatternsCategories -notcontains $category) {
+            continue
+        }
+        
         foreach ($pattern in $patterns[$category]) {
-            $files = Get-ChildItem -Path $ProjectRoot -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue | 
-                Where-Object { 
+            $files = Get-ChildItem -Path $ProjectRoot -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue |
+                Where-Object {
                     $path = $_.FullName
                     $fileName = $_.Name
                     $excluded = $false
-                    
-                    # Check directory exclusions (FAST - path check)
-                    foreach ($excludeDir in $excludeDirs) {
+
+                    # Check directory exclusions (FAST - path check) - use active exclusions
+                    foreach ($excludeDir in $activeExcludeDirs) {
                         if ($path -like "*\$excludeDir\*" -or $path -like "*/$excludeDir/*") {
                             $excluded = $true
                             break
                         }
                     }
-                    
-                    # Check file-level exclusions (FAST - filename patterns)
+
+                    # Check file-level exclusions (FAST - filename patterns) - use active exclusions
                     if (-not $excluded) {
-                        foreach ($filePattern in $excludeFilePatterns) {
+                        foreach ($filePattern in $activeExcludeFiles) {
                             if ($fileName -like $filePattern) {
                                 $excluded = $true
                                 $skippedCount++
@@ -335,7 +466,7 @@ function Invoke-CodebaseAnalysis {
                             }
                         }
                     }
-                    
+
                     -not $excluded
                 }
 
@@ -344,7 +475,7 @@ function Invoke-CodebaseAnalysis {
                 if ($category -ne 'Tests' -and ($file.Name -match '\.(test|spec)\.(ts|js|py|tsx)$')) {
                     continue
                 }
-                
+
                 $allFiles += [PSCustomObject]@{
                     Category = $category
                     File = $file
@@ -352,7 +483,7 @@ function Invoke-CodebaseAnalysis {
             }
         }
     }
-    
+
     # Report optimization
     if ($skippedCount -gt 0) {
         Write-Host "   ⚡ Optimized: Skipped $skippedCount archived/legacy files" -ForegroundColor Gray
@@ -361,11 +492,11 @@ function Invoke-CodebaseAnalysis {
     # Process files with progress
     $processedFiles = 0
     $totalFiles = $allFiles.Count
-    
+
     foreach ($item in $allFiles) {
         $category = $item.Category
         $file = $item.File
-        
+
         # Progress indicator (every 50 files)
         $processedFiles++
         if ($processedFiles % 50 -eq 0 -or $processedFiles -eq $totalFiles) {
@@ -375,6 +506,42 @@ function Invoke-CodebaseAnalysis {
 
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
         if (-not $content) { continue }
+
+        # SEARCH MODE: Check for keyword matches
+        if ($ScanMode -eq 'Search') {
+            $matchedKeywords = @()
+            foreach ($keyword in $SearchKeywords) {
+                if ($content -match [regex]::Escape($keyword)) {
+                    $matchedKeywords += $keyword
+                }
+            }
+            
+            if ($matchedKeywords.Count -gt 0) {
+                # Find line numbers for each match
+                $lineMatches = @()
+                $lineNumber = 0
+                foreach ($line in ($content -split "`n")) {
+                    $lineNumber++
+                    foreach ($keyword in $matchedKeywords) {
+                        if ($line -match [regex]::Escape($keyword)) {
+                            $lineMatches += [PSCustomObject]@{
+                                LineNumber = $lineNumber
+                                Keyword = $keyword
+                                LineContent = $line.Trim()
+                            }
+                        }
+                    }
+                }
+                
+                $searchMatches += [PSCustomObject]@{
+                    File = $file.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+                    Category = $category
+                    Keywords = $matchedKeywords
+                    Matches = $lineMatches
+                    TotalMatches = $lineMatches.Count
+                }
+            }
+        }
 
         $lines = $content -split "`n"
         $totalLines = $lines.Count
@@ -386,7 +553,7 @@ function Invoke-CodebaseAnalysis {
         $inBlockComment = $false
         foreach ($line in $lines) {
             $trimmed = $line.Trim()
-            
+
             if ($trimmed -eq '') {
                 $blankLines++
             }
@@ -445,9 +612,9 @@ function Invoke-CodebaseAnalysis {
     }
 
     Write-Progress -Activity "Analyzing files" -Completed
-    
+
     $discoveryTime = (Get-Date).Subtract($discoveryStart).TotalSeconds
-    
+
     Write-Host ""
     Write-Host "✅ Discovery complete in " -NoNewline -ForegroundColor Green
     Write-Host "$([math]::Round($discoveryTime, 1))s" -ForegroundColor White
@@ -477,19 +644,19 @@ function Invoke-CodebaseAnalysis {
     # Based on Halstead Volume, Cyclomatic Complexity, and Lines of Code
     $avgLinesPerFile = if ($metrics.Total.Files -gt 0) { $metrics.Total.Lines / $metrics.Total.Files } else { 0 }
     $commentRatio = if ($metrics.Total.Lines -gt 0) { ($metrics.Total.Comments / $metrics.Total.Lines) * 100 } else { 0 }
-    
+
     $maintainability = 100
     if ($avgLinesPerFile -gt 300) { $maintainability -= 15 }
     elseif ($avgLinesPerFile -gt 200) { $maintainability -= 10 }
     elseif ($avgLinesPerFile -gt 150) { $maintainability -= 5 }
-    
+
     if ($commentRatio -lt 10) { $maintainability -= 20 }
     elseif ($commentRatio -lt 15) { $maintainability -= 10 }
-    
+
     if ($testCoverage -lt 30) { $maintainability -= 15 }
     elseif ($testCoverage -lt 50) { $maintainability -= 10 }
     elseif ($testCoverage -lt 70) { $maintainability -= 5 }
-    
+
     $metrics.Quality.Maintainability = [math]::Max(0, $maintainability)
 
     # Technical Debt Estimation (in days)
@@ -499,7 +666,7 @@ function Invoke-CodebaseAnalysis {
     $technicalDebt += (100 - $testCoverage) * 0.3  # Lack of tests
     $technicalDebt += $complexity.Overall * 2  # High complexity
     if ($commentRatio -lt 15) { $technicalDebt += 10 }  # Poor documentation
-    
+
     $metrics.Quality.TechnicalDebt = [math]::Round($technicalDebt, 1)
 
     # Security Score (0-100, higher is better)
@@ -508,7 +675,7 @@ function Invoke-CodebaseAnalysis {
     if ($metrics.Infrastructure.Files -lt 5) { $securityScore -= 10 }  # Lack of security configs
     if ($testCoverage -lt 50) { $securityScore -= 15 }  # Insufficient testing
     if ($metrics.Documentation.Files -lt 10) { $securityScore -= 10 }  # Poor documentation
-    
+
     $metrics.Quality.SecurityScore = [math]::Max(0, $securityScore)
 
     Write-Host "✅ Quality analysis complete!" -ForegroundColor Green
@@ -540,7 +707,7 @@ function Invoke-CodebaseAnalysis {
 
         # Calculate base timeline
         $days = [math]::Ceiling($metrics.Total.Effective / $rate.LinesPerDay)
-        
+
         # Risk adjustment (add 20-50% buffer)
         $bestCase = $days
         $likelyCase = [math]::Ceiling($days * 1.3)  # 30% buffer
@@ -600,6 +767,76 @@ function Invoke-CodebaseAnalysis {
 
     Write-Host "✅ Estimates calculated!" -ForegroundColor Green
     Write-Host ""
+
+    # SEARCH MODE: Display Results
+    if ($ScanMode -eq 'Search' -and $searchMatches.Count -gt 0) {
+        Write-Host "🔍 SEARCH RESULTS" -ForegroundColor Cyan
+        Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Blue
+        Write-Host ""
+        Write-Host "Found " -NoNewline
+        Write-Host "$($searchMatches.Count)" -NoNewline -ForegroundColor Yellow
+        Write-Host " files with matches for keywords: " -NoNewline
+        Write-Host ($SearchKeywords -join ', ') -ForegroundColor Yellow
+        Write-Host ""
+        
+        $totalMatches = ($searchMatches | Measure-Object -Property TotalMatches -Sum).Sum
+        Write-Host "Total matches: " -NoNewline
+        Write-Host $totalMatches -ForegroundColor Yellow
+        Write-Host ""
+        
+        # Group by keyword
+        $keywordStats = @{}
+        foreach ($match in $searchMatches) {
+            foreach ($keyword in $match.Keywords) {
+                if (-not $keywordStats.ContainsKey($keyword)) {
+                    $keywordStats[$keyword] = 0
+                }
+                $keywordStats[$keyword] += ($match.Matches | Where-Object { $_.Keyword -eq $keyword }).Count
+            }
+        }
+        
+        Write-Host "Keyword breakdown:" -ForegroundColor Cyan
+        foreach ($keyword in ($keywordStats.Keys | Sort-Object)) {
+            Write-Host "  • $keyword" -NoNewline -ForegroundColor White
+            Write-Host ": $($keywordStats[$keyword]) matches" -ForegroundColor Gray
+        }
+        Write-Host ""
+        
+        # Display detailed results
+        Write-Host "Detailed results:" -ForegroundColor Cyan
+        foreach ($match in ($searchMatches | Sort-Object -Property TotalMatches -Descending | Select-Object -First 20)) {
+            Write-Host ""
+            Write-Host "  📄 " -NoNewline -ForegroundColor Yellow
+            Write-Host $match.File -ForegroundColor White
+            Write-Host "     Category: " -NoNewline -ForegroundColor Gray
+            Write-Host $match.Category -NoNewline -ForegroundColor Cyan
+            Write-Host " | Matches: " -NoNewline -ForegroundColor Gray
+            Write-Host $match.TotalMatches -ForegroundColor Yellow
+            
+            # Show first 5 matches per file
+            foreach ($lineMatch in ($match.Matches | Select-Object -First 5)) {
+                Write-Host "     Line $($lineMatch.LineNumber): " -NoNewline -ForegroundColor Gray
+                $highlightedLine = $lineMatch.LineContent
+                foreach ($keyword in $match.Keywords) {
+                    $highlightedLine = $highlightedLine -replace [regex]::Escape($keyword), "[$keyword]"
+                }
+                Write-Host $highlightedLine -ForegroundColor White
+            }
+            
+            if ($match.Matches.Count -gt 5) {
+                Write-Host "     ... and $($match.Matches.Count - 5) more matches" -ForegroundColor Gray
+            }
+        }
+        
+        if ($searchMatches.Count -gt 20) {
+            Write-Host ""
+            Write-Host "  ... and $($searchMatches.Count - 20) more files" -ForegroundColor Gray
+        }
+        
+        Write-Host ""
+        Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Blue
+        Write-Host ""
+    }
 
     # Step 5: Generate Enhanced Reports
     Write-Host "📝 Generating reports..." -ForegroundColor Cyan
@@ -718,11 +955,11 @@ function Invoke-CodebaseAnalysis {
     Write-Host "   • Phase Breakdown:" -ForegroundColor Gray
     Write-Host "     └─ File Discovery: $(([math]::Round($discoveryTime / $duration * 100)))%" -ForegroundColor Gray
     Write-Host "     └─ Code Analysis: $(100 - [math]::Round($discoveryTime / $duration * 100))%" -ForegroundColor Gray
-    
+
     if ($UseCache) {
         Write-Host "   • Cache: " -NoNewline; Write-Host "Enabled" -ForegroundColor Green
     }
-    
+
     # Performance rating
     $perfRating = if ($duration -lt 30) { "⚡ Blazing Fast" }
                   elseif ($duration -lt 60) { "✅ Fast" }
@@ -730,7 +967,7 @@ function Invoke-CodebaseAnalysis {
                   else { "❌ Slow (consider optimizing exclusions)" }
     Write-Host "   • Rating: " -NoNewline; Write-Host $perfRating -ForegroundColor $(if ($duration -lt 60) { 'Green' } else { 'Yellow' })
     Write-Host ""
-    
+
     Write-Host "✅ Analysis complete!" -ForegroundColor Green
     Write-Host ""
 
@@ -752,17 +989,17 @@ function Invoke-CodebaseAnalysis {
 # Helper function to generate markdown report
 function Generate-MarkdownReport {
     param($Metrics, $Estimates, $Complexity, $TestCoverage, $RegionInfo, $MaintenanceCosts, $StartTime, $AnalysisId)
-    
+
     $duration = (Get-Date).Subtract($StartTime).TotalSeconds
-    
+
     return @"
 # 📊 Codebase Analysis & Estimation Report V2.0
 
-**Generated**: $(Get-Date -Format "MMMM dd, yyyy HH:mm:ss")  
-**Analysis ID**: $AnalysisId  
-**Project**: Lokifi  
-**Region**: $($RegionInfo.Name) ($(if ($RegionInfo.Multiplier -eq 1) { '100%' } else { "$($RegionInfo.Multiplier * 100)%" }) of US rates)  
-**Analysis Duration**: $([math]::Round($duration, 2))s  
+**Generated**: $(Get-Date -Format "MMMM dd, yyyy HH:mm:ss")
+**Analysis ID**: $AnalysisId
+**Project**: Lokifi
+**Region**: $($RegionInfo.Name) ($(if ($RegionInfo.Multiplier -eq 1) { '100%' } else { "$($RegionInfo.Multiplier * 100)%" }) of US rates)
+**Analysis Duration**: $([math]::Round($duration, 2))s
 **Version**: 2.0.0
 
 ---
@@ -852,7 +1089,7 @@ $(if ($Metrics.Git.TotalDays -gt 0) {@"
 1. **Actual Duration**: Project took **$($Metrics.Git.TotalDays) calendar days** with **$($Metrics.Git.ActiveDays) active development days**
 2. **Team Composition**: $($Metrics.Git.Contributors) contributor$(if ($Metrics.Git.Contributors -gt 1) { 's' } else { '' }) working on the project
 3. **Development Pace**: ~$([math]::Round($Metrics.Total.Effective / $Metrics.Git.ActiveDays)) lines of effective code per active day
-4. **Estimated Real Cost** ($($RegionInfo.Name) rates): 
+4. **Estimated Real Cost** ($($RegionInfo.Name) rates):
    - Junior: ~`$$([math]::Round(35 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
    - Mid-Level: ~`$$([math]::Round(70 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
    - Senior: ~`$$([math]::Round(100 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
@@ -977,7 +1214,7 @@ $juniorMonths = [math]::Round($juniorDays / 22, 1)
 $juniorYears = [math]::Round($juniorMonths / 12, 1)
 $juniorCostUS = [math]::Round($juniorDays * 8 * 35 * $RegionInfo.Multiplier)
 
-# Mid-Level Developer  
+# Mid-Level Developer
 $midRate = 125
 $midDays = [math]::Ceiling(($effectiveLOC / $midRate) * $complexityMultiplier)
 $midWeeks = [math]::Round($midDays / 5, 1)
@@ -996,7 +1233,7 @@ $seniorCostUS = [math]::Round($seniorDays * 8 * 100 * $RegionInfo.Multiplier)
 @"
 #### Junior Developer (1-2 years experience)
 - **Productivity**: 75 LOC/day (industry standard without AI)
-- **Timeline**: 
+- **Timeline**:
   * **$juniorDays work days** (~$juniorWeeks weeks, ~**$juniorMonths months**, ~**$juniorYears years**)
   * Calendar time: ~$([math]::Round($juniorDays / 5 * 7, 0)) days (~$([math]::Round($juniorDays / 5 * 7 / 30, 1)) months) assuming 5-day weeks
 - **Cost** ($($RegionInfo.Name) @ `$35/hr):
@@ -1005,7 +1242,7 @@ $seniorCostUS = [math]::Round($seniorDays * 8 * 100 * $RegionInfo.Multiplier)
 
 #### Mid-Level Developer (3-5 years experience)
 - **Productivity**: 125 LOC/day (industry standard without AI)
-- **Timeline**: 
+- **Timeline**:
   * **$midDays work days** (~$midWeeks weeks, ~**$midMonths months**, ~**$midYears years**)
   * Calendar time: ~$([math]::Round($midDays / 5 * 7, 0)) days (~$([math]::Round($midDays / 5 * 7 / 30, 1)) months) assuming 5-day weeks
 - **Cost** ($($RegionInfo.Name) @ `$70/hr):
@@ -1014,7 +1251,7 @@ $seniorCostUS = [math]::Round($seniorDays * 8 * 100 * $RegionInfo.Multiplier)
 
 #### Senior Developer (5-10+ years experience)
 - **Productivity**: 175 LOC/day (industry standard without AI)
-- **Timeline**: 
+- **Timeline**:
   * **$seniorDays work days** (~$seniorWeeks weeks, ~**$seniorMonths months**, ~**$seniorYears years**)
   * Calendar time: ~$([math]::Round($seniorDays / 5 * 7, 0)) days (~$([math]::Round($seniorDays / 5 * 7 / 30, 1)) months) assuming 5-day weeks
 - **Cost** ($($RegionInfo.Name) @ `$100/hr):
@@ -1057,7 +1294,7 @@ $largeTeamCost = [math]::Round((2 * ($seniorCostUS / $seniorDays) + 3 * ($midCos
 #### Small Team (2-3 developers) ✅ **RECOMMENDED**
 - **Composition**: 1 Senior + 2 Mid-Level
 - **Efficiency**: 1.7x (parallel work with 85% efficiency due to coordination)
-- **Timeline**: 
+- **Timeline**:
   * **$smallTeamDays work days** (~$smallTeamWeeks weeks, ~**$smallTeamMonths months**, ~**$smallTeamYears years**)
   * Calendar time: ~$([math]::Round($smallTeamDays / 5 * 7, 0)) days (~$([math]::Round($smallTeamDays / 5 * 7 / 30, 1)) months)
 - **Cost** ($($RegionInfo.Name)):
@@ -1068,7 +1305,7 @@ $largeTeamCost = [math]::Round((2 * ($seniorCostUS / $seniorDays) + 3 * ($midCos
 #### Medium Team (4-6 developers)
 - **Composition**: 1 Senior + 1 Mid-Level + 4 Junior
 - **Efficiency**: 3.15x (more parallel work, 70% efficiency due to increased coordination overhead)
-- **Timeline**: 
+- **Timeline**:
   * **$mediumTeamDays work days** (~$mediumTeamWeeks weeks, ~**$mediumTeamMonths months**, ~**$mediumTeamYears years**)
   * Calendar time: ~$([math]::Round($mediumTeamDays / 5 * 7, 0)) days (~$([math]::Round($mediumTeamDays / 5 * 7 / 30, 1)) months)
 - **Cost** ($($RegionInfo.Name)):
@@ -1079,7 +1316,7 @@ $largeTeamCost = [math]::Round((2 * ($seniorCostUS / $seniorDays) + 3 * ($midCos
 #### Large Team (7-10 developers)
 - **Composition**: 2 Senior + 3 Mid-Level + 5 Junior
 - **Efficiency**: 4.4x (maximum parallelization, 55% efficiency due to high coordination overhead)
-- **Timeline**: 
+- **Timeline**:
   * **$largeTeamDays work days** (~$largeTeamWeeks weeks, ~**$largeTeamMonths months**, ~**$largeTeamYears years**)
   * Calendar time: ~$([math]::Round($largeTeamDays / 5 * 7, 0)) days (~$([math]::Round($largeTeamDays / 5 * 7 / 30, 1)) months)
 - **Cost** ($($RegionInfo.Name)):
@@ -1293,9 +1530,9 @@ $(if ($Metrics.Quality.SecurityScore -ge 80) {@"
 
 ---
 
-**Report Generated**: $(Get-Date -Format "yyyy-MM-ddTHH:mm:ss")  
-**Analysis Tool**: Lokifi Codebase Analyzer v2.0  
-**Total Analysis Time**: $([math]::Round($duration, 2)) seconds  
+**Report Generated**: $(Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
+**Analysis Tool**: Lokifi Codebase Analyzer v2.0
+**Total Analysis Time**: $([math]::Round($duration, 2)) seconds
 **Performance**: $(if ($duration -lt 60) { '⚡ Fast' } elseif ($duration -lt 120) { '✅ Normal' } else { '⚠️ Slow' })
 
 ---
@@ -1307,7 +1544,7 @@ $(if ($Metrics.Quality.SecurityScore -ge 80) {@"
 # Helper function to generate CSV report
 function Generate-CSVReport {
     param($Estimates, $RegionInfo)
-    
+
     $csvData = @()
     foreach ($key in $Estimates.Keys) {
         $est = $Estimates[$key]

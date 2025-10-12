@@ -1,0 +1,300 @@
+{
+  "test_coverage": 0.0,
+  "metrics": {
+    "Total": {
+      "Blank": 11417,
+      "Files": 264,
+      "Lines": 65399,
+      "Effective": 3938,
+      "Comments": 50044
+    },
+    "Infrastructure": {
+      "Comments": 0,
+      "Files": 0,
+      "Effective": 0,
+      "Extensions": {},
+      "LargestFile": {
+        "Lines": 0,
+        "Name": ""
+      },
+      "Lines": 0,
+      "Blank": 0
+    },
+    "Git": {
+      "EndDate": "2025-10-12",
+      "WorkingDays": 12,
+      "LastCommit": "10 hours ago",
+      "Churn": 16126,
+      "Contributors": 2,
+      "AvgCommitsPerDay": 18.5,
+      "StartDate": "2025-09-25",
+      "EstimatedWorkHours": 120,
+      "Commits": 278,
+      "TotalDays": 16,
+      "ActiveDays": 15,
+      "EstimatedWorkDays": 15.0
+    },
+    "Documentation": {
+      "Files": 0,
+      "Extensions": {},
+      "LargestFile": {
+        "Lines": 0,
+        "Name": ""
+      },
+      "Lines": 0
+    },
+    "Tests": {
+      "Comments": 0,
+      "Files": 0,
+      "Effective": 0,
+      "Extensions": {},
+      "LargestFile": {
+        "Lines": 0,
+        "Name": ""
+      },
+      "Lines": 0,
+      "Blank": 0
+    },
+    "Backend": {
+      "Comments": 0,
+      "Files": 0,
+      "Effective": 0,
+      "Extensions": {},
+      "LargestFile": {
+        "Lines": 0,
+        "Name": ""
+      },
+      "Lines": 0,
+      "Blank": 0
+    },
+    "Frontend": {
+      "Comments": 0,
+      "Files": 0,
+      "Effective": 0,
+      "Extensions": {},
+      "LargestFile": {
+        "Lines": 0,
+        "Name": ""
+      },
+      "Lines": 0,
+      "Blank": 0
+    },
+    "Custom": {
+      "Blank": 11417,
+      "LargestFile": {
+        "Path": "tools\\scripts\\deployment\\production_setup.py",
+        "Lines": 1611,
+        "Name": "production_setup.py"
+      },
+      "Lines": 65399,
+      "Extensions": {
+        ".py": 264
+      },
+      "Effective": 3938,
+      "Files": 264,
+      "Comments": 50044
+    },
+    "Quality": {
+      "TechnicalDebt": 32.0,
+      "Maintainability": 75,
+      "SecurityScore": 65
+    }
+  },
+  "timestamp": "2025-10-12T11:27:36",
+  "estimates": {
+    "MediumTeam": {
+      "LinesPerDay": 700,
+      "Days": {
+        "Worst": 9.0,
+        "Likely": 8.0,
+        "Best": 6.0
+      },
+      "Rate": 2500.0,
+      "Cost": {
+        "Worst": 22500.0,
+        "Likely": 20000.0,
+        "Best": 15000.0
+      },
+      "Weeks": {
+        "Worst": 1.8,
+        "Likely": 1.6,
+        "Best": 1.2
+      },
+      "Months": {
+        "Worst": 0.4,
+        "Likely": 0.4,
+        "Best": 0.3
+      },
+      "Hours": {
+        "Worst": 72.0,
+        "Likely": 64.0,
+        "Best": 48.0
+      },
+      "Name": "MediumTeam"
+    },
+    "SmallTeam": {
+      "LinesPerDay": 400,
+      "Days": {
+        "Worst": 15.0,
+        "Likely": 13.0,
+        "Best": 10.0
+      },
+      "Rate": 1200.0,
+      "Cost": {
+        "Worst": 18000.0,
+        "Likely": 15600.0,
+        "Best": 12000.0
+      },
+      "Weeks": {
+        "Worst": 3.0,
+        "Likely": 2.6,
+        "Best": 2.0
+      },
+      "Months": {
+        "Worst": 0.7,
+        "Likely": 0.6,
+        "Best": 0.5
+      },
+      "Hours": {
+        "Worst": 120.0,
+        "Likely": 104.0,
+        "Best": 80.0
+      },
+      "Name": "SmallTeam"
+    },
+    "Mid": {
+      "LinesPerDay": 200,
+      "Days": {
+        "Worst": 30.0,
+        "Likely": 26.0,
+        "Best": 20.0
+      },
+      "Rate": 50.0,
+      "Cost": {
+        "Worst": 12000.0,
+        "Likely": 10400.0,
+        "Best": 8000.0
+      },
+      "Weeks": {
+        "Worst": 6.0,
+        "Likely": 5.2,
+        "Best": 4.0
+      },
+      "Months": {
+        "Worst": 1.4,
+        "Likely": 1.2,
+        "Best": 0.9
+      },
+      "Hours": {
+        "Worst": 240.0,
+        "Likely": 208.0,
+        "Best": 160.0
+      },
+      "Name": "Mid Developer"
+    },
+    "Senior": {
+      "LinesPerDay": 300,
+      "Days": {
+        "Worst": 21.0,
+        "Likely": 19.0,
+        "Best": 14.0
+      },
+      "Rate": 100.0,
+      "Cost": {
+        "Worst": 16800.0,
+        "Likely": 15200.0,
+        "Best": 11200.0
+      },
+      "Weeks": {
+        "Worst": 4.2,
+        "Likely": 3.8,
+        "Best": 2.8
+      },
+      "Months": {
+        "Worst": 1.0,
+        "Likely": 0.9,
+        "Best": 0.6
+      },
+      "Hours": {
+        "Worst": 168.0,
+        "Likely": 152.0,
+        "Best": 112.0
+      },
+      "Name": "Senior Developer"
+    },
+    "Junior": {
+      "LinesPerDay": 100,
+      "Days": {
+        "Worst": 60.0,
+        "Likely": 52.0,
+        "Best": 40.0
+      },
+      "Rate": 25.0,
+      "Cost": {
+        "Worst": 12000.0,
+        "Likely": 10400.0,
+        "Best": 8000.0
+      },
+      "Weeks": {
+        "Worst": 12.0,
+        "Likely": 10.4,
+        "Best": 8.0
+      },
+      "Months": {
+        "Worst": 2.7,
+        "Likely": 2.4,
+        "Best": 1.8
+      },
+      "Hours": {
+        "Worst": 480.0,
+        "Likely": 416.0,
+        "Best": 320.0
+      },
+      "Name": "Junior Developer"
+    },
+    "LargeTeam": {
+      "LinesPerDay": 1000,
+      "Days": {
+        "Worst": 6.0,
+        "Likely": 6.0,
+        "Best": 4.0
+      },
+      "Rate": 5000.0,
+      "Cost": {
+        "Worst": 30000.0,
+        "Likely": 30000.0,
+        "Best": 20000.0
+      },
+      "Weeks": {
+        "Worst": 1.2,
+        "Likely": 1.2,
+        "Best": 0.8
+      },
+      "Months": {
+        "Worst": 0.3,
+        "Likely": 0.3,
+        "Best": 0.2
+      },
+      "Hours": {
+        "Worst": 48.0,
+        "Likely": 48.0,
+        "Best": 32.0
+      },
+      "Name": "LargeTeam"
+    }
+  },
+  "maintenance_costs": {
+    "Year3": 4680.0,
+    "Year1": 1560.0,
+    "Year5": 7800.0
+  },
+  "complexity": {
+    "Overall": 0.0,
+    "Infrastructure": 0,
+    "Backend": 0,
+    "Frontend": 0
+  },
+  "version": "2.0.0",
+  "analysis_id": "20251012_112733",
+  "region": "us"
+}

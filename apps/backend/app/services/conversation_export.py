@@ -11,7 +11,7 @@ import zipfile
 
 # import markdown  # Optional - install with: pip install markdown
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from io import BytesIO, StringIO
 from typing import Any
 
@@ -153,7 +153,7 @@ class ConversationExporter:
     def _export_json(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as JSON."""
         export_data = {
-            "exported_at": datetime.now(timezone.utc).isoformat(),
+            "exported_at": datetime.now(UTC).isoformat(),
             "format": "json",
             "total_conversations": len(conversations),
             "conversations": conversations,
@@ -204,7 +204,7 @@ class ConversationExporter:
         """Export as Markdown."""
         output = []
         output.append("# AI Conversations Export")
-        output.append(f"\nExported at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
+        output.append(f"\nExported at: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}")
         output.append(f"Total conversations: {len(conversations)}\n")
 
         for conv in conversations:
@@ -247,7 +247,7 @@ class ConversationExporter:
 
         output.append("<h1>AI Conversations Export</h1>")
         output.append(
-            f"<p><strong>Exported at:</strong> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}</p>"
+            f"<p><strong>Exported at:</strong> {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}</p>"
         )
         output.append(f"<p><strong>Total conversations:</strong> {len(conversations)}</p>")
 
@@ -280,7 +280,7 @@ class ConversationExporter:
     def _export_xml(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
         """Export as XML."""
         root = ET.Element("conversations")
-        root.set("exported_at", datetime.now(timezone.utc).isoformat())
+        root.set("exported_at", datetime.now(UTC).isoformat())
         root.set("total", str(len(conversations)))
 
         for conv in conversations:
@@ -315,7 +315,7 @@ class ConversationExporter:
         output = []
         output.append("AI CONVERSATIONS EXPORT")
         output.append("=" * 50)
-        output.append(f"Exported at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
+        output.append(f"Exported at: {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}")
         output.append(f"Total conversations: {len(conversations)}")
         output.append("")
 
@@ -443,7 +443,7 @@ class ConversationImporter:
                 if existing_thread and merge_strategy == "overwrite":
                     thread = existing_thread
                     thread.title = conv_data["title"]
-                    thread.updated_at = datetime.now(timezone.utc)
+                    thread.updated_at = datetime.now(UTC)
 
                     # Delete existing messages
                     db.query(AIMessage).filter(AIMessage.thread_id == thread.id).delete()
@@ -455,12 +455,12 @@ class ConversationImporter:
                         created_at=(
                             datetime.fromisoformat(conv_data["created_at"])
                             if "created_at" in conv_data
-                            else datetime.now(timezone.utc)
+                            else datetime.now(UTC)
                         ),
                         updated_at=(
                             datetime.fromisoformat(conv_data["updated_at"])
                             if "updated_at" in conv_data
-                            else datetime.now(timezone.utc)
+                            else datetime.now(UTC)
                         ),
                     )
                     db.add(thread)
@@ -475,7 +475,7 @@ class ConversationImporter:
                         created_at=(
                             datetime.fromisoformat(msg_data["created_at"])
                             if "created_at" in msg_data
-                            else datetime.now(timezone.utc)
+                            else datetime.now(UTC)
                         ),
                     )
 
