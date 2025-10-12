@@ -18,8 +18,8 @@ def mock_httpx_response():
     response = AsyncMock()
     response.status_code = 200
     response.json = AsyncMock(return_value={})
-    response.text = ""
-    response.content = b""
+    response.text = """
+    response.content = b"""
     response.headers = {}
     response.raise_for_status = Mock()
     return response

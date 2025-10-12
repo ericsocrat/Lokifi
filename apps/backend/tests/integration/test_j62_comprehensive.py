@@ -502,8 +502,8 @@ class J62TestSuite:
                 result = await send_rich_notification(
                     user_id="invalid-uuid",  # Invalid UUID format
                     notification_type=NotificationType.FOLLOW,
-                    title="",  # Empty title
-                    message="",  # Empty message
+                    title=""",  # Empty title
+                    message=""",  # Empty message
                 )
                 
                 # Should handle gracefully
