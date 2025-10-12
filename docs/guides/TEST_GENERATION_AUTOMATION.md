@@ -1,6 +1,6 @@
 # Test Generation Automation Guide
 
-**Last Updated**: October 12, 2025  
+**Last Updated**: October 12, 2025
 **Phase**: 5 - Test Coverage Boost
 
 ---
@@ -78,11 +78,11 @@ async def mock_db_session():
 ```python
 class TestModuleName:
     """Test suite for module_name"""
-    
+
     def test_module_imports(self):
         """Test that module imports successfully"""
         assert True
-    
+
     @pytest.mark.asyncio
     async def test_basic_functionality(self, sample_data):
         """Test basic functionality"""
@@ -94,7 +94,7 @@ class TestModuleName:
 ```python
 class TestModuleNameIntegration:
     """Integration tests"""
-    
+
     @pytest.mark.asyncio
     async def test_integration_scenario(self, mock_db_session):
         """Test integration with dependencies"""
@@ -106,12 +106,12 @@ class TestModuleNameIntegration:
 ```python
 class TestModuleNameEdgeCases:
     """Edge case and error handling tests"""
-    
+
     def test_null_input_handling(self):
         """Test handling of null/None inputs"""
         # TODO: Test null handling
         pass
-    
+
     def test_invalid_input_handling(self):
         """Test handling of invalid inputs"""
         # TODO: Test invalid input handling
@@ -123,7 +123,7 @@ class TestModuleNameEdgeCases:
 @pytest.mark.slow
 class TestModuleNamePerformance:
     """Performance and load tests"""
-    
+
     @pytest.mark.skip(reason="Performance test - run manually")
     def test_performance_under_load(self):
         """Test performance under load"""
@@ -235,7 +235,7 @@ The generated TODO markers are perfect for AI assistance:
 ### **Example Prompts:**
 
 ```
-"Complete the tests in test_crypto_data_service.py. 
+"Complete the tests in test_crypto_data_service.py.
 The service fetches cryptocurrency data from CoinGecko API."
 ```
 
@@ -367,7 +367,7 @@ def sample_crypto_data():
 ```python
 def test_fetch_price(self, sample_data):
     result = fetch_crypto_price("bitcoin")
-    
+
     assert result is not None
     assert "current_price" in result
     assert result["current_price"] > 0
@@ -380,10 +380,10 @@ def test_fetch_price(self, sample_data):
 async def test_api_call_with_mock(self):
     with patch('app.services.crypto_data_service.httpx.AsyncClient') as mock:
         mock.return_value.get.return_value.json.return_value = {"price": 50000}
-        
+
         service = CryptoDataService()
         result = await service.fetch_price("bitcoin")
-        
+
         assert result["price"] == 50000
 ```
 
@@ -403,26 +403,26 @@ def test_api_timeout(self):
 ## Troubleshooting
 
 ### Issue: "Module import failed"
-**Cause**: Module has import errors or missing dependencies  
-**Solution**: 
+**Cause**: Module has import errors or missing dependencies
+**Solution**:
 - Fix import errors in the module first
 - Check if all dependencies are installed
 - Verify PYTHONPATH is set correctly
 
 ### Issue: "Generated tests are empty"
-**Cause**: This is expected - generated tests are templates  
+**Cause**: This is expected - generated tests are templates
 **Solution**: Fill in the TODO markers with actual test logic
 
 ### Issue: "Coverage didn't increase"
-**Cause**: Tests are scaffolding only, need real assertions  
-**Solution**: 
+**Cause**: Tests are scaffolding only, need real assertions
+**Solution**:
 1. Add meaningful test data
 2. Write actual assertions
 3. Cover different code paths
 4. Run coverage to identify gaps
 
 ### Issue: "Too many test files to review"
-**Cause**: Generated 148 files at once  
+**Cause**: Generated 148 files at once
 **Solution**: Generate selectively:
 ```powershell
 # High priority first

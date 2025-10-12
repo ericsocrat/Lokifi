@@ -1,6 +1,6 @@
 # Python Quality Automation Guide
 
-**Last Updated**: October 12, 2025  
+**Last Updated**: October 12, 2025
 **Phase**: 3 & 4 Automation
 
 ---
@@ -44,8 +44,8 @@ The `fix-quality` command runs the following auto-fixes in sequence:
   from typing import Any, Optional
   import os
   from datetime import datetime
-  
-  # AFTER  
+
+  # AFTER
   import os
   from datetime import datetime
   from typing import Any
@@ -58,7 +58,7 @@ The `fix-quality` command runs the following auto-fixes in sequence:
   # BEFORE
   def func(param: Optional[str] = None) -> Optional[int]:
       pass
-  
+
   # AFTER
   def func(param: str | None = None) -> int | None:
       pass
@@ -71,7 +71,7 @@ The `fix-quality` command runs the following auto-fixes in sequence:
   # BEFORE
   from datetime import datetime
   now = datetime.utcnow()
-  
+
   # AFTER
   from datetime import UTC, datetime
   now = datetime.now(UTC)
@@ -88,7 +88,7 @@ The `fix-quality` command runs the following auto-fixes in sequence:
   import sys
   sys.path.append("/some/path")
   from mymodule import something  # E402: Import not at top
-  
+
   # AFTER
   """Module docstring"""
   from mymodule import something  # Moved to top
@@ -121,7 +121,7 @@ The command also **scans and reports** issues that require manual intervention:
       risky_operation()
   except:  # Catches everything, even KeyboardInterrupt!
       pass
-  
+
   # GOOD
   try:
       risky_operation()

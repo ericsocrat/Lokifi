@@ -1,7 +1,7 @@
 # 🔍 Codebase Analyzer - Scanning Modes Guide
 
-**Version**: 2.1  
-**Date**: 2025-10-12  
+**Version**: 2.1
+**Date**: 2025-10-12
 **Status**: ✅ **ENHANCED WITH SCANNING MODES**
 
 ---
@@ -144,11 +144,11 @@ Invoke-CodebaseAnalysis -ScanMode Custom -CustomIncludePatterns @('*.py')
 
 ## 💡 Best Practices
 
-**Daily Development**: Use `CodeOnly` or `Quick`  
-**Documentation Work**: Use `DocsOnly`  
-**Pre-Sprint Cleanup**: Use `Search` for TODOs  
-**Security Audit**: Use `Search` with security keywords  
-**Comprehensive Audit**: Use `Full`  
+**Daily Development**: Use `CodeOnly` or `Quick`
+**Documentation Work**: Use `DocsOnly`
+**Pre-Sprint Cleanup**: Use `Search` for TODOs
+**Security Audit**: Use `Search` with security keywords
+**Comprehensive Audit**: Use `Full`
 **Framework Analysis**: Use `Custom`
 
 ---
@@ -166,8 +166,8 @@ Invoke-WithCodebaseBaseline -AutomationType "Format" -ScanMode Quick -ScriptBloc
 
 ---
 
-**Status**: ✅ **READY FOR TESTING**  
-**Backward Compatible**: Yes  
+**Status**: ✅ **READY FOR TESTING**
+**Backward Compatible**: Yes
 **Performance**: Up to 4x faster
 
 ---
