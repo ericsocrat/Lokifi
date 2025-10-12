@@ -2,11 +2,14 @@
 Test script for Phase J3 Follow Graph endpoints.
 """
 
+import pytest
 import requests
 
 BASE_URL = "http://localhost:8000"
 
 
+@pytest.mark.integration
+@pytest.mark.skip(reason="Requires live server - run manually or in integration test suite")
 def create_test_user(email: str, username: str, full_name: str):
     """Helper to create or login a test user."""
     user_data = {
@@ -32,6 +35,8 @@ def create_test_user(email: str, username: str, full_name: str):
     return None
 
 
+@pytest.mark.integration
+@pytest.mark.skip(reason="Requires live server - run manually or in integration test suite")
 def test_follow_graph():
     print("🧪 Testing Phase J3 Follow Graph Endpoints")
     print("=" * 60)

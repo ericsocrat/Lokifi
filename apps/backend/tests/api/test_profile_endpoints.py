@@ -2,11 +2,14 @@
 Test script for Phase J2 Profile & Settings endpoints.
 """
 
+import pytest
 import requests
 
 BASE_URL = "http://localhost:8000"
 
 
+@pytest.mark.integration
+@pytest.mark.skip(reason="Requires live server - run manually or in integration test suite")
 def test_profile_endpoints():
     print("🧪 Testing Phase J2 Profile & Settings Endpoints")
     print("=" * 60)
