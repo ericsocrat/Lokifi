@@ -77,7 +77,7 @@ param(
     [Parameter(Position = 0)]
     [ValidateSet('servers', 'redis', 'postgres', 'test', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
                  'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs',
-                 'analyze', 'fix', 'fix-datetime', 'fix-imports', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
+                 'analyze', 'fix', 'fix-datetime', 'fix-imports', 'fix-type-hints', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
                  'dashboard', 'metrics',  # Phase 3.2: Monitoring & Telemetry
                  'ai',                     # Phase 3.4: AI/ML Features
@@ -3833,6 +3833,119 @@ function Invoke-ImportFixer {
             Write-Host "   • Sorted: $i001Count import blocks" -ForegroundColor White
             Write-Host "   • Code Quality: Improved maintainability" -ForegroundColor White
             Write-Host "   • Performance: Faster Python startup" -ForegroundColor White
+            Write-Host ""
+
+        } finally {
+            Pop-Location
+        }
+    }
+}
+
+function Invoke-TypeHintFixer {
+    <#
+    .SYNOPSIS
+        Modernize Python type hints (UP045)
+    .DESCRIPTION
+        Converts Optional[X] to X | None (Python 3.10+ syntax) using ruff.
+        Expected to fix 2 UP045 violations.
+    .PARAMETER DryRun
+        Preview fixes without applying them
+    .PARAMETER Force
+        Skip confirmation prompt
+    .EXAMPLE
+        Invoke-TypeHintFixer
+        Invoke-TypeHintFixer -DryRun
+        Invoke-TypeHintFixer -Force
+    #>
+    param(
+        [switch]$DryRun,
+        [switch]$Force
+    )
+
+    Invoke-WithCodebaseBaseline -AutomationType "Type Hint Modernization (UP045)" -RequireConfirmation:(!$Force) -ScriptBlock {
+        Write-LokifiHeader "Python Type Hint Modernization"
+        
+        Write-Host "🔍 Scanning for outdated type hints..." -ForegroundColor Cyan
+        Write-Host ""
+
+        $backendPath = $Global:LokifiConfig.BackendDir
+        Push-Location $backendPath
+        try {
+            # Check if ruff is available
+            if (-not (Test-Path "venv/Scripts/ruff.exe")) {
+                Write-Host "❌ Ruff not found in venv" -ForegroundColor Red
+                Write-Host "   Run: pip install ruff (in backend venv)" -ForegroundColor Yellow
+                return
+            }
+
+            # Scan for UP045 issues (Optional[X] → X | None)
+            Write-Host "📊 Current violations:" -ForegroundColor Cyan
+            $beforeCheck = & .\venv\Scripts\ruff.exe check app --select UP045 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
+            
+            # Count issues
+            $up045Count = ($beforeCheck | Select-String "UP045" | Measure-Object).Count
+            
+            if ($up045Count -eq 0) {
+                Write-Host "✅ No outdated type hints found!" -ForegroundColor Green
+                Write-Host "   All type hints use modern Python 3.10+ syntax." -ForegroundColor Gray
+                return
+            }
+
+            Write-Host "   Found $up045Count outdated type hints (UP045)" -ForegroundColor Yellow
+            Write-Host ""
+
+            # Show what will be fixed
+            Write-Host "💡 This will modernize type hints:" -ForegroundColor Cyan
+            Write-Host "   Before: Optional[Type]" -ForegroundColor Red
+            Write-Host "   After:  Type | None" -ForegroundColor Green
+            Write-Host ""
+            Write-Host "   Benefits:" -ForegroundColor Cyan
+            Write-Host "   • ✅ Python 3.10+ best practices" -ForegroundColor Gray
+            Write-Host "   • ✅ More readable union types" -ForegroundColor Gray
+            Write-Host "   • ✅ Consistent modern syntax" -ForegroundColor Gray
+            Write-Host "   • ✅ Better IDE support" -ForegroundColor Gray
+            Write-Host ""
+
+            if ($DryRun) {
+                Write-Host "🔍 DRY RUN MODE - Showing what would be fixed:" -ForegroundColor Yellow
+                Write-Host ""
+                $beforeCheck | Select-String "UP045" | ForEach-Object {
+                    Write-Host "   $_" -ForegroundColor Gray
+                }
+                Write-Host ""
+                Write-Host "💡 Run without -DryRun to apply fixes" -ForegroundColor Cyan
+                return
+            }
+
+            # Apply fixes
+            Write-Host "✍️  Applying fixes..." -ForegroundColor Yellow
+            $fixOutput = & .\venv\Scripts\ruff.exe check app --select UP045 --fix 2>&1
+            
+            Write-Host ""
+            Write-Host "🔍 Verifying fixes..." -ForegroundColor Cyan
+            $verification = & .\venv\Scripts\ruff.exe check app --select UP045 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
+            $remaining = ($verification | Select-String "UP045" | Measure-Object).Count
+            
+            if ($remaining -eq 0) {
+                Write-Host "✅ Verification passed! All type hints modernized." -ForegroundColor Green
+                Write-Host ""
+                Write-Host "📊 Fixed:" -ForegroundColor Cyan
+                Write-Host "   • Type hints modernized (UP045): $up045Count" -ForegroundColor Green
+                Write-Host "   • Converted: Optional[X] → X | None" -ForegroundColor White
+            } else {
+                $fixed = $up045Count - $remaining
+                Write-Host "✅ Fixed $fixed out of $up045Count type hints!" -ForegroundColor Green
+                if ($remaining -gt 0) {
+                    Write-Host "⚠️  $remaining issues may need manual review" -ForegroundColor Yellow
+                }
+            }
+
+            Write-Host ""
+            Write-Host "📊 Impact Summary:" -ForegroundColor Cyan
+            Write-Host "   • Modernized: $up045Count type hints" -ForegroundColor White
+            Write-Host "   • Syntax: Optional[X] → X | None" -ForegroundColor White
+            Write-Host "   • Code Quality: Python 3.10+ best practices" -ForegroundColor White
+            Write-Host "   • Readability: Improved type hint clarity" -ForegroundColor White
             Write-Host ""
 
         } finally {
@@ -7985,6 +8098,9 @@ switch ($Action.ToLower()) {
     }
     'fix-imports' {
         Invoke-ImportFixer
+    }
+    'fix-type-hints' {
+        Invoke-TypeHintFixer
     }
     'fix' {
         Write-LokifiHeader "Quick Fixes"

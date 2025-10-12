@@ -103,8 +103,8 @@ class CrossDatabaseQuery:
 
     def window_function_row_number(
         self,
-        partition_by: Optional[ColumnElement[Any]] = None,
-        order_by: Optional[ColumnElement[Any]] = None,
+        partition_by: ColumnElement[Any] | None = None,
+        order_by: ColumnElement[Any] | None = None,
     ) -> ClauseElement:
         """ROW_NUMBER() window function with compatibility"""
 
