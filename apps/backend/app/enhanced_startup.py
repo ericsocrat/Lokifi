@@ -60,6 +60,7 @@ class EnhancedSettings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+        extra = "ignore"  # Allow extra fields from .env without validation errors
 
 # Global settings instance
 enhanced_settings = EnhancedSettings()
