@@ -6,7 +6,7 @@ Request/response models for AI API endpoints.
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class AIThreadCreate(BaseModel):
@@ -112,7 +112,8 @@ class ExportRequest(BaseModel):
     thread_ids: list[int] | None = None
     date_range: list[str] | None = None  # [start_date, end_date] in ISO format
     
-    @validator('format')
+    @field_validator('format')
+    @classmethod
     def validate_format(cls, v):
         allowed_formats = ['json', 'csv', 'markdown', 'html', 'xml', 'txt']
         if v not in allowed_formats:

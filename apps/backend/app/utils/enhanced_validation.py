@@ -11,7 +11,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 import bleach
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 from app.core.security_config import security_config
 
@@ -183,7 +183,8 @@ class SecureValidationModel(BaseModel):
         # Use enum values
         use_enum_values = True
     
-    @validator('*', pre=True)
+    @field_validator('*', mode='before')
+    @classmethod
     def sanitize_strings(cls, v):
         """Sanitize all string fields"""
         if isinstance(v, str):
@@ -195,7 +196,8 @@ class SecureStringField(BaseModel):
     """Secure string field with built-in validation"""
     value: str
     
-    @validator('value')
+    @field_validator('value')
+    @classmethod
     def validate_string(cls, v):
         return InputSanitizer.sanitize_string(v)
 
@@ -204,7 +206,8 @@ class SecureEmailField(BaseModel):
     """Secure email field with validation"""
     value: str
     
-    @validator('value')
+    @field_validator('value')
+    @classmethod
     def validate_email(cls, v):
         return InputSanitizer.validate_email(v)
 
@@ -213,7 +216,8 @@ class SecureUsernameField(BaseModel):
     """Secure username field with validation"""
     value: str
     
-    @validator('value')
+    @field_validator('value')
+    @classmethod
     def validate_username(cls, v):
         return InputSanitizer.validate_username(v)
 
@@ -222,7 +226,8 @@ class SecureUrlField(BaseModel):
     """Secure URL field with validation"""
     value: str
     
-    @validator('value')  
+    @field_validator('value')
+    @classmethod
     def validate_url(cls, v):
         return InputSanitizer.validate_url(v)
 
