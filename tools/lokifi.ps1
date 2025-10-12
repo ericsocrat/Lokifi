@@ -75,7 +75,7 @@
 
 param(
     [Parameter(Position = 0)]
-    [ValidateSet('servers', 'redis', 'postgres', 'test', 'generate-tests', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
+    [ValidateSet('servers', 'redis', 'postgres', 'test', 'generate-tests', 'generate-mocks', 'generate-fixtures', 'analyze-coverage-gaps', 'organize', 'health', 'stop', 'restart', 'clean', 'status',
                  'dev', 'launch', 'validate', 'format', 'lint', 'setup', 'install', 'upgrade', 'docs',
                  'analyze', 'fix', 'fix-datetime', 'fix-imports', 'fix-type-hints', 'fix-quality', 'help', 'backup', 'restore', 'logs', 'monitor', 'migrate', 'loadtest',
                  'git', 'env', 'security', 'deploy', 'ci', 'watch', 'audit', 'autofix', 'profile',
@@ -98,6 +98,9 @@ param(
                  'scan', 'secrets', 'vulnerabilities', 'licenses', 'audit',  # Security components (Phase 3.3)
                  'autofix', 'predict', 'forecast', 'recommendations', 'learn')]  # AI/ML components (Phase 3.4)
     [string]$Component = 'all',
+
+    # File path for generate-mocks, generate-fixtures
+    [string]$FilePath = "",
 
     # Development-specific parameters
     [string]$DevCommand = "",
@@ -271,7 +274,7 @@ function Search-CodebaseForPatterns {
     try {
         # Analyzer already sourced globally, just call it
         $scanMode = if ($Scope -eq 'CodeOnly') { 'Search' } else { 'Search' }
-        
+
         $results = Invoke-CodebaseAnalysis `
             -ScanMode $scanMode `
             -SearchKeywords $Keywords `
@@ -3574,7 +3577,7 @@ function Invoke-DatetimeFixer {
     .SYNOPSIS
         Fix deprecated datetime.utcnow() usage (UP017)
     .DESCRIPTION
-        Modernizes Python datetime usage by replacing datetime.utcnow() with 
+        Modernizes Python datetime usage by replacing datetime.utcnow() with
         datetime.now(datetime.UTC). Fixes 43 UP017 ruff violations.
     .PARAMETER DryRun
         Preview fixes without applying them
@@ -3591,7 +3594,7 @@ function Invoke-DatetimeFixer {
 
     Invoke-WithCodebaseBaseline -AutomationType "Datetime Modernization (UP017)" -RequireConfirmation:(!$Force) -ScriptBlock {
         Write-LokifiHeader "Python Datetime Modernization"
-        
+
         Write-Host "🔍 Scanning for deprecated datetime.utcnow() usage..." -ForegroundColor Cyan
         Write-Host ""
 
@@ -3608,11 +3611,11 @@ function Invoke-DatetimeFixer {
             # Scan for UP017 issues (ignore syntax errors for now)
             Write-Host "📊 Current violations:" -ForegroundColor Cyan
             $beforeCheck = & .\venv\Scripts\ruff.exe check app --select UP017 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
-            
+
             # Count UP017 violations (filter out syntax errors)
             $up017Issues = $beforeCheck | Select-String "UP017"
             $issueCount = ($up017Issues | Measure-Object).Count
-            
+
             if ($issueCount -eq 0) {
                 Write-Host "✅ No datetime.utcnow() issues found!" -ForegroundColor Green
                 Write-Host "   All datetime usage is already modernized." -ForegroundColor Gray
@@ -3648,7 +3651,7 @@ function Invoke-DatetimeFixer {
             # Apply fixes
             Write-Host "✍️  Applying fixes..." -ForegroundColor Yellow
             $fixOutput = & .\venv\Scripts\ruff.exe check app --select UP017 --fix 2>&1
-            
+
             if ($LASTEXITCODE -eq 0) {
                 Write-Host "✅ Successfully applied fixes!" -ForegroundColor Green
             } else {
@@ -3674,7 +3677,7 @@ function Invoke-DatetimeFixer {
             $verification = & .\venv\Scripts\ruff.exe check app --select UP017 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
             $remainingIssues = $verification | Select-String "UP017"
             $remaining = ($remainingIssues | Measure-Object).Count
-            
+
             if ($remaining -eq 0) {
                 Write-Host "✅ Verification passed! No UP017 violations remaining." -ForegroundColor Green
             } else {
@@ -3725,7 +3728,7 @@ function Invoke-ImportFixer {
 
     Invoke-WithCodebaseBaseline -AutomationType "Import Cleanup (F401, I001)" -RequireConfirmation:(!$Force) -ScriptBlock {
         Write-LokifiHeader "Python Import Cleanup"
-        
+
         Write-Host "🔍 Scanning for import issues..." -ForegroundColor Cyan
         Write-Host ""
 
@@ -3742,12 +3745,12 @@ function Invoke-ImportFixer {
             # Scan for import issues (F401 = unused imports, I001 = unsorted imports)
             Write-Host "📊 Current violations:" -ForegroundColor Cyan
             $beforeCheck = & .\venv\Scripts\ruff.exe check app --select F401,I001 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
-            
+
             # Count issues
             $f401Count = ($beforeCheck | Select-String "F401" | Measure-Object).Count
             $i001Count = ($beforeCheck | Select-String "I001" | Measure-Object).Count
             $totalIssues = $f401Count + $i001Count
-            
+
             if ($totalIssues -eq 0) {
                 Write-Host "✅ No import issues found!" -ForegroundColor Green
                 Write-Host "   All imports are clean and properly sorted." -ForegroundColor Gray
@@ -3802,14 +3805,14 @@ function Invoke-ImportFixer {
             # Apply fixes
             Write-Host "✍️  Applying fixes..." -ForegroundColor Yellow
             $fixOutput = & .\venv\Scripts\ruff.exe check app --select F401,I001 --fix 2>&1
-            
+
             Write-Host ""
             Write-Host "🔍 Verifying fixes..." -ForegroundColor Cyan
             $verification = & .\venv\Scripts\ruff.exe check app --select F401,I001 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
             $remainingF401 = ($verification | Select-String "F401" | Measure-Object).Count
             $remainingI001 = ($verification | Select-String "I001" | Measure-Object).Count
             $remaining = $remainingF401 + $remainingI001
-            
+
             if ($remaining -eq 0) {
                 Write-Host "✅ Verification passed! All import issues resolved." -ForegroundColor Green
                 Write-Host ""
@@ -3864,7 +3867,7 @@ function Invoke-TypeHintFixer {
 
     Invoke-WithCodebaseBaseline -AutomationType "Type Hint Modernization (UP045)" -RequireConfirmation:(!$Force) -ScriptBlock {
         Write-LokifiHeader "Python Type Hint Modernization"
-        
+
         Write-Host "🔍 Scanning for outdated type hints..." -ForegroundColor Cyan
         Write-Host ""
 
@@ -3881,10 +3884,10 @@ function Invoke-TypeHintFixer {
             # Scan for UP045 issues (Optional[X] → X | None)
             Write-Host "📊 Current violations:" -ForegroundColor Cyan
             $beforeCheck = & .\venv\Scripts\ruff.exe check app --select UP045 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
-            
+
             # Count issues
             $up045Count = ($beforeCheck | Select-String "UP045" | Measure-Object).Count
-            
+
             if ($up045Count -eq 0) {
                 Write-Host "✅ No outdated type hints found!" -ForegroundColor Green
                 Write-Host "   All type hints use modern Python 3.10+ syntax." -ForegroundColor Gray
@@ -3920,12 +3923,12 @@ function Invoke-TypeHintFixer {
             # Apply fixes
             Write-Host "✍️  Applying fixes..." -ForegroundColor Yellow
             $fixOutput = & .\venv\Scripts\ruff.exe check app --select UP045 --fix 2>&1
-            
+
             Write-Host ""
             Write-Host "🔍 Verifying fixes..." -ForegroundColor Cyan
             $verification = & .\venv\Scripts\ruff.exe check app --select UP045 2>&1 | Where-Object { $_ -notmatch "invalid-syntax" }
             $remaining = ($verification | Select-String "UP045" | Measure-Object).Count
-            
+
             if ($remaining -eq 0) {
                 Write-Host "✅ Verification passed! All type hints modernized." -ForegroundColor Green
                 Write-Host ""
@@ -4158,7 +4161,7 @@ function Invoke-PythonQualityFix {
             Write-Host "📊 FINAL RESULTS" -ForegroundColor Green
             Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
             Write-Host ""
-            
+
             if (-not $DryRun) {
                 Write-Host "✅ Total fixes applied: $fixCount" -ForegroundColor Green
                 Write-Host ""
@@ -4227,9 +4230,9 @@ function Invoke-TestGenerator {
 
         # Step 2: Find modules without tests
         Write-Step "2" "🔍 Scanning for untested modules..."
-        $appFiles = Get-ChildItem -Path $TargetDir -Recurse -Filter "*.py" | 
-            Where-Object { 
-                $_.Name -ne "__init__.py" -and 
+        $appFiles = Get-ChildItem -Path $TargetDir -Recurse -Filter "*.py" |
+            Where-Object {
+                $_.Name -ne "__init__.py" -and
                 $_.DirectoryName -notmatch "tests" -and
                 $_.DirectoryName -notmatch "__pycache__"
             }
@@ -4263,13 +4266,13 @@ function Invoke-TestGenerator {
         foreach ($file in $untestedFiles) {
             $relativePath = $file.FullName.Replace($backendDir, "").TrimStart("\")
             $modulePath = $relativePath -replace "\\", "." -replace "\.py$", ""
-            
+
             # Determine test directory (unit/integration/services)
             $testType = if ($relativePath -match "services\\") { "services" }
                        elseif ($relativePath -match "routers\\") { "api" }
                        elseif ($relativePath -match "models\\") { "unit" }
                        else { "unit" }
-            
+
             $testDir = Join-Path "tests" $testType
             $testFileName = "test_$($file.BaseName).py"
             $testFilePath = Join-Path $testDir $testFileName
@@ -4335,7 +4338,7 @@ class Test$($file.BaseName.Replace('_', '')):
         $triple Test basic functionality $triple
         # TODO: Add basic functionality test
         assert sample_data is not None
-        
+
     # TODO: Add more test cases for:
     # - Happy path scenarios
     # - Edge cases
@@ -4424,7 +4427,7 @@ class Test$($file.BaseName.Replace('_', ''))Performance:
         Write-Host "📊 GENERATION SUMMARY" -ForegroundColor Green
         Write-Host "═══════════════════════════════════════════════════════════" -ForegroundColor Cyan
         Write-Host ""
-        
+
         if ($DryRun) {
             Write-Host "🔍 DRY RUN MODE" -ForegroundColor Cyan
             Write-Host "   Would generate: $generated test files" -ForegroundColor Yellow
@@ -4446,6 +4449,855 @@ class Test$($file.BaseName.Replace('_', ''))Performance:
         if (-not $DryRun -and $generated -gt 0) {
             Write-Host "💡 Pro Tip: Use AI to help fill in test cases:" -ForegroundColor Cyan
             Write-Host "   'Please add comprehensive tests for [module_name]'" -ForegroundColor Gray
+        }
+
+    } finally {
+        Pop-Location
+    }
+}
+
+function Invoke-MockGenerator {
+    <#
+    .SYNOPSIS
+        Generate mock objects for external dependencies in test files
+    .DESCRIPTION
+        Analyzes Python modules to identify external dependencies (httpx, Redis, database, APIs)
+        and generates comprehensive mock fixtures for testing. Supports async mocks, context managers,
+        and common patterns.
+    .PARAMETER TargetModule
+        Specific module to generate mocks for (e.g., "app/services/crypto_data_service.py")
+    .PARAMETER OutputFile
+        Custom output file path (default: tests/fixtures/mock_{module_name}.py)
+    .PARAMETER DryRun
+        Preview what would be generated without creating files
+    .PARAMETER IncludeExamples
+        Include example usage in generated mock file
+    .EXAMPLE
+        Invoke-MockGenerator -TargetModule "app/services/crypto_data_service.py"
+        Invoke-MockGenerator -TargetModule "app/core/redis_client.py" -DryRun
+        Invoke-MockGenerator -TargetModule "app/services/smart_price_service.py" -IncludeExamples
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TargetModule,
+        [string]$OutputFile = "",
+        [switch]$DryRun,
+        [switch]$IncludeExamples
+    )
+
+    try {
+        Push-Location (Join-Path $PSScriptRoot ".." "apps" "backend")
+
+        Write-Host ""
+        Write-Host "🚀 Lokifi Ultimate Manager - 🎭 Mock Generator" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        # Validate module exists
+        if (-not (Test-Path $TargetModule)) {
+            Write-Host "❌ Module not found: $TargetModule" -ForegroundColor Red
+            return
+        }
+
+        $moduleName = [System.IO.Path]::GetFileNameWithoutExtension($TargetModule)
+        $moduleContent = Get-Content $TargetModule -Raw
+
+        Write-Host "2 🔍 Analyzing module: $moduleName..." -ForegroundColor Yellow
+
+        # Detect external dependencies
+        $dependencies = @{
+            httpx = $moduleContent -match "import httpx|from httpx"
+            redis = $moduleContent -match "import redis|from.*redis|advanced_redis_client"
+            database = $moduleContent -match "from sqlalchemy|Session|AsyncSession"
+            fastapi = $moduleContent -match "from fastapi|FastAPI|Request|Response"
+            pydantic = $moduleContent -match "from pydantic|BaseModel"
+            aiohttp = $moduleContent -match "import aiohttp|from aiohttp"
+            websocket = $moduleContent -match "WebSocket|websocket"
+        }
+
+        $detected = $dependencies.GetEnumerator() | Where-Object { $_.Value } | ForEach-Object { $_.Key }
+
+        if ($detected.Count -eq 0) {
+            Write-Host "   ℹ️  No external dependencies detected" -ForegroundColor Gray
+            Write-Host "   Supported: httpx, redis, database, fastapi, pydantic, aiohttp, websocket" -ForegroundColor Gray
+            return
+        }
+
+        Write-Host "   Found dependencies: $($detected -join ', ')" -ForegroundColor Green
+        Write-Host ""
+
+        # Generate output file path
+        if (-not $OutputFile) {
+            $fixtureDir = "tests/fixtures"
+            if (-not (Test-Path $fixtureDir)) {
+                New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
+            }
+            $OutputFile = "$fixtureDir/mock_$moduleName.py"
+        }
+
+        Write-Host "3 🔧 Generating mock fixtures..." -ForegroundColor Yellow
+
+        # Build mock content
+        $triple = '"""'
+        $mockContent = @"
+$triple
+Mock fixtures for $moduleName
+
+Auto-generated by Lokifi Mock Generator
+Provides comprehensive mocks for external dependencies
+$triple
+import pytest
+from unittest.mock import Mock, AsyncMock, MagicMock, patch
+from typing import Any, Dict, List, Optional
+
+
+"@
+
+        # Add httpx mocks
+        if ($dependencies.httpx) {
+            $mockContent += @"
+# ============================================================================
+# HTTPX MOCKS
+# ============================================================================
+
+@pytest.fixture
+def mock_httpx_response():
+    $triple Mock HTTP response $triple
+    response = AsyncMock()
+    response.status_code = 200
+    response.json = AsyncMock(return_value={})
+    response.text = ""
+    response.content = b""
+    response.headers = {}
+    response.raise_for_status = Mock()
+    return response
+
+
+@pytest.fixture
+def mock_httpx_client(mock_httpx_response):
+    $triple Mock httpx AsyncClient $triple
+    client = AsyncMock()
+    client.get = AsyncMock(return_value=mock_httpx_response)
+    client.post = AsyncMock(return_value=mock_httpx_response)
+    client.put = AsyncMock(return_value=mock_httpx_response)
+    client.delete = AsyncMock(return_value=mock_httpx_response)
+    client.patch = AsyncMock(return_value=mock_httpx_response)
+    client.aclose = AsyncMock()
+
+    # Support context manager
+    client.__aenter__ = AsyncMock(return_value=client)
+    client.__aexit__ = AsyncMock()
+
+    return client
+
+
+@pytest.fixture
+def mock_httpx_error():
+    $triple Mock httpx error scenarios $triple
+    return {
+        'timeout': lambda: httpx.TimeoutException("Request timeout"),
+        'network': lambda: httpx.NetworkError("Network error"),
+        'http': lambda: httpx.HTTPError("HTTP error"),
+        'status': lambda code: httpx.HTTPStatusError("Status error", request=Mock(), response=Mock(status_code=code))
+    }
+
+
+"@
+        }
+
+        # Add Redis mocks
+        if ($dependencies.redis) {
+            $mockContent += @"
+# ============================================================================
+# REDIS MOCKS
+# ============================================================================
+
+@pytest.fixture
+def mock_redis_client():
+    $triple Mock Redis client $triple
+    client = AsyncMock()
+    client.ping = AsyncMock(return_value=True)
+    client.get = AsyncMock(return_value=None)
+    client.set = AsyncMock(return_value=True)
+    client.delete = AsyncMock(return_value=1)
+    client.exists = AsyncMock(return_value=0)
+    client.expire = AsyncMock(return_value=True)
+    client.keys = AsyncMock(return_value=[])
+    client.flushdb = AsyncMock(return_value=True)
+    client.flushall = AsyncMock(return_value=True)
+
+    # Hash operations
+    client.hget = AsyncMock(return_value=None)
+    client.hset = AsyncMock(return_value=1)
+    client.hgetall = AsyncMock(return_value={})
+    client.hdel = AsyncMock(return_value=1)
+
+    # List operations
+    client.lpush = AsyncMock(return_value=1)
+    client.rpush = AsyncMock(return_value=1)
+    client.lpop = AsyncMock(return_value=None)
+    client.rpop = AsyncMock(return_value=None)
+    client.lrange = AsyncMock(return_value=[])
+
+    # Set operations
+    client.sadd = AsyncMock(return_value=1)
+    client.smembers = AsyncMock(return_value=set())
+    client.srem = AsyncMock(return_value=1)
+
+    return client
+
+
+@pytest.fixture
+def mock_redis_cache():
+    $triple Mock Redis cache with get/set behavior $triple
+    cache = {}
+
+    async def mock_get(key):
+        return cache.get(key)
+
+    async def mock_set(key, value, expire=None):
+        cache[key] = value
+        return True
+
+    async def mock_delete(key):
+        if key in cache:
+            del cache[key]
+            return 1
+        return 0
+
+    client = AsyncMock()
+    client.get = mock_get
+    client.set = mock_set
+    client.delete = mock_delete
+    client.exists = AsyncMock(side_effect=lambda k: 1 if k in cache else 0)
+
+    return client
+
+
+"@
+        }
+
+        # Add Database mocks
+        if ($dependencies.database) {
+            $mockContent += @"
+# ============================================================================
+# DATABASE MOCKS
+# ============================================================================
+
+@pytest.fixture
+async def mock_db_session():
+    $triple Mock database session $triple
+    session = AsyncMock()
+    session.add = Mock()
+    session.delete = Mock()
+    session.commit = AsyncMock()
+    session.rollback = AsyncMock()
+    session.refresh = AsyncMock()
+    session.close = AsyncMock()
+    session.flush = AsyncMock()
+
+    # Query methods
+    session.execute = AsyncMock()
+    session.scalar = AsyncMock()
+    session.scalars = AsyncMock()
+
+    # Context manager support
+    session.__aenter__ = AsyncMock(return_value=session)
+    session.__aexit__ = AsyncMock()
+
+    return session
+
+
+@pytest.fixture
+def mock_db_query_result():
+    $triple Mock database query result $triple
+    result = AsyncMock()
+    result.scalar = Mock(return_value=None)
+    result.scalars = Mock(return_value=Mock(all=Mock(return_value=[])))
+    result.fetchone = Mock(return_value=None)
+    result.fetchall = Mock(return_value=[])
+    result.first = Mock(return_value=None)
+    result.all = Mock(return_value=[])
+    return result
+
+
+"@
+        }
+
+        # Add FastAPI mocks
+        if ($dependencies.fastapi) {
+            $mockContent += @"
+# ============================================================================
+# FASTAPI MOCKS
+# ============================================================================
+
+@pytest.fixture
+def mock_request():
+    $triple Mock FastAPI Request $triple
+    request = Mock()
+    request.headers = {}
+    request.cookies = {}
+    request.query_params = {}
+    request.path_params = {}
+    request.url = Mock(path="/", query="")
+    request.client = Mock(host="127.0.0.1", port=8000)
+    request.method = "GET"
+    return request
+
+
+@pytest.fixture
+def mock_websocket():
+    $triple Mock WebSocket connection $triple
+    ws = AsyncMock()
+    ws.accept = AsyncMock()
+    ws.send_text = AsyncMock()
+    ws.send_json = AsyncMock()
+    ws.receive_text = AsyncMock(return_value="")
+    ws.receive_json = AsyncMock(return_value={})
+    ws.close = AsyncMock()
+    return ws
+
+
+"@
+        }
+
+        # Add usage examples if requested
+        if ($IncludeExamples) {
+            $mockContent += @"
+# ============================================================================
+# USAGE EXAMPLES
+# ============================================================================
+
+$triple
+Example usage of generated mocks:
+
+1. Using httpx mock:
+    @pytest.mark.asyncio
+    async def test_api_call(mock_httpx_client, mock_httpx_response):
+        mock_httpx_response.json = AsyncMock(return_value={"price": 50000})
+
+        with patch('$($TargetModule.Replace('\', '.').Replace('.py', '').Replace('/', '.')).httpx.AsyncClient', return_value=mock_httpx_client):
+            result = await fetch_data()
+            assert result["price"] == 50000
+
+2. Using Redis mock:
+    @pytest.mark.asyncio
+    async def test_cache(mock_redis_client):
+        mock_redis_client.get = AsyncMock(return_value='{"cached": true}')
+
+        with patch('$($TargetModule.Replace('\', '.').Replace('.py', '').Replace('/', '.')).advanced_redis_client.client', mock_redis_client):
+            result = await get_cached_data("key")
+            assert result["cached"] is True
+
+3. Using database mock:
+    @pytest.mark.asyncio
+    async def test_db_query(mock_db_session, mock_db_query_result):
+        mock_db_query_result.scalar = Mock(return_value={"id": 1, "name": "test"})
+        mock_db_session.execute = AsyncMock(return_value=mock_db_query_result)
+
+        result = await get_user(1, mock_db_session)
+        assert result["id"] == 1
+$triple
+
+
+"@
+        }
+
+        if ($DryRun) {
+            Write-Host "   📄 Would create: $OutputFile" -ForegroundColor Yellow
+            Write-Host ""
+            Write-Host "Preview (first 50 lines):" -ForegroundColor Cyan
+            $mockContent -split "`n" | Select-Object -First 50 | ForEach-Object { Write-Host "   $_" -ForegroundColor Gray }
+            if (($mockContent -split "`n").Count -gt 50) {
+                Write-Host "   ..." -ForegroundColor Gray
+                Write-Host "   (truncated)" -ForegroundColor Gray
+            }
+        } else {
+            $mockContent | Out-File -FilePath $OutputFile -Encoding utf8 -NoNewline
+            Write-Host "   ✅ Created: $OutputFile" -ForegroundColor Green
+        }
+
+        Write-Host ""
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host "📊 MOCK GENERATION SUMMARY" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        if ($DryRun) {
+            Write-Host "Would generate mocks for:" -ForegroundColor Yellow
+        } else {
+            Write-Host "✅ Generated mocks for:" -ForegroundColor Green
+        }
+
+        $detected | ForEach-Object {
+            Write-Host "   • $($_)" -ForegroundColor White
+        }
+
+        Write-Host ""
+        Write-Host "📝 Next Steps:" -ForegroundColor Yellow
+        Write-Host "   1. Review generated mock fixtures" -ForegroundColor Gray
+        Write-Host "   2. Import mocks in your test files: from tests.fixtures.mock_$moduleName import *" -ForegroundColor Gray
+        Write-Host "   3. Use mocks in your tests with @patch decorator" -ForegroundColor Gray
+        Write-Host "   4. Customize mock behavior for specific test scenarios" -ForegroundColor Gray
+        Write-Host ""
+
+    } finally {
+        Pop-Location
+    }
+}
+
+function Invoke-FixtureGenerator {
+    <#
+    .SYNOPSIS
+        Generate domain-specific pytest fixtures from Pydantic models and dataclasses
+    .DESCRIPTION
+        Analyzes Pydantic models, dataclasses, and schemas to generate realistic test fixtures
+        with sample data. Creates reusable fixtures in conftest.py or separate fixture files.
+    .PARAMETER TargetModel
+        Specific model file to generate fixtures for (e.g., "app/models/user.py")
+    .PARAMETER OutputFile
+        Custom output file path (default: tests/fixtures/fixture_{model_name}.py)
+    .PARAMETER DryRun
+        Preview what would be generated without creating files
+    .PARAMETER UpdateConftest
+        Add fixtures to tests/conftest.py instead of separate file
+    .EXAMPLE
+        Invoke-FixtureGenerator -TargetModel "app/models/user.py"
+        Invoke-FixtureGenerator -TargetModel "app/schemas/portfolio.py" -UpdateConftest
+        Invoke-FixtureGenerator -TargetModel "app/models/alert.py" -DryRun
+    #>
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$TargetModel,
+        [string]$OutputFile = "",
+        [switch]$DryRun,
+        [switch]$UpdateConftest
+    )
+
+    try {
+        Push-Location (Join-Path $PSScriptRoot ".." "apps" "backend")
+
+        Write-Host ""
+        Write-Host "🚀 Lokifi Ultimate Manager - 🏭 Fixture Generator" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        # Validate model exists
+        if (-not (Test-Path $TargetModel)) {
+            Write-Host "❌ Model not found: $TargetModel" -ForegroundColor Red
+            return
+        }
+
+        $modelName = [System.IO.Path]::GetFileNameWithoutExtension($TargetModel)
+        $modelContent = Get-Content $TargetModel -Raw
+
+        Write-Host "2 🔍 Analyzing model: $modelName..." -ForegroundColor Yellow
+
+        # Detect model types
+        $hasPydantic = $modelContent -match "from pydantic import|class \w+\(BaseModel\)"
+        $hasDataclass = $modelContent -match "@dataclass|from dataclasses import"
+        $hasEnum = $modelContent -match "from enum import|class \w+\(Enum\)"
+
+        if (-not ($hasPydantic -or $hasDataclass -or $hasEnum)) {
+            Write-Host "   ℹ️  No Pydantic models, dataclasses, or enums detected" -ForegroundColor Gray
+            Write-Host "   This tool works best with Pydantic BaseModel or @dataclass" -ForegroundColor Gray
+            return
+        }
+
+        Write-Host "   Found: " -NoNewline -ForegroundColor Green
+        $types = @()
+        if ($hasPydantic) { $types += "Pydantic models" }
+        if ($hasDataclass) { $types += "dataclasses" }
+        if ($hasEnum) { $types += "enums" }
+        Write-Host ($types -join ", ") -ForegroundColor Green
+
+        # Extract class names
+        $classMatches = [regex]::Matches($modelContent, 'class\s+(\w+)\s*\((?:BaseModel|Enum)')
+        $dataclassMatches = [regex]::Matches($modelContent, '@dataclass.*?class\s+(\w+)')
+
+        $classes = @()
+        $classMatches | ForEach-Object { $classes += $_.Groups[1].Value }
+        $dataclassMatches | ForEach-Object { $classes += $_.Groups[1].Value }
+
+        if ($classes.Count -eq 0) {
+            Write-Host "   ⚠️  No classes found to generate fixtures for" -ForegroundColor Yellow
+            return
+        }
+
+        Write-Host "   Classes: $($classes -join ', ')" -ForegroundColor Cyan
+        Write-Host ""
+
+        # Generate output file path
+        if ($UpdateConftest) {
+            $OutputFile = "tests/conftest.py"
+        } elseif (-not $OutputFile) {
+            $fixtureDir = "tests/fixtures"
+            if (-not (Test-Path $fixtureDir)) {
+                New-Item -ItemType Directory -Path $fixtureDir -Force | Out-Null
+            }
+            $OutputFile = "$fixtureDir/fixture_$modelName.py"
+        }
+
+        Write-Host "3 🔧 Generating fixtures..." -ForegroundColor Yellow
+
+        # Build fixture content
+        $triple = '"""'
+        $fixtureContent = @"
+$triple
+Test fixtures for $modelName
+
+Auto-generated by Lokifi Fixture Generator
+Provides realistic test data for models
+$triple
+import pytest
+from datetime import datetime, timezone
+from typing import Any, Dict, List
+from $($TargetModel.Replace('\', '/').Replace('.py', '').Replace('/', '.')) import *
+
+
+"@
+
+        # Generate fixtures for each class
+        foreach ($className in $classes) {
+            $fixtureName = "sample_" + ($className -replace '([A-Z])', '_$1').TrimStart('_').ToLower()
+
+            $fixtureContent += @"
+# ============================================================================
+# $className FIXTURES
+# ============================================================================
+
+@pytest.fixture
+def $fixtureName():
+    $triple Sample $className for testing $triple
+    # TODO: Customize with realistic test data
+    return $className(
+        # Add field values here
+        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+    )
+
+
+@pytest.fixture
+def ${fixtureName}_list():
+    $triple List of sample ${className}s $triple
+    return [
+        # TODO: Add multiple instances
+    ]
+
+
+@pytest.fixture
+def ${fixtureName}_factory():
+    $triple Factory function for creating ${className}s with custom values $triple
+    def _factory(**kwargs):
+        defaults = {
+            # TODO: Add default values
+        }
+        return $className(**{**defaults, **kwargs})
+    return _factory
+
+
+"@
+        }
+
+        # Add helper fixtures
+        $fixtureContent += @"
+# ============================================================================
+# HELPER FIXTURES
+# ============================================================================
+
+@pytest.fixture
+def mock_datetime():
+    $triple Fixed datetime for testing $triple
+    return datetime(2025, 1, 1, 12, 0, 0, tzinfo=timezone.utc)
+
+
+@pytest.fixture
+def sample_ids():
+    $triple Sample IDs for testing $triple
+    return {
+        'user': 1,
+        'portfolio': 100,
+        'asset': 1000,
+        'alert': 10000
+    }
+
+
+"@
+
+        if ($DryRun) {
+            Write-Host "   📄 Would create: $OutputFile" -ForegroundColor Yellow
+            Write-Host ""
+            Write-Host "Preview:" -ForegroundColor Cyan
+            $fixtureContent -split "`n" | Select-Object -First 60 | ForEach-Object { Write-Host "   $_" -ForegroundColor Gray }
+            if (($fixtureContent -split "`n").Count -gt 60) {
+                Write-Host "   ..." -ForegroundColor Gray
+                Write-Host "   (truncated)" -ForegroundColor Gray
+            }
+        } else {
+            if ($UpdateConftest) {
+                # Append to conftest.py
+                Add-Content -Path $OutputFile -Value "`n`n$fixtureContent"
+                Write-Host "   ✅ Updated: $OutputFile" -ForegroundColor Green
+            } else {
+                $fixtureContent | Out-File -FilePath $OutputFile -Encoding utf8 -NoNewline
+                Write-Host "   ✅ Created: $OutputFile" -ForegroundColor Green
+            }
+        }
+
+        Write-Host ""
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host "📊 FIXTURE GENERATION SUMMARY" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        if ($DryRun) {
+            Write-Host "Would generate fixtures for:" -ForegroundColor Yellow
+        } else {
+            Write-Host "✅ Generated fixtures for:" -ForegroundColor Green
+        }
+
+        $classes | ForEach-Object {
+            $fixtureName = "sample_" + ($_ -replace '([A-Z])', '_$1').TrimStart('_').ToLower()
+            Write-Host "   • $($_): $fixtureName, ${fixtureName}_list, ${fixtureName}_factory" -ForegroundColor White
+        }
+
+        Write-Host ""
+        Write-Host "📝 Next Steps:" -ForegroundColor Yellow
+        Write-Host "   1. Review generated fixtures and fill in TODO markers" -ForegroundColor Gray
+        Write-Host "   2. Add realistic field values based on your domain" -ForegroundColor Gray
+        Write-Host "   3. Import fixtures in tests: from tests.fixtures.fixture_$modelName import *" -ForegroundColor Gray
+        Write-Host "   4. Use fixtures in test functions as parameters" -ForegroundColor Gray
+        Write-Host ""
+
+    } finally {
+        Pop-Location
+    }
+}
+
+function Invoke-CoverageGapAnalyzer {
+    <#
+    .SYNOPSIS
+        Analyze test coverage and identify specific gaps
+    .DESCRIPTION
+        Runs pytest with coverage, parses the results, and provides actionable recommendations
+        on which functions, classes, and lines need test coverage. Prioritizes by importance.
+    .PARAMETER Module
+        Specific module to analyze (e.g., "app/services/crypto_data_service.py")
+    .PARAMETER Threshold
+        Minimum coverage percentage to flag as needing attention (default: 80)
+    .PARAMETER DetailLevel
+        Level of detail: Summary, Detailed, or Verbose (default: Detailed)
+    .PARAMETER OutputFormat
+        Output format: Console, JSON, or HTML (default: Console)
+    .EXAMPLE
+        Invoke-CoverageGapAnalyzer
+        Invoke-CoverageGapAnalyzer -Module "app/services" -Threshold 90
+        Invoke-CoverageGapAnalyzer -DetailLevel Verbose -OutputFormat JSON
+    #>
+    param(
+        [string]$Module = "app",
+        [int]$Threshold = 80,
+        [ValidateSet('Summary', 'Detailed', 'Verbose')]
+        [string]$DetailLevel = 'Detailed',
+        [ValidateSet('Console', 'JSON', 'HTML')]
+        [string]$OutputFormat = 'Console'
+    )
+
+    try {
+        Push-Location (Join-Path $PSScriptRoot ".." "apps" "backend")
+
+        Write-Host ""
+        Write-Host "🚀 Lokifi Ultimate Manager - 📊 Coverage Gap Analyzer" -ForegroundColor Cyan
+        Write-Host ("=" * 84) -ForegroundColor Green
+        Write-Host ""
+
+        Write-Host "2 🔍 Running coverage analysis..." -ForegroundColor Yellow
+        Write-Host "   Module: $Module" -ForegroundColor Gray
+        Write-Host "   Threshold: $Threshold%" -ForegroundColor Gray
+        Write-Host ""
+
+        # Run pytest with coverage
+        $coverageArgs = @(
+            "--cov=$Module"
+            "--cov-report=term-missing"
+            "--cov-report=json"
+            "--cov-report=html"
+            "-v"
+            "--tb=no"
+            "-q"
+        )
+
+        $result = python -m pytest tests/ $coverageArgs 2>&1
+
+        if (-not (Test-Path "coverage.json")) {
+            Write-Host "❌ Coverage report not generated" -ForegroundColor Red
+            Write-Host "   Make sure pytest-cov is installed: pip install pytest-cov" -ForegroundColor Yellow
+            return
+        }
+
+        # Parse coverage.json
+        $coverageJson = Get-Content "coverage.json" -Raw
+        $coverage = $coverageJson | ConvertFrom-Json -AsHashtable
+
+        Write-Host "3 📈 Analyzing coverage data..." -ForegroundColor Yellow
+        Write-Host ""
+
+        # Calculate statistics
+        $totalLines = 0
+        $coveredLines = 0
+        $gaps = @()
+
+        foreach ($filePath in $coverage['files'].Keys) {
+            $fileData = $coverage['files'][$filePath]
+
+            if ($filePath -like "*$Module*" -and $filePath -notlike "*test_*" -and $filePath -notlike "*__pycache__*") {
+                $summary = $fileData['summary']
+                $totalLines += $summary['num_statements']
+                $coveredLines += $summary['covered_lines']
+
+                $fileCoverage = if ($summary['num_statements'] -gt 0) {
+                    [math]::Round(($summary['covered_lines'] / $summary['num_statements']) * 100, 2)
+                } else {
+                    100
+                }
+
+                if ($fileCoverage -lt $Threshold) {
+                    $missingLines = $fileData['missing_lines']
+                    $gaps += [PSCustomObject]@{
+                        File = $filePath.Replace((Get-Location).Path + "\", "")
+                        Coverage = $fileCoverage
+                        TotalLines = $summary['num_statements']
+                        CoveredLines = $summary['covered_lines']
+                        MissingLines = $missingLines
+                        MissingCount = if ($missingLines) { $missingLines.Count } else { 0 }
+                        Priority = if ($filePath -like "*service*") { "High" }
+                                 elseif ($filePath -like "*router*") { "High" }
+                                 elseif ($filePath -like "*core*") { "Medium" }
+                                 else { "Low" }
+                    }
+                }
+            }
+        }
+
+        $overallCoverage = if ($totalLines -gt 0) {
+            [math]::Round(($coveredLines / $totalLines) * 100, 2)
+        } else {
+            0
+        }
+
+        # Display results based on format
+        if ($OutputFormat -eq 'Console') {
+            Write-Host ("=" * 84) -ForegroundColor Green
+            Write-Host "📊 COVERAGE GAP ANALYSIS" -ForegroundColor Cyan
+            Write-Host ("=" * 84) -ForegroundColor Green
+            Write-Host ""
+
+            Write-Host "Overall Coverage: " -NoNewline
+            if ($overallCoverage -ge $Threshold) {
+                Write-Host "$overallCoverage% ✅" -ForegroundColor Green
+            } else {
+                Write-Host "$overallCoverage% ⚠️" -ForegroundColor Yellow
+            }
+            Write-Host "Total Lines: $totalLines" -ForegroundColor Gray
+            Write-Host "Covered Lines: $coveredLines" -ForegroundColor Gray
+            Write-Host "Missing Lines: $($totalLines - $coveredLines)" -ForegroundColor Gray
+            Write-Host ""
+
+            if ($gaps.Count -eq 0) {
+                Write-Host "🎉 All modules meet the $Threshold% coverage threshold!" -ForegroundColor Green
+            } else {
+                Write-Host "⚠️  Found $($gaps.Count) modules below $Threshold% threshold" -ForegroundColor Yellow
+                Write-Host ""
+
+                # Sort by priority and coverage
+                $sortedGaps = $gaps | Sort-Object @{Expression={
+                    switch ($_.Priority) {
+                        'High' { 1 }
+                        'Medium' { 2 }
+                        'Low' { 3 }
+                    }
+                }}, Coverage
+
+                foreach ($gap in $sortedGaps) {
+                    $priorityColor = switch ($gap.Priority) {
+                        'High' { 'Red' }
+                        'Medium' { 'Yellow' }
+                        'Low' { 'Gray' }
+                    }
+
+                    Write-Host "📄 $($gap.File)" -ForegroundColor White
+                    Write-Host "   Coverage: $($gap.Coverage)% " -NoNewline
+                    Write-Host "Priority: $($gap.Priority)" -ForegroundColor $priorityColor
+                    Write-Host "   Lines: $($gap.CoveredLines)/$($gap.TotalLines) covered" -ForegroundColor Gray
+
+                    if ($DetailLevel -eq 'Detailed' -or $DetailLevel -eq 'Verbose') {
+                        Write-Host "   Missing: $($gap.MissingCount) lines" -ForegroundColor Gray
+
+                        if ($DetailLevel -eq 'Verbose' -and $gap.MissingLines.Count -gt 0) {
+                            $lineGroups = @()
+                            $currentGroup = @($gap.MissingLines[0])
+
+                            for ($i = 1; $i -lt $gap.MissingLines.Count; $i++) {
+                                if ($gap.MissingLines[$i] -eq $gap.MissingLines[$i-1] + 1) {
+                                    $currentGroup += $gap.MissingLines[$i]
+                                } else {
+                                    $lineGroups += $currentGroup
+                                    $currentGroup = @($gap.MissingLines[$i])
+                                }
+                            }
+                            $lineGroups += $currentGroup
+
+                            Write-Host "   Line ranges: " -NoNewline -ForegroundColor Gray
+                            $ranges = $lineGroups | ForEach-Object {
+                                if ($_.Count -eq 1) { "$($_[0])" }
+                                elseif ($_.Count -eq 2) { "$($_[0]), $($_[1])" }
+                                else { "$($_[0])-$($_[-1])" }
+                            }
+                            Write-Host ($ranges -join ", ") -ForegroundColor DarkGray
+                        }
+                    }
+                    Write-Host ""
+                }
+
+                Write-Host ("=" * 84) -ForegroundColor Green
+                Write-Host "📝 RECOMMENDATIONS" -ForegroundColor Cyan
+                Write-Host ("=" * 84) -ForegroundColor Green
+                Write-Host ""
+
+                $highPriority = $sortedGaps | Where-Object { $_.Priority -eq 'High' }
+                if ($highPriority.Count -gt 0) {
+                    Write-Host "🔴 High Priority (Services & Routers):" -ForegroundColor Red
+                    $highPriority | Select-Object -First 5 | ForEach-Object {
+                        Write-Host "   1. Add tests for: $($_.File)" -ForegroundColor White
+                        Write-Host "      Current: $($_.Coverage)%, Need: +$([math]::Round($Threshold - $_.Coverage, 2))%" -ForegroundColor Gray
+                        Write-Host "      ~$($_.MissingCount) lines need coverage" -ForegroundColor Gray
+                    }
+                    Write-Host ""
+                }
+
+                Write-Host "💡 Quick Actions:" -ForegroundColor Cyan
+                Write-Host "   • Generate test boilerplate: .\tools\lokifi.ps1 generate-tests -Component `"$Module`"" -ForegroundColor Gray
+                Write-Host "   • Generate mocks: .\tools\lokifi.ps1 generate-mocks -TargetModule `"<file>`"" -ForegroundColor Gray
+                Write-Host "   • View HTML report: start htmlcov/index.html" -ForegroundColor Gray
+                Write-Host ""
+            }
+
+        } elseif ($OutputFormat -eq 'JSON') {
+            $jsonOutput = @{
+                overall_coverage = $overallCoverage
+                threshold = $Threshold
+                total_lines = $totalLines
+                covered_lines = $coveredLines
+                gaps = $gaps
+            } | ConvertTo-Json -Depth 10
+
+            Write-Output $jsonOutput
+            $jsonOutput | Out-File "coverage-gaps.json" -Encoding utf8
+            Write-Host "✅ Saved to: coverage-gaps.json" -ForegroundColor Green
+
+        } elseif ($OutputFormat -eq 'HTML') {
+            Write-Host "✅ HTML report generated: htmlcov/index.html" -ForegroundColor Green
+            Write-Host "   Opening in browser..." -ForegroundColor Gray
+            Start-Process "htmlcov/index.html"
         }
 
     } finally {
@@ -7960,6 +8812,27 @@ switch ($Action.ToLower()) {
     'generate-tests' {
         Invoke-TestGenerator -TargetDir $Component -DryRun:$DryRun -Force:$Force -Coverage:$TestCoverage
     }
+    'generate-mocks' {
+        if (-not $FilePath) {
+            Write-Host "❌ Error: -FilePath parameter required" -ForegroundColor Red
+            Write-Host "Example: .\tools\lokifi.ps1 generate-mocks -FilePath `"app/services/crypto_data_service.py`"" -ForegroundColor Yellow
+            return
+        }
+        Invoke-MockGenerator -TargetModule $FilePath -DryRun:$DryRun -IncludeExamples:$Verbose
+    }
+    'generate-fixtures' {
+        if (-not $FilePath) {
+            Write-Host "❌ Error: -FilePath parameter required" -ForegroundColor Red
+            Write-Host "Example: .\tools\lokifi.ps1 generate-fixtures -FilePath `"app/models/user.py`"" -ForegroundColor Yellow
+            return
+        }
+        Invoke-FixtureGenerator -TargetModel $FilePath -DryRun:$DryRun -UpdateConftest:$Force
+    }
+    'analyze-coverage-gaps' {
+        $detailLevel = if ($Verbose) { 'Verbose' } elseif ($DryRun) { 'Summary' } else { 'Detailed' }
+        $moduleToAnalyze = if ($FilePath) { $FilePath } else { "app" }
+        Invoke-CoverageGapAnalyzer -Module $moduleToAnalyze -DetailLevel $detailLevel
+    }
     'organize' {
         Write-LokifiHeader "Repository Organization"
         Invoke-RepositoryOrganization | Out-Null
@@ -8490,24 +9363,24 @@ switch ($Action.ToLower()) {
     }
     'find-todos' {
         Write-LokifiHeader "Finding TODOs/FIXMEs"
-        
+
         Write-Host "🔍 Searching codebase for technical debt markers..." -ForegroundColor Cyan
         $results = Search-CodebaseForPatterns -Keywords @('TODO', 'FIXME', 'XXX', 'HACK')
-        
+
         if ($results -and $results.SearchMatches) {
             $totalMatches = ($results.SearchMatches | Measure-Object -Property TotalMatches -Sum).Sum
-            
+
             Write-Host "`n📋 Found $totalMatches TODOs/FIXMEs in $($results.SearchMatches.Count) files" -ForegroundColor Yellow
             Write-Host ""
-            
+
             # Show top 15 files with most TODOs
             $topFiles = $results.SearchMatches | Sort-Object TotalMatches -Descending | Select-Object -First 15
-            
+
             foreach ($match in $topFiles) {
                 $color = if ($match.TotalMatches -gt 10) { 'Red' } elseif ($match.TotalMatches -gt 5) { 'Yellow' } else { 'White' }
                 Write-Host "  📄 $($match.File)" -ForegroundColor $color
                 Write-Host "     $($match.TotalMatches) items | Keywords: $($match.Keywords -join ', ')" -ForegroundColor Gray
-                
+
                 if ($ShowDetails) {
                     # Show first 3 matches
                     foreach ($lineMatch in ($match.Matches | Select-Object -First 3)) {
@@ -8518,11 +9391,11 @@ switch ($Action.ToLower()) {
                     }
                 }
             }
-            
+
             if ($results.SearchMatches.Count -gt 15) {
                 Write-Host "`n  ... and $($results.SearchMatches.Count - 15) more files" -ForegroundColor Gray
             }
-            
+
             Write-Host "`n💡 Tip: Use 'lokifi find-todos --show-details' to see specific lines" -ForegroundColor Cyan
         } else {
             Write-Host "`n✅ No TODOs/FIXMEs found! Clean codebase!" -ForegroundColor Green
@@ -8530,24 +9403,24 @@ switch ($Action.ToLower()) {
     }
     'find-console' {
         Write-LokifiHeader "Finding Console Statements"
-        
+
         Write-Host "🔍 Searching for console.log, console.warn, etc..." -ForegroundColor Cyan
         $results = Search-CodebaseForPatterns -Keywords @('console.log', 'console.warn', 'console.error', 'console.debug')
-        
+
         if ($results -and $results.SearchMatches) {
             $totalMatches = ($results.SearchMatches | Measure-Object -Property TotalMatches -Sum).Sum
-            
+
             Write-Host "`n🐛 Found $totalMatches console statements in $($results.SearchMatches.Count) files" -ForegroundColor Yellow
             Write-Host ""
-            
+
             # Show top files
             $topFiles = $results.SearchMatches | Sort-Object TotalMatches -Descending | Select-Object -First 15
-            
+
             foreach ($match in $topFiles) {
                 $color = if ($match.TotalMatches -gt 10) { 'Red' } elseif ($match.TotalMatches -gt 5) { 'Yellow' } else { 'White' }
                 Write-Host "  📄 $($match.File)" -ForegroundColor $color
                 Write-Host "     $($match.TotalMatches) statements | Types: $($match.Keywords -join ', ')" -ForegroundColor Gray
-                
+
                 if ($ShowDetails) {
                     # Show first 3 matches
                     foreach ($lineMatch in ($match.Matches | Select-Object -First 3)) {
@@ -8555,7 +9428,7 @@ switch ($Action.ToLower()) {
                     }
                 }
             }
-            
+
             Write-Host "`n⚠️  Recommendation: Replace console statements with proper logger utility" -ForegroundColor Yellow
             Write-Host "💡 See: frontend/lib/logger.ts or frontend/lib/observability.tsx" -ForegroundColor Cyan
         } else {
@@ -8564,21 +9437,21 @@ switch ($Action.ToLower()) {
     }
     'find-secrets' {
         Write-LokifiHeader "Scanning for Potential Secrets"
-        
+
         Write-Host "🔍 Searching for potential hardcoded secrets..." -ForegroundColor Cyan
         Write-Host "⚠️  This is a quick scan. Use proper secret scanning tools for production!" -ForegroundColor Yellow
         Write-Host ""
-        
+
         $results = Search-CodebaseForPatterns -Keywords @('password', 'api_key', 'secret_key', 'token', 'AKIA', 'sk_live_')
-        
+
         if ($results -and $results.SearchMatches) {
             Write-Host "`n⚠️  Found $($results.SearchMatches.Count) files with potential secrets`n" -ForegroundColor Red
             Write-Host "🔒 Review these files manually:" -ForegroundColor Yellow
-            
+
             foreach ($match in ($results.SearchMatches | Select-Object -First 20)) {
                 Write-Host "  🔐 $($match.File)" -ForegroundColor Red
                 Write-Host "     $($match.TotalMatches) potential matches | Keywords: $($match.Keywords -join ', ')" -ForegroundColor Gray
-                
+
                 if ($ShowDetails) {
                     foreach ($lineMatch in ($match.Matches | Select-Object -First 2)) {
                         $preview = $lineMatch.LineContent.Trim()
@@ -8587,7 +9460,7 @@ switch ($Action.ToLower()) {
                     }
                 }
             }
-            
+
             Write-Host "`n⚠️  IMPORTANT: Verify these are not real secrets!" -ForegroundColor Red
             Write-Host "💡 Use environment variables or secret management tools" -ForegroundColor Cyan
         } else {
