@@ -14,6 +14,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import pytest
+
 # Add the backend directory to the Python path
 backend_dir = Path(__file__).parent
 sys.path.insert(0, str(backend_dir))
@@ -81,6 +83,7 @@ def print_info(message: str):
     """Print info message"""
     print(f"{Colors.WHITE}ℹ️  {message}{Colors.END}")
 
+@pytest.mark.asyncio
 async def test_server_health():
     """Test if server is running and responding"""
     print_test("Server Health Check")
@@ -100,6 +103,7 @@ async def test_server_health():
         print_error(f"Health check failed: {e}")
         return False
 
+@pytest.mark.asyncio
 async def test_security_functions():
     """Test core security functions (J0 Foundation)"""
     print_test("Security Function Testing")
@@ -136,6 +140,7 @@ async def test_security_functions():
         print_error(f"Security function test failed: {e}")
         return False
 
+@pytest.mark.asyncio
 async def test_basic_api_endpoints():
     """Test basic API endpoints without database"""
     print_test("Basic API Endpoint Testing")
@@ -168,6 +173,7 @@ async def test_basic_api_endpoints():
         print_error(f"Basic API test failed: {e}")
         return False
 
+@pytest.mark.asyncio
 async def test_database_models():
     """Test database model creation (J1 Data Layer)"""
     print_test("Database Model Testing")
@@ -210,6 +216,7 @@ async def test_database_models():
         print_info("This is expected in test environment without full database setup")
         return True  # Consider this a pass since models can be created
 
+@pytest.mark.asyncio
 async def test_file_structure():
     """Test that all required files exist"""
     print_test("File Structure Validation")
@@ -242,6 +249,7 @@ async def test_file_structure():
         print_success("All required files present")
         return True
 
+@pytest.mark.asyncio
 async def test_configuration():
     """Test configuration loading"""
     print_test("Configuration Testing")
@@ -266,6 +274,7 @@ async def test_configuration():
         print_error(f"Configuration test failed: {e}")
         return False
 
+@pytest.mark.asyncio
 async def test_imports():
     """Test that all critical imports work"""
     print_test("Import Testing")
