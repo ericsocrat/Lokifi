@@ -1,7 +1,7 @@
 import React from 'react'
-import { listPlugins } from '@/lib/plugins'
-import { saveJSON, loadJSON } from '@/lib/storage'
-import type { PluginMeta, Registered } from '@/lib/plugins'
+import { listPlugins } from '@/lib/plugins/plugins'
+import { saveJSON, loadJSON } from '@/lib/utils/storage'
+import type { PluginMeta, Registered } from '@/lib/plugins/plugins'
 
 type ConfigMap = Record<string, Record<string, any>>
 

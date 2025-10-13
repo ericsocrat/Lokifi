@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { FLAGS, setDevFlag, getAllFlags, type FeatureFlags } from '../../../lib/featureFlags';
+import { FLAGS, setDevFlag, getAllFlags, type FeatureFlags } from '@/lib/utils/featureFlags';
 
 // Dev-only debug page for feature flags
 export default function FeatureFlagsDebug() {

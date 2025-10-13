@@ -3,7 +3,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { screen, fireEvent, waitFor } from '@testing-library/dom';
 import { IndicatorModal } from '../components/IndicatorModalV2';
-import { usePaneStore } from '../lib/paneStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 
 // Mock the pane store
 vi.mock('../lib/paneStore', () => ({
@@ -185,3 +185,4 @@ describe('IndicatorModal', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 });
+

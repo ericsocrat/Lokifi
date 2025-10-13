@@ -1,4 +1,4 @@
-import { keyFromEvent } from '@/lib/keys';
+import { keyFromEvent } from '@/lib/utils/keys';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 

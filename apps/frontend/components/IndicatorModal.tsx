@@ -1,8 +1,8 @@
 "use client";
 import React, { useState, useMemo } from 'react';
 import { Search, X, TrendingUp, BarChart3, Activity, Volume } from 'lucide-react';
-import { indicatorStore, IndicatorFlags } from '../lib/indicatorStore';
-import { usePaneStore } from '../lib/paneStore';
+import { indicatorStore, IndicatorFlags } from '@/lib/stores/indicatorStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 
 interface Indicator {
   id: string;

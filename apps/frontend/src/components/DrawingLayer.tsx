@@ -1,7 +1,7 @@
 import ContextMenu from "@/components/ContextMenu";
-import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from "@/lib/chartMap";
-import { Drawing, createDrawing, drawParallelChannel, drawPitchfork, updateDrawingGeometry } from "@/lib/drawings";
-import { distanceToSegment, rectFromPoints, withinRect } from "@/lib/geom";
+import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/charts/chartMap';
+import { Drawing, createDrawing, drawParallelChannel, drawPitchfork, updateDrawingGeometry } from '@/lib/utils/drawings';
+import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/utils/geom';
 import { useChartStore } from "@/state/store";
 import React from "react";
 

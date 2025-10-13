@@ -6,11 +6,11 @@ import {
   ISeriesApi
 } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
-import { useDrawingStore } from '../lib/drawingStore';
-import { useMarketDataStore } from '../lib/marketDataStore';
-import { usePaneStore } from '../lib/paneStore';
-import { symbolStore } from '../lib/symbolStore';
-import { timeframeStore } from '../lib/timeframeStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { useMarketDataStore } from '@/lib/stores/marketDataStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
+import { symbolStore } from '@/lib/stores/symbolStore';
+import { timeframeStore } from '@/lib/stores/timeframeStore';
 
 interface EnhancedChartProps {
   paneId: string;

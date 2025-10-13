@@ -96,7 +96,7 @@ export const FLAGS: FeatureFlags = new Proxy(DEFAULT_FLAGS, {
   get(target, prop: keyof FeatureFlags) {
     // Priority: Remote config > Environment > Default
     return remoteFlags[prop] ?? ENV_FLAGS[prop] ?? target[prop];
-  }
+  },
 });
 
 // Helper functions
@@ -114,7 +114,7 @@ export function getAllFlags(): FeatureFlags {
 
 // Dev-only utilities
 export function setDevFlag(flag: keyof FeatureFlags, enabled: boolean) {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
     remoteFlags[flag] = enabled;
   }
 }

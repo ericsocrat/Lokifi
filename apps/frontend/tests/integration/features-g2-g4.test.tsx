@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
-import { useWatchlistStore } from '../lib/watchlist';
-import { useTemplatesStore } from '../lib/templates';
-import { FLAGS } from '../lib/featureFlags';
+import { useWatchlistStore } from '@/lib/stores/watchlistStore';
+import { useTemplatesStore } from '@/lib/stores/templatesStore';
+import { FLAGS } from '@/lib/utils/featureFlags';
 
 // Mock feature flags
 vi.mock('../lib/featureFlags', () => ({
@@ -533,3 +533,4 @@ describe('Feature Flag Integration', () => {
     vi.mocked(FLAGS).templates = true;
   });
 });
+

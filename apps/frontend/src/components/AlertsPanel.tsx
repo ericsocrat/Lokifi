@@ -1,7 +1,7 @@
 import React from 'react'
 import { useChartStore } from '@/state/store'
-import type { Alert } from '@/lib/alerts'
-import { ensureNotificationPermission } from '@/lib/notify'
+import type { Alert } from '@/lib/utils/alerts'
+import { ensureNotificationPermission } from '@/lib/utils/notify'
 
 type Filter = 'all'|'active'|'snoozed'|'disabled'|'triggered'
 
@@ -96,3 +96,4 @@ function AlertRow({ a }: { a: Alert }) {
 function MenuBtn({children, onClick}:{children:React.ReactNode; onClick:()=>void}) {
   return <div className='px-3 py-2 hover:bg-white/10 cursor-pointer' onClick={onClick}>{children}</div>
 }
+

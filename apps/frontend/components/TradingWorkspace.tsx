@@ -6,10 +6,10 @@ import { DrawingChart } from '../components/DrawingChart';
 import { DrawingToolbar } from '../components/DrawingToolbar';
 import { ObjectTree } from '../components/ObjectTree';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { useDrawingStore } from '../lib/drawingStore';
-import { usePaneStore } from '../lib/paneStore';
-import { symbolStore } from '../lib/symbolStore';
-import { timeframeStore } from '../lib/timeframeStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
+import { symbolStore } from '@/lib/stores/symbolStore';
+import { timeframeStore } from '@/lib/stores/timeframeStore';
 
 export const TradingWorkspace: React.FC = () => {
   const [isDrawingToolbarCollapsed, setIsDrawingToolbarCollapsed] = useState(false);
@@ -242,3 +242,4 @@ export const TradingWorkspace: React.FC = () => {
     </div>
   );
 };
+

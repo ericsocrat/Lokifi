@@ -1,8 +1,8 @@
 'use client';
 
-import { startCollab } from '@/lib/collab';
-import { exportReportPDF } from '@/lib/pdf';
-import { makeShareURL, tryLoadFromURL } from '@/lib/share';
+import { startCollab } from '@/lib/api/collab';
+import { exportReportPDF } from '@/lib/utils/pdf';
+import { makeShareURL, tryLoadFromURL } from '@/lib/utils/share';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 
@@ -96,4 +96,5 @@ export default function ShareBar() {
     </div>
   );
 }
+
 

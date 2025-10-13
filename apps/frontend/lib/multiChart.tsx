@@ -2,13 +2,13 @@
  * Multi-chart layout system with linking capabilities
  * Feature-flagged and OFF by default
  */
-"use client";
-import React, { createContext, useContext, useState, useCallback } from 'react';
+'use client';
+import React, { createContext, useCallback, useContext } from 'react';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
-import { createVersionedState, type VersionedState } from './migrations';
+import { type VersionedState } from './migrations';
 
 export type LayoutType = '1x1' | '1x2' | '2x2';
 
@@ -40,7 +40,7 @@ interface MultiChartStore {
   charts: ChartInstance[];
   linking: LinkingDimensions;
   activeChart: string | null;
-  
+
   // Actions
   setLayout: (layout: LayoutType) => void;
   addChart: (chart: Omit<ChartInstance, 'id'>) => void;
@@ -48,7 +48,7 @@ interface MultiChartStore {
   updateChart: (chartId: string, updates: Partial<ChartInstance>) => void;
   setActiveChart: (chartId: string | null) => void;
   updateLinking: (dimension: keyof LinkingDimensions, enabled: boolean) => void;
-  
+
   // Linked actions
   changeSymbolLinked: (symbol: string) => void;
   changeTimeframeLinked: (timeframe: string) => void;
@@ -75,137 +75,141 @@ const createInitialState = () => ({
 });
 
 export const useMultiChartStore = create<MultiChartStore>()(
-  persist(
-    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
-    immer((set, get, _store) => ({
-      ...createInitialState(),
+  devtools(
+    persist(
+      immer((set, get, _store) => ({
+        ...createInitialState(),
 
-      setLayout: (layout: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        set((state: any) => {
-          const newCharts = [...state.charts];
-          const positions = getPositionsForLayout(layout);
-          
-          // Ensure we have the right number of charts
-          while (newCharts.length < positions.length) {
-            const newChart: ChartInstance = {
-              id: `chart-${Date.now()}-${newCharts.length}`,
-              symbol: 'BTCUSDT',
-              timeframe: '1h',
-              paneId: `pane-${newCharts.length + 1}`,
-              position: positions[newCharts.length],
-            };
-            newCharts.push(newChart);
-          }
-          
-          // Update positions for existing charts
-          newCharts.forEach((chart: any, index: any) => {
-            if (positions[index]) {
-              chart.position = positions[index];
+        setLayout: (layout: any) => {
+          if (!FLAGS.multiChart) return;
+
+          set((state: any) => {
+            const positions = getPositionsForLayout(layout);
+
+            // Update layout
+            state.layout = layout;
+
+            // Ensure we have the right number of charts
+            while (state.charts.length < positions.length) {
+              const newChart: ChartInstance = {
+                id: `chart-${Date.now()}-${state.charts.length}`,
+                symbol: 'BTCUSDT',
+                timeframe: '1h',
+                paneId: `pane-${state.charts.length + 1}`,
+                position: positions[state.charts.length],
+              };
+              state.charts.push(newChart);
             }
+
+            // Update positions for existing charts
+            state.charts.forEach((chart: any, index: any) => {
+              if (positions[index]) {
+                chart.position = positions[index];
+              }
+            });
+
+            // Remove excess charts
+            if (state.charts.length > positions.length) {
+              state.charts.splice(positions.length);
+            }
+
+            // No return - Immer will handle the mutations
           });
-          
-          // Remove excess charts
-          if (newCharts.length > positions.length) {
-            newCharts.splice(positions.length);
-          }
-          
-          return { layout, charts: newCharts };
-        });
-      },
-
-      addChart: (chartData: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        const newChart: ChartInstance = {
-          id: `chart-${Date.now()}`,
-          ...chartData,
-        };
-        set((state: any) => ({ charts: [...state.charts, newChart] }));
-      },
-
-      removeChart: (chartId: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        set((state: any) => ({
-          charts: state.charts.filter((chart: any) => chart.id !== chartId),
-          activeChart: state.activeChart === chartId ? null : state.activeChart,
-        }));
-      },
-
-      updateChart: (chartId: any, updates: any) => {
-        set((state: any) => ({
-          charts: state.charts.map((chart: any) =>
-            chart.id === chartId ? { ...chart, ...updates } : chart
-          ),
-        }));
-      },
-
-      setActiveChart: (chartId: any) => {
-        set({ activeChart: chartId });
-      },
-
-      updateLinking: (dimension: any, enabled: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        set((state: any) => ({
-          linking: { ...state.linking, [dimension]: enabled },
-        }));
-      },
-
-      changeSymbolLinked: (symbol: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        const { linking, charts, activeChart } = get();
-        if (!linking.symbol || !activeChart) return;
-        
-        set({
-          charts: charts.map((chart: any) =>
-            chart.id !== activeChart ? { ...chart, symbol } : chart
-          ),
-        });
-      },
-
-      changeTimeframeLinked: (timeframe: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        const { linking, charts, activeChart } = get();
-        if (!linking.timeframe || !activeChart) return;
-        
-        set({
-          charts: charts.map((chart: any) =>
-            chart.id !== activeChart ? { ...chart, timeframe } : chart
-          ),
-        });
-      },
-
-      updateCursorLinked: (position: any) => {
-        if (!FLAGS.multiChart) return;
-        
-        const { linking } = get();
-        if (!linking.cursor) return;
-        
-        // Emit cursor update event for other charts
-        window.dispatchEvent(
-          new CustomEvent('multiChartCursorUpdate', {
-            detail: { position, source: get().activeChart },
-          })
-        );
-      },
-    })),
-    {
-      name: 'multi-chart-storage',
-      partialize: (state: MultiChartStore) => ({
-        schemaVersion: 1,
-        data: {
-          layout: state.layout,
-          charts: state.charts,
-          linking: state.linking,
-          activeChart: state.activeChart,
         },
-      }),
-    }
+
+        addChart: (chartData: any) => {
+          if (!FLAGS.multiChart) return;
+
+          const newChart: ChartInstance = {
+            id: `chart-${Date.now()}`,
+            ...chartData,
+          };
+          set((state: any) => ({ charts: [...state.charts, newChart] }));
+        },
+
+        removeChart: (chartId: any) => {
+          if (!FLAGS.multiChart) return;
+
+          set((state: any) => ({
+            charts: state.charts.filter((chart: any) => chart.id !== chartId),
+            activeChart: state.activeChart === chartId ? null : state.activeChart,
+          }));
+        },
+
+        updateChart: (chartId: any, updates: any) => {
+          set((state: any) => ({
+            charts: state.charts.map((chart: any) =>
+              chart.id === chartId ? { ...chart, ...updates } : chart
+            ),
+          }));
+        },
+
+        setActiveChart: (chartId: any) => {
+          set({ activeChart: chartId });
+        },
+
+        updateLinking: (dimension: any, enabled: any) => {
+          if (!FLAGS.multiChart) return;
+
+          set((state: any) => ({
+            linking: { ...state.linking, [dimension]: enabled },
+          }));
+        },
+
+        changeSymbolLinked: (symbol: any) => {
+          if (!FLAGS.multiChart) return;
+
+          const { linking, charts, activeChart } = get();
+          if (!linking.symbol || !activeChart) return;
+
+          set({
+            charts: charts.map((chart: any) =>
+              chart.id !== activeChart ? { ...chart, symbol } : chart
+            ),
+          });
+        },
+
+        changeTimeframeLinked: (timeframe: any) => {
+          if (!FLAGS.multiChart) return;
+
+          const { linking, charts, activeChart } = get();
+          if (!linking.timeframe || !activeChart) return;
+
+          set({
+            charts: charts.map((chart: any) =>
+              chart.id !== activeChart ? { ...chart, timeframe } : chart
+            ),
+          });
+        },
+
+        updateCursorLinked: (position: any) => {
+          if (!FLAGS.multiChart) return;
+
+          const { linking } = get();
+          if (!linking.cursor) return;
+
+          // Emit cursor update event for other charts
+          window.dispatchEvent(
+            new CustomEvent('multiChartCursorUpdate', {
+              detail: { position, source: get().activeChart },
+            })
+          );
+        },
+      })),
+      {
+        name: 'multi-chart-storage',
+        partialize: (state: MultiChartStore) => ({
+          schemaVersion: 1,
+          data: {
+            layout: state.layout,
+            charts: state.charts,
+            linking: state.linking,
+            activeChart: state.activeChart,
+          },
+        }),
+      }
+    ),
+    { name: 'MultiChartStore' }
   )
 );
 
@@ -237,7 +241,7 @@ interface MultiChartContextType {
   charts: ChartInstance[];
   linking: LinkingDimensions;
   activeChart: string | null;
-  
+
   // Actions
   setLayout: (layout: LayoutType) => void;
   updateLinking: (dimension: keyof LinkingDimensions, enabled: boolean) => void;
@@ -262,25 +266,31 @@ export const MultiChartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     changeTimeframeLinked,
   } = useMultiChartStore();
 
-  const changeSymbol = useCallback((symbol: string, chartId?: string) => {
-    if (chartId) {
-      updateChart(chartId, { symbol });
-    }
-    
-    if (linking.symbol && activeChart) {
-      changeSymbolLinked(symbol);
-    }
-  }, [linking.symbol, activeChart, updateChart, changeSymbolLinked]);
+  const changeSymbol = useCallback(
+    (symbol: string, chartId?: string) => {
+      if (chartId) {
+        updateChart(chartId, { symbol });
+      }
 
-  const changeTimeframe = useCallback((timeframe: string, chartId?: string) => {
-    if (chartId) {
-      updateChart(chartId, { timeframe });
-    }
-    
-    if (linking.timeframe && activeChart) {
-      changeTimeframeLinked(timeframe);
-    }
-  }, [linking.timeframe, activeChart, updateChart, changeTimeframeLinked]);
+      if (linking.symbol && activeChart) {
+        changeSymbolLinked(symbol);
+      }
+    },
+    [linking.symbol, activeChart, updateChart, changeSymbolLinked]
+  );
+
+  const changeTimeframe = useCallback(
+    (timeframe: string, chartId?: string) => {
+      if (chartId) {
+        updateChart(chartId, { timeframe });
+      }
+
+      if (linking.timeframe && activeChart) {
+        changeTimeframeLinked(timeframe);
+      }
+    },
+    [linking.timeframe, activeChart, updateChart, changeTimeframeLinked]
+  );
 
   const contextValue: MultiChartContextType = {
     isMultiChartEnabled: FLAGS.multiChart,
@@ -295,11 +305,7 @@ export const MultiChartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     changeTimeframe,
   };
 
-  return (
-    <MultiChartContext.Provider value={contextValue}>
-      {children}
-    </MultiChartContext.Provider>
-  );
+  return <MultiChartContext.Provider value={contextValue}>{children}</MultiChartContext.Provider>;
 };
 
 export const useMultiChart = () => {
@@ -357,7 +363,9 @@ export const LinkingControls: React.FC = () => {
             <input
               type="checkbox"
               checked={enabled}
-              onChange={(e: any) => updateLinking(dimension as keyof LinkingDimensions, e.target.checked)}
+              onChange={(e: any) =>
+                updateLinking(dimension as keyof LinkingDimensions, e.target.checked)
+              }
               className="w-3 h-3"
             />
             <span className="text-xs text-gray-300 capitalize">{dimension}</span>
@@ -367,4 +375,3 @@ export const LinkingControls: React.FC = () => {
     </div>
   );
 };
-

@@ -13,7 +13,7 @@ import {
   Type,
 } from 'lucide-react';
 import React from 'react';
-import { DrawingTool, useDrawingStore } from '../lib/drawingStore';
+import { DrawingTool, useDrawingStore } from '@/lib/stores/drawingStore';
 
 const DRAWING_TOOLS: Array<{
   id: DrawingTool;
@@ -320,3 +320,4 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
     </div>
   );
 };
+

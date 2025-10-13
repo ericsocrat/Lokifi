@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { FLAGS } from '../lib/featureFlags';
+import { FLAGS } from '@/lib/utils/featureFlags';
 import {
   useActiveWatchlist,
   useWatchlistItems,
   useWatchlistStore,
   type SymbolMetrics,
-} from '../lib/watchlist';
+} from '@/lib/stores/watchlistStore';
 
 // Watchlist Panel Component
 export const WatchlistPanel: React.FC = () => {
@@ -439,3 +439,4 @@ const ChevronDownIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
   </svg>
 );
+

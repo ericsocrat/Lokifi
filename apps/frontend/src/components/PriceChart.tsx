@@ -1,10 +1,16 @@
 import DataStatus from '@/components/DataStatus';
 import SymbolTfBar from '@/components/SymbolTfBar';
-import { setChart } from '@/lib/chartBus';
+import { setChart } from '@/lib/charts/chartBus';
+import {
+  bollinger,
+  Candle as IndCandle,
+  stdDevChannels,
+  vwap,
+  vwma,
+} from '@/lib/charts/indicators';
 import { MarketDataAdapter } from '@/lib/data/adapter';
-import useHotkeys from '@/lib/hotkeys';
-import { bollinger, Candle as IndCandle, stdDevChannels, vwap, vwma } from '@/lib/indicators';
-import { debounce, rafThrottle } from '@/lib/perf';
+import useHotkeys from '@/lib/utils/hotkeys';
+import { debounce, rafThrottle } from '@/lib/utils/perf';
 import { useChartStore } from '@/state/store';
 import {
   createChart,
@@ -23,7 +29,7 @@ import {
   downsampleLineMinMax,
   sliceByTimeWindow,
   timeToSec,
-} from '@/lib/lod';
+} from '@/lib/utils/lod';
 
 type Series = ISeriesApi<'Candlestick'>;
 type CandleLW = {

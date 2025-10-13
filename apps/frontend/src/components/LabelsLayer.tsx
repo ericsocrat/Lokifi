@@ -1,6 +1,6 @@
 import React from "react"
 import { useChartStore } from "@/state/store"
-import { describeDrawing } from "@/lib/labels"
+import { describeDrawing } from '@/lib/utils/labels'
 
 export default function LabelsLayer() {
   const s = useChartStore()

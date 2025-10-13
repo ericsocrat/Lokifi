@@ -1,7 +1,7 @@
 'use client';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { symbolStore } from '../lib/symbolStore';
+import { symbolStore } from '@/lib/stores/symbolStore';
 
 interface Symbol {
   symbol: string;
@@ -297,3 +297,4 @@ export const EnhancedSymbolPicker: React.FC = () => {
     </div>
   );
 };
+

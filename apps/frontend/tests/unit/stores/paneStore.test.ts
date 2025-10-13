@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { usePaneStore } from '../lib/paneStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 
 describe('PaneStore', () => {
   beforeEach(() => {
@@ -136,3 +136,4 @@ describe('PaneStore', () => {
     expect(reorderedPanes[2].id).toBe(pane2Id);
   });
 });
+

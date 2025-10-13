@@ -1,6 +1,6 @@
 import React from 'react'
 import { useChartStore } from '@/state/store'
-import { TF_PRESETS, SYMBOL_SUGGESTIONS, normalizeTf } from '@/lib/timeframes'
+import { TF_PRESETS, SYMBOL_SUGGESTIONS, normalizeTf } from '@/lib/utils/timeframes'
 
 export default function SymbolTfBar() {
   const symbol = useChartStore(s => s.symbol)

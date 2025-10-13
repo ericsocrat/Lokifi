@@ -1,7 +1,7 @@
 'use client';
 import { Activity, BarChart3, Search, TrendingUp, Volume, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { usePaneStore } from '../lib/paneStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 
 interface Indicator {
   id: string;
@@ -226,3 +226,4 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
     </div>
   );
 };
+

@@ -34,9 +34,16 @@
       "@/*": ["src/*", "*"],
       "@/app/*": ["app/*", "src/app/*"],
       "@/components/*": ["components/*", "src/components/*"],
-      "@/lib/*": ["src/lib/*", "lib/*"],
-      "@/state/*": ["src/state/*", "state/*"],
-      "@/plugins/*": ["src/plugins/*", "plugins/*"]
+      "@/lib/*": ["src/lib/*"],
+      "@/stores/*": ["src/lib/stores/*"],
+      "@/utils/*": ["src/lib/utils/*"],
+      "@/api/*": ["src/lib/api/*"],
+      "@/charts/*": ["src/lib/charts/*"],
+      "@/hooks/*": ["src/lib/hooks/*"],
+      "@/types/*": ["src/lib/types/*"],
+      "@/constants/*": ["src/lib/constants/*"],
+      "@/plugins/*": ["src/lib/plugins/*"],
+      "@/state/*": ["src/state/*", "state/*"]
     },
     "types": ["vitest", "node"],
     "plugins": [

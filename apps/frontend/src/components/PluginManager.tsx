@@ -1,6 +1,6 @@
 import React from "react"
 import { useChartStore } from "@/state/store"
-import { listPlugins, setPluginEnabled } from "@/lib/plugins"
+import { listPlugins, setPluginEnabled } from '@/lib/plugins/plugins'
 
 export default function PluginManager() {
   const s = useChartStore()

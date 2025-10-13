@@ -1,4 +1,4 @@
-import type { Alert, AlertEvent } from "@/lib/alerts";
+import type { Alert, AlertEvent } from '@/lib/utils/alerts';
 import type { Drawing, DrawingSettings, Layer } from "@/types/drawings";
 import { create, StateCreator } from "zustand";
 import { persist } from "zustand/middleware";

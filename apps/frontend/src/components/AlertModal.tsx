@@ -1,6 +1,6 @@
 import React from 'react'
 import { useChartStore } from '@/state/store'
-import type { Alert } from '@/lib/alerts'
+import type { Alert } from '@/lib/utils/alerts'
 import type { BaseAlert, AlertSound } from '@/src/types/alerts'
 
 type Props = { open: boolean; onClose: () => void }

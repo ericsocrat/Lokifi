@@ -1,6 +1,6 @@
 import React from 'react'
 import { useChartStore } from '@/state/store'
-import { PALETTE } from '@/lib/styles'
+import { PALETTE } from '@/lib/utils/styles'
 
 export default function DrawingStylePanel() {
   const selCount = useChartStore(s => s.selection.size)

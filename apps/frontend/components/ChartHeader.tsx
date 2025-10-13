@@ -2,8 +2,8 @@
 import { useAuth } from '@/src/components/AuthProvider';
 import { BarChart3, Layers, Settings, User } from 'lucide-react';
 import { useState } from 'react';
-import { indicatorStore } from '../lib/indicatorStore';
-import { timeframeStore } from '../lib/timeframeStore';
+import { indicatorStore } from '@/lib/stores/indicatorStore';
+import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { AuthModal } from '@/src/components/AuthModal';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
@@ -141,3 +141,4 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
     </>
   );
 }
+

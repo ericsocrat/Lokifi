@@ -1,8 +1,8 @@
 "use client";
 
-import { downloadText, exportPngFromRoot } from '@/lib/io';
-import { saveCurrent } from '@/lib/persist';
-import { encodeShare } from '@/lib/share';
+import { downloadText, exportPngFromRoot } from '@/lib/utils/io';
+import { saveCurrent } from '@/lib/utils/persist';
+import { encodeShare } from '@/lib/utils/share';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 
@@ -120,3 +120,4 @@ export default function ExportImportPanel() {
     </div>
   )
 }
+

@@ -5,15 +5,17 @@ const API_URL = process.env.API_URL || 'http://localhost:8000';
 describe('Security: Authentication', () => {
   describe('SQL Injection Protection', () => {
     it('rejects SQL injection in username', async () => {
+      const params = new URLSearchParams({
+        username: "admin' OR '1'='1' --",
+        password: 'anything',
+      });
+
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({
-          username: "admin' OR '1'='1' --",
-          password: 'anything',
-        }),
+        body: params.toString(),
       });
 
       // Should not return 200 (successful auth)
@@ -22,30 +24,34 @@ describe('Security: Authentication', () => {
     });
 
     it('rejects SQL injection in password', async () => {
+      const params = new URLSearchParams({
+        username: 'admin',
+        password: "' OR '1'='1",
+      });
+
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({
-          username: 'admin',
-          password: "' OR '1'='1",
-        }),
+        body: params.toString(),
       });
 
       expect(response.status).not.toBe(200);
     });
 
     it('rejects union-based SQL injection', async () => {
+      const params = new URLSearchParams({
+        username: "admin' UNION SELECT * FROM users --",
+        password: 'test',
+      });
+
       const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: new URLSearchParams({
-          username: "admin' UNION SELECT * FROM users --",
-          password: 'test',
-        }),
+        body: params.toString(),
       });
 
       expect(response.status).not.toBe(200);
@@ -126,18 +132,22 @@ describe('Security: Authentication', () => {
   describe('Rate Limiting', () => {
     it('enforces rate limiting on login attempts', async () => {
       // Make 20 rapid login attempts
-      const attempts = Array(20).fill(null).map(() =>
-        fetch(`${API_URL}/api/auth/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: new URLSearchParams({
-            username: 'test',
-            password: 'wrong',
-          }),
-        })
-      );
+      const params = new URLSearchParams({
+        username: 'test',
+        password: 'wrong',
+      });
+
+      const attempts = Array(20)
+        .fill(null)
+        .map(() =>
+          fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: params.toString(),
+          })
+        );
 
       const responses = await Promise.all(attempts);
       const rateLimited = responses.filter((r: any) => r.status === 429);
@@ -151,9 +161,9 @@ describe('Security: Authentication', () => {
     }, 15000);
 
     it('enforces rate limiting on API endpoints', async () => {
-      const requests = Array(50).fill(null).map(() =>
-        fetch(`${API_URL}/api/health`)
-      );
+      const requests = Array(50)
+        .fill(null)
+        .map(() => fetch(`${API_URL}/api/health`));
 
       const responses = await Promise.all(requests);
       const statuses = responses.map((r: any) => r.status);
@@ -171,7 +181,7 @@ describe('Security: Authentication', () => {
     it('rejects invalid JWT tokens', async () => {
       const response = await fetch(`${API_URL}/api/users/me`, {
         headers: {
-          'Authorization': 'Bearer invalid_token_12345',
+          Authorization: 'Bearer invalid_token_12345',
         },
       });
 
@@ -180,11 +190,12 @@ describe('Security: Authentication', () => {
 
     it('rejects expired tokens', async () => {
       // Expired JWT token
-      const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjF9.invalid';
+      const expiredToken =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjF9.invalid';
 
       const response = await fetch(`${API_URL}/api/users/me`, {
         headers: {
-          'Authorization': `Bearer ${expiredToken}`,
+          Authorization: `Bearer ${expiredToken}`,
         },
       });
 
@@ -194,7 +205,7 @@ describe('Security: Authentication', () => {
     it('rejects malformed authorization headers', async () => {
       const response = await fetch(`${API_URL}/api/users/me`, {
         headers: {
-          'Authorization': 'InvalidFormat token123',
+          Authorization: 'InvalidFormat token123',
         },
       });
 
@@ -309,4 +320,3 @@ describe('Security: Authentication', () => {
     });
   });
 });
-

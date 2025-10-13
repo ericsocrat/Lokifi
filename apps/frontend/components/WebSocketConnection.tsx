@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { useMarketDataStore } from '../lib/marketDataStore';
+import { useMarketDataStore } from '@/lib/stores/marketDataStore';
 
 interface WebSocketConnectionProps {
   enabled?: boolean;
@@ -242,3 +242,4 @@ export function useWebSocketData(symbol: string, enabled: boolean = true) {
 
   return { data, isConnected };
 }
+

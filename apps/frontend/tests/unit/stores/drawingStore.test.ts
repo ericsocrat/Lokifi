@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { useDrawingStore } from '../lib/drawingStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
 
 describe('DrawingStore', () => {
   beforeEach(() => {
@@ -278,3 +278,4 @@ describe('DrawingStore', () => {
     expect(useDrawingStore.getState().magnetMode).toBe(true);
   });
 });
+

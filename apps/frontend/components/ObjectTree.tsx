@@ -11,8 +11,8 @@ import {
   Unlock,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { useDrawingStore } from '../lib/drawingStore';
-import { usePaneStore } from '../lib/paneStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 
 interface ObjectTreeProps {
   isCollapsed?: boolean;
@@ -300,3 +300,4 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     </div>
   );
 };
+
