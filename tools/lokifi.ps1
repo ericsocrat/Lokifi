@@ -84,7 +84,7 @@ param(
                  'estimate',               # Phase 3.5: Codebase Analysis & Estimation
                  'find-todos', 'find-console', 'find-secrets',  # Phase 3.6: Search Commands (using analyzer)
                  'test-suggest', 'test-smart', 'test-trends', 'test-impact', 'coverage-dashboard',  # Phase 1.5.4-1.5.5: Test Intelligence
-                 'test-suggest', 'test-smart', 'test-trends', 'test-impact',  # Phase 1.5.4: Test Intelligence
+                 'security-scan', 'security-test', 'security-baseline',  # Phase 1.5.6: Security Automation
                  # Quick Aliases
                  's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk', 'est', 'cost')]
     [string]$Action = 'help',
@@ -127,6 +127,7 @@ param(
     [switch]$SkipTypeCheck,
     [switch]$SkipAnalysis,
     [switch]$Quick,
+    [switch]$Deep,
     [switch]$Force,
     [switch]$Compress,
     [switch]$IncludeDatabase,
@@ -5786,6 +5787,22 @@ USAGE:
                     -Export: Save dashboard without opening browser
                     Features: Gauges, trend charts, module breakdown, gaps
 
+🔒 SECURITY AUTOMATION (Phase 1.5.6 - NEW):
+    security-scan   🔒 Automated security vulnerability scanning
+                    Scans dependencies (npm audit) and code patterns
+                    -Quick: Fast scan (dependencies only, <30s)
+                    -Deep: Full scan (code analysis + dependencies, <2min)
+                    -Fix: Auto-fix vulnerabilities where possible
+                    Detects: eval(), innerHTML, hardcoded secrets, weak crypto
+    security-test   🧪 Generate security test files
+                    Auto-generates tests for auth, XSS, CSRF, validation
+                    -Component: Type (auth, xss, csrf, validation, all)
+                    Creates test templates ready to implement
+    security-baseline 📊 Track security metrics over time
+                    Saves snapshot with vulnerability counts & security score
+                    Run periodically to monitor security trends
+                    Score: 0-100 (deductions for vulnerabilities & patterns)
+
     organize    Organize repository files
     health      🆕 Comprehensive health check (Infrastructure + Codebase + Quality)
                 Shows: Services, API, Code Quality, Dependencies, TypeScript, Git
@@ -10350,6 +10367,35 @@ SELECT
             New-CoverageDashboard -Open
         }
     }
+    
+    # Phase 1.5.6: Security Automation
+    'security-scan' {
+        . (Join-Path $PSScriptRoot "scripts\security-scanner.ps1")
+        if ($Quick) {
+            Invoke-SecurityScan -Quick
+        } elseif ($Deep) {
+            Invoke-SecurityScan -Deep
+        } else {
+            Invoke-SecurityScan -Deep
+        }
+        
+        if ($Fix) {
+            Invoke-SecurityScan -Fix
+        }
+    }
+    'security-test' {
+        . (Join-Path $PSScriptRoot "scripts\security-scanner.ps1")
+        if ($Component) {
+            New-SecurityTests -Type $Component
+        } else {
+            New-SecurityTests -Type 'all'
+        }
+    }
+    'security-baseline' {
+        . (Join-Path $PSScriptRoot "scripts\security-scanner.ps1")
+        Save-SecurityBaseline
+    }
+    
     'test-suggest' {
         # Phase 1.5.4: AI Test Suggestions
         . (Join-Path $PSScriptRoot "scripts\test-intelligence.ps1")
