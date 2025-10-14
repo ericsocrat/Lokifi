@@ -36,7 +36,10 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: 📚 Install dependencies
+      - name: � Upgrade npm to latest
+        run: npm install -g npm@latest
+
+      - name: �📚 Install dependencies
         working-directory: ${{ github.workspace }}/apps/frontend
         run: npm ci
 
@@ -131,7 +134,10 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: 📚 Install dependencies
+      - name: � Upgrade npm to latest
+        run: npm install -g npm@latest
+
+      - name: �📚 Install dependencies
         working-directory: ${{ github.workspace }}/apps/frontend
         run: npm ci
 
@@ -273,7 +279,10 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: 📚 Install dependencies
+      - name: � Upgrade npm to latest
+        run: npm install -g npm@latest
+
+      - name: �📚 Install dependencies
         working-directory: ${{ github.workspace }}/apps/frontend
         run: npm ci
 
