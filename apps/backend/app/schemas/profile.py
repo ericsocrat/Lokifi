@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field, HttpUrl
 # Profile request schemas
 class ProfileUpdateRequest(BaseModel):
     """Profile update request schema."""
+
     username: str | None = Field(None, min_length=3, max_length=30, pattern="^[a-zA-Z0-9_]+$")
     display_name: str | None = Field(None, min_length=1, max_length=100)
     bio: str | None = Field(None, max_length=500)
@@ -20,6 +21,7 @@ class ProfileUpdateRequest(BaseModel):
 
 class UserSettingsUpdateRequest(BaseModel):
     """User settings update request schema."""
+
     full_name: str | None = Field(None, min_length=1, max_length=100)
     email: str | None = None  # Email changes require verification
     timezone: str | None = Field(None, max_length=50)
@@ -29,6 +31,7 @@ class UserSettingsUpdateRequest(BaseModel):
 # Notification preferences schemas
 class NotificationPreferencesUpdateRequest(BaseModel):
     """Notification preferences update request schema."""
+
     email_enabled: bool | None = None
     email_follows: bool | None = None
     email_messages: bool | None = None
@@ -44,6 +47,7 @@ class NotificationPreferencesUpdateRequest(BaseModel):
 # Response schemas
 class ProfileResponse(BaseModel):
     """Profile response schema."""
+
     id: UUID
     user_id: UUID
     username: str | None
@@ -55,12 +59,13 @@ class ProfileResponse(BaseModel):
     following_count: int
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = {"from_attributes": True}
 
 
 class UserSettingsResponse(BaseModel):
     """User settings response schema."""
+
     id: UUID
     email: str
     full_name: str
@@ -71,12 +76,13 @@ class UserSettingsResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     last_login: datetime | None
-    
+
     model_config = {"from_attributes": True}
 
 
 class NotificationPreferencesResponse(BaseModel):
     """Notification preferences response schema."""
+
     id: UUID
     user_id: UUID
     email_enabled: bool
@@ -91,12 +97,13 @@ class NotificationPreferencesResponse(BaseModel):
     push_system: bool
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = {"from_attributes": True}
 
 
 class PublicProfileResponse(BaseModel):
     """Public profile response schema (limited info for non-friends)."""
+
     id: UUID
     username: str | None
     display_name: str
@@ -107,12 +114,13 @@ class PublicProfileResponse(BaseModel):
     following_count: int
     created_at: datetime
     is_following: bool | None = None  # Whether current user follows this profile
-    
+
     model_config = {"from_attributes": True}
 
 
 class ProfileSearchResponse(BaseModel):
     """Profile search response schema."""
+
     profiles: list[PublicProfileResponse]
     total: int
     page: int

@@ -11,27 +11,31 @@ from pydantic import BaseModel
 # Request schemas
 class FollowRequest(BaseModel):
     """Follow user request schema."""
+
     user_id: UUID
 
 
 class UnfollowRequest(BaseModel):
     """Unfollow user request schema."""
+
     user_id: UUID
 
 
 # Response schemas
 class FollowResponse(BaseModel):
     """Follow relationship response schema."""
+
     id: UUID
     follower_id: UUID
     followee_id: UUID
     created_at: datetime
-    
+
     model_config = {"from_attributes": True}
 
 
 class UserFollowStatus(BaseModel):
     """User follow status response schema."""
+
     user_id: UUID
     username: str | None
     display_name: str
@@ -40,12 +44,13 @@ class UserFollowStatus(BaseModel):
     follows_you: bool
     mutual_follow: bool
     created_at: datetime
-    
+
     model_config = {"from_attributes": True}
 
 
 class FollowersListResponse(BaseModel):
     """Followers list response schema."""
+
     followers: list[UserFollowStatus]
     total: int
     page: int
@@ -55,6 +60,7 @@ class FollowersListResponse(BaseModel):
 
 class FollowingListResponse(BaseModel):
     """Following list response schema."""
+
     following: list[UserFollowStatus]
     total: int
     page: int
@@ -64,6 +70,7 @@ class FollowingListResponse(BaseModel):
 
 class FollowStatsResponse(BaseModel):
     """Follow statistics response schema."""
+
     user_id: UUID
     username: str | None
     display_name: str
@@ -74,6 +81,7 @@ class FollowStatsResponse(BaseModel):
 
 class MutualFollowsResponse(BaseModel):
     """Mutual follows response schema."""
+
     mutual_follows: list[UserFollowStatus]
     total: int
     page: int
@@ -83,6 +91,7 @@ class MutualFollowsResponse(BaseModel):
 
 class SuggestedUsersResponse(BaseModel):
     """Suggested users response schema."""
+
     suggestions: list[UserFollowStatus]
     reason: str  # "mutual_follows", "popular", "new_users", etc.
     total: int
@@ -93,6 +102,7 @@ class SuggestedUsersResponse(BaseModel):
 
 class FollowActivityResponse(BaseModel):
     """Recent follow activity response schema."""
+
     recent_followers: list[UserFollowStatus]
     recent_following: list[UserFollowStatus]
     follower_growth: int  # New followers in last 7 days
@@ -101,6 +111,7 @@ class FollowActivityResponse(BaseModel):
 
 class FollowActionResponse(BaseModel):
     """Unified response for follow/unfollow actions returning current relationship + counters."""
+
     user_id: UUID  # target user id
     is_following: bool
     follows_you: bool

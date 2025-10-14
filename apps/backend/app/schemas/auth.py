@@ -11,6 +11,7 @@ from pydantic import BaseModel, EmailStr, Field
 # Request schemas
 class UserRegisterRequest(BaseModel):
     """User registration request schema."""
+
     email: EmailStr
     password: str = Field(min_length=8, max_length=100)
     full_name: str = Field(min_length=1, max_length=100)
@@ -19,23 +20,27 @@ class UserRegisterRequest(BaseModel):
 
 class UserLoginRequest(BaseModel):
     """User login request schema."""
+
     email: EmailStr
     password: str
 
 
 class GoogleOAuthRequest(BaseModel):
     """Google OAuth request schema."""
+
     token: str  # Google ID token (JWT) from Google Sign-In
 
 
 class RefreshTokenRequest(BaseModel):
     """Refresh token request schema."""
+
     refresh_token: str
 
 
 # Response schemas
 class TokenResponse(BaseModel):
     """Token response schema."""
+
     access_token: str
     refresh_token: str
     token_type: str = "bearer"
@@ -44,18 +49,20 @@ class TokenResponse(BaseModel):
 
 class UserResponse(BaseModel):
     """User response schema."""
+
     id: UUID
     email: str
     full_name: str
     is_active: bool
     is_verified: bool
     created_at: datetime
-    
+
     model_config = {"from_attributes": True}
 
 
 class ProfileResponse(BaseModel):
     """Profile response schema."""
+
     id: UUID
     user_id: UUID
     username: str | None
@@ -67,17 +74,19 @@ class ProfileResponse(BaseModel):
     following_count: int
     created_at: datetime
     updated_at: datetime
-    
+
     model_config = {"from_attributes": True}
 
 
 class AuthUserResponse(BaseModel):
     """Authenticated user response schema."""
+
     user: UserResponse
     profile: ProfileResponse | None
 
 
 class MessageResponse(BaseModel):
     """Generic message response schema."""
+
     message: str
     success: bool = True

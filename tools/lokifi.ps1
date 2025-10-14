@@ -83,6 +83,7 @@ param(
                  'ai',                     # Phase 3.4: AI/ML Features
                  'estimate',               # Phase 3.5: Codebase Analysis & Estimation
                  'find-todos', 'find-console', 'find-secrets',  # Phase 3.6: Search Commands (using analyzer)
+                 'test-suggest', 'test-smart', 'test-trends', 'test-impact',  # Phase 1.5.4: Test Intelligence
                  # Quick Aliases
                  's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk', 'est', 'cost')]
     [string]$Action = 'help',
@@ -5764,6 +5765,21 @@ USAGE:
                 -Watch: Watch mode for frontend tests
                 -Quick: Skip coverage analysis
                 Shows: Current coverage, test files, lines needed for 70%
+
+🧠 TEST INTELLIGENCE (Phase 1.5.4 - NEW):
+    test-suggest    🧠 AI-powered test suggestions based on code changes
+                    Analyzes git changes and suggests relevant tests
+                    Prioritizes by impact (high/medium/low)
+    test-smart      ⚡ Run only affected tests (smart selection)
+                    -DryRun: Preview without running tests
+                    Shows time savings vs full test suite
+    test-trends     📊 Track coverage trends over time
+                    -Days: Number of days to show (default: 7)
+                    Stores historical snapshots, shows improvements
+    test-impact     🎯 Analyze test coverage for specific files
+                    -FilePath: File to analyze (required)
+                    Shows: Test files, coverage %, gaps, suggestions
+
     organize    Organize repository files
     health      🆕 Comprehensive health check (Infrastructure + Codebase + Quality)
                 Shows: Services, API, Code Quality, Dependencies, TypeScript, Git
@@ -10315,6 +10331,32 @@ SELECT
                 Write-Host "  .\lokifi.ps1 metrics -Component init                     - Initialize database" -ForegroundColor Gray
             }
         }
+    }
+    'test-suggest' {
+        # Phase 1.5.4: AI Test Suggestions
+        . (Join-Path $PSScriptRoot "scripts\test-intelligence.ps1")
+        Get-TestSuggestions -ChangedFiles $FilePath
+    }
+    'test-smart' {
+        # Phase 1.5.4: Smart Test Selection
+        . (Join-Path $PSScriptRoot "scripts\test-intelligence.ps1")
+        Invoke-SmartTests -DryRun:$DryRun
+    }
+    'test-trends' {
+        # Phase 1.5.4: Coverage Trend Tracking
+        . (Join-Path $PSScriptRoot "scripts\test-intelligence.ps1")
+        $days = if ($Hours) { $Hours } else { 7 }
+        Track-CoverageTrend -Days $days
+    }
+    'test-impact' {
+        # Phase 1.5.4: Test Impact Analysis
+        . (Join-Path $PSScriptRoot "scripts\test-intelligence.ps1")
+        if (-not $FilePath) {
+            Write-Host "❌ Error: -FilePath parameter required" -ForegroundColor Red
+            Write-Host "Example: .\tools\lokifi.ps1 test-impact -FilePath `"src/lib/utils/portfolio.ts`"" -ForegroundColor Yellow
+            return
+        }
+        Get-TestImpact -FilePath $FilePath
     }
     'help' { Show-EnhancedHelp }
     default { Show-EnhancedHelp }
