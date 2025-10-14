@@ -36,12 +36,12 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: � Upgrade npm to latest
+      - name: 🔼 Upgrade npm to latest
         run: npm install -g npm@latest
 
-      - name: �📚 Install dependencies
+      - name:  Install dependencies
         working-directory: ${{ github.workspace }}/apps/frontend
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: 🧪 Run tests with coverage
         run: npm run test:coverage
@@ -134,12 +134,12 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: � Upgrade npm to latest
+      - name: 🔼 Upgrade npm to latest
         run: npm install -g npm@latest
 
-      - name: �📚 Install dependencies
+      - name:  Install dependencies
         working-directory: ${{ github.workspace }}/apps/frontend
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: 🔍 Run npm audit
         run: |
@@ -279,12 +279,12 @@ jobs:
           # cache: "npm"
           # cache-dependency-path: apps/frontend/package-lock.json
 
-      - name: � Upgrade npm to latest
+      - name: 🔼 Upgrade npm to latest
         run: npm install -g npm@latest
 
-      - name: �📚 Install dependencies
+      - name:  Install dependencies
         working-directory: ${{ github.workspace }}/apps/frontend
-        run: npm ci
+        run: npm install --legacy-peer-deps
 
       - name: 🧪 Run tests (needed for coverage data)
         run: npm run test:coverage || true
