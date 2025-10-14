@@ -10376,7 +10376,7 @@ SELECT
             }
         }
     }
-    
+
     # Phase 1.5.5: Coverage Dashboard
     'coverage-dashboard' {
         . (Join-Path $PSScriptRoot "scripts\coverage-dashboard.ps1")
@@ -10388,7 +10388,7 @@ SELECT
             New-CoverageDashboard -Open
         }
     }
-    
+
     # Phase 1.5.6: Security Automation
     'security-scan' {
         . (Join-Path $PSScriptRoot "scripts\security-scanner.ps1")
@@ -10399,7 +10399,7 @@ SELECT
         } else {
             Invoke-SecurityScan -Deep
         }
-        
+
         if ($Fix) {
             Invoke-SecurityScan -Fix
         }
@@ -10416,7 +10416,7 @@ SELECT
         . (Join-Path $PSScriptRoot "scripts\security-scanner.ps1")
         Save-SecurityBaseline
     }
-    
+
     # Phase 1.5.7: Auto-Documentation
     'doc-generate' {
         . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
@@ -10424,11 +10424,11 @@ SELECT
         Write-Host "📚 Generating All Documentation..." -ForegroundColor Cyan
         Write-Host "============================================" -ForegroundColor Green
         Write-Host ""
-        
+
         $testDoc = New-TestDocumentation -Type 'all'
         $apiDoc = New-APIDocumentation -Format 'markdown'
         $componentDoc = New-ComponentDocumentation -IncludeProps -IncludeExamples
-        
+
         Write-Host ""
         Write-Host "✅ All documentation generated!" -ForegroundColor Green
         Write-Host ""
@@ -10459,7 +10459,7 @@ SELECT
         . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
         New-ComponentDocumentation -IncludeProps -IncludeExamples
     }
-    
+
     'test-suggest' {
         # Phase 1.5.4: AI Test Suggestions
         . (Join-Path $PSScriptRoot "scripts\test-intelligence.ps1")

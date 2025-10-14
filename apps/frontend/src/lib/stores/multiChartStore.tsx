@@ -305,7 +305,11 @@ export const MultiChartProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     changeTimeframe,
   };
 
-  return <MultiChartContext.Provider value={contextValue}>{children}</MultiChartContext.Provider>;
+  return (
+    <MultiChartContext.Provider value={contextValue}>
+      {children}
+    </MultiChartContext.Provider>
+  );
 };
 
 export const useMultiChart = () => {

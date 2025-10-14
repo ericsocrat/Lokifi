@@ -1,7 +1,7 @@
 # Phase 1.5.4: Bot Enhancement - AI-Powered Test Automation
 
-**Status:** 🚀 IN PROGRESS  
-**Estimated Time:** 30 minutes  
+**Status:** 🚀 IN PROGRESS
+**Estimated Time:** 30 minutes
 **Started:** October 14, 2025, 02:35 AM
 
 ---
@@ -9,6 +9,7 @@
 ## Objectives
 
 Enhance the lokifi.ps1 bot with AI-powered test intelligence:
+
 1. **AI Test Suggestions** - Analyze code changes and suggest relevant tests
 2. **Smart Test Selection** - Run only tests affected by code changes
 3. **Coverage Tracking** - Track and report coverage trends over time
@@ -23,6 +24,7 @@ Enhance the lokifi.ps1 bot with AI-powered test intelligence:
 **Goal:** Analyze changed files and suggest which tests to run
 
 **Tasks:**
+
 1. Create `Get-TestSuggestions` function in lokifi.ps1
 2. Analyze git diff to identify changed files
 3. Map files to related test files using patterns
@@ -34,6 +36,7 @@ Enhance the lokifi.ps1 bot with AI-powered test intelligence:
 5. Return prioritized test list
 
 **Example Output:**
+
 ```
 🧠 AI Test Suggestions for your changes:
 
@@ -54,6 +57,7 @@ Recommended Command:
 **Goal:** Run only affected tests based on file changes
 
 **Tasks:**
+
 1. Create `Invoke-SmartTests` function in lokifi.ps1
 2. Build dependency graph:
    - Source files → Test files
@@ -65,6 +69,7 @@ Recommended Command:
 5. Show time saved vs full test run
 
 **Example Output:**
+
 ```
 ⚡ Smart Test Selection Active
 
@@ -87,6 +92,7 @@ Time: 4.1s (vs 7.1s full run)
 **Goal:** Track coverage over time and show trends
 
 **Tasks:**
+
 1. Create `Track-CoverageTrend` function in lokifi.ps1
 2. Store coverage snapshots in `.coverage-history/`
 3. Calculate trends (increasing/decreasing)
@@ -94,6 +100,7 @@ Time: 4.1s (vs 7.1s full run)
 5. Alert on coverage drops
 
 **Data Structure:**
+
 ```json
 {
   "timestamp": "2025-10-14T02:35:00Z",
@@ -114,6 +121,7 @@ Time: 4.1s (vs 7.1s full run)
 ```
 
 **Example Output:**
+
 ```
 📊 Coverage Trends (Last 7 days)
 
@@ -132,6 +140,7 @@ Trend: 📈 IMPROVING
 **Goal:** Show which tests cover which code
 
 **Tasks:**
+
 1. Create `Get-TestImpact` function in lokifi.ps1
 2. Map source files to their test coverage
 3. Show coverage gaps (files without tests)
@@ -139,6 +148,7 @@ Trend: 📈 IMPROVING
 5. Suggest test priorities
 
 **Example Output:**
+
 ```
 🎯 Test Impact Analysis
 
@@ -181,6 +191,7 @@ tools/
 ### New Functions to Add
 
 **1. Get-TestSuggestions**
+
 ```powershell
 function Get-TestSuggestions {
     param([string[]]$ChangedFiles)
@@ -192,6 +203,7 @@ function Get-TestSuggestions {
 ```
 
 **2. Invoke-SmartTests**
+
 ```powershell
 function Invoke-SmartTests {
     param([switch]$DryRun)
@@ -204,6 +216,7 @@ function Invoke-SmartTests {
 ```
 
 **3. Track-CoverageTrend**
+
 ```powershell
 function Track-CoverageTrend {
     param([int]$Days = 7)
@@ -215,6 +228,7 @@ function Track-CoverageTrend {
 ```
 
 **4. Get-TestImpact**
+
 ```powershell
 function Get-TestImpact {
     param([string]$File)
@@ -228,6 +242,7 @@ function Get-TestImpact {
 ### Integration with Existing Bot
 
 Add new commands to lokifi.ps1:
+
 ```powershell
 # New test intelligence commands
 .\lokifi.ps1 test-suggest          # AI test suggestions
@@ -243,6 +258,7 @@ Add new commands to lokifi.ps1:
 ### Developer Experience Improvements
 
 **Before Phase 1.5.4:**
+
 ```bash
 # Manual test selection
 npm test                          # Run ALL 224 tests (7.1s)
@@ -250,6 +266,7 @@ npx vitest tests/unit/utils/      # Manual path selection
 ```
 
 **After Phase 1.5.4:**
+
 ```bash
 # AI-powered automation
 .\lokifi.ps1 test-suggest         # Get intelligent suggestions
@@ -280,18 +297,21 @@ npx vitest tests/unit/utils/      # Manual path selection
 ## Success Metrics
 
 ### Functionality
+
 - [ ] `Get-TestSuggestions` analyzes changes and suggests tests
 - [ ] `Invoke-SmartTests` runs only affected tests
 - [ ] `Track-CoverageTrend` stores and reports coverage history
 - [ ] `Get-TestImpact` shows file-to-test mapping
 
 ### Performance
+
 - [ ] Smart test selection reduces run time by 50%+
 - [ ] Test suggestions generated in <2s
 - [ ] Coverage trend calculation in <1s
 - [ ] Impact analysis for any file in <1s
 
 ### Usability
+
 - [ ] Clear, actionable output
 - [ ] Color-coded priorities (high/medium/low)
 - [ ] Helpful examples and suggestions
@@ -304,38 +324,42 @@ npx vitest tests/unit/utils/      # Manual path selection
 ### Manual Testing
 
 1. **Test Suggestions:**
+
    ```bash
    # Modify a file
    echo "// test" >> src/lib/utils/portfolio.ts
-   
+
    # Get suggestions
    .\lokifi.ps1 test-suggest
-   
+
    # Verify: Should suggest portfolio.test.ts
    ```
 
 2. **Smart Test Selection:**
+
    ```bash
    # Modify multiple files
    # Run smart tests
    .\lokifi.ps1 test-smart
-   
+
    # Verify: Runs only affected tests, shows time saved
    ```
 
 3. **Coverage Trends:**
+
    ```bash
    # Run multiple times
    .\lokifi.ps1 test-trends
-   
+
    # Verify: Shows historical trends, arrows indicate direction
    ```
 
 4. **Test Impact:**
+
    ```bash
    # Check specific file
    .\lokifi.ps1 test-impact portfolio.ts
-   
+
    # Verify: Shows test files, coverage %, gaps
    ```
 

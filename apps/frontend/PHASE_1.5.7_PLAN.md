@@ -1,8 +1,8 @@
 # Phase 1.5.7: Auto-Documentation - Implementation Plan 📚
 
-**Status:** 🚧 IN PROGRESS  
-**Started:** October 14, 2025  
-**Estimated Duration:** 30 minutes  
+**Status:** 🚧 IN PROGRESS
+**Started:** October 14, 2025
+**Estimated Duration:** 30 minutes
 **Phase:** Test Intelligence Enhancement - Documentation Automation
 
 ---
@@ -48,6 +48,7 @@ Build automated documentation generation tools to complement the test intelligen
 **Functions to Implement:**
 
 #### 1. `New-TestDocumentation`
+
 ```powershell
 function New-TestDocumentation {
     param(
@@ -56,7 +57,7 @@ function New-TestDocumentation {
         [ValidateSet('all', 'unit', 'integration', 'e2e', 'security')]
         [string]$Type = 'all'
     )
-    
+
     # Scan test files
     # Extract describe/it blocks
     # Parse test descriptions
@@ -66,6 +67,7 @@ function New-TestDocumentation {
 ```
 
 **Features:**
+
 - Parse test files for `describe()` and `it()` blocks
 - Extract test descriptions and assertions
 - Link to coverage data
@@ -73,6 +75,7 @@ function New-TestDocumentation {
 - Create interactive test catalog
 
 #### 2. `New-APIDocumentation`
+
 ```powershell
 function New-APIDocumentation {
     param(
@@ -81,7 +84,7 @@ function New-APIDocumentation {
         [ValidateSet('markdown', 'openapi', 'html')]
         [string]$Format = 'markdown'
     )
-    
+
     # Scan API files (FastAPI routes)
     # Extract endpoints, methods, parameters
     # Document request/response schemas
@@ -90,6 +93,7 @@ function New-APIDocumentation {
 ```
 
 **Features:**
+
 - Detect FastAPI routes and endpoints
 - Extract Pydantic models for schemas
 - Document authentication requirements
@@ -97,6 +101,7 @@ function New-APIDocumentation {
 - Create human-readable markdown docs
 
 #### 3. `New-ComponentDocumentation`
+
 ```powershell
 function New-ComponentDocumentation {
     param(
@@ -105,7 +110,7 @@ function New-ComponentDocumentation {
         [switch]$IncludeProps,
         [switch]$IncludeExamples
     )
-    
+
     # Scan React/TypeScript components
     # Extract component props and types
     # Parse JSDoc comments
@@ -115,6 +120,7 @@ function New-ComponentDocumentation {
 ```
 
 **Features:**
+
 - Parse TypeScript interfaces for props
 - Extract JSDoc comments
 - Generate prop tables
@@ -122,6 +128,7 @@ function New-ComponentDocumentation {
 - Create usage examples
 
 #### 4. `Invoke-TypeDocGeneration`
+
 ```powershell
 function Invoke-TypeDocGeneration {
     param(
@@ -129,7 +136,7 @@ function Invoke-TypeDocGeneration {
         [string]$OutputPath = "docs/api-reference",
         [switch]$Watch
     )
-    
+
     # Check if TypeDoc is installed
     # Generate TypeDoc configuration
     # Run TypeDoc generation
@@ -138,6 +145,7 @@ function Invoke-TypeDocGeneration {
 ```
 
 **Features:**
+
 - Generate TypeDoc config if missing
 - Run TypeDoc with proper settings
 - Support watch mode for live updates
@@ -152,6 +160,7 @@ function Invoke-TypeDocGeneration {
 **Changes Needed:**
 
 1. **Add Commands to ValidateSet:**
+
 ```powershell
 [ValidateSet(
     # ... existing commands ...
@@ -163,6 +172,7 @@ function Invoke-TypeDocGeneration {
 ```
 
 2. **Add Command Handlers:**
+
 ```powershell
 'doc-generate' {
     . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
@@ -204,19 +214,20 @@ function Invoke-TypeDocGeneration {
 ```
 
 3. **Update Help Documentation:**
+
 ```powershell
 📚 DOCUMENTATION AUTOMATION (Phase 1.5.7 - NEW):
     doc-generate    📚 Generate all documentation
                     Auto-generates test, API, component, and TypeDoc docs
-                    
+
     doc-test        🧪 Generate test documentation
                     -Type: all, unit, integration, e2e, security
                     Creates markdown catalog of all tests
-                    
+
     doc-api         🌐 Generate API documentation
                     -Format: markdown, openapi, html
                     Documents all API endpoints
-                    
+
     doc-component   🎨 Generate component documentation
                     Documents React components with props and examples
 ```
@@ -228,6 +239,7 @@ function Invoke-TypeDocGeneration {
 **Test Cases:**
 
 1. **Test Documentation Generation:**
+
 ```powershell
 .\lokifi.ps1 doc-test
 .\lokifi.ps1 doc-test -Type unit
@@ -235,6 +247,7 @@ function Invoke-TypeDocGeneration {
 ```
 
 Expected Output:
+
 - ✅ Scans all test files
 - ✅ Extracts describe/it blocks
 - ✅ Generates docs/testing/TEST_CATALOG.md
@@ -242,34 +255,40 @@ Expected Output:
 - ✅ Creates test matrix
 
 2. **API Documentation Generation:**
+
 ```powershell
 .\lokifi.ps1 doc-api
 .\lokifi.ps1 doc-api -Format openapi
 ```
 
 Expected Output:
+
 - ✅ Scans backend API files
 - ✅ Extracts FastAPI routes
 - ✅ Generates docs/api/API_REFERENCE.md
 - ✅ Creates OpenAPI spec (if requested)
 
 3. **Component Documentation:**
+
 ```powershell
 .\lokifi.ps1 doc-component
 ```
 
 Expected Output:
+
 - ✅ Scans React components
 - ✅ Extracts props and types
 - ✅ Generates docs/components/COMPONENT_CATALOG.md
 - ✅ Includes prop tables
 
 4. **Full Documentation Generation:**
+
 ```powershell
 .\lokifi.ps1 doc-generate
 ```
 
 Expected Output:
+
 - ✅ Generates all documentation types
 - ✅ Creates organized doc structure
 - ✅ Links between docs
@@ -310,6 +329,7 @@ docs/
 ### Documentation Features
 
 **Test Documentation:**
+
 - 📋 Test catalog with descriptions
 - 🎯 Test coverage mapping
 - 🔍 Searchable test index
@@ -317,6 +337,7 @@ docs/
 - 🔗 Links to source files
 
 **API Documentation:**
+
 - 🌐 All endpoints documented
 - 📝 Request/response examples
 - 🔐 Authentication requirements
@@ -324,6 +345,7 @@ docs/
 - 🚦 Status codes explained
 
 **Component Documentation:**
+
 - 🎨 Component catalog
 - 📋 Prop tables with types
 - 💡 Usage examples
@@ -334,31 +356,33 @@ docs/
 
 ## ⏱️ Performance Targets
 
-| Operation | Target Time | Complexity |
-|-----------|------------|------------|
-| Test docs generation | <10s | Low |
-| API docs generation | <15s | Medium |
-| Component docs | <5s | Low |
-| Full doc generation | <30s | Medium |
+| Operation            | Target Time | Complexity |
+| -------------------- | ----------- | ---------- |
+| Test docs generation | <10s        | Low        |
+| API docs generation  | <15s        | Medium     |
+| Component docs       | <5s         | Low        |
+| Full doc generation  | <30s        | Medium     |
 
 ---
 
 ## 💡 Developer Experience Improvements
 
 ### Before Phase 1.5.7
-❌ Manual test documentation (2 hours/project)  
-❌ Manual API endpoint documentation (3 hours/project)  
-❌ Manual component prop documentation (1 hour/project)  
-❌ Outdated documentation  
-❌ No test coverage visibility in docs  
+
+❌ Manual test documentation (2 hours/project)
+❌ Manual API endpoint documentation (3 hours/project)
+❌ Manual component prop documentation (1 hour/project)
+❌ Outdated documentation
+❌ No test coverage visibility in docs
 
 ### After Phase 1.5.7
-✅ Auto-generated test catalog (<10s)  
-✅ Auto-generated API docs (<15s)  
-✅ Auto-generated component docs (<5s)  
-✅ Always up-to-date documentation  
-✅ Coverage data integrated into docs  
-✅ One-command documentation refresh  
+
+✅ Auto-generated test catalog (<10s)
+✅ Auto-generated API docs (<15s)
+✅ Auto-generated component docs (<5s)
+✅ Always up-to-date documentation
+✅ Coverage data integrated into docs
+✅ One-command documentation refresh
 
 ---
 
@@ -384,6 +408,7 @@ Phase 1.5.7 is complete when:
 ### Test Documentation Parsing
 
 **Vitest/Jest Test Structure:**
+
 ```typescript
 describe('Component Name', () => {
   describe('Feature Group', () => {
@@ -395,6 +420,7 @@ describe('Component Name', () => {
 ```
 
 **Parsing Strategy:**
+
 - Use regex to find `describe()` and `it()` blocks
 - Extract test descriptions (first parameter)
 - Build hierarchical structure
@@ -403,6 +429,7 @@ describe('Component Name', () => {
 ### API Documentation Extraction
 
 **FastAPI Route Structure:**
+
 ```python
 @router.get("/endpoint/{id}", response_model=ResponseSchema)
 async def get_item(id: int, auth: User = Depends(get_current_user)):
@@ -411,6 +438,7 @@ async def get_item(id: int, auth: User = Depends(get_current_user)):
 ```
 
 **Parsing Strategy:**
+
 - Scan for `@router` decorators
 - Extract HTTP method, path, response model
 - Parse function parameters and types
@@ -420,6 +448,7 @@ async def get_item(id: int, auth: User = Depends(get_current_user)):
 ### Component Documentation
 
 **React Component Structure:**
+
 ```typescript
 interface ComponentProps {
   /** Prop description */
@@ -434,6 +463,7 @@ export const Component: React.FC<ComponentProps> = (props) => {
 ```
 
 **Parsing Strategy:**
+
 - Parse TypeScript interfaces
 - Extract JSDoc comments
 - Build prop tables
@@ -444,23 +474,28 @@ export const Component: React.FC<ComponentProps> = (props) => {
 ## 💰 Return on Investment (ROI)
 
 ### Time Investment
+
 - Planning: 5 min
 - Implementation: 20 min
 - Testing: 5 min
-**Total: 30 minutes**
+  **Total: 30 minutes**
 
 ### Time Saved
+
 **Per Project:**
+
 - Test documentation: 2 hours saved
 - API documentation: 3 hours saved
 - Component documentation: 1 hour saved
-**Total: 6 hours per project**
+  **Total: 6 hours per project**
 
 **Per Year (4 projects):**
+
 - Time saved: 24 hours
 - Value: $1,200/year (at $50/hour)
 
 ### Additional Value
+
 - Always up-to-date documentation
 - Reduced onboarding time for new developers
 - Better code discoverability
@@ -468,6 +503,7 @@ export const Component: React.FC<ComponentProps> = (props) => {
 - Professional documentation quality
 
 **ROI Calculation:**
+
 - Investment: 30 minutes ($25)
 - Annual return: $1,200
 - **ROI: 4,700%** 🚀
