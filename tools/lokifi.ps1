@@ -83,6 +83,7 @@ param(
                  'ai',                     # Phase 3.4: AI/ML Features
                  'estimate',               # Phase 3.5: Codebase Analysis & Estimation
                  'find-todos', 'find-console', 'find-secrets',  # Phase 3.6: Search Commands (using analyzer)
+                 'test-suggest', 'test-smart', 'test-trends', 'test-impact', 'coverage-dashboard',  # Phase 1.5.4-1.5.5: Test Intelligence
                  'test-suggest', 'test-smart', 'test-trends', 'test-impact',  # Phase 1.5.4: Test Intelligence
                  # Quick Aliases
                  's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk', 'est', 'cost')]
@@ -5766,7 +5767,7 @@ USAGE:
                 -Quick: Skip coverage analysis
                 Shows: Current coverage, test files, lines needed for 70%
 
-🧠 TEST INTELLIGENCE (Phase 1.5.4 - NEW):
+🧠 TEST INTELLIGENCE (Phase 1.5.4-1.5.5 - NEW):
     test-suggest    🧠 AI-powered test suggestions based on code changes
                     Analyzes git changes and suggests relevant tests
                     Prioritizes by impact (high/medium/low)
@@ -5779,6 +5780,11 @@ USAGE:
     test-impact     🎯 Analyze test coverage for specific files
                     -FilePath: File to analyze (required)
                     Shows: Test files, coverage %, gaps, suggestions
+    coverage-dashboard 📊 Generate interactive HTML coverage dashboard
+                    Opens beautiful dashboard with charts & trends
+                    -Watch: Auto-refresh mode (updates every 30s)
+                    -Export: Save dashboard without opening browser
+                    Features: Gauges, trend charts, module breakdown, gaps
 
     organize    Organize repository files
     health      🆕 Comprehensive health check (Infrastructure + Codebase + Quality)
@@ -10330,6 +10336,18 @@ SELECT
                 Write-Host "  .\lokifi.ps1 metrics -Component query -Environment 'SELECT...' - Custom query" -ForegroundColor Gray
                 Write-Host "  .\lokifi.ps1 metrics -Component init                     - Initialize database" -ForegroundColor Gray
             }
+        }
+    }
+    
+    # Phase 1.5.5: Coverage Dashboard
+    'coverage-dashboard' {
+        . (Join-Path $PSScriptRoot "scripts\coverage-dashboard.ps1")
+        if ($Watch) {
+            New-CoverageDashboard -Watch -Open
+        } elseif ($Export) {
+            New-CoverageDashboard -Export
+        } else {
+            New-CoverageDashboard -Open
         }
     }
     'test-suggest' {

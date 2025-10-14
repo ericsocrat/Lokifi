@@ -1,0 +1,69 @@
+{
+  "current": {
+    "tests": {
+      "passing": 18,
+      "skipped": 4,
+      "failing": 0,
+      "total": 18
+    },
+    "coverage": {
+      "functions": 63.31,
+      "branches": 75.11,
+      "lines": 12.3,
+      "statements": 12.3
+    }
+  },
+  "modules": [
+    {
+      "name": "api",
+      "coverage": 12.3,
+      "files": 10,
+      "tests": 0
+    },
+    {
+      "name": "stores",
+      "coverage": 25.0,
+      "files": 2,
+      "tests": 23
+    },
+    {
+      "name": "utils",
+      "coverage": 62.0,
+      "files": 30,
+      "tests": 140
+    },
+    {
+      "name": "charts",
+      "coverage": 12.3,
+      "files": 7,
+      "tests": 30
+    }
+  ],
+  "trends": [
+    {
+      "coverage": {
+        "functions": 63.31,
+        "branches": 75.11,
+        "lines": 12.3,
+        "statements": 12.3
+      },
+      "timestamp": "2025-10-14T08:33:36.3726088+03:00",
+      "tests": {
+        "passing": 18,
+        "skipped": 4,
+        "failing": 0,
+        "total": 18
+      },
+      "commit": "73e010eb"
+    }
+  ],
+  "delta": {},
+  "generated": "2025-10-14T08:53:40.0616774+03:00",
+  "gaps": {
+    "reason": "Date calculations",
+    "coverage": 0,
+    "file": "src/lib/utils/timeframes.ts",
+    "priority": "HIGH",
+    "tests": 0
+  }
+}

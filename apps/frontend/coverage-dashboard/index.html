@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokifi Coverage Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .gauge-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-900 to-purple-900 p-6 shadow-lg">
+        <div class="container mx-auto">
+            <h1 class="text-4xl font-bold mb-2">📊 Lokifi Test Coverage Dashboard</h1>
+            <p class="text-gray-300">Real-time test coverage analytics and trends</p>
+            <p class="text-sm text-gray-400 mt-2">Last updated: <span id="lastUpdate" class="text-blue-400">Loading...</span></p>
+        </div>
+    </header>
+
+    <!-- Quick Stats Bar -->
+    <section class="bg-gray-800 border-b border-gray-700 py-4">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div>
+                    <div class="text-2xl font-bold text-blue-400" id="totalTests">-</div>
+                    <div class="text-sm text-gray-400">Total Tests</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-green-400" id="passingTests">-</div>
+                    <div class="text-sm text-gray-400">Passing</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-yellow-400" id="testFiles">-</div>
+                    <div class="text-sm text-gray-400">Test Files</div>
+                </div>
+                <div>
+                    <div class="text-2xl font-bold text-purple-400" id="testDuration">-</div>
+                    <div class="text-sm text-gray-400">Duration</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Coverage Overview Gauges -->
+    <section class="container mx-auto px-6 py-8">
+        <h2 class="text-3xl font-bold mb-6">Coverage Overview</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Statements -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                <h3 class="text-xl font-semibold mb-4 text-center text-blue-400">Statements</h3>
+                <div class="gauge-container">
+                    <canvas id="statementsGauge"></canvas>
+                    <div class="gauge-text" id="statementsText">-</div>
+                </div>
+                <div class="text-center mt-4">
+                    <span class="text-sm text-gray-400" id="statementsDelta">-</span>
+                </div>
+            </div>
+            
+            <!-- Branches -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                <h3 class="text-xl font-semibold mb-4 text-center text-green-400">Branches</h3>
+                <div class="gauge-container">
+                    <canvas id="branchesGauge"></canvas>
+                    <div class="gauge-text" id="branchesText">-</div>
+                </div>
+                <div class="text-center mt-4">
+                    <span class="text-sm text-gray-400" id="branchesDelta">-</span>
+                </div>
+            </div>
+            
+            <!-- Functions -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                <h3 class="text-xl font-semibold mb-4 text-center text-yellow-400">Functions</h3>
+                <div class="gauge-container">
+                    <canvas id="functionsGauge"></canvas>
+                    <div class="gauge-text" id="functionsText">-</div>
+                </div>
+                <div class="text-center mt-4">
+                    <span class="text-sm text-gray-400" id="functionsDelta">-</span>
+                </div>
+            </div>
+            
+            <!-- Lines -->
+            <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
+                <h3 class="text-xl font-semibold mb-4 text-center text-purple-400">Lines</h3>
+                <div class="gauge-container">
+                    <canvas id="linesGauge"></canvas>
+                    <div class="gauge-text" id="linesText">-</div>
+                </div>
+                <div class="text-center mt-4">
+                    <span class="text-sm text-gray-400" id="linesDelta">-</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trend Charts -->
+    <section class="container mx-auto px-6 py-8">
+        <h2 class="text-3xl font-bold mb-6">Coverage Trends</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="mb-4">
+                <h3 class="text-xl font-semibold">Historical Coverage (Last 30 Days)</h3>
+                <p class="text-sm text-gray-400">Track how your test coverage has evolved over time</p>
+            </div>
+            <canvas id="trendChart" class="w-full" style="max-height: 400px;"></canvas>
+        </div>
+    </section>
+
+    <!-- Module Breakdown -->
+    <section class="container mx-auto px-6 py-8">
+        <h2 class="text-3xl font-bold mb-6">Module Coverage</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+            <div class="mb-4">
+                <h3 class="text-xl font-semibold">Coverage by Module</h3>
+                <p class="text-sm text-gray-400">Identify which modules need more test coverage</p>
+            </div>
+            <canvas id="moduleChart" class="w-full" style="max-height: 400px;"></canvas>
+        </div>
+    </section>
+
+    <!-- Coverage Gaps -->
+    <section class="container mx-auto px-6 py-8">
+        <h2 class="text-3xl font-bold mb-6">Coverage Gaps</h2>
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg overflow-x-auto">
+            <div class="mb-4">
+                <h3 class="text-xl font-semibold">Files Needing Tests</h3>
+                <p class="text-sm text-gray-400">High-priority files with low or missing test coverage</p>
+            </div>
+            <table class="w-full" id="gapsTable">
+                <thead>
+                    <tr class="border-b border-gray-700">
+                        <th class="text-left py-3 px-4">Priority</th>
+                        <th class="text-left py-3 px-4">File</th>
+                        <th class="text-center py-3 px-4">Coverage</th>
+                        <th class="text-center py-3 px-4">Tests</th>
+                        <th class="text-center py-3 px-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="gapsTableBody">
+                    <tr>
+                        <td colspan="5" class="text-center py-8 text-gray-400">Loading coverage gaps...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="container mx-auto px-6 py-8 mb-12">
+        <h2 class="text-3xl font-bold mb-6">Quick Actions</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <button onclick="refreshDashboard()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                🔄 Refresh Data
+            </button>
+            <button onclick="runCoverage()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                📊 Run Coverage
+            </button>
+            <button onclick="runTests()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                🧪 Run Tests
+            </button>
+            <button onclick="getSuggestions()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                🎯 Test Suggestions
+            </button>
+            <button onclick="exportReport()" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                📥 Export Report
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 py-6 mt-12">
+        <div class="container mx-auto px-6 text-center text-gray-400">
+            <p>Generated by Lokifi Test Intelligence System</p>
+            <p class="text-sm mt-2">Powered by Chart.js & Tailwind CSS</p>
+        </div>
+    </footer>
+
+    <script>
+        let dashboardData = null;
+        let charts = {};
+
+        // Utility: Get color based on coverage percentage
+        function getCoverageColor(percentage) {
+            if (percentage >= 80) return { bg: 'rgb(16, 185, 129)', text: 'text-green-400' };
+            if (percentage >= 60) return { bg: 'rgb(251, 191, 36)', text: 'text-yellow-400' };
+            if (percentage >= 40) return { bg: 'rgb(249, 115, 22)', text: 'text-orange-400' };
+            return { bg: 'rgb(239, 68, 68)', text: 'text-red-400' };
+        }
+
+        // Create gauge chart
+        function createGauge(canvasId, value, color) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            return new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [value, 100 - value],
+                        backgroundColor: [color, 'rgba(75, 85, 99, 0.3)'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    circumference: 180,
+                    rotation: 270,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+        }
+
+        // Create trend chart
+        function createTrendChart(data) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            
+            if (charts.trend) {
+                charts.trend.destroy();
+            }
+
+            charts.trend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.trends.map(t => new Date(t.timestamp).toLocaleDateString()),
+                    datasets: [
+                        {
+                            label: 'Statements %',
+                            data: data.trends.map(t => t.coverage.statements),
+                            borderColor: 'rgb(59, 130, 246)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Branches %',
+                            data: data.trends.map(t => t.coverage.branches),
+                            borderColor: 'rgb(16, 185, 129)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Functions %',
+                            data: data.trends.map(t => t.coverage.functions),
+                            borderColor: 'rgb(251, 191, 36)',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { color: 'rgb(209, 213, 219)' }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: 'rgb(156, 163, 175)' },
+                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                        },
+                        x: {
+                            ticks: { color: 'rgb(156, 163, 175)' },
+                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create module chart
+        function createModuleChart(data) {
+            const ctx = document.getElementById('moduleChart').getContext('2d');
+            
+            if (charts.module) {
+                charts.module.destroy();
+            }
+
+            charts.module = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.modules.map(m => m.name),
+                    datasets: [{
+                        label: 'Coverage %',
+                        data: data.modules.map(m => m.coverage),
+                        backgroundColor: data.modules.map(m => getCoverageColor(m.coverage).bg)
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const module = data.modules[context.dataIndex];
+                                    return [
+                                        `Coverage: ${module.coverage}%`,
+                                        `Files: ${module.files}`,
+                                        `Tests: ${module.tests}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { color: 'rgb(156, 163, 175)' },
+                            grid: { color: 'rgba(75, 85, 99, 0.3)' }
+                        },
+                        y: {
+                            ticks: { color: 'rgb(209, 213, 219)' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Populate coverage gaps table
+        function populateGapsTable(data) {
+            const tbody = document.getElementById('gapsTableBody');
+            
+            if (!data.gaps || data.gaps.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-green-400">✅ No significant coverage gaps found!</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = data.gaps.map(gap => {
+                const priorityEmoji = gap.priority === 'HIGH' ? '🔴' : gap.priority === 'MEDIUM' ? '🟡' : '🟢';
+                const coverageColor = getCoverageColor(gap.coverage).text;
+                
+                return `
+                    <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+                        <td class="py-3 px-4 text-center text-2xl">${priorityEmoji}</td>
+                        <td class="py-3 px-4 font-mono text-sm">${gap.file}</td>
+                        <td class="py-3 px-4 text-center ${coverageColor} font-bold">${gap.coverage}%</td>
+                        <td class="py-3 px-4 text-center">${gap.tests}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="analyzeFile('${gap.file}')" class="text-blue-400 hover:text-blue-300 text-sm">
+                                🎯 Analyze
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load and render dashboard
+        async function loadDashboard() {
+            try {
+                const response = await fetch('data.json');
+                dashboardData = await response.json();
+                
+                // Update last update time
+                document.getElementById('lastUpdate').textContent = 
+                    new Date(dashboardData.generated).toLocaleString();
+
+                // Update quick stats
+                const current = dashboardData.current;
+                document.getElementById('totalTests').textContent = current.tests.total || '-';
+                document.getElementById('passingTests').textContent = current.tests.passing || '-';
+                document.getElementById('testFiles').textContent = current.tests.files || '-';
+                document.getElementById('testDuration').textContent = current.tests.duration || '-';
+
+                // Create gauges
+                const coverage = current.coverage;
+                
+                charts.statementsGauge = createGauge('statementsGauge', coverage.statements, getCoverageColor(coverage.statements).bg);
+                document.getElementById('statementsText').textContent = `${coverage.statements.toFixed(1)}%`;
+                document.getElementById('statementsDelta').textContent = dashboardData.delta?.statements || 'No change';
+                
+                charts.branchesGauge = createGauge('branchesGauge', coverage.branches, getCoverageColor(coverage.branches).bg);
+                document.getElementById('branchesText').textContent = `${coverage.branches.toFixed(1)}%`;
+                document.getElementById('branchesDelta').textContent = dashboardData.delta?.branches || 'No change';
+                
+                charts.functionsGauge = createGauge('functionsGauge', coverage.functions, getCoverageColor(coverage.functions).bg);
+                document.getElementById('functionsText').textContent = `${coverage.functions.toFixed(1)}%`;
+                document.getElementById('functionsDelta').textContent = dashboardData.delta?.functions || 'No change';
+                
+                charts.linesGauge = createGauge('linesGauge', coverage.lines, getCoverageColor(coverage.lines).bg);
+                document.getElementById('linesText').textContent = `${coverage.lines.toFixed(1)}%`;
+                document.getElementById('linesDelta').textContent = dashboardData.delta?.lines || 'No change';
+
+                // Create charts
+                if (dashboardData.trends && dashboardData.trends.length > 0) {
+                    createTrendChart(dashboardData);
+                }
+                
+                if (dashboardData.modules && dashboardData.modules.length > 0) {
+                    createModuleChart(dashboardData);
+                }
+
+                // Populate gaps table
+                populateGapsTable(dashboardData);
+
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                document.getElementById('lastUpdate').textContent = 'Error loading data';
+            }
+        }
+
+        // Quick action functions
+        function refreshDashboard() {
+            location.reload();
+        }
+
+        function runCoverage() {
+            alert('Run: .\\tools\\lokifi.ps1 test-trends');
+        }
+
+        function runTests() {
+            alert('Run: npm run test:coverage');
+        }
+
+        function getSuggestions() {
+            alert('Run: .\\tools\\lokifi.ps1 test-suggest');
+        }
+
+        function exportReport() {
+            window.print();
+        }
+
+        function analyzeFile(file) {
+            alert(`Run: .\\tools\\lokifi.ps1 test-impact -FilePath "${file}"`);
+        }
+
+        // Load dashboard on page load
+        window.addEventListener('load', loadDashboard);
+
+        // Auto-refresh every 30 seconds (optional)
+        // setInterval(loadDashboard, 30000);
+    </script>
+</body>
+</html>
