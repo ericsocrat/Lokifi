@@ -27,16 +27,16 @@ function New-TestDocumentation {
     <#
     .SYNOPSIS
         Generate test documentation from test files
-    
+
     .PARAMETER TestPath
         Path to test directory (default: apps/frontend/tests)
-    
+
     .PARAMETER OutputPath
         Path to output documentation (default: docs/testing)
-    
+
     .PARAMETER Type
         Type of tests to document: all, unit, integration, e2e, security
-    
+
     .EXAMPLE
         New-TestDocumentation -Type all
         New-TestDocumentation -Type security
@@ -47,17 +47,17 @@ function New-TestDocumentation {
         [ValidateSet('all', 'unit', 'integration', 'e2e', 'security')]
         [string]$Type = 'all'
     )
-    
+
     Write-Host ""
     Write-Host "📚 Generating Test Documentation..." -ForegroundColor Cyan
     Write-Host "============================================" -ForegroundColor Green
-    
+
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
         Write-Host "✅ Created output directory: $OutputPath" -ForegroundColor Green
     }
-    
+
     # Get test files based on type
     $testFiles = @()
     if ($Type -eq 'all') {
@@ -70,14 +70,14 @@ function New-TestDocumentation {
             'security' { $testFiles = Get-ChildItem -Path "$TestPath/security" -Recurse -Filter "*.security.test.ts" -File -ErrorAction SilentlyContinue }
         }
     }
-    
+
     if ($testFiles.Count -eq 0) {
         Write-Host "⚠️  No test files found for type: $Type" -ForegroundColor Yellow
         return
     }
-    
+
     Write-Host "📂 Found $($testFiles.Count) test file(s)" -ForegroundColor Cyan
-    
+
     # Parse test files and extract test structure
     $testCatalog = @{
         generatedAt = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
@@ -86,22 +86,22 @@ function New-TestDocumentation {
         totalTests = 0
         suites = @()
     }
-    
+
     foreach ($file in $testFiles) {
         Write-Host "   Parsing: $($file.Name)" -ForegroundColor Gray
-        
+
         $content = Get-Content $file.FullName -Raw
         $relativePath = $file.FullName -replace [regex]::Escape((Get-Location).Path), ""
         $relativePath = $relativePath.TrimStart('\', '/')
-        
+
         # Extract describe blocks (test suites)
         $describePattern = 'describe\(["'']([^"'']+)["'']'
         $describeMatches = [regex]::Matches($content, $describePattern)
-        
+
         # Extract it/test blocks (individual tests)
         $itPattern = '(?:it|test)\(["'']([^"'']+)["'']'
         $itMatches = [regex]::Matches($content, $itPattern)
-        
+
         $suite = @{
             file = $file.Name
             path = $relativePath
@@ -109,18 +109,18 @@ function New-TestDocumentation {
             tests = @($itMatches | ForEach-Object { $_.Groups[1].Value })
             testCount = $itMatches.Count
         }
-        
+
         $testCatalog.suites += $suite
         $testCatalog.totalTests += $suite.testCount
     }
-    
+
     # Generate markdown documentation
     $markdown = @"
 # Test Documentation - $($Type.ToUpper())
 
-**Generated:** $($testCatalog.generatedAt)  
-**Type:** $Type  
-**Files:** $($testCatalog.totalFiles)  
+**Generated:** $($testCatalog.generatedAt)
+**Type:** $Type
+**Files:** $($testCatalog.totalFiles)
 **Tests:** $($testCatalog.totalTests)
 
 ---
@@ -138,17 +138,17 @@ This document provides an overview of all tests in the project.
 ## 📋 Test Catalog
 
 "@
-    
+
     foreach ($suite in $testCatalog.suites) {
         $markdown += @"
 
 ### 🧪 $($suite.file)
 
-**Path:** ``$($suite.path)``  
+**Path:** ``$($suite.path)``
 **Test Count:** $($suite.testCount)
 
 "@
-        
+
         if ($suite.describes.Count -gt 0) {
             $markdown += "**Test Suites:**`n"
             foreach ($describe in $suite.describes) {
@@ -156,7 +156,7 @@ This document provides an overview of all tests in the project.
             }
             $markdown += "`n"
         }
-        
+
         if ($suite.tests.Count -gt 0) {
             $markdown += "**Tests:**`n"
             foreach ($test in $suite.tests) {
@@ -165,7 +165,7 @@ This document provides an overview of all tests in the project.
             $markdown += "`n"
         }
     }
-    
+
     # Add coverage information if available
     $coveragePath = "apps/frontend/coverage/coverage-summary.json"
     if (Test-Path $coveragePath) {
@@ -179,7 +179,7 @@ This document provides an overview of all tests in the project.
         try {
             $coverage = Get-Content $coveragePath -Raw | ConvertFrom-Json
             $totalCoverage = $coverage.total
-            
+
             $markdown += @"
 **Overall Coverage:**
 
@@ -195,7 +195,7 @@ This document provides an overview of all tests in the project.
             $markdown += "Coverage data available but could not be parsed.`n`n"
         }
     }
-    
+
     $markdown += @"
 
 ---
@@ -218,21 +218,21 @@ npm run test:watch
 
 ---
 
-**Generated by Lokifi Documentation System**  
+**Generated by Lokifi Documentation System**
 *Keeping your docs fresh and accurate* 📚✨
 
 "@
-    
+
     # Write to file
     $outputFile = Join-Path $OutputPath "TEST_CATALOG_$($Type.ToUpper()).md"
     $markdown | Set-Content $outputFile -Encoding UTF8
-    
+
     Write-Host ""
     Write-Host "✅ Test documentation generated!" -ForegroundColor Green
     Write-Host "📍 Location: $outputFile" -ForegroundColor Cyan
     Write-Host "📊 Documented $($testCatalog.totalTests) tests from $($testCatalog.totalFiles) files" -ForegroundColor White
     Write-Host ""
-    
+
     return $outputFile
 }
 
@@ -240,16 +240,16 @@ function New-APIDocumentation {
     <#
     .SYNOPSIS
         Generate API documentation from backend code
-    
+
     .PARAMETER APIPath
         Path to API directory (default: apps/backend/app)
-    
+
     .PARAMETER OutputPath
         Path to output documentation (default: docs/api)
-    
+
     .PARAMETER Format
         Output format: markdown, openapi, html
-    
+
     .EXAMPLE
         New-APIDocumentation -Format markdown
         New-APIDocumentation -Format openapi
@@ -260,26 +260,26 @@ function New-APIDocumentation {
         [ValidateSet('markdown', 'openapi', 'html')]
         [string]$Format = 'markdown'
     )
-    
+
     Write-Host ""
     Write-Host "🌐 Generating API Documentation..." -ForegroundColor Cyan
     Write-Host "============================================" -ForegroundColor Green
-    
+
     # Check if backend exists
     if (-not (Test-Path $APIPath)) {
         Write-Host "⚠️  Backend API path not found: $APIPath" -ForegroundColor Yellow
         Write-Host "💡 Creating placeholder documentation..." -ForegroundColor Cyan
-        
+
         # Create output directory
         if (-not (Test-Path $OutputPath)) {
             New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
         }
-        
+
         # Create placeholder documentation
         $placeholder = @"
 # API Documentation
 
-**Status:** 🚧 Backend API not yet implemented  
+**Status:** 🚧 Backend API not yet implemented
 **Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 
 ---
@@ -329,48 +329,48 @@ Authorization: Bearer <token>
 
 ---
 
-**Generated by Lokifi Documentation System**  
+**Generated by Lokifi Documentation System**
 *API documentation will be generated once backend is implemented* 🌐✨
 
 "@
-        
+
         $outputFile = Join-Path $OutputPath "API_REFERENCE.md"
         $placeholder | Set-Content $outputFile -Encoding UTF8
-        
+
         Write-Host "✅ Placeholder API documentation created!" -ForegroundColor Green
         Write-Host "📍 Location: $outputFile" -ForegroundColor Cyan
         Write-Host ""
-        
+
         return $outputFile
     }
-    
+
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
     }
-    
+
     # Scan for Python API files
     $apiFiles = Get-ChildItem -Path $APIPath -Recurse -Filter "*.py" -File | Where-Object { $_.Name -notmatch '__pycache__|__init__' }
-    
+
     Write-Host "📂 Found $($apiFiles.Count) API file(s)" -ForegroundColor Cyan
-    
+
     # Parse API files for FastAPI routes
     $endpoints = @()
-    
+
     foreach ($file in $apiFiles) {
         Write-Host "   Parsing: $($file.Name)" -ForegroundColor Gray
-        
+
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-        
+
         # Skip empty files
         if (-not $content) {
             continue
         }
-        
+
         # Extract FastAPI route decorators
         $routePattern = '@(?:router|app)\.(get|post|put|delete|patch)\(["'']([^"'']+)["'']'
         $routeMatches = [regex]::Matches($content, $routePattern)
-        
+
         foreach ($match in $routeMatches) {
             $endpoints += @{
                 method = $match.Groups[1].Value.ToUpper()
@@ -379,13 +379,13 @@ Authorization: Bearer <token>
             }
         }
     }
-    
+
     # Generate markdown documentation
     $markdown = @"
 # API Reference
 
-**Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")  
-**Format:** $Format  
+**Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+**Format:** $Format
 **Endpoints:** $($endpoints.Count)
 
 ---
@@ -393,14 +393,14 @@ Authorization: Bearer <token>
 ## 📋 API Endpoints
 
 "@
-    
+
     if ($endpoints.Count -gt 0) {
         # Group endpoints by HTTP method
         $groupedEndpoints = $endpoints | Group-Object method
-        
+
         foreach ($group in $groupedEndpoints) {
             $markdown += "`n### $($group.Name) Requests`n`n"
-            
+
             foreach ($endpoint in $group.Group) {
                 $markdown += "- **$($endpoint.method)** ``$($endpoint.path)```n"
                 $markdown += "  - Source: ``$($endpoint.file)```n"
@@ -409,7 +409,7 @@ Authorization: Bearer <token>
     } else {
         $markdown += "`n*No endpoints found*`n"
     }
-    
+
     $markdown += @"
 
 ---
@@ -453,21 +453,21 @@ All API responses follow this format:
 
 ---
 
-**Generated by Lokifi Documentation System**  
+**Generated by Lokifi Documentation System**
 *Auto-generated from backend source code* 🌐✨
 
 "@
-    
+
     # Write to file
     $outputFile = Join-Path $OutputPath "API_REFERENCE.md"
     $markdown | Set-Content $outputFile -Encoding UTF8
-    
+
     Write-Host ""
     Write-Host "✅ API documentation generated!" -ForegroundColor Green
     Write-Host "📍 Location: $outputFile" -ForegroundColor Cyan
     Write-Host "📊 Documented $($endpoints.Count) endpoint(s)" -ForegroundColor White
     Write-Host ""
-    
+
     return $outputFile
 }
 
@@ -475,19 +475,19 @@ function New-ComponentDocumentation {
     <#
     .SYNOPSIS
         Generate component documentation from React components
-    
+
     .PARAMETER ComponentPath
         Path to components directory (default: apps/frontend/src/components)
-    
+
     .PARAMETER OutputPath
         Path to output documentation (default: docs/components)
-    
+
     .PARAMETER IncludeProps
         Include component props documentation
-    
+
     .PARAMETER IncludeExamples
         Include usage examples
-    
+
     .EXAMPLE
         New-ComponentDocumentation -IncludeProps -IncludeExamples
     #>
@@ -497,26 +497,26 @@ function New-ComponentDocumentation {
         [switch]$IncludeProps,
         [switch]$IncludeExamples
     )
-    
+
     Write-Host ""
     Write-Host "🎨 Generating Component Documentation..." -ForegroundColor Cyan
     Write-Host "============================================" -ForegroundColor Green
-    
+
     # Ensure output directory exists
     if (-not (Test-Path $OutputPath)) {
         New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
         Write-Host "✅ Created output directory: $OutputPath" -ForegroundColor Green
     }
-    
+
     # Check if component directory exists
     if (-not (Test-Path $ComponentPath)) {
         Write-Host "⚠️  Component path not found: $ComponentPath" -ForegroundColor Yellow
         Write-Host "💡 Creating placeholder documentation..." -ForegroundColor Cyan
-        
+
         $placeholder = @"
 # Component Documentation
 
-**Status:** 🚧 Components not yet organized  
+**Status:** 🚧 Components not yet organized
 **Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 
 ---
@@ -574,61 +574,61 @@ interface ButtonProps {
 
 ---
 
-**Generated by Lokifi Documentation System**  
+**Generated by Lokifi Documentation System**
 *Component documentation will be generated once components are organized* 🎨✨
 
 "@
-        
+
         $outputFile = Join-Path $OutputPath "COMPONENT_CATALOG.md"
         $placeholder | Set-Content $outputFile -Encoding UTF8
-        
+
         Write-Host "✅ Placeholder component documentation created!" -ForegroundColor Green
         Write-Host "📍 Location: $outputFile" -ForegroundColor Cyan
         Write-Host ""
-        
+
         return $outputFile
     }
-    
+
     # Scan for React components
     $componentFiles = Get-ChildItem -Path $ComponentPath -Recurse -Filter "*.tsx" -File | Where-Object { $_.Name -notmatch '\.test\.|\.spec\.' }
-    
+
     if ($componentFiles.Count -eq 0) {
         Write-Host "⚠️  No component files found" -ForegroundColor Yellow
         return
     }
-    
+
     Write-Host "📂 Found $($componentFiles.Count) component file(s)" -ForegroundColor Cyan
-    
+
     # Parse components
     $components = @()
-    
+
     foreach ($file in $componentFiles) {
         Write-Host "   Parsing: $($file.Name)" -ForegroundColor Gray
-        
+
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
-        
+
         # Skip empty files
         if (-not $content) {
             continue
         }
-        
+
         $relativePath = $file.FullName -replace [regex]::Escape((Get-Location).Path), ""
         $relativePath = $relativePath.TrimStart('\', '/')
-        
+
         # Extract component name
         $componentName = $file.BaseName
-        
+
         # Extract props interface if IncludeProps
         $props = @()
         if ($IncludeProps) {
             $interfacePattern = "interface\s+$($componentName)Props\s*\{([^}]+)\}"
             $interfaceMatch = [regex]::Match($content, $interfacePattern, [System.Text.RegularExpressions.RegexOptions]::Singleline)
-            
+
             if ($interfaceMatch.Success) {
                 $propsContent = $interfaceMatch.Groups[1].Value
                 $propPattern = '(?:\/\*\*\s*([^*]+)\s*\*\/)?\s*(\w+)\??\s*:\s*([^;]+)'
                 $propMatches = [regex]::Matches($propsContent, $propPattern)
-                
+
                 foreach ($propMatch in $propMatches) {
                     $props += @{
                         description = $propMatch.Groups[1].Value.Trim()
@@ -638,7 +638,7 @@ interface ButtonProps {
                 }
             }
         }
-        
+
         $components += @{
             name = $componentName
             file = $file.Name
@@ -646,12 +646,12 @@ interface ButtonProps {
             props = $props
         }
     }
-    
+
     # Generate markdown documentation
     $markdown = @"
 # Component Catalog
 
-**Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")  
+**Generated:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
 **Components:** $($components.Count)
 
 ---
@@ -659,30 +659,30 @@ interface ButtonProps {
 ## 📋 Component List
 
 "@
-    
+
     foreach ($component in $components) {
         $markdown += @"
 
 ### 🎨 $($component.name)
 
-**File:** ``$($component.file)``  
+**File:** ``$($component.file)``
 **Path:** ``$($component.path)``
 
 "@
-        
+
         if ($IncludeProps -and $component.props.Count -gt 0) {
             $markdown += "`n**Props:**`n`n"
             $markdown += "| Prop | Type | Description |`n"
             $markdown += "|------|------|-------------|`n"
-            
+
             foreach ($prop in $component.props) {
                 $description = if ($prop.description) { $prop.description } else { "-" }
                 $markdown += "| ``$($prop.name)`` | ``$($prop.type)`` | $description |`n"
             }
-            
+
             $markdown += "`n"
         }
-        
+
         if ($IncludeExamples) {
             $markdown += @"
 **Usage:**
@@ -698,7 +698,7 @@ function Example() {
 "@
         }
     }
-    
+
     $markdown += @"
 
 ---
@@ -718,21 +718,21 @@ npm run type-check
 
 ---
 
-**Generated by Lokifi Documentation System**  
+**Generated by Lokifi Documentation System**
 *Auto-generated from React components* 🎨✨
 
 "@
-    
+
     # Write to file
     $outputFile = Join-Path $OutputPath "COMPONENT_CATALOG.md"
     $markdown | Set-Content $outputFile -Encoding UTF8
-    
+
     Write-Host ""
     Write-Host "✅ Component documentation generated!" -ForegroundColor Green
     Write-Host "📍 Location: $outputFile" -ForegroundColor Cyan
     Write-Host "📊 Documented $($components.Count) component(s)" -ForegroundColor White
     Write-Host ""
-    
+
     return $outputFile
 }
 
@@ -740,16 +740,16 @@ function Invoke-TypeDocGeneration {
     <#
     .SYNOPSIS
         Generate TypeDoc API reference documentation
-    
+
     .PARAMETER SourcePath
         Path to source code (default: apps/frontend/src/lib)
-    
+
     .PARAMETER OutputPath
         Path to output documentation (default: docs/api-reference)
-    
+
     .PARAMETER Watch
         Enable watch mode for live updates
-    
+
     .EXAMPLE
         Invoke-TypeDocGeneration
         Invoke-TypeDocGeneration -Watch
@@ -759,11 +759,11 @@ function Invoke-TypeDocGeneration {
         [string]$OutputPath = "docs/api-reference",
         [switch]$Watch
     )
-    
+
     Write-Host ""
     Write-Host "📖 Generating TypeDoc Documentation..." -ForegroundColor Cyan
     Write-Host "============================================" -ForegroundColor Green
-    
+
     # Check if TypeDoc is installed
     $typedocInstalled = $false
     try {
@@ -772,21 +772,21 @@ function Invoke-TypeDocGeneration {
     } catch {
         Write-Host "⚠️  TypeDoc not found" -ForegroundColor Yellow
     }
-    
+
     if (-not $typedocInstalled) {
         Write-Host "💡 Installing TypeDoc..." -ForegroundColor Cyan
         npm install --save-dev typedoc
     }
-    
+
     # Check if source path exists
     if (-not (Test-Path $SourcePath)) {
         Write-Host "⚠️  Source path not found: $SourcePath" -ForegroundColor Yellow
         Write-Host "💡 Creating placeholder..." -ForegroundColor Cyan
-        
+
         if (-not (Test-Path $OutputPath)) {
             New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
         }
-        
+
         $placeholder = @"
 <!DOCTYPE html>
 <html lang="en">
@@ -813,22 +813,22 @@ npx typedoc --out $OutputPath $SourcePath</pre>
 </body>
 </html>
 "@
-        
+
         $placeholderFile = Join-Path $OutputPath "index.html"
         $placeholder | Set-Content $placeholderFile -Encoding UTF8
-        
+
         Write-Host "✅ Placeholder created!" -ForegroundColor Green
         Write-Host "📍 Location: $placeholderFile" -ForegroundColor Cyan
         Write-Host ""
-        
+
         return $placeholderFile
     }
-    
+
     # Generate TypeDoc config if it doesn't exist
     $configPath = "apps/frontend/typedoc.json"
     if (-not (Test-Path $configPath)) {
         Write-Host "📝 Creating TypeDoc configuration..." -ForegroundColor Cyan
-        
+
         $config = @{
             entryPoints = @("src/lib")
             out = "../../$OutputPath"
@@ -840,15 +840,15 @@ npx typedoc --out $OutputPath $SourcePath</pre>
             name = "Lokifi API Reference"
             includeVersion = $true
         } | ConvertTo-Json -Depth 10
-        
+
         $config | Set-Content $configPath -Encoding UTF8
         Write-Host "✅ Created typedoc.json" -ForegroundColor Green
     }
-    
+
     # Run TypeDoc
     Write-Host "🔨 Running TypeDoc..." -ForegroundColor Cyan
     Push-Location "apps/frontend"
-    
+
     try {
         if ($Watch) {
             Write-Host "👀 Starting watch mode (Ctrl+C to stop)..." -ForegroundColor Yellow
@@ -865,7 +865,7 @@ npx typedoc --out $OutputPath $SourcePath</pre>
     } finally {
         Pop-Location
     }
-    
+
     return (Join-Path $OutputPath "index.html")
 }
 

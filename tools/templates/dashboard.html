@@ -72,7 +72,7 @@
                     <span class="text-sm text-gray-400" id="statementsDelta">-</span>
                 </div>
             </div>
-            
+
             <!-- Branches -->
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <h3 class="text-xl font-semibold mb-4 text-center text-green-400">Branches</h3>
@@ -84,7 +84,7 @@
                     <span class="text-sm text-gray-400" id="branchesDelta">-</span>
                 </div>
             </div>
-            
+
             <!-- Functions -->
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <h3 class="text-xl font-semibold mb-4 text-center text-yellow-400">Functions</h3>
@@ -96,7 +96,7 @@
                     <span class="text-sm text-gray-400" id="functionsDelta">-</span>
                 </div>
             </div>
-            
+
             <!-- Lines -->
             <div class="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow">
                 <h3 class="text-xl font-semibold mb-4 text-center text-purple-400">Lines</h3>
@@ -233,7 +233,7 @@
         // Create trend chart
         function createTrendChart(data) {
             const ctx = document.getElementById('trendChart').getContext('2d');
-            
+
             if (charts.trend) {
                 charts.trend.destroy();
             }
@@ -301,7 +301,7 @@
         // Create module chart
         function createModuleChart(data) {
             const ctx = document.getElementById('moduleChart').getContext('2d');
-            
+
             if (charts.module) {
                 charts.module.destroy();
             }
@@ -354,7 +354,7 @@
         // Populate coverage gaps table
         function populateGapsTable(data) {
             const tbody = document.getElementById('gapsTableBody');
-            
+
             if (!data.gaps || data.gaps.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-green-400">✅ No significant coverage gaps found!</td></tr>';
                 return;
@@ -363,7 +363,7 @@
             tbody.innerHTML = data.gaps.map(gap => {
                 const priorityEmoji = gap.priority === 'HIGH' ? '🔴' : gap.priority === 'MEDIUM' ? '🟡' : '🟢';
                 const coverageColor = getCoverageColor(gap.coverage).text;
-                
+
                 return `
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
                         <td class="py-3 px-4 text-center text-2xl">${priorityEmoji}</td>
@@ -385,9 +385,9 @@
             try {
                 const response = await fetch('data.json');
                 dashboardData = await response.json();
-                
+
                 // Update last update time
-                document.getElementById('lastUpdate').textContent = 
+                document.getElementById('lastUpdate').textContent =
                     new Date(dashboardData.generated).toLocaleString();
 
                 // Update quick stats
@@ -399,19 +399,19 @@
 
                 // Create gauges
                 const coverage = current.coverage;
-                
+
                 charts.statementsGauge = createGauge('statementsGauge', coverage.statements, getCoverageColor(coverage.statements).bg);
                 document.getElementById('statementsText').textContent = `${coverage.statements.toFixed(1)}%`;
                 document.getElementById('statementsDelta').textContent = dashboardData.delta?.statements || 'No change';
-                
+
                 charts.branchesGauge = createGauge('branchesGauge', coverage.branches, getCoverageColor(coverage.branches).bg);
                 document.getElementById('branchesText').textContent = `${coverage.branches.toFixed(1)}%`;
                 document.getElementById('branchesDelta').textContent = dashboardData.delta?.branches || 'No change';
-                
+
                 charts.functionsGauge = createGauge('functionsGauge', coverage.functions, getCoverageColor(coverage.functions).bg);
                 document.getElementById('functionsText').textContent = `${coverage.functions.toFixed(1)}%`;
                 document.getElementById('functionsDelta').textContent = dashboardData.delta?.functions || 'No change';
-                
+
                 charts.linesGauge = createGauge('linesGauge', coverage.lines, getCoverageColor(coverage.lines).bg);
                 document.getElementById('linesText').textContent = `${coverage.lines.toFixed(1)}%`;
                 document.getElementById('linesDelta').textContent = dashboardData.delta?.lines || 'No change';
@@ -420,7 +420,7 @@
                 if (dashboardData.trends && dashboardData.trends.length > 0) {
                     createTrendChart(dashboardData);
                 }
-                
+
                 if (dashboardData.modules && dashboardData.modules.length > 0) {
                     createModuleChart(dashboardData);
                 }

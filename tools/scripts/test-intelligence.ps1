@@ -74,10 +74,10 @@ function Get-TestSuggestions {
 
     foreach ($file in $ChangedFiles) {
         $file = $file.Trim()
-        
+
         # Get project root (tools/scripts -> tools -> root)
         $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-        
+
         # Direct test file mapping
         if ($file -like "*src/lib/utils/*") {
             $baseName = [System.IO.Path]::GetFileNameWithoutExtension($file)
@@ -188,7 +188,7 @@ function Get-TestSuggestions {
     if ($highPriority.Count -gt 0) {
         $uniqueTests = $highPriority | Select-Object -Unique -ExpandProperty TestFile
         $testPaths = ($uniqueTests | ForEach-Object { """$_""" }) -join " "
-        
+
         Write-Host "💡 Recommended Command:" -ForegroundColor Cyan
         Write-Host "   npx vitest $testPaths" -ForegroundColor Green
         Write-Host ""
@@ -380,9 +380,9 @@ function Track-CoverageTrend {
     Push-Location $frontendPath
     try {
         Write-Host "`n🔍 Running coverage analysis..." -ForegroundColor White
-        
+
         $coverageOutput = npx vitest run --coverage --reporter=json 2>&1 | Out-String
-        
+
         # Parse current test stats
         $testOutput = npx vitest run 2>&1 | Out-String
         $testsPassing = 0
@@ -415,7 +415,7 @@ function Track-CoverageTrend {
         # Save snapshot
         $snapshotFile = Join-Path $historyDir "$timestamp.json"
         $snapshot | ConvertTo-Json -Depth 10 | Set-Content -Path $snapshotFile
-        
+
         # Also save as latest
         $latestFile = Join-Path $historyDir "latest.json"
         $snapshot | ConvertTo-Json -Depth 10 | Set-Content -Path $latestFile
@@ -423,7 +423,7 @@ function Track-CoverageTrend {
         Write-Host "✅ Snapshot saved: $timestamp" -ForegroundColor Green
 
         # Load historical data
-        $historyFiles = Get-ChildItem -Path $historyDir -Filter "*.json" | 
+        $historyFiles = Get-ChildItem -Path $historyDir -Filter "*.json" |
             Where-Object { $_.Name -ne "latest.json" } |
             Sort-Object Name -Descending |
             Select-Object -First $Days
@@ -466,11 +466,11 @@ function Track-CoverageTrend {
             Write-Host "  Pass Rate:  100% ✅" -ForegroundColor Green
             Write-Host ""
 
-            $overallTrend = if ($stmtDiff + $testDiff -gt 0) { "📈 IMPROVING" } 
-                           elseif ($stmtDiff + $testDiff -lt 0) { "📉 DECLINING" } 
+            $overallTrend = if ($stmtDiff + $testDiff -gt 0) { "📈 IMPROVING" }
+                           elseif ($stmtDiff + $testDiff -lt 0) { "📉 DECLINING" }
                            else { "➡️ STABLE" }
-            $trendColor = if ($stmtDiff + $testDiff -gt 0) { "Green" } 
-                         elseif ($stmtDiff + $testDiff -lt 0) { "Red" } 
+            $trendColor = if ($stmtDiff + $testDiff -gt 0) { "Green" }
+                         elseif ($stmtDiff + $testDiff -lt 0) { "Red" }
                          else { "Yellow" }
             Write-Host "  Trend: $overallTrend" -ForegroundColor $trendColor
         } else {
@@ -524,7 +524,7 @@ function Get-TestImpact {
     $baseName = [System.IO.Path]::GetFileNameWithoutExtension($FilePath)
 
     $projectRoot = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-    
+
     $possiblePaths = @(
         "apps/frontend/tests/unit/utils/$baseName.test.ts",
         "apps/frontend/tests/unit/stores/$baseName.test.tsx",
@@ -543,7 +543,7 @@ function Get-TestImpact {
         Write-Host "`n✅ Test Coverage Found:" -ForegroundColor Green
         foreach ($test in $testFiles) {
             Write-Host "  • $test" -ForegroundColor White
-            
+
             # Count tests in file
             $testContent = Get-Content (Join-Path $projectRoot $test) -Raw
             $testCount = ([regex]::Matches($testContent, "it\(|test\(")).Count
@@ -552,7 +552,7 @@ function Get-TestImpact {
     } else {
         Write-Host "`n❌ No Test Coverage Found" -ForegroundColor Red
         Write-Host "   This file has no associated test files" -ForegroundColor Yellow
-        
+
         # Suggest where to create test
         if ($FilePath -like "*src/lib/utils/*") {
             Write-Host "`n💡 Suggested test location:" -ForegroundColor Cyan
@@ -567,7 +567,7 @@ function Get-TestImpact {
             Write-Host "`n💡 Suggested test location:" -ForegroundColor Cyan
             Write-Host "   tests/components/$baseName.test.tsx" -ForegroundColor Green
         }
-        
+
         Write-Host "`n📝 Create test from template:" -ForegroundColor Cyan
         Write-Host "   cp tests/templates/utility.test.template.ts tests/unit/utils/$baseName.test.ts" -ForegroundColor Green
     }

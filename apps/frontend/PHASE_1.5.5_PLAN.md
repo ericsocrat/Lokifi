@@ -1,7 +1,7 @@
 # Phase 1.5.5: Coverage Dashboard - Visual HTML Reports
 
-**Status:** 🚀 IN PROGRESS  
-**Estimated Time:** 30 minutes  
+**Status:** 🚀 IN PROGRESS
+**Estimated Time:** 30 minutes
 **Started:** October 14, 2025, 08:40 AM
 
 ---
@@ -9,6 +9,7 @@
 ## Objectives
 
 Create an interactive HTML dashboard to visualize test coverage:
+
 1. **Coverage Overview** - Current metrics with visual gauges
 2. **Trend Visualization** - Historical coverage trends with charts
 3. **Module Breakdown** - Per-module coverage with drill-down
@@ -24,6 +25,7 @@ Create an interactive HTML dashboard to visualize test coverage:
 **Goal:** Create base HTML template with Chart.js
 
 **Features:**
+
 - Responsive design (mobile-friendly)
 - Dark/light theme toggle
 - Modern UI with Tailwind CSS (CDN)
@@ -31,6 +33,7 @@ Create an interactive HTML dashboard to visualize test coverage:
 - Interactive elements
 
 **Sections:**
+
 1. Header with current coverage metrics
 2. Trend charts (line graphs)
 3. Module breakdown (bar charts)
@@ -42,6 +45,7 @@ Create an interactive HTML dashboard to visualize test coverage:
 **Goal:** PowerShell function to generate dashboard data
 
 **Tasks:**
+
 1. Create `New-CoverageDashboard` function
 2. Read coverage history from `.coverage-history/`
 3. Aggregate data by module
@@ -50,6 +54,7 @@ Create an interactive HTML dashboard to visualize test coverage:
 6. Inject data into HTML template
 
 **Data Structure:**
+
 ```json
 {
   "generated": "2025-10-14T08:40:00Z",
@@ -80,6 +85,7 @@ Create an interactive HTML dashboard to visualize test coverage:
 **Goal:** Add dashboard command to lokifi.ps1
 
 **Tasks:**
+
 1. Add `dashboard` to ValidateSet
 2. Create handler for `.\lokifi.ps1 dashboard`
 3. Options:
@@ -88,6 +94,7 @@ Create an interactive HTML dashboard to visualize test coverage:
    - `-Watch`: Auto-refresh mode
 
 **Commands:**
+
 ```powershell
 .\lokifi.ps1 dashboard              # Generate and open
 .\lokifi.ps1 dashboard -Export      # Save to file
@@ -99,6 +106,7 @@ Create an interactive HTML dashboard to visualize test coverage:
 **Goal:** Enable live updates during development
 
 **Implementation:**
+
 - JavaScript polling (every 5 seconds)
 - Fetch updated data from JSON file
 - Update charts without page reload
@@ -133,12 +141,14 @@ apps/frontend/
 ### 1. Coverage Overview (Hero Section)
 
 **Gauges for:**
+
 - Statements: 12.3% (target: 25%)
 - Branches: 75.11% (target: 85%)
 - Functions: 63.31% (target: 70%)
 - Tests: 224 tests
 
 **Visual:**
+
 - Circular progress bars
 - Color-coded (red/yellow/green)
 - Shows delta from last snapshot
@@ -146,12 +156,14 @@ apps/frontend/
 ### 2. Trend Charts
 
 **Line Graph:**
+
 - X-axis: Date (last 30 days)
 - Y-axis: Coverage %
 - Multiple lines: statements, branches, functions
 - Hover tooltips with exact values
 
 **Bar Graph:**
+
 - X-axis: Date
 - Y-axis: Test count
 - Shows test growth over time
@@ -159,6 +171,7 @@ apps/frontend/
 ### 3. Module Breakdown
 
 **Horizontal Bar Chart:**
+
 ```
 utils     ████████████████░░  95%  (7 files, 127 tests)
 stores    ████████░░░░░░░░░░  45%  (3 files, 6 tests)
@@ -167,6 +180,7 @@ api       ████░░░░░░░░░░░░░░  25%  (11 files
 ```
 
 **Interactive:**
+
 - Click to drill-down into module
 - Shows file-level coverage
 - Link to source file
@@ -181,6 +195,7 @@ api       ████░░░░░░░░░░░░░░  25%  (11 files
 | chartUtils.ts | 45% | 1 | 🟡 MEDIUM |
 
 **Actions:**
+
 - "Create Test" button (generates template)
 - Link to test-impact analysis
 - Show complexity score
@@ -188,6 +203,7 @@ api       ████░░░░░░░░░░░░░░  25%  (11 files
 ### 5. Quick Actions
 
 **Buttons:**
+
 - 🔄 Refresh Data
 - 📥 Export Report (PDF)
 - 📊 Run Coverage Analysis
@@ -203,54 +219,54 @@ api       ████░░░░░░░░░░░░░░  25%  (11 files
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lokifi Coverage Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body class="bg-gray-900 text-white">
+  </head>
+  <body class="bg-gray-900 text-white">
     <!-- Header -->
     <header class="bg-gray-800 p-6">
-        <h1 class="text-3xl font-bold">📊 Test Coverage Dashboard</h1>
-        <p class="text-gray-400">Last updated: <span id="lastUpdate"></span></p>
+      <h1 class="text-3xl font-bold">📊 Test Coverage Dashboard</h1>
+      <p class="text-gray-400">Last updated: <span id="lastUpdate"></span></p>
     </header>
 
     <!-- Coverage Overview -->
     <section class="p-6 grid grid-cols-4 gap-4">
-        <div class="bg-gray-800 p-6 rounded-lg">
-            <h3>Statements</h3>
-            <div id="statementsGauge"></div>
-        </div>
-        <!-- ... more gauges -->
+      <div class="bg-gray-800 p-6 rounded-lg">
+        <h3>Statements</h3>
+        <div id="statementsGauge"></div>
+      </div>
+      <!-- ... more gauges -->
     </section>
 
     <!-- Trend Charts -->
     <section class="p-6">
-        <h2 class="text-2xl mb-4">Coverage Trends</h2>
-        <canvas id="trendChart"></canvas>
+      <h2 class="text-2xl mb-4">Coverage Trends</h2>
+      <canvas id="trendChart"></canvas>
     </section>
 
     <!-- Module Breakdown -->
     <section class="p-6">
-        <h2 class="text-2xl mb-4">Module Coverage</h2>
-        <canvas id="moduleChart"></canvas>
+      <h2 class="text-2xl mb-4">Module Coverage</h2>
+      <canvas id="moduleChart"></canvas>
     </section>
 
     <!-- Coverage Gaps -->
     <section class="p-6">
-        <h2 class="text-2xl mb-4">Coverage Gaps</h2>
-        <table id="gapsTable" class="w-full"></table>
+      <h2 class="text-2xl mb-4">Coverage Gaps</h2>
+      <table id="gapsTable" class="w-full"></table>
     </section>
 
     <script>
-        // Load data and render charts
-        fetch('data.json')
-            .then(r => r.json())
-            .then(data => renderDashboard(data));
+      // Load data and render charts
+      fetch('data.json')
+        .then((r) => r.json())
+        .then((data) => renderDashboard(data));
     </script>
-</body>
+  </body>
 </html>
 ```
 
@@ -288,7 +304,7 @@ function New-CoverageDashboard {
 
     $dashboardDir = "apps/frontend/coverage-dashboard"
     New-Item -ItemType Directory -Path $dashboardDir -Force | Out-Null
-    
+
     $data | ConvertTo-Json -Depth 10 | Set-Content "$dashboardDir/data.json"
 
     # Copy HTML template
@@ -315,34 +331,34 @@ function New-CoverageDashboard {
 
 ```javascript
 new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: data.trends.map(t => t.date),
-        datasets: [
-            {
-                label: 'Statements',
-                data: data.trends.map(t => t.statements),
-                borderColor: 'rgb(59, 130, 246)',
-                tension: 0.4
-            },
-            {
-                label: 'Branches',
-                data: data.trends.map(t => t.branches),
-                borderColor: 'rgb(16, 185, 129)',
-                tension: 0.4
-            }
-        ]
+  type: 'line',
+  data: {
+    labels: data.trends.map((t) => t.date),
+    datasets: [
+      {
+        label: 'Statements',
+        data: data.trends.map((t) => t.statements),
+        borderColor: 'rgb(59, 130, 246)',
+        tension: 0.4,
+      },
+      {
+        label: 'Branches',
+        data: data.trends.map((t) => t.branches),
+        borderColor: 'rgb(16, 185, 129)',
+        tension: 0.4,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { mode: 'index' },
     },
-    options: {
-        responsive: true,
-        plugins: {
-            legend: { position: 'top' },
-            tooltip: { mode: 'index' }
-        },
-        scales: {
-            y: { beginAtZero: true, max: 100 }
-        }
-    }
+    scales: {
+      y: { beginAtZero: true, max: 100 },
+    },
+  },
 });
 ```
 
@@ -350,23 +366,27 @@ new Chart(ctx, {
 
 ```javascript
 new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: data.modules.map(m => m.name),
-        datasets: [{
-            label: 'Coverage %',
-            data: data.modules.map(m => m.coverage),
-            backgroundColor: data.modules.map(m => 
-                m.coverage >= 70 ? 'rgb(16, 185, 129)' :
-                m.coverage >= 50 ? 'rgb(251, 191, 36)' : 
-                'rgb(239, 68, 68)'
-            )
-        }]
-    },
-    options: {
-        indexAxis: 'y',
-        responsive: true
-    }
+  type: 'bar',
+  data: {
+    labels: data.modules.map((m) => m.name),
+    datasets: [
+      {
+        label: 'Coverage %',
+        data: data.modules.map((m) => m.coverage),
+        backgroundColor: data.modules.map((m) =>
+          m.coverage >= 70
+            ? 'rgb(16, 185, 129)'
+            : m.coverage >= 50
+              ? 'rgb(251, 191, 36)'
+              : 'rgb(239, 68, 68)'
+        ),
+      },
+    ],
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+  },
 });
 ```
 
@@ -377,12 +397,14 @@ new Chart(ctx, {
 ### Visual Dashboard Features
 
 **Before Phase 1.5.5:**
+
 - ❌ No visual coverage representation
 - ❌ Hard to see trends
 - ❌ No module breakdown
 - ❌ Manual gap analysis
 
 **After Phase 1.5.5:**
+
 - ✅ Beautiful interactive dashboard
 - ✅ Visual trend graphs
 - ✅ Module drill-down
@@ -392,6 +414,7 @@ new Chart(ctx, {
 ### User Experience
 
 **Opening Dashboard:**
+
 ```bash
 .\lokifi.ps1 dashboard
 
@@ -404,6 +427,7 @@ new Chart(ctx, {
 ```
 
 **Auto-Refresh Mode:**
+
 ```bash
 .\lokifi.ps1 dashboard -Watch
 
@@ -417,6 +441,7 @@ new Chart(ctx, {
 ## Success Metrics
 
 ### Functionality
+
 - [ ] HTML dashboard generates correctly
 - [ ] Charts render with real data
 - [ ] Trends show historical data
@@ -425,6 +450,7 @@ new Chart(ctx, {
 - [ ] Auto-refresh works
 
 ### Visual Quality
+
 - [ ] Responsive design (mobile + desktop)
 - [ ] Professional appearance
 - [ ] Color-coded metrics (red/yellow/green)
@@ -432,6 +458,7 @@ new Chart(ctx, {
 - [ ] Interactive elements
 
 ### Performance
+
 - [ ] Dashboard generates in <2s
 - [ ] Charts render in <500ms
 - [ ] Auto-refresh updates seamlessly
@@ -444,9 +471,10 @@ new Chart(ctx, {
 ### Manual Testing
 
 1. **Generate Dashboard:**
+
    ```bash
    .\lokifi.ps1 dashboard
-   
+
    # Verify:
    # - Opens in default browser
    # - Shows current coverage
@@ -454,17 +482,19 @@ new Chart(ctx, {
    ```
 
 2. **Check Data Accuracy:**
+
    ```bash
    # Compare dashboard numbers to vitest output
    npm run test:coverage
-   
+
    # Verify metrics match
    ```
 
 3. **Test Auto-Refresh:**
+
    ```bash
    .\lokifi.ps1 dashboard -Watch
-   
+
    # Run tests in another terminal
    # Verify dashboard updates
    ```
