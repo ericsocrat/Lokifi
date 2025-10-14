@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, develop]
 
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
 env:
   NODE_VERSION: "22"
   COVERAGE_THRESHOLD: 10
@@ -27,10 +32,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
+          # Temporarily disabled cache to debug
+          # cache: "npm"
+          # cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📚 Install dependencies
+        working-directory: ${{ github.workspace }}/apps/frontend
         run: npm ci
 
       - name: 🧪 Run tests with coverage
@@ -120,10 +127,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
+          # Temporarily disabled cache to debug
+          # cache: "npm"
+          # cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📚 Install dependencies
+        working-directory: ${{ github.workspace }}/apps/frontend
         run: npm ci
 
       - name: 🔍 Run npm audit
@@ -260,10 +269,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
+          # Temporarily disabled cache to debug
+          # cache: "npm"
+          # cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📚 Install dependencies
+        working-directory: ${{ github.workspace }}/apps/frontend
         run: npm ci
 
       - name: 🧪 Run tests (needed for coverage data)
