@@ -85,6 +85,7 @@ param(
                  'find-todos', 'find-console', 'find-secrets',  # Phase 3.6: Search Commands (using analyzer)
                  'test-suggest', 'test-smart', 'test-trends', 'test-impact', 'coverage-dashboard',  # Phase 1.5.4-1.5.5: Test Intelligence
                  'security-scan', 'security-test', 'security-baseline',  # Phase 1.5.6: Security Automation
+                 'doc-generate', 'doc-test', 'doc-api', 'doc-component',  # Phase 1.5.7: Auto-Documentation
                  # Quick Aliases
                  's', 'r', 'up', 'down', 'b', 't', 'v', 'd', 'l', 'h', 'a', 'f', 'm', 'st', 'rs', 'bk', 'est', 'cost')]
     [string]$Action = 'help',
@@ -98,7 +99,9 @@ param(
                  'commit', 'push', 'pull', 'branch', 'log', 'diff',  # Git components
                  'percentiles', 'query', 'init',               # Metrics components (Phase 3.2)
                  'scan', 'secrets', 'vulnerabilities', 'licenses', 'audit',  # Security components (Phase 3.3)
-                 'autofix', 'predict', 'forecast', 'recommendations', 'learn')]  # AI/ML components (Phase 3.4)
+                 'autofix', 'predict', 'forecast', 'recommendations', 'learn',  # AI/ML components (Phase 3.4)
+                 'unit', 'integration', 'e2e', 'security',     # Test types (Phase 1.5.7)
+                 'markdown', 'openapi', 'html', 'auth', 'xss', 'csrf', 'validation')]  # Doc formats & security types (Phase 1.5.6-1.5.7)
     [string]$Component = 'all',
 
     # File path for generate-mocks, generate-fixtures
@@ -5803,6 +5806,24 @@ USAGE:
                     Run periodically to monitor security trends
                     Score: 0-100 (deductions for vulnerabilities & patterns)
 
+📚 DOCUMENTATION AUTOMATION (Phase 1.5.7 - NEW):
+    doc-generate    📚 Generate all documentation
+                    Creates test, API, and component documentation
+                    Auto-generates from source code and tests
+                    Output: docs/testing, docs/api, docs/components
+    doc-test        🧪 Generate test documentation
+                    Creates markdown catalog of all tests
+                    -Type: all, unit, integration, e2e, security
+                    Includes coverage data and test descriptions
+    doc-api         🌐 Generate API documentation
+                    Documents backend API endpoints
+                    -Format: markdown, openapi, html
+                    Extracts routes, params, and schemas
+    doc-component   🎨 Generate component documentation
+                    Documents React components with props
+                    Includes prop tables and usage examples
+                    Auto-extracts TypeScript interfaces
+
     organize    Organize repository files
     health      🆕 Comprehensive health check (Infrastructure + Codebase + Quality)
                 Shows: Services, API, Code Quality, Dependencies, TypeScript, Git
@@ -10394,6 +10415,49 @@ SELECT
     'security-baseline' {
         . (Join-Path $PSScriptRoot "scripts\security-scanner.ps1")
         Save-SecurityBaseline
+    }
+    
+    # Phase 1.5.7: Auto-Documentation
+    'doc-generate' {
+        . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
+        Write-Host ""
+        Write-Host "📚 Generating All Documentation..." -ForegroundColor Cyan
+        Write-Host "============================================" -ForegroundColor Green
+        Write-Host ""
+        
+        $testDoc = New-TestDocumentation -Type 'all'
+        $apiDoc = New-APIDocumentation -Format 'markdown'
+        $componentDoc = New-ComponentDocumentation -IncludeProps -IncludeExamples
+        
+        Write-Host ""
+        Write-Host "✅ All documentation generated!" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "📄 Generated files:" -ForegroundColor Cyan
+        Write-Host "   - Test Catalog: $testDoc" -ForegroundColor White
+        Write-Host "   - API Reference: $apiDoc" -ForegroundColor White
+        Write-Host "   - Component Catalog: $componentDoc" -ForegroundColor White
+        Write-Host ""
+    }
+    'doc-test' {
+        . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
+        if ($Component -and $Component -ne 'all') {
+            New-TestDocumentation -Type $Component
+        } else {
+            New-TestDocumentation -Type 'all'
+        }
+    }
+    'doc-api' {
+        . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
+        # Format can be passed via Component parameter (markdown, openapi, html)
+        if ($Component -and $Component -in @('markdown', 'openapi', 'html')) {
+            New-APIDocumentation -Format $Component
+        } else {
+            New-APIDocumentation -Format 'markdown'
+        }
+    }
+    'doc-component' {
+        . (Join-Path $PSScriptRoot "scripts\doc-generator.ps1")
+        New-ComponentDocumentation -IncludeProps -IncludeExamples
     }
     
     'test-suggest' {
