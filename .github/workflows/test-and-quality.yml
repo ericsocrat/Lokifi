@@ -1,0 +1,298 @@
+name: Test & Quality Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+env:
+  NODE_VERSION: '20'
+  COVERAGE_THRESHOLD: 10
+  
+jobs:
+  # Job 1: Run Tests & Generate Coverage
+  test:
+    name: 🧪 Test & Coverage
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+          
+      - name: 📚 Install dependencies
+        run: npm ci
+        
+      - name: 🧪 Run tests with coverage
+        run: npm run test:coverage
+        continue-on-error: false
+        
+      - name: 📊 Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: apps/frontend/coverage/
+          retention-days: 30
+          
+      - name: 💬 Comment PR with test results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const coveragePath = path.join(process.env.GITHUB_WORKSPACE, 'apps/frontend/coverage/coverage-summary.json');
+              const coverage = JSON.parse(fs.readFileSync(coveragePath, 'utf8'));
+              const total = coverage.total;
+              
+              const body = [
+                '## 🧪 Test Results',
+                '',
+                '**Status:** ✅ Tests completed',
+                '',
+                '### Coverage Report',
+                '| Metric | Percentage | Covered/Total |',
+                '|--------|-----------|---------------|',
+                `| Statements | ${total.statements.pct}% | ${total.statements.covered}/${total.statements.total} |`,
+                `| Branches | ${total.branches.pct}% | ${total.branches.covered}/${total.branches.total} |`,
+                `| Functions | ${total.functions.pct}% | ${total.functions.covered}/${total.functions.total} |`,
+                `| Lines | ${total.lines.pct}% | ${total.lines.covered}/${total.lines.total} |`,
+                '',
+                `📈 [View detailed coverage report in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
+                '',
+                '---',
+                '*Automated by Lokifi CI/CD Pipeline* 🚀'
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            } catch (error) {
+              console.log('Could not read coverage data:', error.message);
+              
+              const fallbackBody = [
+                '## 🧪 Test Results',
+                '',
+                '**Status:** ✅ Tests completed',
+                '',
+                `Coverage data not available. Check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.`,
+                '',
+                '---',
+                '*Automated by Lokifi CI/CD Pipeline* 🚀'
+              ].join('\n');
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: fallbackBody
+              });
+            }
+
+  # Job 2: Security Scan
+  security:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/frontend
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+          
+      - name: 📚 Install dependencies
+        run: npm ci
+        
+      - name: 🔍 Run npm audit
+        run: |
+          npm audit --json > audit-results.json || true
+          cat audit-results.json
+        
+      - name: 🚨 Check for critical vulnerabilities
+        run: |
+          CRITICAL=$(jq '.metadata.vulnerabilities.critical' audit-results.json)
+          HIGH=$(jq '.metadata.vulnerabilities.high' audit-results.json)
+          
+          echo "Critical vulnerabilities: $CRITICAL"
+          echo "High vulnerabilities: $HIGH"
+          
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "❌ Found $CRITICAL critical vulnerabilities!"
+            echo "Run 'npm audit fix' to resolve issues"
+            exit 1
+          fi
+          
+          if [ "$HIGH" -gt 5 ]; then
+            echo "⚠️ Found $HIGH high vulnerabilities"
+            echo "Consider running 'npm audit fix'"
+          fi
+          
+          echo "✅ Security check passed!"
+        
+      - name: 📊 Upload security report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-report
+          path: apps/frontend/audit-results.json
+          retention-days: 30
+          
+      - name: 💬 Comment PR with security results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            try {
+              const auditPath = path.join(process.env.GITHUB_WORKSPACE, 'apps/frontend/audit-results.json');
+              const audit = JSON.parse(fs.readFileSync(auditPath, 'utf8'));
+              const vulns = audit.metadata.vulnerabilities;
+              
+              const total = vulns.critical + vulns.high + vulns.moderate + vulns.low;
+              const status = vulns.critical > 0 ? '❌' : (vulns.high > 5 ? '⚠️' : '✅');
+              const statusText = vulns.critical > 0 ? 'Critical issues found!' : (vulns.high > 5 ? 'High vulnerabilities detected' : 'No critical issues');
+              
+              const bodyLines = [
+                '## 🔒 Security Scan Results',
+                '',
+                `**Status:** ${status} ${statusText}`,
+                '',
+                '### Vulnerability Summary',
+                '| Severity | Count |',
+                '|----------|-------|',
+                `| Critical | ${vulns.critical} |`,
+                `| High | ${vulns.high} |`,
+                `| Moderate | ${vulns.moderate} |`,
+                `| Low | ${vulns.low} |`,
+                `| **Total** | **${total}** |`,
+                ''
+              ];
+              
+              if (vulns.critical > 0) {
+                bodyLines.push('⚠️ **Action Required:** Run `npm audit fix` to resolve critical vulnerabilities', '');
+              }
+              if (vulns.high > 5) {
+                bodyLines.push('💡 **Recommendation:** Consider running `npm audit fix` to address high vulnerabilities', '');
+              }
+              
+              bodyLines.push(
+                `📊 [View detailed security report in artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})`,
+                '',
+                '---',
+                '*Automated by Lokifi CI/CD Pipeline* 🔒'
+              );
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: bodyLines.join('\n')
+              });
+            } catch (error) {
+              console.log('Could not read audit data:', error.message);
+            }
+
+  # Job 3: Quality Gate
+  quality-gate:
+    name: 🎯 Quality Gate
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: always()
+    
+    steps:
+      - name: ✅ Check test status
+        if: needs.test.result != 'success'
+        run: |
+          echo "❌ Tests failed!"
+          exit 1
+          
+      - name: ✅ Check security status
+        if: needs.security.result != 'success'
+        run: |
+          echo "❌ Security check failed!"
+          exit 1
+          
+      - name: 🎉 Quality gate passed
+        run: |
+          echo "✅ All quality checks passed!"
+          echo "🎉 Ready to merge!"
+
+  # Job 4: Generate Documentation (main branch only)
+  documentation:
+    name: 📚 Generate Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [test, security]
+    defaults:
+      run:
+        working-directory: apps/frontend
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+          
+      - name: 📚 Install dependencies
+        run: npm ci
+        
+      - name: 🧪 Run tests (needed for coverage data)
+        run: npm run test:coverage || true
+        
+      - name: 📖 Generate documentation
+        run: |
+          echo "📚 Documentation generation placeholder"
+          echo "In a real setup, this would run:"
+          echo "  - npm run docs:generate"
+          echo "  - TypeDoc generation"
+          echo "  - API documentation"
+          
+      - name: 📊 Prepare documentation files
+        run: |
+          mkdir -p ../../docs-output
+          cp -r coverage ../../docs-output/ || true
+          echo "# Lokifi Documentation" > ../../docs-output/index.md
+          echo "Generated: $(date)" >> ../../docs-output/index.md
+          
+      - name: 🚀 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs-output
+          commit_message: 'docs: update documentation'
+          
+      - name: ✅ Documentation deployed
+        run: |
+          echo "✅ Documentation generated and deployed!"
+          echo "📍 Available at: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
