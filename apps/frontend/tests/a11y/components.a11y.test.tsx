@@ -1,18 +1,16 @@
 /**
  * Accessibility tests for basic UI components
- * 
+ *
  * Tests WCAG 2.1 AA compliance using jest-axe
  * These are unit-level accessibility tests that run in Vitest
  */
 
+import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { describe, expect, it } from 'vitest';
-import { render } from '@testing-library/react';
 
 // Simple test component to verify jest-axe is working
-const TestButton = () => (
-  <button aria-label="Test button">Click me</button>
-);
+const TestButton = () => <button aria-label="Test button">Click me</button>;
 
 const TestForm = () => (
   <form>
@@ -39,7 +37,7 @@ describe('Component Accessibility Tests', () => {
     const BadButton = () => <button>Click</button>;
     const { container } = render(<BadButton />);
     const results = await axe(container);
-    
+
     // This button is actually accessible (has text content), so it should pass
     expect(results).toHaveNoViolations();
   });
@@ -51,10 +49,10 @@ describe('Component Accessibility Tests', () => {
         <button type="submit">Submit</button>
       </form>
     );
-    
+
     const { container } = render(<BadForm />);
     const results = await axe(container);
-    
+
     // This should have violations (unlabeled input)
     expect(results.violations.length).toBeGreaterThan(0);
   });
@@ -67,7 +65,7 @@ describe('Component Accessibility Tests', () => {
         <h3>Section</h3>
       </div>
     );
-    
+
     const { container } = render(<GoodHeadings />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
@@ -75,18 +73,16 @@ describe('Component Accessibility Tests', () => {
 
   it('should detect color contrast issues', async () => {
     const PoorContrast = () => (
-      <div style={{ backgroundColor: '#fff', color: '#eee' }}>
-        Hard to read text
-      </div>
+      <div style={{ backgroundColor: '#fff', color: '#eee' }}>Hard to read text</div>
     );
-    
+
     const { container } = render(<PoorContrast />);
     const results = await axe(container, {
       rules: {
-        'color-contrast': { enabled: true }
-      }
+        'color-contrast': { enabled: true },
+      },
     });
-    
+
     // May or may not detect depending on element size
     // Just verify the test runs
     expect(results).toBeDefined();
