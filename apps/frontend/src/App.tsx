@@ -8,7 +8,7 @@ import PluginDrawer from '@/components/PluginDrawer'
 import AlertPortal from '@/components/AlertPortal'
 import DrawingLayer from '@/components/DrawingLayer'
 import DrawingSettingsPanel from '@/components/DrawingSettingsPanel'
-import { useGlobalHotkeys } from '@/lib/globalHotkeys'
+import { useGlobalHotkeys } from '@/lib/utils/globalHotkeys'
 
 export default function App() {
   useGlobalHotkeys()
