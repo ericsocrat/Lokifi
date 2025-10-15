@@ -12,16 +12,9 @@ import schemathesis
 from app.main import app
 from hypothesis import HealthCheck, settings
 
-# Load the OpenAPI schema from the FastAPI app
+# Load schema using schemathesis.openapi.from_asgi
+# This creates test cases for all endpoints defined in the OpenAPI schema
 schema = schemathesis.openapi.from_asgi("/openapi.json", app)
-
-import pytest
-import schemathesis
-from app.main import app
-from hypothesis import HealthCheck, settings
-
-# Load the OpenAPI schema from the FastAPI app
-schema = schemathesis.from_asgi("/openapi.json", app)
 
 
 @schema.parametrize()
