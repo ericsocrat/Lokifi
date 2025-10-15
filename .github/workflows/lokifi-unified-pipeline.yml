@@ -190,6 +190,8 @@ jobs:
     defaults:
       run:
         working-directory: apps/backend
+    env:
+      LOKIFI_JWT_SECRET: test-secret-for-ci-pipeline
 
     steps:
       - name: 📥 Checkout code
@@ -312,6 +314,8 @@ jobs:
     defaults:
       run:
         working-directory: apps/backend
+    env:
+      LOKIFI_JWT_SECRET: test-secret-for-ci-pipeline
 
     steps:
       - name: 📥 Checkout code
