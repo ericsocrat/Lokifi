@@ -207,6 +207,9 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
+      - name: 🔧 Set PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE/apps/backend" >> $GITHUB_ENV
+
       - name: ✨ Run Ruff lint
         run: |
           pip install ruff
@@ -215,7 +218,7 @@ jobs:
       - name: 🧪 Run pytest
         run: |
           pip install pytest pytest-cov
-          pytest --cov=. --cov-report=xml --cov-report=term || true
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml --cov-report=term || true
 
       - name: 📊 Upload coverage
         uses: actions/upload-artifact@v4
