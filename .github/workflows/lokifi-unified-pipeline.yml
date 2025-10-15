@@ -218,9 +218,10 @@ jobs:
           ruff check . || true
 
       - name: 🧪 Run pytest
+        working-directory: apps/backend
         run: |
           pip install pytest pytest-cov
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml --cov-report=term -m "not contract" --timeout=300 || true
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml:coverage.xml --cov-report=term -m "not contract" --timeout=300 || true
 
       - name: 📊 Upload coverage
         uses: actions/upload-artifact@v4
@@ -229,6 +230,7 @@ jobs:
           name: backend-coverage
           path: apps/backend/coverage.xml
           retention-days: 30
+          if-no-files-found: warn
 
   # ============================================
   # SPECIALIZED JOBS (Conditional)
