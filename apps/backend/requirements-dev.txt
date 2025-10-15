@@ -19,6 +19,6 @@ black==25.9.0
 # Test Utilities
 pytest-mock==3.14.0
 pytest-timeout==2.3.1
-faker==34.3.0
+faker==30.8.2  # Latest stable version for Python 3.11+
 factory-boy==3.3.1
 httpx==0.28.1  # For async test client (already in requirements.txt)
