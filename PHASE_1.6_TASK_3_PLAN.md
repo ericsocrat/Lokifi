@@ -1,8 +1,8 @@
 # 📸 Phase 1.6 Task 3 - Visual Regression Testing Implementation Plan
 
-**Date:** October 15, 2025  
-**Status:** 📋 **PLANNING**  
-**Estimated Time:** 6-8 hours  
+**Date:** October 15, 2025
+**Status:** 📋 **PLANNING**
+**Estimated Time:** 6-8 hours
 **Priority:** Medium
 
 ---
@@ -499,7 +499,7 @@ npm run test:visual:ui
 
 ---
 
-**Status:** Ready to implement  
-**Estimated Total Time:** 6-8 hours  
-**Blocking Issues:** None  
+**Status:** Ready to implement
+**Estimated Total Time:** 6-8 hours
+**Blocking Issues:** None
 **Dependencies:** None (main branch is ready)
