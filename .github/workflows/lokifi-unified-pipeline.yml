@@ -330,21 +330,24 @@ jobs:
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
           pip install schemathesis openapi-core pytest
 
-      - name: 📋 Run OpenAPI schema validation
+      - name: � Set PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE/apps/backend" >> $GITHUB_ENV
+
+      - name: �📋 Run OpenAPI schema validation
         run: |
           echo "📋 Validating OpenAPI schema..."
-          pytest tests/test_openapi_schema.py -v --tb=short
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_openapi_schema.py -v --tb=short
 
       - name: 🔍 Run API contract tests
         run: |
           echo "� Running property-based API contract tests..."
-          pytest tests/test_api_contracts.py -v --tb=short -m "not slow"
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m "not slow"
 
       - name: 📊 Run extended contract tests (slow)
         if: contains(github.event.pull_request.labels.*.name, 'thorough-test')
         run: |
           echo "📊 Running extended property-based tests..."
-          pytest tests/test_api_contracts.py -v --tb=short -m slow
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m slow
 
       - name: 💬 Comment PR with results
         if: always()
