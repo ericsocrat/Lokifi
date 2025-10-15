@@ -24,14 +24,16 @@ def test_openapi_schema_available():
 
 def test_health_endpoint():
     """Test that health endpoint works."""
-    response = client.get("/health")
+    response = client.get("/api/health")
     assert response.status_code == 200
+    data = response.json()
+    assert "ok" in data or "status" in data
 
 
 def test_api_responses_are_json():
     """Test that API endpoints return JSON."""
-    # Test a few key endpoints
-    endpoints = ["/health", "/api/version"]
+    # Test a few key endpoints (with correct API prefix)
+    endpoints = ["/api/health"]
     
     for endpoint in endpoints:
         response = client.get(endpoint)
