@@ -342,16 +342,10 @@ jobs:
           echo "📋 Validating OpenAPI schema..."
           PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_openapi_schema.py -v --tb=short --timeout=60
 
-      - name: 🔍 Run API contract tests
+      - name: 🔍 Run API contract tests (simplified)
         run: |
-          echo "🔍 Running property-based API contract tests..."
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m "not slow" --timeout=180
-
-      - name: 📊 Run extended contract tests (slow)
-        if: contains(github.event.pull_request.labels.*.name, 'thorough-test')
-        run: |
-          echo "📊 Running extended property-based tests..."
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m slow --timeout=300
+          echo "🔍 Running API contract sanity checks..."
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short --timeout=60
 
       - name: 💬 Comment PR with results
         if: always()
