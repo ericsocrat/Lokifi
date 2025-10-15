@@ -1,0 +1,24 @@
+# Development and Testing Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# Testing Framework (already in requirements.txt but listed for clarity)
+pytest==8.4.2
+pytest-asyncio==1.2.0
+pytest-cov==7.0.0
+
+# API Contract Testing (Phase 1.6 Task 2)
+schemathesis==4.3.3
+openapi-core==0.19.5
+openapi-spec-validator==0.7.2
+
+# Code Quality
+mypy==1.18.2
+ruff==0.13.2
+black==25.9.0
+
+# Test Utilities
+pytest-mock==3.14.0
+pytest-timeout==2.3.1
+faker==34.3.0
+factory-boy==3.3.1
+httpx==0.28.1  # For async test client (already in requirements.txt)
