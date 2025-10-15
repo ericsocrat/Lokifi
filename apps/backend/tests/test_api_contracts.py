@@ -9,9 +9,8 @@ Phase 1.6 Task 2: API Contract Testing
 
 import pytest
 import schemathesis
-from hypothesis import settings, HealthCheck
 from app.main import app
-
+from hypothesis import HealthCheck, settings
 
 # Load the OpenAPI schema from the FastAPI app
 schema = schemathesis.openapi.from_asgi("/openapi.json", app)

@@ -388,7 +388,6 @@ jobs:
               body: body
             });
 
-
   visual-regression:
     name: 📸 Visual Regression Tests
     runs-on: ubuntu-latest
