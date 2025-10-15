@@ -220,7 +220,7 @@ jobs:
       - name: 🧪 Run pytest
         run: |
           pip install pytest pytest-cov
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml --cov-report=term || true
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml --cov-report=term -m "not contract" --timeout=300 || true
 
       - name: 📊 Upload coverage
         uses: actions/upload-artifact@v4
@@ -337,21 +337,21 @@ jobs:
       - name: � Set PYTHONPATH
         run: echo "PYTHONPATH=$GITHUB_WORKSPACE/apps/backend" >> $GITHUB_ENV
 
-      - name: �📋 Run OpenAPI schema validation
+      - name: 📋 Run OpenAPI schema validation
         run: |
           echo "📋 Validating OpenAPI schema..."
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_openapi_schema.py -v --tb=short
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_openapi_schema.py -v --tb=short --timeout=60
 
       - name: 🔍 Run API contract tests
         run: |
-          echo "� Running property-based API contract tests..."
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m "not slow"
+          echo "🔍 Running property-based API contract tests..."
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m "not slow" --timeout=180
 
       - name: 📊 Run extended contract tests (slow)
         if: contains(github.event.pull_request.labels.*.name, 'thorough-test')
         run: |
           echo "📊 Running extended property-based tests..."
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m slow
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m slow --timeout=300
 
       - name: 💬 Comment PR with results
         if: always()

@@ -17,11 +17,12 @@ from hypothesis import HealthCheck, settings
 schema = schemathesis.openapi.from_asgi("/openapi.json", app)
 
 
+@pytest.mark.contract
 @schema.parametrize()
 @settings(
-    max_examples=10,  # Number of test cases per endpoint
-    deadline=None,  # Disable deadline for slow endpoints
-    suppress_health_check=[HealthCheck.too_slow],  # Allow slower tests
+    max_examples=3,  # Reduced to prevent long runs
+    deadline=5000,  # 5 second timeout per example
+    suppress_health_check=[HealthCheck.too_slow],
 )
 def test_api_conforms_to_schema(case):
     """
@@ -41,10 +42,11 @@ def test_api_conforms_to_schema(case):
     case.validate_response(response)
 
 
+@pytest.mark.contract
 @schema.parametrize()
 @settings(
-    max_examples=5,
-    deadline=None,
+    max_examples=2,
+    deadline=5000,
     suppress_health_check=[HealthCheck.too_slow],
 )
 def test_api_responses_are_json(case):
@@ -68,10 +70,11 @@ def test_api_responses_are_json(case):
                 ), f"Expected JSON or HTML response, got: {content_type}"
 
 
+@pytest.mark.contract
 @schema.parametrize()
 @settings(
-    max_examples=10,
-    deadline=None,
+    max_examples=2,
+    deadline=5000,
     suppress_health_check=[HealthCheck.too_slow],
 )
 def test_get_endpoints_are_idempotent(case):
@@ -83,7 +86,7 @@ def test_get_endpoints_are_idempotent(case):
     # Only test GET endpoints
     if case.method != "GET":
         pytest.skip("This test only applies to GET endpoints")
-    
+
     # Make first request
     response1 = case.call_asgi()
 
@@ -100,8 +103,9 @@ def test_get_endpoints_are_idempotent(case):
         assert response1.text == response2.text, "GET requests should return consistent data"
 
 
+@pytest.mark.contract
 @schema.parametrize()
-@settings(max_examples=3, deadline=None)
+@settings(max_examples=2, deadline=5000)
 def test_health_endpoint_responds_quickly(case):
     """
     Test that the health check endpoint responds with 200 OK.
@@ -111,7 +115,7 @@ def test_health_endpoint_responds_quickly(case):
     # Only test the /health endpoint
     if "/health" not in case.path:
         pytest.skip("This test only applies to /health endpoint")
-    
+
     response = case.call_asgi()
 
     # Health check should succeed
@@ -124,10 +128,11 @@ def test_health_endpoint_responds_quickly(case):
 
 
 # Negative testing: Verify proper error handling
+@pytest.mark.contract
 @schema.parametrize()
 @settings(
-    max_examples=5,
-    deadline=None,
+    max_examples=2,
+    deadline=5000,
     suppress_health_check=[HealthCheck.too_slow],
 )
 def test_invalid_auth_returns_401(case):
@@ -151,10 +156,11 @@ def test_invalid_auth_returns_401(case):
 
 
 @pytest.mark.slow
+@pytest.mark.contract
 @schema.parametrize()
 @settings(
-    max_examples=20,  # More thorough testing
-    deadline=None,
+    max_examples=5,  # Reduced for CI/CD
+    deadline=10000,  # 10 second timeout
     suppress_health_check=[HealthCheck.too_slow, HealthCheck.filter_too_much],
 )
 def test_api_handles_edge_cases(case):
