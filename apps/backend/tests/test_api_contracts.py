@@ -68,7 +68,7 @@ def test_api_responses_are_json(case):
                 ), f"Expected JSON or HTML response, got: {content_type}"
 
 
-@schema.parametrize(method="GET")
+@schema.parametrize()
 @settings(
     max_examples=10,
     deadline=None,
@@ -80,6 +80,10 @@ def test_get_endpoints_are_idempotent(case):
 
     Makes the same GET request twice and verifies the responses are consistent.
     """
+    # Only test GET endpoints
+    if case.method != "GET":
+        pytest.skip("This test only applies to GET endpoints")
+    
     # Make first request
     response1 = case.call_asgi()
 
@@ -96,7 +100,7 @@ def test_get_endpoints_are_idempotent(case):
         assert response1.text == response2.text, "GET requests should return consistent data"
 
 
-@schema.parametrize(endpoint="/health")
+@schema.parametrize()
 @settings(max_examples=3, deadline=None)
 def test_health_endpoint_responds_quickly(case):
     """
@@ -104,6 +108,10 @@ def test_health_endpoint_responds_quickly(case):
 
     Health endpoints should always be available and respond quickly.
     """
+    # Only test the /health endpoint
+    if "/health" not in case.path:
+        pytest.skip("This test only applies to /health endpoint")
+    
     response = case.call_asgi()
 
     # Health check should succeed
