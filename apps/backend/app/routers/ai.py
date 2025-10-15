@@ -134,17 +134,19 @@ async def send_message(
             ):
                 if isinstance(chunk, StreamChunk):
                     # Stream token chunk
-                    yield f"data: {json.dumps({
+                    chunk_data = {
                         'type': 'chunk',
                         'content': chunk.content,
                         'is_complete': chunk.is_complete
-                    })}\n\n"
+                    }
+                    yield f"data: {json.dumps(chunk_data)}\n\n"
                 elif isinstance(chunk, AIMessage):
                     # Final message
-                    yield f"data: {json.dumps({
+                    complete_data = {
                         'type': 'complete',
                         'message': AIMessageResponse.model_validate(chunk).model_dump()
-                    })}\n\n"
+                    }
+                    yield f"data: {json.dumps(complete_data)}\n\n"
 
                     # J6.1 Notification Integration: Trigger AI response notification
                     try:
@@ -174,30 +176,34 @@ async def send_message(
                         logger.warning(f"AI response notification failed: {e}")
 
         except RateLimitError as e:
-            yield f"data: {json.dumps({
+            error_data = {
                 'type': 'error',
                 'error': 'rate_limit',
                 'message': str(e)
-            })}\n\n"
+            }
+            yield f"data: {json.dumps(error_data)}\n\n"
         except SafetyFilterError as e:
-            yield f"data: {json.dumps({
+            error_data = {
                 'type': 'error',
                 'error': 'safety_filter',
                 'message': str(e)
-            })}\n\n"
+            }
+            yield f"data: {json.dumps(error_data)}\n\n"
         except ProviderError as e:
-            yield f"data: {json.dumps({
+            error_data = {
                 'type': 'error',
                 'error': 'provider_error',
                 'message': str(e)
-            })}\n\n"
+            }
+            yield f"data: {json.dumps(error_data)}\n\n"
         except Exception as e:
             logger.error(f"Stream error: {e}")
-            yield f"data: {json.dumps({
+            error_data = {
                 'type': 'error',
                 'error': 'internal_error',
                 'message': 'An internal error occurred'
-            })}\n\n"
+            }
+            yield f"data: {json.dumps(error_data)}\n\n"
 
     return StreamingResponse(
         stream_response(),
@@ -535,17 +541,19 @@ async def upload_file_to_thread(
                         thread_id=thread_id,
                     ):
                         if isinstance(chunk, StreamChunk):
-                            yield f"data: {json.dumps({
+                            chunk_data = {
                                 'type': 'chunk',
                                 'content': chunk.content,
                                 'is_complete': chunk.is_complete
-                            })}\\n\\n"
+                            }
+                            yield f"data: {json.dumps(chunk_data)}\\n\\n"
                         else:
-                            yield f"data: {json.dumps({
+                            chunk_data = {
                                 'type': 'chunk',
                                 'content': str(chunk),
                                 'is_complete': False
-                            })}\\n\\n"
+                            }
+                            yield f"data: {json.dumps(chunk_data)}\\n\\n"
 
                 return StreamingResponse(
                     stream_image_analysis(),
@@ -564,17 +572,19 @@ async def upload_file_to_thread(
                         thread_id=thread_id,
                     ):
                         if isinstance(chunk, StreamChunk):
-                            yield f"data: {json.dumps({
+                            chunk_data = {
                                 'type': 'chunk',
                                 'content': chunk.content,
                                 'is_complete': chunk.is_complete
-                            })}\\n\\n"
+                            }
+                            yield f"data: {json.dumps(chunk_data)}\\n\\n"
                         else:
-                            yield f"data: {json.dumps({
+                            chunk_data = {
                                 'type': 'chunk',
                                 'content': str(chunk),
                                 'is_complete': False
-                            })}\\n\\n"
+                            }
+                            yield f"data: {json.dumps(chunk_data)}\\n\\n"
 
                 return StreamingResponse(
                     stream_document_analysis(),
