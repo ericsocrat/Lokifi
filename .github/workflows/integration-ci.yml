@@ -2,9 +2,9 @@ name: Integration CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 env:
   NEXT_TELEMETRY_DISABLED: 1
@@ -14,7 +14,7 @@ jobs:
   integration-test:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    
+
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -47,6 +47,7 @@ jobs:
           file: apps/backend/Dockerfile
           load: true
           tags: lokifi-backend:latest
+          no-cache: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -57,18 +58,18 @@ jobs:
           LOKIFI_JWT_SECRET=test-secret-for-ci-integration
           JWT_SECRET_KEY=test-secret-for-ci-integration
           LOKIFI_JWT_TTL_MIN=1440
-          
+
           # API Configuration
           API_PREFIX=/api
           FRONTEND_ORIGIN=http://localhost:3000
-          
+
           # Database
           DATABASE_URL=postgresql+asyncpg://lokifi:lokifi_dev_password@postgres:5432/lokifi_db
           POSTGRES_PASSWORD=lokifi_dev_password
-          
+
           # Redis
           REDIS_URL=redis://:23233@redis:6379/0
-          
+
           # API Keys (demo values for CI)
           CMC_KEY=demo-key-for-ci
           POLYGON_API_KEY=demo-key-for-ci
@@ -80,7 +81,15 @@ jobs:
           FMP_KEY=demo-key-for-ci
           EOL
 
-      - name: 🚀 Start Services
+      - name: � Debug Backend Image
+        run: |
+          echo "📦 Checking backend image contents..."
+          docker run --rm lokifi-backend:latest ls -la /app/
+          echo ""
+          echo "📜 Checking entrypoint script..."
+          docker run --rm lokifi-backend:latest cat docker-entrypoint-ci.sh || echo "⚠️ Entrypoint not found"
+
+      - name: �🚀 Start Services
         run: docker compose -f apps/docker-compose.ci.yml up -d
         timeout-minutes: 5
 
@@ -89,7 +98,7 @@ jobs:
           echo "⏳ Waiting for backend health check..."
           timeout 90 bash -c 'until curl -f http://localhost:8000/api/health > /dev/null 2>&1; do echo "Retrying..."; sleep 3; done'
           echo "✅ Backend is ready!"
-          
+
           echo "⏳ Waiting for frontend..."
           timeout 90 bash -c 'until curl -f http://localhost:3000/ > /dev/null 2>&1; do echo "Retrying..."; sleep 3; done'
           echo "✅ Frontend is ready!"
@@ -103,7 +112,7 @@ jobs:
             exit 1
           fi
           echo "✅ Backend health: OK"
-          
+
           echo "🧪 Testing frontend page..."
           response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/)
           if [ "$response" != "200" ]; then
@@ -111,7 +120,7 @@ jobs:
             exit 1
           fi
           echo "✅ Frontend: OK"
-          
+
           echo "🎉 All health endpoints working!"
 
       - name: 🔍 Show Service Status
