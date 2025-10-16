@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
-import { me, login, register as registerApi, logout as logoutApi } from "@/src/lib/auth";
+import { me, login, register as registerApi, logout as logoutApi } from "@/src/lib/api/auth";
 
 type User = {
   id: string;
