@@ -13,6 +13,7 @@ RUN apt-get update && \
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY app ./app
+COPY scripts ./scripts
 COPY docker-entrypoint-ci.sh ./
 RUN chmod +x docker-entrypoint-ci.sh
 
