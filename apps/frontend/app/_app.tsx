@@ -3,7 +3,7 @@
  * This integrates Web Vitals monitoring into Next.js
  */
 
-import { webVitalsMonitor } from '@/src/lib/webVitals';
+import { webVitalsMonitor } from '@/src/lib/utils/webVitals';
 import type { AppProps } from 'next/app';
 import { useEffect } from 'react';
 

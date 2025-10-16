@@ -6,7 +6,7 @@
  */
 
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/src/lib/queryClient';
+import { queryKeys } from '@/src/lib/api/queryClient';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 

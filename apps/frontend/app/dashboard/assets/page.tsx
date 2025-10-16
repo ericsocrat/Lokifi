@@ -1,17 +1,17 @@
 'use client';
 
-import { useToast } from '@/components/dashboard/ToastProvider';
 import {
   loadPortfolio,
-  PortfolioSection,
   Asset as PortfolioAsset,
+  PortfolioSection,
   addAssets as storageAddAssets,
   addSection as storageAddSection,
   deleteAsset as storageDeleteAsset,
   totalValue as storageTotalValue,
-} from '@/lib/portfolioStorage';
+} from '@/src/lib/data/portfolioStorage';
 import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { ProfileDropdown } from '@/src/components/dashboard/ProfileDropdown';
+import { useToast } from '@/src/components/dashboard/ToastProvider';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
   AlertCircle,
@@ -142,7 +142,7 @@ export default function AssetsPage() {
   const addNewSection = () => {
     const newSection: PortfolioSection = {
       title: 'New Section',
-      assets: []
+      assets: [],
     };
     storageAddSection(newSection);
     setSections(loadPortfolio());
@@ -378,7 +378,10 @@ export default function AssetsPage() {
             </div>
 
             {sections.map((section: PortfolioSection, idx: number) => {
-              const sectionValue = section.assets.reduce((s: number, a: PortfolioAsset) => s + a.value, 0);
+              const sectionValue = section.assets.reduce(
+                (s: number, a: PortfolioAsset) => s + a.value,
+                0
+              );
               return (
                 <section className="mb-8" key={idx}>
                   <div className="flex items-center justify-between mb-4">

@@ -9,7 +9,7 @@ import {
   deleteAsset as storageDeleteAsset,
   totalValue as storageTotalValue,
   Asset as StorageAsset,
-} from '@/src/lib/portfolioStorage';
+} from '@/src/lib/data/portfolioStorage';
 import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {

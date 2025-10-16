@@ -27,9 +27,9 @@ import {
   type DashboardStats,
   type AllocationItem,
   type TopHolding,
-} from '@/src/lib/dashboardData';
+} from '@/src/lib/data/dashboardData';
 import { usePortfolioPrices } from '@/src/hooks/useMarketData';
-import { loadPortfolio } from '@/src/lib/portfolioStorage';
+import { loadPortfolio } from '@/src/lib/data/portfolioStorage';
 
 interface User {
   email: string;

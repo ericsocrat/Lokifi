@@ -6,7 +6,9 @@ const nextConfig = {
   experimental: {
     forceSwcTransforms: false,
   },
-  outputFileTracingRoot: process.cwd(),
+  // Fix for Docker builds - ensure output tracing works correctly
+  outputFileTracingRoot: process.env.DOCKER_BUILD ? undefined : process.cwd(),
+  output: 'standalone',
   webpack: (config, { dev, isServer }) => {
     // Configure hot reloading
     config.watchOptions = {
