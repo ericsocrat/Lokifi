@@ -19,7 +19,7 @@ import {
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Navbar } from '../../src/components/Navbar';
-import { authToken } from '../../src/lib/auth';
+import { authToken } from '../../src/lib/api/auth';
 
 interface Profile {
     id: string;
