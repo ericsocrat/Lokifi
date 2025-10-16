@@ -81,7 +81,7 @@ jobs:
           EOL
 
       - name: 🚀 Start Services
-        run: docker compose -f apps/docker-compose.yml up -d
+        run: docker compose -f apps/docker-compose.ci.yml up -d
         timeout-minutes: 5
 
       - name: ⏳ Wait for Services to be Ready
@@ -117,7 +117,7 @@ jobs:
       - name: 🔍 Show Service Status
         run: |
           echo "📊 Docker Compose Services:"
-          docker compose -f apps/docker-compose.yml ps
+          docker compose -f apps/docker-compose.ci.yml ps
           echo ""
           echo "🐳 Container Status:"
           docker ps -a
@@ -132,19 +132,19 @@ jobs:
         if: failure()
         run: |
           echo "=== 🔴 Backend logs ==="
-          docker compose -f apps/docker-compose.yml logs backend --tail=100
+          docker compose -f apps/docker-compose.ci.yml logs backend --tail=100
           echo ""
           echo "=== 🔴 Frontend logs ==="
-          docker compose -f apps/docker-compose.yml logs frontend --tail=100
+          docker compose -f apps/docker-compose.ci.yml logs frontend --tail=100
           echo ""
           echo "=== 🔴 Redis logs ==="
-          docker compose -f apps/docker-compose.yml logs redis --tail=100
+          docker compose -f apps/docker-compose.ci.yml logs redis --tail=100
           echo ""
           echo "=== 🔴 PostgreSQL logs ==="
-          docker compose -f apps/docker-compose.yml logs postgres --tail=100
+          docker compose -f apps/docker-compose.ci.yml logs postgres --tail=100
 
       - name: 🧹 Cleanup
         if: always()
         run: |
-          docker compose -f apps/docker-compose.yml down -v
+          docker compose -f apps/docker-compose.ci.yml down -v
           docker system prune -f
