@@ -140,9 +140,12 @@ jobs:
           docker ps -a
 
       - name: 🧪 Run Frontend Integration Tests
+        env:
+          HUSKY: 0
         run: |
           cd apps/frontend
-          HUSKY=0 npm ci --legacy-peer-deps
+          npm install -g npm@latest
+          npm ci --legacy-peer-deps --ignore-scripts
           npm run test:ci || echo "⚠️ Frontend tests not configured yet"
 
       - name: 📋 Show service logs on failure
