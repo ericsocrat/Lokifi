@@ -18,6 +18,8 @@
     "test:contracts": "vitest run tests/api/contracts",
     "test:security": "vitest run tests/security",
     "test:visual": "playwright test tests/visual",
+    "test:visual:update": "playwright test tests/visual --update-snapshots",
+    "test:visual:ui": "playwright test tests/visual --ui",
     "test:a11y": "playwright test tests/a11y",
     "test:all": "npm run typecheck && npm run test:ci && npm run test:e2e",
     "test:coverage": "vitest run --coverage",
@@ -58,7 +60,7 @@
     "@axe-core/playwright": "^4.10.2",
     "@axe-core/react": "^4.10.2",
     "@jest/globals": "^29.7.0",
-    "@playwright/test": "^1.49.0",
+    "@playwright/test": "^1.56.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
@@ -83,7 +85,8 @@
     "supertest": "^7.1.4",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "wait-on": "^9.0.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [

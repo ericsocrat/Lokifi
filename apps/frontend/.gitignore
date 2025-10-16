@@ -25,3 +25,11 @@ Thumbs.db
 # Data
 backend/data/*
 !backend/data/.gitkeep
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Keep visual regression baselines
+!tests/visual-baselines/

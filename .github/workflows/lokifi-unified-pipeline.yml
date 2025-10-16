@@ -207,6 +207,9 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
 
+      - name: 🔧 Set PYTHONPATH
+        run: echo "PYTHONPATH=$GITHUB_WORKSPACE/apps/backend" >> $GITHUB_ENV
+
       - name: ✨ Run Ruff lint
         run: |
           pip install ruff
@@ -215,7 +218,7 @@ jobs:
       - name: 🧪 Run pytest
         run: |
           pip install pytest pytest-cov
-          pytest --cov=. --cov-report=xml --cov-report=term || true
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml --cov-report=term || true
 
       - name: 📊 Upload coverage
         uses: actions/upload-artifact@v4
@@ -322,16 +325,142 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'visual-test')
     needs: [frontend-test]
+    defaults:
+      run:
+        working-directory: apps/frontend
 
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: 📸 Run visual regression
+      - name: � Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 🔼 Upgrade npm to latest
+        run: npm install -g npm@latest
+
+      - name: 📚 Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: 🚀 Start development server
         run: |
-          echo "📸 Running visual regression tests..."
-          echo "⚠️  Placeholder - implement Percy, Chromatic, or similar"
-          # Add Percy, Chromatic, BackstopJS, etc.
+          npm run dev &
+          npx wait-on http://localhost:3000 --timeout 120000
+
+      - name: 📸 Run visual regression tests
+        run: npx playwright test tests/visual --project=chromium
+        continue-on-error: true
+
+      - name: 📊 Upload visual test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-test-results
+          path: apps/frontend/test-results/
+          retention-days: 30
+
+      - name: 📊 Upload visual diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: apps/frontend/test-results/**/*-diff.png
+          retention-days: 30
+
+      - name: 💬 Comment PR with results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+
+            let body = [
+              '## 📸 Visual Regression Test Results',
+              '',
+            ];
+
+            try {
+              const resultsPath = path.join(process.env.GITHUB_WORKSPACE, 'apps/frontend/test-results');
+              
+              if (!fs.existsSync(resultsPath)) {
+                body.push('**Status:** ⚠️ No test results found');
+                body.push('');
+                body.push('Tests may have failed to run. Check workflow logs.');
+              } else {
+                const files = fs.readdirSync(resultsPath);
+                const diffFiles = files.filter(f => f.endsWith('-diff.png'));
+
+                if (diffFiles.length === 0) {
+                  body.push('**Status:** ✅ No visual changes detected!');
+                  body.push('');
+                  body.push('All screenshots match the baseline images.');
+                  body.push('');
+                  body.push('### What was tested');
+                  body.push('- ✅ Component visual appearance');
+                  body.push('- ✅ Page layouts and structure');
+                  body.push('- ✅ Responsive design (desktop, tablet, mobile)');
+                  body.push('- ✅ UI consistency');
+                } else {
+                  body.push('**Status:** ⚠️ Visual changes detected!');
+                  body.push('');
+                  body.push(`Found ${diffFiles.length} visual difference(s):`);
+                  body.push('');
+                  diffFiles.forEach(file => {
+                    body.push(`- ⚠️ \`${file}\``);
+                  });
+                  body.push('');
+                  body.push('📎 **Download artifacts to review changes:**');
+                  body.push('1. Go to workflow run details');
+                  body.push('2. Download `visual-diffs` artifact');
+                  body.push('3. Review diff images showing pixel differences');
+                  body.push('');
+                  body.push('**If changes are intentional:**');
+                  body.push('```bash');
+                  body.push('# Update baselines locally');
+                  body.push('npm run test:visual:update');
+                  body.push('');
+                  body.push('# Commit new baselines');
+                  body.push('git add tests/visual-baselines/');
+                  body.push('git commit -m "chore: Update visual regression baselines"');
+                  body.push('git push');
+                  body.push('```');
+                }
+              }
+            } catch (error) {
+              body.push('**Status:** ⚠️ Could not read test results');
+              body.push('');
+              body.push(`Error: ${error.message}`);
+            }
+
+            body.push('');
+            body.push('---');
+            body.push('### 📋 About Visual Regression Testing');
+            body.push('');
+            body.push('Visual tests automatically detect UI changes by:');
+            body.push('- 📸 Capturing screenshots of components and pages');
+            body.push('- 🔍 Comparing against baseline images');
+            body.push('- 🎯 Highlighting pixel-level differences');
+            body.push('- ✅ Preventing unintended visual bugs');
+            body.push('');
+            body.push('**Tool:** Playwright Visual Comparisons');
+            body.push('**Coverage:** Components, pages, responsive layouts');
+            body.push('**Trigger:** Add `visual-test` label to PR');
+            body.push('');
+            body.push('---');
+            body.push('*Part of Lokifi Unified CI/CD Pipeline* 📸');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: body.join('\n')
+            });
 
   # ============================================
   # INTEGRATION TESTS (Optional)
