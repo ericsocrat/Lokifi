@@ -1,6 +1,6 @@
 'use client';
 
-import { useToast } from '@/components/dashboard/ToastProvider';
+import { useToast } from '@/src/components/dashboard/ToastProvider';
 import {
   loadPortfolio,
   PortfolioSection,
