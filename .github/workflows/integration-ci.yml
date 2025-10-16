@@ -25,7 +25,7 @@ jobs:
       - name: 📦 Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
           cache: npm
           cache-dependency-path: apps/frontend/package-lock.json
 
@@ -89,7 +89,7 @@ jobs:
           echo "📜 Checking entrypoint script..."
           docker run --rm lokifi-backend:latest cat docker-entrypoint-ci.sh || echo "⚠️ Entrypoint not found"
 
-      - name:  Start Services
+      - name: Start Services
         run: docker compose -f apps/docker-compose.ci.yml up -d
         timeout-minutes: 5
 
@@ -142,7 +142,7 @@ jobs:
       - name: 🧪 Run Frontend Integration Tests
         run: |
           cd apps/frontend
-          npm ci --legacy-peer-deps
+          HUSKY=0 npm ci --legacy-peer-deps
           npm run test:ci || echo "⚠️ Frontend tests not configured yet"
 
       - name: 📋 Show service logs on failure
