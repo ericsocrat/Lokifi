@@ -89,9 +89,17 @@ jobs:
           echo "📜 Checking entrypoint script..."
           docker run --rm lokifi-backend:latest cat docker-entrypoint-ci.sh || echo "⚠️ Entrypoint not found"
 
-      - name: �🚀 Start Services
+      - name:  Start Services
         run: docker compose -f apps/docker-compose.ci.yml up -d
         timeout-minutes: 5
+
+      - name: 📋 Show Backend Logs (First 50 lines)
+        run: |
+          echo "📋 Backend container logs:"
+          docker logs lokifi-backend-dev 2>&1 | head -50 || echo "⚠️ No logs yet"
+          echo ""
+          echo "📊 Container status:"
+          docker ps -a | grep lokifi
 
       - name: ⏳ Wait for Services to be Ready
         run: |
