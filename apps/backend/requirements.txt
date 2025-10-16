@@ -64,5 +64,10 @@ ruff==0.13.2
 black==25.9.0
 psutil==7.1.0
 
+# API Contract Testing (Phase 1.6 Task 2)
+schemathesis==4.3.3
+openapi-core==0.19.5
+openapi-spec-validator==0.7.2
+
 # Error Tracking
 sentry-sdk[fastapi]==2.20.0
