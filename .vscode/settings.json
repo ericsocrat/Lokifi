@@ -304,7 +304,7 @@
   // ===== DOCKER =====
   "docker.showExplorer": true,
 
-  // ===== TODO TREE =====
+  // ===== TODO TREE - ENHANCED TASK TRACKING =====
   "todo-tree.general.tags": [
     "TODO",
     "FIXME",
@@ -312,30 +312,178 @@
     "HACK",
     "NOTE",
     "XXX",
+    "TASK",
+    "TEST",
+    "COVERAGE",
+    "REFACTOR",
+    "OPTIMIZE",
+    "CRITICAL",
+    "HIGH",
+    "MEDIUM",
+    "LOW",
+    "DONE",
     "[ ]",
     "[x]"
   ],
+  "todo-tree.general.statusBar": "total",
+  "todo-tree.general.revealBehaviour": "start of todo",
+  "todo-tree.general.tagGroups": {
+    "CRITICAL": ["CRITICAL", "FIXME", "BUG"],
+    "TASKS": ["TODO", "TASK", "HACK"],
+    "TESTING": ["TEST", "COVERAGE"],
+    "QUALITY": ["OPTIMIZE", "REFACTOR"],
+    "INFO": ["NOTE", "XXX"]
+  },
   "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\*))\\s*($TAGS)",
+  "todo-tree.highlights.enabled": true,
   "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
-    "type": "text",
+    "type": "text-and-comment",
     "foreground": "#ffffff",
-    "iconColour": "#feca57"
+    "background": "#feca57",
+    "opacity": 50,
+    "iconColour": "#feca57",
+    "gutterIcon": true
   },
   "todo-tree.highlights.customHighlight": {
     "TODO": {
       "icon": "check",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#48dbfb",
       "iconColour": "#48dbfb"
     },
+    "TASK": {
+      "icon": "tasklist",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#00aa00",
+      "iconColour": "#00aa00"
+    },
     "FIXME": {
-      "icon": "alert",
+      "icon": "flame",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff6b6b",
       "iconColour": "#ff6b6b"
     },
     "BUG": {
       "icon": "bug",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff6b6b",
       "iconColour": "#ff6b6b"
+    },
+    "CRITICAL": {
+      "icon": "alert",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff0000",
+      "iconColour": "#ff0000"
+    },
+    "TEST": {
+      "icon": "beaker",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#00ced1",
+      "iconColour": "#00ced1"
+    },
+    "COVERAGE": {
+      "icon": "graph",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#32cd32",
+      "iconColour": "#32cd32"
+    },
+    "REFACTOR": {
+      "icon": "sync",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#4169e1",
+      "iconColour": "#4169e1"
+    },
+    "OPTIMIZE": {
+      "icon": "zap",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#9370db",
+      "iconColour": "#9370db"
+    },
+    "NOTE": {
+      "icon": "note",
+      "type": "text-and-comment",
+      "foreground": "#000",
+      "background": "#ffff00",
+      "iconColour": "#ffff00"
+    },
+    "HACK": {
+      "icon": "tools",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff8c00",
+      "iconColour": "#ff8c00"
+    },
+    "DONE": {
+      "icon": "check-circle",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#00aa00",
+      "iconColour": "#00aa00"
+    },
+    "HIGH": {
+      "icon": "arrow-up",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff6347",
+      "iconColour": "#ff6347"
+    },
+    "MEDIUM": {
+      "icon": "dash",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ffa500",
+      "iconColour": "#ffa500"
+    },
+    "LOW": {
+      "icon": "arrow-down",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#90ee90",
+      "iconColour": "#90ee90"
     }
   },
+  "todo-tree.filtering.excludeGlobs": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/.pytest_cache/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/venv/**",
+    "**/__pycache__/**",
+    "**/.git/**",
+    "**/htmlcov/**",
+    "**/.lokifi-cache/**"
+  ],
+  "todo-tree.filtering.includeGlobs": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.py",
+    "**/*.md",
+    "**/*.json",
+    "**/*.yaml",
+    "**/*.yml"
+  ],
+  "todo-tree.tree.showCountsInTree": true,
+  "todo-tree.tree.showBadges": true,
+  "todo-tree.tree.grouped": true,
+  "todo-tree.tree.expanded": true,
+  "todo-tree.tree.flat": false,
+  "todo-tree.tree.sort": true,
+  "todo-tree.tree.tagsOnly": false,
+  "todo-tree.tree.hideIconsWhenGroupedByTag": false,
 
   // ===== TERMINAL =====
   "terminal.integrated.defaultProfile.windows": "PowerShell",
