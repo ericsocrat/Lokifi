@@ -1,20 +1,18 @@
 /**
  * useMarketData Hook
- * 
+ *
  * React hook for accessing real-time market data throughout the application.
  * Automatically subscribes to updates and provides live prices.
  */
 
-import { useEffect, useState, useCallback } from 'react';
-import marketData, { MarketAsset, MarketStats, PricePoint } from '@/src/services/marketData';
+import marketData, { MarketAsset, MarketStats, PricePoint } from '@/services/marketData';
+import { useCallback, useEffect, useState } from 'react';
 
 /**
  * Hook to get real-time data for a specific asset
  */
 export function useAsset(symbol: string): MarketAsset | undefined {
-  const [asset, setAsset] = useState<MarketAsset | undefined>(() => 
-    marketData.getAsset(symbol)
-  );
+  const [asset, setAsset] = useState<MarketAsset | undefined>(() => marketData.getAsset(symbol));
 
   useEffect(() => {
     const unsubscribe = marketData.subscribe((assets: any) => {
@@ -60,9 +58,7 @@ export function useAllAssets(type?: 'stock' | 'crypto' | 'etf'): MarketAsset[] {
 
   useEffect(() => {
     const unsubscribe = marketData.subscribe(() => {
-      const allAssets = type 
-        ? marketData.getAssetsByType(type)
-        : marketData.getAllAssets();
+      const allAssets = type ? marketData.getAssetsByType(type) : marketData.getAllAssets();
       setAssets(allAssets);
     });
 
@@ -99,9 +95,7 @@ export function useAssetSearch(query: string): MarketAsset[] {
  * Hook to get market statistics
  */
 export function useMarketStats(): MarketStats {
-  const [stats, setStats] = useState<MarketStats>(() => 
-    marketData.getMarketStats()
-  );
+  const [stats, setStats] = useState<MarketStats>(() => marketData.getMarketStats());
 
   useEffect(() => {
     const unsubscribe = marketData.subscribe(() => {
@@ -219,30 +213,36 @@ export function useTopMovers(): {
 export function useAssetFormatter(symbol: string) {
   const asset = useAsset(symbol);
 
-  const formatPrice = useCallback((price: number): string => {
-    if (!asset) return `$${price.toFixed(2)}`;
+  const formatPrice = useCallback(
+    (price: number): string => {
+      if (!asset) return `$${price.toFixed(2)}`;
 
-    if (asset.type === 'crypto') {
-      // Format based on price magnitude
-      if (price < 0.01) {
-        return `$${price.toFixed(6)}`;
-      } else if (price < 1) {
-        return `$${price.toFixed(4)}`;
-      } else if (price < 100) {
-        return `$${price.toFixed(2)}`;
-      } else {
-        return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (asset.type === 'crypto') {
+        // Format based on price magnitude
+        if (price < 0.01) {
+          return `$${price.toFixed(6)}`;
+        } else if (price < 1) {
+          return `$${price.toFixed(4)}`;
+        } else if (price < 100) {
+          return `$${price.toFixed(2)}`;
+        } else {
+          return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        }
       }
-    }
 
-    // Stocks
-    return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  }, [asset]);
+      // Stocks
+      return `$${price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    },
+    [asset]
+  );
 
-  const formatChange = useCallback((change: number, changePercent: number): string => {
-    const sign = change >= 0 ? '+' : '';
-    return `${sign}${formatPrice(Math.abs(change))} (${sign}${changePercent.toFixed(2)}%)`;
-  }, [formatPrice]);
+  const formatChange = useCallback(
+    (change: number, changePercent: number): string => {
+      const sign = change >= 0 ? '+' : '';
+      return `${sign}${formatPrice(Math.abs(change))} (${sign}${changePercent.toFixed(2)}%)`;
+    },
+    [formatPrice]
+  );
 
   const formatMarketCap = useCallback((marketCap: number): string => {
     if (marketCap >= 1e12) {
