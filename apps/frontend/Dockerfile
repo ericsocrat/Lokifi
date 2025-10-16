@@ -22,12 +22,38 @@ FROM node:22-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# Debug: List directory structure to verify files are copied
+RUN echo "=== Checking directory structure ===" && \
+    ls -la && \
+    echo "=== Checking app directory ===" && \
+    ls -la app/ 2>/dev/null || echo "No app directory found" && \
+    echo "=== Checking for alerts page ===" && \
+    ls -la app/alerts/ 2>/dev/null || echo "No alerts directory found"
+# Set environment variables for build
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV DOCKER_BUILD=true
 RUN npm run build
 
 FROM node:22-alpine AS prod
 WORKDIR /app
-COPY --from=build /app ./
+
+# Copy standalone output
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+
+# Copy package.json for runtime
+COPY --from=build /app/package.json ./
+
 EXPOSE 3000
-RUN chown -R node:node /app
-USER node
-CMD ["npm", "run", "start"]
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+RUN chown -R nextjs:nodejs /app
+
+USER nextjs
+
+CMD ["node", "server.js"]
