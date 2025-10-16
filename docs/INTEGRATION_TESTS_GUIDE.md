@@ -279,7 +279,7 @@ Integration tests are passing when:
 - [Docker Compose Configuration](../apps/docker-compose.yml)
 - [Backend README](../apps/backend/README.md)
 - [Frontend README](../apps/frontend/README.md)
-- [CI/CD Pipeline](./.github/workflows/lokifi-unified-pipeline.yml)
+- [CI/CD Pipeline](../.github/workflows/lokifi-unified-pipeline.yml)
 
 ---
 
