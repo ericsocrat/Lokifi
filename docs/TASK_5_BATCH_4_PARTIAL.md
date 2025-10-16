@@ -1,7 +1,7 @@
-# Task 5 - Batch 4 Partial: Components Testing 
+# Task 5 - Batch 4 Partial: Components Testing
 
-**Date**: October 16, 2025  
-**Branch**: `feature/frontend-coverage-expansion`  
+**Date**: October 16, 2025
+**Branch**: `feature/frontend-coverage-expansion`
 **Status**: 🔄 **PARTIAL COMPLETE** - 1/2 files completed
 
 ---
@@ -120,9 +120,9 @@ it('should display Bollinger Bands when enabled', async () => {
     ...mockStoreState,
     indicators: { ...mockStoreState.indicators, showBB: true },
   });
-  
+
   const { container } = render(<PriceChart />);
-  
+
   await waitFor(() => {
     expect(container.firstChild).toBeTruthy(); // ❌ Too shallow!
   });
@@ -179,9 +179,9 @@ it('should display Bollinger Bands when enabled', async () => {
 it('should create chart with candlestick and volume series', async () => {
   const { createChart } = await import('lightweight-charts');
   const mockChart = (createChart as any).mock.results[0]?.value;
-  
+
   render(<PriceChart />);
-  
+
   await waitFor(() => {
     expect(createChart).toHaveBeenCalled();
     expect(mockChart.addCandlestickSeries).toHaveBeenCalled();
@@ -193,9 +193,9 @@ it('should subscribe to time scale changes for LOD updates', async () => {
   const { createChart } = await import('lightweight-charts');
   const mockChart = (createChart as any).mock.results[0]?.value;
   const mockTimeScale = mockChart.timeScale();
-  
+
   render(<PriceChart />);
-  
+
   await waitFor(() => {
     expect(mockTimeScale.subscribeVisibleTimeRangeChange).toHaveBeenCalled();
   });
@@ -214,8 +214,8 @@ it('should subscribe to time scale changes for LOD updates', async () => {
 
 ### Coverage Progress
 - **Frontend Coverage**: 9.2% → 9.4% (+0.2%)
-- **Backend Coverage**: 85.8% (stable)
-- **Overall Coverage**: 47.6%
+- **Backend Coverage**: 27% (actual - see BACKEND_VS_FRONTEND_TESTING_ANALYSIS.md)
+- **Overall Coverage**: ~18% (corrected)
 - **Target**: 60% frontend
 - **Progress**: 15.7% of goal achieved (was 15.3%)
 - **Remaining**: 50.6%
