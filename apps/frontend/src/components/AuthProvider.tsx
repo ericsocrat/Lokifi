@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useEffect, useMemo, useState, useCallback } from "react";
-import { me, login, register as registerApi, logout as logoutApi } from "@/src/lib/api/auth";
+import { login, logout as logoutApi, me, register as registerApi } from '@/lib/api/auth';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 type User = {
   id: string;
@@ -17,7 +17,12 @@ type AuthContextType = {
   user: User;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, full_name: string, username?: string) => Promise<void>;
+  register: (
+    email: string,
+    password: string,
+    full_name: string,
+    username?: string
+  ) => Promise<void>;
   logout: () => void;
   refresh: () => Promise<void>;
 };
@@ -57,20 +62,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   // Memoize login function to prevent re-renders
-  const handleLogin = useCallback(async (email: string, password: string) => {
-    console.log('🔐 AuthProvider: Logging in...');
-    await login(email, password);
-    console.log('🔐 AuthProvider: Login successful, refreshing user data...');
-    await refresh();
-  }, [refresh]);
+  const handleLogin = useCallback(
+    async (email: string, password: string) => {
+      console.log('🔐 AuthProvider: Logging in...');
+      await login(email, password);
+      console.log('🔐 AuthProvider: Login successful, refreshing user data...');
+      await refresh();
+    },
+    [refresh]
+  );
 
   // Memoize register function to prevent re-renders
-  const handleRegister = useCallback(async (email: string, password: string, full_name: string, username?: string) => {
-    console.log('📝 AuthProvider: Registering...');
-    await registerApi(email, password, full_name, username);
-    console.log('📝 AuthProvider: Registration successful, refreshing user data...');
-    await refresh();
-  }, [refresh]);
+  const handleRegister = useCallback(
+    async (email: string, password: string, full_name: string, username?: string) => {
+      console.log('📝 AuthProvider: Registering...');
+      await registerApi(email, password, full_name, username);
+      console.log('📝 AuthProvider: Registration successful, refreshing user data...');
+      await refresh();
+    },
+    [refresh]
+  );
 
   // Memoize logout function to prevent re-renders
   const handleLogout = useCallback(async () => {
@@ -97,6 +108,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
