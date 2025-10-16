@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { chat, type ChatMessage } from "@/src/lib/chat";
+import { chat, type ChatMessage } from "@/src/lib/api/chat";
 import { useAuth } from "@/src/components/AuthProvider";
 import Link from "next/link";
 
