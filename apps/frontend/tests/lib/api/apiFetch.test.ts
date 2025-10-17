@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { apiFetch, getToken, setToken } from '@/lib/api/apiFetch';
 import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../../mocks/server';
-import { apiFetch, setToken, getToken } from '@/lib/api/apiFetch';
 
 const API_BASE = 'http://localhost:8000/api';
 
@@ -178,10 +178,7 @@ describe('apiFetch', () => {
     it('throws error for 404 response', async () => {
       server.use(
         http.get(`${API_BASE}/not-found`, () => {
-          return HttpResponse.json(
-            { detail: 'Resource not found' },
-            { status: 404 }
-          );
+          return HttpResponse.json({ detail: 'Resource not found' }, { status: 404 });
         })
       );
 
@@ -191,10 +188,7 @@ describe('apiFetch', () => {
     it('throws error for 500 response', async () => {
       server.use(
         http.get(`${API_BASE}/error`, () => {
-          return HttpResponse.json(
-            { detail: 'Internal server error' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Internal server error' }, { status: 500 });
         })
       );
 
@@ -240,10 +234,7 @@ describe('apiFetch', () => {
     it('handles 401 unauthorized', async () => {
       server.use(
         http.get(`${API_BASE}/protected`, () => {
-          return HttpResponse.json(
-            { detail: 'Not authenticated' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Not authenticated' }, { status: 401 });
         })
       );
 
@@ -253,10 +244,7 @@ describe('apiFetch', () => {
     it('handles 403 forbidden', async () => {
       server.use(
         http.get(`${API_BASE}/forbidden`, () => {
-          return HttpResponse.json(
-            { detail: 'Access denied' },
-            { status: 403 }
-          );
+          return HttpResponse.json({ detail: 'Access denied' }, { status: 403 });
         })
       );
 
@@ -281,9 +269,7 @@ describe('apiFetch', () => {
         })
       );
 
-      await expect(
-        apiFetch('/validate', { method: 'POST' })
-      ).rejects.toThrow();
+      await expect(apiFetch('/validate', { method: 'POST' })).rejects.toThrow();
     });
 
     it('handles network error', async () => {

@@ -1,20 +1,16 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  getTotalNetWorth,
-  getStats,
-  getAllocationByCategory,
   getAllocationByAssetType,
-  getTopHoldings,
-  getNetWorthTrend,
-  getNetWorthChange,
-  hasAssets,
+  getAllocationByCategory,
   getAssetCount,
-  type DashboardStats,
-  type AllocationItem,
-  type NetWorthTrend,
-  type TopHolding,
+  getNetWorthChange,
+  getNetWorthTrend,
+  getStats,
+  getTopHoldings,
+  getTotalNetWorth,
+  hasAssets,
 } from '@/lib/data/dashboardData';
 import * as portfolioStorage from '@/lib/data/portfolioStorage';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock portfolioStorage module
 vi.mock('@/lib/data/portfolioStorage', () => ({
@@ -301,9 +297,7 @@ describe('dashboardData', () => {
     });
 
     it('handles zero total value', () => {
-      const mockPortfolio = [
-        { title: 'Empty', assets: [] },
-      ];
+      const mockPortfolio = [{ title: 'Empty', assets: [] }];
 
       vi.mocked(portfolioStorage.loadPortfolio).mockReturnValue(mockPortfolio);
       vi.mocked(portfolioStorage.totalValue).mockReturnValue(0);
@@ -362,9 +356,7 @@ describe('dashboardData', () => {
       const mockPortfolio = [
         {
           title: 'Assets',
-          assets: [
-            { name: 'Real Estate', value: 500000 },
-          ],
+          assets: [{ name: 'Real Estate', value: 500000 }],
         },
       ];
 
@@ -486,9 +478,7 @@ describe('dashboardData', () => {
       const mockPortfolio = [
         {
           title: 'Portfolio',
-          assets: [
-            { symbol: 'AAPL', name: 'Apple Inc.', value: 50000 },
-          ],
+          assets: [{ symbol: 'AAPL', name: 'Apple Inc.', value: 50000 }],
         },
       ];
 
@@ -779,9 +769,7 @@ describe('dashboardData', () => {
         },
         {
           title: 'Section 2',
-          assets: [
-            { name: 'C', value: 300 },
-          ],
+          assets: [{ name: 'C', value: 300 }],
         },
       ];
 

@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import SymbolTfBar from '@/components/SymbolTfBar';
+import { SYMBOL_SUGGESTIONS, TF_PRESETS } from '@/lib/utils/timeframes';
 import { useChartStore } from '@/state/store';
-import { TF_PRESETS, SYMBOL_SUGGESTIONS } from '@/lib/utils/timeframes';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock the store
 vi.mock('@/state/store', () => ({
@@ -102,7 +102,7 @@ describe('SymbolTfBar', () => {
 
     it('syncs input value when store symbol changes', () => {
       const { rerender } = render(<SymbolTfBar />);
-      
+
       const symbolInput = screen.getByPlaceholderText('Symbol');
       expect(symbolInput).toHaveValue('BTCUSDT');
 
@@ -213,8 +213,8 @@ describe('SymbolTfBar', () => {
       await waitFor(() => {
         const buttons = screen.getAllByRole('button');
         // Count only suggestion buttons (exclude Set buttons and timeframe buttons)
-        const suggestionButtons = buttons.filter(
-          (btn) => SYMBOL_SUGGESTIONS.includes(btn.textContent || '')
+        const suggestionButtons = buttons.filter((btn) =>
+          SYMBOL_SUGGESTIONS.includes(btn.textContent || '')
         );
         expect(suggestionButtons.length).toBeLessThanOrEqual(20);
       });
@@ -314,8 +314,8 @@ describe('SymbolTfBar', () => {
       await waitFor(() => {
         // Menu should be visible but empty (no suggestion buttons)
         const buttons = screen.getAllByRole('button');
-        const suggestionButtons = buttons.filter(
-          (btn) => SYMBOL_SUGGESTIONS.includes(btn.textContent || '')
+        const suggestionButtons = buttons.filter((btn) =>
+          SYMBOL_SUGGESTIONS.includes(btn.textContent || '')
         );
         expect(suggestionButtons).toHaveLength(0);
       });
@@ -359,7 +359,7 @@ describe('SymbolTfBar', () => {
 
     it('syncs input value when store timeframe changes', () => {
       const { rerender } = render(<SymbolTfBar />);
-      
+
       const tfInput = screen.getByPlaceholderText('e.g. 90m');
       expect(tfInput).toHaveValue('1h');
 
@@ -416,13 +416,13 @@ describe('SymbolTfBar', () => {
 
       for (const { input, expected } of testCases) {
         const { unmount } = render(<SymbolTfBar />);
-        
+
         const tfInput = screen.getByPlaceholderText('e.g. 90m');
         await user.clear(tfInput);
         await user.type(tfInput, `${input}{Enter}`);
 
         expect(mockStore.setTimeframe).toHaveBeenCalledWith(expected);
-        
+
         // Cleanup for next iteration
         vi.clearAllMocks();
         unmount();
@@ -444,12 +444,12 @@ describe('SymbolTfBar', () => {
   describe('Event Cleanup', () => {
     it('removes mousedown listener on unmount', () => {
       const removeEventListenerSpy = vi.spyOn(document, 'removeEventListener');
-      
+
       const { unmount } = render(<SymbolTfBar />);
       unmount();
 
       expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
-      
+
       removeEventListenerSpy.mockRestore();
     });
   });
@@ -460,7 +460,7 @@ describe('SymbolTfBar', () => {
       render(<SymbolTfBar />);
 
       const symbolInput = screen.getByPlaceholderText('Symbol');
-      
+
       // Type rapidly
       await user.clear(symbolInput);
       await user.type(symbolInput, 'A');

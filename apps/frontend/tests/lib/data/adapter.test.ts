@@ -418,7 +418,8 @@ describe('MarketDataAdapter', () => {
 
     afterEach(() => {
       vi.unstubAllGlobals();
-    });    it('falls back to mock when STREAM_URL not set', async () => {
+    });
+    it('falls back to mock when STREAM_URL not set', async () => {
       delete process.env.NEXT_PUBLIC_STREAM_URL;
 
       const listener = vi.fn();
@@ -525,7 +526,7 @@ describe('MarketDataAdapter', () => {
         onmessage: null,
         close: mockClose,
       };
-      
+
       const MockWebSocket = vi.fn(() => mockWs);
       vi.stubGlobal('WebSocket', MockWebSocket);
 
@@ -539,7 +540,7 @@ describe('MarketDataAdapter', () => {
       adapter.stop();
 
       expect(mockClose).toHaveBeenCalled();
-      
+
       vi.unstubAllGlobals();
     });
 

@@ -1,14 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  listSlots,
-  saveSlot,
-  loadSlot,
   deleteSlot,
-  projectFromState,
   fnv1a,
+  listSlots,
+  loadSlot,
+  projectFromState,
+  saveSlot,
   type ProjectV1,
 } from '@/lib/data/persistence';
 import type { Drawing } from '@/lib/utils/drawings';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('persistence', () => {
   beforeEach(() => {
@@ -111,7 +111,7 @@ describe('persistence', () => {
       const slots = listSlots();
 
       expect(slots).toEqual([]);
-      
+
       spy.mockRestore();
     });
   });
@@ -207,7 +207,10 @@ describe('persistence', () => {
         {
           id: 'draw1',
           type: 'line',
-          points: [{ x: 0, y: 0 }, { x: 100, y: 100 }],
+          points: [
+            { x: 0, y: 0 },
+            { x: 100, y: 100 },
+          ],
           style: { color: '#000', width: 2 },
         } as any,
       ];

@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { http, HttpResponse } from 'msw';
-import { server } from '../../mocks/server';
-import * as auth from '@/lib/api/auth';
 import * as apiFetch from '@/lib/api/apiFetch';
+import * as auth from '@/lib/api/auth';
+import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { server } from '../../mocks/server';
 
 const API_URL = 'http://localhost:8000';
 
@@ -65,11 +65,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      const result = await auth.register(
-        'user2@example.com',
-        'password123',
-        'User Two'
-      );
+      const result = await auth.register('user2@example.com', 'password123', 'User Two');
 
       expect(result).toEqual(mockResponse);
       expect(result.user.username).toBeUndefined();
@@ -78,10 +74,7 @@ describe('Auth API Functions', () => {
     it('handles registration error when email exists', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/register`, () => {
-          return HttpResponse.json(
-            { detail: 'Email already registered' },
-            { status: 400 }
-          );
+          return HttpResponse.json({ detail: 'Email already registered' }, { status: 400 });
         })
       );
 
@@ -108,9 +101,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      await expect(
-        auth.register('invalid-email', 'password123', 'User')
-      ).rejects.toThrow();
+      await expect(auth.register('invalid-email', 'password123', 'User')).rejects.toThrow();
     });
   });
 
@@ -139,16 +130,11 @@ describe('Auth API Functions', () => {
     it('handles invalid credentials', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/login`, () => {
-          return HttpResponse.json(
-            { detail: 'Invalid credentials' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Invalid credentials' }, { status: 401 });
         })
       );
 
-      await expect(
-        auth.login('wrong@example.com', 'wrongpassword')
-      ).rejects.toThrow();
+      await expect(auth.login('wrong@example.com', 'wrongpassword')).rejects.toThrow();
     });
 
     it('handles account locked error', async () => {
@@ -161,9 +147,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      await expect(
-        auth.login('locked@example.com', 'password123')
-      ).rejects.toThrow();
+      await expect(auth.login('locked@example.com', 'password123')).rejects.toThrow();
     });
 
     it('handles network errors', async () => {
@@ -173,9 +157,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      await expect(
-        auth.login('test@example.com', 'password123')
-      ).rejects.toThrow();
+      await expect(auth.login('test@example.com', 'password123')).rejects.toThrow();
     });
   });
 
@@ -205,10 +187,7 @@ describe('Auth API Functions', () => {
     it('handles invalid Google token', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/google`, () => {
-          return HttpResponse.json(
-            { detail: 'Invalid Google access token' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Invalid Google access token' }, { status: 401 });
         })
       );
 
@@ -218,10 +197,7 @@ describe('Auth API Functions', () => {
     it('handles expired Google token', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/google`, () => {
-          return HttpResponse.json(
-            { detail: 'Google token expired' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Google token expired' }, { status: 401 });
         })
       );
 
@@ -231,10 +207,7 @@ describe('Auth API Functions', () => {
     it('handles Google API errors', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/google`, () => {
-          return HttpResponse.json(
-            { detail: 'Failed to verify Google token' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Failed to verify Google token' }, { status: 500 });
         })
       );
 
@@ -256,10 +229,7 @@ describe('Auth API Functions', () => {
     it('handles logout when already logged out', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/logout`, () => {
-          return HttpResponse.json(
-            { detail: 'No active session' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'No active session' }, { status: 401 });
         })
       );
 
@@ -270,10 +240,7 @@ describe('Auth API Functions', () => {
     it('handles server errors during logout', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/logout`, () => {
-          return HttpResponse.json(
-            { detail: 'Internal server error' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Internal server error' }, { status: 500 });
         })
       );
 
@@ -307,10 +274,7 @@ describe('Auth API Functions', () => {
     it('handles unauthenticated request', async () => {
       server.use(
         http.get(`${API_URL}/api/auth/me`, () => {
-          return HttpResponse.json(
-            { detail: 'Not authenticated' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Not authenticated' }, { status: 401 });
         })
       );
 
@@ -320,10 +284,7 @@ describe('Auth API Functions', () => {
     it('handles expired session', async () => {
       server.use(
         http.get(`${API_URL}/api/auth/me`, () => {
-          return HttpResponse.json(
-            { detail: 'Session expired' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Session expired' }, { status: 401 });
         })
       );
 
@@ -388,11 +349,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      const registered = await auth.register(
-        'flow@example.com',
-        'password123',
-        'Flow User'
-      );
+      const registered = await auth.register('flow@example.com', 'password123', 'Flow User');
       expect(registered.user.email).toBe('flow@example.com');
 
       // 2. Login
@@ -439,9 +396,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      await expect(
-        auth.login('test@example.com', 'password')
-      ).rejects.toThrow();
+      await expect(auth.login('test@example.com', 'password')).rejects.toThrow();
     });
 
     it('handles timeout errors', async () => {
@@ -452,9 +407,7 @@ describe('Auth API Functions', () => {
         })
       );
 
-      await expect(
-        auth.login('test@example.com', 'password')
-      ).rejects.toThrow();
+      await expect(auth.login('test@example.com', 'password')).rejects.toThrow();
     });
 
     it('handles empty responses', async () => {

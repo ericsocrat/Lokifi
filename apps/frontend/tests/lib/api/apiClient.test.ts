@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { APIClient, apiClient, APIError } from '@/lib/api/apiClient';
 import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../../mocks/server';
-import { APIClient, APIError, apiClient } from '@/lib/api/apiClient';
 
 const API_URL = 'http://localhost:8000';
 
@@ -114,9 +114,7 @@ describe('APIClient', () => {
       );
 
       await expect(client.getSymbols()).rejects.toThrow(APIError);
-      await expect(client.getSymbols()).rejects.toThrow(
-        'Invalid response format from server'
-      );
+      await expect(client.getSymbols()).rejects.toThrow('Invalid response format from server');
     });
 
     it('handles HTTP error responses', async () => {
@@ -136,9 +134,7 @@ describe('APIClient', () => {
       );
 
       await expect(client.getSymbols()).rejects.toThrow(APIError);
-      await expect(client.getSymbols()).rejects.toThrow(
-        'Database connection failed'
-      );
+      await expect(client.getSymbols()).rejects.toThrow('Database connection failed');
     });
   });
 
@@ -239,9 +235,9 @@ describe('APIClient', () => {
         })
       );
 
-      await expect(
-        client.getOHLC({ symbol: 'AAPL', timeframe: '1h' } as any)
-      ).rejects.toThrow(APIError);
+      await expect(client.getOHLC({ symbol: 'AAPL', timeframe: '1h' } as any)).rejects.toThrow(
+        APIError
+      );
     });
   });
 
@@ -321,9 +317,7 @@ describe('APIClient', () => {
       );
 
       await expect(client.getTicker('INVALID')).rejects.toThrow(APIError);
-      await expect(client.getTicker('INVALID')).rejects.toThrow(
-        'Symbol not found'
-      );
+      await expect(client.getTicker('INVALID')).rejects.toThrow('Symbol not found');
     });
 
     it('validates ticker response structure', async () => {
@@ -342,9 +336,7 @@ describe('APIClient', () => {
       );
 
       await expect(client.getTicker('BTC')).rejects.toThrow(APIError);
-      await expect(client.getTicker('BTC')).rejects.toThrow(
-        'Invalid response format'
-      );
+      await expect(client.getTicker('BTC')).rejects.toThrow('Invalid response format');
     });
   });
 

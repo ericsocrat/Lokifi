@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { saveJSON, loadJSON } from '@/lib/utils/storage';
+import { loadJSON, saveJSON } from '@/lib/utils/storage';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('storage utilities', () => {
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe('storage utilities', () => {
     it('should save objects to localStorage', () => {
       const testObj = { name: 'John', age: 30 };
       saveJSON('test-object', testObj);
-      
+
       const stored = localStorage.getItem('test-object');
       expect(stored).toBe('{"name":"John","age":30}');
       expect(JSON.parse(stored!)).toEqual(testObj);
@@ -40,7 +40,7 @@ describe('storage utilities', () => {
     it('should save arrays to localStorage', () => {
       const testArray = [1, 2, 3, 'four'];
       saveJSON('test-array', testArray);
-      
+
       const stored = localStorage.getItem('test-array');
       expect(stored).toBe('[1,2,3,"four"]');
       expect(JSON.parse(stored!)).toEqual(testArray);
@@ -52,7 +52,7 @@ describe('storage utilities', () => {
         data: [1, 2, 3],
       };
       saveJSON('test-nested', nestedObj);
-      
+
       const stored = localStorage.getItem('test-nested');
       expect(JSON.parse(stored!)).toEqual(nestedObj);
     });
@@ -60,7 +60,7 @@ describe('storage utilities', () => {
     it('should overwrite existing values', () => {
       saveJSON('test-key', 'first');
       expect(localStorage.getItem('test-key')).toBe('"first"');
-      
+
       saveJSON('test-key', 'second');
       expect(localStorage.getItem('test-key')).toBe('"second"');
     });
@@ -81,9 +81,14 @@ describe('storage utilities', () => {
     });
 
     it('should handle special characters in key', () => {
-      const specialKeys = ['key-with-dash', 'key_with_underscore', 'key.with.dot', 'key:with:colon'];
-      
-      specialKeys.forEach(key => {
+      const specialKeys = [
+        'key-with-dash',
+        'key_with_underscore',
+        'key.with.dot',
+        'key:with:colon',
+      ];
+
+      specialKeys.forEach((key) => {
         saveJSON(key, 'value');
         expect(localStorage.getItem(key)).toBe('"value"');
       });
@@ -96,7 +101,7 @@ describe('storage utilities', () => {
         quotes: 'He said "hello"',
         newlines: 'line1\nline2',
       };
-      
+
       saveJSON('test-special', specialValues);
       const stored = localStorage.getItem('test-special');
       expect(JSON.parse(stored!)).toEqual(specialValues);
@@ -105,7 +110,7 @@ describe('storage utilities', () => {
     it('should handle Date objects (serialized as ISO strings)', () => {
       const date = new Date('2024-01-01T00:00:00.000Z');
       saveJSON('test-date', date);
-      
+
       const stored = localStorage.getItem('test-date');
       expect(stored).toBe('"2024-01-01T00:00:00.000Z"');
     });
@@ -121,7 +126,7 @@ describe('storage utilities', () => {
           },
         },
       };
-      
+
       saveJSON('test-complex', complex);
       const stored = localStorage.getItem('test-complex');
       expect(JSON.parse(stored!)).toEqual(complex);
@@ -129,11 +134,11 @@ describe('storage utilities', () => {
 
     it('should handle large objects', () => {
       const largeObj = { data: new Array(1000).fill({ value: 'test' }) };
-      
+
       expect(() => {
         saveJSON('test-large', largeObj);
       }).not.toThrow();
-      
+
       const stored = localStorage.getItem('test-large');
       expect(JSON.parse(stored!)).toEqual(largeObj);
     });
@@ -157,14 +162,14 @@ describe('storage utilities', () => {
     it('should load objects from localStorage', () => {
       const testObj = { name: 'John', age: 30 };
       localStorage.setItem('test-object', JSON.stringify(testObj));
-      
+
       expect(loadJSON('test-object', {})).toEqual(testObj);
     });
 
     it('should load arrays from localStorage', () => {
       const testArray = [1, 2, 3, 'four'];
       localStorage.setItem('test-array', JSON.stringify(testArray));
-      
+
       expect(loadJSON('test-array', [])).toEqual(testArray);
     });
 
@@ -200,14 +205,14 @@ describe('storage utilities', () => {
         nested: { value: 'default' },
         array: [1, 2, 3],
       };
-      
+
       expect(loadJSON('nonexistent', fallback)).toEqual(fallback);
     });
 
     it('should handle loading after saveJSON', () => {
       const testData = { id: 1, name: 'Test', values: [1, 2, 3] };
       saveJSON('test-key', testData);
-      
+
       const loaded = loadJSON('test-key', {});
       expect(loaded).toEqual(testData);
     });
@@ -216,7 +221,7 @@ describe('storage utilities', () => {
       saveJSON('string', 'hello');
       saveJSON('number', 42);
       saveJSON('boolean', true);
-      
+
       expect(typeof loadJSON('string', '')).toBe('string');
       expect(typeof loadJSON('number', 0)).toBe('number');
       expect(typeof loadJSON('boolean', false)).toBe('boolean');
@@ -229,20 +234,14 @@ describe('storage utilities', () => {
         quotes: 'He said "hello"',
         newlines: 'line1\nline2',
       };
-      
+
       saveJSON('test-special', specialValues);
       expect(loadJSON('test-special', {})).toEqual(specialValues);
     });
 
     it('should handle malformed JSON gracefully', () => {
-      const malformedValues = [
-        '{incomplete',
-        '[array without end',
-        'undefined',
-        'NaN',
-        'Infinity',
-      ];
-      
+      const malformedValues = ['{incomplete', '[array without end', 'undefined', 'NaN', 'Infinity'];
+
       malformedValues.forEach((value, index) => {
         localStorage.setItem(`malformed-${index}`, value);
         expect(loadJSON(`malformed-${index}`, 'safe')).toBe('safe');
@@ -252,7 +251,7 @@ describe('storage utilities', () => {
     it('should handle large stored values', () => {
       const largeObj = { data: new Array(1000).fill({ value: 'test' }) };
       saveJSON('large', largeObj);
-      
+
       const loaded = loadJSON('large', {});
       expect(loaded).toEqual(largeObj);
     });
@@ -261,10 +260,10 @@ describe('storage utilities', () => {
   describe('integration scenarios', () => {
     it('should support save and load workflow', () => {
       const testData = { user: 'Alice', preferences: { theme: 'dark' } };
-      
+
       saveJSON('app-state', testData);
       const loaded = loadJSON('app-state', {});
-      
+
       expect(loaded).toEqual(testData);
     });
 
@@ -272,7 +271,7 @@ describe('storage utilities', () => {
       saveJSON('key1', 'value1');
       saveJSON('key2', 'value2');
       saveJSON('key3', 'value3');
-      
+
       expect(loadJSON('key1', '')).toBe('value1');
       expect(loadJSON('key2', '')).toBe('value2');
       expect(loadJSON('key3', '')).toBe('value3');
@@ -280,8 +279,8 @@ describe('storage utilities', () => {
 
     it('should handle overwrites correctly', () => {
       saveJSON('data', { version: 1 });
-      expect(loadJSON('data', {})). toEqual({ version: 1 });
-      
+      expect(loadJSON('data', {})).toEqual({ version: 1 });
+
       saveJSON('data', { version: 2 });
       expect(loadJSON('data', {})).toEqual({ version: 2 });
     });
@@ -291,10 +290,10 @@ describe('storage utilities', () => {
         id: number;
         name: string;
       }
-      
+
       const user: User = { id: 1, name: 'Alice' };
       saveJSON<User>('user', user);
-      
+
       const loaded = loadJSON<User>('user', { id: 0, name: '' });
       expect(loaded).toEqual(user);
       expect(loaded.id).toBe(1);
@@ -304,7 +303,7 @@ describe('storage utilities', () => {
     it('should handle clearing and reloading', () => {
       saveJSON('temp', 'data');
       expect(loadJSON('temp', 'fallback')).toBe('data');
-      
+
       localStorage.clear();
       expect(loadJSON('temp', 'fallback')).toBe('fallback');
     });
@@ -316,9 +315,9 @@ describe('storage utilities', () => {
         () => saveJSON('key2', 'value2'),
         () => loadJSON('key2', 'fallback2'),
       ];
-      
+
       expect(() => {
-        operations.forEach(op => op());
+        operations.forEach((op) => op());
       }).not.toThrow();
     });
   });
@@ -343,7 +342,7 @@ describe('storage utilities', () => {
     it('should handle circular reference fallback objects', () => {
       const circular: any = { a: 1 };
       circular.self = circular;
-      
+
       // Can't save circular, but can use as fallback
       expect(loadJSON('nonexistent', circular)).toBe(circular);
     });
@@ -374,9 +373,9 @@ describe('storage utilities', () => {
       localStorage.getItem = vi.fn().mockImplementation(() => {
         throw new Error('Storage error');
       });
-      
+
       expect(loadJSON('error-key', 'fallback')).toBe('fallback');
-      
+
       // Restore
       localStorage.getItem = originalGetItem;
     });
@@ -384,7 +383,7 @@ describe('storage utilities', () => {
     it('should handle JSON.parse errors in loadJSON', () => {
       // Store corrupted JSON that will fail parsing
       localStorage.setItem('corrupted', '{invalid json}');
-      
+
       expect(loadJSON('corrupted', 'safe')).toBe('safe');
     });
 

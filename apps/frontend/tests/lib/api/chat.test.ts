@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { http, HttpResponse } from 'msw';
-import { server } from '../../mocks/server';
 import { chat, type ChatMessage } from '@/lib/api/chat';
+import { http, HttpResponse } from 'msw';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { server } from '../../mocks/server';
 
 const API_BASE = 'http://localhost:8000/api';
 
@@ -17,9 +17,7 @@ describe('Chat API', () => {
         answer: 'Hello! How can I help you today?',
       };
 
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, async ({ request }) => {
@@ -91,9 +89,7 @@ describe('Chat API', () => {
         answer: 'Hello John!',
       };
 
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'My name is John', name: 'John' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'My name is John', name: 'John' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, async ({ request }) => {
@@ -120,9 +116,7 @@ describe('Chat API', () => {
         },
       };
 
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Show me stock prices' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Show me stock prices' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
@@ -213,9 +207,7 @@ describe('Chat API', () => {
       };
 
       const longContent = 'a'.repeat(10000);
-      const messages: ChatMessage[] = [
-        { role: 'user', content: longContent },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: longContent }];
 
       server.use(
         http.post(`${API_BASE}/chat`, async ({ request }) => {
@@ -233,16 +225,11 @@ describe('Chat API', () => {
 
   describe('Error Handling', () => {
     it('throws error on 400 bad request', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
-          return HttpResponse.json(
-            { detail: 'Invalid message format' },
-            { status: 400 }
-          );
+          return HttpResponse.json({ detail: 'Invalid message format' }, { status: 400 });
         })
       );
 
@@ -250,16 +237,11 @@ describe('Chat API', () => {
     });
 
     it('throws error on 401 unauthorized', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
-          return HttpResponse.json(
-            { detail: 'Authentication required' },
-            { status: 401 }
-          );
+          return HttpResponse.json({ detail: 'Authentication required' }, { status: 401 });
         })
       );
 
@@ -267,16 +249,11 @@ describe('Chat API', () => {
     });
 
     it('throws error on 429 rate limit', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
-          return HttpResponse.json(
-            { detail: 'Rate limit exceeded' },
-            { status: 429 }
-          );
+          return HttpResponse.json({ detail: 'Rate limit exceeded' }, { status: 429 });
         })
       );
 
@@ -284,16 +261,11 @@ describe('Chat API', () => {
     });
 
     it('throws error on 500 server error', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
-          return HttpResponse.json(
-            { detail: 'Internal server error' },
-            { status: 500 }
-          );
+          return HttpResponse.json({ detail: 'Internal server error' }, { status: 500 });
         })
       );
 
@@ -301,9 +273,7 @@ describe('Chat API', () => {
     });
 
     it('throws error on network failure', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
@@ -315,9 +285,7 @@ describe('Chat API', () => {
     });
 
     it('handles malformed JSON response', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
@@ -332,9 +300,7 @@ describe('Chat API', () => {
     });
 
     it('handles empty response body', async () => {
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
@@ -399,9 +365,7 @@ describe('Chat API', () => {
         })
       );
 
-      const result = await chat([
-        { role: 'user', content: 'Analyze the market' },
-      ]);
+      const result = await chat([{ role: 'user', content: 'Analyze the market' }]);
 
       expect(result.mode).toBe('analysis');
       expect(result.result.trend).toBe('bullish');
@@ -437,9 +401,7 @@ describe('Chat API', () => {
         answer: 'Response',
       };
 
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'User message' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'User message' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, async ({ request }) => {
@@ -577,9 +539,7 @@ describe('Chat API', () => {
         answer: 'Unicode handled! 你好 🚀',
       };
 
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Hello 世界 🌍' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Hello 世界 🌍' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, () => {
@@ -599,9 +559,7 @@ describe('Chat API', () => {
         answer: 'Response',
       };
 
-      const messages: ChatMessage[] = [
-        { role: 'user', content: 'Line 1\nLine 2\n\nLine 3' },
-      ];
+      const messages: ChatMessage[] = [{ role: 'user', content: 'Line 1\nLine 2\n\nLine 3' }];
 
       server.use(
         http.post(`${API_BASE}/chat`, async ({ request }) => {

@@ -1,12 +1,12 @@
 /**
  * Unified Assets Hook
- * 
+ *
  * Fetches all asset types (crypto, stocks, indices, forex) in a single API call.
  * Uses React Query for automatic caching, deduplication, and background updates.
  */
 
-import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from '@/lib/api/queryClient';
+import { useQuery } from '@tanstack/react-query';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
@@ -56,13 +56,13 @@ async function fetchUnifiedAssets(
 ): Promise<UnifiedAssetsResponse> {
   const typesParam = types.join(',');
   const url = `${API_URL}/prices/all?limit_per_type=${limitPerType}&types=${typesParam}`;
-  
+
   const response = await fetch(url);
-  
+
   if (!response.ok) {
     throw new Error(`Failed to fetch unified assets: ${response.statusText}`);
   }
-  
+
   return response.json();
 }
 
@@ -72,19 +72,19 @@ async function fetchUnifiedAssets(
 
 /**
  * Hook: useUnifiedAssets
- * 
+ *
  * Fetches all requested asset types in a single API call.
  * Perfect for the overview /markets page.
- * 
+ *
  * @param limitPerType - Number of assets per type (default: 10)
  * @param types - Asset types to fetch (default: all types)
  * @param options - React Query options
- * 
+ *
  * @example
  * ```tsx
  * // Get 10 of each type
  * const { data, isLoading } = useUnifiedAssets();
- * 
+ *
  * // Get 5 cryptos and stocks only
  * const { data } = useUnifiedAssets(5, ['crypto', 'stocks']);
  * ```
@@ -109,10 +109,10 @@ export function useUnifiedAssets(
 
 /**
  * Hook: useUnifiedCryptos
- * 
+ *
  * Convenience hook for fetching only cryptocurrencies.
  * Uses the unified endpoint but filters to crypto only.
- * 
+ *
  * @example
  * ```tsx
  * const { data, isLoading } = useUnifiedCryptos(20);
@@ -121,7 +121,7 @@ export function useUnifiedAssets(
  */
 export function useUnifiedCryptos(limit: number = 10) {
   const { data, ...rest } = useUnifiedAssets(limit, ['crypto']);
-  
+
   return {
     data: data?.data.crypto || [],
     response: data,
@@ -131,9 +131,9 @@ export function useUnifiedCryptos(limit: number = 10) {
 
 /**
  * Hook: useUnifiedStocks
- * 
+ *
  * Convenience hook for fetching only stocks.
- * 
+ *
  * @example
  * ```tsx
  * const { data, isLoading } = useUnifiedStocks(10);
@@ -142,7 +142,7 @@ export function useUnifiedCryptos(limit: number = 10) {
  */
 export function useUnifiedStocks(limit: number = 10) {
   const { data, ...rest } = useUnifiedAssets(limit, ['stocks']);
-  
+
   return {
     data: data?.data.stocks || [],
     response: data,
@@ -152,9 +152,9 @@ export function useUnifiedStocks(limit: number = 10) {
 
 /**
  * Hook: useUnifiedIndices
- * 
+ *
  * Convenience hook for fetching market indices.
- * 
+ *
  * @example
  * ```tsx
  * const { data, isLoading } = useUnifiedIndices();
@@ -163,7 +163,7 @@ export function useUnifiedStocks(limit: number = 10) {
  */
 export function useUnifiedIndices() {
   const { data, ...rest } = useUnifiedAssets(50, ['indices']); // Get all indices
-  
+
   return {
     data: data?.data.indices || [],
     response: data,
@@ -173,9 +173,9 @@ export function useUnifiedIndices() {
 
 /**
  * Hook: useUnifiedForex
- * 
+ *
  * Convenience hook for fetching forex pairs.
- * 
+ *
  * @example
  * ```tsx
  * const { data, isLoading } = useUnifiedForex(10);
@@ -184,7 +184,7 @@ export function useUnifiedIndices() {
  */
 export function useUnifiedForex(limit: number = 10) {
   const { data, ...rest } = useUnifiedAssets(limit, ['forex']);
-  
+
   return {
     data: data?.data.forex || [],
     response: data,

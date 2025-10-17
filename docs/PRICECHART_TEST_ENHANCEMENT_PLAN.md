@@ -1,9 +1,9 @@
 # PriceChart.tsx Test Enhancement Plan
 
-**Component**: `src/components/PriceChart.tsx` (370 lines)  
-**Current Tests**: `tests/components/PriceChart.test.tsx` (482 lines, 25 tests)  
-**Current Coverage**: 46.4% (Statements), 58.82% (Branches), 66.66% (Functions)  
-**Target Coverage**: 80%+  
+**Component**: `src/components/PriceChart.tsx` (370 lines)
+**Current Tests**: `tests/components/PriceChart.test.tsx` (482 lines, 25 tests)
+**Current Coverage**: 46.4% (Statements), 58.82% (Branches), 66.66% (Functions)
+**Target Coverage**: 80%+
 **Status**: 🔄 Enhancement Needed
 
 ---
@@ -65,7 +65,7 @@ it('should display Bollinger Bands when enabled', async () => {
     ...mockStoreState,
     indicators: { ...mockStoreState.indicators, showBB: true },
   });
-  
+
   const { container } = render(<PriceChart />);
   await waitFor(() => {
     expect(container.firstChild).toBeTruthy();
@@ -88,14 +88,14 @@ it('should display Bollinger Bands when enabled', async () => {
     indicators: { ...mockStoreState.indicators, showBB: true },
     indicatorSettings: { bbPeriod: 20, bbMultiplier: 2 },
   });
-  
+
   render(<PriceChart />);
-  
+
   // Wait for indicator effect to run
   await waitFor(() => {
     // Verify 3 line series created (basis, upper, lower)
     expect(mockLineSeries).toHaveBeenCalledTimes(3);
-    
+
     // Verify first series has data (basis line)
     const basisSeries = mockLineSeries.mock.results[0].value;
     expect(basisSeries.setData).toHaveBeenCalled();
@@ -107,7 +107,7 @@ it('should display Bollinger Bands when enabled', async () => {
 });
 ```
 
-**Time Estimate**: 1-2 hours  
+**Time Estimate**: 1-2 hours
 **Coverage Impact**: +5-10%
 
 ---
@@ -123,14 +123,14 @@ it('should display Bollinger Bands when enabled', async () => {
 describe('Chart Initialization', () => {
   it('should create chart with theme-based colors', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
-    
+
     (useChartStore as any).mockReturnValue({
       ...mockStoreState,
       theme: 'dark',
     });
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(createChart).toHaveBeenCalledWith(
         expect.any(HTMLDivElement),
@@ -146,9 +146,9 @@ describe('Chart Initialization', () => {
 
   it('should create candlestick series for price data', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(mockChart.addCandlestickSeries).toHaveBeenCalledWith({
         upColor: expect.any(String),
@@ -161,9 +161,9 @@ describe('Chart Initialization', () => {
 
   it('should create histogram series for volume with left scale', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(mockChart.addHistogramSeries).toHaveBeenCalledWith({
         priceScaleId: 'left',
@@ -176,9 +176,9 @@ describe('Chart Initialization', () => {
   it('should subscribe to visible time range changes', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
     const mockTimeScale = mockChart.timeScale();
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(mockTimeScale.subscribeVisibleTimeRangeChange).toHaveBeenCalled();
     });
@@ -186,9 +186,9 @@ describe('Chart Initialization', () => {
 
   it('should publish chart to chartBus', async () => {
     const chartBusSpy = vi.spyOn(chartBus, 'setChart');
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(chartBusSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -204,9 +204,9 @@ describe('Chart Initialization', () => {
       ...mockStoreState,
       theme: 'light',
     });
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(createChart).toHaveBeenCalledWith(
         expect.any(HTMLDivElement),
@@ -223,19 +223,19 @@ describe('Chart Initialization', () => {
   it('should clean up chart on unmount', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
     const { unmount } = render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(mockChart).toBeTruthy();
     });
-    
+
     unmount();
-    
+
     expect(mockChart.remove).toHaveBeenCalled();
   });
 });
 ```
 
-**Time Estimate**: 45 minutes  
+**Time Estimate**: 45 minutes
 **Coverage Impact**: +5-7%
 
 ---
@@ -249,18 +249,18 @@ describe('Chart Initialization', () => {
 describe('Resize Handling', () => {
   it('should resize chart on window resize', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(mockChart).toBeTruthy();
     });
-    
+
     // Trigger resize
     act(() => {
       window.dispatchEvent(new Event('resize'));
     });
-    
+
     await waitFor(() => {
       expect(mockChart.resize).toHaveBeenCalled();
     });
@@ -271,18 +271,18 @@ describe('Resize Handling', () => {
     const mockTimeScale = mockChart.timeScale();
     const rangeSpy = vi.fn();
     mockTimeScale.getVisibleRange = rangeSpy.mockReturnValue({ from: 1000, to: 2000 });
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(mockChart).toBeTruthy();
     });
-    
+
     // Trigger resize
     act(() => {
       window.dispatchEvent(new Event('resize'));
     });
-    
+
     await waitFor(() => {
       expect(rangeSpy).toHaveBeenCalled();
     });
@@ -291,19 +291,19 @@ describe('Resize Handling', () => {
   it('should remove resize listener on unmount', async () => {
     const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
     const { unmount } = render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(createChart).toHaveBeenCalled();
     });
-    
+
     unmount();
-    
+
     expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
   });
 });
 ```
 
-**Time Estimate**: 30 minutes  
+**Time Estimate**: 30 minutes
 **Coverage Impact**: +1-2%
 
 ---
@@ -317,15 +317,15 @@ describe('Resize Handling', () => {
 describe('Data Adapter Integration', () => {
   it('should create MarketDataAdapter with provider, symbol, timeframe', async () => {
     const adapterSpy = vi.spyOn(MarketDataAdapter.prototype, 'constructor' as any);
-    
+
     (useChartStore as any).mockReturnValue({
       ...mockStoreState,
       symbol: 'ETHUSDT',
       timeframe: '5m',
     });
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(adapterSpy).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -339,9 +339,9 @@ describe('Data Adapter Integration', () => {
 
   it('should subscribe to adapter events', async () => {
     const subscribeSpy = vi.spyOn(MarketDataAdapter.prototype, 'on');
-    
+
     render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(subscribeSpy).toHaveBeenCalledWith('data', expect.any(Function));
     });
@@ -350,23 +350,23 @@ describe('Data Adapter Integration', () => {
   it('should update candles on data events', async () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
     const mockSeries = mockChart.addCandlestickSeries.mock.results[0].value;
-    
+
     render(<PriceChart />);
-    
+
     // Simulate adapter emitting data
     const adapter = MarketDataAdapter.prototype;
     const dataHandler = (adapter.on as any).mock.calls.find(
       (call: any[]) => call[0] === 'data'
     )?.[1];
-    
+
     const newCandles = [
       { time: 1000, open: 100, high: 110, low: 90, close: 105, volume: 1000 },
     ];
-    
+
     act(() => {
       dataHandler({ candles: newCandles });
     });
-    
+
     await waitFor(() => {
       expect(mockSeries.setData).toHaveBeenCalledWith(
         expect.arrayContaining(newCandles)
@@ -377,31 +377,31 @@ describe('Data Adapter Integration', () => {
   it('should stop adapter on unmount', async () => {
     const stopSpy = vi.spyOn(MarketDataAdapter.prototype, 'stop');
     const { unmount } = render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(createChart).toHaveBeenCalled();
     });
-    
+
     unmount();
-    
+
     expect(stopSpy).toHaveBeenCalled();
   });
 
   it('should recreate adapter on symbol change', async () => {
     const { rerender } = render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(MarketDataAdapter).toHaveBeenCalledTimes(1);
     });
-    
+
     // Change symbol
     (useChartStore as any).mockReturnValue({
       ...mockStoreState,
       symbol: 'ETHUSDT',
     });
-    
+
     rerender(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(MarketDataAdapter).toHaveBeenCalledTimes(2);
     });
@@ -409,19 +409,19 @@ describe('Data Adapter Integration', () => {
 
   it('should recreate adapter on timeframe change', async () => {
     const { rerender } = render(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(MarketDataAdapter).toHaveBeenCalledTimes(1);
     });
-    
+
     // Change timeframe
     (useChartStore as any).mockReturnValue({
       ...mockStoreState,
       timeframe: '15m',
     });
-    
+
     rerender(<PriceChart />);
-    
+
     await waitFor(() => {
       expect(MarketDataAdapter).toHaveBeenCalledTimes(2);
     });
@@ -429,7 +429,7 @@ describe('Data Adapter Integration', () => {
 });
 ```
 
-**Time Estimate**: 1 hour  
+**Time Estimate**: 1 hour
 **Coverage Impact**: +8-12%
 
 ---
@@ -446,15 +446,15 @@ describe('Indicator Calculations', () => {
       const mockChart = vi.mocked(createChart).mock.results[0].value;
       const mockLineSeries = vi.fn();
       mockChart.addLineSeries = mockLineSeries;
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: { ...mockStoreState.indicators, showBB: true },
         indicatorSettings: { bbPeriod: 50, bbMultiplier: 2 },
       });
-      
+
       render(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(mockLineSeries).toHaveBeenCalledTimes(3); // basis, upper, lower
       }, { timeout: 200 });
@@ -464,15 +464,15 @@ describe('Indicator Calculations', () => {
       const mockChart = vi.mocked(createChart).mock.results[0].value;
       const mockLineSeries = vi.fn();
       mockChart.addLineSeries = mockLineSeries;
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: { ...mockStoreState.indicators, showBB: true },
         indicatorSettings: { bbPeriod: 20, bbMultiplier: 3 },
       });
-      
+
       render(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(mockLineSeries).toHaveBeenCalledTimes(3);
       }, { timeout: 200 });
@@ -492,15 +492,15 @@ describe('Indicator Calculations', () => {
       const mockChart = vi.mocked(createChart).mock.results[0].value;
       const mockLineSeries = vi.fn();
       mockChart.addLineSeries = mockLineSeries;
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: { ...mockStoreState.indicators, showVWAP: true },
         indicatorSettings: { vwapAnchorIndex: 100 },
       });
-      
+
       render(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(mockLineSeries).toHaveBeenCalled();
         const vwapSeries = mockLineSeries.mock.results[0].value;
@@ -514,9 +514,9 @@ describe('Indicator Calculations', () => {
         indicators: { ...mockStoreState.indicators, showVWAP: true },
         indicatorSettings: { vwapAnchorIndex: 99999 },
       });
-      
+
       const { container } = render(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(container.firstChild).toBeTruthy();
       });
@@ -535,14 +535,14 @@ describe('Indicator Calculations', () => {
       const mockChart = vi.mocked(createChart).mock.results[0].value;
       const mockLineSeries = vi.fn();
       mockChart.addLineSeries = mockLineSeries;
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: { ...mockStoreState.indicators, showStdChannels: true },
       });
-      
+
       render(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(mockLineSeries).toHaveBeenCalledTimes(3);
       }, { timeout: 200 });
@@ -554,7 +554,7 @@ describe('Indicator Calculations', () => {
       const mockChart = vi.mocked(createChart).mock.results[0].value;
       const mockLineSeries = vi.fn();
       mockChart.addLineSeries = mockLineSeries;
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: {
@@ -564,9 +564,9 @@ describe('Indicator Calculations', () => {
           showStdChannels: true,
         },
       });
-      
+
       render(<PriceChart />);
-      
+
       await waitFor(() => {
         // BB: 3 series, VWAP: 1, VWMA: 1, StdCh: 3 = 8 total
         expect(mockLineSeries).toHaveBeenCalledTimes(8);
@@ -575,25 +575,25 @@ describe('Indicator Calculations', () => {
 
     it('should toggle individual indicators without affecting others', async () => {
       const { rerender } = render(<PriceChart />);
-      
+
       // Enable BB
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: { showBB: true, showVWAP: false },
       });
       rerender(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(window._bbSeries).toBeDefined();
       });
-      
+
       // Enable VWAP, keep BB
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: { showBB: true, showVWAP: true },
       });
       rerender(<PriceChart />);
-      
+
       await waitFor(() => {
         expect(window._vwap).toBeDefined();
         expect(window._bbSeries).toBeDefined();
@@ -609,13 +609,13 @@ describe('Indicator Calculations', () => {
       const dataHandler = (adapter.on as any).mock.calls.find(
         (call: any[]) => call[0] === 'data'
       )?.[1];
-      
+
       render(<PriceChart />);
-      
+
       act(() => {
         dataHandler({ candles: [] });
       });
-      
+
       await waitFor(() => {
         expect(mockChart).toBeTruthy();
       });
@@ -633,7 +633,7 @@ describe('Indicator Calculations', () => {
 });
 ```
 
-**Time Estimate**: 2-2.5 hours  
+**Time Estimate**: 2-2.5 hours
 **Coverage Impact**: +15-20%
 
 ---
@@ -650,15 +650,15 @@ describe('Dynamic Level of Detail', () => {
     const mockTimeScale = mockChart.timeScale();
     const rangeSpy = vi.fn().mockReturnValue({ from: 1000, to: 2000 });
     mockTimeScale.getVisibleRange = rangeSpy;
-    
+
     render(<PriceChart />);
-    
+
     // Trigger visible range change
     const rangeHandler = mockTimeScale.subscribeVisibleTimeRangeChange.mock.calls[0][0];
     act(() => {
       rangeHandler({ from: 1500, to: 2500 });
     });
-    
+
     await waitFor(() => {
       expect(rangeSpy).toHaveBeenCalled();
     });
@@ -680,14 +680,14 @@ describe('Dynamic Level of Detail', () => {
     const mockChart = vi.mocked(createChart).mock.results[0].value;
     const mockCandleSeries = mockChart.addCandlestickSeries.mock.results[0].value;
     const mockVolumeSeries = mockChart.addHistogramSeries.mock.results[0].value;
-    
+
     render(<PriceChart />);
-    
+
     const rangeHandler = mockChart.timeScale().subscribeVisibleTimeRangeChange.mock.calls[0][0];
     act(() => {
       rangeHandler({ from: 1000, to: 2000 });
     });
-    
+
     await waitFor(() => {
       expect(mockCandleSeries.setData).toHaveBeenCalled();
       expect(mockVolumeSeries.setData).toHaveBeenCalled();
@@ -704,7 +704,7 @@ describe('Dynamic Level of Detail', () => {
 });
 ```
 
-**Time Estimate**: 1 hour  
+**Time Estimate**: 1 hour
 **Coverage Impact**: +5-8%
 
 ---
@@ -764,14 +764,14 @@ describe('Dynamic Level of Detail', () => {
 ## 🚧 Known Challenges
 
 ### Challenge 1: lightweight-charts Mock Complexity
-**Problem**: Chart library has extensive API surface  
+**Problem**: Chart library has extensive API surface
 **Solution**: Create comprehensive mock factory function
 
 ```typescript
 function createMockChart() {
   const mockSeries = createMockSeries();
   const mockTimeScale = createMockTimeScale();
-  
+
   return {
     addCandlestickSeries: vi.fn(() => mockSeries),
     addLineSeries: vi.fn(() => createMockSeries()),
@@ -785,7 +785,7 @@ function createMockChart() {
 ```
 
 ### Challenge 2: Async Effect Timing
-**Problem**: Multiple effects with debouncing/throttling  
+**Problem**: Multiple effects with debouncing/throttling
 **Solution**: Use longer timeouts in waitFor, test with act()
 
 ```typescript
@@ -795,7 +795,7 @@ await waitFor(() => {
 ```
 
 ### Challenge 3: MarketDataAdapter Mocking
-**Problem**: Need to emit events for testing  
+**Problem**: Need to emit events for testing
 **Solution**: Mock constructor and provide event emission helpers
 
 ```typescript
@@ -810,7 +810,7 @@ const mockAdapter = {
 ```
 
 ### Challenge 4: Indicator Math Verification
-**Problem**: Hard to verify calculations without implementation knowledge  
+**Problem**: Hard to verify calculations without implementation knowledge
 **Solution**: Test structure, not exact values; verify data shape
 
 ```typescript
