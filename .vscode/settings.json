@@ -40,6 +40,26 @@
   "editor.selectionHighlight": true,
   "editor.semanticHighlighting.enabled": true,
   "editor.maxTokenizationLineLength": 20000,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  "editor.autoClosingBrackets": "languageDefined",
+  "editor.autoClosingQuotes": "languageDefined",
+  "editor.autoClosingDelete": "auto",
+  "editor.autoClosingOvertype": "auto",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "on"
+  },
+  "editor.suggest.preview": true,
+  "editor.suggest.showDetails": true,
+  "editor.suggest.showStatusBar": true,
+  "editor.suggest.insertMode": "insert",
+  "editor.suggest.filterGraceful": true,
+  "editor.suggest.localityBonus": true,
+  "editor.suggest.shareSuggestSelections": true,
+  "editor.inlayHints.enabled": "on",
+  "editor.largeFileOptimizations": true,
 
   // ===== FILES - AUTO-SAVE & EXCLUSIONS =====
   "files.autoSave": "onFocusChange",
@@ -96,6 +116,9 @@
   "search.useIgnoreFiles": true,
   "search.smartCase": true,
   "search.followSymlinks": false,
+  "search.maxResults": 20000,
+  "search.quickOpen.includeSymbols": true,
+  "search.quickOpen.includeHistory": true,
 
   // ===== TYPESCRIPT / JAVASCRIPT - FORMATTING =====
   "[typescript]": {
@@ -146,7 +169,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "javascript.suggest.autoImports": true,
   "typescript.suggest.autoImports": true,
-  "javascript.suggest.paths": true,
   "typescript.suggest.paths": true,
   "typescript.tsserver.maxTsServerMemory": 4096,
   "typescript.tsserver.watchOptions": {
@@ -159,6 +181,18 @@
   "typescript.disableAutomaticTypeAcquisition": true,
   "typescript.tsserver.log": "off",
   "typescript.surveys.enabled": false,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.parameterTypes.enabled": false,
+  "typescript.inlayHints.variableTypes.enabled": false,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": false,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "typescript.inlayHints.enumMemberValues.enabled": false,
+  "javascript.inlayHints.parameterNames.enabled": "literals",
+  "javascript.inlayHints.parameterTypes.enabled": false,
+  "javascript.inlayHints.variableTypes.enabled": false,
+  "javascript.inlayHints.propertyDeclarationTypes.enabled": false,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "javascript.inlayHints.enumMemberValues.enabled": false,
 
   // ===== PYTHON - BACKEND CONFIGURATION =====
   "[python]": {
@@ -174,6 +208,8 @@
   "python.analysis.autoImportCompletions": true,
   "python.analysis.inlayHints.functionReturnTypes": true,
   "python.analysis.inlayHints.variableTypes": false,
+  "python.analysis.inlayHints.pytestParameters": true,
+  "python.analysis.inlayHints.callArgumentNames": "partial",
   "python.analysis.diagnosticMode": "openFilesOnly",
   "python.analysis.memory.keepLibraryAst": false,
   "python.analysis.persistAllIndices": false,
@@ -202,10 +238,12 @@
     "**/cypress/**",
     "**/.{idea,git,cache,output,temp}/**"
   ],
+  "vitest.showFailMessages": true,
+  "vitest.watchOnStartup": "openTesting",
 
   // ===== PLAYWRIGHT (NEW!) =====
   "playwright.reuseBrowser": false,
-  "playwright.showTrace": false,
+  "playwright.showTrace": true,
 
   // ===== COVERAGE GUTTERS (NEW!) =====
   "coverage-gutters.coverageFileNames": [
@@ -283,6 +321,10 @@
   "git.autofetchPeriod": 180,
   "git.pruneOnFetch": true,
   "git.untrackedChanges": "separate",
+  "git.ignoreRebaseWarning": true,
+  "git.maxFileSize": 5242880,
+  "git.allowForcePush": false,
+  "git.branchProtection": ["main", "master", "production"],
   "gitlens.hovers.currentLine.over": "line",
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
@@ -515,20 +557,75 @@
   "editor.codeLens": true,
   "diffEditor.codeLens": false,
 
-  // ===== GITHUB COPILOT - AI ASSISTANCE =====
+  // ===== GITHUB COPILOT - AI ASSISTANCE (OPTIMIZED) =====
+  // Enable Copilot for all relevant file types
   "github.copilot.enable": {
     "*": true,
     "yaml": true,
     "plaintext": false,
-    "markdown": true
+    "markdown": true,
+    "scminput": false
   },
+
+  // Editor completions and suggestions
   "github.copilot.editor.enableAutoCompletions": true,
-  "github.copilot.editor.enableCodeActions": false,
-  "github.copilot.chat.useProjectTemplates": false,
+  "github.copilot.editor.enableCodeActions": true,
+
+  // Chat settings - Enhanced for better context
+  "github.copilot.chat.useProjectTemplates": true,
+  "github.copilot.chat.scopeSelection": true,
+  "github.copilot.chat.runCommand.enabled": true,
+  "github.copilot.chat.terminalChatLocation": "quickChat",
+  "github.copilot.chat.followUps": "on",
+  "github.copilot.chat.localeOverride": "en",
+
+  // Enable search capabilities (requires GitHub Copilot with search enabled)
+  "github.copilot.chat.search.enabled": true,
+
+  // Advanced settings for better code generation
+  "github.copilot.advanced": {
+    "debug.overrideEngine": "",
+    "debug.testOverrideProxyUrl": "",
+    "debug.overrideProxyUrl": "",
+    "length": 500,
+    "temperature": "",
+    "top_p": "",
+    "stops": {
+      "*": ["\n\n\n"],
+      "python": ["\ndef ", "\nclass ", "\nif ", "\n\n#"],
+      "javascript": ["\nfunction ", "\nclass ", "\nif ", "\n\n//"],
+      "typescript": ["\nfunction ", "\nclass ", "\nif ", "\ninterface ", "\ntype ", "\n\n//"],
+      "typescriptreact": ["\nfunction ", "\nclass ", "\nif ", "\ninterface ", "\ntype ", "\nconst ", "\n\n//"],
+      "javascriptreact": ["\nfunction ", "\nclass ", "\nif ", "\nconst ", "\n\n//"]
+    }
+  },
+
+  // Inline suggestions
+  "github.copilot.inlineSuggest.enable": true,
+
+  // Completions preference
+  "github.copilot.editor.iterativeFixing": true,
 
   // ===== WORKBENCH - UI PREFERENCES =====
   "workbench.colorTheme": "Default Dark+",
   "workbench.iconTheme": "vs-seti",
+
+  // Color customizations for visual distinction
+  "workbench.colorCustomizations": {
+    // Development environment (blue theme)
+    "titleBar.activeBackground": "#1e3a8a",
+    "titleBar.activeForeground": "#ffffff",
+    "titleBar.inactiveBackground": "#1e40af",
+    "titleBar.inactiveForeground": "#94a3b8",
+    "statusBar.background": "#1e3a8a",
+    "statusBar.foreground": "#ffffff",
+    "statusBar.noFolderBackground": "#334155",
+    "statusBar.debuggingBackground": "#dc2626",
+    "statusBar.debuggingForeground": "#ffffff",
+    "activityBar.activeBackground": "#1e40af33",
+    "activityBar.activeBorder": "#3b82f6"
+  },
+
   "workbench.startupEditor": "none",
   "workbench.editor.enablePreview": false,
   "workbench.editor.closeEmptyGroups": false,
@@ -539,7 +636,16 @@
   "workbench.tree.indent": 20,
   "workbench.list.smoothScrolling": true,
   "workbench.activityBar.location": "default",
+  "workbench.sideBar.location": "left",
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.editor.decorations.badges": true,
+  "workbench.editor.decorations.colors": true,
+  "workbench.editor.tabCloseButton": "right",
+  "workbench.editor.tabSizing": "shrink",
+  "workbench.commandPalette.history": 50,
   "problems.autoReveal": false,
+  "problems.showCurrentInStatus": true,
 
   // ===== FILE EXPLORER - FILE NESTING =====
   "explorer.fileNesting.enabled": true,
@@ -563,10 +669,13 @@
   "npm.autoDetect": "on",
   "npm.runSilent": false,
 
-  // ===== BREADCRUMBS =====
   "breadcrumbs.enabled": true,
   "breadcrumbs.filePath": "on",
   "breadcrumbs.symbolPath": "on",
+  "breadcrumbs.symbolSortOrder": "position",
+  "breadcrumbs.showKeys": false,
+  "breadcrumbs.showFunctions": true,
+  "breadcrumbs.showClasses": true,
 
   // ===== SECURITY =====
   "security.workspace.trust.untrustedFiles": "prompt",
@@ -617,5 +726,18 @@
   "versionlens.suggestions.showOnStartup": false,
   "versionlens.npm.caching.duration": 3600,
   "versionlens.pip.caching.duration": 3600,
-  "versionlens.suggestions.showPrerelease": false
+  "versionlens.suggestions.showPrerelease": false,
+  "workbench.editor.tabActionLocation": "right",
+  "github.copilot.chat.codeGeneration.instructions": [
+    {
+      "text": "Always follow the coding standards in CODING_STANDARDS.md"
+    },
+    {
+      "text": "For testing, use Vitest conventions from TEST_QUICK_REFERENCE.md"
+    },
+    {
+      "text": "Follow project structure in REPOSITORY_STRUCTURE.md"
+    }
+  ],
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }

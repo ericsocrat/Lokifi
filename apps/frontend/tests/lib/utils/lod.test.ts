@@ -1,15 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import type { Time } from 'lightweight-charts';
+import { describe, expect, it } from 'vitest';
 import {
   bucketCountFor,
   downsampleCandlesMinMax,
   downsampleLineMinMax,
-  timeToSec,
   lowerBoundByTime,
-  upperBoundByTime,
   sliceByTimeWindow,
+  timeToSec,
+  upperBoundByTime,
   type Candle,
 } from '../../../src/lib/utils/lod';
-import type { Time } from 'lightweight-charts';
 
 // Helper to create mock candles
 function mockCandle(time: number, ohlcv: [number, number, number, number, number]): Candle {
@@ -63,11 +63,9 @@ describe('lod utilities', () => {
     });
 
     it('should downsample to approximately target count', () => {
-      const data = Array.from({ length: 1000 }, (_, i) =>
-        mockCandle(i, [100, 110, 90, 105, 500])
-      );
+      const data = Array.from({ length: 1000 }, (_, i) => mockCandle(i, [100, 110, 90, 105, 500]));
       const result = downsampleCandlesMinMax(data, 100);
-      
+
       // Should be close to target (not exact due to bucketing)
       expect(result.length).toBeGreaterThan(90);
       expect(result.length).toBeLessThan(110);
@@ -80,7 +78,7 @@ describe('lod utilities', () => {
         mockCandle(3, [115, 118, 110, 112, 1500]),
       ];
       const result = downsampleCandlesMinMax(data, 1);
-      
+
       expect(result.length).toBe(1);
       expect(result[0].open).toBe(100); // First open
       expect(result[0].high).toBe(120); // Max high
@@ -95,7 +93,7 @@ describe('lod utilities', () => {
         mockCandle(300, [110, 120, 100, 115, 3000]),
       ];
       const result = downsampleCandlesMinMax(data, 1);
-      
+
       expect(result[0].time).toBe(200); // Middle time
     });
 
@@ -106,17 +104,14 @@ describe('lod utilities', () => {
         mockCandle(3, [110, 120, 100, 115, 3000]),
       ];
       const result = downsampleCandlesMinMax(data, 1);
-      
+
       expect(result[0].volume).toBe(6000); // 1000 + 2000 + 3000
     });
 
     it('should handle zero volumes', () => {
-      const data = [
-        mockCandle(1, [100, 110, 90, 105, 0]),
-        mockCandle(2, [105, 115, 95, 110, 0]),
-      ];
+      const data = [mockCandle(1, [100, 110, 90, 105, 0]), mockCandle(2, [105, 115, 95, 110, 0])];
       const result = downsampleCandlesMinMax(data, 1);
-      
+
       expect(result[0].volume).toBe(0);
     });
 
@@ -130,7 +125,7 @@ describe('lod utilities', () => {
         mockCandle(i, [100 + Math.sin(i) * 10, 110, 90, 105, 1000])
       );
       const result = downsampleCandlesMinMax(data, 500);
-      
+
       expect(result.length).toBeGreaterThan(450);
       expect(result.length).toBeLessThan(550);
       // First and last should be preserved approximately
@@ -139,13 +134,11 @@ describe('lod utilities', () => {
     });
 
     it('should maintain price relationships', () => {
-      const data = Array.from({ length: 100 }, (_, i) =>
-        mockCandle(i, [100, 110, 90, 105, 1000])
-      );
+      const data = Array.from({ length: 100 }, (_, i) => mockCandle(i, [100, 110, 90, 105, 1000]));
       const result = downsampleCandlesMinMax(data, 10);
-      
+
       // Each candle should maintain OHLC relationships
-      result.forEach(candle => {
+      result.forEach((candle) => {
         expect(candle.high).toBeGreaterThanOrEqual(candle.open);
         expect(candle.high).toBeGreaterThanOrEqual(candle.close);
         expect(candle.low).toBeLessThanOrEqual(candle.open);
@@ -162,7 +155,7 @@ describe('lod utilities', () => {
         mockCandle(5, [120, 130, 110, 125, 5000]),
       ];
       const result = downsampleCandlesMinMax(data, 2);
-      
+
       // Should create approximately 2 buckets
       expect(result.length).toBeGreaterThanOrEqual(2);
       expect(result.length).toBeLessThanOrEqual(3);
@@ -187,7 +180,7 @@ describe('lod utilities', () => {
         { time: 4 as Time, value: 75 },
       ];
       const result = downsampleLineMinMax(data, 1);
-      
+
       // Should preserve both min and max points
       expect(result.length).toBe(2);
       expect(result).toContainEqual({ time: 2, value: 50 });
@@ -200,7 +193,7 @@ describe('lod utilities', () => {
         value: Math.sin(i / 10) * 100,
       }));
       const result = downsampleLineMinMax(data, 50);
-      
+
       // Each bucket contributes 2 points (min and max)
       expect(result.length).toBeGreaterThan(80);
       expect(result.length).toBeLessThan(120);
@@ -212,7 +205,7 @@ describe('lod utilities', () => {
         value: i,
       }));
       const result = downsampleLineMinMax(data, 10);
-      
+
       // For monotonic data, min and max are bucket start and end
       expect(result.length).toBeGreaterThan(10);
     });
@@ -223,7 +216,7 @@ describe('lod utilities', () => {
         value: 100 - i,
       }));
       const result = downsampleLineMinMax(data, 10);
-      
+
       expect(result.length).toBeGreaterThan(10);
     });
 
@@ -233,9 +226,9 @@ describe('lod utilities', () => {
         value: 50,
       }));
       const result = downsampleLineMinMax(data, 10);
-      
+
       // When all values same, min and max are same point
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBe(50);
       });
     });
@@ -252,7 +245,7 @@ describe('lod utilities', () => {
         { time: 3 as Time, value: -25 },
       ];
       const result = downsampleLineMinMax(data, 1);
-      
+
       expect(result).toContainEqual({ time: 2, value: -100 }); // Min
       expect(result).toContainEqual({ time: 3, value: -25 }); // Max
     });
@@ -263,7 +256,7 @@ describe('lod utilities', () => {
         value: Math.sin(i / 10) * 100,
       }));
       const result = downsampleLineMinMax(data, 10);
-      
+
       // Should have points from multiple buckets (2 per bucket)
       expect(result.length).toBeGreaterThan(10);
       // Each bucket contributes min and max (order may vary)
@@ -285,7 +278,7 @@ describe('lod utilities', () => {
     it('should convert business day object to UTC seconds', () => {
       const bd = { year: 2023, month: 1, day: 15 };
       const result = timeToSec(bd as any);
-      
+
       // January 15, 2023 at midnight UTC
       const expected = Math.floor(new Date(Date.UTC(2023, 0, 15)).getTime() / 1000);
       expect(result).toBe(expected);
@@ -294,7 +287,7 @@ describe('lod utilities', () => {
     it('should require month property for business day', () => {
       const bd = { year: 2023, day: 1 }; // Missing month
       const result = timeToSec(bd as any);
-      
+
       // Without month, treated as invalid and returns 0
       expect(result).toBe(0);
     });
@@ -302,17 +295,17 @@ describe('lod utilities', () => {
     it('should handle different months', () => {
       const june = { year: 2023, month: 6, day: 15 };
       const dec = { year: 2023, month: 12, day: 31 };
-      
+
       const juneResult = timeToSec(june as any);
       const decResult = timeToSec(dec as any);
-      
+
       expect(decResult).toBeGreaterThan(juneResult);
     });
 
     it('should handle leap year dates', () => {
       const leapDay = { year: 2024, month: 2, day: 29 };
       const result = timeToSec(leapDay as any);
-      
+
       const expected = Math.floor(new Date(Date.UTC(2024, 1, 29)).getTime() / 1000);
       expect(result).toBe(expected);
     });
@@ -470,14 +463,14 @@ describe('lod utilities', () => {
 
     it('should handle single element array', () => {
       const single = [mockCandle(100, [100, 110, 90, 105, 1000])];
-      
+
       const result1 = sliceByTimeWindow(single, 50, 150);
       expect(result1).toEqual(single);
-      
+
       const result2 = sliceByTimeWindow(single, 0, 50);
       // Window before element - clamping behavior
       expect(result2.length).toBeGreaterThanOrEqual(0);
-      
+
       const result3 = sliceByTimeWindow(single, 150, 200);
       // Window after element - clamping behavior returns element
       expect(result3.length).toBeGreaterThanOrEqual(0);
@@ -500,10 +493,10 @@ describe('lod utilities', () => {
       const data = Array.from({ length: 1000 }, (_, i) =>
         mockCandle(i * 100, [100, 110, 90, 105, 1000])
       );
-      
+
       const downsampled = downsampleCandlesMinMax(data, 100);
       const sliced = sliceByTimeWindow(downsampled, 10000, 50000);
-      
+
       expect(sliced.length).toBeGreaterThan(0);
       expect(sliced.length).toBeLessThanOrEqual(downsampled.length);
     });
@@ -512,10 +505,10 @@ describe('lod utilities', () => {
       const data = Array.from({ length: 10000 }, (_, i) =>
         mockCandle(i, [100, 110, 90, 105, 1000])
       );
-      
+
       const buckets = bucketCountFor(3000, 3); // 1000 buckets
       const downsampled = downsampleCandlesMinMax(data, buckets);
-      
+
       expect(downsampled.length).toBeGreaterThan(900);
       expect(downsampled.length).toBeLessThan(1100);
     });
@@ -524,16 +517,16 @@ describe('lod utilities', () => {
       const data = Array.from({ length: 1000 }, (_, i) =>
         mockCandle(i * 1000, [100, 110, 90, 105, 1000])
       );
-      
+
       const fromSec = 100000;
       const toSec = 500000;
-      
+
       const start = lowerBoundByTime(data, fromSec);
       const end = upperBoundByTime(data, toSec);
-      
+
       const sliced = data.slice(start, end + 1);
       const slicedByWindow = sliceByTimeWindow(data, fromSec, toSec);
-      
+
       expect(sliced).toEqual(slicedByWindow);
     });
   });

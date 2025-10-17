@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { angleDeg, tfToSeconds, barsFromTimes } from '@/lib/charts/chartUtils';
+import { angleDeg, barsFromTimes, tfToSeconds } from '@/lib/charts/chartUtils';
+import { describe, expect, it } from 'vitest';
 
 describe('chartUtils', () => {
   describe('angleDeg', () => {
@@ -72,7 +72,7 @@ describe('chartUtils', () => {
     it('should return consistent angles for reversed direction', () => {
       const angle1 = angleDeg(0, 0, 1, 1);
       const angle2 = angleDeg(1, 1, 0, 0);
-      
+
       // Opposite directions should differ by ±180°
       expect(Math.abs(Math.abs(angle1 - angle2) - 180)).toBeLessThan(0.01);
     });
@@ -164,27 +164,32 @@ describe('chartUtils', () => {
 
   describe('barsFromTimes', () => {
     it('should calculate bars for 1 hour with 1m timeframe', () => {
-      const a = 0, b = 3600; // one hour apart
+      const a = 0,
+        b = 3600; // one hour apart
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(60);
     });
 
     it('should calculate bars for 1 day with 1h timeframe', () => {
-      const a = 0, b = 86400; // one day apart
+      const a = 0,
+        b = 86400; // one day apart
       expect(barsFromTimes(a, b, '1h')).toBeCloseTo(24);
     });
 
     it('should calculate bars for 1 week with 1d timeframe', () => {
-      const a = 0, b = 604800; // one week apart
+      const a = 0,
+        b = 604800; // one week apart
       expect(barsFromTimes(a, b, '1d')).toBeCloseTo(7);
     });
 
     it('should calculate bars for 1 month with 1w timeframe', () => {
-      const a = 0, b = 2592000; // ~30 days apart
+      const a = 0,
+        b = 2592000; // ~30 days apart
       expect(barsFromTimes(a, b, '1w')).toBeCloseTo(4.285, 2);
     });
 
     it('should handle reversed time order (uses absolute difference)', () => {
-      const a = 3600, b = 0; // reversed
+      const a = 3600,
+        b = 0; // reversed
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(60);
     });
 
@@ -193,23 +198,27 @@ describe('chartUtils', () => {
     });
 
     it('should handle fractional bars', () => {
-      const a = 0, b = 90; // 90 seconds = 1.5 minutes
+      const a = 0,
+        b = 90; // 90 seconds = 1.5 minutes
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(1.5);
     });
 
     it('should handle very small time differences', () => {
-      const a = 0, b = 1; // 1 second
-      expect(barsFromTimes(a, b, '1m')).toBeCloseTo(1/60, 3);
+      const a = 0,
+        b = 1; // 1 second
+      expect(barsFromTimes(a, b, '1m')).toBeCloseTo(1 / 60, 3);
     });
 
     it('should handle very large time differences', () => {
-      const a = 0, b = 31536000; // 1 year
+      const a = 0,
+        b = 31536000; // 1 year
       expect(barsFromTimes(a, b, '1d')).toBeCloseTo(365);
     });
 
     it('should handle different timeframe formats', () => {
-      const a = 0, b = 3600; // 1 hour
-      
+      const a = 0,
+        b = 3600; // 1 hour
+
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(60);
       expect(barsFromTimes(a, b, '5m')).toBeCloseTo(12);
       expect(barsFromTimes(a, b, '15m')).toBeCloseTo(4);
@@ -217,17 +226,20 @@ describe('chartUtils', () => {
     });
 
     it('should handle negative timestamps (treats as absolute difference)', () => {
-      const a = -3600, b = 0;
+      const a = -3600,
+        b = 0;
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(60);
     });
 
     it('should handle both timestamps negative', () => {
-      const a = -7200, b = -3600; // 1 hour apart
+      const a = -7200,
+        b = -3600; // 1 hour apart
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(60);
     });
 
     it('should handle zero timeframe seconds (divides by 60 due to default)', () => {
-      const a = 0, b = 3600;
+      const a = 0,
+        b = 3600;
       // Invalid timeframe defaults to 60 seconds
       expect(barsFromTimes(a, b, 'invalid')).toBeCloseTo(60);
     });
@@ -236,22 +248,25 @@ describe('chartUtils', () => {
       // Intraday trading
       const marketOpen = 9.5 * 3600; // 9:30 AM
       const marketClose = 16 * 3600; // 4:00 PM
-      
+
       expect(barsFromTimes(marketOpen, marketClose, '5m')).toBeCloseTo(78);
       expect(barsFromTimes(marketOpen, marketClose, '15m')).toBeCloseTo(26);
       expect(barsFromTimes(marketOpen, marketClose, '1h')).toBeCloseTo(6.5);
     });
 
     it('should handle exact bar boundaries', () => {
-      const a = 0, b = 3600; // Exactly 1 hour
+      const a = 0,
+        b = 3600; // Exactly 1 hour
       expect(barsFromTimes(a, b, '1h')).toBe(1);
-      
-      const c = 0, d = 86400; // Exactly 1 day
+
+      const c = 0,
+        d = 86400; // Exactly 1 day
       expect(barsFromTimes(c, d, '1d')).toBe(1);
     });
 
     it('should handle sub-bar intervals', () => {
-      const a = 0, b = 30; // 30 seconds
+      const a = 0,
+        b = 30; // 30 seconds
       expect(barsFromTimes(a, b, '1m')).toBeCloseTo(0.5);
     });
   });
@@ -260,7 +275,7 @@ describe('chartUtils', () => {
     it('should calculate angle and convert to common reference', () => {
       const angle = angleDeg(0, 0, 1, 1);
       expect(angle).toBeCloseTo(45);
-      
+
       // Could be used for trendline analysis
       const isUptrend = angle > 0 && angle < 90;
       expect(isUptrend).toBe(true);
@@ -269,11 +284,11 @@ describe('chartUtils', () => {
     it('should work with timeframe conversions for bar calculations', () => {
       const start = 1000000;
       const end = 1003600; // 1 hour later
-      
+
       const tf = '5m';
       const bars = barsFromTimes(start, end, tf);
       const secondsPerBar = tfToSeconds(tf);
-      
+
       expect(bars).toBeCloseTo(12);
       expect(secondsPerBar).toBe(300);
       expect(bars * secondsPerBar).toBeCloseTo(3600);
@@ -281,15 +296,17 @@ describe('chartUtils', () => {
 
     it('should handle complete trendline scenario', () => {
       // Calculate angle of trendline
-      const x1 = 0, y1 = 100;
-      const x2 = 100, y2 = 150;
+      const x1 = 0,
+        y1 = 100;
+      const x2 = 100,
+        y2 = 150;
       const angle = angleDeg(x1, y1, x2, y2);
-      
+
       // Calculate number of bars
       const startTime = 0;
       const endTime = 3600;
       const bars = barsFromTimes(startTime, endTime, '1m');
-      
+
       expect(angle).toBeCloseTo(26.565, 2);
       expect(bars).toBeCloseTo(60);
     });
@@ -310,7 +327,7 @@ describe('chartUtils', () => {
       const a = 0;
       const b = Number.MAX_SAFE_INTEGER;
       const bars = barsFromTimes(a, b, '1m');
-      
+
       expect(Number.isFinite(bars)).toBe(true);
       expect(bars).toBeGreaterThan(0);
     });

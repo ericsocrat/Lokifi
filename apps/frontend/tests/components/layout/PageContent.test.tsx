@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
 import { PageContent } from '@/components/layout/PageContent';
+import { render, screen } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
 
 describe('PageContent', () => {
   describe('Basic Rendering', () => {
@@ -10,7 +10,7 @@ describe('PageContent', () => {
           <div>Test Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Test Content')).toBeInTheDocument();
     });
 
@@ -20,7 +20,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Test Title');
     });
@@ -31,7 +31,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Test Description')).toBeInTheDocument();
     });
 
@@ -41,7 +41,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Test Title')).toBeInTheDocument();
       expect(screen.getByText('Test Description')).toBeInTheDocument();
     });
@@ -52,7 +52,7 @@ describe('PageContent', () => {
           <div>Content Only</div>
         </PageContent>
       );
-      
+
       // Should only have the main container and children, no header section
       expect(screen.queryByRole('heading')).not.toBeInTheDocument();
       expect(screen.getByText('Content Only')).toBeInTheDocument();
@@ -66,7 +66,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       const pageContent = container.firstChild as HTMLElement;
       expect(pageContent.className).toContain('p-6');
     });
@@ -77,7 +77,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       const pageContent = container.firstChild as HTMLElement;
       expect(pageContent.className).toContain('custom-class');
       expect(pageContent.className).toContain('p-6');
@@ -89,7 +89,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       const pageContent = container.firstChild as HTMLElement;
       expect(pageContent.className).toContain('class-1');
       expect(pageContent.className).toContain('class-2');
@@ -103,7 +103,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       const pageContent = container.firstChild as HTMLElement;
       expect(pageContent.className).toContain('p-6');
     });
@@ -116,15 +116,15 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Initial Title')).toBeInTheDocument();
-      
+
       rerender(
         <PageContent title="Updated Title">
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.queryByText('Initial Title')).not.toBeInTheDocument();
       expect(screen.getByText('Updated Title')).toBeInTheDocument();
     });
@@ -135,15 +135,15 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Initial Desc')).toBeInTheDocument();
-      
+
       rerender(
         <PageContent description="Updated Desc">
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.queryByText('Initial Desc')).not.toBeInTheDocument();
       expect(screen.getByText('Updated Desc')).toBeInTheDocument();
     });
@@ -154,15 +154,15 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.queryByRole('heading')).not.toBeInTheDocument();
-      
+
       rerender(
         <PageContent title="New Title">
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('New Title')).toBeInTheDocument();
     });
 
@@ -172,16 +172,16 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Title')).toBeInTheDocument();
       expect(screen.getByText('Description')).toBeInTheDocument();
-      
+
       rerender(
         <PageContent>
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.queryByText('Title')).not.toBeInTheDocument();
       expect(screen.queryByText('Description')).not.toBeInTheDocument();
     });
@@ -192,15 +192,15 @@ describe('PageContent', () => {
           <div>Original Child</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Original Child')).toBeInTheDocument();
-      
+
       rerender(
         <PageContent>
           <div>Updated Child</div>
         </PageContent>
       );
-      
+
       expect(screen.queryByText('Original Child')).not.toBeInTheDocument();
       expect(screen.getByText('Updated Child')).toBeInTheDocument();
     });
@@ -215,7 +215,7 @@ describe('PageContent', () => {
           <div>Child 3</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Child 1')).toBeInTheDocument();
       expect(screen.getByText('Child 2')).toBeInTheDocument();
       expect(screen.getByText('Child 3')).toBeInTheDocument();
@@ -229,7 +229,7 @@ describe('PageContent', () => {
           </PageContent>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Parent Title')).toBeInTheDocument();
       expect(screen.getByText('Nested Title')).toBeInTheDocument();
       expect(screen.getByText('Nested Content')).toBeInTheDocument();
@@ -246,20 +246,20 @@ describe('PageContent', () => {
           </div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
     });
 
     it('should handle text children', () => {
       render(<PageContent>Plain text content</PageContent>);
-      
+
       expect(screen.getByText('Plain text content')).toBeInTheDocument();
     });
 
     it('should handle empty children', () => {
       const { container } = render(<PageContent>{null}</PageContent>);
-      
+
       expect(container.firstChild).toBeInTheDocument();
     });
   });
@@ -272,7 +272,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText(longTitle)).toBeInTheDocument();
     });
 
@@ -283,7 +283,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText(longDesc)).toBeInTheDocument();
     });
 
@@ -293,20 +293,17 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText(/Title with.*special chars/)).toBeInTheDocument();
     });
 
     it('should handle unicode in title and description', () => {
       render(
-        <PageContent 
-          title="Title 你好 🎉" 
-          description="Description العربية ®"
-        >
+        <PageContent title="Title 你好 🎉" description="Description العربية ®">
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText(/Title 你好 🎉/)).toBeInTheDocument();
       expect(screen.getByText(/Description العربية ®/)).toBeInTheDocument();
     });
@@ -317,7 +314,7 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       const pageContent = container.firstChild as HTMLElement;
       expect(pageContent.className).toContain('p-6');
     });
@@ -328,19 +325,21 @@ describe('PageContent', () => {
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText('CamelCase Title With CAPS')).toBeInTheDocument();
     });
 
     it('should handle description with line breaks', () => {
       render(
-        <PageContent description="Line 1
+        <PageContent
+          description="Line 1
 Line 2
-Line 3">
+Line 3"
+        >
           <div>Content</div>
         </PageContent>
       );
-      
+
       expect(screen.getByText(/Line 1/)).toBeInTheDocument();
     });
   });
@@ -352,7 +351,7 @@ Line 3">
           <div>Content</div>
         </PageContent>
       );
-      
+
       const heading = screen.getByRole('heading', { level: 1 });
       expect(heading).toBeInTheDocument();
       expect(heading).toHaveTextContent('Main Title');
@@ -364,7 +363,7 @@ Line 3">
           <div>Content</div>
         </PageContent>
       );
-      
+
       const paragraph = container.querySelector('p');
       expect(paragraph).toBeInTheDocument();
       expect(paragraph).toHaveTextContent('Description text');
@@ -376,10 +375,10 @@ Line 3">
           <div>Content</div>
         </PageContent>
       );
-      
+
       const outerDiv = container.firstChild as HTMLElement;
       expect(outerDiv.tagName).toBe('DIV');
-      
+
       // Should have header section and children
       const divs = outerDiv.querySelectorAll(':scope > div');
       expect(divs.length).toBeGreaterThanOrEqual(1);

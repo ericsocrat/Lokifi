@@ -1,0 +1,128 @@
+# GitHub Copilot Ignore File
+# Files and patterns listed here will be excluded from Copilot's context
+# This improves performance and protects sensitive information
+
+# ===== SECURITY & SECRETS =====
+**/.env*
+**/*.secret*
+**/secrets/**
+**/.aws/**
+**/credentials/**
+**/private/**
+**/*.key
+**/*.pem
+**/.ssh/**
+**/ssl/**
+**/.pgp/**
+
+# ===== LOCAL DATA & CACHE =====
+**/.lokifi-cache/**
+**/.lokifi-data/**
+**/.lokifi-profiles/**
+**/tmp/**
+**/temp/**
+**/.cache/**
+
+# ===== BUILD OUTPUTS =====
+**/node_modules/**
+**/.next/**
+**/dist/**
+**/build/**
+**/out/**
+**/.output/**
+**/__pycache__/**
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/**
+**/htmlcov/**
+**/.tox/**
+
+# ===== COVERAGE & TEST REPORTS =====
+**/coverage/**
+**/.coverage
+**/.nyc_output/**
+**/test-results/**
+**/playwright-report/**
+
+# ===== LOGS =====
+**/*.log
+**/logs/**
+**/.npm/**
+
+# ===== VERSION CONTROL =====
+**/.git/**
+**/.gitattributes
+**/.gitignore
+
+# ===== DEPENDENCIES & LOCK FILES =====
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
+**/poetry.lock
+**/Pipfile.lock
+
+# ===== VIRTUAL ENVIRONMENTS =====
+**/venv/**
+**/.venv/**
+**/env/**
+**/.env/**
+**/virtualenv/**
+
+# ===== DATABASE FILES =====
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+**/migrations/**/versions/*.py
+**/alembic/versions/*.py
+
+# ===== EDITOR & IDE =====
+**/.vscode/*.log
+**/.idea/**
+**/*.swp
+**/*.swo
+**/*.swn
+**/.DS_Store
+**/Thumbs.db
+
+# ===== ARCHIVES =====
+**/*.zip
+**/*.tar
+**/*.gz
+**/*.rar
+**/*.7z
+
+# ===== MEDIA FILES (typically not relevant for code context) =====
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.gif
+**/*.svg
+**/*.ico
+**/*.mp4
+**/*.mp3
+**/*.wav
+**/*.pdf
+
+# ===== MINIFIED FILES =====
+**/*.min.js
+**/*.min.css
+**/*.min.map
+
+# ===== SOURCE MAPS =====
+**/*.map
+
+# ===== GENERATED FILES =====
+**/generated/**
+**/auto-generated/**
+**/.next/trace
+**/.next/cache/**
+
+# ===== DOCUMENTATION (already indexed) =====
+# Exclude large documentation files to reduce noise
+**/node_modules/**/README.md
+**/node_modules/**/CHANGELOG.md
+**/node_modules/**/LICENSE
+
+# ===== SPECIFIC TO PROJECT =====
+# Add any project-specific files to exclude here
