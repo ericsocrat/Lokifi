@@ -272,6 +272,9 @@ describe('DrawingStore', () => {
         });
       });
 
+      // Small delay to ensure timestamp difference
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
       act(() => {
         result.current.updateObject(objectId, {
           points: [{ x: 200, y: 200 }],
