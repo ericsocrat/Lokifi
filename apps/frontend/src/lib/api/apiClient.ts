@@ -112,18 +112,39 @@ export class APIClient {
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      const error = ErrorResponseSchema.safeParse(errorData);
-      
-      if (error.success) {
-        throw new APIError(error.data.error, error.data.code, response.status);
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      let errorCode = 'HTTP_ERROR';
+      let errorDetails: unknown;
+
+      try {
+        const errorData = await response.json();
+        const parsedError = ErrorResponseSchema.safeParse(errorData);
+
+        if (parsedError.success) {
+          // Backend returned valid error schema
+          errorMessage = parsedError.data.error || errorMessage;
+          errorCode = parsedError.data.code || errorCode;
+          errorDetails = parsedError.data.details;
+        } else {
+          // Backend returned JSON but not in expected format - preserve it
+          errorDetails = errorData;
+          console.warn('[APIClient] Received error response not matching schema:', {
+            status: response.status,
+            statusText: response.statusText,
+            data: errorData,
+            parseErrors: parsedError.error?.errors,
+          });
+        }
+      } catch (jsonError) {
+        // Could not parse JSON - fallback to statusText
+        console.warn('[APIClient] Could not parse error response as JSON:', {
+          status: response.status,
+          statusText: response.statusText,
+          parseError: jsonError instanceof Error ? jsonError.message : String(jsonError),
+        });
       }
-      
-      throw new APIError(
-        `HTTP ${response.status}: ${response.statusText}`,
-        'HTTP_ERROR',
-        response.status
-      );
+
+      throw new APIError(errorMessage, errorCode, response.status, errorDetails);
     }
 
     const data = await response.json();

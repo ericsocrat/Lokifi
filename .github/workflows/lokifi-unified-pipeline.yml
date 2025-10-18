@@ -44,18 +44,33 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: 🧪 Run tests with coverage
-        run: npm run test:coverage
+        run: |
+          set -o pipefail
+          # Run tests and save full output to test-output.log (preserved even on failure)
+          npm run test:coverage 2>&1 | tee test-output.log
+        shell: bash
         continue-on-error: false
 
       - name: 📊 Upload coverage report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
           path: apps/frontend/coverage/
           retention-days: 30
+          if-no-files-found: warn
+
+      - name: 📄 Upload frontend test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-logs
+          path: apps/frontend/test-output.log
+          retention-days: 30
+          if-no-files-found: warn
 
       - name: 💬 Comment PR with results
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
         with:
           script: |
@@ -570,10 +585,33 @@ jobs:
     if: always()
 
     steps:
+      - name: 🔽 Download frontend test logs
+        if: needs.frontend-test.result != 'success'
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-test-logs
+          path: frontend-logs
+        continue-on-error: true
+
       - name: ✅ Check frontend tests
         if: needs.frontend-test.result != 'success'
         run: |
           echo "❌ Frontend tests failed!"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📄 Frontend Test Log (last 200 lines):"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          if [ -f frontend-logs/test-output.log ]; then
+            tail -n 200 frontend-logs/test-output.log
+          else
+            echo "⚠️  Test log file not found (artifact may not have uploaded)"
+          fi
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "💡 Full artifacts available for download:"
+          echo "   - frontend-test-logs (test output)"
+          echo "   - frontend-coverage (coverage report)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           exit 1
 
       - name: ✅ Check frontend security
