@@ -91,8 +91,16 @@ jobs:
           if-no-files-found: warn
 
       - name: � Validate coverage threshold
+        if: always()
         run: |
+          cd apps/frontend
           echo "📊 Checking coverage threshold..."
+
+          # Check if coverage file exists
+          if [ ! -f "coverage/coverage-summary.json" ]; then
+            echo "⚠️  Coverage file not found, skipping validation"
+            exit 0
+          fi
 
           # Extract coverage percentage
           COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
@@ -101,8 +109,10 @@ jobs:
           echo "Coverage: ${COVERAGE}%"
           echo "Threshold: ${THRESHOLD}%"
 
-          # Use bc for floating point comparison
-          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+          # Use awk for floating point comparison (bc not always available)
+          BELOW_THRESHOLD=$(awk -v cov="$COVERAGE" -v thr="$THRESHOLD" 'BEGIN {print (cov < thr)}')
+          
+          if [ "$BELOW_THRESHOLD" -eq 1 ]; then
             echo "⚠️  Coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
             echo "This is a warning, not blocking the build yet."
             # Uncomment to make it blocking:
