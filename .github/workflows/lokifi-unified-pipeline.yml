@@ -60,17 +60,17 @@ jobs:
           retry_on: error
           command: |
             cd apps/frontend
-            set -o pipefail
             # Run tests with CI optimizations:
+            # - run: Force non-watch mode for CI
             # - maxWorkers=2: Limit parallel execution for CI stability
             # - testTimeout=30000: 30s timeout per test (prevents hangs)
             # - reporter=github-actions: Native GitHub annotations
             npm run test:coverage -- \
+              --run \
               --maxWorkers=2 \
               --testTimeout=30000 \
               --reporter=default \
-              --reporter=github-actions \
-              2>&1 | tee test-output.log
+              --reporter=github-actions
 
       - name: 📊 Upload coverage report
         if: always()
@@ -111,7 +111,7 @@ jobs:
 
           # Use awk for floating point comparison (bc not always available)
           BELOW_THRESHOLD=$(awk -v cov="$COVERAGE" -v thr="$THRESHOLD" 'BEGIN {print (cov < thr)}')
-          
+
           if [ "$BELOW_THRESHOLD" -eq 1 ]; then
             echo "⚠️  Coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
             echo "This is a warning, not blocking the build yet."

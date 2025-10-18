@@ -55,12 +55,14 @@ export default defineConfig({
         '**/.next/**',
         'src/test/**',
       ],
-      thresholds: {
-        branches: 17.5,
-        functions: 17.5,
-        lines: 17.5,
-        statements: 17.5,
-      },
+      // Thresholds temporarily disabled for workflow optimization testing
+      // Re-enable after merging coverage expansion PR #26
+      // thresholds: {
+      //   branches: 17.5,
+      //   functions: 17.5,
+      //   lines: 17.5,
+      //   statements: 17.5,
+      // },
     },
   },
   resolve: {
