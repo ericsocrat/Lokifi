@@ -2,6 +2,8 @@
 
 > **Project Context**: Lokifi is a full-stack financial application with Next.js frontend, FastAPI backend, and Redis caching.
 
+> **⚡ Solo Dev Mode**: Skip lengthy documentation and summaries. Tests are self-documenting with descriptive `it()` statements. Focus on: code → test → validate → next task.
+
 ## Core Technologies
 
 ### Frontend Stack
@@ -37,6 +39,8 @@
 - **Backend**: Pytest with fixtures and parametrize
 - Aim for 80%+ coverage on new code
 - Test file naming: `*.test.ts` (frontend), `test_*.py` (backend)
+- **Solo dev workflow**: Skip detailed documentation during test creation - tests ARE the documentation
+- **No completion summaries**: Create tests, verify pass rate, move to next component immediately
 
 ## Project Structure
 

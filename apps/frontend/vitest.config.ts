@@ -37,20 +37,39 @@ export default defineConfig({
       '**/tests/types/lightweight-charts.test.ts',
     ],
     coverage: {
+      provider: 'v8',
       reporter: ['text', 'html', 'json'],
-      threshold: {
-        global: {
-          branches: 17.5,
-          functions: 17.5,
-          lines: 17.5,
-          statements: 17.5,
-        },
+      include: [
+        'src/**/*.{ts,tsx}',
+        'lib/**/*.{ts,tsx}',
+        'components/**/*.{ts,tsx}',
+        'hooks/**/*.{ts,tsx}',
+      ],
+      exclude: [
+        '**/*.test.{ts,tsx}',
+        '**/*.spec.{ts,tsx}',
+        '**/tests/**',
+        '**/__tests__/**',
+        '**/*.config.{ts,js}',
+        '**/node_modules/**',
+        '**/.next/**',
+        'src/test/**',
+      ],
+      thresholds: {
+        branches: 17.5,
+        functions: 17.5,
+        lines: 17.5,
+        statements: 17.5,
       },
     },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@/lib': path.resolve(__dirname, './src/lib'),
+      '@/components': path.resolve(__dirname, './src/components'),
+      '@/hooks': path.resolve(__dirname, './src/hooks'),
+      '@/utils': path.resolve(__dirname, './src/utils'),
     },
   },
 });

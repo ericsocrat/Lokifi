@@ -1,8 +1,9 @@
 {
   // ============================================
-  // LOKIFI WORKSPACE SETTINGS - OPTIMIZED
-  // Optimized for: Next.js + FastAPI + Testing
-  // Updated: October 10, 2025
+  // LOKIFI WORKSPACE SETTINGS - FULLY OPTIMIZED
+  // Optimized for: Next.js 15 + FastAPI + Vitest + Pytest
+  // Last Updated: October 18, 2025
+  // Optimization Level: Production-Ready ⭐
   // ============================================
 
   // ===== EDITOR - PERFORMANCE & UX =====
@@ -67,6 +68,8 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.eol": "\n",
+  "files.hotExit": "onExitAndWindowClose",
+  "files.defaultLanguage": "typescript",
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
@@ -541,12 +544,16 @@
 
   // ===== PERFORMANCE - OPTIMIZATIONS =====
   "files.maxMemoryForLargeFilesMB": 4096,
+  "files.simpleDialog.enable": true,
   "extensions.ignoreRecommendations": true,
   "extensions.autoUpdate": false,
   "extensions.autoCheckUpdates": false,
   "extensions.experimental.useAutoProfilingMode": true,
   "workbench.enableExperiments": false,
   "workbench.settings.enableNaturalLanguageSearch": false,
+  "workbench.reduceMotion": "off",
+  "window.restoreWindows": "none",
+  "window.newWindowDimensions": "inherit",
   "telemetry.telemetryLevel": "off",
   "update.mode": "manual",
   "update.showReleaseNotes": false,
@@ -582,14 +589,9 @@
   // Enable search capabilities (requires GitHub Copilot with search enabled)
   "github.copilot.chat.search.enabled": true,
 
-  // Advanced settings for better code generation
+  // Advanced settings for better code generation (optimized for 50-75 line suggestions)
   "github.copilot.advanced": {
-    "debug.overrideEngine": "",
-    "debug.testOverrideProxyUrl": "",
-    "debug.overrideProxyUrl": "",
-    "length": 500,
-    "temperature": "",
-    "top_p": "",
+    "length": 600,
     "stops": {
       "*": ["\n\n\n"],
       "python": ["\ndef ", "\nclass ", "\nif ", "\n\n#"],
@@ -728,16 +730,7 @@
   "versionlens.pip.caching.duration": 3600,
   "versionlens.suggestions.showPrerelease": false,
   "workbench.editor.tabActionLocation": "right",
-  "github.copilot.chat.codeGeneration.instructions": [
-    {
-      "text": "Always follow the coding standards in CODING_STANDARDS.md"
-    },
-    {
-      "text": "For testing, use Vitest conventions from TEST_QUICK_REFERENCE.md"
-    },
-    {
-      "text": "Follow project structure in REPOSITORY_STRUCTURE.md"
-    }
-  ],
+
+  // Use .github/copilot-instructions.md for project-specific instructions
   "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }

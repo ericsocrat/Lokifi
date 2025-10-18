@@ -1,5 +1,11 @@
+import {
+  deleteSlot,
+  listSlots,
+  loadSlot,
+  projectFromState,
+  saveSlot,
+} from '@/lib/data/persistence';
 import { exportPNG, exportSVG } from '@/lib/utils/exporters';
-import { deleteSlot, listSlots, loadSlot, projectFromState, saveSlot } from '@/lib/utils/persistence';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 
@@ -106,4 +112,3 @@ export default function ProjectBar() {
     </div>
   );
 }
-
