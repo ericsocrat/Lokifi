@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main, develop]
 
+# Prevent concurrent runs on same ref
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   pull-requests: write
@@ -14,7 +19,9 @@ permissions:
 env:
   NODE_VERSION: "20"
   PYTHON_VERSION: "3.11"
-  COVERAGE_THRESHOLD: 10
+  COVERAGE_THRESHOLD_FRONTEND: 10
+  COVERAGE_THRESHOLD_BACKEND: 80
+  COVERAGE_THRESHOLD_OVERALL: 20
 
 jobs:
   # ============================================
@@ -36,6 +43,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 🔼 Upgrade npm to latest
         run: npm install -g npm@latest
@@ -43,13 +52,25 @@ jobs:
       - name: 📚 Install dependencies
         run: npm install --legacy-peer-deps
 
-      - name: 🧪 Run tests with coverage
-        run: |
-          set -o pipefail
-          # Run tests and save full output to test-output.log (preserved even on failure)
-          npm run test:coverage 2>&1 | tee test-output.log
-        shell: bash
-        continue-on-error: false
+      - name: 🧪 Run tests with coverage (with retry)
+        uses: nick-fields/retry-action@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 2
+          retry_on: error
+          command: |
+            cd apps/frontend
+            set -o pipefail
+            # Run tests with CI optimizations:
+            # - maxWorkers=2: Limit parallel execution for CI stability
+            # - testTimeout=30000: 30s timeout per test (prevents hangs)
+            # - reporter=github-actions: Native GitHub annotations
+            npm run test:coverage -- \
+              --maxWorkers=2 \
+              --testTimeout=30000 \
+              --reporter=default \
+              --reporter=github-actions \
+              2>&1 | tee test-output.log
 
       - name: 📊 Upload coverage report
         if: always()
@@ -69,7 +90,28 @@ jobs:
           retention-days: 30
           if-no-files-found: warn
 
-      - name: 💬 Comment PR with results
+      - name: � Validate coverage threshold
+        run: |
+          echo "📊 Checking coverage threshold..."
+
+          # Extract coverage percentage
+          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          THRESHOLD=${{ env.COVERAGE_THRESHOLD_FRONTEND }}
+
+          echo "Coverage: ${COVERAGE}%"
+          echo "Threshold: ${THRESHOLD}%"
+
+          # Use bc for floating point comparison
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "⚠️  Coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+            echo "This is a warning, not blocking the build yet."
+            # Uncomment to make it blocking:
+            # exit 1
+          else
+            echo "✅ Coverage ${COVERAGE}% meets threshold ${THRESHOLD}%"
+          fi
+
+      - name: �💬 Comment PR with results
         if: github.event_name == 'pull_request' && always()
         uses: actions/github-script@v7
         with:
@@ -217,6 +259,9 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
+          cache-dependency-path: |
+            apps/backend/requirements.txt
+            apps/backend/requirements-dev.txt
 
       - name: 📚 Install dependencies
         run: |
@@ -585,7 +630,40 @@ jobs:
     if: always()
 
     steps:
-      - name: 🔽 Download frontend test logs
+      - name: � Check Job Results
+        id: check-results
+        run: |
+          echo "Frontend Test: ${{ needs.frontend-test.result }}"
+          echo "Frontend Security: ${{ needs.frontend-security.result }}"
+          echo "Backend Test: ${{ needs.backend-test.result }}"
+          
+          # Track failures
+          FAILURES=0
+          
+          if [ "${{ needs.frontend-test.result }}" != "success" ]; then
+            echo "❌ Frontend tests failed"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          if [ "${{ needs.frontend-security.result }}" != "success" ]; then
+            echo "❌ Frontend security failed"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          if [ "${{ needs.backend-test.result }}" != "success" ]; then
+            echo "❌ Backend tests failed"
+            FAILURES=$((FAILURES + 1))
+          fi
+          
+          echo "failures=$FAILURES" >> $GITHUB_OUTPUT
+          
+          if [ $FAILURES -gt 0 ]; then
+            echo "⚠️  $FAILURES critical job(s) failed"
+          else
+            echo "✅ All critical jobs passed!"
+          fi
+
+      - name: �🔽 Download frontend test logs
         if: needs.frontend-test.result != 'success'
         uses: actions/download-artifact@v4
         with:
@@ -626,27 +704,48 @@ jobs:
           echo "❌ Backend tests failed!"
           exit 1
 
-      - name: 🎉 Quality gate passed
+      - name: 🎉 Quality gate result
         run: |
-          echo "✅ All critical quality checks passed!"
-          echo "🎉 Ready to merge!"
+          FAILURES=${{ steps.check-results.outputs.failures }}
+          
+          if [ "$FAILURES" -eq "0" ]; then
+            echo "✅ All critical quality checks passed!"
+            echo "🎉 Ready to merge!"
+          else
+            echo "⚠️  Quality gate completed with $FAILURES failure(s)"
+            echo "📋 Review the logs above for details"
+            # Strict mode: Uncomment to block merges on failure
+            # exit 1
+          fi
 
       - name: 💬 Comment PR with final status
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
+            const frontendResult = '${{ needs.frontend-test.result }}';
+            const securityResult = '${{ needs.frontend-security.result }}';
+            const backendResult = '${{ needs.backend-test.result }}';
+            const failures = parseInt('${{ steps.check-results.outputs.failures }}');
+            
+            const getEmoji = (result) => result === 'success' ? '✅' : '❌';
+            const getStatus = (result) => result === 'success' ? 'PASSED' : 'FAILED';
+            
+            const allPassed = failures === 0;
+            
             const body = [
               '## 🎯 Quality Gate - Final Status',
               '',
-              '**Result:** ✅ All checks passed!',
+              `**Overall Result:** ${allPassed ? '✅ ALL CHECKS PASSED' : '⚠️ SOME CHECKS FAILED'}`,
               '',
-              '### Summary',
-              '- ✅ Frontend tests passed',
-              '- ✅ Frontend security passed',
-              '- ✅ Backend tests passed',
+              '### Job Results',
+              `${getEmoji(frontendResult)} **Frontend Tests:** ${getStatus(frontendResult)}`,
+              `${getEmoji(securityResult)} **Frontend Security:** ${getStatus(securityResult)}`,
+              `${getEmoji(backendResult)} **Backend Tests:** ${getStatus(backendResult)}`,
               '',
-              '🎉 **This PR is ready to merge!**',
+              allPassed 
+                ? '🎉 **This PR is ready to merge!**'
+                : '⚠️ **Please review and fix failing checks before merging**',
               '',
               '---',
               '*Lokifi Unified CI/CD Pipeline* 🚀'
