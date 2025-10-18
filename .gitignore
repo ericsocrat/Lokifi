@@ -39,3 +39,7 @@ backend/data/*
 # OS/IDE
 frontend/frontend/
 frontend/backend/
+
+# Protection Reports (auto-generated on each commit)
+docs/reports/protection_report_*.md
+tools/docs/reports/protection_report_*.md

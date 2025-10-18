@@ -1,8 +1,9 @@
 {
   // ============================================
-  // LOKIFI WORKSPACE SETTINGS - OPTIMIZED
-  // Optimized for: Next.js + FastAPI + Testing
-  // Updated: October 10, 2025
+  // LOKIFI WORKSPACE SETTINGS - FULLY OPTIMIZED
+  // Optimized for: Next.js 15 + FastAPI + Vitest + Pytest
+  // Last Updated: October 18, 2025
+  // Optimization Level: Production-Ready ⭐
   // ============================================
 
   // ===== EDITOR - PERFORMANCE & UX =====
@@ -40,6 +41,26 @@
   "editor.selectionHighlight": true,
   "editor.semanticHighlighting.enabled": true,
   "editor.maxTokenizationLineLength": 20000,
+  "editor.formatOnPaste": true,
+  "editor.formatOnType": false,
+  "editor.autoClosingBrackets": "languageDefined",
+  "editor.autoClosingQuotes": "languageDefined",
+  "editor.autoClosingDelete": "auto",
+  "editor.autoClosingOvertype": "auto",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "on"
+  },
+  "editor.suggest.preview": true,
+  "editor.suggest.showDetails": true,
+  "editor.suggest.showStatusBar": true,
+  "editor.suggest.insertMode": "insert",
+  "editor.suggest.filterGraceful": true,
+  "editor.suggest.localityBonus": true,
+  "editor.suggest.shareSuggestSelections": true,
+  "editor.inlayHints.enabled": "on",
+  "editor.largeFileOptimizations": true,
 
   // ===== FILES - AUTO-SAVE & EXCLUSIONS =====
   "files.autoSave": "onFocusChange",
@@ -47,6 +68,8 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.eol": "\n",
+  "files.hotExit": "onExitAndWindowClose",
+  "files.defaultLanguage": "typescript",
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
@@ -96,6 +119,9 @@
   "search.useIgnoreFiles": true,
   "search.smartCase": true,
   "search.followSymlinks": false,
+  "search.maxResults": 20000,
+  "search.quickOpen.includeSymbols": true,
+  "search.quickOpen.includeHistory": true,
 
   // ===== TYPESCRIPT / JAVASCRIPT - FORMATTING =====
   "[typescript]": {
@@ -146,7 +172,6 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "javascript.suggest.autoImports": true,
   "typescript.suggest.autoImports": true,
-  "javascript.suggest.paths": true,
   "typescript.suggest.paths": true,
   "typescript.tsserver.maxTsServerMemory": 4096,
   "typescript.tsserver.watchOptions": {
@@ -159,6 +184,18 @@
   "typescript.disableAutomaticTypeAcquisition": true,
   "typescript.tsserver.log": "off",
   "typescript.surveys.enabled": false,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.parameterTypes.enabled": false,
+  "typescript.inlayHints.variableTypes.enabled": false,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": false,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "typescript.inlayHints.enumMemberValues.enabled": false,
+  "javascript.inlayHints.parameterNames.enabled": "literals",
+  "javascript.inlayHints.parameterTypes.enabled": false,
+  "javascript.inlayHints.variableTypes.enabled": false,
+  "javascript.inlayHints.propertyDeclarationTypes.enabled": false,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": false,
+  "javascript.inlayHints.enumMemberValues.enabled": false,
 
   // ===== PYTHON - BACKEND CONFIGURATION =====
   "[python]": {
@@ -174,6 +211,8 @@
   "python.analysis.autoImportCompletions": true,
   "python.analysis.inlayHints.functionReturnTypes": true,
   "python.analysis.inlayHints.variableTypes": false,
+  "python.analysis.inlayHints.pytestParameters": true,
+  "python.analysis.inlayHints.callArgumentNames": "partial",
   "python.analysis.diagnosticMode": "openFilesOnly",
   "python.analysis.memory.keepLibraryAst": false,
   "python.analysis.persistAllIndices": false,
@@ -202,10 +241,12 @@
     "**/cypress/**",
     "**/.{idea,git,cache,output,temp}/**"
   ],
+  "vitest.showFailMessages": true,
+  "vitest.watchOnStartup": "openTesting",
 
   // ===== PLAYWRIGHT (NEW!) =====
   "playwright.reuseBrowser": false,
-  "playwright.showTrace": false,
+  "playwright.showTrace": true,
 
   // ===== COVERAGE GUTTERS (NEW!) =====
   "coverage-gutters.coverageFileNames": [
@@ -283,6 +324,10 @@
   "git.autofetchPeriod": 180,
   "git.pruneOnFetch": true,
   "git.untrackedChanges": "separate",
+  "git.ignoreRebaseWarning": true,
+  "git.maxFileSize": 5242880,
+  "git.allowForcePush": false,
+  "git.branchProtection": ["main", "master", "production"],
   "gitlens.hovers.currentLine.over": "line",
   "gitlens.codeLens.enabled": false,
   "gitlens.currentLine.enabled": false,
@@ -304,7 +349,7 @@
   // ===== DOCKER =====
   "docker.showExplorer": true,
 
-  // ===== TODO TREE =====
+  // ===== TODO TREE - ENHANCED TASK TRACKING =====
   "todo-tree.general.tags": [
     "TODO",
     "FIXME",
@@ -312,30 +357,178 @@
     "HACK",
     "NOTE",
     "XXX",
+    "TASK",
+    "TEST",
+    "COVERAGE",
+    "REFACTOR",
+    "OPTIMIZE",
+    "CRITICAL",
+    "HIGH",
+    "MEDIUM",
+    "LOW",
+    "DONE",
     "[ ]",
     "[x]"
   ],
+  "todo-tree.general.statusBar": "total",
+  "todo-tree.general.revealBehaviour": "start of todo",
+  "todo-tree.general.tagGroups": {
+    "CRITICAL": ["CRITICAL", "FIXME", "BUG"],
+    "TASKS": ["TODO", "TASK", "HACK"],
+    "TESTING": ["TEST", "COVERAGE"],
+    "QUALITY": ["OPTIMIZE", "REFACTOR"],
+    "INFO": ["NOTE", "XXX"]
+  },
   "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\*))\\s*($TAGS)",
+  "todo-tree.highlights.enabled": true,
   "todo-tree.highlights.defaultHighlight": {
     "icon": "alert",
-    "type": "text",
+    "type": "text-and-comment",
     "foreground": "#ffffff",
-    "iconColour": "#feca57"
+    "background": "#feca57",
+    "opacity": 50,
+    "iconColour": "#feca57",
+    "gutterIcon": true
   },
   "todo-tree.highlights.customHighlight": {
     "TODO": {
       "icon": "check",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#48dbfb",
       "iconColour": "#48dbfb"
     },
+    "TASK": {
+      "icon": "tasklist",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#00aa00",
+      "iconColour": "#00aa00"
+    },
     "FIXME": {
-      "icon": "alert",
+      "icon": "flame",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff6b6b",
       "iconColour": "#ff6b6b"
     },
     "BUG": {
       "icon": "bug",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff6b6b",
       "iconColour": "#ff6b6b"
+    },
+    "CRITICAL": {
+      "icon": "alert",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff0000",
+      "iconColour": "#ff0000"
+    },
+    "TEST": {
+      "icon": "beaker",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#00ced1",
+      "iconColour": "#00ced1"
+    },
+    "COVERAGE": {
+      "icon": "graph",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#32cd32",
+      "iconColour": "#32cd32"
+    },
+    "REFACTOR": {
+      "icon": "sync",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#4169e1",
+      "iconColour": "#4169e1"
+    },
+    "OPTIMIZE": {
+      "icon": "zap",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#9370db",
+      "iconColour": "#9370db"
+    },
+    "NOTE": {
+      "icon": "note",
+      "type": "text-and-comment",
+      "foreground": "#000",
+      "background": "#ffff00",
+      "iconColour": "#ffff00"
+    },
+    "HACK": {
+      "icon": "tools",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff8c00",
+      "iconColour": "#ff8c00"
+    },
+    "DONE": {
+      "icon": "check-circle",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#00aa00",
+      "iconColour": "#00aa00"
+    },
+    "HIGH": {
+      "icon": "arrow-up",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ff6347",
+      "iconColour": "#ff6347"
+    },
+    "MEDIUM": {
+      "icon": "dash",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#ffa500",
+      "iconColour": "#ffa500"
+    },
+    "LOW": {
+      "icon": "arrow-down",
+      "type": "text-and-comment",
+      "foreground": "#fff",
+      "background": "#90ee90",
+      "iconColour": "#90ee90"
     }
   },
+  "todo-tree.filtering.excludeGlobs": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/.pytest_cache/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/venv/**",
+    "**/__pycache__/**",
+    "**/.git/**",
+    "**/htmlcov/**",
+    "**/.lokifi-cache/**"
+  ],
+  "todo-tree.filtering.includeGlobs": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.jsx",
+    "**/*.py",
+    "**/*.md",
+    "**/*.json",
+    "**/*.yaml",
+    "**/*.yml"
+  ],
+  "todo-tree.tree.showCountsInTree": true,
+  "todo-tree.tree.showBadges": true,
+  "todo-tree.tree.grouped": true,
+  "todo-tree.tree.expanded": true,
+  "todo-tree.tree.flat": false,
+  "todo-tree.tree.sort": true,
+  "todo-tree.tree.tagsOnly": false,
+  "todo-tree.tree.hideIconsWhenGroupedByTag": false,
 
   // ===== TERMINAL =====
   "terminal.integrated.defaultProfile.windows": "PowerShell",
@@ -351,12 +544,16 @@
 
   // ===== PERFORMANCE - OPTIMIZATIONS =====
   "files.maxMemoryForLargeFilesMB": 4096,
+  "files.simpleDialog.enable": true,
   "extensions.ignoreRecommendations": true,
   "extensions.autoUpdate": false,
   "extensions.autoCheckUpdates": false,
   "extensions.experimental.useAutoProfilingMode": true,
   "workbench.enableExperiments": false,
   "workbench.settings.enableNaturalLanguageSearch": false,
+  "workbench.reduceMotion": "off",
+  "window.restoreWindows": "none",
+  "window.newWindowDimensions": "inherit",
   "telemetry.telemetryLevel": "off",
   "update.mode": "manual",
   "update.showReleaseNotes": false,
@@ -367,20 +564,70 @@
   "editor.codeLens": true,
   "diffEditor.codeLens": false,
 
-  // ===== GITHUB COPILOT - AI ASSISTANCE =====
+  // ===== GITHUB COPILOT - AI ASSISTANCE (OPTIMIZED) =====
+  // Enable Copilot for all relevant file types
   "github.copilot.enable": {
     "*": true,
     "yaml": true,
     "plaintext": false,
-    "markdown": true
+    "markdown": true,
+    "scminput": false
   },
+
+  // Editor completions and suggestions
   "github.copilot.editor.enableAutoCompletions": true,
-  "github.copilot.editor.enableCodeActions": false,
-  "github.copilot.chat.useProjectTemplates": false,
+  "github.copilot.editor.enableCodeActions": true,
+
+  // Chat settings - Enhanced for better context
+  "github.copilot.chat.useProjectTemplates": true,
+  "github.copilot.chat.scopeSelection": true,
+  "github.copilot.chat.runCommand.enabled": true,
+  "github.copilot.chat.terminalChatLocation": "quickChat",
+  "github.copilot.chat.followUps": "on",
+  "github.copilot.chat.localeOverride": "en",
+
+  // Enable search capabilities (requires GitHub Copilot with search enabled)
+  "github.copilot.chat.search.enabled": true,
+
+  // Advanced settings for better code generation (optimized for 50-75 line suggestions)
+  "github.copilot.advanced": {
+    "length": 600,
+    "stops": {
+      "*": ["\n\n\n"],
+      "python": ["\ndef ", "\nclass ", "\nif ", "\n\n#"],
+      "javascript": ["\nfunction ", "\nclass ", "\nif ", "\n\n//"],
+      "typescript": ["\nfunction ", "\nclass ", "\nif ", "\ninterface ", "\ntype ", "\n\n//"],
+      "typescriptreact": ["\nfunction ", "\nclass ", "\nif ", "\ninterface ", "\ntype ", "\nconst ", "\n\n//"],
+      "javascriptreact": ["\nfunction ", "\nclass ", "\nif ", "\nconst ", "\n\n//"]
+    }
+  },
+
+  // Inline suggestions
+  "github.copilot.inlineSuggest.enable": true,
+
+  // Completions preference
+  "github.copilot.editor.iterativeFixing": true,
 
   // ===== WORKBENCH - UI PREFERENCES =====
   "workbench.colorTheme": "Default Dark+",
   "workbench.iconTheme": "vs-seti",
+
+  // Color customizations for visual distinction
+  "workbench.colorCustomizations": {
+    // Development environment (blue theme)
+    "titleBar.activeBackground": "#1e3a8a",
+    "titleBar.activeForeground": "#ffffff",
+    "titleBar.inactiveBackground": "#1e40af",
+    "titleBar.inactiveForeground": "#94a3b8",
+    "statusBar.background": "#1e3a8a",
+    "statusBar.foreground": "#ffffff",
+    "statusBar.noFolderBackground": "#334155",
+    "statusBar.debuggingBackground": "#dc2626",
+    "statusBar.debuggingForeground": "#ffffff",
+    "activityBar.activeBackground": "#1e40af33",
+    "activityBar.activeBorder": "#3b82f6"
+  },
+
   "workbench.startupEditor": "none",
   "workbench.editor.enablePreview": false,
   "workbench.editor.closeEmptyGroups": false,
@@ -391,7 +638,16 @@
   "workbench.tree.indent": 20,
   "workbench.list.smoothScrolling": true,
   "workbench.activityBar.location": "default",
+  "workbench.sideBar.location": "left",
+  "workbench.panel.defaultLocation": "bottom",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.editor.decorations.badges": true,
+  "workbench.editor.decorations.colors": true,
+  "workbench.editor.tabCloseButton": "right",
+  "workbench.editor.tabSizing": "shrink",
+  "workbench.commandPalette.history": 50,
   "problems.autoReveal": false,
+  "problems.showCurrentInStatus": true,
 
   // ===== FILE EXPLORER - FILE NESTING =====
   "explorer.fileNesting.enabled": true,
@@ -415,10 +671,13 @@
   "npm.autoDetect": "on",
   "npm.runSilent": false,
 
-  // ===== BREADCRUMBS =====
   "breadcrumbs.enabled": true,
   "breadcrumbs.filePath": "on",
   "breadcrumbs.symbolPath": "on",
+  "breadcrumbs.symbolSortOrder": "position",
+  "breadcrumbs.showKeys": false,
+  "breadcrumbs.showFunctions": true,
+  "breadcrumbs.showClasses": true,
 
   // ===== SECURITY =====
   "security.workspace.trust.untrustedFiles": "prompt",
@@ -469,5 +728,9 @@
   "versionlens.suggestions.showOnStartup": false,
   "versionlens.npm.caching.duration": 3600,
   "versionlens.pip.caching.duration": 3600,
-  "versionlens.suggestions.showPrerelease": false
+  "versionlens.suggestions.showPrerelease": false,
+  "workbench.editor.tabActionLocation": "right",
+
+  // Use .github/copilot-instructions.md for project-specific instructions
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true
 }

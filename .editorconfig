@@ -1,0 +1,84 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# Top-most EditorConfig file
+root = true
+
+# ============================================
+# LOKIFI EDITORCONFIG
+# Cross-editor formatting consistency
+# Works with: VS Code, Sublime, Vim, IntelliJ, etc.
+# ============================================
+
+# ===== ALL FILES =====
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+
+# ===== TYPESCRIPT/JAVASCRIPT =====
+[*.{js,jsx,ts,tsx,mjs,cjs}]
+indent_size = 2
+max_line_length = 120
+
+# ===== JSON FILES =====
+[*.json]
+indent_size = 2
+max_line_length = 120
+
+# ===== YAML FILES =====
+[*.{yml,yaml}]
+indent_size = 2
+
+# ===== MARKDOWN =====
+[*.md]
+indent_size = 2
+trim_trailing_whitespace = false
+max_line_length = off
+
+# ===== PYTHON =====
+[*.py]
+indent_size = 4
+max_line_length = 88
+# Black formatter standard
+
+# ===== HTML =====
+[*.html]
+indent_size = 2
+max_line_length = 120
+
+# ===== CSS/SCSS =====
+[*.{css,scss,sass}]
+indent_size = 2
+max_line_length = 120
+
+# ===== SHELL SCRIPTS =====
+[*.{sh,bash}]
+indent_size = 2
+end_of_line = lf
+
+# ===== POWERSHELL =====
+[*.ps1]
+indent_size = 4
+end_of_line = crlf
+
+# ===== CONFIG FILES =====
+[*.{toml,ini,cfg}]
+indent_size = 2
+
+# ===== DOCKER =====
+[Dockerfile*]
+indent_size = 2
+
+# ===== MAKEFILE =====
+[Makefile]
+indent_style = tab
+
+# ===== PACKAGE FILES =====
+[{package.json,package-lock.json,requirements.txt,Pipfile}]
+indent_size = 2
+
+# ===== IGNORE GENERATED FILES =====
+[{*.min.js,*.min.css,dist/**,build/**,.next/**,coverage/**}]
+insert_final_newline = unset
+trim_trailing_whitespace = unset

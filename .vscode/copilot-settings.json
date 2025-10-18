@@ -1,0 +1,272 @@
+{
+  // ============================================
+  // GITHUB COPILOT WORKSPACE CONFIGURATION
+  // Optimized for: High-Quality Code Generation
+  // Project: Lokifi (Next.js + FastAPI + Testing)
+  // Updated: October 17, 2025
+  // ============================================
+
+  // ===== CONTEXT & PROJECT UNDERSTANDING =====
+  "projectContext": {
+    "name": "Lokifi",
+    "type": "fullstack",
+    "stack": {
+      "frontend": {
+        "framework": "Next.js 14",
+        "language": "TypeScript",
+        "styling": "Tailwind CSS",
+        "stateManagement": "Zustand",
+        "testing": "Vitest + React Testing Library",
+        "e2e": "Playwright"
+      },
+      "backend": {
+        "framework": "FastAPI",
+        "language": "Python 3.11+",
+        "testing": "pytest",
+        "orm": "SQLAlchemy"
+      }
+    },
+    "patterns": [
+      "TypeScript strict mode",
+      "Functional components with hooks",
+      "Server-side rendering where applicable",
+      "API routes for backend communication",
+      "Comprehensive test coverage",
+      "Accessibility-first design"
+    ]
+  },
+
+  // ===== CODE GENERATION PREFERENCES =====
+  "codeStyle": {
+    "typescript": {
+      "preferArrowFunctions": true,
+      "preferConst": true,
+      "useTypeScript": true,
+      "explicitTypes": "when-needed",
+      "asyncAwait": "prefer",
+      "nullishCoalescing": true,
+      "optionalChaining": true,
+      "destructuring": "prefer",
+      "templateLiterals": "prefer"
+    },
+    "python": {
+      "style": "black",
+      "typeHints": true,
+      "asyncAwait": "prefer",
+      "docstrings": "google",
+      "imports": "isort",
+      "lineLength": 100
+    },
+    "react": {
+      "componentType": "functional",
+      "hooks": true,
+      "propsDestructuring": true,
+      "conditionalRendering": "ternary-or-short-circuit",
+      "keyExtraction": "always"
+    }
+  },
+
+  // ===== TESTING PREFERENCES =====
+  "testingConventions": {
+    "frontend": {
+      "framework": "vitest",
+      "library": "@testing-library/react",
+      "coverage": {
+        "target": 80,
+        "statements": true,
+        "branches": true,
+        "functions": true,
+        "lines": true
+      },
+      "testStructure": "describe-it",
+      "assertionStyle": "expect",
+      "mockingStrategy": "vitest.mock",
+      "testFileNaming": "*.test.ts(x)",
+      "testLocation": "adjacent-or-tests-folder"
+    },
+    "backend": {
+      "framework": "pytest",
+      "coverage": {
+        "target": 80,
+        "strict": true
+      },
+      "fixtures": "prefer-fixtures",
+      "asyncTesting": "pytest-asyncio",
+      "mockingStrategy": "pytest-mock"
+    }
+  },
+
+  // ===== DOCUMENTATION PREFERENCES =====
+  "documentation": {
+    "comments": {
+      "typescript": "JSDoc for public APIs",
+      "python": "Google-style docstrings",
+      "inline": "when-complex-logic-only"
+    },
+    "readme": {
+      "sections": ["Overview", "Installation", "Usage", "Testing", "Contributing"],
+      "codeExamples": true,
+      "badges": true
+    }
+  },
+
+  // ===== QUALITY & BEST PRACTICES =====
+  "quality": {
+    "errorHandling": {
+      "typescript": "try-catch with specific error types",
+      "python": "specific exceptions with context",
+      "logging": "structured logging with appropriate levels"
+    },
+    "security": {
+      "inputValidation": "always",
+      "sqlInjectionPrevention": "use-orm-parameterized-queries",
+      "xssPrevention": "sanitize-user-input",
+      "authenticationPattern": "JWT-based",
+      "environmentVariables": "dotenv-with-validation"
+    },
+    "performance": {
+      "react": ["useMemo", "useCallback", "React.memo when beneficial"],
+      "database": ["indexing", "query optimization", "connection pooling"],
+      "caching": "Redis for session and data caching",
+      "bundleSize": "tree-shaking and code-splitting"
+    },
+    "accessibility": {
+      "ariaLabels": "always",
+      "keyboardNavigation": "full-support",
+      "semanticHTML": "prefer",
+      "colorContrast": "WCAG-AA minimum"
+    }
+  },
+
+  // ===== NAMING CONVENTIONS =====
+  "namingConventions": {
+    "typescript": {
+      "components": "PascalCase",
+      "hooks": "camelCase with 'use' prefix",
+      "utilities": "camelCase",
+      "constants": "UPPER_SNAKE_CASE",
+      "types": "PascalCase",
+      "interfaces": "PascalCase with 'I' prefix optional",
+      "enums": "PascalCase"
+    },
+    "python": {
+      "functions": "snake_case",
+      "classes": "PascalCase",
+      "constants": "UPPER_SNAKE_CASE",
+      "modules": "snake_case",
+      "private": "_leading_underscore"
+    },
+    "files": {
+      "components": "PascalCase.tsx",
+      "pages": "lowercase-kebab-case or [dynamic].tsx",
+      "utilities": "camelCase.ts",
+      "tests": "*.test.ts(x) or *.spec.ts(x)",
+      "types": "types.ts or *.types.ts"
+    }
+  },
+
+  // ===== PROJECT-SPECIFIC PATTERNS =====
+  "projectPatterns": {
+    "stateManagement": {
+      "stores": "Zustand with TypeScript",
+      "location": "src/stores/",
+      "pattern": "functional-slice-pattern",
+      "persistence": "localStorage with version migration"
+    },
+    "apiCalls": {
+      "pattern": "fetch with error boundaries",
+      "location": "src/lib/api/",
+      "authentication": "Bearer token in headers",
+      "errorHandling": "centralized error handler"
+    },
+    "routing": {
+      "pattern": "Next.js App Router",
+      "location": "app/",
+      "metadata": "export metadata from page components",
+      "loading": "loading.tsx for suspense boundaries",
+      "error": "error.tsx for error boundaries"
+    },
+    "styling": {
+      "approach": "Tailwind CSS utility-first",
+      "customComponents": "cva for variant-based components",
+      "animations": "tailwindcss-animate",
+      "darkMode": "class-based strategy"
+    }
+  },
+
+  // ===== COPILOT BEHAVIOR HINTS =====
+  "copilotHints": {
+    "preferredSuggestionLength": "medium-to-long",
+    "contextAwareness": "maximum",
+    "codeCompletion": {
+      "importSuggestions": true,
+      "functionSignatures": true,
+      "typeInference": true,
+      "testGeneration": "comprehensive-with-edge-cases"
+    },
+    "refactoring": {
+      "suggestImprovements": true,
+      "modernSyntax": "prefer",
+      "performanceOptimizations": "suggest-when-obvious",
+      "typeScriptStrictMode": "enforce"
+    }
+  },
+
+  // ===== EXCLUDE FROM COPILOT TRAINING =====
+  "excludePatterns": [
+    "**/.env*",
+    "**/*.secret*",
+    "**/secrets/**",
+    "**/.aws/**",
+    "**/credentials/**",
+    "**/private/**",
+    "**/*.key",
+    "**/*.pem",
+    "**/.lokifi-cache/**",
+    "**/.lokifi-data/**",
+    "**/.lokifi-profiles/**"
+  ],
+
+  // ===== FOLDER STRUCTURE AWARENESS =====
+  "folderStructure": {
+    "frontend": {
+      "app": "Next.js App Router pages and layouts",
+      "src/components": "Reusable React components",
+      "src/lib": "Utility functions and helpers",
+      "src/stores": "Zustand state management stores",
+      "src/hooks": "Custom React hooks",
+      "src/types": "TypeScript type definitions",
+      "tests": "Test files organized by type",
+      "public": "Static assets"
+    },
+    "backend": {
+      "app": "FastAPI application code",
+      "app/api": "API routes and endpoints",
+      "app/models": "SQLAlchemy models",
+      "app/schemas": "Pydantic schemas",
+      "app/services": "Business logic",
+      "app/utils": "Utility functions",
+      "tests": "Pytest test files",
+      "alembic": "Database migrations"
+    }
+  },
+
+  // ===== LANGUAGE-SPECIFIC PRIORITIES =====
+  "languagePriorities": {
+    "primary": ["typescript", "typescriptreact", "python"],
+    "secondary": ["javascript", "json", "yaml", "markdown"],
+    "testing": ["typescript", "python"],
+    "documentation": ["markdown"]
+  },
+
+  // ===== OPTIMIZATION FLAGS =====
+  "optimization": {
+    "responsiveness": "high",
+    "contextWindow": "maximum",
+    "suggestionQuality": "high",
+    "latency": "acceptable-for-quality",
+    "multiFileSuggestions": true,
+    "crossLanguageSuggestions": true,
+    "intelligentSnippets": true
+  }
+}

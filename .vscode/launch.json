@@ -1,9 +1,15 @@
 {
+  // ============================================
+  // LOKIFI DEBUG CONFIGURATIONS
+  // Optimized for: Next.js + FastAPI + Testing
+  // ============================================
+
   "version": "0.2.0",
   "configurations": [
+    // ===== PYTHON/BACKEND DEBUGGING =====
     {
-      "name": "Python: FastAPI",
-      "type": "python",
+      "name": "🔧 Python: FastAPI Server",
+      "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/backend/.venv/Scripts/uvicorn.exe",
       "args": [
@@ -18,26 +24,135 @@
       "cwd": "${workspaceFolder}/backend",
       "env": {
         "PYTHONPATH": "${workspaceFolder}/backend"
-      }
+      },
+      "justMyCode": false,
+      "preLaunchTask": "🔴 Start Redis Server (Docker)"
     },
     {
-      "name": "Python: Current File",
-      "type": "python",
+      "name": "🐍 Python: Current File",
+      "type": "debugpy",
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}/backend",
       "env": {
         "PYTHONPATH": "${workspaceFolder}/backend"
-      }
+      },
+      "justMyCode": true
     },
     {
-      "name": "Python: Database Tests",
-      "type": "python",
+      "name": "🧪 Python: Pytest Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "${file}",
+        "-v",
+        "-s",
+        "--tb=short"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}/backend"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "🗄️ Python: Database Tests",
+      "type": "debugpy",
       "request": "launch",
       "program": "${workspaceFolder}/backend/database_management_suite.py",
       "console": "integratedTerminal",
       "cwd": "${workspaceFolder}/backend"
+    },
+
+    // ===== JAVASCRIPT/FRONTEND DEBUGGING =====
+    {
+      "name": "🎨 Next.js: Chrome Debug",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/apps/frontend",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${workspaceFolder}/apps/frontend/*"
+      },
+      "preLaunchTask": "🎨 Start Frontend Server"
+    },
+    {
+      "name": "🎨 Next.js: Edge Debug",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder}/apps/frontend",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "webpack://_N_E/*": "${workspaceFolder}/apps/frontend/*"
+      },
+      "preLaunchTask": "🎨 Start Frontend Server"
+    },
+    {
+      "name": "🔗 Next.js: Attach to Running Server",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**"
+      ]
+    },
+
+    // ===== TESTING DEBUGGING =====
+    {
+      "name": "🧪 Vitest: Current File",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "test",
+        "--",
+        "${file}"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/frontend",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "🎭 Playwright: Debug Test",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "playwright",
+        "test",
+        "--debug"
+      ],
+      "console": "integratedTerminal",
+      "cwd": "${workspaceFolder}/apps/frontend"
+    }
+  ],
+
+  // ===== COMPOUND CONFIGURATIONS =====
+  // Run multiple debug configs simultaneously
+  "compounds": [
+    {
+      "name": "🚀 Full Stack: Frontend + Backend",
+      "configurations": [
+        "🔧 Python: FastAPI Server",
+        "🎨 Next.js: Chrome Debug"
+      ],
+      "stopAll": true,
+      "preLaunchTask": "🔴 Start Redis Server (Docker)"
+    },
+    {
+      "name": "🧪 All Tests: Frontend + Backend",
+      "configurations": [
+        "🧪 Vitest: Current File",
+        "🧪 Python: Pytest Current File"
+      ],
+      "stopAll": true
     }
   ]
 }
