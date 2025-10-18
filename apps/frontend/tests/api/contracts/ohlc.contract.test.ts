@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 const API_URL = process.env.API_URL || 'http://localhost:8000';
 
 describe('OHLC API Contract', () => {
-  describe('GET /api/ohlc/:symbol/:timeframe', () => {
+  describe('GET /api/ohlc', () => {
     it('returns valid OHLC data structure', async () => {
-      const response = await fetch(`${API_URL}/api/ohlc/BTCUSDT/1h?limit=10`);
+      const response = await fetch(`${API_URL}/api/ohlc?symbol=BTCUSDT&timeframe=1h&limit=10`);
 
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -39,14 +39,18 @@ describe('OHLC API Contract', () => {
     });
 
     it('validates symbol parameter', async () => {
-      const response = await fetch(`${API_URL}/api/ohlc/INVALID_SYMBOL/1h?limit=10`);
+      const response = await fetch(
+        `${API_URL}/api/ohlc?symbol=INVALID_SYMBOL&timeframe=1h&limit=10`
+      );
 
       // Should return 404 or 422 for invalid symbol
       expect([404, 422]).toContain(response.status);
     });
 
     it('validates timeframe parameter', async () => {
-      const response = await fetch(`${API_URL}/api/ohlc/BTCUSDT/invalid_timeframe?limit=10`);
+      const response = await fetch(
+        `${API_URL}/api/ohlc?symbol=BTCUSDT&timeframe=invalid_timeframe&limit=10`
+      );
 
       // Should return 422 for invalid timeframe
       expect(response.status).toBe(422);
@@ -54,7 +58,9 @@ describe('OHLC API Contract', () => {
 
     it('respects limit parameter', async () => {
       const limit = 5;
-      const response = await fetch(`${API_URL}/api/ohlc/BTCUSDT/1h?limit=${limit}`);
+      const response = await fetch(
+        `${API_URL}/api/ohlc?symbol=BTCUSDT&timeframe=1h&limit=${limit}`
+      );
 
       expect(response.status).toBe(200);
       const data = await response.json();
@@ -63,16 +69,14 @@ describe('OHLC API Contract', () => {
     });
 
     it('returns data in correct time order', async () => {
-      const response = await fetch(`${API_URL}/api/ohlc/BTCUSDT/1h?limit=10`);
+      const response = await fetch(`${API_URL}/api/ohlc?symbol=BTCUSDT&timeframe=1h&limit=10`);
 
       expect(response.status).toBe(200);
       const data = await response.json();
 
       if (data.candles.length > 1) {
         for (let i = 1; i < data.candles.length; i++) {
-          expect(data.candles[i].timestamp).toBeGreaterThanOrEqual(
-            data.candles[i - 1].timestamp
-          );
+          expect(data.candles[i].timestamp).toBeGreaterThanOrEqual(data.candles[i - 1].timestamp);
         }
       }
     });
@@ -81,7 +85,7 @@ describe('OHLC API Contract', () => {
   describe('Performance', () => {
     it('responds within 500ms for small dataset', async () => {
       const startTime = Date.now();
-      const response = await fetch(`${API_URL}/api/ohlc/BTCUSDT/1h?limit=100`);
+      const response = await fetch(`${API_URL}/api/ohlc?symbol=BTCUSDT&timeframe=1h&limit=100`);
       const duration = Date.now() - startTime;
 
       expect(response.status).toBe(200);
@@ -89,9 +93,9 @@ describe('OHLC API Contract', () => {
     });
 
     it('handles concurrent requests', async () => {
-      const requests = Array(5).fill(null).map(() =>
-        fetch(`${API_URL}/api/ohlc/BTCUSDT/1h?limit=10`)
-      );
+      const requests = Array(5)
+        .fill(null)
+        .map(() => fetch(`${API_URL}/api/ohlc?symbol=BTCUSDT&timeframe=1h&limit=10`));
 
       const responses = await Promise.all(requests);
 
@@ -101,4 +105,3 @@ describe('OHLC API Contract', () => {
     });
   });
 });
-

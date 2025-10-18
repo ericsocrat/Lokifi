@@ -128,19 +128,26 @@ export const handlers = [
   // OHLC (Candlestick) Data API
   // ========================================
 
-  http.get(`${API_URL}/api/ohlc/:symbol/:timeframe`, ({ params, request }) => {
-    const { symbol, timeframe } = params;
+  http.get(`${API_URL}/api/ohlc`, ({ request }) => {
     const url = new URL(request.url);
+    const symbol = url.searchParams.get('symbol');
+    const timeframe = url.searchParams.get('timeframe');
     const limit = parseInt(url.searchParams.get('limit') || '100');
 
     // Validate symbol
+    if (!symbol) {
+      return HttpResponse.json({ detail: 'Symbol parameter is required' }, { status: 422 });
+    }
     if (symbol === 'INVALID_SYMBOL') {
       return HttpResponse.json({ detail: 'Invalid symbol' }, { status: 404 });
     }
 
     // Validate timeframe
+    if (!timeframe) {
+      return HttpResponse.json({ detail: 'Timeframe parameter is required' }, { status: 422 });
+    }
     const validTimeframes = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w'];
-    if (!validTimeframes.includes(timeframe as string)) {
+    if (!validTimeframes.includes(timeframe)) {
       return HttpResponse.json(
         { detail: 'Invalid timeframe. Must be one of: ' + validTimeframes.join(', ') },
         { status: 422 }
