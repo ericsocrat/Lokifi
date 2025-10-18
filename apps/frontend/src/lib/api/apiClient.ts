@@ -3,13 +3,12 @@
  */
 import { z } from 'zod';
 import type {
-  SymbolsResponse,
-  OHLCResponse,
-  TickerResponse,
   HealthResponse,
   OHLCRequest,
+  OHLCResponse,
   SymbolSearchRequest,
-  ErrorResponse
+  SymbolsResponse,
+  TickerResponse,
 } from '../types/api';
 
 // Zod schemas for validation
@@ -152,11 +151,7 @@ export class APIClient {
 
     if (!result.success) {
       console.error('API response validation failed:', result.error);
-      throw new APIError(
-        'Invalid response format from server',
-        'VALIDATION_ERROR',
-        500
-      );
+      throw new APIError('Invalid response format from server', 'VALIDATION_ERROR', 500);
     }
 
     return result.data;
@@ -173,11 +168,7 @@ export class APIClient {
 
   async getOHLC(params: OHLCRequest): Promise<OHLCResponse> {
     const query = new URLSearchParams(params as any).toString();
-    return this.request(
-      `/api/ohlc?${query}`,
-      { method: 'GET' },
-      OHLCResponseSchema
-    );
+    return this.request(`/api/ohlc?${query}`, { method: 'GET' }, OHLCResponseSchema);
   }
 
   async getTicker(symbol: string): Promise<TickerResponse> {
