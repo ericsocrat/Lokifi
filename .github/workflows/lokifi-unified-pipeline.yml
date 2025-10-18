@@ -53,7 +53,7 @@ jobs:
         run: npm install --legacy-peer-deps
 
       - name: 🧪 Run tests with coverage (with retry)
-        uses: nick-fields/retry-action@v3
+        uses: nick-invision/retry@v3
         with:
           timeout_minutes: 10
           max_attempts: 2
@@ -636,27 +636,27 @@ jobs:
           echo "Frontend Test: ${{ needs.frontend-test.result }}"
           echo "Frontend Security: ${{ needs.frontend-security.result }}"
           echo "Backend Test: ${{ needs.backend-test.result }}"
-          
+
           # Track failures
           FAILURES=0
-          
+
           if [ "${{ needs.frontend-test.result }}" != "success" ]; then
             echo "❌ Frontend tests failed"
             FAILURES=$((FAILURES + 1))
           fi
-          
+
           if [ "${{ needs.frontend-security.result }}" != "success" ]; then
             echo "❌ Frontend security failed"
             FAILURES=$((FAILURES + 1))
           fi
-          
+
           if [ "${{ needs.backend-test.result }}" != "success" ]; then
             echo "❌ Backend tests failed"
             FAILURES=$((FAILURES + 1))
           fi
-          
+
           echo "failures=$FAILURES" >> $GITHUB_OUTPUT
-          
+
           if [ $FAILURES -gt 0 ]; then
             echo "⚠️  $FAILURES critical job(s) failed"
           else
@@ -707,7 +707,7 @@ jobs:
       - name: 🎉 Quality gate result
         run: |
           FAILURES=${{ steps.check-results.outputs.failures }}
-          
+
           if [ "$FAILURES" -eq "0" ]; then
             echo "✅ All critical quality checks passed!"
             echo "🎉 Ready to merge!"
@@ -727,12 +727,12 @@ jobs:
             const securityResult = '${{ needs.frontend-security.result }}';
             const backendResult = '${{ needs.backend-test.result }}';
             const failures = parseInt('${{ steps.check-results.outputs.failures }}');
-            
+
             const getEmoji = (result) => result === 'success' ? '✅' : '❌';
             const getStatus = (result) => result === 'success' ? 'PASSED' : 'FAILED';
-            
+
             const allPassed = failures === 0;
-            
+
             const body = [
               '## 🎯 Quality Gate - Final Status',
               '',
@@ -743,7 +743,7 @@ jobs:
               `${getEmoji(securityResult)} **Frontend Security:** ${getStatus(securityResult)}`,
               `${getEmoji(backendResult)} **Backend Tests:** ${getStatus(backendResult)}`,
               '',
-              allPassed 
+              allPassed
                 ? '🎉 **This PR is ready to merge!**'
                 : '⚠️ **Please review and fix failing checks before merging**',
               '',
