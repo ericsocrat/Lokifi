@@ -272,8 +272,8 @@ describe('DrawingStore', () => {
         });
       });
 
-      // Small delay to ensure timestamp difference
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      // Delay to ensure timestamp difference (50ms for CI reliability)
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
       act(() => {
         result.current.updateObject(objectId, {
