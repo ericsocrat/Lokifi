@@ -26,8 +26,8 @@ from app.schemas.follow import (
 )
 from app.services.follow_service import FollowService
 
-# J6.1 Notification Integration
-from scripts.setup_j6_integration import trigger_follow_notification
+# Notification Integration
+from scripts.notification_integration_helpers import trigger_follow_notification
 
 router = APIRouter(prefix="/follow", tags=["follow"])
 

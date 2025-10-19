@@ -35,8 +35,8 @@ from app.services.message_search_service import (
 from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import connection_manager
 
-# J6.1 Notification Integration
-from scripts.setup_j6_integration import process_mentions_in_content, trigger_dm_notification
+# Notification Integration
+from scripts.notification_integration_helpers import process_mentions_in_content, trigger_dm_notification
 
 logger = logging.getLogger(__name__)
 

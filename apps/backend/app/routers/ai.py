@@ -40,8 +40,8 @@ from app.services.multimodal_ai_service import (
     multimodal_ai_service,
 )
 
-# J6.1 Notification Integration
-from scripts.setup_j6_integration import trigger_ai_response_notification
+# Notification Integration
+from scripts.notification_integration_helpers import trigger_ai_response_notification
 
 logger = logging.getLogger(__name__)
 
