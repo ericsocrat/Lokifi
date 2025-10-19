@@ -184,7 +184,11 @@
       </div>
 
       <!-- Threshold Settings Panel (Hidden by default) -->
-      <div id="thresholdSettings" class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6" style="display: none;">
+      <div
+        id="thresholdSettings"
+        class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6"
+        style="display: none"
+      >
         <h3 class="text-lg font-semibold mb-4 text-blue-400">Configure Coverage Targets</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <!-- Statements Threshold -->
@@ -243,11 +247,9 @@
             />
           </div>
         </div>
-        
+
         <div class="flex justify-between items-center">
-          <p class="text-xs text-gray-500">
-            💡 Thresholds are saved locally in your browser
-          </p>
+          <p class="text-xs text-gray-500">💡 Thresholds are saved locally in your browser</p>
           <div class="space-x-2">
             <button
               onclick="resetThresholds()"
@@ -284,7 +286,11 @@
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-              <div id="statementsProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div
+                id="statementsProgress"
+                class="h-3 rounded-full transition-all duration-500"
+                style="width: 0%"
+              ></div>
             </div>
           </div>
           <div class="text-xs text-gray-400" id="statementsGap">
@@ -309,7 +315,11 @@
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-              <div id="branchesProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div
+                id="branchesProgress"
+                class="h-3 rounded-full transition-all duration-500"
+                style="width: 0%"
+              ></div>
             </div>
           </div>
           <div class="text-xs text-gray-400" id="branchesGap">
@@ -334,7 +344,11 @@
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-              <div id="functionsProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div
+                id="functionsProgress"
+                class="h-3 rounded-full transition-all duration-500"
+                style="width: 0%"
+              ></div>
             </div>
           </div>
           <div class="text-xs text-gray-400" id="functionsGap">
@@ -359,7 +373,11 @@
             </div>
             <!-- Progress Bar -->
             <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
-              <div id="linesProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+              <div
+                id="linesProgress"
+                class="h-3 rounded-full transition-all duration-500"
+                style="width: 0%"
+              ></div>
             </div>
           </div>
           <div class="text-xs text-gray-400" id="linesGap">
@@ -369,7 +387,7 @@
       </div>
 
       <!-- Overall Status Alert -->
-      <div id="thresholdAlert" class="mt-6 p-4 rounded-lg border-l-4" style="display: none;">
+      <div id="thresholdAlert" class="mt-6 p-4 rounded-lg border-l-4" style="display: none">
         <div class="flex items-start">
           <span id="alertIcon" class="text-2xl mr-3">🎯</span>
           <div class="flex-1">
@@ -401,6 +419,147 @@
           <p class="text-sm text-gray-400">Identify which modules need more test coverage</p>
         </div>
         <canvas id="moduleChart" class="w-full" style="max-height: 400px"></canvas>
+      </div>
+    </section>
+
+    <!-- Advanced Visualizations (V2.4) -->
+    <section class="container mx-auto px-6 py-8" id="advancedVisualizationsSection">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-3xl font-bold">📈 Advanced Analytics</h2>
+        <button
+          onclick="toggleVisualizationView()"
+          class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg text-sm transition-colors"
+        >
+          <span id="vizToggleText">📊 Switch View</span>
+        </button>
+      </div>
+
+      <!-- Coverage Velocity Chart -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold">📊 Coverage Velocity</h3>
+          <p class="text-sm text-gray-400">
+            Rate of coverage change over time - track improvement momentum
+          </p>
+        </div>
+        <div class="relative" style="height: 300px">
+          <canvas id="velocityChart"></canvas>
+        </div>
+        <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+          <div class="bg-gray-900 p-3 rounded">
+            <div class="text-2xl font-bold text-blue-400" id="avgVelocity">-</div>
+            <div class="text-xs text-gray-400">Avg Change/Run</div>
+          </div>
+          <div class="bg-gray-900 p-3 rounded">
+            <div class="text-2xl font-bold text-green-400" id="maxIncrease">-</div>
+            <div class="text-xs text-gray-400">Best Gain</div>
+          </div>
+          <div class="bg-gray-900 p-3 rounded">
+            <div class="text-2xl font-bold text-red-400" id="maxDecrease">-</div>
+            <div class="text-xs text-gray-400">Worst Drop</div>
+          </div>
+          <div class="bg-gray-900 p-3 rounded">
+            <div class="text-2xl font-bold text-purple-400" id="volatility">-</div>
+            <div class="text-xs text-gray-400">Volatility</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- File-Level Heatmap -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+        <div class="mb-4 flex items-center justify-between">
+          <div>
+            <h3 class="text-xl font-semibold">🗺️ File Coverage Heatmap</h3>
+            <p class="text-sm text-gray-400">
+              Visual representation of file-level coverage - darker = better coverage
+            </p>
+          </div>
+          <select
+            id="heatmapMetric"
+            onchange="updateHeatmap()"
+            class="bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
+          >
+            <option value="lines">Lines</option>
+            <option value="statements">Statements</option>
+            <option value="branches">Branches</option>
+            <option value="functions">Functions</option>
+          </select>
+        </div>
+        <div id="heatmapContainer" class="grid gap-1" style="grid-template-columns: repeat(auto-fill, minmax(40px, 1fr))">
+          <!-- Heatmap cells will be dynamically generated -->
+        </div>
+        <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
+          <div class="flex items-center gap-2">
+            <span>Coverage:</span>
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-4 bg-red-900 border border-red-700"></div>
+              <span>0%</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-4 bg-yellow-700 border border-yellow-600"></div>
+              <span>50%</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-4 bg-green-700 border border-green-600"></div>
+              <span>80%</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <div class="w-4 h-4 bg-green-500 border border-green-400"></div>
+              <span>100%</span>
+            </div>
+          </div>
+          <div id="heatmapStats" class="text-sm">
+            <span id="heatmapFileCount">-</span> files displayed
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed History with All Metrics -->
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6">
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold">📉 Detailed Coverage History</h3>
+          <p class="text-sm text-gray-400">
+            Last 30 test runs with all coverage metrics and trend analysis
+          </p>
+        </div>
+        <div class="relative" style="height: 400px">
+          <canvas id="detailedHistoryChart"></canvas>
+        </div>
+        <!-- Metric Sparklines -->
+        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-gray-900 p-4 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-blue-400">Statements</span>
+              <span class="text-xs text-gray-400" id="statementsSparklineValue">-</span>
+            </div>
+            <canvas id="statementsSparkline" height="40"></canvas>
+            <div class="mt-2 text-xs text-gray-400" id="statementsTrend">-</div>
+          </div>
+          <div class="bg-gray-900 p-4 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-green-400">Branches</span>
+              <span class="text-xs text-gray-400" id="branchesSparklineValue">-</span>
+            </div>
+            <canvas id="branchesSparkline" height="40"></canvas>
+            <div class="mt-2 text-xs text-gray-400" id="branchesTrend">-</div>
+          </div>
+          <div class="bg-gray-900 p-4 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-yellow-400">Functions</span>
+              <span class="text-xs text-gray-400" id="functionsSparklineValue">-</span>
+            </div>
+            <canvas id="functionsSparkline" height="40"></canvas>
+            <div class="mt-2 text-xs text-gray-400" id="functionsTrend">-</div>
+          </div>
+          <div class="bg-gray-900 p-4 rounded-lg">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-semibold text-purple-400">Lines</span>
+              <span class="text-xs text-gray-400" id="linesSparklineValue">-</span>
+            </div>
+            <canvas id="linesSparkline" height="40"></canvas>
+            <div class="mt-2 text-xs text-gray-400" id="linesTrend">-</div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1177,6 +1336,346 @@
         applyFilters();
       }
 
+      // ==================== V2.4 ADVANCED VISUALIZATION FUNCTIONS ====================
+
+      // Create velocity chart showing rate of coverage change
+      function createVelocityChart(trends) {
+        if (!trends || trends.length < 2) return;
+
+        const ctx = document.getElementById('velocityChart');
+        if (!ctx) return;
+
+        // Calculate velocity (change between consecutive runs)
+        const velocities = [];
+        const labels = [];
+
+        for (let i = 1; i < trends.length; i++) {
+          const current = trends[i].coverage.lines;
+          const previous = trends[i - 1].coverage.lines;
+          const change = current - previous;
+          velocities.push(change);
+          labels.push(new Date(trends[i].timestamp).toLocaleDateString());
+        }
+
+        // Calculate stats
+        const avgVelocity = velocities.reduce((a, b) => a + b, 0) / velocities.length;
+        const maxIncrease = Math.max(...velocities);
+        const maxDecrease = Math.min(...velocities);
+        const volatility = Math.sqrt(
+          velocities.reduce((sum, v) => sum + Math.pow(v - avgVelocity, 2), 0) / velocities.length
+        );
+
+        // Update stats display
+        document.getElementById('avgVelocity').textContent = avgVelocity.toFixed(3) + '%';
+        document.getElementById('maxIncrease').textContent = '+' + maxIncrease.toFixed(2) + '%';
+        document.getElementById('maxDecrease').textContent = maxDecrease.toFixed(2) + '%';
+        document.getElementById('volatility').textContent = volatility.toFixed(3);
+
+        // Create chart
+        if (charts.velocity) {
+          charts.velocity.destroy();
+        }
+
+        charts.velocity = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'Coverage Change (%)',
+                data: velocities,
+                backgroundColor: velocities.map((v) =>
+                  v > 0 ? 'rgba(16, 185, 129, 0.8)' : 'rgba(239, 68, 68, 0.8)'
+                ),
+                borderColor: velocities.map((v) =>
+                  v > 0 ? 'rgb(16, 185, 129)' : 'rgb(239, 68, 68)'
+                ),
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: function (context) {
+                    const value = context.parsed.y;
+                    return value > 0 ? `+${value.toFixed(3)}%` : `${value.toFixed(3)}%`;
+                  },
+                },
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  color: 'rgb(156, 163, 175)',
+                  callback: function (value) {
+                    return value + '%';
+                  },
+                },
+                grid: { color: 'rgba(75, 85, 99, 0.3)' },
+              },
+              x: {
+                ticks: { color: 'rgb(156, 163, 175)', maxRotation: 45, minRotation: 45 },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+      }
+
+      // Create file-level heatmap
+      function createHeatmap(dashboardData) {
+        const container = document.getElementById('heatmapContainer');
+        if (!container || !dashboardData.gaps) return;
+
+        const metric = document.getElementById('heatmapMetric').value;
+        const files = dashboardData.gaps.slice(0, 100); // Limit to 100 files for performance
+
+        container.innerHTML = files
+          .map((gap) => {
+            const coverage = gap.coverage[metric] || 0;
+            const color = getHeatmapColor(coverage);
+            const fileName = gap.file.split('/').pop();
+
+            return `
+            <div 
+              class="relative group cursor-pointer transition-transform hover:scale-110"
+              style="
+                width: 40px;
+                height: 40px;
+                background-color: ${color};
+                border: 1px solid rgba(0, 0, 0, 0.3);
+                border-radius: 4px;
+              "
+              title="${fileName}: ${coverage.toFixed(1)}%"
+            >
+              <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-nowrap z-10 border border-gray-700">
+                <div class="font-semibold">${fileName}</div>
+                <div>${metric}: ${coverage.toFixed(1)}%</div>
+              </div>
+            </div>
+          `;
+          })
+          .join('');
+
+        document.getElementById('heatmapFileCount').textContent = files.length;
+      }
+
+      // Get heatmap color based on coverage percentage
+      function getHeatmapColor(percentage) {
+        if (percentage >= 90) return 'rgb(34, 197, 94)'; // green-500
+        if (percentage >= 80) return 'rgb(74, 222, 128)'; // green-400
+        if (percentage >= 70) return 'rgb(132, 204, 22)'; // lime-500
+        if (percentage >= 60) return 'rgb(234, 179, 8)'; // yellow-500
+        if (percentage >= 50) return 'rgb(251, 146, 60)'; // orange-400
+        if (percentage >= 40) return 'rgb(249, 115, 22)'; // orange-500
+        if (percentage >= 30) return 'rgb(239, 68, 68)'; // red-500
+        if (percentage >= 20) return 'rgb(220, 38, 38)'; // red-600
+        if (percentage >= 10) return 'rgb(185, 28, 28)'; // red-700
+        return 'rgb(153, 27, 27)'; // red-900
+      }
+
+      // Update heatmap when metric selector changes
+      function updateHeatmap() {
+        if (window.currentDashboardData) {
+          createHeatmap(window.currentDashboardData);
+        }
+      }
+
+      // Create detailed history chart with all 4 metrics
+      function createDetailedHistoryChart(trends) {
+        if (!trends || trends.length === 0) return;
+
+        const ctx = document.getElementById('detailedHistoryChart');
+        if (!ctx) return;
+
+        const last30 = trends.slice(-30);
+
+        if (charts.detailedHistory) {
+          charts.detailedHistory.destroy();
+        }
+
+        charts.detailedHistory = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: last30.map((t) => new Date(t.timestamp).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+            })),
+            datasets: [
+              {
+                label: 'Statements',
+                data: last30.map((t) => t.coverage.statements),
+                borderColor: 'rgb(59, 130, 246)',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: false,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+              },
+              {
+                label: 'Branches',
+                data: last30.map((t) => t.coverage.branches),
+                borderColor: 'rgb(16, 185, 129)',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: false,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+              },
+              {
+                label: 'Functions',
+                data: last30.map((t) => t.coverage.functions),
+                borderColor: 'rgb(251, 191, 36)',
+                backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                tension: 0.4,
+                fill: false,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+              },
+              {
+                label: 'Lines',
+                data: last30.map((t) => t.coverage.lines),
+                borderColor: 'rgb(168, 85, 247)',
+                backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                tension: 0.4,
+                fill: false,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+                labels: { color: 'rgb(209, 213, 219)', padding: 15, usePointStyle: true },
+              },
+              tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                padding: 12,
+                titleColor: 'rgb(209, 213, 219)',
+                bodyColor: 'rgb(209, 213, 219)',
+                borderColor: 'rgba(75, 85, 99, 0.5)',
+                borderWidth: 1,
+              },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                  color: 'rgb(156, 163, 175)',
+                  callback: function (value) {
+                    return value + '%';
+                  },
+                },
+                grid: { color: 'rgba(75, 85, 99, 0.3)' },
+              },
+              x: {
+                ticks: { color: 'rgb(156, 163, 175)', maxRotation: 45, minRotation: 0 },
+                grid: { color: 'rgba(75, 85, 99, 0.1)' },
+              },
+            },
+          },
+        });
+      }
+
+      // Create sparkline charts for quick metric visualization
+      function createSparklines(trends) {
+        if (!trends || trends.length === 0) return;
+
+        const metrics = ['statements', 'branches', 'functions', 'lines'];
+        const colors = {
+          statements: 'rgb(59, 130, 246)',
+          branches: 'rgb(16, 185, 129)',
+          functions: 'rgb(251, 191, 36)',
+          lines: 'rgb(168, 85, 247)',
+        };
+
+        metrics.forEach((metric) => {
+          const canvas = document.getElementById(`${metric}Sparkline`);
+          if (!canvas) return;
+
+          const ctx = canvas.getContext('2d');
+          const data = trends.slice(-10).map((t) => t.coverage[metric]);
+          const current = data[data.length - 1];
+          const previous = data[data.length - 2] || current;
+          const change = current - previous;
+
+          // Update value display
+          document.getElementById(`${metric}SparklineValue`).textContent =
+            current.toFixed(1) + '%';
+
+          // Update trend text
+          const trendEl = document.getElementById(`${metric}Trend`);
+          if (change > 0) {
+            trendEl.innerHTML = `<span class="text-green-400">↑ +${change.toFixed(2)}%</span> from last run`;
+          } else if (change < 0) {
+            trendEl.innerHTML = `<span class="text-red-400">↓ ${change.toFixed(2)}%</span> from last run`;
+          } else {
+            trendEl.innerHTML = `<span class="text-gray-400">→ No change</span>`;
+          }
+
+          // Create mini sparkline chart
+          if (charts[`${metric}Sparkline`]) {
+            charts[`${metric}Sparkline`].destroy();
+          }
+
+          charts[`${metric}Sparkline`] = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: data.map((_, i) => i),
+              datasets: [
+                {
+                  data: data,
+                  borderColor: colors[metric],
+                  backgroundColor: colors[metric].replace('rgb', 'rgba').replace(')', ', 0.2)'),
+                  borderWidth: 2,
+                  fill: true,
+                  tension: 0.4,
+                  pointRadius: 0,
+                  pointHoverRadius: 0,
+                },
+              ],
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false },
+              },
+              scales: {
+                x: { display: false },
+                y: { display: false, min: Math.min(...data) - 5, max: Math.max(...data) + 5 },
+              },
+            },
+          });
+        });
+      }
+
+      // Toggle visualization view (future enhancement)
+      function toggleVisualizationView() {
+        // Placeholder for view switching functionality
+        console.log('View toggle clicked - future enhancement');
+      }
+
+      // ==================== END V2.4 FUNCTIONS ====================
+
       // ==================== THRESHOLD FUNCTIONS ====================
 
       // Default thresholds
@@ -1210,14 +1709,15 @@
         };
 
         localStorage.setItem('lokifi-coverage-thresholds', JSON.stringify(thresholds));
-        
+
         // Re-update threshold display if data is available
         if (currentDashboardData) {
           updateThresholdDisplay(currentDashboardData.current.coverage, thresholds);
         }
 
         // Show feedback
-        const btn = event?.target?.closest('button') || document.querySelector('#thresholdSettings button');
+        const btn =
+          event?.target?.closest('button') || document.querySelector('#thresholdSettings button');
         if (btn) {
           const originalText = btn.textContent;
           btn.textContent = '✅ Saved!';
@@ -1233,7 +1733,7 @@
         document.getElementById('branchesThreshold').value = DEFAULT_THRESHOLDS.branches;
         document.getElementById('functionsThreshold').value = DEFAULT_THRESHOLDS.functions;
         document.getElementById('linesThreshold').value = DEFAULT_THRESHOLDS.lines;
-        
+
         saveThresholds();
       }
 
@@ -1273,11 +1773,7 @@
           const progressBar = document.getElementById(`${metric}Progress`);
           progressBar.style.width = `${progress}%`;
           progressBar.className = `h-3 rounded-full transition-all duration-500 ${
-            isOnTrack
-              ? 'bg-green-500'
-              : isNearTarget
-                ? 'bg-yellow-500'
-                : 'bg-red-500'
+            isOnTrack ? 'bg-green-500' : isNearTarget ? 'bg-yellow-500' : 'bg-red-500'
           }`;
 
           // Update status icon
@@ -1362,7 +1858,7 @@
       // Initialize thresholds on page load
       function initializeThresholds() {
         const thresholds = loadThresholds();
-        
+
         // Set threshold input values
         document.getElementById('statementsThreshold').value = thresholds.statements;
         document.getElementById('branchesThreshold').value = thresholds.branches;
@@ -1505,6 +2001,19 @@
           if (dashboardData.modules && dashboardData.modules.length > 0) {
             createModuleChart(dashboardData);
           }
+
+          // Create V2.4 advanced visualizations
+          if (dashboardData.trends && dashboardData.trends.length > 0) {
+            createVelocityChart(dashboardData.trends);
+            createDetailedHistoryChart(dashboardData.trends);
+            createSparklines(dashboardData.trends);
+          }
+
+          // Create heatmap
+          createHeatmap(dashboardData);
+
+          // Store dashboard data globally for heatmap updates
+          window.currentDashboardData = dashboardData;
 
           // Initialize filter system and populate gaps table
           initializeFilters(dashboardData);
