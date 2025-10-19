@@ -4,7 +4,7 @@
 param(
     [switch]$Docker,
     [switch]$Native,
-    [string]$PostgresPassword = "fynix123"
+    [string]$PostgresPassword = "lokifi123"
 )
 
 Write-Host "🚀 Lokifi Database Setup" -ForegroundColor Cyan
@@ -24,11 +24,11 @@ function Test-Docker {
 # Setup using Docker (Recommended)
 function Setup-Docker {
     Write-Host "🐳 Setting up PostgreSQL and Redis using Docker..." -ForegroundColor Yellow
-    
+
     # Stop existing containers
     docker stop lokifi-postgres lokifi-redis 2>$null
     docker rm lokifi-postgres lokifi-redis 2>$null
-    
+
     # Start PostgreSQL
     Write-Host "📊 Starting PostgreSQL container..."
     docker run -d `
@@ -38,18 +38,18 @@ function Setup-Docker {
         -e POSTGRES_USER=lokifi `
         -p 5432:5432 `
         postgres:15
-    
+
     # Start Redis
     Write-Host "🔴 Starting Redis container..."
     docker run -d `
         --name lokifi-redis `
         -p 6379:6379 `
         redis:7-alpine
-    
+
     # Wait for services to start
     Write-Host "⏳ Waiting for services to start..."
     Start-Sleep 5
-    
+
     # Update .env file
     $envContent = @"
 # Updated by setup script
@@ -59,9 +59,9 @@ ENABLE_DATA_ARCHIVAL=true
 ARCHIVE_THRESHOLD_DAYS=365
 DELETE_THRESHOLD_DAYS=2555
 "@
-    
+
     Add-Content -Path ".env" -Value $envContent
-    
+
     Write-Host "✅ Docker setup complete!" -ForegroundColor Green
     Write-Host "   PostgreSQL: localhost:5432 (user: lokifi, password: $PostgresPassword)" -ForegroundColor Gray
     Write-Host "   Redis: localhost:6379" -ForegroundColor Gray
@@ -70,17 +70,17 @@ DELETE_THRESHOLD_DAYS=2555
 # Setup using native Windows installations
 function Setup-Native {
     Write-Host "🖥️  Setting up PostgreSQL and Redis natively..." -ForegroundColor Yellow
-    
+
     # Check if Chocolatey is available
     $chocoInstalled = Get-Command choco -ErrorAction SilentlyContinue
-    
+
     if ($chocoInstalled) {
         Write-Host "📦 Installing PostgreSQL via Chocolatey..."
         choco install postgresql -y --params="/Password:$PostgresPassword"
-        
+
         Write-Host "📦 Installing Redis via Chocolatey..."
         choco install redis-64 -y
-        
+
         Write-Host "✅ Native setup complete!" -ForegroundColor Green
         Write-Host "   PostgreSQL: localhost:5432 (user: postgres, password: $PostgresPassword)" -ForegroundColor Gray
         Write-Host "   Redis: localhost:6379" -ForegroundColor Gray
@@ -95,7 +95,7 @@ function Setup-Native {
 # Test database connection
 function Test-DatabaseConnection {
     Write-Host "🔍 Testing database connection..." -ForegroundColor Yellow
-    
+
     try {
         & .\venv\Scripts\python.exe manage_db.py test-connection
         Write-Host "✅ Database connection successful!" -ForegroundColor Green
@@ -108,7 +108,7 @@ function Test-DatabaseConnection {
 # Run database migrations
 function Run-Migrations {
     Write-Host "📊 Running database migrations..." -ForegroundColor Yellow
-    
+
     try {
         & .\venv\Scripts\python.exe -m alembic upgrade head
         Write-Host "✅ Database migrations complete!" -ForegroundColor Green
@@ -121,7 +121,7 @@ function Run-Migrations {
 # Show storage metrics
 function Show-Metrics {
     Write-Host "📈 Checking storage metrics..." -ForegroundColor Yellow
-    
+
     try {
         & .\venv\Scripts\python.exe manage_db.py metrics
     }

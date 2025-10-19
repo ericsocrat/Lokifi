@@ -3,7 +3,7 @@
 
 # Set JWT secret for testing
 $env:JWT_SECRET_KEY = "test_jwt_secret_key_for_development_only_change_in_production"
-$env:FYNIX_JWT_SECRET = "test_jwt_secret_key_for_development_only_change_in_production"
+$env:LOKIFI_JWT_SECRET = "test_jwt_secret_key_for_development_only_change_in_production"
 
 # Database URL (adjust if needed)
 $env:DATABASE_URL = "postgresql+asyncpg://lokifi:lokifi@localhost:5432/lokifi"
