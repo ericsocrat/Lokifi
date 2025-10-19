@@ -26,10 +26,14 @@ Thumbs.db
 backend/data/*
 !backend/data/.gitkeep
 
-# Playwright
+# Testing
+coverage/
 test-results/
 playwright-report/
 playwright/.cache/
+
+# Build artifacts
+*.tsbuildinfo
 
 # Keep visual regression baselines
 !tests/visual-baselines/

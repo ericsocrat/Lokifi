@@ -28,6 +28,9 @@ describe('VS Code Configuration', () => {
   const vscodeDir = join(process.cwd(), '.vscode');
   const settingsPath = join(vscodeDir, 'settings.json');
   const tasksPath = join(vscodeDir, 'tasks.json');
+  const launchPath = join(vscodeDir, 'launch.json');
+  const extensionsPath = join(vscodeDir, 'extensions.json');
+  const keybindingsPath = join(vscodeDir, 'keybindings.json');
 
   describe('settings.json', () => {
     it('should exist and be valid JSONC', () => {
@@ -139,12 +142,81 @@ describe('VS Code Configuration', () => {
     });
   });
 
+  describe('launch.json', () => {
+    it('should exist and be valid JSON', () => {
+      expect(existsSync(launchPath)).toBe(true);
+      
+      const content = readFileSync(launchPath, 'utf-8');
+      expect(() => JSON.parse(content)).not.toThrow();
+    });
+
+    it('should have Next.js debug configuration', () => {
+      const launch = JSON.parse(readFileSync(launchPath, 'utf-8'));
+      
+      expect(launch.version).toBe('0.2.0');
+      expect(Array.isArray(launch.configurations)).toBe(true);
+      
+      const nextConfig = launch.configurations.find((config: any) => 
+        config.name.includes('Frontend') || config.name.includes('Next.js')
+      );
+      expect(nextConfig).toBeDefined();
+      expect(nextConfig.type).toBe('node');
+    });
+  });
+
+  describe('extensions.json', () => {
+    it('should exist and be valid JSON', () => {
+      expect(existsSync(extensionsPath)).toBe(true);
+      
+      const content = readFileSync(extensionsPath, 'utf-8');
+      expect(() => parseJSONC(content)).not.toThrow();
+    });
+
+    it('should recommend essential development extensions', () => {
+      const extensions = parseJSONC(readFileSync(extensionsPath, 'utf-8'));
+      
+      expect(Array.isArray(extensions.recommendations)).toBe(true);
+      
+      // Should include essential extensions
+      const recs = extensions.recommendations;
+      expect(recs.some((ext: string) => ext.includes('prettier'))).toBe(true);
+      expect(recs.some((ext: string) => ext.includes('eslint'))).toBe(true);
+      expect(recs.some((ext: string) => ext.includes('tailwindcss'))).toBe(true);
+      expect(recs.some((ext: string) => ext.includes('vitest'))).toBe(true);
+    });
+  });
+
+  describe('keybindings.json', () => {
+    it('should exist and be valid JSONC array', () => {
+      expect(existsSync(keybindingsPath)).toBe(true);
+      
+      const content = readFileSync(keybindingsPath, 'utf-8');
+      const bindings = parseJSONC(content);
+      expect(Array.isArray(bindings)).toBe(true);
+    });
+
+    it('should have frontend-specific keybindings', () => {
+      const bindings = parseJSONC(readFileSync(keybindingsPath, 'utf-8'));
+      
+      // Should have task and debug shortcuts
+      expect(bindings.some((binding: any) => 
+        binding.command === 'workbench.action.tasks.runTask'
+      )).toBe(true);
+      
+      expect(bindings.some((binding: any) => 
+        binding.command === 'vitest.run'
+      )).toBe(true);
+    });
+  });
+
   describe('Configuration Validation', () => {
-    it('should have essential VS Code settings working properly', () => {
-      // This test passes if all the above individual tests pass
-      // Validates that the VS Code configuration is functional
+    it('should have complete VS Code workspace setup', () => {
+      // Validates that all essential VS Code configuration files exist
       expect(existsSync(settingsPath)).toBe(true);
       expect(existsSync(tasksPath)).toBe(true);
+      expect(existsSync(launchPath)).toBe(true);
+      expect(existsSync(extensionsPath)).toBe(true);
+      expect(existsSync(keybindingsPath)).toBe(true);
     });
   });
 });

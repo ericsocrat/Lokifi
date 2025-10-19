@@ -1,0 +1,41 @@
+# EditorConfig for Lokifi Frontend
+# Ensures consistent coding styles across different editors and IDEs
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+max_line_length = 100
+
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+
+[*.{json,jsonc}]
+indent_size = 2
+
+[*.{md,mdx}]
+trim_trailing_whitespace = false
+max_line_length = off
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.css]
+indent_size = 2
+
+[*.{ps1,psm1}]
+charset = utf-8-bom
+end_of_line = crlf
+indent_size = 4
+
+[Makefile]
+indent_style = tab
+
+[*.py]
+indent_size = 4
+max_line_length = 88
