@@ -234,6 +234,88 @@
           <h3 class="text-xl font-semibold">Files Needing Tests</h3>
           <p class="text-sm text-gray-400">High-priority files with low or missing test coverage</p>
         </div>
+
+        <!-- Search & Filter Controls -->
+        <div class="mb-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <!-- Search Box -->
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">🔍 Search Files</label>
+              <input
+                type="text"
+                id="searchBox"
+                placeholder="Type filename..."
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500 text-white"
+                oninput="applyFilters()"
+              />
+            </div>
+
+            <!-- Priority Filter -->
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">🎯 Priority</label>
+              <select
+                id="priorityFilter"
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500 text-white"
+                onchange="applyFilters()"
+              >
+                <option value="ALL">All Priorities</option>
+                <option value="HIGH">🔴 HIGH only</option>
+                <option value="MEDIUM">🟡 MEDIUM only</option>
+                <option value="LOW">🟢 LOW only</option>
+              </select>
+            </div>
+
+            <!-- Module Filter -->
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">📁 Module</label>
+              <select
+                id="moduleFilter"
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500 text-white"
+                onchange="applyFilters()"
+              >
+                <option value="ALL">All Modules</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- Sort Control -->
+            <div>
+              <label class="block text-xs text-gray-400 mb-1">📊 Sort By</label>
+              <select
+                id="sortControl"
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded text-sm focus:outline-none focus:border-blue-500 text-white"
+                onchange="applyFilters()"
+              >
+                <option value="priority">Priority (default)</option>
+                <option value="impact-desc">Impact (high to low)</option>
+                <option value="impact-asc">Impact (low to high)</option>
+                <option value="complexity-desc">Complexity (high to low)</option>
+                <option value="complexity-asc">Complexity (low to high)</option>
+                <option value="coverage-asc">Coverage (low to high)</option>
+                <option value="coverage-desc">Coverage (high to low)</option>
+                <option value="filename">Filename (A-Z)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Results Counter & Clear Button -->
+          <div class="flex justify-between items-center">
+            <div class="text-sm text-gray-400">
+              Showing <span id="filteredCount" class="text-blue-400 font-semibold">0</span> of
+              <span id="totalCount" class="text-gray-300 font-semibold">0</span> gaps
+              <span id="filterStatus" class="text-yellow-400 ml-2"></span>
+            </div>
+            <button
+              id="clearFiltersBtn"
+              onclick="clearAllFilters()"
+              class="px-4 py-1 bg-red-600/20 hover:bg-red-600/40 text-red-400 rounded text-sm border border-red-600/50 transition-colors"
+              style="display: none"
+            >
+              ✕ Clear Filters
+            </button>
+          </div>
+        </div>
+
         <table class="w-full text-sm" id="gapsTable">
           <thead>
             <tr class="border-b border-gray-700">
@@ -520,6 +602,237 @@
           .join('');
       }
 
+      // Global variable to store all gaps data for filtering
+      let allGapsData = [];
+      let currentDashboardData = null;
+
+      // Extract unique modules from gaps data
+      function getUniqueModules(gaps) {
+        const modules = new Set();
+        gaps.forEach((gap) => {
+          const parts = gap.file.split('/');
+          if (parts.length > 1) {
+            modules.add(parts[0]); // First directory is the module
+          }
+        });
+        return Array.from(modules).sort();
+      }
+
+      // Populate module filter dropdown
+      function populateModuleFilter(gaps) {
+        const moduleFilter = document.getElementById('moduleFilter');
+        const modules = getUniqueModules(gaps);
+
+        // Clear existing options except "All"
+        moduleFilter.innerHTML = '<option value="ALL">All Modules</option>';
+
+        // Add module options
+        modules.forEach((module) => {
+          const option = document.createElement('option');
+          option.value = module;
+          option.textContent = module;
+          moduleFilter.appendChild(option);
+        });
+      }
+
+      // Sort gaps based on selected criteria
+      function sortGaps(gaps, sortBy) {
+        const sorted = [...gaps];
+
+        switch (sortBy) {
+          case 'priority':
+            // Default: HIGH > MEDIUM > LOW
+            const priorityOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+            sorted.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+            break;
+
+          case 'impact-desc':
+            sorted.sort(
+              (a, b) => (b.metrics?.impact || 0) - (a.metrics?.impact || 0)
+            );
+            break;
+
+          case 'impact-asc':
+            sorted.sort(
+              (a, b) => (a.metrics?.impact || 0) - (b.metrics?.impact || 0)
+            );
+            break;
+
+          case 'complexity-desc':
+            sorted.sort(
+              (a, b) => (b.metrics?.complexity || 0) - (a.metrics?.complexity || 0)
+            );
+            break;
+
+          case 'complexity-asc':
+            sorted.sort(
+              (a, b) => (a.metrics?.complexity || 0) - (b.metrics?.complexity || 0)
+            );
+            break;
+
+          case 'coverage-asc':
+            sorted.sort((a, b) => a.coverage - b.coverage);
+            break;
+
+          case 'coverage-desc':
+            sorted.sort((a, b) => b.coverage - a.coverage);
+            break;
+
+          case 'filename':
+            sorted.sort((a, b) => a.file.localeCompare(b.file));
+            break;
+        }
+
+        return sorted;
+      }
+
+      // Apply all filters and re-render table
+      function applyFilters() {
+        if (!allGapsData || allGapsData.length === 0) return;
+
+        // Get filter values
+        const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+        const priorityFilter = document.getElementById('priorityFilter').value;
+        const moduleFilter = document.getElementById('moduleFilter').value;
+        const sortControl = document.getElementById('sortControl').value;
+
+        // Filter gaps
+        let filteredGaps = allGapsData.filter((gap) => {
+          // Search filter
+          if (searchTerm && !gap.file.toLowerCase().includes(searchTerm)) {
+            return false;
+          }
+
+          // Priority filter
+          if (priorityFilter !== 'ALL' && gap.priority !== priorityFilter) {
+            return false;
+          }
+
+          // Module filter
+          if (moduleFilter !== 'ALL') {
+            const gapModule = gap.file.split('/')[0];
+            if (gapModule !== moduleFilter) {
+              return false;
+            }
+          }
+
+          return true;
+        });
+
+        // Sort gaps
+        filteredGaps = sortGaps(filteredGaps, sortControl);
+
+        // Update counts
+        document.getElementById('filteredCount').textContent = filteredGaps.length;
+        document.getElementById('totalCount').textContent = allGapsData.length;
+
+        // Show/hide clear button
+        const hasActiveFilters =
+          searchTerm || priorityFilter !== 'ALL' || moduleFilter !== 'ALL' || sortControl !== 'priority';
+        document.getElementById('clearFiltersBtn').style.display = hasActiveFilters
+          ? 'block'
+          : 'none';
+
+        // Update filter status message
+        const filterStatus = document.getElementById('filterStatus');
+        if (filteredGaps.length === 0 && allGapsData.length > 0) {
+          filterStatus.textContent = '(No matches found)';
+          filterStatus.className = 'text-red-400 ml-2';
+        } else if (filteredGaps.length < allGapsData.length) {
+          filterStatus.textContent = '(Filtered)';
+          filterStatus.className = 'text-yellow-400 ml-2';
+        } else {
+          filterStatus.textContent = '';
+        }
+
+        // Render filtered gaps
+        renderFilteredGaps(filteredGaps);
+      }
+
+      // Render filtered gaps to table
+      function renderFilteredGaps(gaps) {
+        const tbody = document.getElementById('gapsTableBody');
+
+        if (gaps.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center py-8 text-gray-400">
+                <div class="text-xl mb-2">🔍</div>
+                <div>No gaps match your filters</div>
+                <div class="text-sm mt-2">Try adjusting your search or filters</div>
+              </td>
+            </tr>
+          `;
+          return;
+        }
+
+        tbody.innerHTML = gaps
+          .map((gap) => {
+            const priorityEmoji =
+              gap.priority === 'HIGH' ? '🔴' : gap.priority === 'MEDIUM' ? '🟡' : '🟢';
+            const coverageColor = getCoverageColor(gap.coverage).text;
+
+            const uncoveredLines =
+              gap.metrics?.uncoveredLines ||
+              (gap.lines ? gap.lines.total - gap.lines.covered : '-');
+            const complexity = gap.metrics?.complexity || '-';
+            const impact = gap.metrics?.impact || '-';
+
+            return `
+              <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
+                <td class="py-3 px-4 text-center text-xl">${priorityEmoji}</td>
+                <td class="py-3 px-4 font-mono text-xs" title="${gap.fullPath || gap.file}">
+                  <div class="max-w-xs truncate">${gap.file}</div>
+                  ${gap.reason ? `<div class="text-gray-500 text-xs mt-1">${gap.reason}</div>` : ''}
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <div class="${coverageColor} font-bold">${gap.coverage}%</div>
+                  ${gap.details ? `<div class="text-xs text-gray-500 mt-1">B: ${gap.details.branches}% F: ${gap.details.functions}%</div>` : ''}
+                </td>
+                <td class="py-3 px-4 text-center text-red-400 font-semibold">${uncoveredLines}</td>
+                <td class="py-3 px-4 text-center text-yellow-400">${complexity}</td>
+                <td class="py-3 px-4 text-center">
+                  <span class="px-2 py-1 rounded text-xs ${
+                    impact > 200 ? 'bg-red-600' : impact > 100 ? 'bg-yellow-600' : 'bg-blue-600'
+                  }">${impact}</span>
+                </td>
+                <td class="py-3 px-4 text-center">
+                  <button onclick="analyzeFile('${gap.fullPath || gap.file}')"
+                    class="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 rounded hover:bg-blue-900/30">
+                    🎯 Analyze
+                  </button>
+                </td>
+              </tr>
+            `;
+          })
+          .join('');
+      }
+
+      // Clear all filters and reset to defaults
+      function clearAllFilters() {
+        document.getElementById('searchBox').value = '';
+        document.getElementById('priorityFilter').value = 'ALL';
+        document.getElementById('moduleFilter').value = 'ALL';
+        document.getElementById('sortControl').value = 'priority';
+        applyFilters();
+      }
+
+      // Initialize filter system with data
+      function initializeFilters(data) {
+        allGapsData = data.gaps || [];
+        currentDashboardData = data;
+
+        // Populate module filter
+        populateModuleFilter(allGapsData);
+
+        // Set initial counts
+        document.getElementById('filteredCount').textContent = allGapsData.length;
+        document.getElementById('totalCount').textContent = allGapsData.length;
+
+        // Apply initial filters (shows all by default)
+        applyFilters();
+      }
+
       // Load and render dashboard
       async function loadDashboard() {
         try {
@@ -648,8 +961,8 @@
             createModuleChart(dashboardData);
           }
 
-          // Populate gaps table
-          populateGapsTable(dashboardData);
+          // Initialize filter system and populate gaps table
+          initializeFilters(dashboardData);
 
           // Populate new sections
           if (dashboardData.insights && dashboardData.insights.length > 0) {
