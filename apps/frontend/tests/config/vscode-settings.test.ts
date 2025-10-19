@@ -145,19 +145,19 @@ describe('VS Code Configuration', () => {
   describe('launch.json', () => {
     it('should exist and be valid JSON', () => {
       expect(existsSync(launchPath)).toBe(true);
-      
+
       const content = readFileSync(launchPath, 'utf-8');
       expect(() => JSON.parse(content)).not.toThrow();
     });
 
     it('should have Next.js debug configuration', () => {
       const launch = JSON.parse(readFileSync(launchPath, 'utf-8'));
-      
+
       expect(launch.version).toBe('0.2.0');
       expect(Array.isArray(launch.configurations)).toBe(true);
-      
-      const nextConfig = launch.configurations.find((config: any) => 
-        config.name.includes('Frontend') || config.name.includes('Next.js')
+
+      const nextConfig = launch.configurations.find(
+        (config: any) => config.name.includes('Frontend') || config.name.includes('Next.js')
       );
       expect(nextConfig).toBeDefined();
       expect(nextConfig.type).toBe('node');
@@ -167,16 +167,16 @@ describe('VS Code Configuration', () => {
   describe('extensions.json', () => {
     it('should exist and be valid JSON', () => {
       expect(existsSync(extensionsPath)).toBe(true);
-      
+
       const content = readFileSync(extensionsPath, 'utf-8');
       expect(() => parseJSONC(content)).not.toThrow();
     });
 
     it('should recommend essential development extensions', () => {
       const extensions = parseJSONC(readFileSync(extensionsPath, 'utf-8'));
-      
+
       expect(Array.isArray(extensions.recommendations)).toBe(true);
-      
+
       // Should include essential extensions
       const recs = extensions.recommendations;
       expect(recs.some((ext: string) => ext.includes('prettier'))).toBe(true);
@@ -189,7 +189,7 @@ describe('VS Code Configuration', () => {
   describe('keybindings.json', () => {
     it('should exist and be valid JSONC array', () => {
       expect(existsSync(keybindingsPath)).toBe(true);
-      
+
       const content = readFileSync(keybindingsPath, 'utf-8');
       const bindings = parseJSONC(content);
       expect(Array.isArray(bindings)).toBe(true);
@@ -197,15 +197,13 @@ describe('VS Code Configuration', () => {
 
     it('should have frontend-specific keybindings', () => {
       const bindings = parseJSONC(readFileSync(keybindingsPath, 'utf-8'));
-      
+
       // Should have task and debug shortcuts
-      expect(bindings.some((binding: any) => 
-        binding.command === 'workbench.action.tasks.runTask'
-      )).toBe(true);
-      
-      expect(bindings.some((binding: any) => 
-        binding.command === 'vitest.run'
-      )).toBe(true);
+      expect(
+        bindings.some((binding: any) => binding.command === 'workbench.action.tasks.runTask')
+      ).toBe(true);
+
+      expect(bindings.some((binding: any) => binding.command === 'vitest.run')).toBe(true);
     });
   });
 
