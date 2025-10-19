@@ -109,29 +109,35 @@ npm run test:dashboard
 ### What's Tested
 
 ✅ **Sorting Functions** (26 tests)
+
 - All 8 sort options (priority, impact, complexity, coverage, filename)
 - Edge cases and immutability
 
 ✅ **Pagination** (15 tests)
+
 - Boundary conditions, navigation flags
 - Large datasets and edge cases
 
 ✅ **Export** (22 tests)
+
 - CSV/JSON generation
 - Data integrity and formatting
 - Metadata calculations
 
 ✅ **Debounce** (16 tests)
+
 - Timing accuracy
 - Argument preservation
 - Real-world scenarios
 
 ✅ **Velocity Calculations** (20 tests)
+
 - Statistical accuracy
 - Trend analysis
 - Edge cases
 
 ✅ **Heatmap Colors** (15 tests)
+
 - Color gradient validation
 - Boundary values
 - Edge cases
@@ -152,6 +158,7 @@ coverage-dashboard/__tests__/
 ### Testing Philosophy
 
 We test **complex business logic** while skipping UI/DOM tests:
+
 - ✅ Test: Algorithms, calculations, data transformations
 - ⏭️ Skip: DOM manipulation, Chart.js integration, visual output
 
