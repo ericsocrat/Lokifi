@@ -22,7 +22,7 @@
     "test:visual:ui": "playwright test tests/visual --ui",
     "test:a11y": "playwright test tests/a11y",
     "test:all": "npm run typecheck && npm run test:ci && npm run test:e2e",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage && node scripts/update-coverage-dashboard.js",
     "clean": "rimraf .next node_modules",
     "prepare": "husky"
   },

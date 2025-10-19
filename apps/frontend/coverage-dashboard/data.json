@@ -1,69 +1,241 @@
 {
+  "generated": "2025-10-19T14:29:33.618Z",
   "current": {
     "tests": {
-      "passing": 18,
-      "skipped": 4,
+      "passing": 0,
+      "skipped": 0,
       "failing": 0,
-      "total": 18
+      "total": 0,
+      "files": 197,
+      "duration": "-"
     },
     "coverage": {
-      "functions": 63.31,
-      "branches": 75.11,
-      "lines": 12.3,
-      "statements": 12.3
+      "statements": 11.26,
+      "branches": 88.75,
+      "functions": 84.87,
+      "lines": 11.26
     }
   },
   "modules": [
     {
-      "name": "api",
-      "coverage": 12.3,
-      "files": 10,
+      "name": "other",
+      "coverage": 11.259037646472201,
+      "files": 197,
       "tests": 0
+    }
+  ],
+  "gaps": [
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartErrorBoundary.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 40
+      }
     },
     {
-      "name": "stores",
-      "coverage": 25.0,
-      "files": 2,
-      "tests": 23
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartHeader.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 103
+      }
     },
     {
-      "name": "utils",
-      "coverage": 62.0,
-      "files": 30,
-      "tests": 140
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartLoadingState.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 14
+      }
     },
     {
-      "name": "charts",
-      "coverage": 12.3,
-      "files": 7,
-      "tests": 30
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanel.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 974
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 425
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 147
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ContextMenu.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 18
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\CopilotChat.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 65
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawToolbar.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 48
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 336
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 260
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 234
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 246
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 218
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModal.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 193
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 184
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorPanel.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 47
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorSettingsDrawer.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 63
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\LeftDock.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 41
+      }
+    },
+    {
+      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\MultiChartLayout.tsx",
+      "coverage": 0,
+      "tests": 0,
+      "priority": "HIGH",
+      "lines": {
+        "covered": 0,
+        "total": 53
+      }
     }
   ],
   "trends": [
     {
+      "timestamp": "2025-10-19T14:29:33.618Z",
       "coverage": {
-        "functions": 63.31,
-        "branches": 75.11,
-        "lines": 12.3,
-        "statements": 12.3
-      },
-      "timestamp": "2025-10-14T08:33:36.3726088+03:00",
-      "tests": {
-        "passing": 18,
-        "skipped": 4,
-        "failing": 0,
-        "total": 18
-      },
-      "commit": "73e010eb"
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      }
     }
   ],
-  "delta": {},
-  "generated": "2025-10-14T08:53:40.0616774+03:00",
-  "gaps": {
-    "reason": "Date calculations",
-    "coverage": 0,
-    "file": "src/lib/utils/timeframes.ts",
-    "priority": "HIGH",
-    "tests": 0
-  }
+  "delta": null
 }
