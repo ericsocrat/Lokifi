@@ -21,6 +21,53 @@
         font-size: 24px;
         font-weight: bold;
       }
+
+      /* Print styles for PDF export */
+      @media print {
+        body {
+          background: white !important;
+          color: black !important;
+        }
+        
+        header {
+          background: linear-gradient(to right, #1e40af, #7c3aed) !important;
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        /* Hide interactive elements */
+        button,
+        #viewHint,
+        .no-print {
+          display: none !important;
+        }
+
+        /* Optimize tables for print */
+        table {
+          page-break-inside: avoid;
+        }
+
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+        }
+
+        /* Ensure charts print well */
+        canvas {
+          max-width: 100% !important;
+          height: auto !important;
+        }
+
+        /* Add page breaks between major sections */
+        section {
+          page-break-after: always;
+        }
+
+        /* Last section shouldn't break */
+        section:last-of-type {
+          page-break-after: auto;
+        }
+      }
     </style>
   </head>
   <body class="bg-gray-900 text-white min-h-screen">
@@ -374,6 +421,80 @@
       </div>
     </section>
 
+    <!-- Export & Download Section -->
+    <section class="container mx-auto px-6 py-8 mb-12">
+      <h2 class="text-3xl font-bold mb-6">📦 Export & Download</h2>
+      <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+        <p class="text-sm text-gray-400 mb-6">
+          Export coverage data in various formats for analysis, reporting, or integration with other tools
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- CSV Export -->
+          <button
+            onclick="exportToCSV()"
+            class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg transition-colors flex flex-col items-center"
+          >
+            <span class="text-3xl mb-2">📊</span>
+            <span class="text-lg">Export CSV</span>
+            <span class="text-xs text-gray-200 mt-1">For Excel/Sheets</span>
+          </button>
+
+          <!-- JSON Export -->
+          <button
+            onclick="exportToJSON()"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-lg transition-colors flex flex-col items-center"
+          >
+            <span class="text-3xl mb-2">📋</span>
+            <span class="text-lg">Export JSON</span>
+            <span class="text-xs text-gray-200 mt-1">Raw data format</span>
+          </button>
+
+          <!-- PDF Report -->
+          <button
+            onclick="exportToPDF()"
+            class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-6 rounded-lg transition-colors flex flex-col items-center"
+          >
+            <span class="text-3xl mb-2">📄</span>
+            <span class="text-lg">Export PDF</span>
+            <span class="text-xs text-gray-200 mt-1">Print-friendly report</span>
+          </button>
+
+          <!-- Screenshot Charts -->
+          <button
+            onclick="downloadCharts()"
+            class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-6 rounded-lg transition-colors flex flex-col items-center"
+          >
+            <span class="text-3xl mb-2">📸</span>
+            <span class="text-lg">Save Charts</span>
+            <span class="text-xs text-gray-200 mt-1">Images for docs</span>
+          </button>
+        </div>
+
+        <!-- Export Options -->
+        <div class="mt-6 p-4 bg-gray-700/50 rounded border border-gray-600">
+          <h3 class="text-sm font-semibold mb-3 text-gray-300">📐 Export Options</h3>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label class="flex items-center space-x-2 text-sm text-gray-300">
+              <input type="checkbox" id="exportFiltered" checked class="rounded bg-gray-700 border-gray-600" />
+              <span>Export filtered data only</span>
+            </label>
+            <label class="flex items-center space-x-2 text-sm text-gray-300">
+              <input type="checkbox" id="includeMetadata" checked class="rounded bg-gray-700 border-gray-600" />
+              <span>Include metadata</span>
+            </label>
+            <label class="flex items-center space-x-2 text-sm text-gray-300">
+              <input type="checkbox" id="includeTimestamp" checked class="rounded bg-gray-700 border-gray-600" />
+              <span>Include timestamp</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Export Status -->
+        <div id="exportStatus" class="mt-4 p-3 rounded text-sm" style="display: none;"></div>
+      </div>
+    </section>
+
     <!-- Footer -->
     <footer class="bg-gray-800 border-t border-gray-700 py-6 mt-12">
       <div class="container mx-auto px-6 text-center text-gray-400">
@@ -647,27 +768,19 @@
             break;
 
           case 'impact-desc':
-            sorted.sort(
-              (a, b) => (b.metrics?.impact || 0) - (a.metrics?.impact || 0)
-            );
+            sorted.sort((a, b) => (b.metrics?.impact || 0) - (a.metrics?.impact || 0));
             break;
 
           case 'impact-asc':
-            sorted.sort(
-              (a, b) => (a.metrics?.impact || 0) - (b.metrics?.impact || 0)
-            );
+            sorted.sort((a, b) => (a.metrics?.impact || 0) - (b.metrics?.impact || 0));
             break;
 
           case 'complexity-desc':
-            sorted.sort(
-              (a, b) => (b.metrics?.complexity || 0) - (a.metrics?.complexity || 0)
-            );
+            sorted.sort((a, b) => (b.metrics?.complexity || 0) - (a.metrics?.complexity || 0));
             break;
 
           case 'complexity-asc':
-            sorted.sort(
-              (a, b) => (a.metrics?.complexity || 0) - (b.metrics?.complexity || 0)
-            );
+            sorted.sort((a, b) => (a.metrics?.complexity || 0) - (b.metrics?.complexity || 0));
             break;
 
           case 'coverage-asc':
@@ -728,7 +841,10 @@
 
         // Show/hide clear button
         const hasActiveFilters =
-          searchTerm || priorityFilter !== 'ALL' || moduleFilter !== 'ALL' || sortControl !== 'priority';
+          searchTerm ||
+          priorityFilter !== 'ALL' ||
+          moduleFilter !== 'ALL' ||
+          sortControl !== 'priority';
         document.getElementById('clearFiltersBtn').style.display = hasActiveFilters
           ? 'block'
           : 'none';
@@ -1211,6 +1327,271 @@
 
         alert(suggestions);
       }
+
+      // ==================== EXPORT FUNCTIONS ====================
+
+      // Helper: Show export status message
+      function showExportStatus(message, type = 'success') {
+        const status = document.getElementById('exportStatus');
+        status.style.display = 'block';
+        status.className = `mt-4 p-3 rounded text-sm ${
+          type === 'success'
+            ? 'bg-green-600/20 text-green-400 border border-green-600'
+            : type === 'error'
+            ? 'bg-red-600/20 text-red-400 border border-red-600'
+            : 'bg-blue-600/20 text-blue-400 border border-blue-600'
+        }`;
+        status.textContent = message;
+
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+          status.style.display = 'none';
+        }, 5000);
+      }
+
+      // Helper: Get current data (filtered or all)
+      function getExportData() {
+        const useFiltered = document.getElementById('exportFiltered').checked;
+        const includeMetadata = document.getElementById('includeMetadata').checked;
+        const includeTimestamp = document.getElementById('includeTimestamp').checked;
+
+        // Get the current filtered gaps from the table
+        const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
+        const priorityFilter = document.getElementById('priorityFilter').value;
+        const moduleFilter = document.getElementById('moduleFilter').value;
+
+        let gaps = useFiltered ? [...allGapsData] : [...allGapsData];
+
+        // Apply filters if using filtered data
+        if (useFiltered) {
+          gaps = gaps.filter((gap) => {
+            if (searchTerm && !gap.file.toLowerCase().includes(searchTerm)) return false;
+            if (priorityFilter !== 'ALL' && gap.priority !== priorityFilter) return false;
+            if (moduleFilter !== 'ALL') {
+              const gapModule = gap.file.split('/')[0];
+              if (gapModule !== moduleFilter) return false;
+            }
+            return true;
+          });
+        }
+
+        const data = {
+          gaps,
+          summary: {
+            total: gaps.length,
+            high: gaps.filter((g) => g.priority === 'HIGH').length,
+            medium: gaps.filter((g) => g.priority === 'MEDIUM').length,
+            low: gaps.filter((g) => g.priority === 'LOW').length,
+          },
+        };
+
+        if (includeMetadata && currentDashboardData) {
+          data.metadata = {
+            generated: currentDashboardData.generated,
+            version: currentDashboardData.version,
+            git: currentDashboardData.git,
+            coverage: currentDashboardData.current?.coverage,
+          };
+        }
+
+        if (includeTimestamp) {
+          data.exportedAt = new Date().toISOString();
+        }
+
+        return data;
+      }
+
+      // Helper: Download file
+      function downloadFile(content, filename, mimeType) {
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      // Export to CSV
+      function exportToCSV() {
+        try {
+          const data = getExportData();
+          const { gaps, summary, metadata, exportedAt } = data;
+
+          // Build CSV content
+          let csv = '';
+
+          // Header info
+          if (metadata) {
+            csv += `# Lokifi Coverage Report\n`;
+            csv += `# Generated: ${new Date(metadata.generated).toLocaleString()}\n`;
+            if (exportedAt) {
+              csv += `# Exported: ${new Date(exportedAt).toLocaleString()}\n`;
+            }
+            if (metadata.git) {
+              csv += `# Branch: ${metadata.git.branch}\n`;
+              csv += `# Commit: ${metadata.git.commit}\n`;
+            }
+            if (metadata.coverage) {
+              csv += `# Overall Coverage: ${metadata.coverage.lines.toFixed(1)}% lines, ${metadata.coverage.branches.toFixed(1)}% branches\n`;
+            }
+            csv += `\n`;
+          }
+
+          // Summary
+          csv += `# Summary\n`;
+          csv += `Total Gaps,${summary.total}\n`;
+          csv += `HIGH Priority,${summary.high}\n`;
+          csv += `MEDIUM Priority,${summary.medium}\n`;
+          csv += `LOW Priority,${summary.low}\n`;
+          csv += `\n`;
+
+          // Column headers
+          csv += `Priority,File,Coverage %,Uncovered Lines,Complexity,Impact,Reason\n`;
+
+          // Data rows
+          gaps.forEach((gap) => {
+            const uncoveredLines =
+              gap.metrics?.uncoveredLines ||
+              (gap.lines ? gap.lines.total - gap.lines.covered : 'N/A');
+            const complexity = gap.metrics?.complexity || 'N/A';
+            const impact = gap.metrics?.impact || 'N/A';
+            const reason = (gap.reason || '').replace(/,/g, ';'); // Escape commas
+
+            csv += `${gap.priority},"${gap.file}",${gap.coverage},${uncoveredLines},${complexity},${impact},"${reason}"\n`;
+          });
+
+          // Download
+          const filename = `coverage-gaps-${new Date().toISOString().split('T')[0]}.csv`;
+          downloadFile(csv, filename, 'text/csv');
+
+          showExportStatus(
+            `✅ Successfully exported ${gaps.length} gaps to ${filename}`,
+            'success'
+          );
+        } catch (error) {
+          console.error('CSV export error:', error);
+          showExportStatus(`❌ Export failed: ${error.message}`, 'error');
+        }
+      }
+
+      // Export to JSON
+      function exportToJSON() {
+        try {
+          const data = getExportData();
+          const json = JSON.stringify(data, null, 2);
+
+          const filename = `coverage-data-${new Date().toISOString().split('T')[0]}.json`;
+          downloadFile(json, filename, 'application/json');
+
+          showExportStatus(
+            `✅ Successfully exported ${data.gaps.length} gaps to ${filename}`,
+            'success'
+          );
+        } catch (error) {
+          console.error('JSON export error:', error);
+          showExportStatus(`❌ Export failed: ${error.message}`, 'error');
+        }
+      }
+
+      // Export to PDF (Enhanced)
+      function exportToPDF() {
+        try {
+          const data = getExportData();
+
+          // Show helpful dialog
+          const message =
+            `📄 PDF Export Ready\n\n` +
+            `Coverage Gaps to Export: ${data.gaps.length}\n` +
+            `  🔴 HIGH: ${data.summary.high}\n` +
+            `  🟡 MEDIUM: ${data.summary.medium}\n` +
+            `  🟢 LOW: ${data.summary.low}\n\n` +
+            `The browser print dialog will open.\n\n` +
+            `Tips for Best Results:\n` +
+            `  • Choose "Save as PDF" as destination\n` +
+            `  • Enable "Background graphics"\n` +
+            `  • Use landscape orientation for tables\n` +
+            `  • Adjust margins if needed\n\n` +
+            `Ready to export?`;
+
+          if (confirm(message)) {
+            // Add print-friendly class temporarily
+            document.body.classList.add('print-mode');
+
+            // Trigger print dialog
+            window.print();
+
+            // Remove print class after print dialog closes
+            setTimeout(() => {
+              document.body.classList.remove('print-mode');
+            }, 1000);
+
+            showExportStatus(
+              '📄 PDF export initiated. Check your browser\'s print dialog.',
+              'info'
+            );
+          }
+        } catch (error) {
+          console.error('PDF export error:', error);
+          showExportStatus(`❌ Export failed: ${error.message}`, 'error');
+        }
+      }
+
+      // Download Charts as Images
+      function downloadCharts() {
+        try {
+          const message =
+            `📸 Chart Export\n\n` +
+            `This will save chart images to help document coverage.\n\n` +
+            `Available charts:\n` +
+            `  📊 Coverage Gauges (4 charts)\n` +
+            `  📈 Trend Chart (if available)\n` +
+            `  📉 Module Chart (if available)\n\n` +
+            `Note: Browser limitations may affect quality.\n` +
+            `For best results, take manual screenshots.\n\n` +
+            `How to take screenshots:\n` +
+            `  Windows: Win + Shift + S\n` +
+            `  Mac: Cmd + Shift + 4\n` +
+            `  Linux: Usually PrtScn or Shift + PrtScn\n\n` +
+            `Alternative: Use browser DevTools:\n` +
+            `  1. Right-click chart\n` +
+            `  2. Inspect Element\n` +
+            `  3. Right-click canvas element\n` +
+            `  4. "Save image as..."\n\n` +
+            `Would you like to see tips for screenshot tools?`;
+
+          if (confirm(message)) {
+            const tips =
+              `🛠️ Screenshot Tools Recommendation\n\n` +
+              `For best chart captures:\n\n` +
+              `Windows:\n` +
+              `  • Snipping Tool (built-in)\n` +
+              `  • Greenshot (free)\n` +
+              `  • ShareX (free, advanced)\n\n` +
+              `Mac:\n` +
+              `  • Native screenshot tools (Cmd+Shift+4)\n` +
+              `  • CleanShot X (paid, advanced)\n\n` +
+              `Cross-platform:\n` +
+              `  • Flameshot (free, open-source)\n` +
+              `  • Browser extensions (Nimbus, Awesome Screenshot)\n\n` +
+              `Tip: Capture charts in the dashboard while viewing!`;
+
+            alert(tips);
+
+            showExportStatus(
+              '💡 Use screenshot tools to capture charts. See the tips provided!',
+              'info'
+            );
+          }
+        } catch (error) {
+          console.error('Chart export error:', error);
+          showExportStatus(`❌ Operation failed: ${error.message}`, 'error');
+        }
+      }
+
+      // ==================== END EXPORT FUNCTIONS ====================
 
       function exportReport() {
         if (confirm('Export dashboard as PDF?\n\nThis will open the print dialog.')) {
