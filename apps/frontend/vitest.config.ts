@@ -63,6 +63,15 @@ export default defineConfig({
       //   lines: 17.5,
       //   statements: 17.5,
       // },
+      // Dashboard-specific thresholds for business logic utilities
+      thresholds: {
+        'coverage-dashboard/__tests__/utils.js': {
+          branches: 70,
+          functions: 100,
+          lines: 70,
+          statements: 70,
+        },
+      },
     },
   },
   resolve: {

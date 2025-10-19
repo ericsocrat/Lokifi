@@ -72,6 +72,12 @@ jobs:
               --reporter=default \
               --reporter=github-actions
 
+      - name: 🎯 Run dashboard tests
+        run: |
+          echo "📊 Running coverage dashboard tests..."
+          npm run test:dashboard -- --reporter=default --reporter=github-actions
+        continue-on-error: false
+
       - name: 📊 Upload coverage report
         if: always()
         uses: actions/upload-artifact@v4
