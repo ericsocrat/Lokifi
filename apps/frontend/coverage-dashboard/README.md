@@ -12,6 +12,7 @@ npm run test:coverage
 ```
 
 This will:
+
 - ✅ Run all Vitest tests
 - ✅ Generate coverage reports
 - ✅ Auto-update dashboard data (`data.json`)
@@ -20,13 +21,16 @@ This will:
 ### View the Dashboard
 
 **Option 1: Serve Locally (Recommended)**
+
 ```bash
 cd apps/frontend
 npx serve coverage-dashboard
 ```
+
 Then open the URL shown (usually `http://localhost:3000`)
 
 **Option 2: Use http-server**
+
 ```bash
 cd apps/frontend
 npx http-server coverage-dashboard -p 8080 -o
@@ -38,6 +42,7 @@ Visit: `https://<username>.github.io/<repo>/dashboard/`
 ## 📋 Features
 
 ### 📊 Real-Time Metrics
+
 - **4 Coverage Gauges**: Statements, Branches, Functions, Lines
 - **Visual Color Coding**:
   - 🟢 Green: ≥80% (Excellent)
@@ -46,16 +51,19 @@ Visit: `https://<username>.github.io/<repo>/dashboard/`
   - 🔴 Red: <40% (Needs Work)
 
 ### 📈 Trend Tracking
+
 - Historical coverage over last 30 runs
 - Delta indicators (↑ improved, ↓ decreased)
 - Automatic trend data persistence
 
 ### 🎯 Coverage Gaps Analysis
+
 - Prioritized file list (HIGH/MEDIUM/LOW)
 - Quick "Analyze" button for detailed inspection
 - Sorted by priority and coverage percentage
 
 ### ⚡ Quick Actions
+
 - **🔄 Refresh Data**: Reload dashboard
 - **📊 Run Coverage**: Instructions to generate fresh data
 - **🧪 Run Tests**: Test execution commands
@@ -76,9 +84,78 @@ Visit: `https://<username>.github.io/<repo>/dashboard/`
 ### Automation
 
 The dashboard updates automatically:
+
 - ✅ Every time you run `npm run test:coverage`
 - ✅ In CI/CD pipelines (deployed to GitHub Pages)
 - ✅ Tracks trends automatically (no manual work!)
+
+## 🧪 Testing the Dashboard
+
+The dashboard itself has unit tests for critical business logic:
+
+### Run Dashboard Tests
+
+```bash
+cd apps/frontend
+npm run test:dashboard
+```
+
+### Test Coverage
+
+- **103 test cases** covering all critical functions
+- **6 test suites**: sorting, pagination, export, debounce, velocity, heatmap
+- **~70% coverage** of testable business logic
+
+### What's Tested
+
+✅ **Sorting Functions** (26 tests)
+- All 8 sort options (priority, impact, complexity, coverage, filename)
+- Edge cases and immutability
+
+✅ **Pagination** (15 tests)
+- Boundary conditions, navigation flags
+- Large datasets and edge cases
+
+✅ **Export** (22 tests)
+- CSV/JSON generation
+- Data integrity and formatting
+- Metadata calculations
+
+✅ **Debounce** (16 tests)
+- Timing accuracy
+- Argument preservation
+- Real-world scenarios
+
+✅ **Velocity Calculations** (20 tests)
+- Statistical accuracy
+- Trend analysis
+- Edge cases
+
+✅ **Heatmap Colors** (15 tests)
+- Color gradient validation
+- Boundary values
+- Edge cases
+
+### Test Files
+
+```
+coverage-dashboard/__tests__/
+├── sorting.test.js      # Sort function tests
+├── pagination.test.js   # Pagination logic tests
+├── export.test.js       # CSV/JSON export tests
+├── debounce.test.js     # Debounce behavior tests
+├── velocity.test.js     # Velocity calculation tests
+├── heatmap.test.js      # Color mapping tests
+└── utils.js             # Extracted testable functions
+```
+
+### Testing Philosophy
+
+We test **complex business logic** while skipping UI/DOM tests:
+- ✅ Test: Algorithms, calculations, data transformations
+- ⏭️ Skip: DOM manipulation, Chart.js integration, visual output
+
+See `TESTING_ANALYSIS.md` for full testing strategy.
 
 ## 📁 Files
 
@@ -93,11 +170,13 @@ coverage-dashboard/
 ## 🎨 Customization
 
 The dashboard uses:
+
 - **Tailwind CSS** for styling (dark theme)
 - **Chart.js** for visualizations
 - **Vanilla JavaScript** for interactivity
 
 To customize:
+
 1. Edit `index.html` for UI changes
 2. Modify `scripts/update-coverage-dashboard.js` for data processing logic
 
@@ -108,6 +187,7 @@ To customize:
 **Cause**: `data.json` doesn't exist or can't be loaded
 
 **Solution**:
+
 ```bash
 cd apps/frontend
 npm run test:coverage
@@ -118,6 +198,7 @@ npm run test:coverage
 **Cause**: Browsers block local file access for security
 
 **Solution**: Serve the dashboard instead of opening the file directly
+
 ```bash
 npx serve coverage-dashboard
 ```
@@ -130,12 +211,12 @@ npx serve coverage-dashboard
 
 ## 📊 Coverage Goals
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Statements | ~11% | 80% | 🔴 Needs Work |
-| Branches | ~89% | 80% | 🟢 Excellent |
-| Functions | ~85% | 80% | 🟢 Excellent |
-| Lines | ~11% | 80% | 🔴 Needs Work |
+| Metric     | Current | Target | Status        |
+| ---------- | ------- | ------ | ------------- |
+| Statements | ~11%    | 80%    | 🔴 Needs Work |
+| Branches   | ~89%    | 80%    | 🟢 Excellent  |
+| Functions  | ~85%    | 80%    | 🟢 Excellent  |
+| Lines      | ~11%    | 80%    | 🔴 Needs Work |
 
 **Priority**: Focus on statement and line coverage!
 
@@ -159,6 +240,7 @@ npx serve coverage-dashboard
 ## 🤝 Contributing
 
 When adding features:
+
 1. Update tests first
 2. Run `npm run test:coverage`
 3. Check dashboard for new gaps
@@ -169,4 +251,4 @@ When adding features:
 
 **Built with ❤️ by the Lokifi Team**
 
-*Powered by Vitest, Chart.js, and Tailwind CSS*
+_Powered by Vitest, Chart.js, and Tailwind CSS_

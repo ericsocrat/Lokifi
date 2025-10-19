@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:ci": "vitest run",
+    "test:dashboard": "vitest run coverage-dashboard",
     "test:e2e": "playwright test",
     "test:contracts": "vitest run tests/api/contracts",
     "test:security": "vitest run tests/security",
