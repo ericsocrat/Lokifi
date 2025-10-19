@@ -459,7 +459,7 @@ describe('APIClient', () => {
 
       // First request should be aborted
       await expect(firstPromise).rejects.toThrow();
-      
+
       // Second request should succeed
       await expect(secondPromise).resolves.toBeDefined();
     });
