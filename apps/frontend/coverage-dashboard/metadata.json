@@ -1,0 +1,22 @@
+{
+  "totalRuns": 2,
+  "firstRun": "2025-10-19T14:49:34.228Z",
+  "lastRun": "2025-10-19T14:52:56.934Z",
+  "bestCoverage": {
+    "statements": 11.259037646472201,
+    "branches": 88.74856486796784,
+    "functions": 84.87394957983193,
+    "lines": 11.259037646472201
+  },
+  "worstCoverage": {
+    "statements": 11.259037646472201,
+    "branches": 88.74856486796784,
+    "functions": 84.87394957983193,
+    "lines": 11.259037646472201
+  },
+  "velocity": {
+    "testsPerDay": "NaN",
+    "filesPerRun": "65.7",
+    "avgCoverageGain": "0.00"
+  }
+}

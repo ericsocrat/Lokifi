@@ -32,8 +32,12 @@
         <p class="text-sm text-gray-400 mt-2">
           Last updated: <span id="lastUpdate" class="text-blue-400">Loading...</span>
         </p>
-        <div id="viewHint" class="text-xs text-yellow-400 mt-2 bg-yellow-900/20 px-3 py-2 rounded border border-yellow-700" style="display: none;">
-          💡 <strong>Tip:</strong> For best results, serve this dashboard with: 
+        <div
+          id="viewHint"
+          class="text-xs text-yellow-400 mt-2 bg-yellow-900/20 px-3 py-2 rounded border border-yellow-700"
+          style="display: none"
+        >
+          💡 <strong>Tip:</strong> For best results, serve this dashboard with:
           <code class="bg-gray-800 px-2 py-1 rounded ml-1">npx serve coverage-dashboard</code>
         </div>
       </div>
@@ -141,6 +145,87 @@
       </div>
     </section>
 
+    <!-- Key Insights Section (NEW) -->
+    <section class="container mx-auto px-6 py-8" id="insightsSection" style="display: none">
+      <h2 class="text-3xl font-bold mb-6">💡 Key Insights</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="insightsContainer">
+        <!-- Insights will be dynamically populated -->
+      </div>
+    </section>
+
+    <!-- Summary Statistics (NEW) -->
+    <section class="container mx-auto px-6 py-8" id="summarySection" style="display: none">
+      <h2 class="text-3xl font-bold mb-6">📊 Summary Statistics</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <div class="text-3xl font-bold text-blue-400" id="totalFilesCount">-</div>
+          <div class="text-sm text-gray-400 mt-2">Total Files</div>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <div class="text-3xl font-bold text-green-400" id="healthyFilesCount">-</div>
+          <div class="text-sm text-gray-400 mt-2">Healthy Files (>80%)</div>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <div class="text-3xl font-bold text-red-400" id="criticalFilesCount">-</div>
+          <div class="text-sm text-gray-400 mt-2">Critical Files (<40%)</div>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <div class="text-3xl font-bold text-purple-400" id="avgComplexity">-</div>
+          <div class="text-sm text-gray-400 mt-2">Avg Complexity</div>
+        </div>
+      </div>
+
+      <!-- Velocity Metrics -->
+      <div
+        class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6"
+        id="velocitySection"
+        style="display: none"
+      >
+        <div class="bg-gray-800 p-6 rounded-lg border-l-4 border-blue-500">
+          <div class="text-2xl font-bold text-blue-400" id="testsPerDay">-</div>
+          <div class="text-sm text-gray-400 mt-2">Tests Added/Day</div>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg border-l-4 border-green-500">
+          <div class="text-2xl font-bold text-green-400" id="coverageGain">-</div>
+          <div class="text-sm text-gray-400 mt-2">Coverage Gain/Run</div>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-lg border-l-4 border-purple-500">
+          <div class="text-2xl font-bold text-purple-400" id="totalRuns">-</div>
+          <div class="text-sm text-gray-400 mt-2">Total Coverage Runs</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Recommendations (NEW) -->
+    <section class="container mx-auto px-6 py-8" id="recommendationsSection" style="display: none">
+      <h2 class="text-3xl font-bold mb-6">🎯 Recommended Actions</h2>
+      <div class="space-y-4" id="recommendationsContainer">
+        <!-- Recommendations will be dynamically populated -->
+      </div>
+    </section>
+
+    <!-- Top Files (NEW) -->
+    <section class="container mx-auto px-6 py-8" id="topFilesSection" style="display: none">
+      <h2 class="text-3xl font-bold mb-6">📈 Notable Files</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Best Coverage -->
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold mb-4 text-green-400">🏆 Best Coverage</h3>
+          <div class="space-y-2" id="bestCoverageList">
+            <div class="text-gray-400 text-sm">Loading...</div>
+          </div>
+        </div>
+
+        <!-- Most Complex -->
+        <div class="bg-gray-800 p-6 rounded-lg">
+          <h3 class="text-xl font-semibold mb-4 text-yellow-400">🔧 Most Complex</h3>
+          <div class="space-y-2" id="mostComplexList">
+            <div class="text-gray-400 text-sm">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Coverage Gaps -->
     <section class="container mx-auto px-6 py-8">
       <h2 class="text-3xl font-bold mb-6">Coverage Gaps</h2>
@@ -149,19 +234,21 @@
           <h3 class="text-xl font-semibold">Files Needing Tests</h3>
           <p class="text-sm text-gray-400">High-priority files with low or missing test coverage</p>
         </div>
-        <table class="w-full" id="gapsTable">
+        <table class="w-full text-sm" id="gapsTable">
           <thead>
             <tr class="border-b border-gray-700">
               <th class="text-left py-3 px-4">Priority</th>
               <th class="text-left py-3 px-4">File</th>
               <th class="text-center py-3 px-4">Coverage</th>
-              <th class="text-center py-3 px-4">Tests</th>
+              <th class="text-center py-3 px-4">Uncovered Lines</th>
+              <th class="text-center py-3 px-4">Complexity</th>
+              <th class="text-center py-3 px-4">Impact</th>
               <th class="text-center py-3 px-4">Actions</th>
             </tr>
           </thead>
           <tbody id="gapsTableBody">
             <tr>
-              <td colspan="5" class="text-center py-8 text-gray-400">Loading coverage gaps...</td>
+              <td colspan="7" class="text-center py-8 text-gray-400">Loading coverage gaps...</td>
             </tr>
           </tbody>
         </table>
@@ -382,7 +469,7 @@
 
         if (!data.gaps || data.gaps.length === 0) {
           tbody.innerHTML =
-            '<tr><td colspan="5" class="text-center py-8 text-green-400">✅ No significant coverage gaps found!</td></tr>';
+            '<tr><td colspan="7" class="text-center py-8 text-green-400">✅ No significant coverage gaps found!</td></tr>';
           return;
         }
 
@@ -392,14 +479,38 @@
               gap.priority === 'HIGH' ? '🔴' : gap.priority === 'MEDIUM' ? '🟡' : '🟢';
             const coverageColor = getCoverageColor(gap.coverage).text;
 
+            // Get metrics with fallbacks for older data format
+            const uncoveredLines =
+              gap.metrics?.uncoveredLines ||
+              (gap.lines ? gap.lines.total - gap.lines.covered : '-');
+            const complexity = gap.metrics?.complexity || '-';
+            const impact = gap.metrics?.impact || '-';
+
             return `
                     <tr class="border-b border-gray-700 hover:bg-gray-700 transition-colors">
-                        <td class="py-3 px-4 text-center text-2xl">${priorityEmoji}</td>
-                        <td class="py-3 px-4 font-mono text-sm">${gap.file}</td>
-                        <td class="py-3 px-4 text-center ${coverageColor} font-bold">${gap.coverage}%</td>
-                        <td class="py-3 px-4 text-center">${gap.tests}</td>
+                        <td class="py-3 px-4 text-center text-xl">${priorityEmoji}</td>
+                        <td class="py-3 px-4 font-mono text-xs" title="${gap.fullPath || gap.file}">
+                          <div class="max-w-xs truncate">${gap.file}</div>
+                          ${gap.reason ? `<div class="text-gray-500 text-xs mt-1">${gap.reason}</div>` : ''}
+                        </td>
                         <td class="py-3 px-4 text-center">
-                            <button onclick="analyzeFile('${gap.file}')" class="text-blue-400 hover:text-blue-300 text-sm">
+                          <div class="${coverageColor} font-bold">${gap.coverage}%</div>
+                          ${gap.details ? `<div class="text-xs text-gray-500 mt-1">B: ${gap.details.branches}% F: ${gap.details.functions}%</div>` : ''}
+                        </td>
+                        <td class="py-3 px-4 text-center text-red-400 font-semibold">${uncoveredLines}</td>
+                        <td class="py-3 px-4 text-center text-yellow-400">${complexity}</td>
+                        <td class="py-3 px-4 text-center">
+                          <span class="px-2 py-1 rounded text-xs ${
+                            impact > 200
+                              ? 'bg-red-600'
+                              : impact > 100
+                                ? 'bg-yellow-600'
+                                : 'bg-blue-600'
+                          }">${impact}</span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="analyzeFile('${gap.fullPath || gap.file}')"
+                              class="text-blue-400 hover:text-blue-300 text-xs px-2 py-1 rounded hover:bg-blue-900/30">
                                 🎯 Analyze
                             </button>
                         </td>
@@ -421,13 +532,13 @@
           } catch (fetchError) {
             // If fetch fails (CORS or file not found), show a helpful message
             console.warn('Could not load data.json:', fetchError);
-            document.getElementById('lastUpdate').textContent = 
+            document.getElementById('lastUpdate').textContent =
               'No data - Run: npm run test:coverage';
-            
+
             // Show the hint about serving
             const hint = document.getElementById('viewHint');
             if (hint) hint.style.display = 'block';
-            
+
             // Show helpful message in the gaps section
             const gapsTableBody = document.getElementById('gapsTableBody');
             if (gapsTableBody) {
@@ -481,8 +592,12 @@
           );
           document.getElementById('statementsText').textContent =
             `${coverage.statements.toFixed(1)}%`;
-          document.getElementById('statementsDelta').textContent =
-            dashboardData.delta?.statements || 'No change';
+          const stmtDelta = dashboardData.delta?.statements;
+          document.getElementById('statementsDelta').textContent = stmtDelta?.text || 'No change';
+          if (stmtDelta?.color) {
+            document.getElementById('statementsDelta').className =
+              `text-sm text-${stmtDelta.color}-400`;
+          }
 
           charts.branchesGauge = createGauge(
             'branchesGauge',
@@ -490,8 +605,12 @@
             getCoverageColor(coverage.branches).bg
           );
           document.getElementById('branchesText').textContent = `${coverage.branches.toFixed(1)}%`;
-          document.getElementById('branchesDelta').textContent =
-            dashboardData.delta?.branches || 'No change';
+          const branchDelta = dashboardData.delta?.branches;
+          document.getElementById('branchesDelta').textContent = branchDelta?.text || 'No change';
+          if (branchDelta?.color) {
+            document.getElementById('branchesDelta').className =
+              `text-sm text-${branchDelta.color}-400`;
+          }
 
           charts.functionsGauge = createGauge(
             'functionsGauge',
@@ -500,8 +619,12 @@
           );
           document.getElementById('functionsText').textContent =
             `${coverage.functions.toFixed(1)}%`;
-          document.getElementById('functionsDelta').textContent =
-            dashboardData.delta?.functions || 'No change';
+          const funcDelta = dashboardData.delta?.functions;
+          document.getElementById('functionsDelta').textContent = funcDelta?.text || 'No change';
+          if (funcDelta?.color) {
+            document.getElementById('functionsDelta').className =
+              `text-sm text-${funcDelta.color}-400`;
+          }
 
           charts.linesGauge = createGauge(
             'linesGauge',
@@ -509,8 +632,12 @@
             getCoverageColor(coverage.lines).bg
           );
           document.getElementById('linesText').textContent = `${coverage.lines.toFixed(1)}%`;
-          document.getElementById('linesDelta').textContent =
-            dashboardData.delta?.lines || 'No change';
+          const linesDelta = dashboardData.delta?.lines;
+          document.getElementById('linesDelta').textContent = linesDelta?.text || 'No change';
+          if (linesDelta?.color) {
+            document.getElementById('linesDelta').className =
+              `text-sm text-${linesDelta.color}-400`;
+          }
 
           // Create charts
           if (dashboardData.trends && dashboardData.trends.length > 0) {
@@ -523,9 +650,187 @@
 
           // Populate gaps table
           populateGapsTable(dashboardData);
+
+          // Populate new sections
+          if (dashboardData.insights && dashboardData.insights.length > 0) {
+            populateInsights(dashboardData.insights);
+          }
+
+          if (dashboardData.summary) {
+            populateSummary(dashboardData.summary, dashboardData.metadata);
+          }
+
+          if (dashboardData.recommendations && dashboardData.recommendations.length > 0) {
+            populateRecommendations(dashboardData.recommendations);
+          }
+
+          if (dashboardData.topFiles) {
+            populateTopFiles(dashboardData.topFiles);
+          }
         } catch (error) {
           console.error('Error loading dashboard:', error);
           document.getElementById('lastUpdate').textContent = 'Error loading data';
+        }
+      }
+
+      // Populate insights section
+      function populateInsights(insights) {
+        const section = document.getElementById('insightsSection');
+        const container = document.getElementById('insightsContainer');
+
+        if (!insights || insights.length === 0) return;
+
+        section.style.display = 'block';
+
+        const typeIcons = {
+          error: '🔴',
+          warning: '🟡',
+          success: '🟢',
+          info: '🔵',
+        };
+
+        const typeColors = {
+          error: 'border-red-500 bg-red-900/20',
+          warning: 'border-yellow-500 bg-yellow-900/20',
+          success: 'border-green-500 bg-green-900/20',
+          info: 'border-blue-500 bg-blue-900/20',
+        };
+
+        container.innerHTML = insights
+          .slice(0, 6)
+          .map(
+            (insight) => `
+          <div class="bg-gray-800 p-4 rounded-lg border-l-4 ${typeColors[insight.type] || typeColors.info}">
+            <div class="flex items-start">
+              <span class="text-2xl mr-3">${typeIcons[insight.type] || '💡'}</span>
+              <div class="flex-1">
+                <div class="font-semibold text-gray-200 mb-1">${insight.category.toUpperCase()}</div>
+                <div class="text-sm text-gray-400">${insight.message}</div>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      }
+
+      // Populate summary section
+      function populateSummary(summary, metadata) {
+        const section = document.getElementById('summarySection');
+        section.style.display = 'block';
+
+        document.getElementById('totalFilesCount').textContent = summary.totalFiles || '-';
+        document.getElementById('healthyFilesCount').textContent = summary.healthyFiles || '-';
+        document.getElementById('criticalFilesCount').textContent = summary.criticalFiles || '-';
+        document.getElementById('avgComplexity').textContent = summary.avgComplexity || '-';
+
+        if (metadata && metadata.velocity) {
+          const velocitySection = document.getElementById('velocitySection');
+          velocitySection.style.display = 'grid';
+
+          document.getElementById('testsPerDay').textContent =
+            metadata.velocity.testsPerDay !== 'NaN' ? metadata.velocity.testsPerDay : '0.0';
+          document.getElementById('coverageGain').textContent =
+            metadata.velocity.avgCoverageGain + '%';
+          document.getElementById('totalRuns').textContent = metadata.totalRuns || '-';
+        }
+      }
+
+      // Populate recommendations section
+      function populateRecommendations(recommendations) {
+        const section = document.getElementById('recommendationsSection');
+        const container = document.getElementById('recommendationsContainer');
+
+        if (!recommendations || recommendations.length === 0) return;
+
+        section.style.display = 'block';
+
+        const priorityColors = {
+          HIGH: 'border-red-500 bg-red-900/10',
+          MEDIUM: 'border-yellow-500 bg-yellow-900/10',
+          LOW: 'border-blue-500 bg-blue-900/10',
+        };
+
+        container.innerHTML = recommendations
+          .slice(0, 5)
+          .map(
+            (rec) => `
+          <div class="bg-gray-800 p-6 rounded-lg border-l-4 ${priorityColors[rec.priority] || priorityColors.MEDIUM}">
+            <div class="flex items-start justify-between mb-3">
+              <div class="font-mono text-sm text-gray-300">${rec.file}</div>
+              <span class="px-2 py-1 rounded text-xs font-bold ${
+                rec.priority === 'HIGH'
+                  ? 'bg-red-600'
+                  : rec.priority === 'MEDIUM'
+                    ? 'bg-yellow-600'
+                    : 'bg-blue-600'
+              }">${rec.priority}</span>
+            </div>
+            <div class="text-gray-400 text-sm mb-3">${rec.reason}</div>
+            <div class="space-y-1">
+              ${rec.actions
+                .map(
+                  (action) => `
+                <div class="flex items-start text-sm text-gray-300">
+                  <span class="mr-2">•</span>
+                  <span>${action}</span>
+                </div>
+              `
+                )
+                .join('')}
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      }
+
+      // Populate top files section
+      function populateTopFiles(topFiles) {
+        const section = document.getElementById('topFilesSection');
+        section.style.display = 'block';
+
+        // Best coverage
+        if (topFiles.bestCoverage && topFiles.bestCoverage.length > 0) {
+          const bestList = document.getElementById('bestCoverageList');
+          bestList.innerHTML = topFiles.bestCoverage
+            .slice(0, 5)
+            .map(
+              (file) => `
+            <div class="flex justify-between items-center p-2 bg-gray-700/50 rounded">
+              <span class="text-sm font-mono text-gray-300 truncate flex-1" title="${file.path}">
+                ${file.path.split('/').slice(-2).join('/')}
+              </span>
+              <span class="ml-2 px-2 py-1 rounded text-xs font-bold bg-green-600">
+                ${file.coverage}%
+              </span>
+            </div>
+          `
+            )
+            .join('');
+        }
+
+        // Most complex
+        if (topFiles.mostComplex && topFiles.mostComplex.length > 0) {
+          const complexList = document.getElementById('mostComplexList');
+          complexList.innerHTML = topFiles.mostComplex
+            .slice(0, 5)
+            .map(
+              (file) => `
+            <div class="p-2 bg-gray-700/50 rounded">
+              <div class="flex justify-between items-center mb-1">
+                <span class="text-sm font-mono text-gray-300 truncate flex-1" title="${file.path}">
+                  ${file.path.split('/').slice(-2).join('/')}
+                </span>
+                <span class="ml-2 text-xs text-gray-400">${file.coverage}%</span>
+              </div>
+              <div class="text-xs text-gray-500">
+                Complexity: ${file.complexity} | ${file.branches} branches | ${file.functions} functions
+              </div>
+            </div>
+          `
+            )
+            .join('');
         }
       }
 
@@ -535,7 +840,8 @@
       }
 
       function runCoverage() {
-        const instructions = `🧪 Run Coverage Tests\n\n` +
+        const instructions =
+          `🧪 Run Coverage Tests\n\n` +
           `Terminal Command:\n` +
           `  cd apps/frontend\n` +
           `  npm run test:coverage\n\n` +
@@ -545,9 +851,9 @@
           `  ✅ Updates this dashboard automatically\n` +
           `  ✅ Creates trends data\n\n` +
           `Then refresh this page to see updated data!`;
-        
+
         alert(instructions);
-        
+
         // Copy command to clipboard if possible
         if (navigator.clipboard) {
           navigator.clipboard.writeText('cd apps/frontend && npm run test:coverage');
@@ -555,7 +861,8 @@
       }
 
       function runTests() {
-        const instructions = `🧪 Run Tests Only (no coverage)\n\n` +
+        const instructions =
+          `🧪 Run Tests Only (no coverage)\n\n` +
           `Terminal Command:\n` +
           `  cd apps/frontend\n` +
           `  npm run test\n\n` +
@@ -563,9 +870,9 @@
           `  npm run test:watch\n\n` +
           `For UI mode:\n` +
           `  npm run test:ui`;
-        
+
         alert(instructions);
-        
+
         if (navigator.clipboard) {
           navigator.clipboard.writeText('cd apps/frontend && npm run test');
         }
@@ -573,10 +880,11 @@
 
       function getSuggestions() {
         const gaps = dashboardData?.gaps || [];
-        const highPriority = gaps.filter(g => g.priority === 'HIGH').length;
-        const mediumPriority = gaps.filter(g => g.priority === 'MEDIUM').length;
-        
-        const suggestions = `📝 Test Coverage Suggestions\n\n` +
+        const highPriority = gaps.filter((g) => g.priority === 'HIGH').length;
+        const mediumPriority = gaps.filter((g) => g.priority === 'MEDIUM').length;
+
+        const suggestions =
+          `📝 Test Coverage Suggestions\n\n` +
           `Current Gaps:\n` +
           `  🔴 ${highPriority} HIGH priority files (<20% coverage)\n` +
           `  🟡 ${mediumPriority} MEDIUM priority files (20-40% coverage)\n\n` +
@@ -587,7 +895,7 @@
           `  4. Review detailed report: coverage/index.html\n\n` +
           `  5. Aim for 80%+ on critical modules\n\n` +
           `Tip: Click "🎯 Analyze" on any file in the gaps table for details!`;
-        
+
         alert(suggestions);
       }
 
@@ -598,7 +906,8 @@
       }
 
       function analyzeFile(file) {
-        const analysis = `📊 Analyze Coverage: ${file}\n\n` +
+        const analysis =
+          `📊 Analyze Coverage: ${file}\n\n` +
           `Steps:\n` +
           `  1. Open: apps/frontend/coverage/index.html\n` +
           `  2. Search for the filename (Ctrl+F)\n` +
@@ -610,9 +919,9 @@
           `     - Branches not tested\n` +
           `     - Edge cases\n\n` +
           `Tip: Start with functions that have the most impact!`;
-        
+
         alert(analysis);
-        
+
         // Try to open the coverage report
         const coveragePath = '../coverage/index.html';
         const a = document.createElement('a');
