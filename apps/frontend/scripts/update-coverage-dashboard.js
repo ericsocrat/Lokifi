@@ -27,50 +27,51 @@ let totals = {
   statements: { covered: 0, total: 0 },
   branches: { covered: 0, total: 0 },
   functions: { covered: 0, total: 0 },
-  lines: { covered: 0, total: 0 }
+  lines: { covered: 0, total: 0 },
 };
 
 const files = {};
 
-Object.keys(coverageData).forEach(file => {
+Object.keys(coverageData).forEach((file) => {
   const data = coverageData[file];
-  
+
   files[file] = {
     statements: { covered: 0, total: 0 },
     branches: { covered: 0, total: 0 },
     functions: { covered: 0, total: 0 },
-    lines: { covered: 0, total: 0 }
+    lines: { covered: 0, total: 0 },
   };
-  
+
   if (data.s) {
-    const covered = Object.values(data.s).filter(c => c > 0).length;
+    const covered = Object.values(data.s).filter((c) => c > 0).length;
     const total = Object.keys(data.s).length;
     totals.statements.covered += covered;
     totals.statements.total += total;
     files[file].statements = { covered, total };
   }
-  
+
   if (data.b) {
-    let covered = 0, total = 0;
-    Object.values(data.b).forEach(branches => {
+    let covered = 0,
+      total = 0;
+    Object.values(data.b).forEach((branches) => {
       total += branches.length;
-      covered += branches.filter(c => c > 0).length;
+      covered += branches.filter((c) => c > 0).length;
     });
     totals.branches.covered += covered;
     totals.branches.total += total;
     files[file].branches = { covered, total };
   }
-  
+
   if (data.f) {
-    const covered = Object.values(data.f).filter(c => c > 0).length;
+    const covered = Object.values(data.f).filter((c) => c > 0).length;
     const total = Object.keys(data.f).length;
     totals.functions.covered += covered;
     totals.functions.total += total;
     files[file].functions = { covered, total };
   }
-  
+
   if (data.statementMap && data.s) {
-    const covered = Object.keys(data.statementMap).filter(k => data.s[k] > 0).length;
+    const covered = Object.keys(data.statementMap).filter((k) => data.s[k] > 0).length;
     const total = Object.keys(data.statementMap).length;
     totals.lines.covered += covered;
     totals.lines.total += total;
@@ -78,12 +79,12 @@ Object.keys(coverageData).forEach(file => {
   }
 });
 
-const pct = (covered, total) => total > 0 ? (covered / total) * 100 : 0;
+const pct = (covered, total) => (total > 0 ? (covered / total) * 100 : 0);
 const coverage = {
   statements: pct(totals.statements.covered, totals.statements.total),
   branches: pct(totals.branches.covered, totals.branches.total),
   functions: pct(totals.functions.covered, totals.functions.total),
-  lines: pct(totals.lines.covered, totals.lines.total)
+  lines: pct(totals.lines.covered, totals.lines.total),
 };
 
 console.log('📊 Coverage:');
@@ -94,10 +95,10 @@ console.log(`   Lines:      ${coverage.lines.toFixed(2)}%\n`);
 
 // Module breakdown
 const mods = {};
-Object.keys(files).forEach(file => {
+Object.keys(files).forEach((file) => {
   const parts = file.split('/');
   let name = 'other';
-  
+
   if (parts.includes('lib') && parts[parts.indexOf('lib') + 1]) {
     name = parts[parts.indexOf('lib') + 1];
   } else if (parts.includes('components')) {
@@ -105,53 +106,63 @@ Object.keys(files).forEach(file => {
   } else if (parts.includes('src') || parts.includes('app')) {
     name = 'pages';
   }
-  
+
   if (!mods[name]) {
     mods[name] = { name, files: [], stmtTotal: 0, stmtCovered: 0 };
   }
-  
+
   mods[name].files.push(file);
   mods[name].stmtTotal += files[file].statements.total;
   mods[name].stmtCovered += files[file].statements.covered;
 });
 
-const modules = Object.values(mods).map(m => ({
-  name: m.name,
-  coverage: pct(m.stmtCovered, m.stmtTotal),
-  files: m.files.length,
-  tests: 0
-})).sort((a, b) => a.coverage - b.coverage);
+const modules = Object.values(mods)
+  .map((m) => ({
+    name: m.name,
+    coverage: pct(m.stmtCovered, m.stmtTotal),
+    files: m.files.length,
+    tests: 0,
+  }))
+  .sort((a, b) => a.coverage - b.coverage);
 
 // Coverage gaps
 const gaps = [];
-Object.keys(files).forEach(file => {
+Object.keys(files).forEach((file) => {
   const f = files[file];
   const linePct = pct(f.lines.covered, f.lines.total);
-  
+
   if (f.lines.total >= 10 && linePct < 60) {
     const priority = linePct < 20 ? 'HIGH' : linePct < 40 ? 'MEDIUM' : 'LOW';
-    const shortPath = file.includes('/src/') ? file.substring(file.indexOf('/src/') + 1) : file.split('/').slice(-3).join('/');
-    
+    const shortPath = file.includes('/src/')
+      ? file.substring(file.indexOf('/src/') + 1)
+      : file.split('/').slice(-3).join('/');
+
     gaps.push({
       file: shortPath,
       coverage: parseFloat(linePct.toFixed(1)),
       tests: 0,
       priority,
-      lines: f.lines
+      lines: f.lines,
     });
   }
 });
 
 gaps.sort((a, b) => {
   const order = { HIGH: 0, MEDIUM: 1, LOW: 2 };
-  return order[a.priority] !== order[b.priority] 
+  return order[a.priority] !== order[b.priority]
     ? order[a.priority] - order[b.priority]
     : a.coverage - b.coverage;
 });
 
-console.log('🔍 Coverage gaps:', gaps.filter(g => g.priority === 'HIGH').length, 'HIGH,', 
-            gaps.filter(g => g.priority === 'MEDIUM').length, 'MEDIUM,',
-            gaps.filter(g => g.priority === 'LOW').length, 'LOW\n');
+console.log(
+  '🔍 Coverage gaps:',
+  gaps.filter((g) => g.priority === 'HIGH').length,
+  'HIGH,',
+  gaps.filter((g) => g.priority === 'MEDIUM').length,
+  'MEDIUM,',
+  gaps.filter((g) => g.priority === 'LOW').length,
+  'LOW\n'
+);
 
 // Trends
 let trends = [];
@@ -171,13 +182,13 @@ let delta = null;
 if (trends.length >= 2) {
   const prev = trends[trends.length - 2].coverage;
   const curr = trends[trends.length - 1].coverage;
-  const arrow = (c, p) => c > p ? '↑' : c < p ? '↓' : '→';
-  
+  const arrow = (c, p) => (c > p ? '↑' : c < p ? '↓' : '→');
+
   delta = {
     statements: `${arrow(curr.statements, prev.statements)} ${Math.abs(curr.statements - prev.statements).toFixed(1)}%`,
     branches: `${arrow(curr.branches, prev.branches)} ${Math.abs(curr.branches - prev.branches).toFixed(1)}%`,
     functions: `${arrow(curr.functions, prev.functions)} ${Math.abs(curr.functions - prev.functions).toFixed(1)}%`,
-    lines: `${arrow(curr.lines, prev.lines)} ${Math.abs(curr.lines - prev.lines).toFixed(1)}%`
+    lines: `${arrow(curr.lines, prev.lines)} ${Math.abs(curr.lines - prev.lines).toFixed(1)}%`,
   };
 }
 
@@ -191,19 +202,19 @@ const dashboardData = {
       failing: 0,
       total: 0,
       files: Object.keys(files).length,
-      duration: '-'
+      duration: '-',
     },
     coverage: {
       statements: parseFloat(coverage.statements.toFixed(2)),
       branches: parseFloat(coverage.branches.toFixed(2)),
       functions: parseFloat(coverage.functions.toFixed(2)),
-      lines: parseFloat(coverage.lines.toFixed(2))
-    }
+      lines: parseFloat(coverage.lines.toFixed(2)),
+    },
   },
   modules,
   gaps: gaps.slice(0, 20),
   trends,
-  delta
+  delta,
 };
 
 const dir = path.dirname(DASHBOARD_DATA);

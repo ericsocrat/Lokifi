@@ -32,6 +32,10 @@
         <p class="text-sm text-gray-400 mt-2">
           Last updated: <span id="lastUpdate" class="text-blue-400">Loading...</span>
         </p>
+        <div id="viewHint" class="text-xs text-yellow-400 mt-2 bg-yellow-900/20 px-3 py-2 rounded border border-yellow-700" style="display: none;">
+          💡 <strong>Tip:</strong> For best results, serve this dashboard with: 
+          <code class="bg-gray-800 px-2 py-1 rounded ml-1">npx serve coverage-dashboard</code>
+        </div>
       </div>
     </header>
 
@@ -408,8 +412,52 @@
       // Load and render dashboard
       async function loadDashboard() {
         try {
-          const response = await fetch('data.json');
-          dashboardData = await response.json();
+          // Try to load data.json, handling both local file and served scenarios
+          let dashboardData;
+          try {
+            const response = await fetch('data.json');
+            if (!response.ok) throw new Error('Failed to fetch');
+            dashboardData = await response.json();
+          } catch (fetchError) {
+            // If fetch fails (CORS or file not found), show a helpful message
+            console.warn('Could not load data.json:', fetchError);
+            document.getElementById('lastUpdate').textContent = 
+              'No data - Run: npm run test:coverage';
+            
+            // Show the hint about serving
+            const hint = document.getElementById('viewHint');
+            if (hint) hint.style.display = 'block';
+            
+            // Show helpful message in the gaps section
+            const gapsTableBody = document.getElementById('gapsTableBody');
+            if (gapsTableBody) {
+              gapsTableBody.innerHTML = `
+                <tr>
+                  <td colspan="5" class="py-8 text-center">
+                    <div class="text-yellow-400 text-lg mb-4">⚠️ No coverage data found</div>
+                    <div class="text-gray-400 mb-4">
+                      <strong>To view this dashboard properly:</strong><br><br>
+                      <strong>Option 1 - Generate data first:</strong><br>
+                      <code class="bg-gray-700 px-3 py-1 rounded mt-2 inline-block">
+                        cd apps/frontend && npm run test:coverage
+                      </code><br><br>
+                      <strong>Option 2 - Serve the dashboard (if data exists):</strong><br>
+                      <code class="bg-gray-700 px-3 py-1 rounded mt-2 inline-block">
+                        cd apps/frontend && npx serve coverage-dashboard
+                      </code><br>
+                      <span class="text-sm text-gray-500 mt-2 inline-block">
+                        Then open the URL shown (usually http://localhost:3000)
+                      </span>
+                    </div>
+                    <div class="text-sm text-gray-500">
+                      Note: Opening index.html directly may have CORS restrictions.
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }
+            return;
+          }
 
           // Update last update time
           document.getElementById('lastUpdate').textContent = new Date(
@@ -487,29 +535,90 @@
       }
 
       function runCoverage() {
-        alert(
-          'Run: npm run test:coverage\n\nThis will generate fresh coverage data and update this dashboard automatically.'
-        );
+        const instructions = `🧪 Run Coverage Tests\n\n` +
+          `Terminal Command:\n` +
+          `  cd apps/frontend\n` +
+          `  npm run test:coverage\n\n` +
+          `What this does:\n` +
+          `  ✅ Runs all Vitest tests\n` +
+          `  ✅ Generates coverage report\n` +
+          `  ✅ Updates this dashboard automatically\n` +
+          `  ✅ Creates trends data\n\n` +
+          `Then refresh this page to see updated data!`;
+        
+        alert(instructions);
+        
+        // Copy command to clipboard if possible
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText('cd apps/frontend && npm run test:coverage');
+        }
       }
 
       function runTests() {
-        alert('Run: npm run test:coverage\n\nExecutes Vitest tests with coverage reporting.');
+        const instructions = `🧪 Run Tests Only (no coverage)\n\n` +
+          `Terminal Command:\n` +
+          `  cd apps/frontend\n` +
+          `  npm run test\n\n` +
+          `For watch mode:\n` +
+          `  npm run test:watch\n\n` +
+          `For UI mode:\n` +
+          `  npm run test:ui`;
+        
+        alert(instructions);
+        
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText('cd apps/frontend && npm run test');
+        }
       }
 
       function getSuggestions() {
-        alert(
-          'Test Suggestions:\n\n1. Focus on red/orange modules first\n2. Check "Coverage Gaps" table below\n3. Prioritize files with HIGH priority markers\n4. Review coverage report: coverage/index.html\n\nTip: Aim for 80%+ coverage on critical modules'
-        );
+        const gaps = dashboardData?.gaps || [];
+        const highPriority = gaps.filter(g => g.priority === 'HIGH').length;
+        const mediumPriority = gaps.filter(g => g.priority === 'MEDIUM').length;
+        
+        const suggestions = `📝 Test Coverage Suggestions\n\n` +
+          `Current Gaps:\n` +
+          `  🔴 ${highPriority} HIGH priority files (<20% coverage)\n` +
+          `  🟡 ${mediumPriority} MEDIUM priority files (20-40% coverage)\n\n` +
+          `Strategy:\n` +
+          `  1. Start with HIGH priority files\n` +
+          `  2. Focus on untested critical paths\n` +
+          `  3. Check "Coverage Gaps" table below\n` +
+          `  4. Review detailed report: coverage/index.html\n\n` +
+          `  5. Aim for 80%+ on critical modules\n\n` +
+          `Tip: Click "🎯 Analyze" on any file in the gaps table for details!`;
+        
+        alert(suggestions);
       }
 
       function exportReport() {
-        window.print();
+        if (confirm('Export dashboard as PDF?\n\nThis will open the print dialog.')) {
+          window.print();
+        }
       }
 
       function analyzeFile(file) {
-        alert(
-          `Analyze Coverage for: ${file}\n\n1. Open coverage/index.html\n2. Search for the file name\n3. Review uncovered lines (highlighted in red)\n4. Create tests for untested code paths\n\nTip: Focus on branches and functions with 0% coverage`
-        );
+        const analysis = `📊 Analyze Coverage: ${file}\n\n` +
+          `Steps:\n` +
+          `  1. Open: apps/frontend/coverage/index.html\n` +
+          `  2. Search for the filename (Ctrl+F)\n` +
+          `  3. Look for highlighted lines:\n` +
+          `     🔴 Red = Uncovered code\n` +
+          `     🟢 Green = Covered code\n\n` +
+          `  4. Create tests for uncovered:\n` +
+          `     - Functions with 0% coverage\n` +
+          `     - Branches not tested\n` +
+          `     - Edge cases\n\n` +
+          `Tip: Start with functions that have the most impact!`;
+        
+        alert(analysis);
+        
+        // Try to open the coverage report
+        const coveragePath = '../coverage/index.html';
+        const a = document.createElement('a');
+        a.href = coveragePath;
+        a.target = '_blank';
+        a.click();
       }
 
       // Load dashboard on page load
