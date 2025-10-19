@@ -1,5 +1,5 @@
 # Lokifi Test Runner
-# Comprehensive test execution with advanced features for lokifi bot integration
+# Comprehensive test execution with advanced features
 
 param(
     [ValidateSet('all', 'backend', 'frontend', 'api', 'unit', 'integration', 'e2e', 'security', 'services')]

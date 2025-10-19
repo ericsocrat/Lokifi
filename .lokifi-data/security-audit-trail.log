@@ -1,7 +1,0 @@
-# Lokifi Security Audit Trail
-# This file tracks all security-related events
-# Format: [TIMESTAMP] [SEVERITY] [CATEGORY] [ACTION] [DETAILS]
-# DO NOT MANUALLY EDIT THIS FILE
-
-# Audit trail initialized on 2025-10-08
-[2025-10-08 21:08:57] [INFO] [secret_scan] [started] Path: C:\Users\USER\Desktop\lokifi

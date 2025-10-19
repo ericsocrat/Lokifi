@@ -1446,7 +1446,9 @@
         renderGapsWithPagination(performanceState.filteredGaps, page);
 
         // Scroll to top of table
-        document.getElementById('gapsTable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document
+          .getElementById('gapsTable')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
 
       // Change items per page

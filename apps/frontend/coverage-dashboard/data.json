@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2025-10-19T14:52:56.934Z",
+  "generated": "2025-10-19T17:47:54.882Z",
   "git": {
     "branch": "test/workflow-optimizations-validation",
-    "commit": "fedaf2fe",
+    "commit": "48063657",
     "author": "ericsocrat",
-    "message": "docs: add comprehensive README for coverage dashboard"
+    "message": "ci(dashboard): integrate dashboard tests into CI/CD pipeline"
   },
   "current": {
     "tests": {
@@ -1104,6 +1104,126 @@
         "branch": "test/workflow-optimizations-validation",
         "commit": "fedaf2fe"
       }
+    },
+    {
+      "timestamp": "2025-10-19T15:03:54.543Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "04b850fc"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T15:03:57.739Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "04b850fc"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T15:04:57.516Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "04b850fc"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T15:18:33.893Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "04b850fc"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T15:38:43.528Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "0c1657cb"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T15:42:17.094Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "7a4a39c8"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T16:31:31.638Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "5c217d00"
+      }
+    },
+    {
+      "timestamp": "2025-10-19T17:47:54.882Z",
+      "coverage": {
+        "statements": 11.259037646472201,
+        "branches": 88.74856486796784,
+        "functions": 84.87394957983193,
+        "lines": 11.259037646472201
+      },
+      "tests": 83,
+      "files": 197,
+      "git": {
+        "branch": "test/workflow-optimizations-validation",
+        "commit": "48063657"
+      }
     }
   ],
   "delta": {
@@ -1132,11 +1252,16 @@
       "color": "gray"
     }
   },
-  "weeklyTrend": null,
+  "weeklyTrend": {
+    "statements": 0,
+    "branches": 0,
+    "functions": 0,
+    "lines": 0
+  },
   "metadata": {
-    "totalRuns": 2,
+    "totalRuns": 10,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2025-10-19T14:52:56.934Z",
+    "lastRun": "2025-10-19T17:47:54.882Z",
     "bestCoverage": {
       "statements": 11.259037646472201,
       "branches": 88.74856486796784,
@@ -1151,7 +1276,7 @@
     },
     "velocity": {
       "testsPerDay": "NaN",
-      "filesPerRun": "65.7",
+      "filesPerRun": "17.9",
       "avgCoverageGain": "0.00"
     }
   },

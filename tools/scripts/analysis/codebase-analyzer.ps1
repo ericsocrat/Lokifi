@@ -55,7 +55,7 @@
     Compare with previous report (provide report path)
 
 .EXAMPLE
-    .\lokifi.ps1 estimate
+    .\tools\scripts\analysis\codebase-analyzer.ps1
 
 .EXAMPLE
     Invoke-CodebaseAnalysis -OutputFormat 'all' -Region 'eu' -Detailed
