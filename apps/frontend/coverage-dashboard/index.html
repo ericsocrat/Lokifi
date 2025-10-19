@@ -485,7 +485,11 @@
             <option value="functions">Functions</option>
           </select>
         </div>
-        <div id="heatmapContainer" class="grid gap-1" style="grid-template-columns: repeat(auto-fill, minmax(40px, 1fr))">
+        <div
+          id="heatmapContainer"
+          class="grid gap-1"
+          style="grid-template-columns: repeat(auto-fill, minmax(40px, 1fr))"
+        >
           <!-- Heatmap cells will be dynamically generated -->
         </div>
         <div class="mt-4 flex items-center justify-between text-xs text-gray-400">
@@ -752,6 +756,28 @@
             </tr>
           </tbody>
         </table>
+
+        <!-- Pagination Controls (V2.5) -->
+        <div
+          id="paginationControls"
+          class="mt-6 flex items-center justify-between bg-gray-800 p-4 rounded-lg"
+          style="display: none"
+        >
+          <!-- Pagination buttons will be dynamically generated -->
+        </div>
+
+        <!-- Performance Metrics (V2.5) -->
+        <div class="mt-6 bg-gray-800 p-4 rounded-lg">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-semibold text-gray-300">⚡ Performance Metrics</h3>
+            <span class="text-xs text-gray-500">
+              Lazy loading enabled • Debounced search (300ms)
+            </span>
+          </div>
+          <div id="performanceMetrics">
+            <!-- Metrics will be dynamically populated -->
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1186,75 +1212,92 @@
         return sorted;
       }
 
-      // Apply all filters and re-render table
+      // Apply all filters and re-render table (V2.5: Now uses optimized debounced version)
       function applyFilters() {
-        if (!allGapsData || allGapsData.length === 0) return;
-
-        // Get filter values
-        const searchTerm = document.getElementById('searchBox').value.toLowerCase().trim();
-        const priorityFilter = document.getElementById('priorityFilter').value;
-        const moduleFilter = document.getElementById('moduleFilter').value;
-        const sortControl = document.getElementById('sortControl').value;
-
-        // Filter gaps
-        let filteredGaps = allGapsData.filter((gap) => {
-          // Search filter
-          if (searchTerm && !gap.file.toLowerCase().includes(searchTerm)) {
-            return false;
+        if (!performanceState.allGaps || performanceState.allGaps.length === 0) {
+          // Fallback to legacy data if performance state not initialized
+          if (allGapsData && allGapsData.length > 0) {
+            performanceState.allGaps = allGapsData;
+          } else {
+            return;
           }
-
-          // Priority filter
-          if (priorityFilter !== 'ALL' && gap.priority !== priorityFilter) {
-            return false;
-          }
-
-          // Module filter
-          if (moduleFilter !== 'ALL') {
-            const gapModule = gap.file.split('/')[0];
-            if (gapModule !== moduleFilter) {
-              return false;
-            }
-          }
-
-          return true;
-        });
-
-        // Sort gaps
-        filteredGaps = sortGaps(filteredGaps, sortControl);
-
-        // Update counts
-        document.getElementById('filteredCount').textContent = filteredGaps.length;
-        document.getElementById('totalCount').textContent = allGapsData.length;
-
-        // Show/hide clear button
-        const hasActiveFilters =
-          searchTerm ||
-          priorityFilter !== 'ALL' ||
-          moduleFilter !== 'ALL' ||
-          sortControl !== 'priority';
-        document.getElementById('clearFiltersBtn').style.display = hasActiveFilters
-          ? 'block'
-          : 'none';
-
-        // Update filter status message
-        const filterStatus = document.getElementById('filterStatus');
-        if (filteredGaps.length === 0 && allGapsData.length > 0) {
-          filterStatus.textContent = '(No matches found)';
-          filterStatus.className = 'text-red-400 ml-2';
-        } else if (filteredGaps.length < allGapsData.length) {
-          filterStatus.textContent = '(Filtered)';
-          filterStatus.className = 'text-yellow-400 ml-2';
-        } else {
-          filterStatus.textContent = '';
         }
 
-        // Render filtered gaps
-        renderFilteredGaps(filteredGaps);
+        // Call optimized debounced filter function
+        optimizedApplyFilters();
       }
 
-      // Render filtered gaps to table
+      // Render filtered gaps to table (V2.5: Now uses paginated version for performance)
       function renderFilteredGaps(gaps) {
+        // Update performance state and render with pagination
+        performanceState.filteredGaps = gaps;
+        renderGapsWithPagination(gaps, performanceState.currentPage);
+      }
+
+      // Clear all filters and reset to defaults
+      function clearAllFilters() {
+        document.getElementById('searchBox').value = '';
+        document.getElementById('priorityFilter').value = 'ALL';
+        document.getElementById('moduleFilter').value = 'ALL';
+        document.getElementById('sortControl').value = 'priority';
+        applyFilters();
+      }
+
+      // Initialize filter system with data
+      function initializeFilters(data) {
+        allGapsData = data.gaps || [];
+        currentDashboardData = data;
+
+        // V2.5: Initialize performance state
+        performanceState.allGaps = allGapsData;
+        performanceState.filteredGaps = allGapsData;
+        performanceState.currentPage = 1;
+        performanceState.totalItems = allGapsData.length;
+
+        // Populate module filter
+        populateModuleFilter(allGapsData);
+
+        // Set initial counts
+        document.getElementById('filteredCount').textContent = allGapsData.length;
+        document.getElementById('totalCount').textContent = allGapsData.length;
+
+        // Apply initial filters (shows all by default)
+        applyFilters();
+      }
+
+      // ==================== V2.5 PERFORMANCE OPTIMIZATION ====================
+
+      // Performance state management
+      const performanceState = {
+        currentPage: 1,
+        itemsPerPage: 20,
+        totalItems: 0,
+        allGaps: [],
+        filteredGaps: [],
+        searchDebounceTimer: null,
+        debounceDelay: 300,
+        renderStartTime: 0,
+        lastRenderTime: 0,
+      };
+
+      // Debounced search function - reduces processing on every keystroke
+      function debouncedSearch(callback, delay = 300) {
+        return function (...args) {
+          clearTimeout(performanceState.searchDebounceTimer);
+          performanceState.searchDebounceTimer = setTimeout(() => {
+            callback.apply(this, args);
+          }, delay);
+        };
+      }
+
+      // Optimized render with pagination (lazy loading)
+      function renderGapsWithPagination(gaps, page = 1) {
+        performanceState.renderStartTime = performance.now();
+
         const tbody = document.getElementById('gapsTableBody');
+        const startIndex = (page - 1) * performanceState.itemsPerPage;
+        const endIndex = startIndex + performanceState.itemsPerPage;
+        const pageGaps = gaps.slice(startIndex, endIndex);
 
         if (gaps.length === 0) {
           tbody.innerHTML = `
@@ -1266,10 +1309,15 @@
               </td>
             </tr>
           `;
+          updatePaginationControls(0, page);
           return;
         }
 
-        tbody.innerHTML = gaps
+        // Use DocumentFragment for better performance
+        const fragment = document.createDocumentFragment();
+        const tempDiv = document.createElement('div');
+
+        tempDiv.innerHTML = pageGaps
           .map((gap) => {
             const priorityEmoji =
               gap.priority === 'HIGH' ? '🔴' : gap.priority === 'MEDIUM' ? '🟡' : '🟢';
@@ -1309,32 +1357,189 @@
             `;
           })
           .join('');
+
+        // Clear and append using fragment (more efficient)
+        tbody.innerHTML = '';
+        while (tempDiv.firstChild) {
+          tbody.appendChild(tempDiv.firstChild);
+        }
+
+        // Update pagination controls
+        updatePaginationControls(gaps.length, page);
+
+        // Track render performance
+        performanceState.lastRenderTime = performance.now() - performanceState.renderStartTime;
+        updatePerformanceMetrics();
       }
 
-      // Clear all filters and reset to defaults
-      function clearAllFilters() {
-        document.getElementById('searchBox').value = '';
-        document.getElementById('priorityFilter').value = 'ALL';
-        document.getElementById('moduleFilter').value = 'ALL';
-        document.getElementById('sortControl').value = 'priority';
-        applyFilters();
+      // Update pagination controls
+      function updatePaginationControls(totalItems, currentPage) {
+        const totalPages = Math.ceil(totalItems / performanceState.itemsPerPage);
+        const paginationContainer = document.getElementById('paginationControls');
+
+        if (!paginationContainer) return;
+
+        if (totalItems === 0 || totalPages <= 1) {
+          paginationContainer.style.display = 'none';
+          return;
+        }
+
+        paginationContainer.style.display = 'flex';
+
+        const startItem = (currentPage - 1) * performanceState.itemsPerPage + 1;
+        const endItem = Math.min(currentPage * performanceState.itemsPerPage, totalItems);
+
+        paginationContainer.innerHTML = `
+          <div class="flex items-center justify-between w-full">
+            <div class="text-sm text-gray-400">
+              Showing ${startItem}-${endItem} of ${totalItems} items
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                onclick="goToPage(1)"
+                ${currentPage === 1 ? 'disabled' : ''}
+                class="px-3 py-1 rounded text-sm ${currentPage === 1 ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}"
+              >
+                « First
+              </button>
+              <button
+                onclick="goToPage(${currentPage - 1})"
+                ${currentPage === 1 ? 'disabled' : ''}
+                class="px-3 py-1 rounded text-sm ${currentPage === 1 ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}"
+              >
+                ‹ Prev
+              </button>
+              <span class="text-sm text-gray-300 px-3">
+                Page ${currentPage} of ${totalPages}
+              </span>
+              <button
+                onclick="goToPage(${currentPage + 1})"
+                ${currentPage === totalPages ? 'disabled' : ''}
+                class="px-3 py-1 rounded text-sm ${currentPage === totalPages ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}"
+              >
+                Next ›
+              </button>
+              <button
+                onclick="goToPage(${totalPages})"
+                ${currentPage === totalPages ? 'disabled' : ''}
+                class="px-3 py-1 rounded text-sm ${currentPage === totalPages ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}"
+              >
+                Last »
+              </button>
+            </div>
+            <select
+              onchange="changeItemsPerPage(this.value)"
+              class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm"
+            >
+              <option value="10" ${performanceState.itemsPerPage === 10 ? 'selected' : ''}>10/page</option>
+              <option value="20" ${performanceState.itemsPerPage === 20 ? 'selected' : ''}>20/page</option>
+              <option value="50" ${performanceState.itemsPerPage === 50 ? 'selected' : ''}>50/page</option>
+              <option value="100" ${performanceState.itemsPerPage === 100 ? 'selected' : ''}>100/page</option>
+            </select>
+          </div>
+        `;
       }
 
-      // Initialize filter system with data
-      function initializeFilters(data) {
-        allGapsData = data.gaps || [];
-        currentDashboardData = data;
+      // Navigate to specific page
+      function goToPage(page) {
+        performanceState.currentPage = page;
+        renderGapsWithPagination(performanceState.filteredGaps, page);
 
-        // Populate module filter
-        populateModuleFilter(allGapsData);
-
-        // Set initial counts
-        document.getElementById('filteredCount').textContent = allGapsData.length;
-        document.getElementById('totalCount').textContent = allGapsData.length;
-
-        // Apply initial filters (shows all by default)
-        applyFilters();
+        // Scroll to top of table
+        document.getElementById('gapsTable')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+
+      // Change items per page
+      function changeItemsPerPage(newValue) {
+        performanceState.itemsPerPage = parseInt(newValue);
+        performanceState.currentPage = 1; // Reset to first page
+        renderGapsWithPagination(performanceState.filteredGaps, 1);
+      }
+
+      // Update performance metrics display
+      function updatePerformanceMetrics() {
+        const metricsEl = document.getElementById('performanceMetrics');
+        if (!metricsEl) return;
+
+        const totalGaps = performanceState.allGaps.length;
+        const filteredGaps = performanceState.filteredGaps.length;
+        const renderTime = performanceState.lastRenderTime.toFixed(2);
+        const itemsPerPage = performanceState.itemsPerPage;
+
+        metricsEl.innerHTML = `
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-gray-900 p-3 rounded">
+              <div class="text-xs text-gray-400">Total Items</div>
+              <div class="text-lg font-bold text-blue-400">${totalGaps}</div>
+            </div>
+            <div class="bg-gray-900 p-3 rounded">
+              <div class="text-xs text-gray-400">Filtered Items</div>
+              <div class="text-lg font-bold text-green-400">${filteredGaps}</div>
+            </div>
+            <div class="bg-gray-900 p-3 rounded">
+              <div class="text-xs text-gray-400">Items/Page</div>
+              <div class="text-lg font-bold text-purple-400">${itemsPerPage}</div>
+            </div>
+            <div class="bg-gray-900 p-3 rounded">
+              <div class="text-xs text-gray-400">Render Time</div>
+              <div class="text-lg font-bold text-yellow-400">${renderTime}ms</div>
+            </div>
+          </div>
+        `;
+      }
+
+      // Optimized apply filters with debouncing
+      const optimizedApplyFilters = debouncedSearch(function () {
+        const searchTerm = document.getElementById('searchBox').value.toLowerCase();
+        const priority = document.getElementById('priorityFilter').value;
+        const module = document.getElementById('moduleFilter').value;
+
+        let filtered = [...performanceState.allGaps];
+
+        // Apply search filter
+        if (searchTerm) {
+          filtered = filtered.filter(
+            (gap) =>
+              gap.file.toLowerCase().includes(searchTerm) ||
+              (gap.reason && gap.reason.toLowerCase().includes(searchTerm))
+          );
+        }
+
+        // Apply priority filter
+        if (priority !== 'ALL') {
+          filtered = filtered.filter((gap) => gap.priority === priority);
+        }
+
+        // Apply module filter
+        if (module !== 'ALL') {
+          filtered = filtered.filter((gap) => {
+            const filePath = gap.file || '';
+            return filePath.includes(module);
+          });
+        }
+
+        // Apply sorting
+        const sortValue = document.getElementById('sortControl')?.value || 'priority-desc';
+        filtered = sortGaps(filtered, sortValue);
+
+        // Update state
+        performanceState.filteredGaps = filtered;
+        performanceState.currentPage = 1; // Reset to first page
+
+        // Update counters
+        document.getElementById('filteredCount').textContent = filtered.length;
+        document.getElementById('totalCount').textContent = performanceState.allGaps.length;
+
+        // Show/hide clear button
+        const hasFilters = searchTerm || priority !== 'ALL' || module !== 'ALL';
+        document.getElementById('clearFiltersBtn').style.display = hasFilters ? 'block' : 'none';
+        document.getElementById('filterStatus').textContent = hasFilters ? '(filtered)' : '';
+
+        // Render with pagination
+        renderGapsWithPagination(filtered, 1);
+      }, performanceState.debounceDelay);
+
+      // ==================== END V2.5 FUNCTIONS ====================
 
       // ==================== V2.4 ADVANCED VISUALIZATION FUNCTIONS ====================
 
@@ -1443,7 +1648,7 @@
             const fileName = gap.file.split('/').pop();
 
             return `
-            <div 
+            <div
               class="relative group cursor-pointer transition-transform hover:scale-110"
               style="
                 width: 40px;
@@ -1503,10 +1708,12 @@
         charts.detailedHistory = new Chart(ctx, {
           type: 'line',
           data: {
-            labels: last30.map((t) => new Date(t.timestamp).toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric',
-            })),
+            labels: last30.map((t) =>
+              new Date(t.timestamp).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+              })
+            ),
             datasets: [
               {
                 label: 'Statements',
@@ -1617,8 +1824,7 @@
           const change = current - previous;
 
           // Update value display
-          document.getElementById(`${metric}SparklineValue`).textContent =
-            current.toFixed(1) + '%';
+          document.getElementById(`${metric}SparklineValue`).textContent = current.toFixed(1) + '%';
 
           // Update trend text
           const trendEl = document.getElementById(`${metric}Trend`);
