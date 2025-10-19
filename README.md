@@ -7,9 +7,7 @@
 │   ├── redis/              # Redis configuration
 │   └── docker-compose.yml  # Docker orchestration
 │
-├── 🛠️ lokifi.ps1            # Master DevOps automation tool
-│
-├── 📊 monitoring/           # System monitoring and observability
+├──  monitoring/           # System monitoring and observability
 ├── 🔒 security/             # Security configs and audit tools
 └── 🧪 performance-tests/    # Performance testing suite
 ```
@@ -54,8 +52,7 @@ lokifi/
 │   ├── kubernetes/         # K8s manifests (Phase 4)
 │   └── terraform/          # IaC (Phase 4)
 │
-├── 🛠️ tools/                # DevOps Automation
-│   ├── lokifi.ps1          # Master CLI (6,750+ lines)
+├── 🛠️ tools/                # Development Tools
 │   └── scripts/            # Utility scripts
 │
 ├── 📚 docs/                 # Documentation
@@ -110,27 +107,7 @@ lokifi/
 
    The services include health checks and will automatically restart if unhealthy.
 
-### Alternative: Ultimate Manager (Enhanced)
-
-**All-in-One Command:**
-```bash
-# Quick start (servers + setup)
-.\lokifi.ps1 servers
-
-# Quick analysis & health check
-.\lokifi.ps1 analyze
-
-# Fix common issues automatically
-.\lokifi.ps1 fix
-
-# Interactive development menu
-.\lokifi.ps1 launch
-
-# Development workflow
-.\lokifi.ps1 dev -Component both
-```
-
-**Traditional Setup:**
+### Development Setup:
 ```bash
 cd backend
 make setup  # Creates venv and installs dependencies

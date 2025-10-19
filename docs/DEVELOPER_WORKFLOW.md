@@ -1,7 +1,7 @@
 # 🚀 Lokifi Developer Workflow Guide
 
-**Last Updated**: October 19, 2025  
-**Purpose**: Simple, standard commands for all development tasks  
+**Last Updated**: October 19, 2025
+**Purpose**: Simple, standard commands for all development tasks
 **Philosophy**: Use industry-standard tools, no custom wrappers
 
 ---
@@ -20,7 +20,7 @@ npm run dev              # Start dev server (http://localhost:3000)
 npm test                 # Run tests in watch mode
 npm run lint             # Check code quality
 
-# Backend development  
+# Backend development
 cd apps/backend
 uvicorn app.main:app --reload  # Start dev server (http://localhost:8000)
 pytest                   # Run tests
@@ -760,7 +760,7 @@ git commit --no-verify -m "message"
 # Press Ctrl+Shift+P → "Tasks: Run Task"
 # Available tasks:
 - 🔴 Start Redis Server (Docker)
-- 🔧 Start Backend Server  
+- 🔧 Start Backend Server
 - 🎨 Start Frontend Server
 - 🚀 Start All Servers
 ```
@@ -814,5 +814,5 @@ Everything you learn here applies to your next project too!
 
 **Happy coding! 🚀**
 
-*Last updated: October 19, 2025*  
+*Last updated: October 19, 2025*
 *Maintainer: Development Team*
