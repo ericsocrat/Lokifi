@@ -28,7 +28,7 @@
           background: white !important;
           color: black !important;
         }
-        
+
         header {
           background: linear-gradient(to right, #1e40af, #7c3aed) !important;
           -webkit-print-color-adjust: exact;
@@ -163,6 +163,218 @@
           </div>
           <div class="text-center mt-4">
             <span class="text-sm text-gray-400" id="linesDelta">-</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Coverage Thresholds Section -->
+    <section class="container mx-auto px-6 py-8">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-3xl font-bold">🎯 Coverage Thresholds</h2>
+          <p class="text-sm text-gray-400 mt-1">Set and track your team's coverage goals</p>
+        </div>
+        <button
+          onclick="toggleThresholdSettings()"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+        >
+          ⚙️ Configure
+        </button>
+      </div>
+
+      <!-- Threshold Settings Panel (Hidden by default) -->
+      <div id="thresholdSettings" class="bg-gray-800 p-6 rounded-lg shadow-lg mb-6" style="display: none;">
+        <h3 class="text-lg font-semibold mb-4 text-blue-400">Configure Coverage Targets</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <!-- Statements Threshold -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Statements Target (%)</label>
+            <input
+              type="number"
+              id="statementsThreshold"
+              min="0"
+              max="100"
+              value="80"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+              onchange="saveThresholds()"
+            />
+          </div>
+
+          <!-- Branches Threshold -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Branches Target (%)</label>
+            <input
+              type="number"
+              id="branchesThreshold"
+              min="0"
+              max="100"
+              value="90"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+              onchange="saveThresholds()"
+            />
+          </div>
+
+          <!-- Functions Threshold -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Functions Target (%)</label>
+            <input
+              type="number"
+              id="functionsThreshold"
+              min="0"
+              max="100"
+              value="85"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+              onchange="saveThresholds()"
+            />
+          </div>
+
+          <!-- Lines Threshold -->
+          <div>
+            <label class="block text-sm text-gray-400 mb-2">Lines Target (%)</label>
+            <input
+              type="number"
+              id="linesThreshold"
+              min="0"
+              max="100"
+              value="80"
+              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded text-white focus:outline-none focus:border-blue-500"
+              onchange="saveThresholds()"
+            />
+          </div>
+        </div>
+        
+        <div class="flex justify-between items-center">
+          <p class="text-xs text-gray-500">
+            💡 Thresholds are saved locally in your browser
+          </p>
+          <div class="space-x-2">
+            <button
+              onclick="resetThresholds()"
+              class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm transition-colors"
+            >
+              Reset to Defaults
+            </button>
+            <button
+              onclick="toggleThresholdSettings()"
+              class="px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Threshold Status Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Statements Progress -->
+        <div id="statementsThresholdCard" class="bg-gray-800 p-6 rounded-lg shadow-lg border-l-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold text-blue-400">Statements</h3>
+            <span id="statementsStatus" class="text-2xl">⏳</span>
+          </div>
+          <div class="mb-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-400">Current</span>
+              <span id="statementsCurrentValue" class="font-semibold">-</span>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+              <span class="text-gray-400">Target</span>
+              <span id="statementsTargetValue" class="font-semibold text-green-400">80%</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="statementsProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400" id="statementsGap">
+            Gap: <span class="font-semibold">-</span>
+          </div>
+        </div>
+
+        <!-- Branches Progress -->
+        <div id="branchesThresholdCard" class="bg-gray-800 p-6 rounded-lg shadow-lg border-l-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold text-green-400">Branches</h3>
+            <span id="branchesStatus" class="text-2xl">⏳</span>
+          </div>
+          <div class="mb-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-400">Current</span>
+              <span id="branchesCurrentValue" class="font-semibold">-</span>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+              <span class="text-gray-400">Target</span>
+              <span id="branchesTargetValue" class="font-semibold text-green-400">90%</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="branchesProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400" id="branchesGap">
+            Gap: <span class="font-semibold">-</span>
+          </div>
+        </div>
+
+        <!-- Functions Progress -->
+        <div id="functionsThresholdCard" class="bg-gray-800 p-6 rounded-lg shadow-lg border-l-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold text-yellow-400">Functions</h3>
+            <span id="functionsStatus" class="text-2xl">⏳</span>
+          </div>
+          <div class="mb-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-400">Current</span>
+              <span id="functionsCurrentValue" class="font-semibold">-</span>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+              <span class="text-gray-400">Target</span>
+              <span id="functionsTargetValue" class="font-semibold text-green-400">85%</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="functionsProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400" id="functionsGap">
+            Gap: <span class="font-semibold">-</span>
+          </div>
+        </div>
+
+        <!-- Lines Progress -->
+        <div id="linesThresholdCard" class="bg-gray-800 p-6 rounded-lg shadow-lg border-l-4">
+          <div class="flex justify-between items-center mb-3">
+            <h3 class="text-lg font-semibold text-purple-400">Lines</h3>
+            <span id="linesStatus" class="text-2xl">⏳</span>
+          </div>
+          <div class="mb-3">
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-gray-400">Current</span>
+              <span id="linesCurrentValue" class="font-semibold">-</span>
+            </div>
+            <div class="flex justify-between text-sm mb-2">
+              <span class="text-gray-400">Target</span>
+              <span id="linesTargetValue" class="font-semibold text-green-400">80%</span>
+            </div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-700 rounded-full h-3 overflow-hidden">
+              <div id="linesProgress" class="h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+          </div>
+          <div class="text-xs text-gray-400" id="linesGap">
+            Gap: <span class="font-semibold">-</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Overall Status Alert -->
+      <div id="thresholdAlert" class="mt-6 p-4 rounded-lg border-l-4" style="display: none;">
+        <div class="flex items-start">
+          <span id="alertIcon" class="text-2xl mr-3">🎯</span>
+          <div class="flex-1">
+            <h4 id="alertTitle" class="font-semibold mb-1">-</h4>
+            <p id="alertMessage" class="text-sm text-gray-300">-</p>
           </div>
         </div>
       </div>
@@ -426,9 +638,10 @@
       <h2 class="text-3xl font-bold mb-6">📦 Export & Download</h2>
       <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
         <p class="text-sm text-gray-400 mb-6">
-          Export coverage data in various formats for analysis, reporting, or integration with other tools
+          Export coverage data in various formats for analysis, reporting, or integration with other
+          tools
         </p>
-        
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <!-- CSV Export -->
           <button
@@ -476,22 +689,37 @@
           <h3 class="text-sm font-semibold mb-3 text-gray-300">📐 Export Options</h3>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <label class="flex items-center space-x-2 text-sm text-gray-300">
-              <input type="checkbox" id="exportFiltered" checked class="rounded bg-gray-700 border-gray-600" />
+              <input
+                type="checkbox"
+                id="exportFiltered"
+                checked
+                class="rounded bg-gray-700 border-gray-600"
+              />
               <span>Export filtered data only</span>
             </label>
             <label class="flex items-center space-x-2 text-sm text-gray-300">
-              <input type="checkbox" id="includeMetadata" checked class="rounded bg-gray-700 border-gray-600" />
+              <input
+                type="checkbox"
+                id="includeMetadata"
+                checked
+                class="rounded bg-gray-700 border-gray-600"
+              />
               <span>Include metadata</span>
             </label>
             <label class="flex items-center space-x-2 text-sm text-gray-300">
-              <input type="checkbox" id="includeTimestamp" checked class="rounded bg-gray-700 border-gray-600" />
+              <input
+                type="checkbox"
+                id="includeTimestamp"
+                checked
+                class="rounded bg-gray-700 border-gray-600"
+              />
               <span>Include timestamp</span>
             </label>
           </div>
         </div>
 
         <!-- Export Status -->
-        <div id="exportStatus" class="mt-4 p-3 rounded text-sm" style="display: none;"></div>
+        <div id="exportStatus" class="mt-4 p-3 rounded text-sm" style="display: none"></div>
       </div>
     </section>
 
@@ -949,6 +1177,207 @@
         applyFilters();
       }
 
+      // ==================== THRESHOLD FUNCTIONS ====================
+
+      // Default thresholds
+      const DEFAULT_THRESHOLDS = {
+        statements: 80,
+        branches: 90,
+        functions: 85,
+        lines: 80,
+      };
+
+      // Load thresholds from localStorage or use defaults
+      function loadThresholds() {
+        const saved = localStorage.getItem('lokifi-coverage-thresholds');
+        if (saved) {
+          try {
+            return JSON.parse(saved);
+          } catch (e) {
+            console.error('Failed to parse saved thresholds:', e);
+          }
+        }
+        return { ...DEFAULT_THRESHOLDS };
+      }
+
+      // Save thresholds to localStorage
+      function saveThresholds() {
+        const thresholds = {
+          statements: parseFloat(document.getElementById('statementsThreshold').value) || 80,
+          branches: parseFloat(document.getElementById('branchesThreshold').value) || 90,
+          functions: parseFloat(document.getElementById('functionsThreshold').value) || 85,
+          lines: parseFloat(document.getElementById('linesThreshold').value) || 80,
+        };
+
+        localStorage.setItem('lokifi-coverage-thresholds', JSON.stringify(thresholds));
+        
+        // Re-update threshold display if data is available
+        if (currentDashboardData) {
+          updateThresholdDisplay(currentDashboardData.current.coverage, thresholds);
+        }
+
+        // Show feedback
+        const btn = event?.target?.closest('button') || document.querySelector('#thresholdSettings button');
+        if (btn) {
+          const originalText = btn.textContent;
+          btn.textContent = '✅ Saved!';
+          setTimeout(() => {
+            btn.textContent = originalText;
+          }, 1500);
+        }
+      }
+
+      // Reset thresholds to defaults
+      function resetThresholds() {
+        document.getElementById('statementsThreshold').value = DEFAULT_THRESHOLDS.statements;
+        document.getElementById('branchesThreshold').value = DEFAULT_THRESHOLDS.branches;
+        document.getElementById('functionsThreshold').value = DEFAULT_THRESHOLDS.functions;
+        document.getElementById('linesThreshold').value = DEFAULT_THRESHOLDS.lines;
+        
+        saveThresholds();
+      }
+
+      // Toggle threshold settings panel
+      function toggleThresholdSettings() {
+        const panel = document.getElementById('thresholdSettings');
+        if (panel.style.display === 'none') {
+          panel.style.display = 'block';
+        } else {
+          panel.style.display = 'none';
+        }
+      }
+
+      // Update threshold display with current coverage
+      function updateThresholdDisplay(coverage, thresholds) {
+        const metrics = ['statements', 'branches', 'functions', 'lines'];
+
+        metrics.forEach((metric) => {
+          const current = coverage[metric];
+          const target = thresholds[metric];
+          const gap = target - current;
+          const progress = Math.min((current / target) * 100, 100);
+          const isOnTrack = current >= target;
+          const isNearTarget = current >= target * 0.8; // Within 80% of target
+
+          // Update target display
+          document.getElementById(`${metric}TargetValue`).textContent = `${target}%`;
+
+          // Update current value
+          const currentEl = document.getElementById(`${metric}CurrentValue`);
+          currentEl.textContent = `${current.toFixed(1)}%`;
+          currentEl.className = `font-semibold ${
+            isOnTrack ? 'text-green-400' : isNearTarget ? 'text-yellow-400' : 'text-red-400'
+          }`;
+
+          // Update progress bar
+          const progressBar = document.getElementById(`${metric}Progress`);
+          progressBar.style.width = `${progress}%`;
+          progressBar.className = `h-3 rounded-full transition-all duration-500 ${
+            isOnTrack
+              ? 'bg-green-500'
+              : isNearTarget
+                ? 'bg-yellow-500'
+                : 'bg-red-500'
+          }`;
+
+          // Update status icon
+          const statusEl = document.getElementById(`${metric}Status`);
+          if (isOnTrack) {
+            statusEl.textContent = '✅';
+            statusEl.title = 'On track - target met!';
+          } else if (isNearTarget) {
+            statusEl.textContent = '⚠️';
+            statusEl.title = 'Near target - keep going!';
+          } else {
+            statusEl.textContent = '❌';
+            statusEl.title = 'Below target - needs attention';
+          }
+
+          // Update gap text
+          const gapEl = document.getElementById(`${metric}Gap`);
+          if (isOnTrack) {
+            gapEl.innerHTML = `Gap: <span class="font-semibold text-green-400">Target met! (+${Math.abs(gap).toFixed(1)}%)</span>`;
+          } else {
+            gapEl.innerHTML = `Gap: <span class="font-semibold text-red-400">-${gap.toFixed(1)}%</span>`;
+          }
+
+          // Update card border
+          const card = document.getElementById(`${metric}ThresholdCard`);
+          card.className = card.className.replace(/border-(red|yellow|green)-\d+/, '');
+          card.classList.add(
+            isOnTrack ? 'border-green-500' : isNearTarget ? 'border-yellow-500' : 'border-red-500'
+          );
+        });
+
+        // Update overall alert
+        updateOverallAlert(coverage, thresholds);
+      }
+
+      // Update overall threshold alert
+      function updateOverallAlert(coverage, thresholds) {
+        const metrics = ['statements', 'branches', 'functions', 'lines'];
+        const metGoals = metrics.filter((m) => coverage[m] >= thresholds[m]);
+        const nearGoals = metrics.filter(
+          (m) => coverage[m] < thresholds[m] && coverage[m] >= thresholds[m] * 0.8
+        );
+        const missedGoals = metrics.filter((m) => coverage[m] < thresholds[m] * 0.8);
+
+        const alert = document.getElementById('thresholdAlert');
+        const icon = document.getElementById('alertIcon');
+        const title = document.getElementById('alertTitle');
+        const message = document.getElementById('alertMessage');
+
+        if (metGoals.length === 4) {
+          // All goals met - celebrate!
+          alert.style.display = 'block';
+          alert.className = 'mt-6 p-4 rounded-lg border-l-4 bg-green-900/20 border-green-500';
+          icon.textContent = '🎉';
+          title.textContent = 'All Coverage Targets Met!';
+          message.textContent =
+            'Excellent work! All coverage metrics meet or exceed their targets. Keep up the great testing!';
+        } else if (missedGoals.length === 0 && nearGoals.length > 0) {
+          // Close to goals - encourage
+          alert.style.display = 'block';
+          alert.className = 'mt-6 p-4 rounded-lg border-l-4 bg-yellow-900/20 border-yellow-500';
+          icon.textContent = '💪';
+          title.textContent = 'Almost There!';
+          message.textContent = `${nearGoals.length} metric(s) are close to target (${nearGoals.join(', ')}). A few more tests will get you there!`;
+        } else if (missedGoals.length > 0) {
+          // Need attention - alert
+          alert.style.display = 'block';
+          alert.className = 'mt-6 p-4 rounded-lg border-l-4 bg-red-900/20 border-red-500';
+          icon.textContent = '🎯';
+          title.textContent = 'Coverage Needs Attention';
+          message.textContent = `${missedGoals.length} metric(s) below target (${missedGoals.join(', ')}). Focus on these areas to improve overall coverage.`;
+        } else {
+          // Most goals met - good progress
+          alert.style.display = 'block';
+          alert.className = 'mt-6 p-4 rounded-lg border-l-4 bg-blue-900/20 border-blue-500';
+          icon.textContent = '📊';
+          title.textContent = 'Good Progress';
+          message.textContent = `${metGoals.length} out of 4 metrics meet their targets. Keep testing to reach 100%!`;
+        }
+      }
+
+      // Initialize thresholds on page load
+      function initializeThresholds() {
+        const thresholds = loadThresholds();
+        
+        // Set threshold input values
+        document.getElementById('statementsThreshold').value = thresholds.statements;
+        document.getElementById('branchesThreshold').value = thresholds.branches;
+        document.getElementById('functionsThreshold').value = thresholds.functions;
+        document.getElementById('linesThreshold').value = thresholds.lines;
+
+        // Update target displays
+        document.getElementById('statementsTargetValue').textContent = `${thresholds.statements}%`;
+        document.getElementById('branchesTargetValue').textContent = `${thresholds.branches}%`;
+        document.getElementById('functionsTargetValue').textContent = `${thresholds.functions}%`;
+        document.getElementById('linesTargetValue').textContent = `${thresholds.lines}%`;
+      }
+
+      // ==================== END THRESHOLD FUNCTIONS ====================
+
       // Load and render dashboard
       async function loadDashboard() {
         try {
@@ -1096,6 +1525,11 @@
           if (dashboardData.topFiles) {
             populateTopFiles(dashboardData.topFiles);
           }
+
+          // Initialize and update threshold display
+          initializeThresholds();
+          const thresholds = loadThresholds();
+          updateThresholdDisplay(current.coverage, thresholds);
         } catch (error) {
           console.error('Error loading dashboard:', error);
           document.getElementById('lastUpdate').textContent = 'Error loading data';
@@ -1338,8 +1772,8 @@
           type === 'success'
             ? 'bg-green-600/20 text-green-400 border border-green-600'
             : type === 'error'
-            ? 'bg-red-600/20 text-red-400 border border-red-600'
-            : 'bg-blue-600/20 text-blue-400 border border-blue-600'
+              ? 'bg-red-600/20 text-red-400 border border-red-600'
+              : 'bg-blue-600/20 text-blue-400 border border-blue-600'
         }`;
         status.textContent = message;
 
@@ -1528,10 +1962,7 @@
               document.body.classList.remove('print-mode');
             }, 1000);
 
-            showExportStatus(
-              '📄 PDF export initiated. Check your browser\'s print dialog.',
-              'info'
-            );
+            showExportStatus("📄 PDF export initiated. Check your browser's print dialog.", 'info');
           }
         } catch (error) {
           console.error('PDF export error:', error);
