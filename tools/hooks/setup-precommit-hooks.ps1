@@ -112,7 +112,6 @@ fi
 # Get the repository root
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
 PROTECTION_SCRIPT="`$REPO_ROOT/tools/ci-cd/enhanced-ci-protection.ps1"
-LOKIFI_SCRIPT="`$REPO_ROOT/tools/lokifi.ps1"
 
 # Run enhanced protection with relaxed/strict settings for pre-commit
 if [ -f "`$PROTECTION_SCRIPT" ]; then
@@ -196,7 +195,6 @@ fi
 
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
 PROTECTION_SCRIPT="`$REPO_ROOT/tools/ci-cd/enhanced-ci-protection.ps1"
-LOKIFI_SCRIPT="`$REPO_ROOT/tools/lokifi.ps1"
 
 # Run comprehensive protection checks
 if [ -f "`$PROTECTION_SCRIPT" ]; then
