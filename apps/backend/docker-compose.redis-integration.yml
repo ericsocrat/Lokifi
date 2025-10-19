@@ -1,5 +1,5 @@
 # Phase K Implementation - Docker Compose Redis Service
-version: '3.8'
+version: "3.8"
 
 services:
   # Add this to your existing docker-compose.yml
@@ -19,13 +19,13 @@ services:
       timeout: 3s
       retries: 5
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-fynix_redis_pass}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-lokifi_redis_pass}
     networks:
       - lokifi-network
 
   # Update your existing backend service
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: lokifi-backend
