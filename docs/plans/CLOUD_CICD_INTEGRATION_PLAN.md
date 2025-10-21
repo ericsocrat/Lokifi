@@ -377,7 +377,7 @@ jobs:
 ### **3. Lokifi CLI Deployment Commands** 💻
 
 ```powershell
-# Add to tools/lokifi.ps1
+# Future: Add deployment commands to tools/
 
 function Deploy-ToCloud {
     param(
@@ -602,7 +602,7 @@ services:
 - [ ] Set up automated backups
 - [ ] Create disaster recovery plan
 - [ ] Deploy to production
-- [ ] Update `lokifi.ps1` with deployment commands
+- [ ] Add deployment commands to tools/
 - [ ] Write deployment documentation
 
 ---
