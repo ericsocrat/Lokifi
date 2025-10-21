@@ -7,7 +7,7 @@
 cd apps/backend
 pytest tests/                              # All tests
 pytest tests/api/                          # API tests only
-pytest tests/unit/                         # Unit tests only  
+pytest tests/unit/                         # Unit tests only
 pytest tests/integration/                  # Integration tests
 pytest tests/security/                     # Security tests
 pytest tests/ --cov                        # With coverage

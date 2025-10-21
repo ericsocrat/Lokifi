@@ -38,7 +38,7 @@
 
 #### Workflow & Operations
 - [`PULL_REQUEST_GUIDE.md`](guides/PULL_REQUEST_GUIDE.md) - **Consolidated:** PR workflow guide
-- [`ADVANCED_OPTIMIZATION_GUIDE.md`](guides/ADVANCED_OPTIMIZATION_GUIDE.md) - Performance optimization
+- [`CODE_QUALITY.md`](guides/CODE_QUALITY.md) - Code quality standards and metrics
 
 #### Setup & Configuration
 - [`POSTGRESQL_SETUP_GUIDE.md`](guides/POSTGRESQL_SETUP_GUIDE.md) - Database setup

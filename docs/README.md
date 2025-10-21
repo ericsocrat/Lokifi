@@ -30,7 +30,7 @@ Testing strategies and quality assurance:
 ### 🔄 [Workflow & Operations](./guides/)
 Pull requests, optimization, and setup:
 - [`PULL_REQUEST_GUIDE.md`](./guides/PULL_REQUEST_GUIDE.md) - PR workflow guide
-- [`ADVANCED_OPTIMIZATION_GUIDE.md`](./guides/ADVANCED_OPTIMIZATION_GUIDE.md) - Performance optimization
+- [`CODE_QUALITY.md`](./guides/CODE_QUALITY.md) - Code quality standards and automation
 - [`POSTGRESQL_SETUP_GUIDE.md`](./guides/POSTGRESQL_SETUP_GUIDE.md) - Database setup
 - [`REDIS_DOCKER_SETUP.md`](./guides/REDIS_DOCKER_SETUP.md) - Redis configuration
 
