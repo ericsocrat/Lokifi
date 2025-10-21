@@ -40,12 +40,11 @@ Complete API reference and documentation:
 - [`API_DOCUMENTATION.md`](./api/API_DOCUMENTATION.md) - API overview and guidelines
 
 ### 🎨 [UI & Design](./design/)
-Design system and component documentation:
-- [`COMPONENT_CATALOG.md`](./components/COMPONENT_CATALOG.md) - UI component library
+Design system and architecture documentation:
 - [`ARCHITECTURE_DIAGRAM.md`](./design/ARCHITECTURE_DIAGRAM.md) - System architecture
 - [`THEME_DOCUMENTATION.md`](./design/THEME_DOCUMENTATION.md) - UI theme system
 
-### � [Security](./security/)
+### 🔒 [Security](./security/)
 Security configuration and best practices:
 - [`README.md`](./security/README.md) - Security overview
 - [`ENHANCED_SECURITY_SETUP.md`](./security/ENHANCED_SECURITY_SETUP.md) - Advanced security

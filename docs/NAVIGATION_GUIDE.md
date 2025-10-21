@@ -48,10 +48,11 @@
 **Location:** `docs/api/`
 
 - [`API_REFERENCE.md`](api/API_REFERENCE.md) - Complete API documentation
-- [`API_DOCUMENTATION.md`](api/API_DOCUMENTATION.md) - **MOVED:** API overview and guidelines### UI & Design Documentation
-**Location:** `docs/components/` & `docs/design/`
+- [`API_DOCUMENTATION.md`](api/API_DOCUMENTATION.md) - **MOVED:** API overview and guidelines
 
-- [`COMPONENT_CATALOG.md`](components/COMPONENT_CATALOG.md) - UI component library
+### UI & Design Documentation
+**Location:** `docs/design/`
+
 - [`ARCHITECTURE_DIAGRAM.md`](design/ARCHITECTURE_DIAGRAM.md) - System architecture
 - [`THEME_DOCUMENTATION.md`](design/THEME_DOCUMENTATION.md) - **MOVED:** UI theme system
 

@@ -72,9 +72,6 @@ Welcome to the comprehensive documentation index for Lokifi - A modern financial
 - [Redis Docker Setup](guides/REDIS_DOCKER_SETUP.md)
 - [Environment Configuration](security/README.md)
 
-## 📖 Migration & History
-- **[MIGRATION_GUIDE_FYNIX_TO_LOKIFI.md](MIGRATION_GUIDE_FYNIX_TO_LOKIFI.md)** - Historical context and rebranding guide
-
 ---
 
 **Last Updated:** October 2025

@@ -14,7 +14,7 @@ my-project/
 ├── docs/
 └── config/
 ```bash
-**Used by**: Small projects, MVPs, solo developers  
+**Used by**: Small projects, MVPs, solo developers
 **Rating**: 3/5 - Gets the job done
 
 ---
@@ -35,8 +35,8 @@ lokifi/
 │   └── scripts/
 └── docs/           # Documentation
 ```powershell
-**Used by**: Growing startups, small teams (3-10 people)  
-**Rating**: 4/5 - Industry standard, production-ready  
+**Used by**: Growing startups, small teams (3-10 people)
+**Rating**: 4/5 - Industry standard, production-ready
 **You are here!** ✅
 
 ---
@@ -96,8 +96,8 @@ lokifi/
     ├── actions/    ← NEW! (custom actions)
     └── CODEOWNERS  ← NEW!
 ```powershell
-**Used by**: Google, Microsoft, Meta, Netflix, Stripe  
-**Rating**: 5/5 - Enterprise-grade, hyper-scalable  
+**Used by**: Google, Microsoft, Meta, Netflix, Stripe
+**Rating**: 5/5 - Enterprise-grade, hyper-scalable
 **Future goal!** 🚀
 
 ---
