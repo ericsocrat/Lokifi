@@ -6,12 +6,10 @@ Complete documentation for Lokifi's CI/CD implementation.
 
 | Component | Status | Documentation |
 |-----------|---------|---------------|
-| Pre-commit Hooks | ✅ Active | [Setup Guide](./pre-commit-hooks.md) |
-| GitHub Workflows | ✅ 10 Active | [Workflow Guide](./github-workflows.md) |
-| Quality Gates | ✅ 4/4 Pass | [Quality Guide](./quality-gates.md) |
-| Test Coverage | ⚠️ Needs Work | [Testing Guide](./test-coverage.md) |
-| Security Scanning | ✅ Active | [Security Guide](./security-scanning.md) |
-| Performance Monitoring | ✅ Active | [Performance Guide](./performance-monitoring.md) |
+| GitHub Workflows | ✅ Active | See `guides/` folder |
+| Quality Gates | ✅ 4/4 Pass | Automated in workflows |
+| Test Coverage | ⚠️ Needs Work | See testing guides |
+| Security Scanning | ✅ Active | npm audit in CI |
 
 ## 🛠️ Tools Reference
 
