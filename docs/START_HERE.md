@@ -92,13 +92,13 @@ System design and UI/UX documentation:
 
 Project planning and consolidation reports:
 
-- **[Consolidation Progress Report](plans/CONSOLIDATION_PROGRESS_REPORT.md)** - Documentation cleanup
+
 
 ### ⚙️ CI/CD & Automation (`/ci-cd`)
 
 Continuous integration and deployment:
 
-- **[CI/CD Quick Start](ci-cd/guides/CI_CD_QUICK_START.md)** - GitHub Actions setup
+
 - **[CI/CD Explained Simple](ci-cd/guides/CI_CD_EXPLAINED_SIMPLE.md)** - Understanding our CI/CD
 
 ---

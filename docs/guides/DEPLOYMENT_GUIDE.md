@@ -9,7 +9,7 @@ This guide covers deployment strategies and procedures for the Lokifi applicatio
 - Production
 
 ## CI/CD Pipeline
-See [CI/CD Documentation](ci-cd/README.md) for automated deployment workflows.
+For automated deployment workflows, see the CI/CD documentation in `docs/ci-cd/` folder.
 
 ## Manual Deployment
 Refer to infrastructure documentation for manual deployment procedures.
