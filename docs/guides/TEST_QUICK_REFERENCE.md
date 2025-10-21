@@ -74,6 +74,62 @@ pytest tests/api/test_auth_endpoints.py -v -s
 cd apps/frontend
 npm test -- --grep="authentication"
 ```
+
+### Generating Coverage
+```bash
+# Backend - generate and view coverage
+cd apps/backend
+pytest --cov=app --cov-report=html
+# Open apps/backend/htmlcov/index.html in browser
+
+# Frontend - generate coverage
+cd apps/frontend
+npm run test:coverage
+# Open apps/frontend/coverage/index.html in browser
+```
+
+### Frontend Watch Mode
+```bash
+# Auto-run tests on file changes
+cd apps/frontend
+npm test -- --watch
+```
+
+
+## 🎯 Common Workflows
+
+### During Development
+```bash
+# Backend - run affected tests
+cd apps/backend
+pytest tests/unit/test_auth.py -v
+
+# Frontend - watch mode
+cd apps/frontend
+npm test -- --watch
+```
+
+### Before Committing
+```bash
+# Backend - quick validation
+cd apps/backend
+pytest tests/unit/ tests/api/ --maxfail=1
+
+# Frontend - pre-commit check
+cd apps/frontend
+npm test -- --run
+```
+
+### Debugging Specific Test
+```bash
+# Backend - verbose with print statements
+cd apps/backend
+pytest tests/api/test_auth_endpoints.py -v -s
+
+# Frontend - specific test pattern
+cd apps/frontend
+npm test -- --grep="authentication"
+```
 .\lokifi.ps1 test -TestMatch "authentication" -TestVerbose
 ```powershell
 
@@ -188,7 +244,7 @@ rm -rf node_modules
 npm install
 npm test
 ```
-```powershell
+
 ### Get Verbose Output
 ```bash
 # Backend - verbose with print statements
