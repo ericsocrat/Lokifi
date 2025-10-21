@@ -60,12 +60,10 @@ Welcome to the comprehensive documentation index for Lokifi - A modern financial
 ### Testing
 - [Testing Guide](guides/TESTING_GUIDE.md)
 - [Integration Tests Guide](guides/INTEGRATION_TESTS_GUIDE.md)
-- [Test Quick Reference](guides/TEST_QUICK_REFERENCE.md)
 
 ### Quality & Automation
 - [Code Quality](guides/CODE_QUALITY.md)
 - [Automation Guide](guides/AUTOMATION.md)
-- [Pre-Merge Checklist](guides/PRE_MERGE_CHECKLIST.md)
 
 ### Infrastructure
 - [PostgreSQL Setup](guides/POSTGRESQL_SETUP_GUIDE.md)

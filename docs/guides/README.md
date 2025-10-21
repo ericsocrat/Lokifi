@@ -3,8 +3,7 @@
 This folder contains comprehensive development guides for the Lokifi project.
 
 ## Quick References
-- [QUICK_REFERENCE.md](QUICK_REFERENCE.md) - Quick command reference
-- [TEST_QUICK_REFERENCE.md](TEST_QUICK_REFERENCE.md) - Testing shortcuts
+- [TEST_QUICK_REFERENCE.md](TEST_QUICK_REFERENCE.md) - Testing command shortcuts
 
 ## Development Setup
 - [DEVELOPMENT_SETUP.md](DEVELOPMENT_SETUP.md) - Development environment setup

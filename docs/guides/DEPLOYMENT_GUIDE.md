@@ -5,7 +5,7 @@ This guide covers deployment strategies and procedures for the Lokifi applicatio
 
 ## Deployment Environments
 - Development
-- Staging  
+- Staging
 - Production
 
 ## CI/CD Pipeline
