@@ -48,7 +48,7 @@ Design system and component documentation:
 ### � [Security](./security/)
 Security configuration and best practices:
 - [`README.md`](./security/README.md) - Security overview
-- [`enhanced-security-setup.md`](./security/enhanced-security-setup.md) - Advanced security
+- [`ENHANCED_SECURITY_SETUP.md`](./security/ENHANCED_SECURITY_SETUP.md) - Advanced security
 - [`SECURITY_ALERT_REPOSITORY.md`](./security/SECURITY_ALERT_REPOSITORY.md) - Security alerts
 
 ### 📋 [Planning](./plans/)

@@ -8,7 +8,7 @@ This folder contains all security-related documentation, audits, and implementat
 - **[Environment Configuration](./ENVIRONMENT_CONFIGURATION.md)** - Complete guide for `.env` files and environment variables
 
 ### �🛡️ Implementation Reports
-- **[Enhanced Security Setup](./enhanced-security-setup.md)** - Comprehensive security configuration and implementation
+- **[Enhanced Security Setup](./ENHANCED_SECURITY_SETUP.md)** - Comprehensive security configuration and implementation
 - **[Security Alert Repository](./SECURITY_ALERT_REPOSITORY.md)** - Security alerts and monitoring
 
 ### 🔍 Security Audits

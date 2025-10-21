@@ -64,7 +64,7 @@
 **Location:** `docs/security/`
 
 - [`README.md`](security/README.md) - Security overview
-- [`enhanced-security-setup.md`](security/enhanced-security-setup.md) - Advanced security
+- [`ENHANCED_SECURITY_SETUP.md`](security/ENHANCED_SECURITY_SETUP.md) - Advanced security
 - [`SECURITY_ALERT_REPOSITORY.md`](security/SECURITY_ALERT_REPOSITORY.md) - Security alerts
 - `PHASE_2_DATETIME_FIXER_COMPLETE.md` - DateTime fixer completion
 
