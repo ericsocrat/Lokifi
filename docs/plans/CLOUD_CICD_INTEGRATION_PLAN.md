@@ -1,8 +1,8 @@
 # 🚀 Phase 3.5: Cloud & CI/CD Integration
 
-**Status**: 📋 Ready to Start  
-**Priority**: HIGH  
-**Estimated Time**: 2-3 weeks  
+**Status**: 📋 Ready to Start
+**Priority**: HIGH
+**Estimated Time**: 2-3 weeks
 **Depends On**: Phase 3.4 ✅ Complete
 
 ---
@@ -28,7 +28,7 @@ This phase focuses on implementing production-ready cloud deployment and CI/CD a
 ### **1. Infrastructure as Code (IaC)** 🏗️
 
 #### **Option A: Docker Compose (Recommended for MVP)**
-**Pros**: Simple, fast, minimal cost, perfect for small-medium apps  
+**Pros**: Simple, fast, minimal cost, perfect for small-medium apps
 **Cons**: Limited scalability, manual orchestration
 
 ```yaml
@@ -103,7 +103,7 @@ volumes:
 ```yaml
 
 #### **Option B: Terraform + DigitalOcean (Future - Scale)**
-**When**: 10K+ users, need multi-region, auto-scaling  
+**When**: 10K+ users, need multi-region, auto-scaling
 **Cost**: ~$100-500/month
 
 ```hcl
@@ -117,31 +117,31 @@ resource "digitalocean_app" "lokifi" {
       name               = "frontend"
       instance_count     = 2
       instance_size_slug = "basic-xxs"
-      
+
       github {
         repo           = "ericsocrat/Lokifi"
         branch         = "main"
         deploy_on_push = true
       }
-      
+
       env {
         key   = "NODE_ENV"
         value = "production"
       }
     }
-    
+
     service {
       name               = "backend"
       instance_count     = 2
       instance_size_slug = "basic-xs"
-      
+
       github {
         repo           = "ericsocrat/Lokifi"
         branch         = "main"
         deploy_on_push = true
       }
     }
-    
+
     database {
       name    = "lokifi-db"
       engine  = "PG"
@@ -171,30 +171,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: apps/frontend/package-lock.json
-      
+
       - name: Install dependencies
         working-directory: apps/frontend
         run: npm ci
-      
+
       - name: Run linter
         working-directory: apps/frontend
         run: npm run lint
-      
+
       - name: Run type check
         working-directory: apps/frontend
         run: npm run type-check
-      
+
       - name: Run tests
         working-directory: apps/frontend
         run: npm test
-      
+
       - name: Build application
         working-directory: apps/frontend
         run: npm run build
@@ -212,35 +212,35 @@ jobs:
           POSTGRES_PASSWORD: test_password
         ports:
           - 5432:5432
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
           cache-dependency-path: apps/backend/requirements.txt
-      
+
       - name: Install dependencies
         working-directory: apps/backend
         run: |
           pip install -r requirements.txt
           pip install pytest pytest-cov
-      
+
       - name: Run linter
         working-directory: apps/backend
         run: ruff check .
-      
+
       - name: Run type check
         working-directory: apps/backend
         run: mypy .
-      
+
       - name: Run tests
         working-directory: apps/backend
         run: pytest --cov=app tests/
-      
+
       - name: Upload coverage
         uses: codecov/codecov-action@v3
 ```yaml
@@ -261,27 +261,27 @@ jobs:
     permissions:
       contents: read
       packages: write
-    
+
     strategy:
       matrix:
         service: [frontend, backend]
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -292,7 +292,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=latest,enable={{is_default_branch}}
-      
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -319,12 +319,12 @@ jobs:
             docker-compose pull
             docker-compose up -d
             docker-compose ps
-      
+
       - name: Health check
         run: |
           sleep 30
           curl -f https://lokifi.app/health || exit 1
-      
+
       - name: Notify deployment
         uses: 8398a7/action-slack@v3
         if: always()
@@ -350,7 +350,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
@@ -358,12 +358,12 @@ jobs:
           scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
-      
+
       - name: Upload to GitHub Security
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-      
+
       - name: Run Snyk security scan
         uses: snyk/actions/node@master
         env:
@@ -383,58 +383,58 @@ function Deploy-ToCloud {
     param(
         [ValidateSet('dev', 'staging', 'production')]
         [string]$Environment = 'production',
-        
+
         [switch]$DryRun,
         [switch]$Force
     )
-    
+
     Write-Host "🚀 Deploying Lokifi to $Environment..." -ForegroundColor Cyan
-    
+
     # Pre-deployment checks
     Write-Host "📋 Running pre-deployment checks..." -ForegroundColor Yellow
-    
+
     # 1. Check if all tests pass
     $testsPass = Test-AllApplications
     if (-not $testsPass -and -not $Force) {
         Write-Host "❌ Tests failed. Fix issues or use -Force to deploy anyway." -ForegroundColor Red
         return
     }
-    
+
     # 2. Check if Docker is running
     if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
         Write-Host "❌ Docker not found. Please install Docker." -ForegroundColor Red
         return
     }
-    
+
     # 3. Check environment variables
     $envFile = ".env.$Environment"
     if (-not (Test-Path $envFile)) {
         Write-Host "❌ Environment file not found: $envFile" -ForegroundColor Red
         return
     }
-    
+
     # 4. Build containers
     Write-Host "🏗️  Building containers..." -ForegroundColor Cyan
     docker-compose -f docker-compose.cloud.yml build
-    
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "❌ Build failed!" -ForegroundColor Red
         return
     }
-    
+
     # 5. Push to container registry
     Write-Host "📦 Pushing to GitHub Container Registry..." -ForegroundColor Cyan
     docker-compose -f docker-compose.cloud.yml push
-    
+
     if ($LASTEXITCODE -ne 0) {
         Write-Host "❌ Push failed!" -ForegroundColor Red
         return
     }
-    
+
     # 6. Deploy to server
     if (-not $DryRun) {
         Write-Host "🚀 Deploying to $Environment..." -ForegroundColor Green
-        
+
         # SSH into server and pull latest
         ssh $env:SERVER_USER@$env:SERVER_HOST @"
             cd /opt/lokifi
@@ -442,11 +442,11 @@ function Deploy-ToCloud {
             docker-compose up -d
             docker-compose ps
 "@
-        
+
         # Health check
         Start-Sleep -Seconds 30
         $healthCheck = Invoke-RestMethod -Uri "https://lokifi.app/health" -ErrorAction SilentlyContinue
-        
+
         if ($healthCheck) {
             Write-Host "✅ Deployment successful!" -ForegroundColor Green
             Write-Host "🌐 Application: https://lokifi.app" -ForegroundColor Cyan
@@ -462,12 +462,12 @@ function Rollback-Deployment {
     param(
         [ValidateSet('dev', 'staging', 'production')]
         [string]$Environment = 'production',
-        
+
         [string]$Version
     )
-    
+
     Write-Host "⏮️  Rolling back $Environment to version $Version..." -ForegroundColor Yellow
-    
+
     ssh $env:SERVER_USER@$env:SERVER_HOST @"
         cd /opt/lokifi
         docker-compose down
@@ -475,7 +475,7 @@ function Rollback-Deployment {
         docker-compose up -d
         docker-compose ps
 "@
-    
+
     Write-Host "✅ Rollback completed!" -ForegroundColor Green
 }
 
@@ -484,9 +484,9 @@ function Get-DeploymentStatus {
         [ValidateSet('dev', 'staging', 'production')]
         [string]$Environment = 'production'
     )
-    
+
     Write-Host "📊 Deployment Status: $Environment" -ForegroundColor Cyan
-    
+
     ssh $env:SERVER_USER@$env:SERVER_HOST @"
         cd /opt/lokifi
         docker-compose ps
@@ -500,8 +500,8 @@ function Get-DeploymentStatus {
 ### **4. Deployment Platforms** ☁️
 
 #### **Recommended: DigitalOcean App Platform**
-**Cost**: ~$12-25/month for MVP  
-**Pros**: Simple, managed, auto-scaling, one-click deploy  
+**Cost**: ~$12-25/month for MVP
+**Pros**: Simple, managed, auto-scaling, one-click deploy
 **Perfect for**: 0-10K users
 
 ```bash
@@ -510,8 +510,8 @@ doctl apps create --spec .do/app.yaml
 ```bash
 
 #### **Alternative: Railway.app**
-**Cost**: $5-20/month for MVP  
-**Pros**: Zero-config, GitHub integration, free SSL  
+**Cost**: $5-20/month for MVP
+**Pros**: Zero-config, GitHub integration, free SSL
 **Perfect for**: MVP, testing
 
 ```bash
@@ -520,8 +520,8 @@ railway up
 ```bash
 
 #### **Alternative: Fly.io**
-**Cost**: $0-15/month for MVP  
-**Pros**: Edge network, multi-region, good free tier  
+**Cost**: $0-15/month for MVP
+**Pros**: Edge network, multi-region, good free tier
 **Perfect for**: Global apps
 
 ```bash
@@ -530,8 +530,8 @@ fly deploy
 ```bash
 
 #### **Enterprise: AWS/GCP/Azure**
-**Cost**: $100-1000+/month  
-**When**: 100K+ users, need enterprise features  
+**Cost**: $100-1000+/month
+**When**: 100K+ users, need enterprise features
 **Not recommended yet**: Overkill for current stage
 
 ---
@@ -548,7 +548,7 @@ services:
       - prometheus-data:/prometheus
     ports:
       - "9090:9090"
-  
+
   grafana:
     image: grafana/grafana:latest
     volumes:
@@ -557,14 +557,14 @@ services:
       - "3001:3000"
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
-  
+
   loki:
     image: grafana/loki:latest
     volumes:
       - loki-data:/loki
     ports:
       - "3100:3100"
-  
+
   promtail:
     image: grafana/promtail:latest
     volumes:
@@ -663,9 +663,9 @@ services:
 
 ---
 
-**Status**: 📋 Ready to implement  
-**Priority**: HIGH  
-**Estimated completion**: 2-3 weeks  
+**Status**: 📋 Ready to implement
+**Priority**: HIGH
+**Estimated completion**: 2-3 weeks
 **Blockers**: None - all dependencies met
 
 Let's build production-ready infrastructure! 🚀
