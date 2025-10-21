@@ -130,7 +130,7 @@ Install these for the full experience:
 # Prettier - Code formatter
 code --install-extension esbenp.prettier-vscode
 
-# ESLint - JavaScript linter
+# ESLint - TypeScript linter
 code --install-extension dbaeumer.vscode-eslint
 ```bash
 

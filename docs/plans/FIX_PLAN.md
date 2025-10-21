@@ -143,7 +143,7 @@ curl http://localhost:8000/api/v1/symbols/search?q=AAPL&limit=5
 2. Open DevTools (F12)
 3. Click drawing tool buttons
 4. Check Console for errors
-5. Run diagnostic JavaScript commands
+5. Run diagnostic TypeScript commands
 
 **Document findings in**: `CURRENT_ISSUES.md` fix log
 
