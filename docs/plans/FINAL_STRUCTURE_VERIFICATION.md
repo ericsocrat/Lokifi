@@ -49,7 +49,7 @@ lokifi/
 │   └── README.md
 │
 ├── 🛠️ tools/                         # DevOps Tools (how you manage it)
-│   ├── lokifi.ps1                    # Master CLI (6,758 lines)
+│   ├── cleanup-docs.ps1              # Documentation management CLI
 │   ├── scripts/                      # Utility scripts
 │   │   ├── analysis/                 # Code analysis tools
 │   │   ├── cleanup/                  # Cleanup utilities
@@ -135,7 +135,7 @@ lokifi/
 - ✅ **Logs**: System logs (moved from root)
 
 ### DevOps Tools (`tools/`)
-- ✅ **lokifi.ps1**: Master CLI (6,758 lines)
+- ✅ **cleanup-docs.ps1**: Documentation management CLI
 - ✅ **scripts/analysis**: Code analysis tools
 - ✅ **scripts/cleanup**: Cleanup utilities
 - ✅ **scripts/data**: Data fetching
@@ -311,8 +311,8 @@ Get-ChildItem -Path docs\reports\ | Select-Object Name
 
 ### Test Functionality
 ```powershell
-# Test lokifi CLI (from new location)
-.\tools\lokifi.ps1 status
+# Test cleanup tool (from new location)
+.\tools\cleanup-docs.ps1 -DryRun
 
 # Verify Docker Compose
 docker-compose -f apps/docker-compose.yml config

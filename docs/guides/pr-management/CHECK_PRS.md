@@ -127,9 +127,7 @@ pytest tests/test_api_contracts.py -v -m slow
 - Documentation: `PHASE_1.6_TASK_2_COMPLETE.md`
 ```markdown
 
-### PR #24 Description:
-```markdown
-## 📸 Visual Regression Testing Implementation (Phase 1.6 Task 3)
+## PR #24 Description
 
 ### Overview
 Implements visual regression testing using Playwright to automatically detect UI changes and prevent visual bugs.
