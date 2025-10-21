@@ -71,7 +71,7 @@ interface UnifiedAsset {
 function isStockAsset(asset: Asset): asset is StockAsset {
   return asset.type === 'stock';
 }
-```
+```typescript
 
 #### 2. Drawing System Types (~6 errors)
 **Files:** `frontend/src/components/AlertModal.tsx`
@@ -89,7 +89,7 @@ function hasKindProperty(drawing: Drawing): drawing is DrawingWithKind {
 if (hasKindProperty(drawing)) {
   console.log(drawing.kind);
 }
-```
+```typescript
 
 ### Phase 2: Backend TODO Items (Medium Impact)
 
@@ -142,7 +142,7 @@ response = requests.get(url)
 import httpx
 async with httpx.AsyncClient() as client:
     response = await client.get(url)
-```
+```python
 
 #### 2. Large File Refactoring
 **Candidates for splitting:**
@@ -176,7 +176,7 @@ npm update
 
 # For major updates, test carefully:
 npm install <package>@latest
-```
+```bash
 
 **Recommendation:** Schedule monthly dependency review
 
@@ -199,7 +199,7 @@ npm install <package>@latest
     // ... etc
   }
 }
-```
+```json
 
 ### 2. Code Quality Gates
 **Add to CI/CD:**
@@ -216,7 +216,7 @@ npm install <package>@latest
   
 - name: Python Linting
   run: ruff check backend/app
-```
+```yaml
 
 ### 3. Performance Monitoring
 **Already Implemented:**
@@ -256,7 +256,7 @@ npm install <package>@latest
 ```bash
 cd frontend
 npm run build
-```
+```bash
 **Impact:** Clears 8 auto-generated validator errors
 
 ### 2. Add Explicit Types to Common Patterns
@@ -269,7 +269,7 @@ npm run build
 // Or better, define proper types:
 type AlertsState = { ... };
 (state: AlertsState) => { ... }
-```
+```typescript
 
 ### 3. Update Package Documentation
 - ✅ Quick Reference Guide (done)
@@ -283,7 +283,7 @@ type AlertsState = { ... };
 git log --all --grep="TODO"
 
 # Update or remove comments for completed work
-```
+```bash
 
 ---
 

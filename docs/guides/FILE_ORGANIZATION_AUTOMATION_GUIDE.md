@@ -28,7 +28,7 @@ $targetContent = Get-Content $targetPath -Raw
 if ($rootContent -ne $targetContent) {
     # Files are different - consolidation needed
 }
-```
+```powershell
 
 #### Step 2: Timestamp & Size Analysis
 ```powershell
@@ -38,7 +38,7 @@ $targetFile = Get-Item $targetPath
 # Compare modification times and file sizes
 Write-Host "Root: Modified $($rootFile.LastWriteTime), Size $($rootFile.Length) bytes"
 Write-Host "Existing: Modified $($targetFile.LastWriteTime), Size $($targetFile.Length) bytes"
-```
+```powershell
 
 #### Step 3: Smart Consolidation
 ```powershell
@@ -54,7 +54,7 @@ if ($rootFile.LastWriteTime -gt $targetFile.LastWriteTime) {
     Move-Item -Path $file.FullName -Destination $backupPath -Force
     # Result: Existing kept, root version backed up
 }
-```
+```powershell
 
 ### Behavior
 
@@ -65,7 +65,7 @@ if ($rootFile.LastWriteTime -gt $targetFile.LastWriteTime) {
 | **Different files, existing newer** | Backup root, keep existing | Latest content preserved |
 
 ### Output Example
-```
+```markdown
 ⚠️  Duplicate found with DIFFERENT content: TYPESCRIPT_COMPLETE_SUCCESS.md
    Root file: .\TYPESCRIPT_COMPLETE_SUCCESS.md
    Existing: docs\reports\TYPESCRIPT_COMPLETE_SUCCESS.md
@@ -73,7 +73,7 @@ if ($rootFile.LastWriteTime -gt $targetFile.LastWriteTime) {
    Existing: Modified 10/8/2025 2:15 PM, Size 12456 bytes
    → Backed up older version to: docs\reports\TYPESCRIPT_COMPLETE_SUCCESS_backup.md
    → Moved newer version from root
-```
+```markdown
 
 ---
 
@@ -97,7 +97,7 @@ function Get-OptimalDocumentLocation {
     )
     # Returns the optimal directory path for the file
 }
-```
+```powershell
 
 #### Organization Rules
 
@@ -132,7 +132,7 @@ function Get-OptimalDocumentLocation {
 New-Item "TYPESCRIPT_FIX_REPORT.md" -ItemType File
 # ... write content ...
 Move-Item "TYPESCRIPT_FIX_REPORT.md" "docs\reports\"
-```
+```powershell
 
 **After (Automated):**
 ```powershell
@@ -149,7 +149,7 @@ if ($optimalPath) {
 # Create file directly in the right location
 New-Item $fullPath -ItemType File -Force
 # ... write content ...
-```
+```powershell
 
 **PowerShell Integration:**
 ```powershell
@@ -181,7 +181,7 @@ function New-OrganizedDocument {
 # Usage
 New-OrganizedDocument "API_ENDPOINTS.md" "# API Endpoints..."
 # Creates: docs\api\API_ENDPOINTS.md
-```
+```powershell
 
 ---
 
@@ -192,20 +192,20 @@ New-OrganizedDocument "API_ENDPOINTS.md" "# API Endpoints..."
 ```powershell
 # Run organization with improved consolidation
 .\lokifi-manager-enhanced.ps1 docs -Component organize
-```
+```powershell
 
 ### Output Metrics
-```
+```bash
 📊 Organization completed
    ✅ Files moved: 12
    🔄 Files consolidated: 3
-```
+```bash
 
 ### Status Check
 ```powershell
 # Check organization status
 .\lokifi-manager-enhanced.ps1 docs
-```
+```powershell
 
 ---
 
@@ -277,14 +277,14 @@ foreach ($p in $patterns) {
         Write-Host "Matches: $p"
     }
 }
-```
+```powershell
 
 ### Issue: Duplicate not consolidating
 **Check:** Are files actually different?
 ```powershell
 $diff = Compare-Object (Get-Content file1.md) (Get-Content file2.md)
 if ($diff) { "Different" } else { "Identical" }
-```
+```powershell
 
 ### Issue: Wrong target directory
 **Check:** Pattern priority (first match wins)
@@ -292,7 +292,7 @@ if ($diff) { "Different" } else { "Identical" }
 # TYPESCRIPT_STATUS_REPORT.md matches:
 # 1. *STATUS* → docs\project-management\ ✓ (first match)
 # 2. *REPORT* → docs\reports\ (not checked)
-```
+```powershell
 
 ---
 

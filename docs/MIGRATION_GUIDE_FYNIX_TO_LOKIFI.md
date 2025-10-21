@@ -29,7 +29,7 @@ FYNIX_JWT_SECRET=your-secret-key
 
 # New (REQUIRED)
 LOKIFI_JWT_SECRET=your-secret-key
-```
+```bash
 
 **Generate new secrets (recommended):**
 ```bash
@@ -38,7 +38,7 @@ python tools/scripts/security/generate_secrets.py
 
 # Or generate manually
 python -c "import secrets; print(secrets.token_urlsafe(64))"
-```
+```bash
 
 **Update deployment configurations:**
 - Docker Compose: Update environment variables in all compose files
@@ -63,7 +63,7 @@ The localStorage key for authentication tokens has changed:
 - No data loss - only session tokens are affected
 
 #### Communication Template:
-```
+```yaml
 Subject: System Maintenance - Re-login Required
 
 Hi [User],
@@ -75,7 +75,7 @@ We've completed a system upgrade. Please log in again to continue using the plat
 - This is a one-time requirement
 
 Thank you for your patience!
-```
+```yaml
 
 ---
 
@@ -93,20 +93,20 @@ Default database filename has changed:
 ```bash
 cd apps/backend
 mv fynix.sqlite lokifi.sqlite
-```
+```bash
 
 **Option B: Set custom database path**
 ```bash
 # In .env file
 LOKIFI_DB_PATH=fynix.sqlite  # Keep old name
-```
+```bash
 
 **Option C: Fresh start (development only)**
 ```bash
 cd apps/backend
 rm fynix.sqlite
 python init_db.py
-```
+```bash
 
 ---
 
@@ -129,7 +129,7 @@ redis-cli FLUSHDB
 
 # Restart Celery workers
 make celery-restart
-```
+```bash
 
 ---
 
@@ -193,7 +193,7 @@ make test
 
 # Check type errors
 make type-check-all
-```
+```bash
 
 ### Frontend Testing
 ```bash
@@ -207,7 +207,7 @@ npm test
 
 # Check localStorage migration
 # Open browser console and check for 'lokifi_token' key
-```
+```bash
 
 ### Integration Testing
 - [ ] User registration works
@@ -251,7 +251,7 @@ If critical issues occur, you can rollback:
 ```bash
 # In .env file - change back to:
 FYNIX_JWT_SECRET=your-secret-key
-```
+```bash
 
 ### 2. Revert Code
 ```bash
@@ -261,14 +261,14 @@ git log --oneline | grep -i fynix
 # Revert to that commit
 git revert <commit-hash>
 git push origin main
-```
+```bash
 
 ### 3. Restore Database
 ```bash
 cd apps/backend
 mv lokifi.sqlite lokifi.sqlite.backup
 mv fynix.sqlite.backup fynix.sqlite
-```
+```bash
 
 ---
 

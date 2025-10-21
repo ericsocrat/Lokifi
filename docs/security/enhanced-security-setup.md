@@ -24,7 +24,7 @@ This guide covers the setup and configuration of the enhanced security features 
 
 ## 📊 Current Security Status
 
-```
+```env
 🔒 ENHANCED SECURITY VALIDATION STATUS:
 ==================================================
 ✅ Environment Variables: PASS
@@ -39,7 +39,7 @@ This guide covers the setup and configuration of the enhanced security features 
 🔍 Hardcoded Secrets Found: 0
 
 🛡️ ENTERPRISE-GRADE SECURITY: FULLY IMPLEMENTED
-```
+```env
 
 ## 🚀 External Monitoring Configuration
 
@@ -113,7 +113,7 @@ RATE_LIMIT_VIOLATION_THRESHOLD=100
 FAILED_ATTEMPT_WINDOW=900    # 15 minutes
 RATE_LIMIT_WINDOW=3600       # 1 hour
 ALERT_RATE_LIMIT_MINUTES=5   # Min time between similar alerts
-```
+```env
 
 ## 🔍 Security Monitoring Features
 
@@ -149,14 +149,14 @@ cleaned = InputSanitizer.sanitize_html(safe_html)
 # This will be blocked/cleaned
 dangerous_html = '<script>alert("xss")</script>'
 # Will raise ValueError or clean to safe content
-```
+```python
 
 ### 2. Test Security Alerts
 ```bash
 # Send test alert via API
 curl -X POST http://localhost:8000/api/security/alerts/test \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
-```
+```bash
 
 ### 3. Test Rate Limiting
 ```bash
@@ -164,7 +164,7 @@ curl -X POST http://localhost:8000/api/security/alerts/test \
 for i in {1..50}; do
   curl http://localhost:8000/api/health
 done
-```
+```bash
 
 ## 📈 Monitoring and Maintenance
 

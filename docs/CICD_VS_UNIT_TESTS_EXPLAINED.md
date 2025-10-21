@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Run backend tests
         run: pytest tests/  # ← This RUNS the tests
-```
+```yaml
 
 The CI/CD tests verify:
 - ✅ Can the application **build** correctly?
@@ -55,7 +55,7 @@ Unit/integration tests (`apps/frontend/tests/`, `apps/backend/tests/`) verify **
 it('should reject weak passwords', async () => {
   await expect(register('test@test.com', '123')).rejects.toThrow();
 });
-```
+```typescript
 
 These tests verify:
 - ✅ Does the **login function** work correctly?
@@ -70,7 +70,7 @@ These tests verify:
 
 ### Before Your Recent Work:
 
-```
+```bash
 ┌─────────────────────────────────────────┐
 │        CI/CD Pipeline (GitHub)          │
 │                                         │
@@ -83,13 +83,13 @@ These tests verify:
 │  │ 4. Deploy (if tests pass)       │  │
 │  └─────────────────────────────────┘  │
 └─────────────────────────────────────────┘
-```
+```bash
 
 **Problem**: The CI/CD was running tests, but **the tests themselves were inadequate**!
 
 ### After Your Recent Work:
 
-```
+```bash
 ┌─────────────────────────────────────────┐
 │        CI/CD Pipeline (GitHub)          │
 │                                         │
@@ -105,7 +105,7 @@ These tests verify:
 │  │ 4. Deploy (if tests pass)       │  │
 │  └─────────────────────────────────┘  │
 └─────────────────────────────────────────┘
-```
+```bash
 
 **Improvement**: You're adding **better quality tests** that the CI/CD runs!
 
@@ -181,7 +181,7 @@ describe('login', () => {
     // Test what happens when API is down
   });
 });
-```
+```typescript
 
 **Tests**: The login **function logic** works correctly
 
@@ -199,7 +199,7 @@ describe('AuthProvider', () => {
     expect(result.current.isAuthenticated).toBe(true);
   });
 });
-```
+```typescript
 
 **Tests**: Login function **integrates** with React state management
 
@@ -225,7 +225,7 @@ jobs:
 
       - name: Build application
         run: npm run build
-```
+```yaml
 
 **Tests**: The entire **build and test process** runs automatically on every commit
 
@@ -235,13 +235,13 @@ jobs:
 
 ### Without Good Unit/Integration Tests:
 
-```
+```bash
 ❌ CI/CD Pipeline PASSES
    └─ But runs shallow/incomplete tests
       └─ Bugs reach production
          └─ Users encounter errors
             └─ Revenue loss, reputation damage
-```
+```bash
 
 **Real Example from Your Project**:
 - Backend has 85.8% coverage
@@ -250,23 +250,23 @@ jobs:
 
 ### Without CI/CD Pipeline:
 
-```
+```bash
 ❌ Great tests exist locally
    └─ But developers forget to run them
       └─ Broken code gets committed
          └─ Other developers pull broken code
             └─ Development slows down
-```
+```bash
 
 ### With BOTH (Ideal State):
 
-```
+```bash
 ✅ High-quality unit/integration tests exist
    └─ CI/CD automatically runs them on every commit
       └─ Bugs caught immediately
          └─ Only good code reaches production
             └─ Users happy, developers productive
-```
+```bash
 
 ---
 
@@ -315,7 +315,7 @@ describe('register', () => {
     ).rejects.toThrow('Email already exists');
   });
 });
-```
+```typescript
 
 **Coverage might be the same, but quality is vastly different!**
 
@@ -332,7 +332,7 @@ describe('register', () => {
 
 ### Progress:
 
-```
+```bash
 ┌─────────────────────────────────────────────────────┐
 │  Task 5: Frontend Test Coverage Enhancement        │
 ├─────────────────────────────────────────────────────┤
@@ -365,7 +365,7 @@ describe('register', () => {
 │  📊 Tests Added: ~800 comprehensive tests          │
 │                                                     │
 └─────────────────────────────────────────────────────┘
-```
+```bash
 
 ### What Happens Now:
 
@@ -384,18 +384,18 @@ describe('register', () => {
 
 ### Developer Workflow (You):
 
-```
+```bash
 1. Write code
    └─ Write unit/integration tests for that code
       └─ Run tests locally: npm test
          └─ Fix any failures
             └─ Commit when all tests pass
                └─ Push to GitHub
-```
+```bash
 
 ### CI/CD Workflow (Automated):
 
-```
+```bash
 1. GitHub receives your push
    └─ Triggers CI/CD pipeline
       └─ Runs ALL tests (including your new ones)
@@ -406,7 +406,7 @@ describe('register', () => {
          └─ If tests fail:
             └─ Block deployment
                └─ Notify you of failure
-```
+```bash
 
 ---
 
@@ -428,7 +428,7 @@ describe('register', () => {
 
 ### 1. **They're Different Layers**
 
-```
+```bash
 ┌─────────────────────────────────────┐
 │     CI/CD Pipeline (Delivery)       │  ← Infrastructure
 ├─────────────────────────────────────┤
@@ -438,7 +438,7 @@ describe('register', () => {
 ├─────────────────────────────────────┤
 │      Application Code               │  ← Your product
 └─────────────────────────────────────┘
-```
+```bash
 
 ### 2. **CI/CD Pipeline NEEDS Good Tests**
 

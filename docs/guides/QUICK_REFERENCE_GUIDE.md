@@ -10,7 +10,7 @@
 ```bash
 # Start ALL services (recommended)
 .\start-servers.ps1
-```
+```bash
 This will:
 - ✅ Start Redis (Docker)
 - ✅ Start Backend (FastAPI on port 8000)
@@ -29,13 +29,13 @@ This will:
 
 # Restart Redis
 .\manage-redis.ps1 restart
-```
+```bash
 
 ### Test APIs
 ```bash
 # Run API tests
 .\test-api.ps1
-```
+```bash
 
 ---
 
@@ -94,7 +94,7 @@ docker-compose logs -f
 
 # Restart a service
 docker-compose restart backend
-```
+```bash
 
 ### Redis Container (Manual)
 ```bash
@@ -111,7 +111,7 @@ docker stop lokifi-redis
 
 # View logs
 docker logs -f lokifi-redis
-```
+```bash
 
 ---
 
@@ -134,7 +134,7 @@ pytest
 
 # Start server manually
 python -m uvicorn app.main:app --reload
-```
+```bash
 
 ---
 
@@ -157,7 +157,7 @@ npm start
 
 # Run tests
 npm test
-```
+```bash
 
 ---
 
@@ -173,7 +173,7 @@ docker ps | grep lokifi-redis
 
 # Check Redis logs
 .\manage-redis.ps1 logs
-```
+```bash
 
 ### Backend Issues
 ```bash
@@ -187,7 +187,7 @@ curl http://localhost:8000/api/health
 # Check Redis connection
 curl http://localhost:8000/api/health
 # Should show "redis": "connected"
-```
+```bash
 
 ### Frontend Issues
 ```bash
@@ -201,7 +201,7 @@ npm install
 
 # Restart dev server
 npm run dev
-```
+```bash
 
 ### Docker Issues
 ```bash
@@ -217,7 +217,7 @@ docker system prune -a
 # Rebuild containers
 docker-compose down
 docker-compose up -d --build
-```
+```bash
 
 ---
 
@@ -230,13 +230,13 @@ REDIS_URL=redis://:23233@localhost:6379/0
 SECRET_KEY=your-secret-key
 GOOGLE_CLIENT_ID=your-client-id
 COINGECKO_API_KEY=your-api-key
-```
+```bash
 
 ### Frontend (.env.local)
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:8000
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your-client-id
-```
+```bash
 
 ---
 

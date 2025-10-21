@@ -114,28 +114,28 @@ Comprehensive frontend testing expansion adding store tests, component tests, an
 - Mock child components
 - Test window event listeners
 - Verify cleanup on unmount
-```
+```markdown
 
 **Provider Components**:
 ```typescript
 - Minimal mocks for complex dependencies
 - Test children pass-through
 - Environment-based rendering
-```
+```markdown
 
 **UI Components**:
 ```typescript
 - Store integration testing
 - User interaction flows
 - Accessibility compliance
-```
+```markdown
 
 **Store Tests**:
 ```typescript
 - State management verification
 - Action/reducer testing
 - Side effect handling
-```
+```markdown
 
 ### 🚀 Future Work
 
@@ -229,7 +229,7 @@ npm run test:coverage
 
 # Run lint
 npm run lint
-```
+```markdown
 
 Expected Results:
 - ✅ 82/82 test files passing
@@ -248,7 +248,7 @@ Expected Results:
 - Preserves all work in PR for reference
 
 **Commit Message** (if squashing):
-```
+```markdown
 feat: comprehensive frontend testing expansion (Batches 1-5)
 
 - Add 126 Batch 5 component tests (100% passing)
@@ -259,7 +259,7 @@ feat: comprehensive frontend testing expansion (Batches 1-5)
 - Improve frontend coverage from ~10% → 20.4%
 
 BREAKING CHANGE: None
-```
+```markdown
 
 ---
 
@@ -281,7 +281,7 @@ Questions or review feedback? Reach out to the team or comment on the PR.
 **Branch**: feature/frontend-coverage-expansion
 **Status**: ✅ Ready for Review
 **Last Updated**: October 18, 2025
-```
+```markdown
 
 ---
 
@@ -292,9 +292,9 @@ Questions or review feedback? Reach out to the team or comment on the PR.
 Visit: https://github.com/ericsocrat/Lokifi/compare/feature/frontend-coverage-expansion
 
 **Title**:
-```
+```yaml
 feat: Frontend Testing Expansion (Batches 1-5) - 126+ Tests
-```
+```yaml
 
 **Description**: Use the template above
 

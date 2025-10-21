@@ -24,7 +24,7 @@ Your Lokifi application security has been comprehensively enhanced and optimized
 "X-XSS-Protection": "1; mode=block"
 "Strict-Transport-Security": "max-age=31536000; includeSubDomains"
 "Content-Security-Policy": "default-src 'self'; script-src 'self'..."
-```
+```python
 
 #### ✅ **2. Enhanced Rate Limiting**
 **Location**: `backend/app/services/enhanced_rate_limiter.py`
@@ -42,7 +42,7 @@ Rate Limits:
 - WebSocket: 50 connections per minute  
 - File Uploads: 10 uploads per minute
 - Password Reset: 3 attempts per hour
-```
+```python
 
 #### ✅ **3. Comprehensive Input Validation**
 **Location**: `backend/app/utils/input_validation.py`
@@ -60,7 +60,7 @@ Rate Limits:
 - HTML escape all string inputs
 - SQL injection pattern detection
 - XSS script pattern detection
-```
+```python
 
 #### ✅ **4. Enhanced Password Security**
 **Updated**: `backend/app/core/security.py`
@@ -79,7 +79,7 @@ Rate Limits:
 - Digits: 0-9
 - Special characters: !@#$%^&*(),.?":{}|<>
 - Criteria: Must meet 3 of 4 requirements
-```
+```python
 
 #### ✅ **5. Security Configuration Management**
 **Location**: `backend/app/core/security_config.py`
@@ -107,7 +107,7 @@ allow_headers=["*"]
 # After: Restrictive and secure
 allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 # Headers still flexible for API compatibility
-```
+```python
 
 ### 📊 **Security Metrics - Before vs After**
 
@@ -123,13 +123,13 @@ allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
 ### 🔍 **Security Validation Results**
 
-```
+```env
 🟢 SECURITY VALIDATION PASSED
 ✅ Environment Variables: PASS
 ✅ Docker Compose Security: PASS  
 🔍 Hardcoded Secrets Found: 0
 ⚠️  File Permissions: Windows-compatible security
-```
+```env
 
 **Status**: **ZERO critical security vulnerabilities remaining**
 

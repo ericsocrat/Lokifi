@@ -35,7 +35,7 @@ The **`generate-tests`** command automates the creation of test file boilerplate
 
 # Include coverage analysis first
 .\tools\lokifi.ps1 generate-tests -Coverage
-```
+```powershell
 
 ---
 
@@ -72,7 +72,7 @@ async def mock_db_session():
     """Mock database session"""
     session = AsyncMock()
     return session
-```
+```python
 
 #### **Unit Tests Class**
 ```python
@@ -88,7 +88,7 @@ class TestModuleName:
         """Test basic functionality"""
         # TODO: Add basic functionality test
         pass
-```
+```python
 
 #### **Integration Tests Class**
 ```python
@@ -100,7 +100,7 @@ class TestModuleNameIntegration:
         """Test integration with dependencies"""
         # TODO: Add integration test
         pass
-```
+```python
 
 #### **Edge Cases Class**
 ```python
@@ -116,7 +116,7 @@ class TestModuleNameEdgeCases:
         """Test handling of invalid inputs"""
         # TODO: Test invalid input handling
         pass
-```
+```python
 
 #### **Performance Tests Class** (Optional)
 ```python
@@ -129,7 +129,7 @@ class TestModuleNamePerformance:
         """Test performance under load"""
         # TODO: Add performance test
         pass
-```
+```python
 
 ---
 
@@ -146,7 +146,7 @@ class TestModuleNamePerformance:
 
 ## Example Output
 
-```
+```python
 🚀 Lokifi Ultimate Manager - 🧪 Python Test Generator
 ══════════════════════════════════════════════════════════
 
@@ -174,7 +174,7 @@ class TestModuleNamePerformance:
    3. Add domain-specific test data
    4. Run tests: python -m pytest tests/ -v
    5. Check coverage: python -m pytest --cov=app --cov-report=html
-```
+```python
 
 ---
 
@@ -186,7 +186,7 @@ class TestModuleNamePerformance:
 .\tools\lokifi.ps1 generate-tests -DryRun
 
 # Output shows 148 potential test files
-```
+```powershell
 
 ### 2️⃣ **Selective Generation**
 ```powershell
@@ -198,7 +198,7 @@ class TestModuleNamePerformance:
 
 # Finally models
 .\tools\lokifi.ps1 generate-tests -Component "app/models"
-```
+```powershell
 
 ### 3️⃣ **Fill in Test Logic**
 Open generated files and:
@@ -218,13 +218,13 @@ python -m pytest --cov=app --cov-report=html
 
 # Open coverage report
 start htmlcov/index.html
-```
+```powershell
 
 ### 5️⃣ **Commit Progress**
 ```powershell
 git add tests/
 git commit -m "test: add test boilerplate for 145 modules"
-```
+```powershell
 
 ---
 
@@ -234,23 +234,23 @@ The generated TODO markers are perfect for AI assistance:
 
 ### **Example Prompts:**
 
-```
+```sql
 "Complete the tests in test_crypto_data_service.py.
 The service fetches cryptocurrency data from CoinGecko API."
-```
+```sql
 
-```
+```bash
 "Add comprehensive tests for test_smart_price_service.py including:
 - Happy path for price fetching
 - Error handling for API failures
 - Redis caching scenarios
 - Rate limiting tests"
-```
+```bash
 
-```
+```sql
 "Fill in the edge case tests for test_unified_asset_service.py.
 The service aggregates data from multiple providers."
-```
+```sql
 
 ---
 
@@ -258,7 +258,7 @@ The service aggregates data from multiple providers."
 
 ### **Lokifi Test Structure**
 
-```
+```python
 tests/
 ├── api/               # Router/endpoint tests
 │   ├── test_crypto.py
@@ -277,7 +277,7 @@ tests/
 ├── e2e/               # End-to-end tests
 │   └── test_j6_e2e_notifications.py
 └── conftest.py        # Shared fixtures
-```
+```python
 
 ---
 
@@ -361,7 +361,7 @@ def sample_crypto_data():
             "24h_change": 2.5
         }
     }
-```
+```python
 
 ### **2. Comprehensive Assertions**
 ```python
@@ -372,7 +372,7 @@ def test_fetch_price(self, sample_data):
     assert "current_price" in result
     assert result["current_price"] > 0
     assert isinstance(result["market_cap"], float)
-```
+```python
 
 ### **3. Mock External Dependencies**
 ```python
@@ -385,7 +385,7 @@ async def test_api_call_with_mock(self):
         result = await service.fetch_price("bitcoin")
 
         assert result["price"] == 50000
-```
+```python
 
 ### **4. Error Scenarios**
 ```python
@@ -396,7 +396,7 @@ def test_invalid_symbol(self):
 def test_api_timeout(self):
     with pytest.raises(TimeoutError):
         fetch_crypto_price("bitcoin", timeout=0.001)
-```
+```python
 
 ---
 
@@ -432,7 +432,7 @@ def test_api_timeout(self):
 .\tools\lokifi.ps1 generate-tests -Component "app/routers"
 
 # Fill in tests incrementally
-```
+```powershell
 
 ---
 
@@ -465,7 +465,7 @@ python -m pytest --cov=app/services --cov-report=html
 # 6. Commit progress
 git add tests/services/
 git commit -m "test: add comprehensive service tests"
-```
+```powershell
 
 ---
 

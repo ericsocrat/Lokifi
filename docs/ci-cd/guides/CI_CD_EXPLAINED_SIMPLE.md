@@ -57,11 +57,11 @@ When you make changes and create a Pull Request:
 When you create a PR, you'll see:
 
 **A) Checks Section** (near the bottom of PR page)
-```
+```bash
 ✓ Test & Coverage — Passed in 2m 15s
 ✓ Security Scan — Passed in 1m 30s
 ✓ Quality Gate — Passed in 10s
-```
+```bash
 
 **B) Automated Comments** (2 comments from a bot)
 
@@ -80,7 +80,7 @@ When you create a PR, you'll see:
 | Lines | 13.7% | 123/897 |
 
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 **Comment 2 - Security Scan:**
 ```markdown
@@ -97,7 +97,7 @@ When you create a PR, you'll see:
 | Low | 8 |
 
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ---
 
@@ -112,23 +112,23 @@ This shows:
 - Detailed logs if you want to debug
 
 **What you'll see:**
-```
+```bash
 ✓ docs(ci): add CI/CD quick start guide — 3m 45s
   ✓ Test & Coverage (2m 15s)
   ✓ Security Scan (1m 30s)
   ✓ Quality Gate (10s)
-```
+```bash
 
 ---
 
 ### **3. On Your PR Page - Status Badges**
 
 Near the top of your PR, you'll see:
-```
+```bash
 ● Some checks haven't completed yet  (yellow - in progress)
 ✓ All checks have passed             (green - success)
 ✕ Some checks were not successful    (red - failed)
-```
+```bash
 
 ---
 
@@ -208,7 +208,7 @@ Near the top of your PR, you'll see:
 ### **Scenario: You fix a bug**
 
 **Without CI/CD:**
-```
+```bash
 1. You write code
 2. You THINK it works
 3. You create PR
@@ -218,10 +218,10 @@ Near the top of your PR, you'll see:
 7. 💥 Production breaks because you missed something
 8. Emergency fix needed
 9. Everyone is stressed
-```
+```bash
 
 **With CI/CD:**
-```
+```bash
 1. You write code
 2. You create PR
 3. Robot runs 224 tests automatically
@@ -235,7 +235,7 @@ Near the top of your PR, you'll see:
 11. Reviewer sees "All checks passed" ✅
 12. Code gets merged safely
 13. 🎉 Production stays stable
-```
+```bash
 
 ---
 
@@ -243,7 +243,7 @@ Near the top of your PR, you'll see:
 
 ### **On Any Pull Request Page:**
 
-```
+```bash
 ┌─────────────────────────────────────────────────────────┐
 │  Pull Request #5                                        │
 │  test: verify CI/CD pipeline automation                │
@@ -286,7 +286,7 @@ Near the top of your PR, you'll see:
 ├─────────────────────────────────────────────────────────┤
 │  [Merge pull request] ← Button turns green when ready  │
 └─────────────────────────────────────────────────────────┘
-```
+```bash
 
 ---
 
@@ -333,7 +333,7 @@ Just work normally:
 7. See automated comments appear
 8. If all checks pass → merge!
 9. If checks fail → fix and push again
-```
+```bash
 
 **The robot does everything else automatically!** 🤖✨
 

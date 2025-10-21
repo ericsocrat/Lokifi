@@ -40,7 +40,7 @@ Your frontend testing approach is **excellent** and should be the **standard for
 ### 1. **Proper Test Structure & Organization** ✅
 
 **Test File Organization:**
-```
+```bash
 tests/
 ├── components/      # React component tests
 │   ├── SymbolTfBar.test.tsx (98.86% coverage) ✅
@@ -57,7 +57,7 @@ tests/
 │       ├── adapter.test.ts (89.71% coverage) ✅
 │       ├── dashboardData.test.ts (100% coverage) ✅
 │       └── persistence.test.ts (100% coverage) ✅
-```
+```bash
 
 **✅ Excellent:** Clear separation by layer, easy to find tests
 
@@ -75,7 +75,7 @@ describe('SymbolTfBar', () => {
   describe('Event Cleanup', () => { /* 1 test */ });
   describe('Edge Cases', () => { /* 3 tests */ });
 });
-```
+```typescript
 
 **✅ Excellent:** Tests are grouped logically, comprehensive coverage
 
@@ -105,7 +105,7 @@ beforeEach(() => {
     return mockStore;
   });
 });
-```
+```typescript
 
 **✅ Excellent:** Tests are isolated, no external dependencies
 
@@ -122,7 +122,7 @@ it('should update symbol on Enter key', async () => {
   // ✅ Verify the BEHAVIOR, not just DOM
   expect(mockStore.setSymbol).toHaveBeenCalledWith('ETHUSDT');
 });
-```
+```typescript
 
 **✅ Excellent:** Tests verify what the code DOES, not just what it renders
 
@@ -135,7 +135,7 @@ describe('Edge Cases', () => {
   it('should ignore special characters in symbol input', async () => { /* ... */ });
   it('should maintain menu state across re-renders', async () => { /* ... */ });
 });
-```
+```typescript
 
 **✅ Excellent:** Tests cover edge cases that real users will encounter
 
@@ -152,7 +152,7 @@ it('should remove mousedown listener on unmount', () => {
   // ✅ Verify cleanup to prevent memory leaks
   expect(removeEventListenerSpy).toHaveBeenCalledWith('mousedown', expect.any(Function));
 });
-```
+```typescript
 
 **✅ Excellent:** Tests ensure no memory leaks
 
@@ -167,7 +167,7 @@ expect(suggestions.length).toBe(2);
 
 // ❌ BAD (what backend does)
 expect(response.status_code in [200, 500]);  // Accepts errors!
-```
+```typescript
 
 **✅ Excellent:** Assertions actually verify correctness
 
@@ -233,21 +233,21 @@ expect(response.status_code in [200, 500]);  // Accepts errors!
 def test_register_user():
     response = client.post("/api/auth/register", json=user_data)
     assert response.status_code in [200, 201, 500, 503]  # Accepts errors!
-```
+```python
 
 **2. No Proper Mocking:**
 ```python
 # ❌ BAD - Hits real database
 def test_create_user():
     user = UserService.create_user(...)  # Real DB call!
-```
+```python
 
 **3. Integration Tests Disguised as Unit Tests:**
 ```python
 # ❌ BAD - Requires running server
 def test_auth_endpoints():
     response = requests.get(f"{BASE_URL}/api/health")  # Real HTTP!
-```
+```python
 
 ---
 
@@ -455,7 +455,7 @@ describe('ComponentName', () => {
 
   describe('FeatureB', () => { /* ... */ });
 });
-```
+```typescript
 
 ### 2. Naming Convention
 ```typescript
@@ -467,7 +467,7 @@ it('should remove mousedown listener on unmount', () => {});
 // ❌ BAD - Vague, implementation-focused
 it('should work', () => {});
 it('test symbol', () => {});
-```
+```typescript
 
 ### 3. AAA Pattern (Arrange-Act-Assert)
 ```typescript
@@ -482,7 +482,7 @@ it('should update symbol on Enter key', async () => {
   // Assert
   expect(mockStore.setSymbol).toHaveBeenCalledWith('ETHUSDT');
 });
-```
+```typescript
 
 ### 4. Test Independence
 ```typescript
@@ -495,7 +495,7 @@ beforeEach(() => {
 let sharedState;
 it('test 1', () => { sharedState = 'value'; });
 it('test 2', () => { expect(sharedState).toBe('value'); }); // Depends on test 1!
-```
+```typescript
 
 ---
 

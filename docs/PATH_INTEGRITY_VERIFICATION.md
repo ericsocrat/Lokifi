@@ -23,7 +23,7 @@ BackupsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName ".backups"
 
 # AFTER
 BackupsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "infra\backups"
-```
+```powershell
 
 **Impact**: All backup operations in the main Lokifi CLI now use the correct path
 - ✅ `lokifi backup create`
@@ -40,7 +40,7 @@ $backupDir = ".backups/$(Get-Date -Format 'yyyy-MM-dd')"
 
 # AFTER
 $backupDir = "infra/backups/$(Get-Date -Format 'yyyy-MM-dd')"
-```
+```powershell
 
 **Line 422**: Updated user message
 ```powershell
@@ -49,7 +49,7 @@ Write-Host "⚠️  If issues occur, backups are in '.backups/$(Get-Date -Format
 
 # AFTER
 Write-Host "⚠️  If issues occur, backups are in 'infra/backups/$(Get-Date -Format 'yyyy-MM-dd')'"
-```
+```powershell
 
 **Impact**: TypeScript fixes now backup to correct location
 
@@ -64,7 +64,7 @@ These use the `$Global:LokifiConfig.BackupsDir` variable, which we updated above
 # All of these automatically use the new path:
 $backupPath = Join-Path $Global:LokifiConfig.BackupsDir $backupName
 $backups = Get-ChildItem -Path $Global:LokifiConfig.BackupsDir -Directory
-```
+```powershell
 
 **Status**: ✅ Already correct (uses config variable)
 
@@ -78,7 +78,7 @@ $backups = Get-ChildItem -Path $Global:LokifiConfig.BackupsDir -Directory
 // These are about UI state, not file system paths
 state.backups.push(backup);
 const backup = get().backups.find((b: any) => b.id === backupId);
-```
+```typescript
 
 **Status**: ✅ Unrelated (UI state, not file paths)
 
@@ -89,14 +89,14 @@ const backup = get().backups.find((b: any) => b.id === backupId);
 ##### **`apps/backend/scripts/production_deployment_suite.py`**
 ```python
 self.backups_dir = self.project_root / "backups"
-```
+```python
 **Purpose**: Creates `monitoring/backups/` for production deployment backups  
 **Status**: ✅ Separate concern (not related to root `.backups/`)
 
 ##### **`apps/backend/scripts/dependency_protector.py`**
 ```python
 self.backups_dir = self.protection_dir / "backups"
-```
+```python
 **Purpose**: Creates `dependency_protection/backups/` for dependency snapshots  
 **Status**: ✅ Separate concern (not related to root `.backups/`)
 
@@ -122,7 +122,7 @@ lokifi backup create
 
 # Expected: Creates backup in infra/backups/
 # Result: ✅ Works correctly
-```
+```powershell
 
 ### **Test 2: Universal Fixer Backups**
 ```powershell
@@ -131,7 +131,7 @@ lokifi backup create
 
 # Expected: Creates backup in infra/backups/YYYY-MM-DD/
 # Result: ✅ Works correctly
-```
+```powershell
 
 ### **Test 3: Search for Orphaned References**
 ```powershell
@@ -139,7 +139,7 @@ lokifi backup create
 grep -r "\.backups" --include="*.ts" --include="*.tsx" --include="*.py" --include="*.ps1"
 
 # Result: Only found documentation and unrelated code ✅
-```
+```powershell
 
 ---
 
@@ -167,7 +167,7 @@ grep -r "\.backups" --include="*.ts" --include="*.tsx" --include="*.py" --includ
 
 ## 📁 Backup Directory Structure (After)
 
-```
+```sql
 lokifi/
 ├── infra/
 │   └── backups/               ✅ NEW LOCATION
@@ -181,27 +181,27 @@ lokifi/
 │
 └── dependency_protection/
     └── backups/               ✅ SEPARATE (dependency version snapshots)
-```
+```sql
 
 ---
 
 ## 🚀 Commits Made
 
 ### **Commit 1: Reorganization**
-```
+```bash
 bba3bd5a - refactor: Final structure organization - move backups to infra
 - Moved 413 backup files from .backups/ to infra/backups/
 - Created comprehensive documentation
 - Verified world-class compliance
-```
+```bash
 
 ### **Commit 2: Path Fixes**
-```
+```powershell
 85561e8c - fix: Update backup directory paths after reorganization
 - Updated lokifi.ps1: BackupsDir config
 - Updated universal-fixer.ps1: Backup path and messages
 - Verified no breaking changes
-```
+```powershell
 
 ---
 

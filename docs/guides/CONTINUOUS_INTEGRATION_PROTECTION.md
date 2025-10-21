@@ -55,7 +55,7 @@ git commit -m "feat: new feature"
 # Manual trigger
 .\lokifi.ps1 validate
 .\lokifi.ps1 validate -Quick  # Fast mode
-```
+```powershell
 
 **What It Catches:**
 - ❌ TypeScript errors
@@ -84,7 +84,7 @@ git commit -m "feat: new feature"
 ✓ Security tests
 ✓ Visual regression tests
 ✓ Accessibility tests (a11y)
-```
+```yaml
 
 #### Backend CI (`.github/workflows/backend-ci.yml`)
 ```yaml
@@ -94,7 +94,7 @@ git commit -m "feat: new feature"
 ✓ Import validation
 ✓ API endpoint tests
 ✓ Database migration tests
-```
+```yaml
 
 #### Integration CI (`.github/workflows/integration-ci.yml`)
 ```yaml
@@ -103,7 +103,7 @@ git commit -m "feat: new feature"
 ✓ PostgreSQL integration
 ✓ API contract validation
 ✓ Service health checks
-```
+```yaml
 
 **What It Catches:**
 - ❌ Test failures
@@ -146,7 +146,7 @@ Branch name pattern: main
 ✅ Require conversation resolution before merging
 
 ✅ Do not allow bypassing the above settings
-```
+```yaml
 
 **What It Catches:**
 - ❌ Direct pushes to main (forces PRs)
@@ -171,7 +171,7 @@ Maintainability: 75/100 ✅
 Security Score: 85/100 ✅
 Technical Debt: 89.1 days ⚠️
 Test Coverage: 3.6% ❌
-```
+```powershell
 
 **What It Catches:**
 - ❌ Quality degradation trends
@@ -219,7 +219,7 @@ git push origin feature/new-awesome-feature
 
 # Step 6: Merge to main
 # ✓ Protected - only if all checks pass!
-```
+```powershell
 
 ---
 
@@ -253,7 +253,7 @@ Phase 3 (2 months): 60% coverage
   - Edge cases
   - Error handling
   - Integration scenarios
-```
+```powershell
 
 **Quick Win - Add Coverage Checks:**
 
@@ -280,7 +280,7 @@ if ([int]$backendCoverage -lt $COVERAGE_THRESHOLD) {
 
 Write-Host "✅ Coverage check passed: $backendCoverage%" -ForegroundColor Green
 Pop-Location
-```
+```powershell
 
 **Add to CI:**
 
@@ -289,7 +289,7 @@ Pop-Location
 - name: Check coverage
   run: |
     pytest --cov=app --cov-report=term --cov-fail-under=20
-```
+```yaml
 
 ---
 
@@ -315,7 +315,7 @@ gh api repos/ericsocrat/Lokifi/branches/main/protection \
   --field required_status_checks='{"strict":true,"contexts":["frontend / build-test","backend / lint-test"]}' \
   --field enforce_admins=true \
   --field required_pull_request_reviews='{"required_approving_review_count":1}'
-```
+```bash
 
 ---
 
@@ -378,7 +378,7 @@ e2e-tests:
       with:
         name: playwright-results
         path: frontend/test-results/
-```
+```yaml
 
 ---
 
@@ -429,7 +429,7 @@ if ($failures -gt 0) {
 }
 
 Write-Host "`n✅ All health checks passed!" -ForegroundColor Green
-```
+```powershell
 
 ---
 
@@ -492,7 +492,7 @@ def test_get_crypto_prices_with_invalid_currency():
     response = client.get("/api/crypto/prices?currency=INVALID")
     assert response.status_code == 400
     assert "error" in response.json()
-```
+```python
 
 ### Frontend Tests (Vitest)
 
@@ -523,7 +523,7 @@ describe('CryptoCard', () => {
     expect(screen.getByText('-2.1%')).toHaveClass('text-red-500')
   })
 })
-```
+```typescript
 
 ### E2E Tests (Playwright)
 
@@ -558,7 +558,7 @@ test('complete trading flow', async ({ page }) => {
   // Verify success message
   await expect(page.locator('[role="alert"]')).toContainText('Trade successful')
 })
-```
+```typescript
 
 ---
 
@@ -588,7 +588,7 @@ it('crypto prices API returns expected schema', async () => {
     }
   })
 })
-```
+```typescript
 
 ### Scenario 2: Database Migration Breaks Queries
 
@@ -614,7 +614,7 @@ def test_migration_0042_add_user_preferences():
     alembic.downgrade('-1')
     user = db.query(User).first()
     assert not hasattr(user, 'preferences')
-```
+```python
 
 ### Scenario 3: Dependency Update Breaks Build
 
@@ -640,7 +640,7 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
-```
+```yaml
 
 ---
 
@@ -658,7 +658,7 @@ Metrics:
 - Test Coverage: 60%+ (target)
 - Bugs Caught by CI: Track over time
 - Production Incidents: Aim for 0
-```
+```powershell
 
 ### Weekly Report
 
@@ -671,7 +671,7 @@ Output:
 - PRs blocked by CI failures: Y
 - Test coverage trend: +5% (good!)
 - Production incidents: 0 (excellent!)
-```
+```powershell
 
 ---
 
@@ -702,7 +702,7 @@ def new_feature():
     return expected
 
 # 3. Refactor (STILL PASSES)
-```
+```python
 
 ### 2. Keep CI Fast (<10 minutes)
 - Run unit tests first (fast)
@@ -742,7 +742,7 @@ def new_feature():
 
 # Generate protection report
 .\lokifi.ps1 audit -Report
-```
+```powershell
 
 ---
 

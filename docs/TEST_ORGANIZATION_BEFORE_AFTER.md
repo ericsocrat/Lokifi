@@ -4,7 +4,7 @@
 
 ### BEFORE ❌ (Scattered & Disorganized)
 
-```
+```bash
 lokifi/
 ├── apps/
 │   ├── backend/
@@ -65,13 +65,13 @@ Total Issues:
 - ❌ 3 duplicate implementations
 - ❌ 0% test coverage (files not counted)
 - ❌ Tests not discoverable by lokifi bot
-```
+```bash
 
 ---
 
 ### AFTER ✅ (Organized & Structured)
 
-```
+```python
 lokifi/
 ├── apps/
 │   ├── backend/
@@ -209,7 +209,7 @@ Total Improvements:
 - ✅ 12.1% frontend coverage (was 0%)
 - ✅ All tests discoverable by lokifi bot
 - ✅ 7,500+ lines now counted in coverage
-```
+```python
 
 ---
 

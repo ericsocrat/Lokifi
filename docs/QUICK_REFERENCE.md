@@ -15,7 +15,7 @@ cd frontend && npx prettier --check "src/**/*.{ts,tsx}"
 
 # Build
 cd frontend && npm run build
-```
+```bash
 
 ### Manual Formatting
 ```bash
@@ -24,7 +24,7 @@ cd frontend && npx prettier --write "src/**/*.{ts,tsx,js,jsx,json,md}"
 
 # Fix ESLint issues
 cd frontend && npx next lint --fix
-```
+```bash
 
 ### Test Pre-commit Hook
 ```bash
@@ -33,7 +33,7 @@ cd frontend
 git add .
 git commit -m "test: pre-commit"
 # Should auto-fix and format before committing
-```
+```bash
 
 ---
 
@@ -94,7 +94,7 @@ cd frontend && npm run prepare
 
 # Check Git hooks path
 git config core.hooksPath
-```
+```bash
 
 ### Prettier not formatting?
 ```bash
@@ -106,7 +106,7 @@ cd frontend && npm ls prettier
 
 # Manual format
 npx prettier --write path/to/file.ts
-```
+```bash
 
 ### ESLint not working?
 ```bash
@@ -118,7 +118,7 @@ cd frontend && npx next lint
 
 # View ESLint output
 # In VS Code: View → Output → ESLint
-```
+```bash
 
 ---
 
@@ -132,7 +132,7 @@ code --install-extension esbenp.prettier-vscode
 
 # ESLint - JavaScript linter
 code --install-extension dbaeumer.vscode-eslint
-```
+```bash
 
 Or in VS Code:
 1. Open Command Palette (Ctrl+Shift+P)

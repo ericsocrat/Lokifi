@@ -86,7 +86,7 @@ This PR tests the newly implemented CI/CD pipeline from Phase 1.5.8. It verifies
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 ### Security Scan Comment:
 ```markdown
@@ -107,7 +107,7 @@ This PR tests the newly implemented CI/CD pipeline from Phase 1.5.8. It verifies
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ---
 

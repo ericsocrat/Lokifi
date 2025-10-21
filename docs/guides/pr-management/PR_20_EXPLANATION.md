@@ -7,12 +7,12 @@
 ## 📋 **What This PR Page Shows**
 
 ### **At the Top:**
-```
+```sql
 Pull Request #20
 test: verify CI/CD pipeline automation and PR commenting
 
 Open | ericsocrat wants to merge from test-ci-cd into main
-```
+```sql
 
 This is your test PR that will trigger all the CI/CD automation!
 
@@ -25,26 +25,26 @@ This is your test PR that will trigger all the CI/CD automation!
 You should see something like this:
 
 **While Running (Yellow):**
-```
+```bash
 ● Some checks haven't completed yet
   ● Test & Coverage     — In progress...
   ● Security Scan       — In progress...
   ● Quality Gate        — Queued...
-```
+```bash
 
 **When Complete (Green):**
-```
+```bash
 ✓ All checks have passed
   ✓ Test & Coverage     — 2m 15s
   ✓ Security Scan       — 1m 30s
   ✓ Quality Gate        — 10s
-```
+```bash
 
 **If Failed (Red):**
-```
+```bash
 ✕ Some checks were not successful
   ✕ Test & Coverage     — Failed
-```
+```bash
 
 ---
 
@@ -70,7 +70,7 @@ You should see something like this:
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 #### **Comment 2: Security Scan** 🔒
 ```markdown
@@ -91,13 +91,13 @@ You should see something like this:
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ---
 
 ## ⏱️ **Timeline - What's Happening Right Now**
 
-```
+```bash
 Time    | Event
 --------|----------------------------------------------------------
 Now     | PR #20 created ✅
@@ -121,7 +121,7 @@ Now     | PR #20 created ✅
         |
 +3min   | Status changes to: "All checks have passed" ✅
         | Green "Merge pull request" button appears
-```
+```bash
 
 ---
 
@@ -130,11 +130,11 @@ Now     | PR #20 created ✅
 ### **Look for These Elements:**
 
 #### **A. Check Tabs at Top:**
-```
+```json
 [Conversation] [Commits] [Checks] [Files changed]
                            ↑
                     Click here to see detailed job logs!
-```
+```json
 
 #### **B. Status Badge:**
 Look for one of these near the top:

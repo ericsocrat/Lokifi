@@ -12,11 +12,11 @@ You're seeing **16 failing checks** - but most of these are **OLD workflows** th
 
 These are the ones WE just created:
 
-```
+```bash
 Test & Quality Pipeline / 🧪 Test & Coverage (pull_request) ❌ Failing after 3s
 Test & Quality Pipeline / 🔒 Security Scan (pull_request) ❌ Failing after 4s
 Test & Quality Pipeline / 🎯 Quality Gate (pull_request) ❌ Failing after 2s
-```
+```bash
 
 **Status:** Failing after only 3-4 seconds (too fast - something wrong with setup)
 
@@ -26,7 +26,7 @@ Test & Quality Pipeline / 🎯 Quality Gate (pull_request) ❌ Failing after 2s
 
 These already existed before we started Phase 1.5.8:
 
-```
+```bash
 1. API Contract Tests / api-contracts
 2. CI/CD Pipeline / Backend Tests
 3. CI/CD Pipeline / Test (Feature Flags OFF)
@@ -40,7 +40,7 @@ These already existed before we started Phase 1.5.8:
 11. Lokifi Trading Platform CI/CD / Security Scan
 12. Security Tests / dependency-review
 13. Security Tests / security-tests
-```
+```bash
 
 **Status:** All failing (these were probably already broken)
 
@@ -50,11 +50,11 @@ These already existed before we started Phase 1.5.8:
 
 ### **Our 3 New Checks:**
 
-```
+```bash
 ✓ Test & Quality Pipeline / 🧪 Test & Coverage
 ✓ Test & Quality Pipeline / 🔒 Security Scan
 ✓ Test & Quality Pipeline / 🎯 Quality Gate
-```
+```bash
 
 These are failing because they're running from `apps/frontend` directory but the workflow needs to be adjusted.
 
@@ -129,14 +129,14 @@ We can disable all those old failing workflows so you only see our new ones.
 
 ## 📝 **Current Status Summary**
 
-```
+```bash
 YOUR REPO HAS:
 ├─ 13 old workflows (already broken - ignore these)
 └─ 3 new workflows (Phase 1.5.8 - need fixing)
     ├─ 🧪 Test & Coverage (failing - setup issue)
     ├─ 🔒 Security Scan (failing - setup issue)
     └─ 🎯 Quality Gate (failing - because tests failed)
-```
+```bash
 
 **The good news:** Only 3 workflows to fix (ours!)
 **The challenge:** Need to adjust workflow paths
@@ -157,7 +157,7 @@ working-directory: ./apps/frontend
 
 # Or maybe:
 working-directory: frontend
-```
+```yaml
 
 ### **Change 2: Check if frontend exists**
 Maybe `apps/frontend` doesn't have `package.json` or tests?
@@ -169,7 +169,7 @@ npm run test:coverage
 
 # Should be:
 npm test
-```
+```yaml
 
 ---
 
@@ -177,9 +177,9 @@ npm test
 
 **Please click on this failing check and share the error:**
 
-```
+```bash
 Test & Quality Pipeline / 🧪 Test & Coverage
-```
+```bash
 
 1. Click "Details"
 2. Look at the logs

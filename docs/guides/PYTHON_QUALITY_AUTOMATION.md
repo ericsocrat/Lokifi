@@ -25,7 +25,7 @@ The **`fix-quality`** command provides comprehensive automated Python code quali
 
 # Skip unsafe fixes like E402
 .\tools\lokifi.ps1 fix-quality -SkipUnsafe
-```
+```powershell
 
 ---
 
@@ -154,13 +154,13 @@ If you only need specific fixes, use these commands:
 
 # Fix datetime only
 .\tools\lokifi.ps1 fix-datetime
-```
+```powershell
 
 ---
 
 ## Example Output
 
-```
+```bash
 🚀 Lokifi Ultimate Manager - 🔧 Python Quality Auto-Fix - Phase 3 & 4
 ══════════════════════════════════════════════════════════════════
 
@@ -213,7 +213,7 @@ Continue? (y/n): y
 
 📊 Final violation count...
    302 errors remaining
-```
+```bash
 
 ---
 
@@ -222,13 +222,13 @@ Continue? (y/n): y
 ### 1️⃣ **Initial Scan** (Dry Run)
 ```powershell
 .\tools\lokifi.ps1 fix-quality -DryRun
-```
+```powershell
 Review what would be fixed without making changes.
 
 ### 2️⃣ **Apply Safe Fixes**
 ```powershell
 .\tools\lokifi.ps1 fix-quality -SkipUnsafe
-```
+```powershell
 Apply only safe auto-fixes (skip E402).
 
 ### 3️⃣ **Manual Review**
@@ -237,14 +237,14 @@ Review the reported syntax errors and bare-except statements, fix them manually.
 ### 4️⃣ **Apply Unsafe Fixes** (if needed)
 ```powershell
 .\tools\lokifi.ps1 fix-quality -Force
-```
+```powershell
 Apply all fixes including E402 after reviewing.
 
 ### 5️⃣ **Verify**
 ```powershell
 cd apps\backend
 .\venv\Scripts\python.exe -m ruff check app
-```
+```powershell
 Confirm all fixable errors are resolved.
 
 ---
@@ -285,7 +285,7 @@ git diff
 # 5. Commit
 git add -A
 git commit -m "chore: apply automated quality fixes"
-```
+```powershell
 
 ---
 
@@ -296,14 +296,14 @@ git commit -m "chore: apply automated quality fixes"
 ```powershell
 cd apps\backend
 .\venv\Scripts\pip.exe install ruff
-```
+```powershell
 
 ### Issue: "Backend directory not found"
 **Solution**: Run from repository root:
 ```powershell
 cd C:\path\to\lokifi
 .\tools\lokifi.ps1 fix-quality
-```
+```powershell
 
 ### Issue: "Too many errors reported"
 **Solution**: Fix in phases:

@@ -18,9 +18,9 @@ Since the GitHub CLI (`gh`) is not installed, you'll need to **create the PR man
 ### Step 1: Open the PR Creation Page
 
 **Option A: Click this link (if Simple Browser is still open):**
-```
+```yaml
 https://github.com/ericsocrat/Lokifi/pull/new/test-ci-cd
-```
+```yaml
 
 **Option B: Navigate manually:**
 1. Go to: https://github.com/ericsocrat/Lokifi
@@ -32,9 +32,9 @@ https://github.com/ericsocrat/Lokifi/pull/new/test-ci-cd
 ### Step 2: Fill in PR Details
 
 **Title (copy this):**
-```
+```yaml
 test: verify CI/CD pipeline automation and PR commenting
-```
+```yaml
 
 **Description (copy this):**
 ```markdown
@@ -76,7 +76,7 @@ All checks should pass in ~3 minutes.
 💰 **ROI:** 65,487% ($24,570/year savings)
 
 Part of Phase 1.5.8: CI/CD Integration
-```
+```markdown
 
 ---
 
@@ -114,11 +114,11 @@ Part of Phase 1.5.8: CI/CD Integration
 
 ### In the Checks Section:
 You should see 3 checks running:
-```
+```bash
 ✓ Test & Coverage
 ✓ Security Scan
 ✓ Quality Gate
-```
+```bash
 
 ### In the Comments Section:
 You should see 2 automated comments from "github-actions[bot]":
@@ -141,7 +141,7 @@ You should see 2 automated comments from "github-actions[bot]":
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 **Comment 2: Security Results**
 ```markdown
@@ -162,7 +162,7 @@ You should see 2 automated comments from "github-actions[bot]":
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ---
 
@@ -249,14 +249,14 @@ Then I'll help you:
 ## 📝 Quick Copy-Paste Summary
 
 **PR URL:**
-```
+```yaml
 https://github.com/ericsocrat/Lokifi/pull/new/test-ci-cd
-```
+```yaml
 
 **PR Title:**
-```
+```yaml
 test: verify CI/CD pipeline automation and PR commenting
-```
+```yaml
 
 **What to expect:**
 - 2 automated comments within 3 minutes

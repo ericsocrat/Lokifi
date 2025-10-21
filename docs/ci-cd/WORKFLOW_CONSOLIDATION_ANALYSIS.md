@@ -26,7 +26,7 @@ Working directory: frontend (wrong path)
 Node version: 20 (outdated, should be 22)
 Uses: npm ci (was failing)
 Tests: npm run test:ci
-```
+```yaml
 **Issue:** Same as `test-and-quality.yml` but worse configuration  
 **Recommendation:** **DELETE** - fully covered by `test-and-quality.yml`
 
@@ -35,7 +35,7 @@ Tests: npm run test:ci
 Working directory: backend
 Python version: 3.11
 Coverage: Linting + tests
-```
+```yaml
 **Issue:** Good workflow but could be integrated  
 **Recommendation:** **KEEP SEPARATE** or integrate into main workflow
 
@@ -44,44 +44,44 @@ Coverage: Linting + tests
 Uses: Docker Buildx
 Tests: Full integration with backend + frontend
 Node: 20 (outdated)
-```
+```yaml
 **Issue:** Complex setup, currently failing  
 **Recommendation:** **FIX OR DISABLE** - valuable but needs work
 
 #### 4. **ci-cd.yml** - DUPLICATE ❌
 ```yaml
 Similar to frontend-ci.yml
-```
+```yaml
 **Recommendation:** **DELETE** - duplicate of frontend-ci.yml
 
 #### 5. **ci.yml** - DUPLICATE ❌
 ```yaml
 Another frontend CI variant
-```
+```yaml
 **Recommendation:** **DELETE** - duplicate
 
 #### 6. **accessibility.yml** - SPECIALIZED ✅
 ```yaml
 Tests: Accessibility compliance
-```
+```yaml
 **Recommendation:** **KEEP** - specialized testing, not covered elsewhere
 
 #### 7. **api-contracts.yml** - SPECIALIZED ✅
 ```yaml
 Tests: API contract validation
-```
+```yaml
 **Recommendation:** **KEEP** - valuable for API stability
 
 #### 8. **security-tests.yml** - REDUNDANT ❌
 ```yaml
 Security scanning
-```
+```yaml
 **Recommendation:** **DELETE** - covered by `test-and-quality.yml`
 
 #### 9. **visual-regression.yml** - SPECIALIZED ✅
 ```yaml
 Tests: Visual regression testing
-```
+```yaml
 **Recommendation:** **KEEP** - valuable visual testing
 
 ---
@@ -171,7 +171,7 @@ jobs:
   deploy:
     - Documentation
     - GitHub Pages
-```
+```yaml
 
 **Benefits:**
 - ✅ One workflow to rule them all
@@ -239,7 +239,7 @@ You're working solo on this project, so keep it simple:
 git checkout -b workflow-backup
 git push origin workflow-backup
 git checkout main
-```
+```bash
 
 ### Step 2: Delete Redundant Workflows
 ```bash
@@ -255,7 +255,7 @@ git rm .github/workflows/security-tests.yml
 git rm .github/workflows/accessibility.yml
 git rm .github/workflows/api-contracts.yml
 git rm .github/workflows/visual-regression.yml
-```
+```bash
 
 ### Step 3: Enhance backend-ci.yml (Optional)
 Update Node version from 20 to 22 if backend uses Node
@@ -283,27 +283,27 @@ This reduces complexity and maintenance burden while
 maintaining all necessary coverage."
 
 git push
-```
+```bash
 
 ---
 
 ## 🎯 Expected Results
 
 ### Before Consolidation:
-```
+```bash
 11 workflows
 ├── 6 failing ❌
 ├── 5 passing ✅
 └── Confusing status page
-```
+```bash
 
 ### After Consolidation:
-```
+```bash
 2-3 workflows
 ├── 0 failing ❌
 ├── 2-3 passing ✅
 └── Clean, clear status
-```
+```bash
 
 ---
 

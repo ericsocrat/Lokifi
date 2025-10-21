@@ -28,17 +28,17 @@ Your repository follows security best practices:
 ```bash
 git ls-files | grep ".env"
 Result: No .env files found in git history
-```
+```bash
 
 **Your `.gitignore` properly blocks:**
-```
+```env
 .env
 .env.*
 .env.local
 backend/.env
 *.pem
 *.key
-```
+```env
 
 **Verdict:** ✅ Environment files are NOT committed to git
 
@@ -55,9 +55,9 @@ backend/.env
 - Passwords in code
 
 **Result:**
-```
+```env
 ✅ No hardcoded secrets found in tracked files
-```
+```env
 
 **Verdict:** ✅ No sensitive credentials in code
 
@@ -69,7 +69,7 @@ backend/.env
 **Your workflow uses GitHub Secrets properly:**
 ```yaml
 github_token: ${{ secrets.GITHUB_TOKEN }}
-```
+```yaml
 
 **How GitHub Secrets Work:**
 - 🔒 Encrypted at rest
@@ -99,11 +99,11 @@ github_token: ${{ secrets.GITHUB_TOKEN }}
 - Database files ignored by git
 
 **Your setup:**
-```
+```env
 backend/data/*     # Blocked by .gitignore
 backend/.env       # Blocked by .gitignore
 lokifi.db          # Local SQLite (should be in .gitignore)
-```
+```env
 
 **Verdict:** ✅ Database credentials not exposed
 
@@ -115,7 +115,7 @@ lokifi.db          # Local SQLite (should be in .gitignore)
 **You already have security tools:**
 ```powershell
 .\tools\lokifi.ps1 find-secrets  # Scan for hardcoded secrets
-```
+```powershell
 
 **Security patterns monitored:**
 - AWS Secret Keys
@@ -168,11 +168,11 @@ lokifi.db          # Local SQLite (should be in .gitignore)
 - Adding a LICENSE file protects you further
 
 **Recommended:** Add an MIT License or similar:
-```
+```bash
 Copyright (c) 2025 ericsocrat
 
 Permission is hereby granted, free of charge, to any person obtaining a copy...
-```
+```bash
 
 ### 3. 🌍 **Industry Standard**
 **Most successful projects are open source:**
@@ -250,7 +250,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy...
 // ✅ GOOD - Using environment variables
 const apiKey = process.env.POLYGON_API_KEY;
 const dbUrl = process.env.DATABASE_URL;
-```
+```typescript
 
 **Example of BAD practice (you're NOT doing this):**
 
@@ -258,7 +258,7 @@ const dbUrl = process.env.DATABASE_URL;
 // ❌ BAD - Hardcoded secrets (you don't have this!)
 const apiKey = "abc123xyz789";  // DON'T DO THIS
 const dbUrl = "mongodb://user:pass@host";  // DON'T DO THIS
-```
+```typescript
 
 **Your environment files (.env) are:**
 - ✅ Listed in `.gitignore`
@@ -284,7 +284,7 @@ const dbUrl = "mongodb://user:pass@host";  // DON'T DO THIS
 ```bash
 # Create LICENSE file with MIT or Apache 2.0
 # This protects your copyright while allowing others to use code
-```
+```bash
 
 **Quick command:**
 ```powershell
@@ -310,7 +310,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.' | Out-File -FilePath LICENSE -Encoding UTF8
-```
+```powershell
 
 #### 2. Update README.md (Optional)
 Add sections:
@@ -322,7 +322,7 @@ Add sections:
 #### 3. Create .env.example (Template)
 ```bash
 # Create a template showing what env vars are needed (without actual values)
-```
+```bash
 
 **Example `.env.example`:**
 ```env
@@ -339,7 +339,7 @@ DATABASE_URL=your_database_url_here
 
 # Next.js
 NEXT_PUBLIC_API_URL=http://localhost:8000
-```
+```env
 
 **This helps others set up the project WITHOUT exposing your keys!**
 
@@ -347,7 +347,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 ```powershell
 # Search entire git history for potential secrets
 git log -p | Select-String -Pattern "AKIA|sk_live|password.*=.*['\"]"
-```
+```powershell
 
 ---
 
@@ -456,7 +456,7 @@ git log -p | Select-String -Pattern "AKIA|sk_live|password.*=.*['\"]"
 **A:** Check git history:
 ```powershell
 git log --all --full-history --source --pretty=format:"%h %s" -- .env
-```
+```powershell
 
 If you find any, use `git filter-branch` or BFG Repo-Cleaner to remove it.
 

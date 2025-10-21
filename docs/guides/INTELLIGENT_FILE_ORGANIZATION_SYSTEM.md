@@ -38,7 +38,7 @@ New-OrganizedDocument "TYPESCRIPT_FIX_REPORT.md" -Content "# Fix Report..."
 # Get optimal location for a file
 $location = Get-OptimalDocumentLocation "API_DOCUMENTATION.md"
 # → Returns: "docs\api\"
-```
+```powershell
 
 ### For Manual Organization
 
@@ -48,7 +48,7 @@ $location = Get-OptimalDocumentLocation "API_DOCUMENTATION.md"
 
 # Check organization status
 .\lokifi-manager-enhanced.ps1 docs
-```
+```powershell
 
 ---
 
@@ -71,7 +71,7 @@ function New-OrganizedDocument {
         [switch]$Force          # Overwrite if exists
     )
 }
-```
+```powershell
 
 **Process:**
 1. **Pattern Analysis** - Matches filename against organization rules
@@ -117,7 +117,7 @@ New-OrganizedDocument "API_ENDPOINTS.md" -Content @"
 # Output:
 #    📁 Created directory: docs\api
 #    ✅ Created: docs\api\API_ENDPOINTS.md
-```
+```powershell
 
 **Example 2: Create Fix Report**
 ```powershell
@@ -126,7 +126,7 @@ New-OrganizedDocument "TYPESCRIPT_ERROR_FIX.md" -Content $fixContent
 
 # Output:
 #    ✅ Created: docs\fixes\TYPESCRIPT_ERROR_FIX.md
-```
+```powershell
 
 **Example 3: Handle Existing Files**
 ```powershell
@@ -142,7 +142,7 @@ New-OrganizedDocument "EXISTING_FILE.md" -Content "New content..."
 # With -Force
 New-OrganizedDocument "EXISTING_FILE.md" -Content "New content..." -Force
 # Output: ✅ Created: docs\reports\EXISTING_FILE.md
-```
+```powershell
 
 ---
 
@@ -169,7 +169,7 @@ if (Test-Path $targetPath) {
         # Files are different - consolidation needed
     }
 }
-```
+```powershell
 
 **Step 2: Metadata Comparison**
 ```powershell
@@ -179,7 +179,7 @@ $targetFile = Get-Item $targetPath
 # Compare:
 # - LastWriteTime (which is newer?)
 # - Length (which is larger/more complete?)
-```
+```powershell
 
 **Step 3: Backup Creation**
 ```powershell
@@ -189,7 +189,7 @@ $backupDir = "consolidation_backup_$timestamp"
 # Backup BOTH versions before any changes
 Copy-Item $targetPath → "$backupDir/$fileName.existing"
 Copy-Item $rootPath → "$backupDir/$fileName.root"
-```
+```powershell
 
 **Step 4: Intelligent Merging**
 
@@ -213,12 +213,12 @@ $uniqueInTarget = $targetLines | Where-Object { $_ -notin $rootLines }
 if ($uniqueInRoot.Count -lt 20) {
     $mergedContent = $baseContent + "`n`n---`n## MERGED CONTENT`n" + $uniqueLines
 }
-```
+```powershell
 
 ### Consolidation Scenarios
 
 **Scenario 1: Identical Files**
-```
+```yaml
 Input:
   - Root: REPORT.md (1000 bytes, 10/8/2025 3:00 PM)
   - Existing: docs/reports/REPORT.md (1000 bytes, 10/8/2025 2:00 PM)
@@ -230,10 +230,10 @@ Action:
 
 Result:
   - One clean copy in docs/reports/
-```
+```yaml
 
 **Scenario 2: Root Newer & Larger**
-```
+```yaml
 Input:
   - Root: REPORT.md (2500 bytes, 10/8/2025 4:00 PM)
   - Existing: docs/reports/REPORT.md (2000 bytes, 10/8/2025 2:00 PM)
@@ -251,10 +251,10 @@ Result:
   - docs/reports/REPORT.md = Root version (latest)
   - consolidation_backup_*/REPORT.md.existing = Old version (safe)
   - consolidation_backup_*/REPORT.md.root = Root copy (safe)
-```
+```yaml
 
 **Scenario 3: Root Newer but Smaller (Suspicious)**
-```
+```yaml
 Input:
   - Root: REPORT.md (1000 bytes, 10/8/2025 4:00 PM)
   - Existing: docs/reports/REPORT.md (2500 bytes, 10/8/2025 2:00 PM)
@@ -274,10 +274,10 @@ Result:
   - consolidation_backup_*/REPORT.md.existing = Existing backup
   - consolidation_backup_*/REPORT.md.root = Root backup
   - **Action Required**: Manual review of backups
-```
+```yaml
 
 **Scenario 4: Auto-Merge with Unique Content**
-```
+```yaml
 Input:
   - Root: REPORT.md (2000 bytes, 10/8/2025 4:00 PM)
     Content: Sections A, B, C, D (new)
@@ -299,12 +299,12 @@ Result:
     * --- MERGED CONTENT FROM PREVIOUS VERSION ---
     * Section E (from existing)
   - Full backup created
-```
+```yaml
 
 ### Output Examples
 
 **Example 1: Simple Consolidation**
-```
+```markdown
 📋 Scanning root directory for documents...
    📊 Found 3 documents to process
 
@@ -322,7 +322,7 @@ Result:
 📊 Organization completed
    ✅ Files moved: 1
    🔄 Files consolidated: 1
-```
+```markdown
 
 ---
 
@@ -342,7 +342,7 @@ Result:
 
 ### Backup Structure
 
-```
+```bash
 docs/
   reports/
     TYPESCRIPT_REPORT.md  ← Final merged/consolidated version
@@ -352,7 +352,7 @@ docs/
     consolidation_backup_20251008_143000/
       API_DOCS.md.existing
       API_DOCS.md.root
-```
+```bash
 
 ### Manual Review Process
 
@@ -370,7 +370,7 @@ code --diff REPORT.md.existing REPORT.md.root
 
 # 4. Clean up old backups (after verification)
 Remove-Item consolidation_backup_* -Recurse -Confirm
-```
+```powershell
 
 ---
 
@@ -410,7 +410,7 @@ All errors resolved. Zero breaking changes.
 New-OrganizedDocument "TYPESCRIPT_ERROR_RESOLUTION_REPORT.md" -Content $reportContent
 
 # Result: File created in docs/reports/ immediately
-```
+```powershell
 
 ### Example 2: Developer Creating API Documentation
 
@@ -436,7 +436,7 @@ New-OrganizedDocument "API_MARKET_DATA.md" -Content @"
 "@
 
 # Both created in docs/api/ automatically
-```
+```powershell
 
 ### Example 3: Batch Organization with Consolidation
 
@@ -459,7 +459,7 @@ New-OrganizedDocument "API_MARKET_DATA.md" -Content @"
 #   📊 Organization completed
 #       ✅ Files moved: 2
 #       🔄 Files consolidated: 1
-```
+```powershell
 
 ### Example 4: Creating Files in Scripts
 
@@ -484,7 +484,7 @@ function Write-AuditReport {
     
     Write-Host "Audit report created and organized automatically"
 }
-```
+```powershell
 
 ---
 
@@ -497,7 +497,7 @@ function Write-AuditReport {
 **Syntax:**
 ```powershell
 Get-OptimalDocumentLocation [-FileName] <string>
-```
+```powershell
 
 **Parameters:**
 - `FileName` (String, Mandatory): The name of the file
@@ -516,7 +516,7 @@ Get-OptimalDocumentLocation "README.md"
 
 Get-OptimalDocumentLocation "API_ENDPOINTS.md"
 # Returns: "docs\api\"
-```
+```powershell
 
 ---
 
@@ -527,7 +527,7 @@ Get-OptimalDocumentLocation "API_ENDPOINTS.md"
 **Syntax:**
 ```powershell
 New-OrganizedDocument [-FileName] <string> [[-Content] <string>] [-Force]
-```
+```powershell
 
 **Parameters:**
 - `FileName` (String, Mandatory): Name of the file to create
@@ -548,13 +548,13 @@ New-OrganizedDocument "API_DOCS.md" -Content "# API Documentation"
 
 # Overwrite existing
 New-OrganizedDocument "EXISTING.md" -Content "New content" -Force
-```
+```powershell
 
 **Output:**
-```
+```markdown
 📁 Created directory: docs\guides  (if needed)
 ✅ Created: docs\guides\NEW_GUIDE.md
-```
+```markdown
 
 ---
 
@@ -569,7 +569,7 @@ New-OrganizedDocument "EXISTING.md" -Content "New content" -Force
 
 # Direct function call
 Invoke-UltimateDocumentOrganization [-OrgMode <string>]
-```
+```powershell
 
 **Parameters:**
 - `OrgMode` / `Component`: 
@@ -585,7 +585,7 @@ Invoke-UltimateDocumentOrganization [-OrgMode <string>]
 
 # Organize files
 .\lokifi-manager-enhanced.ps1 docs -Component organize
-```
+```powershell
 
 ---
 
@@ -675,7 +675,7 @@ Get-OptimalDocumentLocation "MY_FILE.md"
 
 # If returns "", rename to match pattern
 Rename-Item "MY_FILE.md" "MY_FILE_REPORT.md"
-```
+```powershell
 
 ### Issue: Consolidation kept wrong version
 
@@ -689,7 +689,7 @@ code --diff "backup_dir/FILE.md.existing" "backup_dir/FILE.md.root"
 
 # Manually restore if needed
 Copy-Item "backup_dir/FILE.md.root" "docs/reports/FILE.md" -Force
-```
+```powershell
 
 ### Issue: Too many consolidation backups
 
@@ -702,7 +702,7 @@ Get-ChildItem docs -Recurse -Filter "consolidation_backup_*" |
 
 # Remove after review
 # ... | Remove-Item -Recurse -Confirm
-```
+```powershell
 
 ---
 
@@ -726,7 +726,7 @@ Get-ChildItem docs -Recurse -Filter "consolidation_backup_*" |
 #
 # 💡 Recommendations
 #    ✅ Root directory well organized
-```
+```powershell
 
 ### Consolidation Metrics
 
@@ -738,7 +738,7 @@ $lastRun = Get-Content docs/.organization_log.txt | Select-String "consolidated"
 # Backup directories created
 $backups = Get-ChildItem docs -Recurse -Filter "consolidation_backup_*"
 Write-Host "Total consolidation events: $($backups.Count)"
-```
+```powershell
 
 ---
 
@@ -758,7 +758,7 @@ $organizationRules = @{
     
     # ... existing patterns ...
 }
-```
+```powershell
 
 ### Integration with CI/CD
 
@@ -786,7 +786,7 @@ jobs:
           git add -A
           git commit -m "chore: Auto-organize documentation" || exit 0
           git push
-```
+```yaml
 
 ---
 

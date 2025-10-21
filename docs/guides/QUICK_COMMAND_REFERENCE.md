@@ -24,7 +24,7 @@
 
 # System health check
 .\lokifi-manager-enhanced.ps1 health
-```
+```powershell
 
 ---
 
@@ -51,7 +51,7 @@
 
 # Upgrade dependencies
 .\lokifi-manager-enhanced.ps1 upgrade
-```
+```powershell
 
 ---
 
@@ -75,7 +75,7 @@
 
 # Load test with report
 .\lokifi-manager-enhanced.ps1 loadtest -Duration 120 -Report
-```
+```powershell
 
 ---
 
@@ -102,7 +102,7 @@
 
 # Clean development files
 .\lokifi-manager-enhanced.ps1 clean
-```
+```powershell
 
 ---
 
@@ -129,7 +129,7 @@
 
 # Restore specific backup
 .\lokifi-manager-enhanced.ps1 restore -BackupName "pre-deploy"
-```
+```powershell
 
 ---
 
@@ -154,7 +154,7 @@
 
 # Search logs
 .\lokifi-manager-enhanced.ps1 logs -Filter "backend"
-```
+```powershell
 
 ---
 
@@ -175,7 +175,7 @@
 
 # View migration history
 .\lokifi-manager-enhanced.ps1 migrate -Component history
-```
+```powershell
 
 ---
 
@@ -202,7 +202,7 @@
 
 # View diff
 .\lokifi-manager-enhanced.ps1 git -Component diff
-```
+```powershell
 
 ---
 
@@ -226,7 +226,7 @@
 
 # Validate environment
 .\lokifi-manager-enhanced.ps1 env -Component validate
-```
+```powershell
 
 ---
 
@@ -238,7 +238,7 @@
 
 # Full security audit
 .\lokifi-manager-enhanced.ps1 security -Force
-```
+```powershell
 
 ---
 
@@ -253,7 +253,7 @@
 
 # Organize repository files
 .\lokifi-manager-enhanced.ps1 organize
-```
+```powershell
 
 ---
 
@@ -264,14 +264,14 @@
 .\lokifi-manager-enhanced.ps1 status              # Check what's running
 .\lokifi-manager-enhanced.ps1 servers             # Start all servers
 .\lokifi-manager-enhanced.ps1 monitor -Duration 30  # Quick health check
-```
+```powershell
 
 ### 💼 **Development Workflow**
 ```powershell
 .\lokifi-manager-enhanced.ps1 dev -Component both  # Start dev servers
 .\lokifi-manager-enhanced.ps1 validate -Quick      # Quick validation
 .\lokifi-manager-enhanced.ps1 test                 # Run tests
-```
+```powershell
 
 ### 🚀 **Pre-Deployment**
 ```powershell
@@ -279,14 +279,14 @@
 .\lokifi-manager-enhanced.ps1 security -Force                    # Security audit
 .\lokifi-manager-enhanced.ps1 loadtest -Duration 120             # Load test
 .\lokifi-manager-enhanced.ps1 migrate -Component status          # Check migrations
-```
+```powershell
 
 ### 🔧 **Database Work**
 ```powershell
 .\lokifi-manager-enhanced.ps1 backup -IncludeDatabase  # Backup database
 .\lokifi-manager-enhanced.ps1 migrate -Component create # Create migration
 .\lokifi-manager-enhanced.ps1 migrate -Component up     # Apply migration
-```
+```powershell
 
 ### 📊 **Troubleshooting**
 ```powershell
@@ -294,7 +294,7 @@
 .\lokifi-manager-enhanced.ps1 logs -Level ERROR    # View errors
 .\lokifi-manager-enhanced.ps1 monitor              # Monitor performance
 .\lokifi-manager-enhanced.ps1 health               # Full health check
-```
+```powershell
 
 ### 🎨 **Code Quality**
 ```powershell
@@ -302,7 +302,7 @@
 .\lokifi-manager-enhanced.ps1 format               # Format code
 .\lokifi-manager-enhanced.ps1 validate             # Pre-commit checks
 .\lokifi-manager-enhanced.ps1 fix                  # Fix issues
-```
+```powershell
 
 ### 🌙 **End of Day**
 ```powershell
@@ -310,7 +310,7 @@
 .\lokifi-manager-enhanced.ps1 git -Component push    # Push changes
 .\lokifi-manager-enhanced.ps1 backup                 # Create backup
 .\lokifi-manager-enhanced.ps1 stop                   # Stop all services
-```
+```powershell
 
 ---
 
@@ -331,7 +331,7 @@
 
 # Quiet mode - minimal output
 .\lokifi-manager-enhanced.ps1 clean -Mode quiet
-```
+```powershell
 
 ---
 
@@ -346,7 +346,7 @@ Get-Help .\lokifi-manager-enhanced.ps1 -Detailed
 
 # Show examples
 Get-Help .\lokifi-manager-enhanced.ps1 -Examples
-```
+```powershell
 
 ---
 

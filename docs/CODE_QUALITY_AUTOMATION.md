@@ -32,7 +32,7 @@ This document summarizes the code quality automation improvements implemented fo
 
 # For JSON, Markdown, YAML files
 - Prettier formatting
-```
+```bash
 
 **Benefits:**
 - ✅ Catches linting errors before they enter the codebase
@@ -60,7 +60,7 @@ This document summarizes the code quality automation improvements implemented fo
   "arrowParens": "always",
   "endOfLine": "lf"
 }
-```
+```json
 
 **Benefits:**
 - ✅ Consistent code formatting across the team
@@ -158,7 +158,7 @@ This document summarizes the code quality automation improvements implemented fo
     "lint-staged": "^16.2.3"
   }
 }
-```
+```json
 
 ---
 
@@ -170,7 +170,7 @@ This document summarizes the code quality automation improvements implemented fo
 ```bash
 cd frontend
 npm install  # Automatically sets up git hooks via "prepare" script
-```
+```bash
 
 **Daily Workflow:**
 ```bash
@@ -183,7 +183,7 @@ git commit -m "feat: add new feature"
 # - Formats code
 # If everything passes, commit succeeds
 # If there are unfixable issues, commit is blocked
-```
+```bash
 
 **Manual Commands:**
 ```bash
@@ -198,14 +198,14 @@ npm run typecheck
 
 # Run all checks
 npm run test:all
-```
+```bash
 
 ### Skipping Hooks (Emergency Only)
 
 ```bash
 # Skip pre-commit hook (use sparingly!)
 git commit --no-verify -m "hotfix: critical security patch"
-```
+```bash
 
 ⚠️ **Note:** Only skip hooks for emergency hotfixes. Always fix linting issues afterward.
 
@@ -244,7 +244,7 @@ git commit --no-verify -m "hotfix: critical security patch"
 cd frontend
 rm -rf .husky
 npx husky init
-```
+```bash
 
 ### Prettier Conflicts with ESLint
 
@@ -252,7 +252,7 @@ npx husky init
 # Our configuration is compatible, but if issues arise:
 npm install --save-dev eslint-config-prettier
 # Then add "prettier" to ESLint extends
-```
+```bash
 
 ### Dependency Update PRs
 

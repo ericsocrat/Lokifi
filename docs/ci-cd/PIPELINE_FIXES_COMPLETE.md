@@ -11,10 +11,10 @@
 
 ### Issue 1: Import Path Error ❌
 **Error:**
-```
+```yaml
 Error: Failed to resolve import "@/lib/globalHotkeys" from "src/App.tsx".
 Does the file exist?
-```
+```yaml
 
 **Root Cause:**
 The file was located at `src/lib/utils/globalHotkeys.ts`, but App.tsx was importing from `@/lib/globalHotkeys`.
@@ -26,16 +26,16 @@ import { useGlobalHotkeys } from '@/lib/globalHotkeys'
 
 // After (correct)
 import { useGlobalHotkeys } from '@/lib/utils/globalHotkeys'
-```
+```tsx
 
 ---
 
 ### Issue 2: Node.js Version Incompatibility ❌
 **Error:**
-```
+```bash
 Frontend tests failed!
 Exit code: 1
-```
+```bash
 
 **Root Cause:**
 Node.js v22 is too new and has compatibility issues with many frontend dependencies and test frameworks.
@@ -49,7 +49,7 @@ env:
 # After (LTS version)
 env:
   NODE_VERSION: "20"
-```
+```yaml
 
 **Why Node 20?**
 - Current LTS (Long Term Support) version
@@ -88,7 +88,7 @@ env:
 ## 📊 Test Results After Fixes
 
 ### Accessibility Tests ✅
-```
+```bash
 ✓ tests/a11y/components.a11y.test.tsx (6 tests)
   ✓ button should not have any accessibility violations
   ✓ form should not have any accessibility violations
@@ -99,15 +99,15 @@ env:
 
 Tests: 6 passed (6)
 Success Rate: 100%
-```
+```bash
 
 ### Quality Gates ✅
-```
+```bash
 ✅ All quality gates passed! Commit allowed.
 ✅ Test Coverage: PASSED (Backend: 84.8%, Frontend: 14.1%)
 ✅ Security Scan: PASSED
 ✅ Performance: PASSED
-```
+```bash
 
 ---
 

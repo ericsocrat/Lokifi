@@ -77,14 +77,14 @@ logger.error('Failed to fetch data', error);
 logger.websocket('Connected', { url });
 logger.api('GET', '/api/users');
 logger.perf('API Response', 234, 'ms');
-```
+```typescript
 
 ### Migration Path
 
 **Step 1:** Import logger in files with console statements
 ```typescript
 import { logger } from '@/src/utils/logger';
-```
+```typescript
 
 **Step 2:** Replace console.log patterns
 ```typescript
@@ -93,7 +93,7 @@ console.log('✅ WebSocket connected');
 
 // After
 logger.websocket('Connected');
-```
+```typescript
 
 **Step 3:** Use appropriate log levels
 ```typescript
@@ -102,7 +102,7 @@ console.log('Some debug info');
 
 // After  
 logger.debug('Some debug info');  // Only shows in development
-```
+```typescript
 
 ---
 
@@ -142,7 +142,7 @@ interface Crypto extends Asset {
   marketCap: number;
   volume24h: number;
 }
-```
+```typescript
 
 #### 2. Use Type Guards
 ```typescript
@@ -158,7 +158,7 @@ function isCrypto(asset: Asset): asset is Crypto {
 if (isStock(asset)) {
   console.log(asset.exchange);  // TypeScript knows this is safe
 }
-```
+```typescript
 
 #### 3. Generic Functions
 ```typescript
@@ -171,7 +171,7 @@ const handleData = (data: any[]) => {
 const handleData = <T extends { value: number }>(data: T[]): number[] => {
   return data.map(item => item.value);
 };
-```
+```typescript
 
 #### 4. Unknown for Error Handling
 ```typescript
@@ -190,7 +190,7 @@ try {
     logger.error('Operation failed', e);
   }
 }
-```
+```typescript
 
 ---
 
@@ -212,7 +212,7 @@ npm run build
 npm run analyze  # If analyzer is configured
 
 # Target: <250KB gzipped main bundle
-```
+```bash
 
 **Optimization Techniques:**
 - Dynamic imports for routes
@@ -233,7 +233,7 @@ import Image from 'next/image';
   loading="lazy"  // Lazy load
   quality={80}    // Optimize quality
 />
-```
+```typescript
 
 #### 3. Database Query Optimization
 ```python
@@ -244,7 +244,7 @@ def upgrade():
     op.create_index('idx_user_email', 'users', ['email'])
     op.create_index('idx_portfolio_user', 'portfolios', ['user_id'])
     op.create_index('idx_asset_symbol', 'assets', ['symbol'])
-```
+```python
 
 ---
 
@@ -268,7 +268,7 @@ cd backend && pip-audit
 # Update dependencies
 npm update
 pip install --upgrade -r requirements.txt
-```
+```bash
 
 #### 2. Security Headers
 ```typescript
@@ -277,14 +277,14 @@ pip install --upgrade -r requirements.txt
 // - Content-Security-Policy
 // - X-Frame-Options
 // - X-Content-Type-Options
-```
+```typescript
 
 #### 3. API Key Rotation
 ```bash
 # Regularly rotate API keys
 # Update .env files
 # Restart services
-```
+```bash
 
 ---
 
@@ -302,7 +302,7 @@ describe('formatCurrency', () => {
     expect(formatCurrency(1234.56, 'USD')).toBe('$1,234.56');
   });
 });
-```
+```typescript
 
 #### 2. Integration Tests
 ```typescript
@@ -313,7 +313,7 @@ describe('Price API', () => {
     expect(response.status).toBe(200);
   });
 });
-```
+```typescript
 
 #### 3. E2E Tests (Future)
 ```typescript
@@ -326,7 +326,7 @@ describe('Portfolio Management', () => {
     // Verify addition
   });
 });
-```
+```typescript
 
 ---
 
@@ -355,7 +355,7 @@ async function calculatePortfolioValue(
 ): Promise<number> {
   // Implementation
 }
-```
+```typescript
 
 #### 2. Architecture Diagrams
 - Update when major changes occur
@@ -384,7 +384,7 @@ async function calculatePortfolioValue(
 .\analyze-typescript-types.ps1
 
 # Review and address findings
-```
+```bash
 
 ### Monthly
 - Update dependencies (`npm update`, `pip update`)
@@ -425,7 +425,7 @@ refactor: Code refactoring
 perf: Performance improvement
 test: Add tests
 chore: Maintenance tasks
-```
+```bash
 
 ---
 
@@ -443,7 +443,7 @@ npm install --save-dev husky lint-staged
     "*.tsx": ["eslint --fix", "prettier --write"]
   }
 }
-```
+```bash
 
 ### CI/CD Pipeline (Future)
 ```yaml
@@ -454,7 +454,7 @@ npm install --save-dev husky lint-staged
 - Integration tests
 - Build verification
 - Security scan
-```
+```yaml
 
 ---
 

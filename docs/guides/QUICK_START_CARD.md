@@ -18,7 +18,7 @@
 
 # Get help
 .\lokifi-manager-enhanced.ps1 help
-```
+```powershell
 
 ---
 
@@ -43,7 +43,7 @@
 
 ```powershell
 .\lokifi-manager-enhanced.ps1 launch
-```
+```powershell
 
 ### 6 Main Categories:
 1. **🚀 Server Management** - Start/stop services
@@ -88,7 +88,7 @@
 
 # 5. Run tests
 .\lokifi-manager-enhanced.ps1 test
-```
+```powershell
 
 ---
 
@@ -106,7 +106,7 @@
 
 # Rollback
 .\lokifi-manager-enhanced.ps1 migrate -Component down
-```
+```powershell
 
 ---
 
@@ -124,7 +124,7 @@
 
 # Restore backup
 .\lokifi-manager-enhanced.ps1 restore
-```
+```powershell
 
 ---
 
@@ -142,7 +142,7 @@
 
 # Watch mode
 .\lokifi-manager-enhanced.ps1 watch
-```
+```powershell
 
 ---
 
@@ -157,7 +157,7 @@
 
 # Validate current
 .\lokifi-manager-enhanced.ps1 env -Component validate
-```
+```powershell
 
 ---
 
@@ -196,7 +196,7 @@
 
 # Run health check
 .\lokifi-manager-enhanced.ps1 analyze
-```
+```powershell
 
 ---
 
@@ -232,7 +232,7 @@ Get-Help .\lokifi-manager-enhanced.ps1 -Detailed
 
 # Examples
 Get-Help .\lokifi-manager-enhanced.ps1 -Examples
-```
+```powershell
 
 ---
 

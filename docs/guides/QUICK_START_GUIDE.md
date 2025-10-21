@@ -26,12 +26,12 @@ Ensure these are running:
 
 # Option 2: Manual Docker command
 docker run -d --name lokifi-redis -p 6379:6379 redis:latest
-```
+```powershell
 
 **Verify Redis:**
 ```powershell
 docker ps | Select-String "lokifi-redis"
-```
+```powershell
 
 ---
 
@@ -45,18 +45,18 @@ cd C:\Users\USER\Desktop\lokifi\backend
 
 # Start server
 python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
+```powershell
 
 **Verify Backend:**
 ```powershell
 # In another terminal
 curl http://localhost:8000/api/v1/health
-```
+```powershell
 
 Expected response:
 ```json
 {"status": "ok"}
-```
+```json
 
 ---
 
@@ -70,10 +70,10 @@ cd C:\Users\USER\Desktop\lokifi\backend
 
 # Run test script
 python test_new_features.py
-```
+```powershell
 
 **Expected Output:**
-```
+```bash
 🚀 LOKIFI API TEST SUITE - Tasks 6, 7, 8
 ============================================================
 Testing against: http://localhost:8000/api/v1
@@ -108,7 +108,7 @@ Testing against: http://localhost:8000/api/v1
 📦 Testing Batch Prices
 ✅ Batch request: 5 prices fetched
    Cache hits: 3, API calls: 2
-```
+```bash
 
 ---
 
@@ -154,7 +154,7 @@ ws.onmessage = (event) => {
   const data = JSON.parse(event.data);
   console.log('📊 Update:', data);
 };
-```
+```javascript
 
 ---
 
@@ -171,7 +171,7 @@ curl "http://localhost:8000/api/v1/prices/AAPL/ohlcv?period=1m"
 
 # Ethereum 1-day history
 curl "http://localhost:8000/api/v1/prices/ETH/history?period=1d"
-```
+```powershell
 
 ### Crypto Discovery
 
@@ -184,7 +184,7 @@ curl "http://localhost:8000/api/v1/prices/crypto/search?q=doge"
 
 # Get symbol mapping
 curl "http://localhost:8000/api/v1/prices/crypto/mapping"
-```
+```powershell
 
 ### Batch Prices
 
@@ -198,7 +198,7 @@ Invoke-RestMethod -Uri "http://localhost:8000/api/v1/prices/batch" `
   -Method POST `
   -Body $body `
   -ContentType "application/json"
-```
+```powershell
 
 ---
 
@@ -223,7 +223,7 @@ Navigate to the **prices** tag to see all new endpoints.
 cd backend
 .\venv\Scripts\Activate.ps1
 pip install httpx
-```
+```powershell
 
 ### Redis connection errors
 
@@ -239,7 +239,7 @@ docker start lokifi-redis
 
 # Or create new container
 docker run -d --name lokifi-redis -p 6379:6379 redis:latest
-```
+```powershell
 
 ### WebSocket won't connect
 
@@ -257,7 +257,7 @@ netstat -an | Select-String "8000"
 
 # Should show:
 # TCP    0.0.0.0:8000    0.0.0.0:0    LISTENING
-```
+```powershell
 
 ### Historical data returns 404
 
@@ -276,7 +276,7 @@ netstat -an | Select-String "8000"
 # Check API keys in .env
 cd backend
 cat .env | Select-String "FINNHUB_KEY|COINGECKO_KEY"
-```
+```powershell
 
 ### Crypto discovery returns empty
 
@@ -303,7 +303,7 @@ To force refresh:
 ```powershell
 # Add ?force_refresh=true to any endpoint
 curl "http://localhost:8000/api/v1/prices/BTC/history?period=1w&force_refresh=true"
-```
+```powershell
 
 ### WebSocket Updates
 - Default interval: **30 seconds**

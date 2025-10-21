@@ -100,7 +100,7 @@ services:
 volumes:
   redis-data:
   postgres-data:
-```
+```yaml
 
 #### **Option B: Terraform + DigitalOcean (Future - Scale)**
 **When**: 10K+ users, need multi-region, auto-scaling  
@@ -149,7 +149,7 @@ resource "digitalocean_app" "lokifi" {
     }
   }
 }
-```
+```hcl
 
 ---
 
@@ -243,7 +243,7 @@ jobs:
       
       - name: Upload coverage
         uses: codecov/codecov-action@v3
-```
+```yaml
 
 #### **Workflow: Deploy to Production**
 ```yaml
@@ -332,7 +332,7 @@ jobs:
           status: ${{ job.status }}
           text: 'Deployment to production ${{ job.status }}'
           webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-```
+```yaml
 
 #### **Workflow: Security Scan**
 ```yaml
@@ -370,7 +370,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
-```
+```yaml
 
 ---
 
@@ -493,7 +493,7 @@ function Get-DeploymentStatus {
         docker stats --no-stream
 "@
 }
-```
+```powershell
 
 ---
 
@@ -507,7 +507,7 @@ function Get-DeploymentStatus {
 ```bash
 # Deploy with DigitalOcean CLI
 doctl apps create --spec .do/app.yaml
-```
+```bash
 
 #### **Alternative: Railway.app**
 **Cost**: $5-20/month for MVP  
@@ -517,7 +517,7 @@ doctl apps create --spec .do/app.yaml
 ```bash
 # Deploy with Railway CLI
 railway up
-```
+```bash
 
 #### **Alternative: Fly.io**
 **Cost**: $0-15/month for MVP  
@@ -527,7 +527,7 @@ railway up
 ```bash
 # Deploy with Fly CLI
 fly deploy
-```
+```bash
 
 #### **Enterprise: AWS/GCP/Azure**
 **Cost**: $100-1000+/month  
@@ -570,7 +570,7 @@ services:
     volumes:
       - /var/log:/var/log
       - ./promtail.yml:/etc/promtail/config.yml
-```
+```yaml
 
 ---
 

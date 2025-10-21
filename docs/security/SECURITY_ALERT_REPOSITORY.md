@@ -38,7 +38,7 @@
 
 Add these to your `.gitignore`:
 
-```gitignore
+```bash
 # Databases - NEVER commit these!
 *.sqlite
 *.sqlite3
@@ -92,7 +92,7 @@ coverage/
 __pycache__/
 *.pyc
 .pytest_cache/
-```
+```bash
 
 ### **Step 2: Remove Sensitive Files from Git History**
 
@@ -117,7 +117,7 @@ git commit -m "🔒 Remove sensitive files from git tracking"
 
 # Push to GitHub
 git push origin main
-```
+```powershell
 
 #### **Option B: Completely Rewrite History** (NUCLEAR OPTION)
 
@@ -134,7 +134,7 @@ git filter-repo --path backend/logs --invert-paths
 
 # Force push (WARNING: This rewrites history!)
 git push origin main --force
-```
+```powershell
 
 ⚠️ **WARNING:** Option B will break anyone else's clone of the repo!
 

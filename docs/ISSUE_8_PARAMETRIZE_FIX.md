@@ -6,9 +6,9 @@
 
 ## Problem
 
-```
+```yaml
 TypeError: BaseSchema.parametrize() got an unexpected keyword argument 'method'
-```
+```yaml
 
 **Location:** `apps/backend/tests/test_api_contracts.py` line 71
 
@@ -27,7 +27,7 @@ def test_get_endpoints_are_idempotent(case):
 @schema.parametrize(endpoint="/health")  # ❌ WRONG
 def test_health_endpoint_responds_quickly(case):
     ...
-```
+```python
 
 ## Solution
 
@@ -41,7 +41,7 @@ def test_get_endpoints_are_idempotent(case):
     response1 = case.call_asgi()
     response2 = case.call_asgi()
     ...
-```
+```python
 
 ### After (✅ CORRECT):
 ```python
@@ -55,14 +55,14 @@ def test_get_endpoints_are_idempotent(case):
     response1 = case.call_asgi()
     response2 = case.call_asgi()
     ...
-```
+```python
 
 ### Second Fix - Health Endpoint Test:
 
 **Before (❌):**
 ```python
 @schema.parametrize(endpoint="/health")
-```
+```python
 
 **After (✅):**
 ```python
@@ -74,7 +74,7 @@ def test_health_endpoint_responds_quickly(case):
 
     response = case.call_asgi()
     ...
-```
+```python
 
 ## Changes Made
 
@@ -100,7 +100,7 @@ def test_api(case):
     # - case.operation.security (auth requirements)
     response = case.call_asgi()
     case.validate_response(response)
-```
+```python
 
 **Available filtering approaches:**
 1. **Runtime filtering** (used in this fix): Check properties inside test

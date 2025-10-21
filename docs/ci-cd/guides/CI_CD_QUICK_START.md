@@ -63,7 +63,7 @@ When you open a PR, you'll automatically get two comments:
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 ### Security Scan Comment
 ```markdown
@@ -84,7 +84,7 @@ When you open a PR, you'll automatically get two comments:
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ---
 
@@ -146,14 +146,14 @@ Your PR **can merge** if:
 cd apps/frontend
 npm test                 # Run all tests
 npm run test:coverage   # Run with coverage
-```
+```bash
 
 ### Run Security Scan Locally
 ```bash
 cd apps/frontend
 npm audit               # Check for vulnerabilities
 npm audit fix          # Fix vulnerabilities automatically
-```
+```bash
 
 ### Generate Documentation Locally
 ```bash
@@ -161,7 +161,7 @@ npm audit fix          # Fix vulnerabilities automatically
 .\lokifi.ps1 doc-test        # Generate test documentation only
 .\lokifi.ps1 doc-api         # Generate API documentation only
 .\lokifi.ps1 doc-component   # Generate component documentation only
-```
+```bash
 
 ### Use AI Test Tools
 ```bash
@@ -169,12 +169,12 @@ npm audit fix          # Fix vulnerabilities automatically
 .\lokifi.ps1 test-suggest    # Get AI test suggestions
 .\lokifi.ps1 test-trends     # View test trends over time
 .\lokifi.ps1 test-impact     # Analyze test impact
-```
+```bash
 
 ### View Coverage Dashboard
 ```bash
 .\lokifi.ps1 test-dashboard  # Interactive HTML dashboard
-```
+```bash
 
 ---
 
@@ -262,7 +262,7 @@ npm audit fix          # Fix vulnerabilities automatically
 .\lokifi.ps1 help           # Show all available commands
 .\lokifi.ps1 test --help    # Test command help
 .\lokifi.ps1 security-scan  # Run security scan
-```
+```bash
 
 **Useful Links:**
 - GitHub Actions: https://github.com/ericsocrat/Lokifi/actions

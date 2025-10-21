@@ -44,14 +44,14 @@ Create it using one of these methods:
 **Method 2: GitHub CLI (if installed)**
 ```powershell
 gh pr create --base main --head feature/api-contract-testing --title "feat: API Contract Testing with OpenAPI Validation (Phase 1.6 Task 2)" --body-file PR_23_DESCRIPTION.md
-```
+```powershell
 
 **Method 3: Push with PR Creation Flag**
 ```powershell
 git checkout feature/api-contract-testing
 git push -u origin feature/api-contract-testing
 # Then create PR via web interface
-```
+```powershell
 
 ### If PR #24 Does NOT Exist:
 Create it similarly:
@@ -69,7 +69,7 @@ Create it similarly:
 **GitHub CLI:**
 ```powershell
 gh pr create --base main --head feature/visual-regression-testing --title "feat: Visual Regression Testing with Playwright (Phase 1.6 Task 3)" --body-file PR_24_DESCRIPTION.md
-```
+```powershell
 
 ## PR Descriptions
 
@@ -115,13 +115,13 @@ pytest tests/test_api_contracts.py -v
 
 # Run with extended tests
 pytest tests/test_api_contracts.py -v -m slow
-```
+```markdown
 
 ### Related
 - Part of Phase 1.6: Advanced Testing Implementation
 - Follows Task 1: Accessibility Testing (merged in #22)
 - Documentation: `PHASE_1.6_TASK_2_COMPLETE.md`
-```
+```markdown
 
 ### PR #24 Description:
 ```markdown
@@ -168,7 +168,7 @@ npm run test:visual:update
 
 # Run with UI mode
 npm run test:visual:ui
-```
+```markdown
 
 ### CI/CD Integration
 Add `visual-test` label to any PR to trigger visual regression tests. Results and diffs are uploaded as artifacts.
@@ -178,7 +178,7 @@ Add `visual-test` label to any PR to trigger visual regression tests. Results an
 - Follows Task 2: API Contract Testing
 - Documentation: `PHASE_1.6_TASK_3_COMPLETE.md`, `tests/visual/README.md`
 - Implementation Plan: `PHASE_1.6_TASK_3_PLAN.md`
-```
+```markdown
 
 ## Quick Verification Commands
 
@@ -192,7 +192,7 @@ gh pr view 24
 
 # Check branch status on GitHub
 # Visit: https://github.com/ericsocrat/Lokifi/branches
-```
+```powershell
 
 ## Next Steps After PRs Are Created/Updated
 

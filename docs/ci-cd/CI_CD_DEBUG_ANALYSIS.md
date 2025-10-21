@@ -25,7 +25,7 @@
 ```yaml
 cache: "npm"
 cache-dependency-path: apps/frontend/package-lock.json
-```
+```yaml
 
 **Evidence:**
 - Failing after 3-7 seconds = during dependency installation
@@ -38,7 +38,7 @@ cache-dependency-path: ./apps/frontend/package-lock.json
 
 # Option B: Remove cache temporarily to test
 # (comment out both cache lines)
-```
+```yaml
 
 ### 2. Working Directory + Checkout Issue
 **Problem:** Files might not be in expected location after checkout.
@@ -54,7 +54,7 @@ steps:
   - uses: actions/setup-node@v4
     with:
       cache-dependency-path: apps/frontend/package-lock.json
-```
+```yaml
 
 **Issue:** `setup-node` runs in root directory, but expects `apps/frontend/package-lock.json`
 
@@ -75,7 +75,7 @@ steps:
 # Locally verify:
 cd apps/frontend
 npm ci --loglevel verbose
-```
+```bash
 
 ### 4. GitHub Actions Permissions
 **Problem:** Workflow might lack necessary permissions.
@@ -86,7 +86,7 @@ permissions:
   contents: read
   pull-requests: write  # Needed for PR comments
   checks: write         # Needed for check annotations
-```
+```yaml
 
 **Solution:** Add permissions at job or workflow level.
 
@@ -118,7 +118,7 @@ permissions:  # ADD THIS
 env:
   NODE_VERSION: "22"
   COVERAGE_THRESHOLD: 10
-```
+```yaml
 
 ### Fix #2: Remove Cache Temporarily
 ```yaml
@@ -128,18 +128,18 @@ env:
     node-version: ${{ env.NODE_VERSION }}
     # cache: "npm"  # COMMENT OUT
     # cache-dependency-path: apps/frontend/package-lock.json  # COMMENT OUT
-```
+```yaml
 
 ### Fix #3: Use Absolute Cache Path
 ```yaml
 cache-dependency-path: ${{ github.workspace }}/apps/frontend/package-lock.json
-```
+```yaml
 
 ### Fix #4: Change Node Version Format
 ```yaml
 env:
   NODE_VERSION: "22.x"  # Instead of "22"
-```
+```yaml
 
 ## How to Test Each Fix
 
@@ -150,7 +150,7 @@ git add .github/workflows/test-and-quality.yml
 git commit -m "fix(ci): add workflow permissions and fix cache path"
 git push
 # Wait 3-5 minutes, check PR #20
-```
+```powershell
 
 ### Method 2: Local Verification
 ```powershell
@@ -162,7 +162,7 @@ npm ci --loglevel verbose
 # If it fails, check:
 npm --version  # Should be >=11.0.0
 node --version # Should be >=22.0.0
-```
+```powershell
 
 ## Recommended Action Plan
 

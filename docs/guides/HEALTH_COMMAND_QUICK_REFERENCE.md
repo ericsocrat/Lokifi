@@ -16,7 +16,7 @@
 
 # With detailed file information
 .\tools\lokifi.ps1 health -ShowDetails
-```
+```powershell
 
 ---
 
@@ -65,7 +65,7 @@
 ## 📈 Output Examples
 
 ### Quick Mode Output
-```
+```bash
 🔧 Infrastructure Health:
 ✅ Docker: Available
 ✅ Redis: Running
@@ -83,10 +83,10 @@
   ❌ Test Coverage: ~3.6%
 
 📊 Overall Code Health: 50/100 ⚠️ Needs Attention
-```
+```bash
 
 ### Full Mode Output (includes above + detailed checks)
-```
+```bash
 🔍 Detailed Quality Analysis:
 🎯 TypeScript Type Safety...
   ✅ No TypeScript errors
@@ -100,7 +100,7 @@
   ⚠️  5 uncommitted changes
 📦 Large Files...
   ✅ No large files (>1MB) detected
-```
+```bash
 
 ---
 
@@ -135,7 +135,7 @@
 
 # Before committing: Full health check
 .\tools\lokifi.ps1 health
-```
+```powershell
 
 ### CI/CD Pipeline
 ```yaml
@@ -147,7 +147,7 @@ jobs:
         run: |
           cd tools
           .\lokifi.ps1 health
-```
+```yaml
 
 ### Pre-Commit Hook
 ```powershell
@@ -158,7 +158,7 @@ if ($LASTEXITCODE -ne 0) {
     Write-Error "Health check failed!"
     exit 1
 }
-```
+```powershell
 
 ---
 
@@ -226,7 +226,7 @@ if ($LASTEXITCODE -ne 0) {
 
 # Infrastructure status only
 .\lokifi.ps1 status
-```
+```powershell
 
 ---
 
@@ -237,13 +237,13 @@ if ($LASTEXITCODE -ne 0) {
 # Separate scripts (DEPRECATED)
 .\tools\lokifi.ps1 health
 .\tools\scripts\analysis\master-health-check.ps1 -Mode Quick
-```
+```powershell
 
 ### New Way ✅
 ```powershell
 # Single unified command
 .\tools\lokifi.ps1 health
-```
+```powershell
 
 ---
 
@@ -262,7 +262,7 @@ if ($LASTEXITCODE -ne 0) {
 .\lokifi.ps1 health -Quick # Quick health while developing
 .\lokifi.ps1 test          # Run tests
 .\lokifi.ps1 health        # Final comprehensive check
-```
+```powershell
 
 ### Monitoring Health Over Time
 ```powershell
@@ -277,7 +277,7 @@ $today = Get-Date -Format "yyyy-MM-dd"
 
 # Compare
 Compare-Object (Get-Content health-baseline-*.txt) (Get-Content health-after-*.txt)
-```
+```powershell
 
 ---
 
@@ -300,14 +300,14 @@ $job = Start-Job {
 
 # Check results later
 Receive-Job $job
-```
+```powershell
 
 ---
 
 ## 🎓 Understanding Health Scores
 
 ### Overall Health Calculation
-```
+```yaml
 Overall Health = (Maintainability + Security + Debt + Coverage) / 4
 
 Where:
@@ -320,17 +320,17 @@ Result:
 - 80-100: 🎉 Excellent
 - 60-79: ⚡ Good
 - 0-59: ⚠️ Needs Attention
-```
+```yaml
 
 ### Example Calculation (Current Lokifi)
-```
+```yaml
 Maintainability: 75/100 (≥70) → ✅ Pass → 25 points
 Security Score: 85/100 (≥80) → ✅ Pass → 25 points
 Technical Debt: 88.5 days (>60) → ❌ Fail → 0 points
 Test Coverage: 3.6% (<50) → ❌ Fail → 0 points
 
 Overall Health: 50/100 ⚠️ Needs Attention
-```
+```yaml
 
 ---
 
@@ -364,7 +364,7 @@ Get-Help .\tools\lokifi.ps1 -Parameter health
 
 # View online documentation
 # docs/implementation/HEALTH_COMMAND_ENHANCEMENT.md
-```
+```powershell
 
 ---
 

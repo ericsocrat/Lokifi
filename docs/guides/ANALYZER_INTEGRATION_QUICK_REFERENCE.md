@@ -15,7 +15,7 @@ The `analyze` command now has **two modes**:
 #### 1️⃣ **Quick Mode** (Fast Health Check)
 ```powershell
 .\lokifi.ps1 analyze -Quick
-```
+```powershell
 **What it does**:
 - TypeScript error count
 - Console.log usage
@@ -30,7 +30,7 @@ The `analyze` command now has **two modes**:
 ```powershell
 .\lokifi.ps1 analyze           # Default behavior
 .\lokifi.ps1 analyze -Full     # With detailed metrics
-```
+```powershell
 **What it does**:
 - Complete LOC analysis (Frontend, Backend, Tests, Docs, Infrastructure)
 - Complexity scoring (0-10 scale)
@@ -48,7 +48,7 @@ The `analyze` command now has **two modes**:
 
 ## 📊 Sample Output (Full Mode)
 
-```
+```markdown
 ╔═══════════════════════════════════════════════════════════════╗
 ║         🚀  CODEBASE ANALYSIS V2.0 - ENHANCED EDITION        ║
 ╚═══════════════════════════════════════════════════════════════╝
@@ -79,7 +79,7 @@ The `analyze` command now has **two modes**:
 
 📄 Reports Generated:
    • MARKDOWN: docs/analysis/CODEBASE_ANALYSIS_V2_[timestamp].md
-```
+```markdown
 
 ---
 
@@ -95,7 +95,7 @@ The `analyze` command now has **two modes**:
 
 # Detailed analysis with all metrics
 .\lokifi.ps1 analyze -Full
-```
+```powershell
 
 ### For Project Estimation
 ```powershell
@@ -112,7 +112,7 @@ The `analyze` command now has **two modes**:
 
 # Quick cached estimates
 .\lokifi.ps1 estimate -Quick
-```
+```powershell
 
 ### For Reporting
 ```powershell
@@ -121,7 +121,7 @@ The `analyze` command now has **two modes**:
 
 # Generate estimates report
 .\lokifi.ps1 estimate -SaveReport
-```
+```powershell
 
 ---
 
@@ -129,14 +129,14 @@ The `analyze` command now has **two modes**:
 
 ### Current Integration
 
-```
+```powershell
 lokifi.ps1 (Main CLI)
     ↓ analyze command
     ├─ Quick Mode → Invoke-QuickAnalysis() [lightweight checks]
     └─ Full Mode  → codebase-analyzer.ps1 [comprehensive analysis]
                         ↓
                     Returns: metrics, estimates, reports
-```
+```powershell
 
 ### Benefits of This Approach
 
@@ -288,25 +288,25 @@ Supports 4 regions with different cost multipliers:
 Use **Quick Mode** for rapid feedback:
 ```powershell
 .\lokifi.ps1 analyze -Quick
-```
+```powershell
 
 ### For Weekly Reports
 Use **Full Mode** for comprehensive insights:
 ```powershell
 .\lokifi.ps1 analyze -Full
-```
+```powershell
 
 ### For Project Planning
 Use **Estimate** for cost/timeline analysis:
 ```powershell
 .\lokifi.ps1 estimate
-```
+```powershell
 
 ### For CI/CD
 Combine with quality gates (Phase 2):
 ```powershell
 .\lokifi.ps1 validate -Strict  # Will use analyzer for quality gates
-```
+```powershell
 
 ---
 

@@ -57,7 +57,7 @@ def test_api_responses_are_json():
         response = client.get(endpoint)
         if response.status_code == 200:
             assert "application/json" in response.headers.get("content-type", "").lower()
-```
+```python
 
 **Benefits:**
 - ✅ Executes in <10 seconds (vs 5+ minutes)
@@ -89,7 +89,7 @@ def test_api_responses_are_json():
 # Rename and run locally
 mv test_api_contracts_full.py.disabled test_api_contracts_full.py
 pytest test_api_contracts_full.py -v
-```
+```bash
 
 ---
 
@@ -109,7 +109,7 @@ pytest test_api_contracts_full.py -v
   if: contains(github.event.pull_request.labels.*.name, 'thorough-test')
   run: |
     PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short -m slow --timeout=300
-```
+```yaml
 
 **New Simplified Job:**
 ```yaml
@@ -120,7 +120,7 @@ pytest test_api_contracts_full.py -v
 - name: 🔍 Run API contract tests (simplified)
   run: |
     PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest tests/test_api_contracts.py -v --tb=short --timeout=60
-```
+```yaml
 
 **Changes:**
 - ✅ Removed extended contract tests step (no longer needed)
@@ -135,7 +135,7 @@ pytest test_api_contracts_full.py -v
 - name: 🧪 Run pytest
   run: |
     PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml --cov-report=term -m "not contract" --timeout=300 || true
-```
+```yaml
 - Added `-m "not contract"` to prevent running contract tests twice
 
 ---
@@ -229,7 +229,7 @@ pytest test_api_contracts_full.py -v
 cd apps/backend
 mv tests/test_api_contracts_full.py.disabled tests/test_api_contracts_full.py
 PYTHONPATH=. pytest tests/test_api_contracts_full.py -v --tb=short
-```
+```bash
 
 ### Option 2: Re-enable in CI (with fixes)
 1. Investigate schemathesis + ASGI performance issues
@@ -247,7 +247,7 @@ PYTHONPATH=. pytest tests/test_api_contracts_full.py -v --tb=short
 def test_thorough_contracts(case):
     # Heavy testing for nightly runs only
     pass
-```
+```python
 
 ---
 

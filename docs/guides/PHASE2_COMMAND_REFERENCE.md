@@ -22,15 +22,15 @@
 ### Before
 ```powershell
 .\lokifi.ps1 test
-```
+```powershell
 Output: Just API test results
 
 ### After
 ```powershell
 .\lokifi.ps1 test
-```
+```powershell
 Output:
-```
+```json
 📈 Test Coverage Context:
   Current Coverage: ~3.6% ❌
   Test Files: 8
@@ -43,7 +43,7 @@ Output:
   That's ~1,043 test files (avg 50 lines each)
 
 [runs all tests...]
-```
+```json
 
 ### New Options
 ```powershell
@@ -52,7 +52,7 @@ Output:
 .\lokifi.ps1 test -Component api       # API tests only
 .\lokifi.ps1 test -Component all       # Everything
 .\lokifi.ps1 test -Quick               # Skip coverage analysis
-```
+```powershell
 
 ---
 
@@ -61,15 +61,15 @@ Output:
 ### Before
 ```powershell
 .\lokifi.ps1 health
-```
+```powershell
 Output: Just infrastructure status
 
 ### After
 ```powershell
 .\lokifi.ps1 health
-```
+```powershell
 Output:
-```
+```bash
 🔧 Infrastructure Health:
   ✅ Redis: Running
   ✅ Backend: Running
@@ -82,7 +82,7 @@ Output:
   ❌ Test Coverage: ~3.6%
 
 📊 Overall Health: 50/100 ⚠️ Needs Attention
-```
+```bash
 
 **Score Breakdown**:
 - 80-100: 🎉 Excellent
@@ -96,15 +96,15 @@ Output:
 ### Before
 ```powershell
 .\lokifi.ps1 security
-```
+```powershell
 Output: Just security findings
 
 ### After
 ```powershell
 .\lokifi.ps1 security
-```
+```powershell
 Output:
-```
+```json
 📈 Security Context:
   Codebase Size: 78,500 effective lines
   Code Complexity: 10/10 ❌
@@ -115,14 +115,14 @@ Output:
 💡 High complexity increases security risk
 
 [security scan results...]
-```
+```json
 
 ### Options
 ```powershell
 .\lokifi.ps1 security -Quick              # Skip baseline
 .\lokifi.ps1 security -Component secrets  # Secrets only
 .\lokifi.ps1 security -Component vulnerabilities
-```
+```powershell
 
 ---
 
@@ -131,15 +131,15 @@ Output:
 ### Before
 ```powershell
 .\lokifi.ps1 format
-```
+```powershell
 Output: Files formatted (no feedback)
 
 ### After
 ```powershell
 .\lokifi.ps1 format
-```
+```powershell
 Output:
-```
+```json
 📊 Analyzing current state...
 [formatting code...]
 
@@ -149,12 +149,12 @@ Output:
   ↑ Security Score: +1 points ✅
 
 🎉 Code quality improved!
-```
+```json
 
 ### Quick Mode
 ```powershell
 .\lokifi.ps1 format -Quick  # Skip tracking, just format
-```
+```powershell
 
 ---
 
@@ -163,22 +163,22 @@ Output:
 ### Before
 ```powershell
 .\lokifi.ps1 lint
-```
+```powershell
 Output: Linting complete (no metrics)
 
 ### After
 ```powershell
 .\lokifi.ps1 lint
-```
+```powershell
 Output:
-```
+```json
 📊 Analyzing current state...
 [linting code...]
 
 ✨ Code Quality Changes:
   Technical Debt: 88.2 → 85.7 days (-2.5) ✅
   Maintainability: 75 → 78/100 (+3) ✅
-```
+```json
 
 ---
 
@@ -187,21 +187,21 @@ Output:
 ### Before
 ```powershell
 .\lokifi.ps1 validate
-```
+```powershell
 Output: Pre-commit checks pass/fail
 
 ### After (Standard Mode - Same as Before)
 ```powershell
 .\lokifi.ps1 validate
-```
+```powershell
 Output: Pre-commit checks (no quality gates)
 
 ### After (Strict Mode - NEW!)
 ```powershell
 .\lokifi.ps1 validate -Full
-```
+```powershell
 Output:
-```
+```json
 [pre-commit checks...]
 
 🚦 Quality Gates:
@@ -211,7 +211,7 @@ Output:
 
 ❌ 1 quality gate(s) failed!
 Fix quality issues before committing
-```
+```json
 
 **Exit Codes**:
 - 0: All gates passed
@@ -220,7 +220,7 @@ Fix quality issues before committing
 **Force Override**:
 ```powershell
 .\lokifi.ps1 validate -Full -Force  # Pass despite violations
-```
+```powershell
 
 ---
 
@@ -255,7 +255,7 @@ Fix quality issues before committing
 # Before commit
 .\lokifi.ps1 format
 .\lokifi.ps1 validate
-```
+```powershell
 
 ### Code Review
 ```powershell
@@ -267,7 +267,7 @@ Fix quality issues before committing
 
 # Security check
 .\lokifi.ps1 security
-```
+```powershell
 
 ### CI/CD Pipeline
 ```bash
@@ -279,7 +279,7 @@ Fix quality issues before committing
 
 # Security audit
 .\lokifi.ps1 security -SaveReport
-```
+```bash
 
 ---
 
@@ -296,7 +296,7 @@ Fix quality issues before committing
 # Force fresh analysis
 .\lokifi.ps1 health  # Wait 5+ minutes OR
 .\lokifi.ps1 analyze  # Manual refresh
-```
+```powershell
 
 ### Quick Mode
 ```powershell
@@ -304,14 +304,14 @@ Fix quality issues before committing
 .\lokifi.ps1 test -Quick      # ~10 seconds faster
 .\lokifi.ps1 format -Quick    # ~70 seconds faster
 .\lokifi.ps1 security -Quick  # ~70 seconds faster
-```
+```powershell
 
 ### Targeted Tests
 ```powershell
 # Don't run all tests if you only need one
 .\lokifi.ps1 test -Component backend  # Only backend
 .\lokifi.ps1 test -Component api      # Only API
-```
+```powershell
 
 ---
 
@@ -324,7 +324,7 @@ Fix quality issues before committing
 
 # Check the trend
 # Compare this week's report with last week's
-```
+```powershell
 
 ### Before/After Improvements
 ```powershell
@@ -338,7 +338,7 @@ Fix quality issues before committing
 #    - Technical Debt decreased?
 #    - Maintainability increased?
 #    - Security Score improved?
-```
+```powershell
 
 ---
 
@@ -346,7 +346,7 @@ Fix quality issues before committing
 
 Based on latest analysis (Oct 9, 2025):
 
-```
+```bash
 📊 Codebase Metrics:
   Size: 78,500 effective lines
   Files: 550
@@ -364,7 +364,7 @@ Based on latest analysis (Oct 9, 2025):
   1. Add tests: ~52K lines needed
   2. Reduce debt: Focus on 88 days
   3. Maintain quality: Keep scores >70
-```
+```bash
 
 ---
 
@@ -372,11 +372,11 @@ Based on latest analysis (Oct 9, 2025):
 
 ### Motivational Feedback
 Run `format` and `lint` to see improvements:
-```
+```bash
 ↓ Technical Debt: -2.5 days
 ↑ Maintainability: +3 points
 ↑ Security Score: +1 points
-```
+```bash
 Small wins add up! 🎉
 
 ### Quality Gates in CI/CD
@@ -384,15 +384,15 @@ Add to GitHub Actions:
 ```yaml
 - name: Quality Gates
   run: .\tools\lokifi.ps1 validate -Full
-```
+```yaml
 Fails PR if gates violated ✅
 
 ### Test Coverage Goals
 Track progress visually:
-```
+```yaml
 Current: 3.6%  [▓░░░░░░░░░] Target: 70%
 Need: 52,137 lines of tests (~1,043 files)
-```
+```yaml
 
 ---
 

@@ -27,17 +27,17 @@ Welcome to the Lokifi testing documentation! This index will help you find the i
 ## 🗂️ Test Structure
 
 ### Backend (`apps/backend/tests/`)
-```
+```bash
 ├── api/              # 6 files - REST API endpoint tests
 ├── unit/             # 15 files - Unit tests for individual components
 ├── integration/      # 4 files - Multi-component integration tests
 ├── e2e/              # 1 file - End-to-end workflow tests
 ├── services/         # 2 files - Business logic service tests
 └── security/         # 2 files - Security and authentication tests
-```
+```bash
 
 ### Frontend (`apps/frontend/tests/`)
-```
+```bash
 ├── api/              # API contract and integration tests
 ├── components/       # React component tests
 ├── unit/             # Unit tests for functions, hooks, utilities
@@ -47,7 +47,7 @@ Welcome to the Lokifi testing documentation! This index will help you find the i
 ├── a11y/             # Accessibility tests (WCAG compliance)
 ├── visual/           # Visual regression tests
 └── types/            # TypeScript type tests
-```
+```bash
 
 ## 📊 Current Status
 
@@ -70,14 +70,14 @@ Welcome to the Lokifi testing documentation! This index will help you find the i
 .\lokifi.ps1 test -TestPreCommit           # Pre-commit validation
 .\lokifi.ps1 test -TestCoverage            # Generate coverage reports
 .\lokifi.ps1 test -TestFile test_auth.py   # Specific test file
-```
+```powershell
 
 **Direct Test Runner**:
 ```powershell
 .\tools\test-runner.ps1 -Category api      # API tests
 .\tools\test-runner.ps1 -Smart             # Smart selection
 .\tools\test-runner.ps1 -PreCommit         # Pre-commit tests
-```
+```powershell
 
 **Traditional Methods** (Still supported):
 ```bash
@@ -90,14 +90,14 @@ pytest --cov=app --cov-report=html  # With coverage
 npm test                            # All tests
 npm test -- tests/components/       # Component tests only
 npm run test:coverage               # With coverage
-```
+```bash
 
 **Check Coverage**:
 ```bash
 .\lokifi.ps1 test -TestCoverage    # Enhanced with HTML report
 # Or traditional:
 ./tools/ci-cd/enhanced-ci-protection.ps1
-```
+```bash
 
 ### Writing Tests
 
@@ -220,7 +220,7 @@ Tests run automatically on:
 Run protection check:
 ```bash
 ./tools/ci-cd/enhanced-ci-protection.ps1
-```
+```bash
 
 ## 📞 Getting Help
 

@@ -37,7 +37,7 @@ The Lokifi Manager includes an intelligent file organization system that automat
 **Command:**
 ```powershell
 .\lokifi.ps1 audit -SaveReport -JsonExport
-```
+```powershell
 
 **Files Created:**
 
@@ -71,11 +71,11 @@ The Lokifi Manager includes an intelligent file organization system that automat
 **Command:**
 ```powershell
 .\lokifi.ps1 backup -IncludeDatabase -Compress
-```
+```powershell
 
 **Structure Created:**
 
-```
+```env
 backups/
 └── backup_YYYY-MM-DD_HHMMSS/
     ├── configs/          # Configuration files (.yml, .json, etc.)
@@ -83,7 +83,7 @@ backups/
     ├── env/              # Environment files (.env*)
     ├── database/         # SQLite database (if -IncludeDatabase used)
     └── manifest.json     # Backup metadata
-```
+```env
 
 **Compressed Output:**
 - **Location:** `backups\backup_YYYY-MM-DD_HHMMSS.zip`
@@ -100,7 +100,7 @@ backups/
   "IncludesDatabase": true,
   "Compressed": true
 }
-```
+```json
 
 ---
 
@@ -147,7 +147,7 @@ These files are **never** moved by the organization system:
 # Result:
 # ✅ CODEBASE_AUDIT_2025-10-08_143025.md (created in root)
 # ✅ CODEBASE_AUDIT_2025-10-08_143025.json (created in root)
-```
+```powershell
 
 ### Example 2: Create Full Backup
 
@@ -158,7 +158,7 @@ These files are **never** moved by the organization system:
 # Result:
 # ✅ backups/backup_2025-10-08_143025/ (folder created)
 # ✅ backups/backup_2025-10-08_143025.zip (compressed archive)
-```
+```powershell
 
 ### Example 3: Create Organized Document
 
@@ -171,7 +171,7 @@ New-OrganizedDocument "PERFORMANCE_OPTIMIZATION_REPORT.md" -Content "# Performan
 
 # Result:
 # ✅ Created: docs/optimization-reports/PERFORMANCE_OPTIMIZATION_REPORT.md
-```
+```powershell
 
 ### Example 4: Organize Existing Files
 
@@ -181,7 +181,7 @@ New-OrganizedDocument "PERFORMANCE_OPTIMIZATION_REPORT.md" -Content "# Performan
 
 # Result:
 # Files automatically moved to correct folders based on patterns
-```
+```powershell
 
 ---
 
@@ -189,12 +189,12 @@ New-OrganizedDocument "PERFORMANCE_OPTIMIZATION_REPORT.md" -Content "# Performan
 
 ### 1. **Naming Conventions**
 Use pattern-matched names for automatic organization:
-```
+```bash
 ✅ API_USER_GUIDE.md → docs/api/
 ✅ DATABASE_MIGRATION_PLAN.md → docs/database/
 ✅ SECURITY_AUDIT_2025.md → docs/security/
 ✅ TYPESCRIPT_FIX_SESSION.md → docs/fixes/
-```
+```bash
 
 ### 2. **Creating New Documents**
 Always use `New-OrganizedDocument` instead of manual creation:
@@ -204,7 +204,7 @@ New-Item "OPTIMIZATION_REPORT.md" -ItemType File
 
 # ✅ Good: Auto-organized creation
 New-OrganizedDocument "OPTIMIZATION_REPORT.md"
-```
+```powershell
 
 ### 3. **Audit Reports**
 Move audit exports after review:
@@ -212,7 +212,7 @@ Move audit exports after review:
 # After reviewing the audit in root, move to permanent location
 Move-Item "CODEBASE_AUDIT_*.md" "docs/audit-reports/"
 Move-Item "CODEBASE_AUDIT_*.json" "docs/audit-reports/"
-```
+```powershell
 
 ### 4. **Backup Management**
 Keep recent backups, archive old ones:
@@ -220,7 +220,7 @@ Keep recent backups, archive old ones:
 # Keep last 5 backups
 $backups = Get-ChildItem "backups" | Sort-Object CreationTime -Descending
 $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
-```
+```powershell
 
 ---
 
@@ -240,7 +240,7 @@ $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
 ```powershell
 .\lokifi.ps1 backup -BackupName "pre-deployment"
 # Creates: backups/pre-deployment_2025-10-08_143025/
-```
+```powershell
 
 ### Q: What if a folder doesn't exist?
 **A:** Folders are auto-created when needed. All 16 pattern folders are verified to exist.
@@ -250,7 +250,7 @@ $backups | Select-Object -Skip 5 | Remove-Item -Recurse -Force
 ```powershell
 .\lokifi.ps1 restore
 # Interactive: Select from list of available backups
-```
+```powershell
 
 ---
 
@@ -278,7 +278,7 @@ New-OrganizedDocument "MY_REPORT.md" -Content "# Report Content"
 
 # Restore backup
 .\lokifi.ps1 restore
-```
+```powershell
 
 ---
 
@@ -304,4 +304,3 @@ The Lokifi file organization and export system is **complete and fully operation
 ✅ Zero manual folder management needed  
 
 **Result:** Clean, organized, maintainable repository structure! 🚀
-

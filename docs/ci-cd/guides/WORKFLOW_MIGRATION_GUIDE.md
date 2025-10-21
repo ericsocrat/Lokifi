@@ -56,7 +56,7 @@ Benefits:
 - Comprehensive PR comments"
 
 git push origin unified-pipeline-test
-```
+```bash
 
 ### Step 2: Create Test PR
 
@@ -65,7 +65,7 @@ git push origin unified-pipeline-test
 # Go to GitHub and create PR from unified-pipeline-test to main
 # Watch the workflow run
 # Verify all jobs execute correctly
-```
+```bash
 
 ### Step 3: Backup Old Workflows
 
@@ -77,7 +77,7 @@ git checkout main
 git checkout -b workflow-backup-pre-migration
 git push origin workflow-backup-pre-migration
 git checkout main
-```
+```bash
 
 ### Step 4: Remove Old Workflows
 
@@ -114,7 +114,7 @@ New unified pipeline provides:
 - Faster execution (parallel jobs)
 - Easier maintenance
 - Clearer status reporting"
-```
+```bash
 
 ### Step 5: Merge to Main
 
@@ -124,7 +124,7 @@ New unified pipeline provides:
 
 # Then push the cleanup
 git push origin main
-```
+```bash
 
 ---
 
@@ -152,7 +152,7 @@ git push origin main
 ## 📊 Comparison: Before vs After
 
 ### Before (11 Workflows)
-```
+```bash
 Status Page Shows:
 ✅ Frontend CI
 ✅ Backend CI
@@ -167,10 +167,10 @@ Status Page Shows:
 ✅ Code Scanning
 
 Result: Confusing, many failures
-```
+```bash
 
 ### After (1 Workflow)
-```
+```bash
 Status Page Shows:
 ✅ Lokifi Unified CI/CD Pipeline
   ├─ ✅ Frontend Tests
@@ -180,7 +180,7 @@ Status Page Shows:
   └─ (Optional jobs as needed)
 
 Result: Clear, clean, professional
-```
+```bash
 
 ---
 
@@ -195,7 +195,7 @@ Jobs run in parallel:
 
 Then waits for all to complete before:
 - quality-gate
-```
+```yaml
 
 ### 2. **Conditional Jobs**
 ```yaml
@@ -207,7 +207,7 @@ visual-regression:
   
 documentation:
   if: github.ref == 'refs/heads/main'
-```
+```yaml
 
 ### 3. **Job Dependencies**
 ```yaml
@@ -216,7 +216,7 @@ quality-gate:
   
 documentation:
   needs: [quality-gate]
-```
+```yaml
 
 ### 4. **Comprehensive PR Comments**
 Each job posts its own comment:
@@ -236,7 +236,7 @@ mobile-test:
   needs: [frontend-test]
   steps:
     - # Your mobile testing steps
-```
+```yaml
 
 ### Add More Conditions
 ```yaml
@@ -245,14 +245,14 @@ performance:
   if: |
     github.event_name == 'pull_request' && 
     contains(github.event.pull_request.labels.*.name, 'performance')
-```
+```yaml
 
 ### Modify Thresholds
 ```yaml
 env:
   COVERAGE_THRESHOLD: 10  # Increase as coverage improves
   MAX_HIGH_VULNS: 5       # Lower as security improves
-```
+```yaml
 
 ---
 
@@ -263,19 +263,19 @@ env:
 # Backend directory path might be wrong
 # Check: apps/backend vs backend
 # Update working-directory in workflow
-```
+```bash
 
 ### If Jobs Don't Run in Parallel
 ```yaml
 # Check job dependencies - remove unnecessary "needs:"
 # Jobs without "needs" run in parallel
-```
+```yaml
 
 ### If Documentation Doesn't Deploy
 ```bash
 # Ensure GitHub Pages is enabled
 # Settings → Pages → Source: gh-pages branch
-```
+```bash
 
 ---
 

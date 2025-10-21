@@ -10,7 +10,7 @@ The test files have been reorganized into a logical, scalable structure to make 
 
 **After**: Organized into subdirectories by type:
 
-```
+```bash
 apps/backend/tests/
 ├── api/              # 6 files - API endpoint tests
 ├── unit/             # 15 files - Unit tests for individual components
@@ -18,13 +18,13 @@ apps/backend/tests/
 ├── e2e/              # 1 file - End-to-end tests (complete workflows)
 ├── services/         # 2 files - Service layer tests
 └── security/         # 2 files - Security-related tests
-```
+```bash
 
 ## Frontend Test Organization
 
 **Status**: Already well-organized ✅
 
-```
+```bash
 apps/frontend/tests/
 ├── api/              # API contract tests
 ├── components/       # React component tests
@@ -35,7 +35,7 @@ apps/frontend/tests/
 ├── a11y/             # Accessibility tests
 ├── visual/           # Visual regression tests
 └── types/            # TypeScript type tests
-```
+```bash
 
 ## Removed Files
 
@@ -95,7 +95,7 @@ pytest apps/backend/tests/services/
 
 # Run all security tests
 pytest apps/backend/tests/security/
-```
+```bash
 
 **Frontend**:
 ```bash
@@ -110,7 +110,7 @@ npm run test:e2e
 
 # Run security tests
 npm test -- tests/security/
-```
+```bash
 
 ### Adding New Tests
 

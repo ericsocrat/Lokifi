@@ -63,13 +63,13 @@ This guide documents all automation opportunities identified in the Lokifi repos
 
 # Skip type check (faster)
 .\scripts\development\pre-commit-checks.ps1 -SkipTypeCheck
-```
+```powershell
 
 **Integration:**
 ```json
 // Add to .husky/pre-commit
 pwsh -File scripts/development/pre-commit-checks.ps1 -Quick
-```
+```json
 
 ---
 
@@ -96,7 +96,7 @@ pwsh -File scripts/development/pre-commit-checks.ps1 -Quick
 
 # Detailed version info
 .\scripts\analysis\check-dependencies.ps1 -Detailed
-```
+```powershell
 
 **Schedule:**
 - **Weekly:** Manual security scan
@@ -129,7 +129,7 @@ pwsh -File scripts/development/pre-commit-checks.ps1 -Quick
 
 # Full backup with everything
 .\scripts\utilities\backup-repository.ps1 -IncludeDatabase -Compress
-```
+```powershell
 
 **Schedule:**
 - **Daily:** Automated via Task Scheduler (optional)
@@ -151,7 +151,7 @@ $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
 $trigger = New-ScheduledTaskTrigger -Daily -At 9am
 Register-ScheduledTask -TaskName "Lokifi-Daily-Health-Check" `
     -Action $action -Trigger $trigger -Description "Daily repository health check"
-```
+```powershell
 
 **Benefits:**
 - Catch issues early
@@ -170,7 +170,7 @@ Register-ScheduledTask -TaskName "Lokifi-Daily-Health-Check" `
 
 # Run quick tests before push
 cd frontend && npm run test:ci
-```
+```bash
 
 **Benefits:**
 - Prevents pushing broken code
@@ -187,7 +187,7 @@ cd frontend && npm run test:ci
 # Auto-generate API documentation from code comments
 # Update README with latest statistics
 # Generate architecture diagrams from code
-```
+```powershell
 
 **Trigger:**
 - On major feature completion
@@ -207,7 +207,7 @@ $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
 $trigger = New-ScheduledTaskTrigger -Daily -At 2am
 Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
     -Action $action -Trigger $trigger
-```
+```powershell
 
 **Benefits:**
 - Disaster recovery
@@ -225,7 +225,7 @@ Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
 # API response time tracking
 # Frontend bundle size monitoring
 # Database query performance
-```
+```powershell
 
 **Schedule:**
 - After each deployment
@@ -243,7 +243,7 @@ Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
 # Secret detection in code
 # OWASP top 10 checks
 # SSL/TLS configuration validation
-```
+```powershell
 
 **Schedule:**
 - **Daily:** Automated scan
@@ -261,7 +261,7 @@ Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
 # Clean old log files (> 30 days)
 # Compress archived logs
 # Maintain disk space
-```
+```powershell
 
 **Schedule:**
 - **Weekly:** Log rotation
@@ -278,7 +278,7 @@ Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
 # Generate TODO report with priorities
 # Track completion over time
 # GitHub issue creation for critical TODOs
-```
+```powershell
 
 **Benefits:**
 - Visibility into technical debt
@@ -296,7 +296,7 @@ Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
 # Complexity analysis
 # Test coverage trends
 # Dependency graph
-```
+```powershell
 
 **Outputs:** HTML dashboard
 **Schedule:** Weekly report generation
@@ -313,7 +313,7 @@ Register-ScheduledTask -TaskName "Lokifi-Database-Backup" `
 # Asset compilation
 # Health check verification
 # Rollback capability
-```
+```powershell
 
 **Trigger:**
 - GitHub release tags
@@ -335,14 +335,14 @@ try {
     # Log error
     exit 1
 }
-```
+```powershell
 
 ### 2. Logging
 ```powershell
 # Comprehensive logging
 $logFile = "logs/automation_$(Get-Date -Format 'yyyy-MM-dd').log"
 "[$(Get-Date)] Starting automation..." | Out-File $logFile -Append
-```
+```powershell
 
 ### 3. Notifications
 ```powershell
@@ -351,7 +351,7 @@ function Send-Notification {
     param($Message, $Severity)
     # Implementation
 }
-```
+```powershell
 
 ### 4. Idempotency
 ```powershell
@@ -359,7 +359,7 @@ function Send-Notification {
 if (Test-Path $file) {
     # Skip if already exists
 }
-```
+```powershell
 
 ### 5. Documentation
 ```powershell
@@ -371,7 +371,7 @@ if (Test-Path $file) {
 .EXAMPLE
     Usage examples
 #>
-```
+```powershell
 
 ---
 
@@ -410,7 +410,7 @@ if (Test-Path $file) {
 # Update .husky/pre-commit
 cd frontend
 echo "pwsh -File ../scripts/development/pre-commit-checks.ps1 -Quick" >> .husky/pre-commit
-```
+```powershell
 
 ### 2. Schedule Daily Health Check
 ```powershell
@@ -420,7 +420,7 @@ $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
 $trigger = New-ScheduledTaskTrigger -Daily -At 9am
 Register-ScheduledTask -TaskName "Lokifi-Health-Check" `
     -Action $action -Trigger $trigger
-```
+```powershell
 
 ### 3. Weekly Dependency Check
 ```powershell
@@ -430,7 +430,7 @@ $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
 $trigger = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Monday -At 10am
 Register-ScheduledTask -TaskName "Lokifi-Dependency-Check" `
     -Action $action -Trigger $trigger
-```
+```powershell
 
 ### 4. Daily Backup
 ```powershell
@@ -440,27 +440,27 @@ $action = New-ScheduledTaskAction -Execute "pwsh.exe" `
 $trigger = New-ScheduledTaskTrigger -Daily -At 2am
 Register-ScheduledTask -TaskName "Lokifi-Daily-Backup" `
     -Action $action -Trigger $trigger
-```
+```powershell
 
 ---
 
 ## 📊 AUTOMATION METRICS
 
 ### Current Status
-```
+```bash
 Automated Processes:      18 scripts
 Manual Processes:         ~10 remaining
 Automation Coverage:      ~65%
 Time Saved (estimated):   ~5 hours/week
-```
+```bash
 
 ### Target Status (After Full Implementation)
-```
+```bash
 Automated Processes:      25+ scripts
 Manual Processes:         ~3 critical only
 Automation Coverage:      >90%
 Time Saved (estimated):   ~10 hours/week
-```
+```bash
 
 ---
 
@@ -521,7 +521,7 @@ Time Saved (estimated):   ~10 hours/week
 .\scripts\development\pre-commit-checks.ps1 -WhatIf
 .\scripts\analysis\check-dependencies.ps1 -Detailed
 .\scripts\utilities\backup-repository.ps1 -BackupDir "test-backups"
-```
+```powershell
 
 ### Troubleshooting
 1. Check script execution policy: `Get-ExecutionPolicy`

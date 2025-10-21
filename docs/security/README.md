@@ -4,9 +4,12 @@ This folder contains all security-related documentation, audits, and implementat
 
 ## 📋 Security Documents
 
-### 🛡️ Implementation Reports
-- **[Security Optimization Complete](./security-optimization-complete.md)** - Comprehensive security optimization implementation
-- **[Security Hardening Complete](./security-hardening-complete.md)** - System hardening procedures and results
+### � Configuration Guides
+- **[Environment Configuration](./ENVIRONMENT_CONFIGURATION.md)** - Complete guide for `.env` files and environment variables
+
+### �🛡️ Implementation Reports
+- **[Enhanced Security Setup](./enhanced-security-setup.md)** - Comprehensive security configuration and implementation
+- **[Security Alert Repository](./SECURITY_ALERT_REPOSITORY.md)** - Security alerts and monitoring
 
 ### 🔍 Security Audits
 - Regular security assessments and findings
@@ -54,9 +57,9 @@ This folder contains all security-related documentation, audits, and implementat
 - Regular security training and awareness
 
 ## 🔗 Related Documentation
-- [Operations Guide](../operations/) - Security in production
-- [Development Guide](../development/) - Secure coding practices
-- [Audit Reports](../audit-reports/) - Security assessment results
+- [Development Guides](../guides/) - Secure coding practices and standards
+- [API Documentation](../api/) - Security considerations for API development
+- [Main Documentation](../README.md) - Project overview and security context
 
 ---
 *Last updated: September 30, 2025*

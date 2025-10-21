@@ -1,6 +1,6 @@
 # 📐 Architecture Diagram - Tasks 6, 7, 8
 
-```
+```python
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                              LOKIFI FRONTEND                                 │
 │                         (Next.js/React - Port 3000)                          │
@@ -77,7 +77,7 @@
 │ • Pub/Sub       │ │              │ │ • Search     │
 │                 │ │              │ │              │
 └─────────────────┘ └──────────────┘ └──────────────┘
-```
+```python
 
 ---
 
@@ -85,7 +85,7 @@
 
 ### 1. Historical Price Request
 
-```
+```sql
 Client
   │
   │ GET /api/v1/prices/BTC/history?period=1m
@@ -121,11 +121,11 @@ HistoricalPriceService
 Total Time:
   • Cached: 1-5ms ⚡
   • API Call: 500-2000ms 🐢
-```
+```sql
 
 ### 2. Crypto Discovery Flow
 
-```
+```bash
 Client
   │
   │ GET /api/v1/prices/crypto/top?limit=100
@@ -158,11 +158,11 @@ CryptoDiscoveryService
   └─► Return to Client
 
 Rate Limit: 10-50 requests/minute (CoinGecko)
-```
+```bash
 
 ### 3. WebSocket Real-Time Updates
 
-```
+```sql
 Client Browser
   │
   │ WebSocket Connection
@@ -206,13 +206,13 @@ WebSocket Router
               })
 
 Client receives update → Updates UI → Wait 30s → Repeat
-```
+```sql
 
 ---
 
 ## 🔄 Caching Strategy
 
-```
+```bash
 ┌────────────────────────────────────────────────────────┐
 │                    REDIS CACHE                          │
 ├────────────────────────────────────────────────────────┤
@@ -238,13 +238,13 @@ Cache Hit Rates (Expected):
   • Current prices: 75-85%
   • Historical data: 85-95%
   • Crypto lists: 90-95%
-```
+```bash
 
 ---
 
 ## 🔌 WebSocket State Machine
 
-```
+```yaml
 ┌─────────────┐
 │   CREATED   │
 └──────┬──────┘
@@ -275,13 +275,13 @@ States:
   • SUBSCRIBING: Processing subscription request
   • ACTIVE: Receiving updates
   • DISCONNECTED: Connection closed
-```
+```yaml
 
 ---
 
 ## 📦 Module Dependencies
 
-```
+```python
 app/
 ├── routers/
 │   ├── smart_prices.py
@@ -316,7 +316,7 @@ app/
 └── core/
     ├── advanced_redis_client.py
     └── config.py
-```
+```python
 
 ---
 
@@ -324,7 +324,7 @@ app/
 
 ### Example 1: Get Bitcoin 1-Week History
 
-```
+```json
 1. Client Request
    GET /api/v1/prices/BTC/history?period=1w
 
@@ -357,11 +357,11 @@ app/
 8. Subsequent requests (within 30 min)
    ✅ Cache HIT
    Response time: 5ms
-```
+```json
 
 ### Example 2: Search for "Doge" Cryptos
 
-```
+```json
 1. Client Request
    GET /api/v1/prices/crypto/search?q=doge
 
@@ -393,11 +393,11 @@ app/
        }
      ]
    }
-```
+```json
 
 ### Example 3: WebSocket Price Streaming
 
-```
+```json
 1. Client connects
    ws://localhost:8000/api/ws/prices?client_id=abc123
 
@@ -427,13 +427,13 @@ app/
 5. Client receives update
    → Updates UI
    → Waits for next update (30 seconds)
-```
+```json
 
 ---
 
 ## 🎨 Color Legend
 
-```
+```bash
 ✨ NEW - Newly implemented features
 ✅ WORKING - Tested and operational
 ⚡ FAST - < 10ms response time
@@ -441,7 +441,7 @@ app/
 📊 DATA - Data transformation
 🔄 CACHE - Caching operation
 🔌 WS - WebSocket operation
-```
+```bash
 
 ---
 

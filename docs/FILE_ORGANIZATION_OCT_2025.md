@@ -148,7 +148,7 @@ Reorganized all root directory documentation files into appropriate subdirectori
 
 ## Directory Structure
 
-```
+```powershell
 docs/
 ├── analysis/              # Codebase analysis documents
 ├── api/                   # API documentation
@@ -170,7 +170,7 @@ docs/
 
 tools/
 └── scripts/               # PowerShell and automation scripts
-```
+```powershell
 
 ## Notes
 

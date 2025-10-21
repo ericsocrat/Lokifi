@@ -37,27 +37,27 @@
 The error will likely be one of these:
 
 ### Error Type 1: Directory Not Found
-```
+```yaml
 Error: ENOENT: no such file or directory
-```
+```yaml
 **Means:** Can't find apps/frontend directory
 
 ### Error Type 2: package-lock.json Not Found
-```
+```yaml
 Error: Unable to locate executable file: npm
-```
+```yaml
 **Means:** Node setup issue
 
 ### Error Type 3: Permission Denied
-```
+```yaml
 Error: EACCES: permission denied
-```
+```yaml
 **Means:** Permissions issue
 
 ### Error Type 4: Invalid Workflow Syntax
-```
+```yaml
 Error: Invalid workflow file
-```
+```yaml
 **Means:** YAML syntax error
 
 ## Screenshot Alternative
@@ -81,14 +81,14 @@ Please copy and paste **ANY error message you see** from the logs. Even if you d
 
 The error will typically be in **red text** and look something like:
 
-```
+```bash
 Error: Process completed with exit code 1.
 npm ERR! code ENOENT
 npm ERR! syscall open
 npm ERR! path /home/runner/work/Lokifi/Lokifi/apps/frontend/package.json
 npm ERR! errno -2
 npm ERR! enoent ENOENT: no such file or directory, open '/home/runner/work/Lokifi/Lokifi/apps/frontend/package.json'
-```
+```bash
 
 ## Quick Links:
 

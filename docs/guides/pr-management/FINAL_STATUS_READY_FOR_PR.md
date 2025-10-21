@@ -116,7 +116,7 @@
 - 4 CI/CD jobs (test, security, quality-gate, documentation)
 
 **Complete Workflow:**
-```
+```bash
 Developer writes code
     ↓
 Pushes to branch
@@ -140,7 +140,7 @@ Merges to main
 Documentation deploys to GitHub Pages
     ↓
 DONE! 🎉
-```
+```bash
 
 ---
 
@@ -163,11 +163,11 @@ DONE! 🎉
 **Total Annual Value:** $39,100/year
 
 **ROI Calculation:**
-```
+```bash
 ROI = (Returns - Investment) / Investment × 100
 ROI = ($39,100 - $212.50) / $212.50 × 100
 ROI = 18,353%
-```
+```bash
 
 ### Monthly Breakdown
 
@@ -223,7 +223,7 @@ ROI = 18,353%
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 **Comment 2: Security Scan** (from github-actions[bot])
 ```markdown
@@ -244,7 +244,7 @@ ROI = 18,353%
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ---
 
@@ -276,64 +276,64 @@ ROI = 18,353%
 ### Important URLs
 
 **Create PR:**
-```
+```yaml
 https://github.com/ericsocrat/Lokifi/pull/new/test-ci-cd
-```
+```yaml
 
 **GitHub Actions:**
-```
+```yaml
 https://github.com/ericsocrat/Lokifi/actions
-```
+```yaml
 
 **Repository:**
-```
+```yaml
 https://github.com/ericsocrat/Lokifi
-```
+```yaml
 
 **GitHub Pages Setup:**
-```
+```yaml
 https://github.com/ericsocrat/Lokifi/settings/pages
-```
+```yaml
 
 ### PR Details
 
 **Title:**
-```
+```yaml
 test: verify CI/CD pipeline automation and PR commenting
-```
+```yaml
 
 **Short Description:**
-```
+```bash
 Tests Phase 1.5.8 CI/CD: automated testing, security scanning, and PR commenting.
 Added CI_CD_QUICK_START.md (284 lines). Expect 2 automated comments within 3 minutes.
-```
+```bash
 
 ### Local Commands
 
 **View all automation tools:**
 ```powershell
 .\lokifi.ps1 help
-```
+```powershell
 
 **Run smart tests:**
 ```powershell
 .\lokifi.ps1 test-smart
-```
+```powershell
 
 **View coverage dashboard:**
 ```powershell
 .\lokifi.ps1 test-dashboard
-```
+```powershell
 
 **Run security scan:**
 ```powershell
 .\lokifi.ps1 security-scan
-```
+```powershell
 
 **Generate all docs:**
 ```powershell
 .\lokifi.ps1 doc-generate
-```
+```powershell
 
 ---
 
@@ -450,13 +450,13 @@ After you create the PR:
 .\lokifi.ps1 test-dashboard    # Coverage dashboard
 .\lokifi.ps1 security-scan     # Security check
 .\lokifi.ps1 doc-generate      # Generate docs
-```
+```powershell
 
 ---
 
 ## 🎯 **YOU ARE HERE**
 
-```
+```json
 Phase 1.5.4 ✅ → AI Test Intelligence (40 min)
 Phase 1.5.5 ✅ → Coverage Dashboard (35 min)
 Phase 1.5.6 ✅ → Security Automation (35 min)
@@ -468,7 +468,7 @@ Phase 1.5.8 ✅ → CI/CD Integration (30 min)
          Create PR to test ⏳
                  ↓
       Watch automation work! 🎊
-```
+```json
 
 **Status:** 99% Complete - Just needs PR testing!
 

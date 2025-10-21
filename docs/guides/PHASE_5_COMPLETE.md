@@ -154,7 +154,7 @@ class TestModuleNamePerformance:
         """ Test performance under load """
         # TODO: Add performance test
         pass
-```
+```python
 
 ---
 
@@ -163,28 +163,28 @@ class TestModuleNamePerformance:
 ### Generate All Tests
 ```powershell
 .\tools\lokifi.ps1 generate-tests
-```
+```powershell
 
 ### Preview (Dry Run)
 ```powershell
 .\tools\lokifi.ps1 generate-tests -DryRun
-```
+```powershell
 
 ### Generate for Specific Directory
 ```powershell
 .\tools\lokifi.ps1 generate-tests -Component "app/services"
 .\tools\lokifi.ps1 generate-tests -Component "app/routers"
-```
+```powershell
 
 ### Force Overwrite
 ```powershell
 .\tools\lokifi.ps1 generate-tests -Force
-```
+```powershell
 
 ### With Coverage Analysis
 ```powershell
 .\tools\lokifi.ps1 generate-tests -Coverage
-```
+```powershell
 
 ---
 
@@ -246,7 +246,7 @@ def mock_redis_client():
     client = AsyncMock()
     client.get = AsyncMock(return_value=None)
     return client
-```
+```python
 
 **Implementation**: Parse module imports and function signatures
 
@@ -258,7 +258,7 @@ def mock_redis_client():
 def build_user(email="test@example.com", **kwargs):
     defaults = {"id": 1, "username": "test", "is_active": True}
     return {**defaults, "email": email, **kwargs}
-```
+```python
 
 **Implementation**: Analyze Pydantic models and dataclasses
 
@@ -274,7 +274,7 @@ def mock_httpx_client():
     response.json = AsyncMock(return_value={})
     client.get = AsyncMock(return_value=response)
     return client
-```
+```python
 
 **Implementation**: Parse imports and identify external libs
 
@@ -284,12 +284,12 @@ def mock_httpx_client():
 **Command**: `.\tools\lokifi.ps1 analyze-coverage-gaps`
 
 **Output**:
-```
+```bash
 app/services/smart_price_service.py:
   - Lines 45-52: Error handling not covered
   - Lines 78-85: Cache hit path not covered
   - Lines 120-135: Provider fallback not covered
-```
+```bash
 
 **Implementation**: Parse coverage.xml and source code
 
@@ -305,7 +305,7 @@ def test_get_price_returns_price_data(self):
     assert isinstance(result, PriceData)
     assert result.symbol == "BTC"
     assert result.price > 0
-```
+```python
 
 **Implementation**: Parse type hints and generate basic assertions
 
@@ -393,7 +393,7 @@ Implement performance test classes:
 
 # Force overwrite
 .\tools\lokifi.ps1 generate-tests -Force
-```
+```powershell
 
 ### Run Tests
 ```powershell
@@ -409,7 +409,7 @@ python -m pytest --cov=app --cov-report=html
 
 # Coverage for specific module
 python -m pytest tests/services/ --cov=app.services --cov-report=term-missing
-```
+```powershell
 
 ### Coverage Analysis
 ```powershell
@@ -422,7 +422,7 @@ python -m pytest --cov=app --cov-report=term-missing
 
 # Coverage summary
 python -m pytest --cov=app --cov-report=term --cov-report=html
-```
+```powershell
 
 ---
 
@@ -452,29 +452,29 @@ The generated TODO markers are designed for AI assistance:
 ### Example Prompts
 
 **For Services**:
-```
+```sql
 "Complete the tests in test_smart_price_service.py.
 The service fetches cryptocurrency prices from CoinGecko API,
 caches results in Redis, and handles provider fallback."
-```
+```sql
 
 **For API Endpoints**:
-```
+```bash
 "Add comprehensive tests for test_portfolio.py including:
 - GET /api/portfolio/:id validation
 - POST /api/portfolio with valid/invalid data
 - Authentication requirements
 - Error responses (404, 400, 403)"
-```
+```bash
 
 **For Edge Cases**:
-```
+```bash
 "Fill in edge case tests for test_unified_asset_service.py:
 - Handle null/empty symbols
 - Handle API timeouts
 - Handle rate limiting
 - Handle provider failures"
-```
+```bash
 
 ---
 
@@ -568,7 +568,7 @@ start htmlcov/index.html
 
 # Help
 .\tools\lokifi.ps1 help generate-tests
-```
+```powershell
 
 ---
 

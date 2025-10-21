@@ -104,7 +104,7 @@
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🚀
-```
+```markdown
 
 #### Comment 2: Security Results
 ```markdown
@@ -125,7 +125,7 @@
 
 ---
 *Automated by Lokifi CI/CD Pipeline* 🔒
-```
+```markdown
 
 ### Step 4: Verify Quality Gate
 - ✅ All checks pass

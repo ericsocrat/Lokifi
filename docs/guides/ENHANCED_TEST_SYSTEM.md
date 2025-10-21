@@ -27,7 +27,7 @@ The Lokifi bot now includes a comprehensive, intelligent test runner that provid
 
 # Run frontend tests only
 .\lokifi.ps1 test -Component frontend
-```
+```powershell
 
 ### Smart Testing
 
@@ -40,7 +40,7 @@ The Lokifi bot now includes a comprehensive, intelligent test runner that provid
 
 # Quality gate validation
 .\lokifi.ps1 test -TestGate
-```
+```powershell
 
 ### Advanced Usage
 
@@ -59,7 +59,7 @@ The Lokifi bot now includes a comprehensive, intelligent test runner that provid
 
 # Frontend tests in watch mode
 .\lokifi.ps1 test -Component frontend -Watch
-```
+```powershell
 
 ## Test Categories
 
@@ -90,7 +90,7 @@ Intelligently selects tests based on changed files:
 
 ```powershell
 .\lokifi.ps1 test -TestSmart
-```
+```powershell
 
 **How it works:**
 - Detects files changed since last commit
@@ -109,7 +109,7 @@ Runs only fast tests (<10s per test):
 
 ```powershell
 .\lokifi.ps1 test -Quick
-```
+```powershell
 
 **Best for:**
 - Rapid feedback loops
@@ -122,7 +122,7 @@ Essential tests that must pass before committing:
 
 ```powershell
 .\lokifi.ps1 test -TestPreCommit
-```
+```powershell
 
 **Includes:**
 - Backend API tests
@@ -139,7 +139,7 @@ Generates comprehensive coverage reports:
 
 ```powershell
 .\lokifi.ps1 test -TestCoverage
-```
+```powershell
 
 **Outputs:**
 - HTML coverage report (viewable in browser)
@@ -157,7 +157,7 @@ Runs full CI/CD quality gates:
 
 ```powershell
 .\lokifi.ps1 test -TestGate
-```
+```powershell
 
 **Validates:**
 - All tests pass
@@ -199,7 +199,7 @@ Runs full CI/CD quality gates:
 
 The test runner maps changed files to affected tests:
 
-```
+```python
 Changed file: app/api/routes/auth.py
 → Runs: test_auth_endpoints.py, test_auth.py
 
@@ -208,27 +208,27 @@ Changed file: app/services/user.py
 
 Changed file: src/components/UserProfile.tsx
 → Runs: UserProfile.test.tsx
-```
+```python
 
 ### 2. Performance Tracking
 
 Every test run includes timing information:
 
-```
+```yaml
 Duration: 12.45s
 All tests passed! 🎉
-```
+```yaml
 
 ### 3. Result Artifacts
 
 Test results are saved to `test-results/`:
 
-```
+```powershell
 test-results/
 ├── backend-results.xml      # JUnit XML results
 ├── backend-coverage.json    # Coverage data
 └── frontend-results.xml     # Frontend test results
-```
+```powershell
 
 ### 4. Environment Setup
 
@@ -246,7 +246,7 @@ The test runner automatically:
 - name: Run Tests
   run: |
     .\tools\lokifi.ps1 test -TestGate
-```
+```yaml
 
 ### Pre-Commit Hook Example
 
@@ -256,13 +256,13 @@ Create `.git/hooks/pre-commit`:
 #!/bin/bash
 pwsh -File tools/lokifi.ps1 test -TestPreCommit
 exit $?
-```
+```bash
 
 ## Test Organization
 
 The test suite is organized for maximum maintainability:
 
-```
+```python
 apps/backend/tests/
 ├── api/                    # REST endpoint tests
 │   ├── test_auth_endpoints.py
@@ -283,13 +283,13 @@ apps/backend/tests/
 └── services/               # Service layer tests
     ├── test_notification.py
     └── test_email.py
-```
+```python
 
 ## Coverage Analysis
 
 The test command shows coverage context:
 
-```
+```bash
 📈 Test Coverage Context:
   Current Coverage: ~20.5%
   Test Files: 48
@@ -300,7 +300,7 @@ The test command shows coverage context:
 💡 To reach 70% coverage:
   Need ~29,708 more lines of tests
   That's ~595 test files (avg 50 lines each)
-```
+```bash
 
 ## Best Practices
 
@@ -309,7 +309,7 @@ The test command shows coverage context:
 ```powershell
 # While coding
 .\lokifi.ps1 test -TestSmart
-```
+```powershell
 
 This gives you rapid feedback on your changes without running the entire suite.
 
@@ -318,7 +318,7 @@ This gives you rapid feedback on your changes without running the entire suite.
 ```powershell
 # Before git commit
 .\lokifi.ps1 test -TestPreCommit
-```
+```powershell
 
 This catches issues early and keeps the main branch stable.
 
@@ -327,7 +327,7 @@ This catches issues early and keeps the main branch stable.
 ```powershell
 # Weekly or before releases
 .\lokifi.ps1 test -TestCoverage
-```
+```powershell
 
 Track coverage trends and identify gaps.
 
@@ -339,14 +339,14 @@ Track coverage trends and identify gaps.
 
 # Debug specific test
 .\lokifi.ps1 test -TestMatch "test_login_success" -TestVerbose
-```
+```powershell
 
 ### 5. Run Full Suite Before Major Changes
 
 ```powershell
 # Before major refactoring or releases
 .\lokifi.ps1 test -Component all -TestCoverage
-```
+```powershell
 
 ## Troubleshooting
 
@@ -360,7 +360,7 @@ ls apps/backend/tests/ -Recurse -Filter "test_*.py"
 
 # Verify test runner can find tests
 .\tools\test-runner.ps1 -Category backend -Verbose
-```
+```powershell
 
 ### Virtual Environment Issues
 
@@ -373,7 +373,7 @@ Remove-Item -Recurse -Force venv
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```
+```powershell
 
 ### Frontend Test Issues
 
@@ -384,7 +384,7 @@ If npm tests fail:
 cd apps/frontend
 Remove-Item -Recurse -Force node_modules
 npm install
-```
+```powershell
 
 ## Future Enhancements
 

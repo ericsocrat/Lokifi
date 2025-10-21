@@ -31,44 +31,44 @@
 ```powershell
 # Run only affected tests (60-90% faster)
 .\lokifi.ps1 test -TestSmart
-```
+```powershell
 
 ### Before Committing
 ```powershell
 # Quick pre-commit validation (30s)
 .\lokifi.ps1 test -TestPreCommit
-```
+```powershell
 
 ### Debugging Specific Test
 ```powershell
 # Run specific file with verbose output
 .\lokifi.ps1 test -TestFile test_auth.py -TestVerbose
-```
+```powershell
 
 ### Debugging by Pattern
 ```powershell
 # Run all tests matching "authentication"
 .\lokifi.ps1 test -TestMatch "authentication" -TestVerbose
-```
+```powershell
 
 ### Generating Coverage
 ```powershell
 # Generate and view coverage report
 .\lokifi.ps1 test -TestCoverage
 Start-Process "apps/backend/htmlcov/index.html"
-```
+```powershell
 
 ### Frontend Watch Mode
 ```powershell
 # Auto-run tests on file changes
 .\lokifi.ps1 test -Component frontend -Watch
-```
+```powershell
 
 ### CI/CD Pipeline
 ```powershell
 # Full quality gate validation
 .\lokifi.ps1 test -TestGate
-```
+```powershell
 
 ## 🔧 All Parameters
 
@@ -89,7 +89,7 @@ Start-Process "apps/backend/htmlcov/index.html"
 
 The test command shows coverage before running:
 
-```
+```bash
 📈 Test Coverage Context:
   Current Coverage: ~20.5%
   Test Files: 48
@@ -100,28 +100,28 @@ The test command shows coverage before running:
 💡 To reach 70% coverage:
   Need ~29,708 more lines of tests
   That's ~595 test files (avg 50 lines each)
-```
+```bash
 
 ## 🎯 Smart Test Selection
 
 Smart mode maps changed files to tests:
 
-```
+```python
 app/api/routes/auth.py → test_auth_endpoints.py, test_auth.py
 app/services/user.py   → test_user.py
 src/components/User.tsx → User.test.tsx
-```
+```python
 
 ## 📁 Test Result Artifacts
 
 Results saved to `test-results/`:
 
-```
+```powershell
 test-results/
 ├── backend-results.xml      # JUnit XML (CI)
 ├── backend-coverage.json    # Coverage data
 └── frontend-results.xml     # Frontend results
-```
+```powershell
 
 ## ⏱️ Performance Comparison
 
@@ -139,7 +139,7 @@ test-results/
 ```powershell
 # Check test locations
 ls apps/backend/tests/ -Recurse -Filter "test_*.py"
-```
+```powershell
 
 ### Virtual Environment Issues
 ```powershell
@@ -149,7 +149,7 @@ Remove-Item -Recurse -Force venv
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```
+```powershell
 
 ### Frontend Issues
 ```powershell
@@ -157,13 +157,13 @@ pip install -r requirements.txt
 cd apps/frontend
 Remove-Item -Recurse -Force node_modules
 npm install
-```
+```powershell
 
 ### Get Verbose Output
 ```powershell
 # See detailed test output
 .\lokifi.ps1 test -TestVerbose
-```
+```powershell
 
 ## 📚 Documentation
 
@@ -211,7 +211,7 @@ echo "# test" >> apps/backend/app/api/routes/health.py
 .\lokifi.ps1 test -TestSmart
 
 # 3. See only affected tests run!
-```
+```powershell
 
 ## 💡 Tips
 
@@ -229,7 +229,7 @@ echo "# test" >> apps/backend/app/api/routes/health.py
 
 # Direct test runner help
 .\tools\test-runner.ps1 -?
-```
+```powershell
 
 ---
 
