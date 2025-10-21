@@ -114,7 +114,7 @@ lokifi.db          # Local SQLite (should be in .gitignore)
 
 **You already have security tools:**
 ```powershell
-.\tools\lokifi.ps1 find-secrets  # Scan for hardcoded secrets
+.\tools\cleanup-docs.ps1  # Documentation management
 ```powershell
 
 **Security patterns monitored:**
@@ -435,7 +435,7 @@ git log -p | Select-String -Pattern "AKIA|sk_live|password.*=.*['\"]"
 3. **Quick scan** (30 seconds)
    ```powershell
    cd c:\Users\USER\Desktop\lokifi
-   .\tools\lokifi.ps1 find-secrets
+   git log --all --full-history --source -- .env
    ```
 
 4. **Make it public!** (30 seconds)

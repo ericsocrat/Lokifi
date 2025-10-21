@@ -26,7 +26,7 @@ This document summarizes the code quality automation improvements implemented fo
 
 **What Runs on Commit:**
 ```bash
-# For TypeScript/JavaScript files
+# For TypeScript files
 - ESLint with auto-fix
 - Prettier formatting
 
@@ -96,7 +96,7 @@ This document summarizes the code quality automation improvements implemented fo
 
 **Contents:**
 - General principles (DRY, KISS, YAGNI)
-- TypeScript/JavaScript standards
+- TypeScript standards
 - React component patterns
 - Python/Backend standards
 - Git workflow and commit messages

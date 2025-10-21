@@ -3,6 +3,8 @@
 ## Current Branch State
 
 ### PR #23: API Contract Testing
+
+#### Description:
 - **Branch:** `feature/api-contract-testing`
 - **Latest Commit (Local & Remote):** `cba8bcaf` - "fix: Add PYTHONPATH to api-contracts job to resolve import errors"
 - **All Fixes Applied:**
@@ -12,6 +14,8 @@
 - **Status:** Remote branch is up to date with all fixes
 
 ### PR #24: Visual Regression Testing
+
+#### Description:
 - **Branch:** `feature/visual-regression-testing`
 - **Latest Commit (Local & Remote):** `72c967e0` - "docs: Update progress summary with api-contracts PYTHONPATH fix"
 - **All Fixes Applied:**
