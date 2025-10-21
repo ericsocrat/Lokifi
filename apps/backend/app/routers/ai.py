@@ -10,10 +10,6 @@ import json
 import logging
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import Response, StreamingResponse
-from sqlalchemy.orm import Session
-
 from app.api.deps import get_current_user, get_db
 from app.db.models import AIMessage, User
 from app.schemas.ai_schemas import (
@@ -39,9 +35,12 @@ from app.services.multimodal_ai_service import (
     UnsupportedFileTypeError,
     multimodal_ai_service,
 )
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import Response, StreamingResponse
 
 # Notification Integration
 from scripts.notification_integration_helpers import trigger_ai_response_notification
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -135,16 +134,16 @@ async def send_message(
                 if isinstance(chunk, StreamChunk):
                     # Stream token chunk
                     chunk_data = {
-                        'type': 'chunk',
-                        'content': chunk.content,
-                        'is_complete': chunk.is_complete
+                        "type": "chunk",
+                        "content": chunk.content,
+                        "is_complete": chunk.is_complete,
                     }
                     yield f"data: {json.dumps(chunk_data)}\n\n"
                 elif isinstance(chunk, AIMessage):
                     # Final message
                     complete_data = {
-                        'type': 'complete',
-                        'message': AIMessageResponse.model_validate(chunk).model_dump()
+                        "type": "complete",
+                        "message": AIMessageResponse.model_validate(chunk).model_dump(),
                     }
                     yield f"data: {json.dumps(complete_data)}\n\n"
 
@@ -176,32 +175,20 @@ async def send_message(
                         logger.warning(f"AI response notification failed: {e}")
 
         except RateLimitError as e:
-            error_data = {
-                'type': 'error',
-                'error': 'rate_limit',
-                'message': str(e)
-            }
+            error_data = {"type": "error", "error": "rate_limit", "message": str(e)}
             yield f"data: {json.dumps(error_data)}\n\n"
         except SafetyFilterError as e:
-            error_data = {
-                'type': 'error',
-                'error': 'safety_filter',
-                'message': str(e)
-            }
+            error_data = {"type": "error", "error": "safety_filter", "message": str(e)}
             yield f"data: {json.dumps(error_data)}\n\n"
         except ProviderError as e:
-            error_data = {
-                'type': 'error',
-                'error': 'provider_error',
-                'message': str(e)
-            }
+            error_data = {"type": "error", "error": "provider_error", "message": str(e)}
             yield f"data: {json.dumps(error_data)}\n\n"
         except Exception as e:
             logger.error(f"Stream error: {e}")
             error_data = {
-                'type': 'error',
-                'error': 'internal_error',
-                'message': 'An internal error occurred'
+                "type": "error",
+                "error": "internal_error",
+                "message": "An internal error occurred",
             }
             yield f"data: {json.dumps(error_data)}\n\n"
 
@@ -542,16 +529,16 @@ async def upload_file_to_thread(
                     ):
                         if isinstance(chunk, StreamChunk):
                             chunk_data = {
-                                'type': 'chunk',
-                                'content': chunk.content,
-                                'is_complete': chunk.is_complete
+                                "type": "chunk",
+                                "content": chunk.content,
+                                "is_complete": chunk.is_complete,
                             }
                             yield f"data: {json.dumps(chunk_data)}\\n\\n"
                         else:
                             chunk_data = {
-                                'type': 'chunk',
-                                'content': str(chunk),
-                                'is_complete': False
+                                "type": "chunk",
+                                "content": str(chunk),
+                                "is_complete": False,
                             }
                             yield f"data: {json.dumps(chunk_data)}\\n\\n"
 
@@ -573,16 +560,16 @@ async def upload_file_to_thread(
                     ):
                         if isinstance(chunk, StreamChunk):
                             chunk_data = {
-                                'type': 'chunk',
-                                'content': chunk.content,
-                                'is_complete': chunk.is_complete
+                                "type": "chunk",
+                                "content": chunk.content,
+                                "is_complete": chunk.is_complete,
                             }
                             yield f"data: {json.dumps(chunk_data)}\\n\\n"
                         else:
                             chunk_data = {
-                                'type': 'chunk',
-                                'content': str(chunk),
-                                'is_complete': False
+                                "type": "chunk",
+                                "content": str(chunk),
+                                "is_complete": False,
                             }
                             yield f"data: {json.dumps(chunk_data)}\\n\\n"
 

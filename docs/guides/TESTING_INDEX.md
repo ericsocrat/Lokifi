@@ -5,24 +5,14 @@ Welcome to the Lokifi testing documentation! This index will help you find the i
 ## 📚 Documentation Overview
 
 ### 🎯 Start Here
-- **[Complete Test Organization Summary](COMPLETE_TEST_ORGANIZATION_SUMMARY.md)** - ⭐ **NEW!** Complete 7-phase organization summary
-- **[Before & After Visual](TEST_ORGANIZATION_BEFORE_AFTER.md)** - ⭐ **NEW!** Visual transformation guide
-- **[Enhanced Test System](guides/ENHANCED_TEST_SYSTEM.md)** - 🆕 Complete guide to the enhanced test runner
-- **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - 🆕 One-page cheat sheet for quick lookups
-- **[Testing Guide](guides/TESTING_GUIDE.md)** - Complete guide to testing in Lokifi
+- **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - One-page cheat sheet for quick lookups
+- **[Testing Guide](TESTING_GUIDE.md)** - Complete guide to testing in Lokifi
+- **[Integration Tests Guide](INTEGRATION_TESTS_GUIDE.md)** - Integration testing specifics
 
 ### 📂 Quick References
-- **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - 🆕 Fast command reference
-- **[Backend Tests README](../apps/backend/tests/README.md)** - Backend testing quick reference
-- **[Frontend Tests README](../apps/frontend/tests/README.md)** - Frontend testing quick reference
-
-### 📊 Analysis & Planning
-- **[Complete Organization Summary](COMPLETE_TEST_ORGANIZATION_SUMMARY.md)** - ⭐ **NEW!** Final completion report
-- **[Before & After Visual](TEST_ORGANIZATION_BEFORE_AFTER.md)** - ⭐ **NEW!** Visual transformation
-- **[Test Consolidation Analysis](TEST_CONSOLIDATION_ANALYSIS.md)** - 🆕 Detailed test optimization plan
-- **[Test Organization Summary](TEST_ORGANIZATION.md)** - How tests are organized
-- **[Organization Complete Report](TEST_ORGANIZATION_COMPLETE.md)** - Full details of recent reorganization
-- **[Comprehensive Organization Plan](COMPREHENSIVE_TEST_ORGANIZATION_PLAN.md)** - 🆕 Detailed 7-phase plan
+- **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - Fast command reference
+- **[Backend Tests README](../../apps/backend/tests/README.md)** - Backend testing quick reference
+- **[Frontend Tests README](../../apps/frontend/tests/README.md)** - Frontend testing quick reference
 
 ## 🗂️ Test Structure
 
@@ -60,24 +50,26 @@ Welcome to the Lokifi testing documentation! This index will help you find the i
 
 ## 🚀 Quick Start
 
-### Running Tests (Enhanced System) 🆕
+### Running Tests
 
-**Using Lokifi Bot** (Recommended):
-```powershell
-.\lokifi.ps1 test                          # All tests with coverage context
-.\lokifi.ps1 test -TestSmart               # Smart selection (60-90% faster)
-.\lokifi.ps1 test -Component api           # API tests only
-.\lokifi.ps1 test -TestPreCommit           # Pre-commit validation
-.\lokifi.ps1 test -TestCoverage            # Generate coverage reports
-.\lokifi.ps1 test -TestFile test_auth.py   # Specific test file
-```powershell
+**Backend Tests (pytest)**:
+```bash
+cd apps/backend
+pytest tests/                              # All tests
+pytest tests/api/                          # API tests only
+pytest tests/unit/                         # Unit tests only
+pytest tests/ --cov                        # With coverage
+pytest tests/api/test_auth_endpoints.py    # Specific file
+```
 
-**Direct Test Runner**:
-```powershell
-.\tools\test-runner.ps1 -Category api      # API tests
-.\tools\test-runner.ps1 -Smart             # Smart selection
-.\tools\test-runner.ps1 -PreCommit         # Pre-commit tests
-```powershell
+**Frontend Tests (Vitest)**:
+```bash
+cd apps/frontend
+npm test                                   # All tests
+npm test -- tests/components/              # Component tests
+npm run test:coverage                      # With coverage
+npm test -- PriceChart.test.tsx            # Specific file
+```
 
 **Traditional Methods** (Still supported):
 ```bash
@@ -94,10 +86,14 @@ npm run test:coverage               # With coverage
 
 **Check Coverage**:
 ```bash
-.\lokifi.ps1 test -TestCoverage    # Enhanced with HTML report
-# Or traditional:
-./tools/ci-cd/enhanced-ci-protection.ps1
-```bash
+# Backend
+cd apps/backend
+pytest --cov=app --cov-report=html
+
+# Frontend
+cd apps/frontend
+npm run test:coverage
+```
 
 ### Writing Tests
 
@@ -112,20 +108,17 @@ npm run test:coverage               # With coverage
 ## 📖 Documentation Guide
 
 ### For New Team Members
-1. Start with **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - 🆕 One-page cheat sheet
-2. Read **[Enhanced Test System](guides/ENHANCED_TEST_SYSTEM.md)** - 🆕 Learn the new test runner
-3. Check **[Testing Guide](guides/TESTING_GUIDE.md)** - Complete testing practices
-4. Check **[Backend README](../apps/backend/tests/README.md)** or **[Frontend README](../apps/frontend/tests/README.md)**
-5. Look at existing tests for examples
-6. Write your first test following the patterns
-7. Run with: `.\lokifi.ps1 test -TestSmart`
+1. Start with **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - One-page cheat sheet
+2. Check **[Testing Guide](TESTING_GUIDE.md)** - Complete testing practices
+3. Check **[Backend README](../../apps/backend/tests/README.md)** or **[Frontend README](../../apps/frontend/tests/README.md)**
+4. Look at existing tests for examples
+5. Write your first test following the patterns
+6. Run with: `npm test` or `pytest`
 
 ### For Existing Team Members
-1. **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - 🆕 Fast command lookup
-2. **[Enhanced Test System](guides/ENHANCED_TEST_SYSTEM.md)** - 🆕 New capabilities
-3. **[Testing Guide](guides/TESTING_GUIDE.md)** - Reference for conventions and best practices
-4. Try the new smart tests: `.\lokifi.ps1 test -TestSmart`
-3. **[Test Organization](TEST_ORGANIZATION.md)** - Understanding the structure
+1. **[Quick Reference Card](TEST_QUICK_REFERENCE.md)** - Fast command lookup
+2. **[Testing Guide](TESTING_GUIDE.md)** - Reference for conventions and best practices
+3. Check updated test organization structure
 
 ### For Test Coverage Improvement
 1. Check current coverage: `./tools/ci-cd/enhanced-ci-protection.ps1`

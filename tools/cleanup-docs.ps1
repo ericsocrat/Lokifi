@@ -210,7 +210,7 @@ if ($DryRun) {
     Write-Host ""
     Write-Host "📝 Files that WOULD be deleted:" -ForegroundColor Cyan
     Write-Host "───────────────────────────────────────────────────────────" -ForegroundColor Gray
-    
+
     # Group by folder for better readability
     $grouped = $filesToDelete | Group-Object { Split-Path $_.FullName -Parent }
     foreach ($group in $grouped | Sort-Object Name) {
@@ -221,7 +221,7 @@ if ($DryRun) {
             Write-Host "     • $($file.Name)" -ForegroundColor DarkGray
         }
     }
-    
+
     Write-Host ""
     Write-Host "To actually delete these files, run:" -ForegroundColor Cyan
     Write-Host "  .\tools\cleanup-docs.ps1" -ForegroundColor White
@@ -262,7 +262,7 @@ foreach ($file in $filesToDelete) {
 Write-Host ""
 Write-Host "🧹 Cleaning up empty folders..." -ForegroundColor Cyan
 
-$emptyFolders = Get-ChildItem -Path "docs" -Directory -Recurse | 
+$emptyFolders = Get-ChildItem -Path "docs" -Directory -Recurse |
     Where-Object { (Get-ChildItem -Path $_.FullName -Recurse -File).Count -eq 0 } |
     Sort-Object -Property FullName -Descending
 

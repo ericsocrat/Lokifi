@@ -2,52 +2,78 @@
 
 ## 🚀 Quick Commands
 
-| Command | Description |
-|---------|-------------|
-| `.\lokifi.ps1 test` | Run all tests with coverage context |
-| `.\lokifi.ps1 test -TestSmart` | Smart selection (only affected tests) |
-| `.\lokifi.ps1 test -Quick` | Fast tests only (<10s each) |
-| `.\lokifi.ps1 test -TestPreCommit` | Pre-commit validation suite |
-| `.\lokifi.ps1 test -TestGate` | Full quality gate validation |
-| `.\lokifi.ps1 test -TestCoverage` | Generate coverage reports |
+### Backend Tests (pytest)
+```bash
+cd apps/backend
+pytest tests/                              # All tests
+pytest tests/api/                          # API tests only
+pytest tests/unit/                         # Unit tests only  
+pytest tests/integration/                  # Integration tests
+pytest tests/security/                     # Security tests
+pytest tests/ --cov                        # With coverage
+pytest tests/api/test_auth_endpoints.py    # Specific file
+pytest -v                                  # Verbose output
+```
+
+### Frontend Tests (Vitest)
+```bash
+cd apps/frontend
+npm test                                   # All tests
+npm test -- tests/components/              # Component tests
+npm test -- tests/unit/                    # Unit tests
+npm test -- tests/e2e/                     # E2E tests
+npm run test:coverage                      # With coverage
+npm test -- PriceChart.test.tsx            # Specific file
+npm test -- --ui                           # Vitest UI
+```
 
 ## 📂 Test Categories
 
-| Category | Location | Command |
-|----------|----------|---------|
-| **All** | `tests/` | `.\lokifi.ps1 test` |
-| **Backend** | `backend/tests/` | `.\lokifi.ps1 test -Component backend` |
-| **Frontend** | `frontend/tests/` | `.\lokifi.ps1 test -Component frontend` |
-| **API** | `backend/tests/api/` | `.\lokifi.ps1 test -Component api` |
-| **Unit** | `backend/tests/unit/` | `.\lokifi.ps1 test -Component unit` |
-| **Integration** | `backend/tests/integration/` | `.\lokifi.ps1 test -Component integration` |
-| **E2E** | `backend/tests/e2e/` | `.\lokifi.ps1 test -Component e2e` |
-| **Security** | `backend/tests/security/` | `.\lokifi.ps1 test -Component security` |
-| **Services** | `backend/tests/services/` | `.\lokifi.ps1 test -Component services` |
+| Category | Location | Backend Command | Frontend Command |
+|----------|----------|-----------------|------------------|
+| **All** | `apps/*/tests/` | `pytest tests/` | `npm test` |
+| **API** | `backend/tests/api/` | `pytest tests/api/` | N/A |
+| **Unit** | `*/tests/unit/` | `pytest tests/unit/` | `npm test -- tests/unit/` |
+| **Integration** | `*/tests/integration/` | `pytest tests/integration/` | `npm test -- tests/integration/` |
+| **E2E** | `*/tests/e2e/` | `pytest tests/e2e/` | `npm test -- tests/e2e/` |
+| **Security** | `*/tests/security/` | `pytest tests/security/` | `npm test -- tests/security/` |
+| **Services** | `backend/tests/services/` | `pytest tests/services/` | N/A |
+| **Components** | `frontend/tests/components/` | N/A | `npm test -- tests/components/` |
 
 ## 🎯 Common Workflows
 
 ### During Development
-```powershell
-# Run only affected tests (60-90% faster)
-.\lokifi.ps1 test -TestSmart
-```powershell
+```bash
+# Backend - run affected tests
+cd apps/backend
+pytest tests/unit/test_auth.py -v
+
+# Frontend - watch mode
+cd apps/frontend
+npm test -- --watch
+```
 
 ### Before Committing
-```powershell
-# Quick pre-commit validation (30s)
-.\lokifi.ps1 test -TestPreCommit
-```powershell
+```bash
+# Backend - quick validation
+cd apps/backend
+pytest tests/unit/ tests/api/ --maxfail=1
+
+# Frontend - pre-commit check
+cd apps/frontend
+npm test -- --run
+```
 
 ### Debugging Specific Test
-```powershell
-# Run specific file with verbose output
-.\lokifi.ps1 test -TestFile test_auth.py -TestVerbose
-```powershell
+```bash
+# Backend - verbose with print statements
+cd apps/backend
+pytest tests/api/test_auth_endpoints.py -v -s
 
-### Debugging by Pattern
-```powershell
-# Run all tests matching "authentication"
+# Frontend - specific test pattern
+cd apps/frontend
+npm test -- --grep="authentication"
+```
 .\lokifi.ps1 test -TestMatch "authentication" -TestVerbose
 ```powershell
 
@@ -136,27 +162,50 @@ test-results/
 ## 🛠️ Troubleshooting
 
 ### Tests Not Found
-```powershell
-# Check test locations
-ls apps/backend/tests/ -Recurse -Filter "test_*.py"
-```powershell
-
-### Virtual Environment Issues
-```powershell
-# Recreate venv
+```bash
+# Backend - check test locations
 cd apps/backend
-Remove-Item -Recurse -Force venv
+find tests/ -name "test_*.py"
+
+# Frontend - check test files
+cd apps/frontend
+find tests/ -name "*.test.ts*"
+```
+
+### Virtual Environment Issues (Backend)
+```bash
+cd apps/backend
+rm -rf venv
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+source venv/bin/activate  # On Windows: .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```powershell
+```
 
 ### Frontend Issues
-```powershell
-# Reinstall dependencies
+```bash
 cd apps/frontend
-Remove-Item -Recurse -Force node_modules
+rm -rf node_modules
 npm install
+npm test
+```
+```powershell
+### Get Verbose Output
+```bash
+# Backend - verbose with print statements
+cd apps/backend
+pytest tests/api/test_auth_endpoints.py -v -s
+
+# Frontend - verbose mode
+cd apps/frontend
+npm test -- --reporter=verbose
+```
+
+## 📚 Additional Resources
+
+- **Full Guide**: `docs/guides/TESTING_GUIDE.md`
+- **Integration Tests**: `docs/guides/INTEGRATION_TESTS_GUIDE.md`
+- **Backend Test README**: `apps/backend/tests/README.md`
+- **Frontend Test README**: `apps/frontend/tests/README.md`
 ```powershell
 
 ### Get Verbose Output
