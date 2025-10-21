@@ -357,7 +357,7 @@ infra/
 ### **5. `tools/` - DevOps & Automation** ⭐
 ```markdown
 tools/
-├── cli/                    # DevOps CLI (lokifi.ps1 evolution)
+├── cli/                    # Future: DevOps CLI tools
 │   ├── src/
 │   │   ├── commands/
 │   │   │   ├── dev/       # Development commands

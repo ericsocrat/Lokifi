@@ -31,7 +31,7 @@ lokifi/
 │   ├── monitoring/
 │   └── security/
 ├── tools/          # DevOps
-│   ├── lokifi.ps1
+│   ├── test-runner.ps1
 │   └── scripts/
 └── docs/           # Documentation
 ```powershell
@@ -76,7 +76,7 @@ lokifi/
 │   └── security/
 │
 ├── tools/          # DevOps & automation
-│   ├── cli/        (evolved lokifi.ps1)
+│   ├── cli/        (future CLI tools)
 │   ├── generators/ ← NEW!
 │   ├── linters/    ← NEW!
 │   └── benchmarks/ ← NEW!

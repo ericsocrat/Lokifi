@@ -16,7 +16,7 @@ Complete documentation for Lokifi's CI/CD implementation.
 ## 🛠️ Tools Reference
 
 ### Core Tools
-- **lokifi.ps1**: Master DevOps CLI (6,750+ lines)
+- **Test Scripts**: Automated test runners in `apps/*/tests/`
 - **protection-dashboard.ps1**: Real-time CI/CD monitoring
 - **enhanced-ci-protection.ps1**: Advanced quality gates
 - **boost-test-coverage.ps1**: Intelligent test generation
