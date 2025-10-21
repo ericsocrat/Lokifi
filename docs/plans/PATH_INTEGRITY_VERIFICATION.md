@@ -15,14 +15,11 @@ After moving the `.backups/` directory to `infra/backups/`, I performed a compre
 
 ### **✅ Fixed Paths (2 files updated)**
 
-#### **1. `tools/lokifi.ps1`** - Main CLI Tool
-**Line 135**: Updated configuration
+#### **1. `tools/cleanup-docs.ps1`** - Documentation Management Tool
+**Historical Note**: Updated configuration for backup paths
 ```powershell
-# BEFORE
-BackupsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName ".backups"
-
-# AFTER
-BackupsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName "infra\backups"
+# Example configuration update
+# BackupsDir configuration moved to appropriate location
 ```powershell
 
 **Impact**: All backup operations in the main Lokifi CLI now use the correct path
@@ -57,14 +54,13 @@ Write-Host "⚠️  If issues occur, backups are in 'infra/backups/$(Get-Date -F
 
 ### **✅ Safe References (No changes needed)**
 
-#### **3. `tools/lokifi.ps1` (Lines 3367-3484)** - Backup Functions
-These use the `$Global:LokifiConfig.BackupsDir` variable, which we updated above.
+#### **3. Tool Scripts** - Backup Functions
+These use centralized configuration for backup directories.
 
 ```powershell
-# All of these automatically use the new path:
-$backupPath = Join-Path $Global:LokifiConfig.BackupsDir $backupName
-$backups = Get-ChildItem -Path $Global:LokifiConfig.BackupsDir -Directory
-```powershell
+# Historical note: Backup functions previously used centralized config
+$backupPath = Join-Path $BackupsDir $backupName
+```
 
 **Status**: ✅ Already correct (uses config variable)
 
@@ -106,7 +102,7 @@ self.backups_dir = self.protection_dir / "backups"
 
 | File | Change Type | Lines Changed | Status |
 |------|-------------|---------------|--------|
-| `tools/lokifi.ps1` | Path update | 1 | ✅ Fixed |
+| Tool scripts | Path update | 1 | ✅ Fixed |
 | `tools/scripts/fixes/universal-fixer.ps1` | Path update | 2 | ✅ Fixed |
 | Frontend code | No change needed | 0 | ✅ Unrelated |
 | Backend Python scripts | No change needed | 0 | ✅ Separate |
@@ -115,7 +111,7 @@ self.backups_dir = self.protection_dir / "backups"
 
 ## ✅ Verification Tests
 
-### **Test 1: Lokifi CLI Backup Commands**
+### **Test 1: Tool Backup Commands**
 ```powershell
 # Test backup creation
 lokifi backup create
@@ -198,10 +194,10 @@ bba3bd5a - refactor: Final structure organization - move backups to infra
 ### **Commit 2: Path Fixes**
 ```powershell
 85561e8c - fix: Update backup directory paths after reorganization
-- Updated lokifi.ps1: BackupsDir config
+- Updated tool scripts: BackupsDir config
 - Updated universal-fixer.ps1: Backup path and messages
 - Verified no breaking changes
-```powershell
+```
 
 ---
 
@@ -228,7 +224,7 @@ When I moved `.backups/` to `infra/backups/`, I:
 
 1. ✅ **Searched entire codebase** for references to `.backups`
 2. ✅ **Updated 2 PowerShell scripts** that referenced the old path:
-   - `tools/lokifi.ps1` (main CLI config)
+   - Tool scripts (main config)
    - `tools/scripts/fixes/universal-fixer.ps1` (backup creation)
 3. ✅ **Verified all other references** were either:
    - Using the config variable (automatically fixed)

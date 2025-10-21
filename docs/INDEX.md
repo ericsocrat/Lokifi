@@ -77,5 +77,5 @@ Welcome to the comprehensive documentation index for Lokifi - A modern financial
 
 ---
 
-**Last Updated:** October 2025  
+**Last Updated:** October 2025
 **Maintained By:** Lokifi Development Team
