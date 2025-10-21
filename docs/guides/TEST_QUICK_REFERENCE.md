@@ -262,12 +262,10 @@ npm test -- --reporter=verbose
 - **Integration Tests**: `docs/guides/INTEGRATION_TESTS_GUIDE.md`
 - **Backend Test README**: `apps/backend/tests/README.md`
 - **Frontend Test README**: `apps/frontend/tests/README.md`
-```powershell
 
-### Get Verbose Output
-```powershell
-# See detailed test output
-.\lokifi.ps1 test -TestVerbose
+---
+
+**Pro Tip**: Use `-v` for verbose output and `-s` to see print statements during debugging!
 ```powershell
 
 ## 📚 Documentation
