@@ -55,7 +55,7 @@ const CONFIG = {
         },
         fmp: {
             base: 'https://financialmodelingprep.com/api/v3',
-            key: 'I7bC0nt4WALTRLIzdYMpDzuAKRwfKotL',
+            key: process.env.FMP_API_KEY || '',
             rateLimit: 250, // requests per day (free tier)  
             delay: 1000     // 1 second between requests
         }
