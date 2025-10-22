@@ -1,6 +1,8 @@
-# Monitoring Setup (Optional)
+# Monitoring Setup
 
-This directory contains optional monitoring configurations for production deployments.
+This directory contains monitoring configurations for Lokifi deployments.
+
+> **Note**: Standalone `docker-compose.monitoring.yml` was removed (Oct 2025). Use `docker-compose.production.yml` for full monitoring stack.
 
 ## Available Monitoring Options
 
@@ -13,18 +15,19 @@ docker compose up -d
 docker compose ps  # Check health status
 ```
 
-### 2. Grafana + Prometheus Stack
+### 2. Full Production Monitoring Stack
 
-For comprehensive monitoring and alerting:
+For comprehensive monitoring, logging, and alerting:
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+# Includes: Prometheus, Grafana, Loki, Promtail, Traefik
+docker compose -f docker-compose.production.yml up -d
 ```
 
 Access:
-- **Grafana**: http://localhost:3001 (admin/admin)
+- **Grafana**: http://localhost:3001 (admin/[GRAFANA_PASSWORD])
 - **Prometheus**: http://localhost:9090
-- **Uptime Kuma**: http://localhost:3002
+- **Traefik Dashboard**: http://localhost:8080
 
 ### 3. Simple Uptime Monitoring
 

@@ -1,36 +1,48 @@
-# 🐳 Redis on Docker - Setup Complete
+# 🐳 Redis Docker Setup Guide
 
-## ✅ What Changed
+> **⚠️ DEPRECATION NOTICE (Oct 2025)**:
+> The separate `docker-compose.redis.yml` HA cluster config has been removed.
+> Redis 7.4 is now included in the base `docker-compose.yml` - sufficient for most production workloads.
+> References to `docker-compose.redis.yml` in this guide are historical.
 
-The Lokifi application now uses **Redis running in Docker** for caching instead of a local Redis installation.
+## ✅ What You Get
 
-### Benefits of Docker Redis:
-- ✅ **Easy setup** - No manual Redis installation needed
-- ✅ **Consistent environment** - Same Redis version across all machines
-- ✅ **Data persistence** - Redis data saved in Docker volumes
-- ✅ **Auto-restart** - Container restarts automatically
-- ✅ **Isolated** - Doesn't conflict with other Redis installations
-- ✅ **Easy management** - Simple commands to start/stop/monitor
+Redis runs as part of the standard Docker Compose stack - no separate Redis installation needed.
+
+### Benefits:
+- ✅ **Easy setup** - Included in base docker-compose.yml
+- ✅ **Consistent environment** - Redis 7.4-alpine across all environments
+- ✅ **Data persistence** - Disabled in dev, enabled in production.yml
+- ✅ **Health checks** - Automatic monitoring and restart
+- ✅ **Isolated** - No conflicts with system Redis
+- ✅ **Production-ready** - Good for most workloads without HA complexity
 
 ---
 
 ## 🚀 Quick Start
 
-**📖 For complete Redis setup and management commands:** See [`../QUICK_START.md`](../QUICK_START.md) - Redis Management section
+### Development
+```bash
+# Redis starts automatically with the stack
+docker compose up
 
-### Using Docker Compose (Alternative)
-```powershell
-# Start Redis
-docker-compose -f docker-compose.redis.yml up -d
+# Check Redis is running
+docker compose ps redis
 
-# Stop Redis
-docker-compose -f docker-compose.redis.yml down
+# View Redis logs
+docker compose logs redis -f
 
-# View logs
-docker-compose -f docker-compose.redis.yml logs -f
+# Restart Redis only
+docker compose restart redis
+```
 
-# Restart Redis
-docker-compose -f docker-compose.redis.yml restart
+### Production
+```bash
+# Self-hosted with persistent Redis
+docker compose -f docker-compose.production.yml up -d
+
+# Cloud deployment (managed Redis recommended)
+docker compose -f docker-compose.prod-minimal.yml up -d
 ```
 
 ---

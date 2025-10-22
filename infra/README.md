@@ -24,42 +24,35 @@ infra/
 
 **Purpose**: Container orchestration and deployment configurations for different environments.
 
+> **Note**: Streamlined from 7 to 4 compose files (Oct 2025) - removed redundant monitoring, Redis HA, and Swarm configs.
+
 ### Available Files:
 
-- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis)
-- **docker-compose.prod.yml**: Production environment overrides (simpler, for basic prod setups)
+- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis, mailhog)
+- **docker-compose.override.yml**: Local development overrides (hot-reload)
+- **docker-compose.prod-minimal.yml**: Lean production (for cloud managed databases)
 - **docker-compose.production.yml**: Full production setup with Traefik, monitoring, and high availability
-- **docker-compose.override.yml**: Local development overrides
-- **docker-compose.monitoring.yml**: Prometheus + Grafana observability stack
-- **docker-compose.redis.yml**: Redis with replication and Sentinel for high availability
-- **docker-compose.swarm.yml**: Docker Swarm orchestration configuration
 
 ### Usage:
 
 ```bash
-# Start development environment
-docker-compose up -d
+# Development (auto-loads override.yml)
+docker compose up
 
-# Start simple production environment
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Production - Cloud deployment
+docker compose -f docker-compose.prod-minimal.yml up -d
 
-# Start full production with monitoring
-docker-compose -f docker-compose.production.yml up -d
-
-# Start with monitoring only
-docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
-
-# Redis high availability setup
-cd infra/docker
-docker-compose -f docker-compose.redis.yml up -d
+# Production - Self-hosted with full monitoring
+docker compose -f docker-compose.production.yml up -d
 ```
 
 ### File Selection Guide:
 
-- **Development**: Use `docker-compose.yml` only
-- **Basic Production**: Use `docker-compose.yml` + `docker-compose.prod.yml`
-- **Enterprise Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)
-- **Redis HA**: Use `docker-compose.redis.yml` for primary-replica-sentinel setup
+- **Development**: Use `docker compose up` (auto-loads override.yml for hot-reload)
+- **Cloud Production**: Use `docker-compose.prod-minimal.yml` (AWS RDS, Azure Database, etc.)
+- **Self-Hosted Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)
+
+📖 **Detailed Guide**: See `docker/README.md` for comprehensive usage instructions
 
 ---
 
@@ -228,17 +221,11 @@ docker-compose up -d
 ### **Production Environment**
 
 ```bash
-# Production deployment with monitoring
-docker-compose -f docker-compose.yml \
-               -f docker-compose.prod.yml \
-               -f docker-compose.monitoring.yml up -d
-```
+# Cloud deployment (managed database)
+docker compose -f docker-compose.prod-minimal.yml up -d
 
-### **Scaled Production**
-
-```bash
-# Docker Swarm deployment
-docker stack deploy -c docker-compose.swarm.yml lokifi
+# Self-hosted (complete stack with monitoring)
+docker compose -f docker-compose.production.yml up -d
 ```
 
 ---
@@ -311,7 +298,7 @@ docker stack deploy -c docker-compose.swarm.yml lokifi
 
 ---
 
-*Last Updated: October 22, 2025*  
-*Infrastructure Components: 7 major systems*  
-*Deployment Strategies: 3 environment configurations*  
+*Last Updated: October 22, 2025*
+*Infrastructure Components: 7 major systems*
+*Deployment Strategies: 3 environment configurations*
 *Security Standards: Enterprise-grade implementation*

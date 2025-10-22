@@ -59,13 +59,13 @@ try {
         New-Item -ItemType Directory -Path "$redisDir\data" -Force | Out-Null
         New-Item -ItemType Directory -Path "$redisDir\logs" -Force | Out-Null
         
-        # Start Redis cluster using Docker
-        Write-Host "Starting Redis cluster with Docker Compose..." -ForegroundColor Gray
-        docker-compose -f docker-compose.redis.yml up -d
+        # Start Redis using Docker Compose production stack
+        Write-Host "Starting Redis with production Docker Compose..." -ForegroundColor Gray
+        docker compose -f docker-compose.production.yml up redis -d
         
         # Wait for Redis to be ready
-        Write-Host "Waiting for Redis cluster to be ready..." -ForegroundColor Gray
-        Start-Sleep -Seconds 10
+        Write-Host "Waiting for Redis to be ready..." -ForegroundColor Gray
+        Start-Sleep -Seconds 5
         
         # Test Redis connection
         $redisTest = docker exec lokifi-redis-primary redis-cli ping
