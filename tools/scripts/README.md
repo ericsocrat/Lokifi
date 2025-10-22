@@ -106,16 +106,12 @@ python .\scripts\security\generate_secrets.py
 
 ---
 
-## � **Root Level Scripts**
+## 📋 **Root Level Scripts**
 
 ### Available Scripts:
 - `coverage-dashboard.ps1` - Coverage visualization and reporting
-- `doc-generator.ps1` - Documentation generation
-- `estimate.ps1` - Project estimation tool
-- `create-prs.ps1` - PR automation
+- `doc-generator.ps1` - Documentation generation (test/API/component docs)
 - `security-scanner.ps1` - Comprehensive security scanning
-- `COMPREHENSIVE_MODE_TEST.ps1` - Testing mode validation
-- `TEST_SCANNING_MODES.ps1` - Scan mode testing
 
 ---
 
@@ -157,5 +153,5 @@ python .\scripts\security\generate_secrets.py
 ---
 
 *Last Updated: October 22, 2025*
-*Active Scripts: 20+ automation tools*
+*Active Scripts: 18 automation tools*
 *Categories: 5 functional areas*

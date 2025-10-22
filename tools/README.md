@@ -186,12 +186,8 @@ Start-Process .\tools\templates\dashboard.html
 - **security-scanner.ps1**: Comprehensive security scanning
 
 ### Utility Scripts (`scripts/`)
-- **coverage-dashboard.ps1**: Coverage visualization
-- **doc-generator.ps1**: Documentation generation
-- **estimate.ps1**: Project estimation tool
-- **create-prs.ps1**: PR automation
-- **COMPREHENSIVE_MODE_TEST.ps1**: Testing mode validation
-- **TEST_SCANNING_MODES.ps1**: Scan mode testing
+- **coverage-dashboard.ps1**: Coverage visualization and reporting
+- **doc-generator.ps1**: Documentation generation (test/API/component docs)
 
 ---
 
@@ -217,4 +213,4 @@ For specific tools:
 
 ---
 
-**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 30+ active automation tools
+**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 18 active automation tools
