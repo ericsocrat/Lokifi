@@ -2,8 +2,6 @@ import logging
 import os
 from contextlib import asynccontextmanager
 
-# Sentry error tracking
-import sentry_sdk
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
 from app.api.routes import security
@@ -44,9 +42,6 @@ from app.routers.profile_enhanced import router as profile_enhanced_router
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sentry_sdk.integrations.fastapi import FastApiIntegration
-from sentry_sdk.integrations.logging import LoggingIntegration
-from sentry_sdk.integrations.starlette import StarletteIntegration
 
 logger = logging.getLogger(__name__)
 
@@ -55,44 +50,6 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Enhanced application lifespan manager for Phase K Track 3 Infrastructure"""
     logger.info("🚀 Starting Lokifi Phase K Track 3 Infrastructure Enhancement")
-
-    # Initialize Sentry error tracking (if enabled)
-    if settings.ENABLE_SENTRY and settings.SENTRY_DSN:
-        logger.info("🔍 Initializing Sentry error tracking...")
-        try:
-            sentry_sdk.init(
-                dsn=settings.SENTRY_DSN,
-                environment=settings.SENTRY_ENVIRONMENT,
-                traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
-                profiles_sample_rate=1.0,  # Profile 100% of transactions
-                integrations=[
-                    FastApiIntegration(),
-                    StarletteIntegration(),
-                    LoggingIntegration(
-                        level=logging.INFO,  # Capture info and above as breadcrumbs
-                        event_level=logging.ERROR,  # Send errors as events
-                    ),
-                ],
-                # Additional options
-                send_default_pii=False,  # Don't send personally identifiable information
-                attach_stacktrace=True,  # Attach stack traces
-                max_request_body_size="medium",  # Limit body size
-                before_send=lambda event, hint: (
-                    event if event.get("level") in ["error", "fatal"] else None
-                ),  # Only send errors
-            )
-            logger.info("✅ Sentry initialized successfully")
-
-            # Test Sentry connection (commented out to prevent startup shutdown)
-            # try:
-            #     sentry_sdk.capture_message("Lokifi backend started successfully", level="info")
-            # except Exception as test_error:
-            #     logger.warning(f"⚠️ Sentry test message failed: {test_error}")
-        except Exception as e:
-            logger.error(f"❌ Sentry initialization failed: {e}")
-            # Don't fail startup if Sentry fails
-    else:
-        logger.info("ℹ️ Sentry error tracking disabled")
 
     # Startup sequence
     logger.info("🗄️ Initializing database...")

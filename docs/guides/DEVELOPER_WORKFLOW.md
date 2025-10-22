@@ -486,8 +486,8 @@ docker scan lokifi-backend-dev
 # → Run audit
 
 # Backend performance
-# → Sentry (already configured)
 # → http://localhost:8000/docs (Swagger - API testing)
+# → Python logging for error tracking
 
 # Database performance
 docker-compose exec postgres psql -U lokifi -d lokifi_db -c "SELECT * FROM pg_stat_activity;"

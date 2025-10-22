@@ -70,4 +70,3 @@ openapi-core==0.19.5
 openapi-spec-validator==0.7.2
 
 # Error Tracking
-sentry-sdk[fastapi]==2.20.0

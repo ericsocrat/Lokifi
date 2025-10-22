@@ -315,7 +315,7 @@ jobs:
 ### Application Monitoring
 - **Health endpoints** for all services
 - **Performance metrics** collection
-- **Error tracking** with Sentry
+- **Error tracking** with browser DevTools and Python logging
 - **Uptime monitoring** alerts
 
 ### Code Quality Monitoring

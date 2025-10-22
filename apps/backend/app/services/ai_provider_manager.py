@@ -6,7 +6,6 @@ import logging
 from enum import Enum
 from typing import Any
 
-import sentry_sdk
 from app.core.config import settings
 from app.services.ai_provider import AIProvider, MockProvider
 from app.services.providers.huggingface_provider import HuggingFaceProvider
@@ -41,8 +40,7 @@ class AIProviderManager:
                 self.providers["openrouter"] = OpenRouterProvider(settings.OPENROUTER_API_KEY)
                 logger.info("OpenRouter provider initialized")
             except Exception as e:
-                logger.error(f"Failed to initialize OpenRouter provider: {e}")
-                sentry_sdk.capture_exception(e)
+                logger.error(f"Failed to initialize OpenRouter provider: {e}", exc_info=True)
 
         # Hugging Face provider
         if hasattr(settings, "HUGGING_FACE_API_KEY") and settings.HUGGING_FACE_API_KEY:
@@ -50,8 +48,7 @@ class AIProviderManager:
                 self.providers["huggingface"] = HuggingFaceProvider(settings.HUGGING_FACE_API_KEY)
                 logger.info("Hugging Face provider initialized")
             except Exception as e:
-                logger.error(f"Failed to initialize Hugging Face provider: {e}")
-                sentry_sdk.capture_exception(e)
+                logger.error(f"Failed to initialize Hugging Face provider: {e}", exc_info=True)
 
         # Ollama provider
         if hasattr(settings, "OLLAMA_BASE_URL"):
@@ -59,8 +56,7 @@ class AIProviderManager:
                 self.providers["ollama"] = OllamaProvider(settings.OLLAMA_BASE_URL)
                 logger.info(f"Ollama provider initialized at {settings.OLLAMA_BASE_URL}")
             except Exception as e:
-                logger.error(f"Failed to initialize Ollama provider: {e}")
-                sentry_sdk.capture_exception(e)
+                logger.error(f"Failed to initialize Ollama provider: {e}", exc_info=True)
         else:
             # Try default Ollama URL
             try:
@@ -68,7 +64,7 @@ class AIProviderManager:
                 logger.info("Ollama provider initialized with default URL")
             except Exception as e:
                 logger.warning(f"Ollama not available: {e}")
-                # Don't report to Sentry - this is expected when Ollama isn't installed
+                # This is expected when Ollama isn't installed
 
         # Always add mock provider as fallback
         self.providers["mock"] = MockProvider()
