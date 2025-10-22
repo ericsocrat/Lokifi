@@ -2,7 +2,7 @@
 
 > **⚠️ DEPRECATION NOTICE (Oct 2025)**:
 > The separate `docker-compose.redis.yml` HA cluster config has been removed.
-> Redis 7.4 is now included in the base `docker-compose.yml` - sufficient for most production workloads.
+> Redis 7.4 is now included in `infra/docker/docker-compose.yml` - sufficient for most production workloads.
 > References to `docker-compose.redis.yml` in this guide are historical.
 
 ## ✅ What You Get
@@ -10,7 +10,7 @@
 Redis runs as part of the standard Docker Compose stack - no separate Redis installation needed.
 
 ### Benefits:
-- ✅ **Easy setup** - Included in base docker-compose.yml
+- ✅ **Easy setup** - Included in infra/docker/docker-compose.yml
 - ✅ **Consistent environment** - Redis 7.4-alpine across all environments
 - ✅ **Data persistence** - Disabled in dev, enabled in production.yml
 - ✅ **Health checks** - Automatic monitoring and restart

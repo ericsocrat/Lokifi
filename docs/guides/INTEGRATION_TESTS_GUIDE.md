@@ -140,8 +140,10 @@ docker compose -f infra/docker/docker-compose.yml logs postgres
 ## 📁 Key Files
 
 ```
-apps/
+infra/docker/
 ├── docker-compose.yml           # Main Docker configuration
+├── docker-compose.ci.yml        # CI/CD configuration
+apps/
 ├── backend/
 │   ├── Dockerfile              # Production build
 │   ├── Dockerfile.dev          # Development build

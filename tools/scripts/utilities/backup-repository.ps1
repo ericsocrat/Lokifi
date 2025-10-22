@@ -46,10 +46,10 @@ $configDir = Join-Path $currentBackup "configs"
 New-Item -ItemType Directory -Path $configDir -Force | Out-Null
 
 $configFiles = @(
-    "docker-compose.yml",
+    "infra\docker\docker-compose.yml",
     ".env.example",
-    "frontend\.env.local.example",
-    "backend\.env.example",
+    "apps\frontend\.env.local.example",
+    "apps\backend\.env.example",
     ".vscode\settings.json",
     ".vscode\tasks.json"
 )

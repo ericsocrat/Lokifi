@@ -1,15 +1,17 @@
 # 🚀 Lokifi
 
-**Market + Social + AI ├── 🎯 lokifi-app/           # Main application code
+**Market + Social + AI ├── 🎯 apps/                  # Application code
 │   ├── backend/            # FastAPI Python backend
 │   ├── frontend/           # Next.js React application
-│   ├── infrastructure/     # Infrastructure as Code (IaC)
-│   ├── redis/              # Redis configuration
-│   └── docker-compose.yml  # Docker orchestration
+│   └── mobile/             # Mobile application
 │
-├──  monitoring/           # System monitoring and observability
-├── 🔒 security/             # Security configs and audit tools
-└── 🧪 performance-tests/    # Performance testing suite
+├── 🏗️ infra/                # Infrastructure
+│   ├── docker/             # Docker compose configurations
+│   ├── monitoring/         # Monitoring stack (Prometheus, Grafana)
+│   └── security/           # Security configs
+│
+├── 📚 docs/                 # Documentation
+└── 🛠️ tools/                # Development and deployment tools
 ```
 
 ### 📖 **Navigation Guide***
@@ -97,7 +99,7 @@ lokifi/
 
 3. **Run with Docker Compose:**
    ```bash
-   docker-compose -f infrastructure/docker/docker-compose.yml up
+   cd infra/docker && docker compose up
    ```
 
    This will start:
@@ -319,7 +321,7 @@ OPENAI_API_KEY=your-openai-key
    ```bash
    # Cloud deployment (managed database)
    docker compose -f infra/docker/docker-compose.prod-minimal.yml up -d
-   
+
    # Self-hosted with full monitoring
    docker compose -f infra/docker/docker-compose.production.yml up -d
    ```
