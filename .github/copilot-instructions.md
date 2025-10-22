@@ -88,13 +88,23 @@ lokifi/
 │   ├── deployment/       # Production deployment guides
 │   ├── guides/           # Development guides
 │   └── security/         # Security documentation
-└── infra/                # Infrastructure & DevOps
-    └── docker/           # Docker configurations
-        ├── .env          # Production secrets (gitignored)
-        ├── .env.example  # Template for .env
-        ├── docker-compose.yml              # Local development
-        ├── docker-compose.production.yml   # Full production
-        └── docker-compose.prod-minimal.yml # Production (cloud DB)
+├── infra/                # Infrastructure & DevOps
+│   └── docker/           # Docker configurations
+│       ├── .env          # Production secrets (gitignored)
+│       ├── .env.example  # Template for .env
+│       ├── docker-compose.yml              # Local development
+│       ├── docker-compose.production.yml   # Full production
+│       └── docker-compose.prod-minimal.yml # Production (cloud DB)
+└── tools/                # Automation & Utility Scripts
+    ├── test-runner.ps1   # Comprehensive test execution
+    ├── hooks/            # Git hook management
+    │   └── setup-precommit-hooks.ps1
+    ├── scripts/          # Organized utility scripts
+    │   ├── analysis/     # Codebase analyzer
+    │   ├── cleanup/      # Cleanup utilities
+    │   ├── data/         # Data fetching (universal-fetcher.js)
+    │   └── security/     # Security scanner & secret generation
+    └── templates/        # HTML/Dashboard templates
 ```
 
 ## Common Patterns
@@ -287,7 +297,7 @@ For quick code analysis tasks, prefer interactive Copilot queries:
 - **Dependency checks**: Run `npm outdated` or `npm audit` directly
 - **Code quality**: Use `@workspace` context to analyze patterns and suggest refactoring
 
-### TypeScript Type Fixing (Replaces universal-fixer.ps1)
+### TypeScript Type Fixing
 For TypeScript type improvements, use **Copilot Edits** with full workspace context:
 
 **Finding Issues**:
