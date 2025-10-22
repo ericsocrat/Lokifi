@@ -16,17 +16,17 @@ function Test-ComposeFile {
         [string]$FilePath,
         [string]$Description = ""
     )
-    
+
     Write-Host "`n📄 Validating: $FilePath" -ForegroundColor Yellow
-    
+
     if (-not (Test-Path $FilePath)) {
         Write-Host "❌ File not found: $FilePath" -ForegroundColor Red
         return $false
     }
-    
+
     # Check if file is valid YAML and compose syntax
     $output = docker compose -f $FilePath config --quiet 2>&1
-    
+
     if ($LASTEXITCODE -eq 0) {
         Write-Host "✅ $FilePath is valid" -ForegroundColor Green
         return $true
@@ -75,12 +75,12 @@ if ($filesWithVersion) {
 }
 
 # Check for localhost in production files
-$localhostRefs = Get-ChildItem "docker-compose.prod*.yml", "docker-compose.production.yml" | 
+$localhostRefs = Get-ChildItem "docker-compose.prod*.yml", "docker-compose.production.yml" |
     Select-String -Pattern "localhost" -SimpleMatch
 if ($localhostRefs) {
     Write-Host "`n⚠️  Warning: Found 'localhost' in production files:" -ForegroundColor Yellow
-    $localhostRefs | ForEach-Object { 
-        Write-Host "   - $($_.Filename):$($_.LineNumber)" -ForegroundColor Gray 
+    $localhostRefs | ForEach-Object {
+        Write-Host "   - $($_.Filename):$($_.LineNumber)" -ForegroundColor Gray
     }
     Write-Host "   (Verify this is intentional for production)" -ForegroundColor Gray
 }

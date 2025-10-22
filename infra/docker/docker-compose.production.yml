@@ -9,7 +9,7 @@ services:
   # Frontend Service
   frontend:
     build:
-      context: ./frontend
+      context: ../../apps/frontend
       dockerfile: Dockerfile.prod
       args:
         - NEXT_PUBLIC_API_URL=http://backend:8000
@@ -45,7 +45,7 @@ services:
   # Backend Service
   backend:
     build:
-      context: ./backend
+      context: ../../apps/backend
       dockerfile: Dockerfile.prod
     image: lokifi/backend:latest
     container_name: lokifi-backend
@@ -92,7 +92,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ../../apps/backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -175,7 +175,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     networks:
       - lokifi-network
@@ -191,7 +191,7 @@ services:
       - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ../monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
     networks:
       - lokifi-network
     depends_on:
@@ -218,7 +218,7 @@ services:
     volumes:
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ../monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
       - lokifi-network

@@ -17,13 +17,13 @@ validate_compose() {
     local file=$1
     echo ""
     echo "📄 Validating: $file"
-    
+
     if [ ! -f "$file" ]; then
         echo "❌ File not found: $file"
         ERRORS=$((ERRORS + 1))
         return
     fi
-    
+
     # Check if file is valid YAML and compose syntax
     if docker compose -f "$file" config --quiet > /dev/null 2>&1; then
         echo "✅ $file is valid"

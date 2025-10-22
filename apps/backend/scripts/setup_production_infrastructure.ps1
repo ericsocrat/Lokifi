@@ -4,13 +4,13 @@
 param(
     [Parameter(Mandatory=$false)]
     [string]$Environment = "development",
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$RedisCluster = $false,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$Monitoring = $true,
-    
+
     [Parameter(Mandatory=$false)]
     [switch]$SkipDependencies = $false
 )
@@ -28,14 +28,14 @@ try {
     # 1. Install additional Python dependencies for infrastructure
     if (-not $SkipDependencies) {
         Write-Host "📦 Installing Python dependencies for infrastructure..." -ForegroundColor Yellow
-        
+
         $infraDependencies = @(
             "redis[hiredis]>=5.0.1",
             "psutil>=5.9.0",
             "httpx>=0.25.0",
             "asyncio-mqtt>=0.13.0"  # For MQTT support if needed
         )
-        
+
         foreach ($dep in $infraDependencies) {
             Write-Host "Installing $dep..." -ForegroundColor Gray
             pip install $dep
@@ -45,28 +45,28 @@ try {
 
     # 2. Set up Redis infrastructure
     Write-Host "🔧 Setting up Redis infrastructure..." -ForegroundColor Yellow
-    
+
     if ($RedisCluster) {
         Write-Host "Setting up Redis cluster with sentinel..." -ForegroundColor Gray
-        
+
         # Create Redis directories
         $redisDir = ".\redis"
         if (-not (Test-Path $redisDir)) {
             New-Item -ItemType Directory -Path $redisDir -Force | Out-Null
         }
-        
+
         # Create data directories
         New-Item -ItemType Directory -Path "$redisDir\data" -Force | Out-Null
         New-Item -ItemType Directory -Path "$redisDir\logs" -Force | Out-Null
-        
+
         # Start Redis using Docker Compose production stack
         Write-Host "Starting Redis with production Docker Compose..." -ForegroundColor Gray
         docker compose -f docker-compose.production.yml up redis -d
-        
+
         # Wait for Redis to be ready
         Write-Host "Waiting for Redis to be ready..." -ForegroundColor Gray
         Start-Sleep -Seconds 5
-        
+
         # Test Redis connection
         $redisTest = docker exec lokifi-redis-primary redis-cli ping
         if ($redisTest -eq "PONG") {
@@ -76,7 +76,7 @@ try {
         }
     } else {
         Write-Host "Setting up single Redis instance..." -ForegroundColor Gray
-        
+
         # Check if Redis is running locally
         $redisRunning = $false
         try {
@@ -87,7 +87,7 @@ try {
         } catch {
             # Redis CLI not available or not running
         }
-        
+
         if ($redisRunning) {
             Write-Host "✅ Redis is already running" -ForegroundColor Green
         } else {
@@ -98,7 +98,7 @@ try {
 
     # 3. Initialize application database with infrastructure tables
     Write-Host "🗄️ Initializing database for infrastructure..." -ForegroundColor Yellow
-    
+
     $pythonPath = python -c "import sys; print(sys.executable)"
     & $pythonPath -c "
 import sys
@@ -114,16 +114,16 @@ async def setup():
 
 asyncio.run(setup())
 "
-    
+
     # 4. Set up monitoring system
     if ($Monitoring) {
         Write-Host "📊 Setting up monitoring system..." -ForegroundColor Yellow
-        
+
         # Create monitoring directories
         New-Item -ItemType Directory -Path ".\monitoring" -Force | Out-Null
         New-Item -ItemType Directory -Path ".\monitoring\logs" -Force | Out-Null
         New-Item -ItemType Directory -Path ".\monitoring\dashboards" -Force | Out-Null
-        
+
         # Initialize monitoring
         & $pythonPath -c "
 import sys
@@ -136,12 +136,12 @@ import asyncio
 async def setup_monitoring():
     print('Initializing Redis client...')
     await advanced_redis_client.initialize()
-    
+
     print('Starting monitoring system...')
     await monitoring_system.start_monitoring()
-    
+
     print('✅ Monitoring system ready')
-    
+
     # Stop after setup verification
     await monitoring_system.stop_monitoring()
 
@@ -152,7 +152,7 @@ asyncio.run(setup_monitoring())
 
     # 5. Run infrastructure validation tests
     Write-Host "🔍 Running infrastructure validation tests..." -ForegroundColor Yellow
-    
+
     $validationResult = & $pythonPath -c "
 import sys
 sys.path.insert(0, '.')
@@ -164,7 +164,7 @@ from app.services.advanced_monitoring import monitoring_system
 
 async def validate_infrastructure():
     results = {'redis': False, 'websocket': False, 'monitoring': False}
-    
+
     try:
         # Test Redis
         await advanced_redis_client.initialize()
@@ -175,7 +175,7 @@ async def validate_infrastructure():
             print('❌ Redis: Connection failed')
     except Exception as e:
         print(f'❌ Redis: {e}')
-    
+
     try:
         # Test WebSocket manager
         stats = advanced_websocket_manager.connection_pool.get_stats()
@@ -183,7 +183,7 @@ async def validate_infrastructure():
         print('✅ WebSocket Manager: Ready')
     except Exception as e:
         print(f'❌ WebSocket Manager: {e}')
-    
+
     try:
         # Test monitoring system
         if hasattr(monitoring_system, 'health_checks'):
@@ -191,7 +191,7 @@ async def validate_infrastructure():
             print('✅ Monitoring System: Ready')
     except Exception as e:
         print(f'❌ Monitoring System: {e}')
-    
+
     all_passed = all(results.values())
     print(f'\\nOverall Status: {\"PASS\" if all_passed else \"FAIL\"}')
     return 0 if all_passed else 1
@@ -207,7 +207,7 @@ exit(asyncio.run(validate_infrastructure()))
 
     # 6. Create environment-specific configuration
     Write-Host "⚙️ Creating environment configuration..." -ForegroundColor Yellow
-    
+
     $envFile = ".env.track3"
     $envContent = @"
 # Phase K Track 3: Infrastructure Enhancement Configuration
@@ -256,11 +256,11 @@ PERFORMANCE_LOGGING_ENABLED=true
     Write-Host "2. Update production passwords and API keys" -ForegroundColor Gray
     Write-Host "3. Start the application: python start_server.py" -ForegroundColor Gray
     Write-Host "4. Access monitoring dashboard: http://localhost:8000/api/v1/monitoring/dashboard" -ForegroundColor Gray
-    
+
     if ($RedisCluster) {
         Write-Host "5. Redis web UI: http://localhost:8081 (admin/lokifi-redis-admin)" -ForegroundColor Gray
     }
-    
+
     Write-Host ""
     Write-Host "Infrastructure Status:" -ForegroundColor Yellow
     Write-Host "- ✅ Advanced Redis Client" -ForegroundColor Green
@@ -269,7 +269,7 @@ PERFORMANCE_LOGGING_ENABLED=true
     Write-Host "- ✅ Performance Analytics" -ForegroundColor Green
     Write-Host "- ✅ Real-time Health Checks" -ForegroundColor Green
     Write-Host "- ✅ Alert Management" -ForegroundColor Green
-    
+
     Write-Host ""
     Write-Host "Phase K Track 3 is ready for production deployment! 🚀" -ForegroundColor Cyan
 
@@ -282,6 +282,6 @@ PERFORMANCE_LOGGING_ENABLED=true
     Write-Host "2. Check if all dependencies are installed" -ForegroundColor Gray
     Write-Host "3. Verify Redis is available (locally or via Docker)" -ForegroundColor Gray
     Write-Host "4. Check network connectivity and firewall settings" -ForegroundColor Gray
-    
+
     exit 1
 }
