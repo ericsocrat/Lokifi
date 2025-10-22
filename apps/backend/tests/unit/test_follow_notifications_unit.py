@@ -1,7 +1,7 @@
 import uuid
 
 import pytest
-from app.models.notification import Notification, NotificationType
+from app.models.notification_models import Notification, NotificationType
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 
