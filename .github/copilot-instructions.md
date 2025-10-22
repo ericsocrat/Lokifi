@@ -287,6 +287,33 @@ For quick code analysis tasks, prefer interactive Copilot queries:
 - **Dependency checks**: Run `npm outdated` or `npm audit` directly
 - **Code quality**: Use `@workspace` context to analyze patterns and suggest refactoring
 
+### TypeScript Type Fixing (Replaces universal-fixer.ps1)
+For TypeScript type improvements, use **Copilot Edits** with full workspace context:
+
+**Finding Issues**:
+```
+@workspace /search find all implicit 'any' types in the frontend
+@workspace /search find components with missing prop types
+@workspace /search find Zustand stores that need type definitions
+```
+
+**Interactive Fixing**:
+1. Ask Copilot to analyze the specific file or component
+2. Review suggested type definitions with full context
+3. Apply fixes one at a time with proper type inference
+4. Copilot understands business logic for accurate types
+
+**Why better than automated scripts?**
+- Context-aware: Sees entire codebase for accurate type inference
+- Interactive: Review each fix before applying
+- Intelligent: Understands component logic and data flow
+- Safe: Prevents breaking changes from bulk automated fixes
+
+**Example Queries**:
+- "Fix all implicit 'any' types in `components/dashboard/PriceChart.tsx`"
+- "Add proper type definitions to the `usePortfolio` Zustand store"
+- "Improve type safety in the `lib/api/client.ts` file"
+
 ## Tips for Best Results
 
 ### Use Workspace Context

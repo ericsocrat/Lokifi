@@ -8,11 +8,10 @@
 
 ```
 scripts/
-├── � analysis/          # Code analysis and quality tools
-├── � cleanup/           # Cleanup and maintenance scripts
-├── � data/              # Data fetching and processing
-├── � fixes/             # Automated fix scripts
-└── � security/          # Security scanning and protection
+├── 📊 analysis/          # Code analysis and quality tools
+├── 🧹 cleanup/           # Cleanup and maintenance scripts
+├── 📦 data/              # Data fetching and processing
+└── 🔒 security/          # Security scanning and protection
 ```
 
 ---
@@ -98,31 +97,7 @@ node .\scripts\data\universal-fetcher.js --stocks --market us
 
 ---
 
-## 🔧 **Fix Scripts** (`fixes/`)
-
-**Purpose**: Automated TypeScript and code quality fixes.
-
-### Available Scripts:
-- `universal-fixer.ps1` - Intelligent TypeScript fixer
-  - Implicit 'any' type fixes
-  - Zustand store type issues
-  - Alert/performance optimizations
-
-### Usage:
-```powershell
-# Fix all implicit 'any' types
-.\scripts\fixes\universal-fixer.ps1 -Target Any -Backup
-
-# Fix Zustand store issues
-.\scripts\fixes\universal-fixer.ps1 -Target Zustand
-
-# Preview fixes without applying
-.\scripts\fixes\universal-fixer.ps1 -Target All -DryRun
-```
-
----
-
-## 🔒 **Security Scripts** (`security/`)
+##  **Security Scripts** (`security/`)
 
 **Purpose**: Security scanning, secret generation, and vulnerability protection.
 
@@ -166,6 +141,7 @@ python .\scripts\security\generate_secrets.py
 
 **Note on Removed Tools**:
 - **Documentation Generation**: Use GitHub Copilot with `@workspace` context
+- **TypeScript Fixes**: Use Copilot Edits with `@workspace` for context-aware type fixing
 - **Coverage Dashboards**: Integrated into `test-runner.ps1`
 - **Protection Dashboards**: Integrated into `test-runner.ps1`
 - **Dependency Protection**: Integrated into `security-scanner.ps1`
@@ -211,5 +187,5 @@ python .\scripts\security\generate_secrets.py
 ---
 
 *Last Updated: October 22, 2025*
-*Active Scripts: 7 focused automation tools*
-*Categories: 5 functional areas*
+*Active Scripts: 7 ultra-lean automation tools*
+*Categories: 4 functional areas*
