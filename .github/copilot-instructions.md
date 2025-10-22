@@ -42,6 +42,19 @@
 - **Solo dev workflow**: Skip detailed documentation during test creation - tests ARE the documentation
 - **No completion summaries**: Create tests, verify pass rate, move to next component immediately
 
+### Task Tracking & Workflow
+- **CHECKLISTS.md**: Use for quality gates, deployment steps, and process standards
+  - Pre-commit checks, deployment checklists, code review standards
+  - Reference: `/docs/CHECKLISTS.md`
+- **Inline TODO Comments**: Use in code for implementation-level reminders
+  - Format: `// TODO: Description` or `# TODO: Description`
+  - Supported tags: TODO, FIXME, BUG, HACK, OPTIMIZE, REFACTOR, SECURITY, PERF, NOTE, REVIEW
+  - Example: `// TODO: Add input validation for email field`
+- **TODO Tree Extension**: Provides visual overview and navigation
+  - Automatically scans codebase for TODO comments
+  - Groups by tag type with color-coded icons
+  - View in VS Code sidebar for quick navigation
+
 ## Project Structure
 
 ```
