@@ -1,5 +1,5 @@
 # Development/Standalone Monitoring Configuration
-# Used by: docker-compose.monitoring.yml
+# Used by: infra/docker/docker-compose.production.yml
 # Purpose: Monitors services using localhost for standalone monitoring stack
 # Targets: localhost:8000, localhost:3000
 

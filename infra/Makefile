@@ -171,15 +171,19 @@ docker-build: ## 🐳 Build Docker images
 
 docker-run: ## 🐳 Run Docker containers
 	@Write-Host "🐳 Running Docker containers..." -ForegroundColor Cyan
-	@docker-compose up --build
+	@Set-Location docker; docker compose up --build
 
-docker-prod: ## 🏭 Production Docker deployment
+docker-prod: ## 🏭 Production Docker deployment (minimal)
 	@Write-Host "🏭 Starting production deployment..." -ForegroundColor Cyan
-	@docker-compose -f docker-compose.prod.yml up --build
+	@Set-Location docker; docker compose -f docker-compose.prod-minimal.yml up --build
+
+docker-prod-full: ## 🏭 Full production stack with monitoring
+	@Write-Host "🏭 Starting full production stack..." -ForegroundColor Cyan
+	@Set-Location docker; docker compose -f docker-compose.production.yml up -d
 
 docker-dev: ## 🐳 Development Docker environment
 	@Write-Host "🐳 Starting development containers..." -ForegroundColor Cyan
-	@docker-compose up --build
+	@Set-Location docker; docker compose up --build
 
 # === MONITORING ===
 monitor: ## 📊 Start monitoring services

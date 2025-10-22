@@ -157,14 +157,18 @@ docker-compose restart backend
 
 ### Production Deployment
 ```powershell
-## Build production images
-docker-compose -f docker-compose.prod.yml build
+## Cloud deployment (managed database)
+cd infra/docker
+docker compose -f docker-compose.prod-minimal.yml build
+docker compose -f docker-compose.prod-minimal.yml up -d
 
-## Deploy to production
-docker-compose -f docker-compose.prod.yml up -d
+## Self-hosted with monitoring
+cd infra/docker
+docker compose -f docker-compose.production.yml build
+docker compose -f docker-compose.production.yml up -d
 
 ## Check deployment status
-docker-compose -f docker-compose.prod.yml ps
+docker compose ps
 ```
 
 ---

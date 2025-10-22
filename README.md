@@ -317,7 +317,11 @@ OPENAI_API_KEY=your-openai-key
 
 2. **Use production Docker Compose:**
    ```bash
-   docker compose -f docker-compose.prod.yml up -d
+   # Cloud deployment (managed database)
+   docker compose -f infra/docker/docker-compose.prod-minimal.yml up -d
+   
+   # Self-hosted with full monitoring
+   docker compose -f infra/docker/docker-compose.production.yml up -d
    ```
 
 ### Monitoring & Health Checks

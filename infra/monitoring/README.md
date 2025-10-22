@@ -2,7 +2,7 @@
 
 This directory contains monitoring configurations for Lokifi deployments.
 
-> **Note**: Standalone `docker-compose.monitoring.yml` was removed (Oct 2025). Use `docker-compose.production.yml` for full monitoring stack.
+> **Note**: Standalone `docker-compose.monitoring.yml` was removed (Oct 2025). Use `infra/docker/docker-compose.production.yml` for full monitoring stack.
 
 ## Available Monitoring Options
 
@@ -21,6 +21,7 @@ For comprehensive monitoring, logging, and alerting:
 
 ```bash
 # Includes: Prometheus, Grafana, Loki, Promtail, Traefik
+cd infra/docker
 docker compose -f docker-compose.production.yml up -d
 ```
 

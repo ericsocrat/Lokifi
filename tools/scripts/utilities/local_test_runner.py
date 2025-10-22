@@ -195,7 +195,7 @@ class LocalTestRunner:
             ("backend/.env", "Environment configuration"),
             ("backend/alembic.ini", "Database migration config"),
             (".env.production", "Production environment"),
-            ("docker-compose.yml", "Docker compose config")
+            ("infra/docker/docker-compose.yml", "Docker compose config")
         ]
         
         for config_path, description in config_tests:

@@ -25,7 +25,7 @@ else
     MKDIR := mkdir -p
 endif
 
-.PHONY: help setup install dev test lint format type-check clean run docker-build docker-run
+.PHONY: help setup install dev test lint format type-check clean run docker-build docker-run docker-dev docker-prod docker-prod-full monitor redis
 
 help: ## 🎯 Show available commands
 	@Write-Host ""
@@ -206,20 +206,24 @@ docker-run: ## 🐳 Run Docker container
 
 docker-dev: ## 🐳 Run with development compose
 	@echo -e "$(CYAN)🐳 Starting development containers...$(NC)"
-	docker-compose up --build
+	cd ../../infra/docker && docker compose up --build
 
-docker-prod: ## 🐳 Run production containers
+docker-prod: ## 🐳 Run production containers (minimal)
 	@echo -e "$(CYAN)🐳 Starting production containers...$(NC)"
-	docker-compose -f docker-compose.prod.yml up --build
+	cd ../../infra/docker && docker compose -f docker-compose.prod-minimal.yml up --build
+
+docker-prod-full: ## 🐳 Run full production stack with monitoring
+	@echo -e "$(CYAN)🐳 Starting full production stack...$(NC)"
+	cd ../../infra/docker && docker compose -f docker-compose.production.yml up -d
 
 # === MONITORING ===
-monitor: ## 📊 Start monitoring services
-	@echo -e "$(CYAN)📊 Starting monitoring...$(NC)"
-	docker-compose -f docker-compose.monitoring.yml up -d
+monitor: ## 📊 Start full production stack with monitoring
+	@echo -e "$(CYAN)📊 Starting production with monitoring...$(NC)"
+	cd ../../infra/docker && docker compose -f docker-compose.production.yml up -d
 
 redis: ## 🔴 Start Redis server
 	@echo -e "$(CYAN)🔴 Starting Redis...$(NC)"
-	docker-compose -f ../../infra/docker/docker-compose.yml up -d redis
+	cd ../../infra/docker && docker compose up -d redis
 
 # === MAINTENANCE ===
 clean: ## 🧹 Remove cache files and build artifacts
