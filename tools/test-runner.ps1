@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     The test-runner.ps1 script provides intelligent test execution with multiple modes:
-    
+
     🎯 EXECUTION MODES:
     - Smart: Run only tests for changed files (git diff)
     - PreCommit: Pre-commit validation (frontend linting + backend tests)
@@ -13,14 +13,14 @@
     - Watch: Continuous test execution on file changes
     - DryRun: Show what would run without executing
     - SelfTest: Validate environment setup
-    
+
     📊 FEATURES:
     - Environment validation (Python, Node.js, npm, git)
-    - File logging with timestamps (.test-runner.log)
+    - File logging with timestamps (infra/logs/test-runner.log)
     - Parallel execution support
     - Category filtering (all, backend, frontend, api, unit, integration, e2e)
     - File-specific and pattern-based test selection
-    
+
 .PARAMETER Category
     Test category to run: 'all', 'backend', 'frontend', 'api', 'unit', 'integration', 'e2e', 'security', 'services'
     Default: 'all'
@@ -125,7 +125,7 @@ $script:Config = @{
     FrontendDir    = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\frontend'
     TestResultsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'test-results'
     CacheDir       = Join-Path (Get-Item $PSScriptRoot).Parent.FullName '.test-cache'
-    LogFile        = Join-Path (Get-Item $PSScriptRoot).Parent.FullName '.test-runner.log'
+    LogFile        = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'infra\logs\test-runner.log'
 }
 
 # ============================================================================
