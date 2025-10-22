@@ -75,9 +75,9 @@ lokifi/
 ### 📖 **Navigation Guide**
 - **👩‍💻 New Developers**: Start with [`START_HERE.md`](START_HERE.md) then [`docs/guides/`](docs/guides/)
 - **🔧 Setup**: Use [`docs/guides/QUICK_START_GUIDE.md`](docs/guides/QUICK_START_GUIDE.md)
-- **� Reference**: See [`docs/guides/QUICK_REFERENCE_GUIDE.md`](docs/guides/QUICK_REFERENCE_GUIDE.md)
-- **� Code Quality**: Run [`scripts/analysis/analyze-and-optimize.ps1`](scripts/analysis/analyze-and-optimize.ps1)
-- **� Deployment**: Follow [`docs/guides/DEPLOYMENT_GUIDE.md`](docs/guides/DEPLOYMENT_GUIDE.md)
+- **📚 Reference**: See [`docs/guides/QUICK_REFERENCE_GUIDE.md`](docs/guides/QUICK_REFERENCE_GUIDE.md)
+- **🔍 Code Quality**: Run [`tools/codebase-analyzer.ps1`](tools/codebase-analyzer.ps1) or [`tools/test-runner.ps1`](tools/test-runner.ps1)
+- **🚀 Deployment**: Follow [`docs/guides/DEPLOYMENT_GUIDE.md`](docs/guides/DEPLOYMENT_GUIDE.md)
 
 ---
 
