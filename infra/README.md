@@ -1,354 +1,636 @@
-# 🏗️ Infrastructure Directory# 🏗️ Infrastructure Directory
+# 🏗️ Infrastructure Directory# 🏗️ Infrastructure Directory# 🏗️ Infrastructure Directory
 
 
 
-**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Lokifi platform.**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Lokifi platform.
+**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Lokifi platform.
 
 
 
-------
+---**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Lokifi platform.**Purpose**: Contains all infrastructure configurations, deployment files, and system architecture components for the Lokifi platform.
 
 
 
-## 📂 **Directory Structure**## 📂 **Directory Structure**
+## 📂 **Directory Structure**
 
 
 
-``````
+```------
 
-infra/infra/
+infra/
 
-├── 🐳 docker/            # Docker configurations and compose files├── 🐳 docker/            # Docker configurations and compose files
+├── 🐳 docker/            # Docker configurations and compose files
 
-├── 🌐 nginx/             # Nginx configurations and load balancing├── 🌐 nginx/             # Nginx configurations and load balancing
+├── 🌐 nginx/             # Nginx configurations and load balancing
 
-├── 📊 monitoring/        # Monitoring and observability configs├── 📊 monitoring/        # Monitoring and observability configs
+├── 📊 monitoring/        # Monitoring and observability configs## 📂 **Directory Structure**## 📂 **Directory Structure**
 
-├── 🔒 security/          # Security tooling & configs├── 🔒 security/          # Security tooling & configs
+├── 🔒 security/          # Security tooling & configs
 
-├── ⚡ performance-tests/ # Load & performance testing├── ⚡ performance-tests/ # Load & performance testing
+├── ⚡ performance-tests/ # Load & performance testing
 
-├── 🔑 ssl/               # SSL certificates and security configs├── � ssl/               # SSL certificates and security configs
+├── 🔑 ssl/               # SSL certificates and security configs
 
-├── 📝 redis/             # Redis configuration files├── 📝 redis/             # Redis configuration files
+├── 📝 redis/             # Redis configuration files``````
 
-└── 📄 Makefile           # Build and deployment automation└── 📄 Makefile           # Build and deployment automation
+└── 📄 Makefile           # Build and deployment automation
 
-``````## 🐳 **Docker Configuration** (`docker/`)
-
-
-
----**Purpose**: Container orchestration and deployment configurations for different environments.
+```infra/infra/
 
 
 
-## 🐳 **Docker Configuration** (`docker/`)### Available Files:
+---├── 🐳 docker/            # Docker configurations and compose files├── 🐳 docker/            # Docker configurations and compose files
 
 
 
-**Purpose**: Container orchestration and deployment configurations for different environments.- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis)
+## 🐳 **Docker Configuration** (`docker/`)├── 🌐 nginx/             # Nginx configurations and load balancing├── 🌐 nginx/             # Nginx configurations and load balancing
+
+
+
+**Purpose**: Container orchestration and deployment configurations for different environments.├── 📊 monitoring/        # Monitoring and observability configs├── 📊 monitoring/        # Monitoring and observability configs
+
+
+
+### Available Files:├── 🔒 security/          # Security tooling & configs├── 🔒 security/          # Security tooling & configs
+
+
+
+- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis)├── ⚡ performance-tests/ # Load & performance testing├── ⚡ performance-tests/ # Load & performance testing
 
 - **docker-compose.prod.yml**: Production environment overrides (simpler, for basic prod setups)
 
-### Available Files:- **docker-compose.production.yml**: Full production setup with Traefik, monitoring, and high availability
+- **docker-compose.production.yml**: Full production setup with Traefik, monitoring, and high availability├── 🔑 ssl/               # SSL certificates and security configs├── � ssl/               # SSL certificates and security configs
 
 - **docker-compose.override.yml**: Local development overrides
 
-- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis)- **docker-compose.monitoring.yml**: Prometheus + Grafana observability stack
-
-- **docker-compose.prod.yml**: Production environment overrides (simpler, for basic prod setups)- **docker-compose.redis.yml**: Redis with replication and Sentinel for high availability
-
-- **docker-compose.production.yml**: Full production setup with Traefik, monitoring, and high availability- **docker-compose.swarm.yml**: Docker Swarm orchestration configuration
-
-- **docker-compose.override.yml**: Local development overrides
-
-- **docker-compose.monitoring.yml**: Prometheus + Grafana observability stack### Usage:
+- **docker-compose.monitoring.yml**: Prometheus + Grafana observability stack├── 📝 redis/             # Redis configuration files├── 📝 redis/             # Redis configuration files
 
 - **docker-compose.redis.yml**: Redis with replication and Sentinel for high availability
 
-- **docker-compose.swarm.yml**: Docker Swarm orchestration configuration```bash
+- **docker-compose.swarm.yml**: Docker Swarm orchestration configuration└── 📄 Makefile           # Build and deployment automation└── 📄 Makefile           # Build and deployment automation
+
+
+
+### Usage:``````## 🐳 **Docker Configuration** (`docker/`)
+
+
+
+```bash
 
 # Start development environment
 
-### Usage:docker-compose up -d
+docker-compose up -d---**Purpose**: Container orchestration and deployment configurations for different environments.
 
 
 
-```bash# Start simple production environment
-
-# Start development environmentdocker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
-docker-compose up -d
-
-# Start full production with monitoring
-
-# Start simple production environmentdocker-compose -f docker-compose.production.yml up -d
+# Start simple production environment
 
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-# Start with monitoring only
+## 🐳 **Docker Configuration** (`docker/`)### Available Files:
 
-# Start full production with monitoringdocker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+# Start full production with monitoring
 
 docker-compose -f docker-compose.production.yml up -d
 
+
+
+# Start with monitoring only**Purpose**: Container orchestration and deployment configurations for different environments.- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis)
+
+docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+
+- **docker-compose.prod.yml**: Production environment overrides (simpler, for basic prod setups)
+
 # Redis high availability setup
 
-# Start with monitoring onlycd infra/docker
-
-docker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -ddocker-compose -f docker-compose.redis.yml up -d
-
-```
-
-# Redis high availability setup
-
-cd infra/docker### File Selection Guide:
+cd infra/docker### Available Files:- **docker-compose.production.yml**: Full production setup with Traefik, monitoring, and high availability
 
 docker-compose -f docker-compose.redis.yml up -d
 
-```- **Development**: Use `docker-compose.yml` only
+```- **docker-compose.override.yml**: Local development overrides
+
+
+
+### File Selection Guide:- **docker-compose.yml**: Base application stack (frontend, backend, postgres, redis)- **docker-compose.monitoring.yml**: Prometheus + Grafana observability stack
+
+
+
+- **Development**: Use `docker-compose.yml` only- **docker-compose.prod.yml**: Production environment overrides (simpler, for basic prod setups)- **docker-compose.redis.yml**: Redis with replication and Sentinel for high availability
 
 - **Basic Production**: Use `docker-compose.yml` + `docker-compose.prod.yml`
 
-### File Selection Guide:- **Enterprise Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)
+- **Enterprise Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)- **docker-compose.production.yml**: Full production setup with Traefik, monitoring, and high availability- **docker-compose.swarm.yml**: Docker Swarm orchestration configuration
 
-- **Redis HA**: Use `docker-compose.redis.yml` for primary-replica-sentinel setup---
+- **Redis HA**: Use `docker-compose.redis.yml` for primary-replica-sentinel setup
 
-- **Development**: Use `docker-compose.yml` only
-
-- **Basic Production**: Use `docker-compose.yml` + `docker-compose.prod.yml`
-
-- **Enterprise Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)
-
-- **Redis HA**: Use `docker-compose.redis.yml` for primary-replica-sentinel setup---## 🌐 **Nginx Configuration** (`nginx/`)
-
-
+- **docker-compose.override.yml**: Local development overrides
 
 ---
 
+- **docker-compose.monitoring.yml**: Prometheus + Grafana observability stack### Usage:
 
+## 🌐 **Nginx Configuration** (`nginx/`)
 
-## 🌐 **Nginx Configuration** (`nginx/`)## 🔴 Redis (`redis/`)**Purpose**: Reverse proxy, load balancing, and web server configurations.
-
-
+- **docker-compose.redis.yml**: Redis with replication and Sentinel for high availability
 
 **Purpose**: Reverse proxy, load balancing, and web server configurations.
 
+- **docker-compose.swarm.yml**: Docker Swarm orchestration configuration```bash
+
+### Available Files:
+
+# Start development environment
+
+- `nginx_loadbalancer.conf` - Load balancer configuration for lokifi backend and frontend services
+
+### Usage:docker-compose up -d
+
+### Features:
 
 
-### Available Files:Redis configuration files for caching, session storage, and pub/sub.### Available Files:
+
+- **Load Balancing**: Distributes traffic across lokifi backend/frontend services
+
+- **SSL Termination**: Handles HTTPS certificates```bash# Start simple production environment
+
+- **Static File Serving**: Optimized static asset delivery
+
+- **Caching**: Intelligent caching strategies# Start development environmentdocker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 
 
-- `nginx_loadbalancer.conf` - Load balancer configuration for lokifi backend and frontend services- `nginx_loadbalancer.conf` - Load balancer configuration
+---docker-compose up -d
 
 
 
-### Features:### Files:
+## 📝 **Redis Configuration** (`redis/`)# Start full production with monitoring
 
 
 
-- **Load Balancing**: Distributes traffic across lokifi backend/frontend services- **redis.conf**: Main Redis configuration### Features:
+**Purpose**: Redis configuration files for caching, session storage, and pub/sub.# Start simple production environmentdocker-compose -f docker-compose.production.yml up -d
 
-- **SSL Termination**: Handles HTTPS certificates
 
-- **Static File Serving**: Optimized static asset delivery- **redis-primary.conf**: Primary node config (for HA setup)- **Load Balancing**: Distributes traffic across backend services
 
-- **Caching**: Intelligent caching strategies
+### Files:docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-- **redis-replica.conf**: Replica node config- **SSL Termination**: Handles HTTPS certificates
+
+
+- **redis.conf**: Main Redis configuration# Start with monitoring only
+
+- **redis-primary.conf**: Primary node config (for HA setup)
+
+- **redis-replica.conf**: Replica node config# Start full production with monitoringdocker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
+
+- **sentinel.conf**: Redis Sentinel for high availability
+
+docker-compose -f docker-compose.production.yml up -d
+
+### Features:
+
+# Redis high availability setup
+
+- **Persistence**: AOF + RDB snapshots
+
+- **Memory Management**: LRU eviction policies# Start with monitoring onlycd infra/docker
+
+- **Security**: Password authentication, command renaming
+
+- **High Availability**: Sentinel configuration readydocker-compose -f docker-compose.yml -f docker-compose.monitoring.yml up -ddocker-compose -f docker-compose.redis.yml up -d
+
+
+
+### Connection:```
+
+
+
+```# Redis high availability setup
+
+URL: redis://:23233@localhost:6379/0
+
+Password: 23233cd infra/docker### File Selection Guide:
+
+```
+
+docker-compose -f docker-compose.redis.yml up -d
+
+---
+
+```- **Development**: Use `docker-compose.yml` only
+
+## 📊 **Monitoring Configuration** (`monitoring/`)
+
+- **Basic Production**: Use `docker-compose.yml` + `docker-compose.prod.yml`
+
+**Purpose**: Observability, performance monitoring, and health check configurations.
+
+### File Selection Guide:- **Enterprise Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)
+
+### Available Files:
+
+- **Redis HA**: Use `docker-compose.redis.yml` for primary-replica-sentinel setup---
+
+- `lighthouserc.json` - Lighthouse CI configuration for performance monitoring
+
+- `prometheus.yml` - Prometheus metrics collection configuration- **Development**: Use `docker-compose.yml` only
+
+- `grafana-datasources.yml` - Grafana data source configurations
+
+- **Basic Production**: Use `docker-compose.yml` + `docker-compose.prod.yml`
+
+### Features:
+
+- **Enterprise Production**: Use `docker-compose.production.yml` (includes Traefik, Prometheus, Grafana, Loki)
+
+- **Performance Monitoring**: Continuous performance assessment via Lighthouse CI
+
+- **Metrics Collection**: Prometheus for system and application metrics- **Redis HA**: Use `docker-compose.redis.yml` for primary-replica-sentinel setup---## 🌐 **Nginx Configuration** (`nginx/`)
+
+- **Visualization**: Grafana dashboards (configurable with docker-compose.production.yml)
+
+- **Health Checks**: Service availability monitoring
+
+
+
+### Key Metrics:---
+
+
+
+- API response times (p50, p95, p99)
+
+- Error rates
+
+- WebSocket connection health## 🌐 **Nginx Configuration** (`nginx/`)## 🔴 Redis (`redis/`)**Purpose**: Reverse proxy, load balancing, and web server configurations.
+
+- Cache hit rates
+
+- Database query performance
+
+
+
+---**Purpose**: Reverse proxy, load balancing, and web server configurations.
+
+
+
+## 🔒 **Security Configuration** (`security/`)
+
+
+
+**Purpose**: Security tooling, configurations, and audit logs.### Available Files:Redis configuration files for caching, session storage, and pub/sub.### Available Files:
+
+
+
+### Features:
+
+
+
+- Secret scanning (prevent credential leaks)- `nginx_loadbalancer.conf` - Load balancer configuration for lokifi backend and frontend services- `nginx_loadbalancer.conf` - Load balancer configuration
+
+- CVE vulnerability scanning
+
+- License compliance checking
+
+- Security audit trails
+
+- Dependency vulnerability tracking### Features:### Files:
+
+
+
+### Tools:
+
+
+
+- Custom secret detection- **Load Balancing**: Distributes traffic across lokifi backend/frontend services- **redis.conf**: Main Redis configuration### Features:
+
+- CVE database integration
+
+- Automated security scanning- **SSL Termination**: Handles HTTPS certificates
+
+
+
+### Best Practices:- **Static File Serving**: Optimized static asset delivery- **redis-primary.conf**: Primary node config (for HA setup)- **Load Balancing**: Distributes traffic across backend services
+
+
+
+- Never commit secrets to Git- **Caching**: Intelligent caching strategies
+
+- Regular dependency updates
+
+- Security scanning in CI/CD- **redis-replica.conf**: Replica node config- **SSL Termination**: Handles HTTPS certificates
+
+- Audit log retention (90 days)
+
+---
 
 ---
 
 - **sentinel.conf**: Redis Sentinel for high availability- **Static File Serving**: Optimized static asset delivery
 
+## 🧪 **Performance Tests** (`performance-tests/`)
+
 ## 📝 **Redis Configuration** (`redis/`)
+
+**Purpose**: Load testing, stress testing, and performance benchmarking.
 
 - **Caching**: Intelligent caching strategies
 
+### Test Types:
+
 **Purpose**: Redis configuration files for caching, session storage, and pub/sub.
-
-### Features:
-
-### Files:
-
-- **Persistence**: AOF + RDB snapshots---
-
-- **redis.conf**: Main Redis configuration
-
-- **redis-primary.conf**: Primary node config (for HA setup)- **Memory Management**: LRU eviction policies
-
-- **redis-replica.conf**: Replica node config
-
-- **sentinel.conf**: Redis Sentinel for high availability- **Security**: Password authentication, command renaming## 📊 **Monitoring Configuration** (`monitoring/`)
-
-
-
-### Features:- **High Availability**: Sentinel configuration ready
-
-
-
-- **Persistence**: AOF + RDB snapshots**Purpose**: Observability, performance monitoring, and health check configurations.
-
-- **Memory Management**: LRU eviction policies
-
-- **Security**: Password authentication, command renaming### Connection:
-
-- **High Availability**: Sentinel configuration ready
-
-```### Available Files:
-
-### Connection:
-
-URL: redis://:23233@localhost:6379/0- `lighthouserc.json` - Lighthouse CI configuration for performance monitoring
-
-```
-
-URL: redis://:23233@localhost:6379/0Password: 23233
-
-Password: 23233
-
-``````### Features:
-
-
-
----- **Performance Monitoring**: Continuous performance assessment
-
-
-
-## 📊 **Monitoring Configuration** (`monitoring/`)---- **Health Checks**: Service availability monitoring
-
-
-
-**Purpose**: Observability, performance monitoring, and health check configurations.- **Metrics Collection**: System and application metrics
-
-
-
-### Available Files:## 📊 Monitoring (`monitoring/`)- **Alerting**: Automated alert configurations
-
-
-
-- `lighthouserc.json` - Lighthouse CI configuration for performance monitoring
-
-- `prometheus.yml` - Prometheus metrics collection configuration
-
-- `grafana-datasources.yml` - Grafana data source configurationsObservability stack for metrics, logs, and tracing.---
-
-
-
-### Features:
-
-
-
-- **Performance Monitoring**: Continuous performance assessment via Lighthouse CI### Current Setup:## 💾 **Backup Configuration** (`backups/`)
-
-- **Metrics Collection**: Prometheus for system and application metrics
-
-- **Visualization**: Grafana dashboards (configurable with docker-compose.production.yml)- Performance monitoring configurations
-
-- **Health Checks**: Service availability monitoring
-
-- Lighthouse CI for frontend performance**Purpose**: Backup strategies, schedules, and restoration procedures.
-
-### Key Metrics:
-
-- Custom metrics collection
-
-- API response times (p50, p95, p99)
-
-- Error rates### Available Files:
-
-- WebSocket connection health
-
-- Cache hit rates### Planned (Phase 3.x):- `fynix_backup_task.xml` - Windows backup task configuration
-
-- Database query performance
-
-- **Prometheus**: Metrics collection and storage
-
----
-
-- **Grafana**: Visualization dashboards### Features:
-
-## 🔒 **Security Configuration** (`security/`)
-
-- **Loki**: Log aggregation- **Automated Backups**: Scheduled backup procedures
-
-**Purpose**: Security tooling, configurations, and audit logs.
-
-- **Jaeger**: Distributed tracing- **Data Integrity**: Verification and validation
-
-### Features:
-
-- **AlertManager**: Alert routing and management- **Disaster Recovery**: Restoration procedures
-
-- Secret scanning (prevent credential leaks)
-
-- CVE vulnerability scanning- **Retention Policies**: Automated cleanup and archival
-
-- License compliance checking
-
-- Security audit trails### Key Metrics:
-
-- Dependency vulnerability tracking
-
-- API response times (p50, p95, p99)---
-
-### Tools:
-
-- Error rates
-
-- Custom secret detection
-
-- CVE database integration- WebSocket connection health## 🔒 **SSL/Security** (`ssl/`)
-
-- Automated security scanning
-
-- Cache hit rates
-
-### Best Practices:
-
-- Database query performance**Purpose**: SSL certificates, security configurations, and cryptographic materials.
-
-- Never commit secrets to Git
-
-- Regular dependency updates
-
-- Security scanning in CI/CD
-
-- Audit log retention (90 days)---### Security Features:
-
-
-
----- **Certificate Management**: SSL/TLS certificate storage
-
-
-
-## 🧪 **Performance Tests** (`performance-tests/`)## 🔒 Security (`security/`)- **Key Management**: Secure key storage and rotation
-
-
-
-**Purpose**: Load testing, stress testing, and performance benchmarking.- **Security Headers**: HTTP security header configurations
-
-
-
-### Test Types:Security tooling, configurations, and audit logs.- **Access Control**: Authentication and authorization configs
-
-
 
 - **Load Tests**: Normal traffic simulation
 
+- **Stress Tests**: Breaking point identification### Features:
+
+- **Spike Tests**: Traffic surge handling
+
+- **Endurance Tests**: Long-running stability### Files:
+
+- **Scalability Tests**: Horizontal scaling validation
+
+- **Persistence**: AOF + RDB snapshots---
+
+### Tools:
+
+- **redis.conf**: Main Redis configuration
+
+- Custom load testing framework
+
+- Benchmark scripts- **redis-primary.conf**: Primary node config (for HA setup)- **Memory Management**: LRU eviction policies
+
+- Performance baseline tracking
+
+- **redis-replica.conf**: Replica node config
+
+---
+
+- **sentinel.conf**: Redis Sentinel for high availability- **Security**: Password authentication, command renaming## 📊 **Monitoring Configuration** (`monitoring/`)
+
+## 🔑 **SSL/Security** (`ssl/`)
+
+
+
+**Purpose**: SSL certificates, security configurations, and cryptographic materials.
+
+### Features:- **High Availability**: Sentinel configuration ready
+
+### Security Features:
+
+
+
+- **Certificate Management**: SSL/TLS certificate storage
+
+- **Key Management**: Secure key storage and rotation- **Persistence**: AOF + RDB snapshots**Purpose**: Observability, performance monitoring, and health check configurations.
+
+- **Security Headers**: HTTP security header configurations
+
+- **Access Control**: Authentication and authorization configs- **Memory Management**: LRU eviction policies
+
+
+
+---- **Security**: Password authentication, command renaming### Connection:
+
+
+
+## 📄 **Build Automation** (`Makefile`)- **High Availability**: Sentinel configuration ready
+
+
+
+**Purpose**: Standardized build, test, and deployment commands.```### Available Files:
+
+
+
+### Available Commands:### Connection:
+
+
+
+```bashURL: redis://:23233@localhost:6379/0- `lighthouserc.json` - Lighthouse CI configuration for performance monitoring
+
+# Build application
+
+make build```
+
+
+
+# Run testsURL: redis://:23233@localhost:6379/0Password: 23233
+
+make test
+
+Password: 23233
+
+# Deploy to production
+
+make deploy``````### Features:
+
+
+
+# Clean build artifacts
+
+make clean
+
+```---- **Performance Monitoring**: Continuous performance assessment
+
+
+
+---
+
+
+
+## 🚀 **Deployment Strategies**## 📊 **Monitoring Configuration** (`monitoring/`)---- **Health Checks**: Service availability monitoring
+
+
+
+### **Development Environment**
+
+
+
+```bash**Purpose**: Observability, performance monitoring, and health check configurations.- **Metrics Collection**: System and application metrics
+
+# Quick start for development
+
+docker-compose up -d
+
+```
+
+### Available Files:## 📊 Monitoring (`monitoring/`)- **Alerting**: Automated alert configurations
+
+### **Production Environment**
+
+
+
+```bash
+
+# Production deployment with monitoring- `lighthouserc.json` - Lighthouse CI configuration for performance monitoring
+
+docker-compose -f docker-compose.yml \- `prometheus.yml` - Prometheus metrics collection configuration
+
+               -f docker-compose.prod.yml \- `grafana-datasources.yml` - Grafana data source configurations
+
+               -f docker-compose.monitoring.yml up -d
+
+```### Features:
+
+
+
+### **Scaled Production**- **Performance Monitoring**: Continuous performance assessment via Lighthouse CI
+
+- **Metrics Collection**: Prometheus for system and application metrics
+
+```bash- **Visualization**: Grafana dashboards (configurable with docker-compose.production.yml)
+
+# Docker Swarm deployment- **Health Checks**: Service availability monitoring
+
+docker stack deploy -c docker-compose.swarm.yml lokifi
+
+```### Key Metrics:
+
+
+
+---- API response times (p50, p95, p99)
+
+- Error rates
+
+## 📋 **Infrastructure Standards**- WebSocket connection health
+
+- Cache hit rates
+
+### **Configuration Management**- Database query performance
+
+
+
+- Use environment variables for configuration---
+
+- Separate development and production configs
+
+- Version control all configuration files## 🔒 **Security Configuration** (`security/`)
+
+- Document configuration changes
+
+**Purpose**: Security tooling, configurations, and audit logs.
+
+### **Security Best Practices**
+
+### Features:
+
+- Encrypt sensitive data at rest and in transit
+
+- Use least privilege access principles- Secret scanning (prevent credential leaks)
+
+- Regular security audits and updates- CVE vulnerability scanning
+
+- Secure secret management- License compliance checking
+
+- Security audit trails
+
+### **Monitoring and Observability**- Dependency vulnerability tracking
+
+
+
+- Implement comprehensive logging### Tools:
+
+- Set up health checks for all services
+
+- Monitor key performance indicators- Custom secret detection
+
+- Configure automated alerting
+
+- CVE database integration- WebSocket connection health## 🔒 **SSL/Security** (`ssl/`)
+
+---
+
+- Automated security scanning
+
+## 🔄 **Maintenance Procedures**
+
+- Cache hit rates
+
+### **Regular Tasks**
+
+### Best Practices:
+
+- Update container images and dependencies
+
+- Review and rotate SSL certificates- Database query performance**Purpose**: SSL certificates, security configurations, and cryptographic materials.
+
+- Monitor system performance and capacity
+
+- Verify automated backup procedures- Never commit secrets to Git
+
+
+
+### **Security Maintenance**- Regular dependency updates
+
+
+
+- Apply security patches promptly- Security scanning in CI/CD
+
+- Audit access controls and permissions
+
+- Review and update firewall rules- Audit log retention (90 days)---### Security Features:
+
+- Conduct periodic security assessments
+
+
+
+### **Performance Optimization**
+
+---- **Certificate Management**: SSL/TLS certificate storage
+
+- Monitor resource utilization
+
+- Optimize database queries and indexes
+
+- Review and tune caching strategies
+
+- Load test critical workflows## 🧪 **Performance Tests** (`performance-tests/`)## 🔒 Security (`security/`)- **Key Management**: Secure key storage and rotation
+
+
+
+---
+
+
+
+## 📊 **Infrastructure Metrics****Purpose**: Load testing, stress testing, and performance benchmarking.- **Security Headers**: HTTP security header configurations
+
+
+
+### **Key Performance Indicators**
+
+
+
+- **Uptime**: 99.9% target availability### Test Types:Security tooling, configurations, and audit logs.- **Access Control**: Authentication and authorization configs
+
+- **Response Time**: < 200ms average response
+
+- **Throughput**: Support for concurrent users
+
+- **Resource Utilization**: Optimal CPU and memory usage
+
+- **Load Tests**: Normal traffic simulation
+
+### **Monitoring Dashboards**
+
 - **Stress Tests**: Breaking point identification
 
-- **Spike Tests**: Traffic surge handling### Features:---
+- System health and performance metrics
 
-- **Endurance Tests**: Long-running stability
+- Application performance monitoring- **Spike Tests**: Traffic surge handling### Features:---
 
-- **Scalability Tests**: Horizontal scaling validation- Secret scanning (prevent credential leaks)
+- Security event monitoring
+
+- Cost and resource optimization- **Endurance Tests**: Long-running stability
 
 
 
-### Tools:- CVE vulnerability scanning## 📄 **Build Automation** (`Makefile`)
+---- **Scalability Tests**: Horizontal scaling validation- Secret scanning (prevent credential leaks)
+
+
+
+*Last Updated: October 22, 2025*  
+
+*Infrastructure Components: 7 major systems*  
+
+*Deployment Strategies: 3 environment configurations*  ### Tools:- CVE vulnerability scanning## 📄 **Build Automation** (`Makefile`)
+
+*Security Standards: Enterprise-grade implementation*
 
 
 
