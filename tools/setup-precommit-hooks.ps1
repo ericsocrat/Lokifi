@@ -111,7 +111,7 @@ fi
 
 # Get the repository root
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
-PROTECTION_SCRIPT="`$REPO_ROOT/tools/ci-cd/enhanced-ci-protection.ps1"
+PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1 -PreCommit"
 
 # Run enhanced protection with relaxed/strict settings for pre-commit
 if [ -f "`$PROTECTION_SCRIPT" ]; then
@@ -127,7 +127,7 @@ if [ -f "`$PROTECTION_SCRIPT" ]; then
         echo "❌ Quality gates failed!"
         echo ""
         echo "🔧 To fix issues:"
-        echo "   • Run: .\tools\enhanced-ci-protection.ps1 -GenerateReport"
+        echo "   • Run: .\tools\test-runner.ps1 -GenerateReport"
         echo "   • Review failed gates and fix issues"
         echo "   • Or use: git commit --no-verify (skip hooks - use carefully!)"
         echo ""
@@ -194,7 +194,7 @@ else
 fi
 
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
-PROTECTION_SCRIPT="`$REPO_ROOT/tools/ci-cd/enhanced-ci-protection.ps1"
+PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1 -PreCommit"
 
 # Run comprehensive protection checks
 if [ -f "`$PROTECTION_SCRIPT" ]; then

@@ -549,7 +549,7 @@ function Invoke-GateTests {
     Write-TestLog 'Running quality gate checks...' -Level Info
 
     # Run the enhanced CI protection script
-    $ciScript = Join-Path $Config.RepoRoot 'tools\ci-cd\enhanced-ci-protection.ps1'
+    $ciScript = Join-Path $Config.RepoRoot 'tools\test-runner.ps1'
 
     if (Test-Path $ciScript) {
         & $ciScript

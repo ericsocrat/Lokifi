@@ -331,7 +331,7 @@ npm run test:coverage
 
 ```bash
 # Run the enhanced CI protection script
-./tools/ci-cd/enhanced-ci-protection.ps1
+./tools/test-runner.ps1 -PreCommit
 ```
 
 ## Best Practices
