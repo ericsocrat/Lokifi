@@ -15,21 +15,24 @@ param(
     [switch]$Parallel,
     [switch]$Verbose,
     [switch]$Watch,
+    [switch]$DryRun,
+    [switch]$SelfTest,
     [int]$Timeout = 300
 )
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = 'Continue'
 
 # ============================================================================
 # Configuration
 # ============================================================================
 
 $script:Config = @{
-    RepoRoot = (Get-Item $PSScriptRoot).Parent.Parent.FullName
-    BackendDir = Join-Path (Get-Item $PSScriptRoot).Parent.Parent.FullName "apps\backend"
-    FrontendDir = Join-Path (Get-Item $PSScriptRoot).Parent.Parent.FullName "apps\frontend"
-    TestResultsDir = Join-Path (Get-Item $PSScriptRoot).Parent.Parent.FullName "test-results"
-    CacheDir = Join-Path (Get-Item $PSScriptRoot).Parent.Parent.FullName ".test-cache"
+    RepoRoot       = (Get-Item $PSScriptRoot).Parent.FullName
+    BackendDir     = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\backend'
+    FrontendDir    = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\frontend'
+    TestResultsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'test-results'
+    CacheDir       = Join-Path (Get-Item $PSScriptRoot).Parent.FullName '.test-cache'
+    LogFile        = Join-Path (Get-Item $PSScriptRoot).Parent.FullName '.test-runner.log'
 }
 
 # ============================================================================
@@ -44,20 +47,25 @@ function Write-TestLog {
     )
 
     $colors = @{
-        'Info' = 'Cyan'
+        'Info'    = 'Cyan'
         'Success' = 'Green'
         'Warning' = 'Yellow'
-        'Error' = 'Red'
+        'Error'   = 'Red'
     }
 
     $icons = @{
-        'Info' = 'ℹ️'
+        'Info'    = 'ℹ️'
         'Success' = '✅'
         'Warning' = '⚠️'
-        'Error' = '❌'
+        'Error'   = '❌'
     }
 
-    Write-Host "$($icons[$Level]) $Message" -ForegroundColor $colors[$Level]
+    $logMessage = "$($icons[$Level]) $Message"
+    Write-Host $logMessage -ForegroundColor $colors[$Level]
+
+    # Also log to file with timestamp
+    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+    Add-Content -Path $Config.LogFile -Value "[$timestamp] [$Level] $Message" -ErrorAction SilentlyContinue
 }
 
 function Get-ChangedFiles {
@@ -93,17 +101,14 @@ function Get-AffectedTests {
                 $module = $Matches[1]
                 $affectedTests += "test_${module}_endpoints.py"
                 $affectedTests += "test_${module}.py"
-            }
-            elseif ($file -match 'app/services/(\w+)\.py') {
+            } elseif ($file -match 'app/services/(\w+)\.py') {
                 $module = $Matches[1]
                 $affectedTests += "test_${module}.py"
-            }
-            elseif ($file -match 'app/models/(\w+)\.py') {
+            } elseif ($file -match 'app/models/(\w+)\.py') {
                 # Model changes might affect multiple tests
-                $affectedTests += "test_api.py"
+                $affectedTests += 'test_api.py'
             }
-        }
-        elseif ($file -match '^apps/frontend/') {
+        } elseif ($file -match '^apps/frontend/') {
             # Frontend file changed
             if ($file -match 'src/components/(.+)\.(tsx?|jsx?)') {
                 $component = $Matches[1]
@@ -122,7 +127,26 @@ function Initialize-TestEnvironment {
     Ensure test environment is ready
     #>
 
-    Write-TestLog "Initializing test environment..." -Level Info
+    Write-TestLog 'Initializing test environment...' -Level Info
+
+    # Validate environment first
+    $pythonFound = Get-Command python -ErrorAction SilentlyContinue
+    $nodeFound = Get-Command node -ErrorAction SilentlyContinue
+
+    if (-not $pythonFound) {
+        Write-TestLog 'Python not found in PATH' -Level Warning
+    }
+    if (-not $nodeFound) {
+        Write-TestLog 'Node.js not found in PATH' -Level Warning
+    }
+
+    # Verify directories exist
+    if (-not (Test-Path $Config.BackendDir)) {
+        Write-TestLog "Backend directory not found: $($Config.BackendDir)" -Level Warning
+    }
+    if (-not (Test-Path $Config.FrontendDir)) {
+        Write-TestLog "Frontend directory not found: $($Config.FrontendDir)" -Level Warning
+    }
 
     # Create directories
     if (-not (Test-Path $Config.TestResultsDir)) {
@@ -134,10 +158,10 @@ function Initialize-TestEnvironment {
     }
 
     # Set environment variables
-    $env:TESTING = "true"
+    $env:TESTING = 'true'
     $env:PYTEST_CURRENT_TEST = $true
 
-    Write-TestLog "Environment ready" -Level Success
+    Write-TestLog 'Environment ready' -Level Success
 }
 
 # ============================================================================
@@ -154,13 +178,13 @@ function Invoke-BackendTests {
         [switch]$Verbose
     )
 
-    Write-TestLog "Running backend tests..." -Level Info
+    Write-TestLog 'Running backend tests...' -Level Info
 
     Push-Location $Config.BackendDir
     try {
         # Ensure virtual environment exists
-        if (-not (Test-Path "venv\Scripts\python.exe")) {
-            Write-TestLog "Virtual environment not found. Creating..." -Level Warning
+        if (-not (Test-Path 'venv\Scripts\python.exe')) {
+            Write-TestLog 'Virtual environment not found. Creating...' -Level Warning
             python -m venv venv
             & .\venv\Scripts\pip.exe install -r requirements.txt
         }
@@ -175,7 +199,7 @@ function Invoke-BackendTests {
         if ($Category -ne 'all') {
             $pytestArgs += "tests/$Category/"
         } else {
-            $pytestArgs += "tests/"
+            $pytestArgs += 'tests/'
         }
 
         # File selection
@@ -185,32 +209,32 @@ function Invoke-BackendTests {
 
         # Match pattern
         if ($Match) {
-            $pytestArgs += "-k"
+            $pytestArgs += '-k'
             $pytestArgs += $Match
         }
 
         # Verbosity
         if ($Verbose) {
-            $pytestArgs += "-vv"
-            $pytestArgs += "--tb=long"
+            $pytestArgs += '-vv'
+            $pytestArgs += '--tb=long'
         } else {
-            $pytestArgs += "-v"
-            $pytestArgs += "--tb=short"
+            $pytestArgs += '-v'
+            $pytestArgs += '--tb=short'
         }
 
         # Coverage
         if ($Coverage) {
-            $pytestArgs += "--cov=app"
-            $pytestArgs += "--cov-report=html"
-            $pytestArgs += "--cov-report=term"
+            $pytestArgs += '--cov=app'
+            $pytestArgs += '--cov-report=html'
+            $pytestArgs += '--cov-report=term'
             $pytestArgs += "--cov-report=json:$($Config.TestResultsDir)/backend-coverage.json"
         }
 
         # Quick mode (only fast tests)
         if ($Quick) {
-            $pytestArgs += "-m"
-            $pytestArgs += "not slow"
-            $pytestArgs += "--timeout=10"
+            $pytestArgs += '-m'
+            $pytestArgs += 'not slow'
+            $pytestArgs += '--timeout=10'
         }
 
         # Output
@@ -223,7 +247,7 @@ function Invoke-BackendTests {
         $exitCode = $LASTEXITCODE
 
         if ($exitCode -eq 0) {
-            Write-TestLog "Backend tests passed!" -Level Success
+            Write-TestLog 'Backend tests passed!' -Level Success
         } else {
             Write-TestLog "Backend tests failed with exit code $exitCode" -Level Error
         }
@@ -250,21 +274,21 @@ function Invoke-FrontendTests {
         [switch]$Watch
     )
 
-    Write-TestLog "Running frontend tests..." -Level Info
+    Write-TestLog 'Running frontend tests...' -Level Info
 
     Push-Location $Config.FrontendDir
     try {
         # Ensure node_modules exists
-        if (-not (Test-Path "node_modules")) {
-            Write-TestLog "node_modules not found. Installing..." -Level Warning
+        if (-not (Test-Path 'node_modules')) {
+            Write-TestLog 'node_modules not found. Installing...' -Level Warning
             npm install
         }
 
         # Build test command
-        $testArgs = @("test")
+        $testArgs = @('test')
 
         if (-not $Watch) {
-            $testArgs += "--run"
+            $testArgs += '--run'
         }
 
         # Category/File selection
@@ -278,20 +302,20 @@ function Invoke-FrontendTests {
 
         # Match pattern
         if ($Match) {
-            $testArgs += "--testNamePattern"
+            $testArgs += '--testNamePattern'
             $testArgs += $Match
         }
 
         # Coverage
         if ($Coverage) {
-            $testArgs += "--coverage"
-            $testArgs += "--coverage.reporter=html"
-            $testArgs += "--coverage.reporter=json-summary"
+            $testArgs += '--coverage'
+            $testArgs += '--coverage.reporter=html'
+            $testArgs += '--coverage.reporter=json-summary'
         }
 
         # Verbosity
         if ($Verbose) {
-            $testArgs += "--reporter=verbose"
+            $testArgs += '--reporter=verbose'
         }
 
         Write-TestLog "npm $($testArgs -join ' ')" -Level Info
@@ -301,7 +325,7 @@ function Invoke-FrontendTests {
         $exitCode = $LASTEXITCODE
 
         if ($exitCode -eq 0) {
-            Write-TestLog "Frontend tests passed!" -Level Success
+            Write-TestLog 'Frontend tests passed!' -Level Success
         } else {
             Write-TestLog "Frontend tests failed with exit code $exitCode" -Level Error
         }
@@ -318,12 +342,12 @@ function Invoke-FrontendTests {
 # ============================================================================
 
 function Invoke-SmartTests {
-    Write-TestLog "Running smart test selection..." -Level Info
+    Write-TestLog 'Running smart test selection...' -Level Info
 
     $changedFiles = Get-ChangedFiles
 
     if ($changedFiles.Count -eq 0) {
-        Write-TestLog "No files changed, running quick smoke tests..." -Level Warning
+        Write-TestLog 'No files changed, running quick smoke tests...' -Level Warning
         return Invoke-QuickTests
     }
 
@@ -332,7 +356,7 @@ function Invoke-SmartTests {
     $affectedTests = Get-AffectedTests -ChangedFiles $changedFiles
 
     if ($affectedTests.Count -eq 0) {
-        Write-TestLog "No directly affected tests found, running category tests..." -Level Warning
+        Write-TestLog 'No directly affected tests found, running category tests...' -Level Warning
 
         $backendChanged = $changedFiles | Where-Object { $_ -match '^apps/backend/' }
         $frontendChanged = $changedFiles | Where-Object { $_ -match '^apps/frontend/' }
@@ -372,7 +396,7 @@ function Invoke-SmartTests {
 # ============================================================================
 
 function Invoke-QuickTests {
-    Write-TestLog "Running quick tests (< 10s per test)..." -Level Info
+    Write-TestLog 'Running quick tests (< 10s per test)...' -Level Info
 
     $backendExit = Invoke-BackendTests -Quick -Category 'unit'
 
@@ -389,13 +413,13 @@ function Invoke-QuickTests {
 # ============================================================================
 
 function Invoke-PreCommitTests {
-    Write-TestLog "Running pre-commit test suite..." -Level Info
+    Write-TestLog 'Running pre-commit test suite...' -Level Info
 
     # Run fast, essential tests
     $tests = @(
-        @{ Name = "Backend API"; Category = "api"; Type = "backend"; Quick = $true }
-        @{ Name = "Backend Security"; Category = "security"; Type = "backend"; Quick = $true }
-        @{ Name = "Frontend Components"; Category = "components"; Type = "frontend"; Quick = $true }
+        @{ Name = 'Backend API'; Category = 'api'; Type = 'backend'; Quick = $true }
+        @{ Name = 'Backend Security'; Category = 'security'; Type = 'backend'; Quick = $true }
+        @{ Name = 'Frontend Components'; Category = 'components'; Type = 'frontend'; Quick = $true }
     )
 
     $allPassed = $true
@@ -416,10 +440,10 @@ function Invoke-PreCommitTests {
     }
 
     if ($allPassed) {
-        Write-TestLog "All pre-commit tests passed!" -Level Success
+        Write-TestLog 'All pre-commit tests passed!' -Level Success
         return 0
     } else {
-        Write-TestLog "Some pre-commit tests failed" -Level Error
+        Write-TestLog 'Some pre-commit tests failed' -Level Error
         return 1
     }
 }
@@ -429,10 +453,10 @@ function Invoke-PreCommitTests {
 # ============================================================================
 
 function Invoke-GateTests {
-    Write-TestLog "Running quality gate checks..." -Level Info
+    Write-TestLog 'Running quality gate checks...' -Level Info
 
     # Run the enhanced CI protection script
-    $ciScript = Join-Path $Config.RepoRoot "tools\ci-cd\enhanced-ci-protection.ps1"
+    $ciScript = Join-Path $Config.RepoRoot 'tools\ci-cd\enhanced-ci-protection.ps1'
 
     if (Test-Path $ciScript) {
         & $ciScript
@@ -444,17 +468,121 @@ function Invoke-GateTests {
 }
 
 # ============================================================================
+# Self-Test & Diagnostics
+# ============================================================================
+
+function Invoke-SelfTest {
+    <#
+    .SYNOPSIS
+    Run self-diagnostics on the test runner
+    #>
+
+    Write-Host ''
+    Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+    Write-Host '║           Test Runner Self-Diagnostics                     ║' -ForegroundColor Cyan
+    Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+    Write-Host ''
+
+    $allPassed = $true
+
+    # Test 1: Environment check
+    Write-TestLog 'Test 1: Environment validation' -Level Info
+    $pythonFound = Get-Command python -ErrorAction SilentlyContinue
+    $nodeFound = Get-Command node -ErrorAction SilentlyContinue
+    $npmFound = Get-Command npm -ErrorAction SilentlyContinue
+    $gitFound = Get-Command git -ErrorAction SilentlyContinue
+
+    if ($pythonFound) {
+        $pythonVersion = python --version 2>&1
+        Write-Host "  ✓ Python: $pythonVersion" -ForegroundColor Green
+    } else {
+        Write-Host '  ✗ Python: Not found' -ForegroundColor Red
+        $allPassed = $false
+    }
+
+    if ($nodeFound) {
+        $nodeVersion = node --version
+        Write-Host "  ✓ Node.js: $nodeVersion" -ForegroundColor Green
+    } else {
+        Write-Host '  ✗ Node.js: Not found' -ForegroundColor Red
+        $allPassed = $false
+    }
+
+    if ($npmFound) {
+        $npmVersion = npm --version
+        Write-Host "  ✓ npm: v$npmVersion" -ForegroundColor Green
+    } else {
+        Write-Host '  ✗ npm: Not found' -ForegroundColor Red
+        $allPassed = $false
+    }
+
+    if ($gitFound) {
+        $gitVersion = git --version
+        Write-Host "  ✓ $gitVersion" -ForegroundColor Green
+    } else {
+        Write-Host '  ✗ Git: Not found' -ForegroundColor Red
+        $allPassed = $false
+    }
+
+    Write-Host ''
+
+    # Test 2: Directory structure
+    Write-TestLog 'Test 2: Directory structure' -Level Info
+    $dirs = @(
+        @{Name = 'Repo Root'; Path = $Config.RepoRoot }
+        @{Name = 'Backend'; Path = $Config.BackendDir }
+        @{Name = 'Frontend'; Path = $Config.FrontendDir }
+    )
+
+    foreach ($dir in $dirs) {
+        if (Test-Path $dir.Path) {
+            Write-Host "  ✓ $($dir.Name): Found" -ForegroundColor Green
+        } else {
+            Write-Host "  ✗ $($dir.Name): Not found at $($dir.Path)" -ForegroundColor Red
+            $allPassed = $false
+        }
+    }
+
+    Write-Host ''
+    Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+    if ($allPassed) {
+        Write-Host '║              Self-Test: ALL PASSED ✅                      ║' -ForegroundColor Green
+        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+        Write-Host ''
+        Write-TestLog 'Test runner is ready to use!' -Level Success
+        return 0
+    } else {
+        Write-Host '║              Self-Test: FAILED ❌                          ║' -ForegroundColor Red
+        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+        Write-Host ''
+        Write-TestLog 'Please install missing dependencies' -Level Error
+        return 1
+    }
+}
+
+# ============================================================================
 # Main Execution Logic
 # ============================================================================
 
 function Invoke-TestRunner {
+    # Handle self-test first (before initialization)
+    if ($SelfTest) {
+        return Invoke-SelfTest
+    }
+    
     Initialize-TestEnvironment
 
-    Write-Host ""
-    Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║           Lokifi Test Runner - Comprehensive Suite        ║" -ForegroundColor Cyan
-    Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-    Write-Host ""
+    Write-Host ''
+    Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+    Write-Host '║           Lokifi Test Runner - Comprehensive Suite        ║' -ForegroundColor Cyan
+    Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+    Write-Host ''
+    
+    # Show dry-run warning
+    if ($DryRun) {
+        Write-TestLog 'DRY RUN MODE - No tests will be executed' -Level Warning
+        Write-Host ''
+    }
 
     $startTime = Get-Date
     $exitCode = 0
@@ -462,34 +590,47 @@ function Invoke-TestRunner {
     try {
         # Handle special modes
         if ($Smart) {
+            if ($DryRun) {
+                $changedFiles = Get-ChangedFiles
+                Write-TestLog "Would analyze $($changedFiles.Count) changed files" -Level Info
+                $affectedTests = Get-AffectedTests -ChangedFiles $changedFiles
+                Write-TestLog "Would run $($affectedTests.Count) affected tests" -Level Info
+                return 0
+            }
             $exitCode = Invoke-SmartTests
-        }
-        elseif ($PreCommit) {
+        } elseif ($PreCommit) {
+            if ($DryRun) {
+                Write-TestLog 'Would run pre-commit test suite' -Level Info
+                return 0
+            }
             $exitCode = Invoke-PreCommitTests
-        }
-        elseif ($Gate) {
+        } elseif ($Gate) {
+            if ($DryRun) {
+                Write-TestLog 'Would run quality gate checks' -Level Info
+                return 0
+            }
             $exitCode = Invoke-GateTests
-        }
-        elseif ($Quick) {
+        } elseif ($Quick) {
+            if ($DryRun) {
+                Write-TestLog 'Would run quick tests (< 10s per test)' -Level Info
+                return 0
+            }
             $exitCode = Invoke-QuickTests
         }
         # Category-based execution
         elseif ($Category -eq 'all') {
-            Write-TestLog "Running all tests..." -Level Info
+            Write-TestLog 'Running all tests...' -Level Info
             $backendExit = Invoke-BackendTests -File $File -Match $Match -Coverage:$Coverage -Verbose:$Verbose
             if ($backendExit -eq 0) {
                 $exitCode = Invoke-FrontendTests -File $File -Match $Match -Coverage:$Coverage -Verbose:$Verbose -Watch:$Watch
             } else {
                 $exitCode = $backendExit
             }
-        }
-        elseif ($Category -eq 'backend') {
+        } elseif ($Category -eq 'backend') {
             $exitCode = Invoke-BackendTests -File $File -Match $Match -Coverage:$Coverage -Verbose:$Verbose
-        }
-        elseif ($Category -eq 'frontend') {
+        } elseif ($Category -eq 'frontend') {
             $exitCode = Invoke-FrontendTests -File $File -Match $Match -Coverage:$Coverage -Verbose:$Verbose -Watch:$Watch
-        }
-        else {
+        } else {
             # Specific category (api, unit, integration, etc.)
             $backendExit = Invoke-BackendTests -Category $Category -File $File -Match $Match -Coverage:$Coverage -Verbose:$Verbose
             $exitCode = $backendExit
@@ -498,20 +639,20 @@ function Invoke-TestRunner {
         $endTime = Get-Date
         $duration = $endTime - $startTime
 
-        Write-Host ""
-        Write-Host "╔════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "║                     Test Run Complete                      ║" -ForegroundColor Cyan
-        Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-        Write-Host ""
+        Write-Host ''
+        Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+        Write-Host '║                     Test Run Complete                      ║' -ForegroundColor Cyan
+        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+        Write-Host ''
         Write-TestLog "Duration: $($duration.TotalSeconds.ToString('0.00'))s" -Level Info
 
         if ($exitCode -eq 0) {
-            Write-TestLog "All tests passed! 🎉" -Level Success
+            Write-TestLog 'All tests passed! 🎉' -Level Success
         } else {
             Write-TestLog "Tests failed with exit code $exitCode" -Level Error
         }
 
-        Write-Host ""
+        Write-Host ''
 
     } catch {
         Write-TestLog "Test runner encountered an error: $_" -Level Error
