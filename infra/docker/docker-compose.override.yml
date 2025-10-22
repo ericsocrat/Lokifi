@@ -1,3 +1,8 @@
+# Development Overrides
+# Purpose: Hot-reload and volume mounts for active development
+# Usage: Auto-loaded with docker-compose.yml by default
+# Features: Live code reload, mounted source directories
+
 services:
   frontend:
     profiles: ["dev"]

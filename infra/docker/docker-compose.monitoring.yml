@@ -1,4 +1,8 @@
-version: "3.8"
+# Standalone Monitoring Stack
+# Purpose: Add Prometheus and Grafana monitoring to any deployment
+# Usage: docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up
+# Services: prometheus, grafana
+# Best for: Adding monitoring to existing setups
 
 services:
   prometheus:

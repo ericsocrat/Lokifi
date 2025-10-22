@@ -1,3 +1,8 @@
+# Base Development Configuration
+# Purpose: Primary docker-compose file for local development
+# Usage: docker compose up (automatically loads docker-compose.override.yml)
+# Services: backend, frontend, redis, postgres, mailhog
+
 services:
   backend:
     build:
@@ -9,7 +14,13 @@ services:
     env_file:
       - ./backend/.env
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')",
+        ]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -75,8 +86,8 @@ services:
   mailhog:
     image: mailhog/mailhog:latest
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
     profiles:
       - dev
 

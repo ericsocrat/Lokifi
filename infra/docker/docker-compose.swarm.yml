@@ -1,4 +1,8 @@
-version: '3.8'
+# Docker Swarm Orchestration Configuration
+# Purpose: Multi-node cluster deployment with Docker Swarm
+# Usage: docker stack deploy -c docker-compose.swarm.yml lokifi
+# Features: Service replication, load balancing, auto-restart, resource limits
+# Best for: Multi-server production clusters with Docker Swarm
 
 services:
   backend:
@@ -15,10 +19,10 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
         reservations:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 256M
     networks:
       - lokifi-network
@@ -34,7 +38,7 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: '0.25'
+          cpus: "0.25"
           memory: 256M
     networks:
       - lokifi-network

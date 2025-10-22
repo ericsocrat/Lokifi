@@ -1,3 +1,9 @@
+# Minimal Production Configuration
+# Purpose: Lightweight production setup without database (uses external DB)
+# Usage: docker compose -f docker-compose.prod-minimal.yml up
+# Services: backend, frontend, redis (no postgres, no monitoring)
+# Best for: Cloud deployments with managed databases
+
 services:
   backend:
     build:
@@ -39,7 +45,8 @@ services:
       - NEXT_PUBLIC_API_BASE=https://api.your-domain.com
       - NODE_OPTIONS="--max_old_space_size=4096"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -50,7 +57,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     ports:
       - "6379:6379"
     healthcheck:

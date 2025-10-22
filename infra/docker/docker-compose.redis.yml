@@ -1,11 +1,13 @@
-# Redis Production Configuration
-# Advanced Redis setup for Phase K Track 3 Infrastructure Enhancement
-
-version: "3.8"
+# Redis High Availability Configuration
+# Purpose: Redis cluster with primary, replica, sentinel for high availability
+# Usage: docker compose -f docker-compose.redis.yml up -d
+# Services: redis-primary, redis-replica, redis-sentinel, redis-commander
+# Features: Automatic failover, replication, web-based management UI
+# Best for: Production environments requiring Redis high availability
 
 services:
   redis-primary:
-    image: redis:7.2-alpine
+    image: redis:7.4-alpine
     container_name: lokifi-redis-primary
     ports:
       - "6379:6379"
@@ -26,7 +28,7 @@ services:
       start_period: 30s
 
   redis-replica:
-    image: redis:7.2-alpine
+    image: redis:7.4-alpine
     container_name: lokifi-redis-replica
     ports:
       - "6380:6379"
@@ -51,7 +53,7 @@ services:
       start_period: 30s
 
   redis-sentinel:
-    image: redis:7.2-alpine
+    image: redis:7.4-alpine
     container_name: lokifi-redis-sentinel
     ports:
       - "26379:26379"
