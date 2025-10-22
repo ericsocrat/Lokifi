@@ -191,6 +191,7 @@ Copilot will automatically use these installed extensions:
 - **ESLint** - For JavaScript/TypeScript linting
 - **Database Client** - For SQL query assistance
 - **Console Ninja** - For runtime debugging context
+- **TODO Tree** - For task tracking and code annotation visualization
 
 ## Tips for Best Results
 
