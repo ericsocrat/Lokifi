@@ -1,5 +1,98 @@
-# Lokifi Test Runner
-# Comprehensive test execution with advanced features
+<#
+.SYNOPSIS
+    Comprehensive test runner for Lokifi frontend and backend with advanced orchestration
+
+.DESCRIPTION
+    The test-runner.ps1 script provides intelligent test execution with multiple modes:
+    
+    🎯 EXECUTION MODES:
+    - Smart: Run only tests for changed files (git diff)
+    - PreCommit: Pre-commit validation (frontend linting + backend tests)
+    - Coverage: Full test suite with coverage reporting
+    - Quick: Fast frontend unit tests only
+    - Watch: Continuous test execution on file changes
+    - DryRun: Show what would run without executing
+    - SelfTest: Validate environment setup
+    
+    📊 FEATURES:
+    - Environment validation (Python, Node.js, npm, git)
+    - File logging with timestamps (.test-runner.log)
+    - Parallel execution support
+    - Category filtering (all, backend, frontend, api, unit, integration, e2e)
+    - File-specific and pattern-based test selection
+    
+.PARAMETER Category
+    Test category to run: 'all', 'backend', 'frontend', 'api', 'unit', 'integration', 'e2e', 'security', 'services'
+    Default: 'all'
+
+.PARAMETER File
+    Run tests for a specific file (path relative to repo root)
+
+.PARAMETER Match
+    Run tests matching a specific pattern (test name or file pattern)
+
+.PARAMETER Smart
+    Run only tests for files changed since last commit (git diff)
+
+.PARAMETER Quick
+    Fast execution mode (frontend unit tests only, no coverage)
+
+.PARAMETER Coverage
+    Run full test suite with coverage reporting
+
+.PARAMETER Gate
+    Run quality gate checks (coverage thresholds)
+
+.PARAMETER PreCommit
+    Pre-commit validation mode (linting + critical tests)
+
+.PARAMETER Parallel
+    Enable parallel test execution (faster but uses more resources)
+
+.PARAMETER Verbose
+    Enable verbose output with detailed logging
+
+.PARAMETER Watch
+    Watch mode - continuously run tests on file changes
+
+.PARAMETER DryRun
+    Show what would be executed without running tests
+
+.PARAMETER SelfTest
+    Validate environment setup (Python, Node.js, npm, git)
+
+.PARAMETER Timeout
+    Maximum execution time in seconds (default: 300)
+
+.EXAMPLE
+    .\tools\test-runner.ps1 -Smart
+    Run tests only for changed files
+
+.EXAMPLE
+    .\tools\test-runner.ps1 -PreCommit
+    Run pre-commit validation checks
+
+.EXAMPLE
+    .\tools\test-runner.ps1 -Category backend -Coverage
+    Run backend tests with coverage
+
+.EXAMPLE
+    .\tools\test-runner.ps1 -File "apps/frontend/components/Dashboard.tsx"
+    Run tests for a specific file
+
+.EXAMPLE
+    .\tools\test-runner.ps1 -SelfTest
+    Validate environment setup
+
+.NOTES
+    File: test-runner.ps1
+    Author: Lokifi Development Team
+    Last Updated: October 22, 2025
+    Requires: PowerShell 5.1+, Python 3.11+, Node.js 18+
+
+.LINK
+    https://github.com/ericsocrat/Lokifi
+#>
 
 param(
     [ValidateSet('all', 'backend', 'frontend', 'api', 'unit', 'integration', 'e2e', 'security', 'services')]
