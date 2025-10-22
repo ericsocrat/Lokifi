@@ -2,15 +2,13 @@
 
 > **Central reference for all environment variables and `.env` file configuration**
 
-**Last Updated:** October 20, 2025
-
 ## 📋 Overview
 
 This guide provides comprehensive documentation for all environment variables used across the Lokifi application, including security best practices and configuration examples.
 
 ## 🗂️ Environment Files Structure
 
-```env
+```
 lokifi/
 ├── backend/
 │   ├── .env                 # Backend environment variables (gitignored)
@@ -18,7 +16,7 @@ lokifi/
 └── frontend/
     ├── .env.local           # Frontend environment variables (gitignored)
     └── .env.example         # Template with safe defaults
-```env
+```
 
 ## 🔑 Required Environment Variables
 
@@ -34,7 +32,7 @@ DATABASE_URL=postgresql+asyncpg://lokifi:lokifi123@localhost:5432/lokifi
 
 # Example for production (use strong credentials)
 DATABASE_URL=postgresql+asyncpg://prod_user:STRONG_PASSWORD@db-host:5432/lokifi_prod
-```bash
+```
 
 #### Redis Configuration
 ```bash
@@ -46,7 +44,7 @@ REDIS_URL=redis://:23233@localhost:6379/0
 
 # Example for production
 REDIS_URL=redis://:STRONG_REDIS_PASSWORD@redis-host:6379/0
-```bash
+```
 
 #### Authentication & Security
 ```bash
@@ -58,7 +56,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=30
 # API Keys (if using external services)
 API_KEY=your-api-key-here
 API_SECRET=your-api-secret-here
-```bash
+```
 
 #### Application Settings
 ```bash
@@ -70,7 +68,7 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:3001
 
 # Debug mode
 DEBUG=True  # Set to False in production
-```bash
+```
 
 ### Frontend Configuration (`frontend/.env.local`)
 
@@ -81,14 +79,14 @@ NEXT_PUBLIC_API_URL=http://localhost:8000
 
 # API Version
 NEXT_PUBLIC_API_VERSION=v1
-```bash
+```
 
 #### Feature Flags
 ```bash
 # Enable/disable features
 NEXT_PUBLIC_ENABLE_ANALYTICS=false
 NEXT_PUBLIC_ENABLE_DEBUG=true
-```bash
+```
 
 ## 🛡️ Security Best Practices
 
@@ -99,7 +97,7 @@ DATABASE_URL=postgresql://admin:admin123@prod-db:5432/lokifi
 
 # ✅ GOOD - Use .env files (gitignored)
 # Store in backend/.env, never commit
-```bash
+```
 
 ### 2. Use Strong Passwords
 ```bash
@@ -110,7 +108,7 @@ REDIS_URL=redis://:password@localhost:6379/0
 # ✅ GOOD
 JWT_SECRET=9k#mP2$vL8@nR4&qW7!xZ6^tY5*hB3
 REDIS_URL=redis://:Kd8#mL2$vP9@nR6&qW!xZ7^tY4*hB@localhost:6379/0
-```bash
+```
 
 ### 3. Environment-Specific Configuration
 ```bash
@@ -123,7 +121,7 @@ DATABASE_URL=postgresql+asyncpg://lokifi:lokifi123@localhost:5432/lokifi
 DEBUG=False
 ENVIRONMENT=production
 DATABASE_URL=postgresql+asyncpg://prod_user:STRONG_PASSWORD@prod-db:5432/lokifi_prod
-```bash
+```
 
 ### 4. Validate Required Variables
 ```python
@@ -135,7 +133,7 @@ missing_vars = [var for var in required_vars if not os.getenv(var)]
 
 if missing_vars:
     raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
-```python
+```
 
 ```typescript
 // Frontend validation example
@@ -145,7 +143,7 @@ const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 if (missingVars.length > 0) {
   throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
 }
-```typescript
+```
 
 ## 📝 Setup Instructions
 
@@ -186,7 +184,7 @@ services:
       - JWT_SECRET=${JWT_SECRET}
     env_file:
       - ./backend/.env
-```yaml
+```
 
 ## 🔍 Reference by Service
 
@@ -224,7 +222,7 @@ cd backend
 
 # Verify environment variables loaded
 python -c "import os; import logging; logger = logging.getLogger(__name__); logger.info(os.getenv('DATABASE_URL'))"
-```powershell
+```
 
 ### Connection refused errors
 ```bash
@@ -235,7 +233,7 @@ DATABASE_URL=postgresql+asyncpg://lokifi:lokifi123@localhost:5432/lokifi
 # Check REDIS_URL format
 # Should be: redis://:password@host:port/db
 REDIS_URL=redis://:23233@localhost:6379/0
-```bash
+```
 
 ### Environment variables not loading
 1. Verify `.env` file exists in correct location

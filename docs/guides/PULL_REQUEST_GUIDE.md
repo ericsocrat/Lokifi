@@ -25,9 +25,9 @@
 ### Method 1: GitHub Web Interface (Recommended)
 
 #### Step 1: Navigate to Repository
-```bash
+```
 https://github.com/ericsocrat/Lokifi
-```bash
+```
 
 #### Step 2: Create PR
 1. Look for yellow banner: "*branch-name* had recent pushes"
@@ -50,7 +50,7 @@ gh pr create --base main --head feature/branch-name --title "feat: Description" 
 
 # Quick PR creation
 gh pr create --fill
-```powershell
+```
 
 ### Method 3: VS Code Extension
 1. Install "GitHub Pull Requests" extension
@@ -62,9 +62,9 @@ gh pr create --fill
 ## 📋 PR Title Standards
 
 ### Format Convention
-```typescript
+```
 <type>(<scope>): <description>
-```typescript
+```
 
 ### Type Categories
 - **feat**: New features
@@ -78,13 +78,13 @@ gh pr create --fill
 - **chore**: Maintenance tasks
 
 ### Examples
-```bash
+```
 feat(api): add real-time WebSocket price updates
 fix(auth): resolve JWT token expiration handling
 test(frontend): expand component test coverage
 docs(setup): update development environment guide
 ci(backend): optimize test pipeline performance
-```bash
+```
 
 ---
 
@@ -169,7 +169,7 @@ Brief summary of the changes and their purpose.
 ✅ Build validation
 ✅ Bundle size analysis
 ✅ Security scan (dependencies)
-```yaml
+```
 
 #### Backend Checks
 ```yaml
@@ -179,7 +179,7 @@ Brief summary of the changes and their purpose.
 ✅ API contract tests
 ✅ Security scan (bandit)
 ✅ Coverage reporting (≥80%)
-```yaml
+```
 
 **📖 For unit testing details:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for comprehensive testing strategies
 
@@ -209,7 +209,7 @@ Brief summary of the changes and their purpose.
 - Dependencies up to date
 
 **Ready for review! 🚀**
-```markdown
+```
 
 ---
 
@@ -249,7 +249,7 @@ Brief summary of the changes and their purpose.
 - [ ] No security vulnerabilities
 - [ ] Performance considerations addressed
 - [ ] Resource usage optimized
-```markdown
+```
 
 ### Review Outcomes
 - **✅ Approved**: Ready to merge
@@ -281,7 +281,7 @@ gh pr status
 
 # Check automated status
 gh pr checks 23
-```powershell
+```
 
 #### Via VS Code
 1. Open GitHub Pull Requests extension
@@ -306,7 +306,7 @@ gh pr checks 23
 ```powershell
 # Check test logs in CI
 gh pr checks PR_NUMBER --watch
-```powershell
+```
 
 **📖 For running tests locally and debugging:**
 - [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Complete testing workflows and debugging options
@@ -319,7 +319,7 @@ gh pr view PR_NUMBER --json statusCheckRollup
 # Test build locally
 npm run build            # Frontend
 python -m build          # Backend
-```powershell
+```
 
 #### Linting/Formatting Issues
 ```powershell
@@ -329,7 +329,7 @@ black .                  # Backend formatting
 
 # Pre-commit hook fixes
 npx lint-staged         # From frontend directory
-```powershell
+```
 
 **📖 For complete code quality setup:**
 - [`CODE_QUALITY.md`](CODE_QUALITY.md) - Complete linting and formatting guide
@@ -341,7 +341,7 @@ npx lint-staged         # From frontend directory
 git checkout feature-branch
 git fetch origin
 git merge origin/main
-```powershell
+```
 
 #### Step 2: Resolve Conflicts
 1. Open conflicted files in VS Code
@@ -354,7 +354,7 @@ git merge origin/main
 git add .
 git commit -m "resolve: merge conflicts with main"
 git push origin feature-branch
-```powershell
+```
 
 ### Branch Protection Issues
 
@@ -373,7 +373,7 @@ git push origin feature-branch
 
 # Force push (use cautiously)
 git push --force-with-lease origin feature-branch
-```powershell
+```
 
 ---
 
@@ -412,7 +412,7 @@ git push origin --delete feature-branch
 
 # Update local main
 git pull origin main
-```powershell
+```
 
 ### Deployment Validation
 - **Monitor deployment**: Check production deployment
@@ -454,7 +454,7 @@ if (featureFlags.isEnabled('new-chart-component')) {
   return <NewPriceChart />;
 }
 return <LegacyPriceChart />;
-```typescript
+```
 
 ### Draft PRs for Early Feedback
 ```powershell
@@ -463,7 +463,7 @@ gh pr create --draft --title "WIP: New feature implementation"
 
 # Convert to ready for review
 gh pr ready PR_NUMBER
-```powershell
+```
 
 ### Stacked PRs for Large Features
 1. **Base PR**: Core infrastructure changes

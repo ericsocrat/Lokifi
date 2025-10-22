@@ -13,14 +13,14 @@ The symbol search is failing because of **double API prefix** causing 404 errors
 
 ### Analysis
 
-```bash
+```
 Market Data Router:  prefix="/api/v1"        (market_data.py line 12)
 Main App:            prefix=settings.API_PREFIX  (main.py line 166)
 API_PREFIX value:    "/api"                  (config.py line 8)
 
 Result: /api + /api/v1 + /symbols/search = /api/api/v1/symbols/search ❌
 Frontend calls:                               /api/v1/symbols/search ✅
-```bash
+```
 
 ### Impact
 
@@ -39,7 +39,7 @@ router = APIRouter(prefix="/api/v1", tags=["market-data"])
 
 # TO:
 router = APIRouter(prefix="/v1", tags=["market-data"])
-```python
+```
 
 **Option 2**: Remove settings.API_PREFIX from main.py include (NOT recommended - breaks other routes)
 
@@ -112,7 +112,7 @@ router = APIRouter(prefix="/api/v1", tags=["market-data"])
 
 # TO:
 router = APIRouter(prefix="/v1", tags=["market-data"])
-```python
+```
 
 **Test**:
 
@@ -123,7 +123,7 @@ curl http://localhost:8000/api/v1/symbols/popular?limit=5
 curl http://localhost:8000/api/v1/symbols/search?q=AAPL&limit=5
 
 # Should return JSON data with symbols
-```bash
+```
 
 **Expected Result**:
 
@@ -156,7 +156,7 @@ curl http://localhost:8000/api/v1/symbols/search?q=AAPL&limit=5
 ```bash
 # PowerShell
 Get-ChildItem frontend/app/*/page.tsx -Recurse
-```bash
+```
 
 **Verify**:
 
@@ -208,16 +208,16 @@ Get-ChildItem frontend/app/*/page.tsx -Recurse
 
 # 2. Restart backend
 # Stop current backend (Ctrl+C)
-# Then:
-cd backend
-python -m uvicorn app.main:app --reload --port 8000
+# Then restart using backend commands
+
+**📖 For backend startup commands:** See [`../QUICK_START.md`](../QUICK_START.md) for complete setup guide
 
 # 3. Test in browser
 # Open: http://localhost:3000
 # Click symbol picker
 # Type "AAPL"
 # Should see search results now!
-```bash
+```
 
 ---
 

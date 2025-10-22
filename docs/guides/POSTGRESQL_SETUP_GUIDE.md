@@ -25,7 +25,7 @@ choco install postgresql14 -y
 
 # Refresh environment
 refreshenv
-```powershell
+```
 
 ### Option 2: Official Installer (Manual)
 1. Download from: https://www.postgresql.org/download/windows/
@@ -50,7 +50,7 @@ docker run -d `
 
 # Verify it's running
 docker ps | Select-String "lokifi-postgres"
-```powershell
+```
 
 ## After Installation
 
@@ -67,19 +67,21 @@ CREATE DATABASE lokifi;
 CREATE USER lokifi WITH PASSWORD 'lokifi123';
 GRANT ALL PRIVILEGES ON DATABASE lokifi TO lokifi;
 \q
-```powershell
+```
 
 ### 2. Update Backend Configuration
-The `DATABASE_URL` environment variable needs to be set. We'll update the backend to use:
-```bash
-postgresql+asyncpg://lokifi:lokifi123@localhost:5432/lokifi
-```bash
+
+**📖 For complete environment configuration:**
+- See [Environment Configuration Guide](../security/ENVIRONMENT_CONFIGURATION.md#database-configuration) for `DATABASE_URL` setup and examples
+
+The `DATABASE_URL` environment variable will be set in `backend/.env`.
 
 ### 3. Run Database Migrations
 ```powershell
-cd backend
 python -m alembic upgrade head
-```powershell
+```
+
+**📖 For directory navigation:** See [`../QUICK_START.md`](../QUICK_START.md) for complete backend setup workflows
 
 ## Quick Start Commands
 
@@ -96,15 +98,15 @@ psql -U lokifi -d lokifi -h localhost
 
 # Exit
 \q
-```powershell
+```
 
 ## Troubleshooting
 
 ### "psql: command not found"
 Add PostgreSQL to PATH:
-```yaml
+```
 C:\Program Files\PostgreSQL\16\bin
-```yaml
+```
 
 ### Connection refused
 Check if PostgreSQL service is running:
@@ -112,7 +114,7 @@ Check if PostgreSQL service is running:
 Get-Service -Name postgresql*
 # Or for Docker:
 docker ps | Select-String postgres
-```powershell
+```
 
 ### "password authentication failed"
 Double-check the password you set during installation.

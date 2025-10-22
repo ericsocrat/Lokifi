@@ -30,7 +30,7 @@ black .                  # Format code
 git add .
 git commit -m "feat: your message"  # Husky auto-runs lint-staged
 git push
-```bash
+```
 
 ---
 
@@ -65,7 +65,7 @@ docker-compose ps
 # View logs
 docker-compose logs -f          # All services
 docker-compose logs -f backend  # Specific service
-```bash
+```
 
 ### Service Health Checks
 
@@ -85,7 +85,7 @@ curl http://localhost:8000/api/health
 # Frontend
 curl http://localhost:3000
 # Expected: HTML response
-```bash
+```
 
 ---
 
@@ -95,7 +95,7 @@ curl http://localhost:3000
 
 ```bash
 cd apps/frontend
-```bash
+```
 
 ### Development Server
 
@@ -107,7 +107,7 @@ npm run dev
 # Start production build locally
 npm run build
 npm start
-```bash
+```
 
 ### Testing
 
@@ -129,7 +129,7 @@ npm run typecheck
 
 # Format with Prettier (auto on commit via Husky)
 npx prettier --write .
-```bash
+```
 
 ### Build & Deploy
 
@@ -142,7 +142,7 @@ npm run build -- --analyze
 
 # Clean build artifacts
 npm run clean
-```bash
+```
 
 ---
 
@@ -152,7 +152,7 @@ npm run clean
 
 ```bash
 cd apps/backend
-```bash
+```
 
 ### Environment Setup
 
@@ -170,7 +170,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 # Or use environment variable
 $env:PYTHONPATH=(Get-Location).Path
 python -m uvicorn app.main:app --reload
-```bash
+```
 
 ### Testing
 
@@ -197,7 +197,7 @@ mypy app/
 
 # Sort imports with isort
 isort .
-```bash
+```
 
 ### Database Management
 
@@ -221,7 +221,7 @@ docker-compose exec backend alembic current
 docker-compose down -v
 docker-compose up -d postgres
 docker-compose exec backend alembic upgrade head
-```bash
+```
 
 ---
 
@@ -244,7 +244,7 @@ docker-compose exec -T postgres psql -U lokifi lokifi_db < backup_20251019.sql
 
 # View database size
 docker-compose exec postgres psql -U lokifi -d lokifi_db -c "SELECT pg_size_pretty(pg_database_size('lokifi_db'));"
-```bash
+```
 
 ### Redis Access
 
@@ -270,7 +270,7 @@ docker-compose exec redis redis-cli -a 23233 MONITOR
 
 # Clear all Redis data
 docker-compose exec redis redis-cli -a 23233 FLUSHALL
-```bash
+```
 
 ---
 
@@ -319,7 +319,7 @@ git log --oneline --graph
 git diff                           # Unstaged changes
 git diff --staged                  # Staged changes
 git diff main                      # Compare with main branch
-```bash
+```
 
 ### Common Operations
 
@@ -349,7 +349,7 @@ git commit --amend
 
 # Amend without changing message
 git commit --amend --no-edit
-```bash
+```
 
 ---
 
@@ -373,7 +373,7 @@ npm run build -- --analyze
 
 # Check Next.js info
 npx next info
-```bash
+```
 
 ### Backend Debugging
 
@@ -392,7 +392,7 @@ pip list
 
 # Check for outdated packages
 pip list --outdated
-```bash
+```
 
 ### Docker Debugging
 
@@ -418,7 +418,7 @@ docker-compose up --build backend
 # Remove all containers and start fresh
 docker-compose down
 docker-compose up --build
-```bash
+```
 
 ---
 
@@ -443,7 +443,7 @@ npm update
 
 # Update specific package
 npm update react
-```bash
+```
 
 ### Backend Security
 
@@ -455,7 +455,7 @@ pip-audit
 
 # Check specific package
 pip show fastapi
-```bash
+```
 
 **📖 For dependency updates:** See [`../QUICK_START.md`](../QUICK_START.md) for complete installation guide
 
@@ -471,7 +471,7 @@ git secrets --scan
 
 # Check Docker security
 docker scan lokifi-backend-dev
-```bash
+```
 
 ---
 
@@ -491,7 +491,7 @@ docker scan lokifi-backend-dev
 
 # Database performance
 docker-compose exec postgres psql -U lokifi -d lokifi_db -c "SELECT * FROM pg_stat_activity;"
-```bash
+```
 
 ### Resource Monitoring
 
@@ -506,7 +506,7 @@ docker system df
 docker system prune              # Remove unused data
 docker system prune -a           # Remove all unused images
 docker volume prune              # Remove unused volumes
-```bash
+```
 
 ---
 
@@ -518,7 +518,7 @@ docker volume prune              # Remove unused volumes
 # Quick setup commands
 git clone https://github.com/ericsocrat/Lokifi.git
 cd Lokifi && docker-compose up -d
-```bash
+```
 
 **📖 For complete setup instructions:**
 - [`QUICK_START.md`](../QUICK_START.md) - Complete installation and setup guide
@@ -546,7 +546,7 @@ git push
 
 # Evening: Stop everything
 docker-compose down
-```bash
+```
 
 ### Creating a Feature
 
@@ -569,7 +569,7 @@ git push -u origin feature/user-profile
 # → Wait for CI checks
 # → Request review
 # → Merge when approved
-```bash
+```
 
 ### Fixing a Bug
 
@@ -590,7 +590,7 @@ git checkout -b fix/login-validation
 git add .
 git commit -m "fix: correct email validation on login"
 git push -u origin fix/login-validation
-```bash
+```
 
 ---
 
@@ -609,7 +609,7 @@ taskkill /PID <PID> /F
 # Or use different port
 npm run dev -- -p 3001
 uvicorn app.main:app --reload --port 8001
-```bash
+```
 
 ### "Module not found"
 
@@ -630,7 +630,7 @@ docker-compose up --build
 docker-compose down -v
 docker system prune -a
 docker-compose up --build
-```bash
+```
 
 ### "Tests failing"
 
@@ -643,7 +643,7 @@ deactivate
 Remove-Item -Recurse venv
 # Follow Backend Setup steps in QUICK_START.md
 pytest
-```bash
+```
 
 **📖 For dependency installation:** See [`../QUICK_START.md`](../QUICK_START.md) for complete setup guide
 
@@ -654,7 +654,7 @@ pytest
 
 # Or temporarily bypass (use sparingly!)
 git commit --no-verify -m "message"
-```bash
+```
 
 ---
 
@@ -686,7 +686,7 @@ git commit --no-verify -m "message"
 - 🔧 Start Backend Server
 - 🎨 Start Frontend Server
 - 🚀 Start All Servers
-```bash
+```
 
 ---
 
@@ -706,7 +706,7 @@ function dcr { docker-compose restart $args }
 dcu          # docker-compose up
 dcd          # docker-compose down
 dcr backend  # docker-compose restart backend
-```bash
+```
 
 ### 3. Use Git Hooks (Already Configured!)
 Husky auto-runs lint-staged on commit - no manual linting needed!

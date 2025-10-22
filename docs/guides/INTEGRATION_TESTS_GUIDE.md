@@ -5,19 +5,9 @@
 
 ---
 
-## Prerequisites
-
-Before running integration tests, ensure you have:
-- Docker Desktop installed and running
-- Node.js 18+ installed
-- Git repository cloned locally
-- At least 4GB free RAM for Docker containers
-
----
-
 ## 🎯 Overview
 
-Integration tests verify that all services (backend, frontend, database, Redis) work together correctly in a Docker environment. This guide shows how to set up, run, and troubleshoot integration tests with detailed workflow diagrams and examples.
+Integration tests verify that all services (backend, frontend, database, Redis) work together correctly in a Docker environment.
 
 ---
 
@@ -42,7 +32,7 @@ npm ci --legacy-peer-deps
 
 # 4. Stop services
 docker compose -f apps/docker-compose.yml down -v
-```bash
+```
 
 ---
 
@@ -111,7 +101,7 @@ docker compose -f apps/docker-compose.yml logs
 
 # Restart services
 docker compose -f apps/docker-compose.yml restart
-```bash
+```
 
 ### Health Checks Failing
 
@@ -121,7 +111,7 @@ docker exec -it lokifi-backend-dev curl http://localhost:8000/api/health
 
 # Check backend logs
 docker compose -f apps/docker-compose.yml logs backend
-```bash
+```
 
 ### Port Conflicts
 
@@ -133,7 +123,7 @@ netstat -ano | findstr "5432"
 netstat -ano | findstr "6379"
 
 # Kill processes or change ports in docker-compose.yml
-```bash
+```
 
 ### Database Connection Issues
 
@@ -143,13 +133,13 @@ docker exec -it lokifi-postgres-dev psql -U lokifi -d lokifi_db -c "SELECT 1;"
 
 # Check database logs
 docker compose -f apps/docker-compose.yml logs postgres
-```bash
+```
 
 ---
 
 ## 📁 Key Files
 
-```yaml
+```
 apps/
 ├── docker-compose.yml           # Main Docker configuration
 ├── backend/
@@ -160,16 +150,11 @@ apps/
     ├── Dockerfile              # Production build
     └── Dockerfile.dev          # Development build
 
-    └── Dockerfile.dev          # Development build
-
 > **📖 Environment setup:** See [Environment Configuration Guide](../security/ENVIRONMENT_CONFIGURATION.md) for `.env` file configuration
 
 .github/workflows/
-```bash
-
-.github/workflows/
 └── integration-ci.yml          # Automation workflow
-```bash
+```
 
 ---
 
@@ -213,7 +198,7 @@ docker compose -f apps/docker-compose.yml restart backend
 
 # Execute command in container
 docker exec -it lokifi-backend-dev bash
-```bash
+```
 
 ---
 
@@ -242,12 +227,11 @@ docker exec -it lokifi-backend-dev bash
 {
   "ok": true
 }
-```yaml
+```
 
 **Frontend (`/`):**
 - Status: 200
 - Content: HTML page
-```json
 
 ---
 

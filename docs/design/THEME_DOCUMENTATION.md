@@ -19,22 +19,14 @@ This document provides comprehensive guidance on using the Lokifi theme system a
 
 ---
 
-## 🎯 Overview
+## 📁 Theme Index
 
-The Lokifi theme system provides:
-
-- **Centralized Configuration**: All design tokens in one place (`lib/theme.ts`)
-- **Tailwind Integration**: Custom utilities and classes (`tailwind.config.ts`)
-- **Global Styles**: Pre-built component classes (`styles/globals.css`)
-- **Type Safety**: Full TypeScript support
-- **Auto-Application**: Consistent theming across all new components
-
-### Design Philosophy
-
-- **Minimalist**: Clean, distraction-free interface
-- **Data-First**: Charts and numbers take center stage
-- **Professional**: Resembles Bloomberg Terminal/TradingView
-- **Modern**: Smooth transitions, rounded corners, subtle effects
+- Color palette and tokens
+- Typography system
+- Component theming
+- Dark mode implementation
+- CSS custom properties
+- Responsive typography
 
 ---
 

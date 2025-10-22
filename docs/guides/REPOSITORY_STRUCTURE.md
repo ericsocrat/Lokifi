@@ -7,7 +7,7 @@
 
 ## 🎯 Overview
 
-This document provides a comprehensive guide to the Lokifi repository structure, explaining where to find files and where to place new content. The guide illustrates the organizational architecture and demonstrates best practices for file placement.
+This document provides a comprehensive guide to the Lokifi repository structure, explaining where to find files and where to place new content.
 
 ---
 
@@ -15,7 +15,7 @@ This document provides a comprehensive guide to the Lokifi repository structure,
 
 ### Essential Directories
 
-```python
+```
 lokifi/
 ├── backend/              # FastAPI Python backend
 ├── frontend/             # Next.js React application
@@ -27,7 +27,7 @@ lokifi/
 ├── redis/                # Redis data and configuration
 ├── performance-tests/    # Performance testing suite
 └── logs/                 # Application logs
-```python
+```
 
 ---
 
@@ -42,7 +42,7 @@ lokifi/
 - `DEPLOYMENT_GUIDE.md` - Production deployment
 - `DEVELOPMENT_ENVIRONMENT.md` - Development configuration
 - `CODE_QUALITY_GUIDE.md` - Code standards and best practices
-- `ADVANCED_OPTIMIZATION_GUIDE.md` - Performance optimization
+- `CODE_QUALITY.md` - Code quality standards
 - `REDIS_DOCKER_SETUP.md` - Redis setup guide
 - `POSTGRESQL_SETUP_GUIDE.md` - Database setup
 
@@ -132,7 +132,7 @@ lokifi/
 
 # Audit TypeScript types
 .\scripts\analysis\analyze-typescript-types.ps1
-```powershell
+```
 
 ---
 
@@ -154,7 +154,7 @@ lokifi/
 ```powershell
 # Run cleanup (careful - moves files!)
 .\scripts\cleanup\cleanup-repo.ps1
-```powershell
+```
 
 ---
 
@@ -180,7 +180,7 @@ lokifi/
 
 # Fix all implicit any types
 .\scripts\fixes\fix-all-implicit-any.ps1
-```powershell
+```
 
 ---
 
@@ -232,7 +232,7 @@ lokifi/
 
 ### `frontend/`
 **Structure:**
-```bash
+```
 frontend/
 ├── app/                 # Next.js App Router pages
 ├── components/          # React components
@@ -244,13 +244,13 @@ frontend/
 │   └── lib/             # Libraries and helpers
 ├── public/              # Static assets
 └── styles/              # Global styles
-```bash
+```
 
 ---
 
 ### `backend/`
 **Structure:**
-```python
+```
 backend/
 ├── app/
 │   ├── api/            # API route handlers
@@ -261,7 +261,7 @@ backend/
 ├── alembic/            # Database migrations
 ├── tests/              # Backend tests
 └── scripts/            # Backend-specific scripts
-```python
+```
 
 ---
 
@@ -271,7 +271,7 @@ backend/
 - `README.md` - Main project documentation
 - `START_HERE.md` - Getting started guide
 - `PROJECT_STATUS_CONSOLIDATED.md` - Current project status
-- `ARCHITECTURE_DIAGRAM.md` - System architecture with visual diagrams illustrating component interactions
+- `ARCHITECTURE_DIAGRAM.md` - System architecture
 - `docker-compose.yml` - Docker Compose configuration
 - `docker-compose.dev.yml` - Development Docker setup
 - `docker-compose.redis.yml` - Redis Docker setup
@@ -296,53 +296,53 @@ backend/
 ### When creating new documentation:
 
 **Setup/How-to Guides** → `docs/guides/`
-```markdown
+```
 Example: MYSQL_SETUP.md → docs/guides/MYSQL_SETUP.md
-```markdown
+```
 
 **Optimization Reports** → `docs/optimization-reports/`
-```markdown
+```
 Example: OPTIMIZATION_SESSION_4.md → docs/optimization-reports/OPTIMIZATION_SESSION_4.md
-```markdown
+```
 
 **Development Docs** → `docs/development/`
-```markdown
+```
 Example: API_REFERENCE.md → docs/development/API_REFERENCE.md
-```markdown
+```
 
 **Project Planning** → `docs/project-management/`
-```markdown
+```
 Example: SPRINT_PLAN.md → docs/project-management/SPRINT_PLAN.md
-```markdown
+```
 
 ---
 
 ### When creating new scripts:
 
 **Analysis/Auditing** → `scripts/analysis/`
-```powershell
+```
 Example: analyze-dependencies.ps1 → scripts/analysis/analyze-dependencies.ps1
-```powershell
+```
 
 **Cleanup/Maintenance** → `scripts/cleanup/`
-```powershell
+```
 Example: cleanup-logs.ps1 → scripts/cleanup/cleanup-logs.ps1
-```powershell
+```
 
 **Automated Fixes** → `scripts/fixes/`
-```powershell
+```
 Example: fix-imports.ps1 → scripts/fixes/fix-imports.ps1
-```powershell
+```
 
 **Development Tools** → `scripts/development/`
-```powershell
+```
 Example: hot-reload.ps1 → scripts/development/hot-reload.ps1
-```powershell
+```
 
 **Deployment** → `scripts/deployment/`
-```powershell
+```
 Example: deploy-production.ps1 → scripts/deployment/deploy-production.ps1
-```powershell
+```
 
 ---
 
@@ -368,7 +368,7 @@ Example: deploy-production.ps1 → scripts/deployment/deploy-production.ps1
 
 ### Current Organization (Post Session 4)
 
-```sql
+```
 Root directory:          27 files (clean!)
 docs/guides:              8 essential guides
 docs/optimization-reports: 6 session reports
@@ -379,7 +379,7 @@ scripts/fixes:            4 fix automation scripts
 Total reduction:         89% from original 240+ files
 Health score:            98% (world-class!)
 Organization:            Professional structure ✅
-```sql
+```
 
 ---
 
@@ -398,7 +398,7 @@ Use the `organize-repository.ps1` script to automatically organize files:
 # - Move analysis scripts to scripts/analysis/
 # - Move cleanup scripts to scripts/cleanup/
 # - Move fix scripts to scripts/fixes/
-```powershell
+```
 
 ---
 

@@ -1,12 +1,5 @@
 # VS Code Setup Guide
 
-## Prerequisites
-
-Before configuring VS Code, ensure you have:
-- VS Code installed (latest stable version recommended)
-- Node.js 18+ and Python 3.11+ installed
-- Project repository cloned locally
-
 ## 📦 Required Extensions
 
 Install these extensions for the best development experience:
@@ -37,7 +30,7 @@ Install these extensions for the best development experience:
 ```bash
 # Open Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
 # Type: Extensions: Install Recommended Extensions
-```bash
+```
 
 ### Option 2: Manual Install
 ```bash
@@ -47,7 +40,7 @@ code --install-extension dbaeumer.vscode-eslint
 code --install-extension ms-python.python
 code --install-extension ms-python.vscode-pylance
 code --install-extension ms-python.black-formatter
-```bash
+```
 
 ## ⚙️ Settings Overview
 

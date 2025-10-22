@@ -8,7 +8,7 @@
 
 ## 🎯 Overview
 
-This guide provides complete documentation for Lokifi's automation systems, from development workflow automation to intelligent file organization. All automation tools are designed to enhance productivity while maintaining code quality. The document illustrates various automation workflows and demonstrates how to implement them effectively.
+This guide provides complete documentation for Lokifi's automation systems, from development workflow automation to intelligent file organization. All automation tools are designed to enhance productivity while maintaining code quality.
 
 ---
 
@@ -39,7 +39,43 @@ This guide provides complete documentation for Lokifi's automation systems, from
 - `visual-regression.yml` - UI consistency validation
 - `api-contracts.yml` - API contract validation
 
+
 **📖 For complete automation workflows:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for comprehensive automation strategies
+
+---
+
+## 🔧 Repository Management
+
+### Docker Compose Automation
+Multi-service orchestration for local development:
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Individual services
+docker-compose up redis -d
+docker-compose up backend -d
+docker-compose up frontend -d
+
+# Check status
+docker-compose ps
+
+# View logs
+docker-compose logs -f backend
+```
+
+### Environment Management
+- **`.env`** files for environment-specific configuration
+- **`.env.example`** templates for team consistency
+- **Environment validation** in CI/CD pipelines
+
+**📖 For environment setup:** See [`DEVELOPMENT_SETUP.md`](DEVELOPMENT_SETUP.md) and [`DEPLOYMENT_GUIDE.md`](DEPLOYMENT_GUIDE.md)
+
+---
+
+## 📋 Testing Automation
+
 
 ---
 
@@ -56,7 +92,7 @@ New-OrganizedDocument "API_GUIDE.md" -Content "# API Documentation..."
 
 New-OrganizedDocument "COMPONENT_TEST.md" -Content "# Testing Guide..."
 # → Creates: docs/guides/COMPONENT_TEST.md
-```powershell
+```
 
 #### Location Detection Rules
 - **API files** (`API_*`, `*_API_*`) → `docs/api/`
@@ -83,7 +119,7 @@ Handles file conflicts with content comparison and smart merging.
 # Result after consolidation:
 # docs/guides/GUIDE.md (newer content)
 # docs/guides/GUIDE_backup.md (older content preserved)
-```powershell
+```
 
 ### Enhanced Organization Features
 
@@ -92,13 +128,13 @@ Handles file conflicts with content comparison and smart merging.
 # Creates directory structure as needed
 $location = Get-OptimalDocumentLocation "NEW_SECURITY_GUIDE.md"
 # → Returns: "docs/security/" (creates if doesn't exist)
-```powershell
+```
 
 #### Batch Organization
 ```powershell
 # Organize all files in root directory
 Invoke-UltimateDocumentOrganization -TargetDirectory "."
-```powershell
+```
 
 ---
 
@@ -122,7 +158,7 @@ function Get-OptimalDocumentLocation {
 
     return 'docs/' # Default fallback
 }
-```powershell
+```
 
 #### New-OrganizedDocument
 Creates files directly in their optimal location with proper directory structure.
@@ -148,7 +184,7 @@ function New-OrganizedDocument {
 
     return $fullPath
 }
-```powershell
+```
 
 #### Invoke-UltimateDocumentOrganization
 Organizes existing files with intelligent duplicate handling and content preservation.
@@ -197,7 +233,7 @@ function Invoke-UltimateDocumentOrganization {
         }
     }
 }
-```powershell
+```
 
 ---
 
@@ -242,7 +278,7 @@ function Invoke-UltimateDocumentOrganization {
 - repo: https://github.com/gitguardian/ggshield
   hooks:
     - id: ggshield
-```bash
+```
 
 ---
 
@@ -270,7 +306,7 @@ jobs:
         run: |
           docker-compose build
           docker-compose up -d
-```yaml
+```
 
 ---
 
@@ -305,7 +341,7 @@ New-OrganizedDocument "FEATURE_GUIDE.md" -Content "# New Feature..."
 
 # Organize any loose files
 Invoke-UltimateDocumentOrganization
-```powershell
+```
 
 ### Pre-Release Checklist Automation
 ```powershell
@@ -316,7 +352,7 @@ safety check
 # Performance validation
 npm run build
 npm run lighthouse
-```powershell
+```
 
 **📖 For comprehensive testing commands:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for complete test automation workflows
 
@@ -327,7 +363,7 @@ npm run lighthouse
 
 # Update API documentation
 .\scripts\doc-generator.ps1 -Type api
-```powershell
+```
 
 **📖 For documentation validation:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for structure testing workflows
 

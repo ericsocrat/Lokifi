@@ -1,4 +1,4 @@
-# 📚 LOKIFI API DOCUMENTATION
+# 📚 LOKIFI API DOCUMENTATION & REFERENCE
 
 **Version:** 1.0.0
 **Base URL:** `http://localhost:8000/api`
@@ -25,19 +25,42 @@
 
 ---
 
+## 📋 API Endpoints
+
+### DELETE Requests
+
+- **DELETE** `/alerts/{alert_id}`
+  - Source: `alerts.py`
+- **DELETE** `/pattern/{pattern}`
+  - Source: `cache.py`
+- **DELETE** `/portfolio/{position_id}`
+  - Source: `portfolio.py`
+- **DELETE** `/security/ip/{ip_address}/unblock`
+  - Source: `security.py`
+- **DELETE** `/social/follow/{handle}`
+  - Source: `social.py`
+- **DELETE** `/admin/messaging/moderation/blocked-words`
+  - Source: `admin_messaging.py`
+- **DELETE** `/threads/{thread_id}`
+  - Source: `ai.py`
+- **DELETE** `/unfollow`
+  - Source: `follow.py`
+- **DELETE** `/{user_id}`
+  - Source: `follow.py`
+- **DELETE** `/bulk/unfollow`
+  - Source: `follow.py`
+- **DELETE** `/cleanup`
+  - Source: `notifications.py`
+- **DELETE** `/enhanced/account`
+  - Source: `profile_enhanced.py`
+- **DELETE** `/me`
+  - Source: `profile.py`
+
+---
+
 ## 🔐 Authentication
 
 All authenticated endpoints require a Bearer token in the `Authorization` header or an HTTP-only cookie.
-
-**Authentication Method:** JWT (JSON Web Token)
-- **Access Token:** Short-lived (1 hour), used for API requests
-- **Refresh Token:** Long-lived (30 days), used to obtain new access tokens
-- **Token Type:** Bearer
-
-**Headers Format:**
-```yaml
-Authorization: Bearer <jwt_access_token>
-```yaml
 
 ### Register
 
@@ -53,7 +76,7 @@ Create a new user account.
   "username": "trader123",
   "full_name": "John Doe"
 }
-```json
+```
 
 **Response:** `201 Created`
 ```json
@@ -78,7 +101,7 @@ Create a new user account.
   "token_type": "bearer",
   "expires_in": 3600
 }
-```json
+```
 
 ### Login
 
@@ -92,7 +115,7 @@ Authenticate with email and password.
   "email": "user@example.com",
   "password": "SecurePass123!"
 }
-```json
+```
 
 **Response:** `200 OK` (same structure as register)
 
@@ -112,7 +135,7 @@ Authenticate with Google account.
   "id_token": "google_id_token",
   "access_token": "google_access_token"
 }
-```json
+```
 
 **Response:** `200 OK` (same structure as register)
 
@@ -123,9 +146,9 @@ Get authenticated user information.
 **Endpoint:** `GET /api/auth/me`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -143,7 +166,7 @@ Authorization: Bearer <access_token>
     "location": "New York"
   }
 }
-```json
+```
 
 ### Check Auth Status
 
@@ -158,7 +181,7 @@ Check if user is authenticated.
   "user_id": "uuid",
   "email": "user@example.com"
 }
-```json
+```
 
 ### Logout
 
@@ -172,7 +195,7 @@ Clear authentication cookies.
   "message": "Successfully logged out",
   "success": true
 }
-```json
+```
 
 ---
 
@@ -198,7 +221,7 @@ Get a user's public profile.
   "posts_count": 42,
   "created_at": "2025-01-01T00:00:00Z"
 }
-```json
+```
 
 ### Update Profile
 
@@ -207,9 +230,9 @@ Update authenticated user's profile.
 **Endpoint:** `PUT /api/profile`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -219,7 +242,7 @@ Authorization: Bearer <access_token>
   "location": "San Francisco",
   "website": "https://..."
 }
-```json
+```
 
 **Response:** `200 OK`
 
@@ -230,15 +253,15 @@ Upload profile avatar image.
 **Endpoint:** `POST /api/profile/avatar`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
 Content-Type: multipart/form-data
-```yaml
+```
 
 **Request Body:** (multipart form)
-```yaml
+```
 file: <image_file>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -246,7 +269,7 @@ file: <image_file>
   "avatar_url": "https://.../avatar.jpg",
   "message": "Avatar uploaded successfully"
 }
-```json
+```
 
 ---
 
@@ -259,9 +282,9 @@ Get all portfolio positions for authenticated user.
 **Endpoint:** `GET /api/portfolio`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Query Parameters:**
 - `symbol` (optional): Filter by symbol
@@ -285,7 +308,7 @@ Authorization: Bearer <access_token>
     "updated_at": "2025-01-29T12:00:00Z"
   }
 ]
-```json
+```
 
 ### Add/Update Position
 
@@ -294,9 +317,9 @@ Add a new position or update existing one.
 **Endpoint:** `POST /api/portfolio/position`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -307,7 +330,7 @@ Authorization: Bearer <access_token>
   "tags": ["tech", "long-term"],
   "notes": "Core holding"
 }
-```json
+```
 
 **Query Parameters:**
 - `create_alerts` (optional, boolean): Create automatic price alerts
@@ -321,9 +344,9 @@ Remove a portfolio position.
 **Endpoint:** `DELETE /api/portfolio/{position_id}`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -331,7 +354,7 @@ Authorization: Bearer <access_token>
   "deleted": true,
   "id": 1
 }
-```json
+```
 
 ### Portfolio Summary
 
@@ -340,9 +363,9 @@ Get portfolio performance summary.
 **Endpoint:** `GET /api/portfolio/summary`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -370,7 +393,7 @@ Authorization: Bearer <access_token>
     "Finance": 15.00
   }
 }
-```json
+```
 
 ---
 
@@ -404,7 +427,7 @@ Get candlestick chart data for a symbol.
     }
   ]
 }
-```json
+```
 
 ### Get Real-time Price
 
@@ -422,7 +445,7 @@ Get current price for a symbol.
   "timestamp": "2025-01-29T12:00:00Z",
   "volume": 50000000
 }
-```json
+```
 
 ### Get News
 
@@ -448,7 +471,7 @@ Get latest news for a symbol.
     "relevance_score": 0.95
   }
 ]
-```json
+```
 
 ---
 
@@ -461,9 +484,9 @@ Get all price alerts for authenticated user.
 **Endpoint:** `GET /api/alerts`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -480,7 +503,7 @@ Authorization: Bearer <access_token>
     "triggered_at": null
   }
 ]
-```json
+```
 
 ### Create Alert
 
@@ -489,9 +512,9 @@ Create a new price alert.
 **Endpoint:** `POST /api/alerts`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -504,7 +527,7 @@ Authorization: Bearer <access_token>
   },
   "cooldown_minutes": 60
 }
-```json
+```
 
 **Alert Types:**
 - `price_threshold`: Trigger when price crosses a level
@@ -520,9 +543,9 @@ Remove a price alert.
 **Endpoint:** `DELETE /api/alerts/{alert_id}`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 
@@ -533,9 +556,9 @@ Enable/disable an alert.
 **Endpoint:** `POST /api/alerts/{alert_id}/toggle`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Query Parameters:**
 - `active`: `true` or `false`
@@ -549,19 +572,19 @@ Real-time alert notifications via Server-Sent Events.
 **Endpoint:** `GET /api/alerts/stream`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Query Parameters:**
 - `mine` (optional, boolean): Only stream user's alerts
 
 **Response:** `text/event-stream`
-```json
+```
 data: {"alert_id": "123", "symbol": "AAPL", "triggered": true, "price": 200.50}
 
 data: {"alert_id": "456", "symbol": "TSLA", "triggered": true, "price": 250.00}
-```json
+```
 
 ---
 
@@ -574,9 +597,9 @@ Start a new AI conversation thread.
 **Endpoint:** `POST /api/ai/threads`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -584,7 +607,7 @@ Authorization: Bearer <access_token>
   "title": "Portfolio Analysis",
   "provider": "openai"
 }
-```json
+```
 
 **Response:** `201 Created`
 ```json
@@ -595,7 +618,7 @@ Authorization: Bearer <access_token>
   "message_count": 0,
   "created_at": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ### List Threads
 
@@ -604,9 +627,9 @@ Get all AI conversation threads.
 **Endpoint:** `GET /api/ai/threads`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -620,7 +643,7 @@ Authorization: Bearer <access_token>
     "created_at": "2025-01-29T10:00:00Z"
   }
 ]
-```json
+```
 
 ### Send Message
 
@@ -629,16 +652,16 @@ Send a message to AI assistant.
 **Endpoint:** `POST /api/ai/threads/{thread_id}/messages`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
 {
   "content": "Analyze my portfolio performance"
 }
-```json
+```
 
 **Response:** `200 OK` (streaming)
 ```json
@@ -649,7 +672,7 @@ Authorization: Bearer <access_token>
   "tokens_used": 150,
   "created_at": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ### Get Thread Messages
 
@@ -658,9 +681,9 @@ Get all messages in a thread.
 **Endpoint:** `GET /api/ai/threads/{thread_id}/messages`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -678,7 +701,7 @@ Authorization: Bearer <access_token>
     "created_at": "2025-01-29T11:30:15Z"
   }
 ]
-```json
+```
 
 ### Delete Thread
 
@@ -687,9 +710,9 @@ Delete an AI conversation thread.
 **Endpoint:** `DELETE /api/ai/threads/{thread_id}`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 
@@ -700,9 +723,9 @@ Check AI provider availability.
 **Endpoint:** `GET /api/ai/providers`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -720,7 +743,7 @@ Authorization: Bearer <access_token>
     "models": ["claude-3-opus", "claude-3-sonnet"]
   }
 }
-```json
+```
 
 ---
 
@@ -733,9 +756,9 @@ Send a direct message to another user.
 **Endpoint:** `POST /api/conversations/{recipient_id}/messages`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -743,7 +766,7 @@ Authorization: Bearer <access_token>
   "content": "Hello! How are you?",
   "attachments": []
 }
-```json
+```
 
 **Response:** `201 Created`
 ```json
@@ -756,7 +779,7 @@ Authorization: Bearer <access_token>
   "read": false,
   "created_at": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ### Get Conversations
 
@@ -765,9 +788,9 @@ Get all conversations for authenticated user.
 **Endpoint:** `GET /api/conversations`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -787,7 +810,7 @@ Authorization: Bearer <access_token>
     "updated_at": "2025-01-29T12:00:00Z"
   }
 ]
-```json
+```
 
 ### Get Conversation Messages
 
@@ -796,9 +819,9 @@ Get messages in a conversation.
 **Endpoint:** `GET /api/conversations/{conversation_id}/messages`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Query Parameters:**
 - `limit` (optional): Number of messages (default: 50)
@@ -818,7 +841,7 @@ Authorization: Bearer <access_token>
   ],
   "has_more": false
 }
-```json
+```
 
 ### Mark as Read
 
@@ -827,9 +850,9 @@ Mark messages as read.
 **Endpoint:** `POST /api/conversations/{conversation_id}/read`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 
@@ -840,9 +863,9 @@ Real-time messaging via WebSocket.
 **Endpoint:** `ws://localhost:8000/ws/chat`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Messages:**
 ```json
@@ -861,7 +884,7 @@ Authorization: Bearer <access_token>
   "content": "Hello!",
   "created_at": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ---
 
@@ -874,9 +897,9 @@ Get notifications for authenticated user.
 **Endpoint:** `GET /api/notifications`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Query Parameters:**
 - `type` (optional): Filter by type
@@ -903,7 +926,7 @@ Authorization: Bearer <access_token>
   "unread_count": 5,
   "total_count": 150
 }
-```json
+```
 
 **Notification Types:**
 - `price_alert`: Price alert triggered
@@ -919,16 +942,16 @@ Mark notifications as read.
 **Endpoint:** `POST /api/notifications/read`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
 {
   "notification_ids": ["notif-123", "notif-456"]
 }
-```json
+```
 
 **Response:** `200 OK`
 
@@ -939,9 +962,9 @@ Mark all notifications as read.
 **Endpoint:** `POST /api/notifications/read-all`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 
@@ -952,9 +975,9 @@ Update notification preferences.
 **Endpoint:** `PUT /api/notifications/preferences`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -974,7 +997,7 @@ Authorization: Bearer <access_token>
     }
   }
 }
-```json
+```
 
 **Response:** `200 OK`
 
@@ -989,9 +1012,9 @@ Follow another user.
 **Endpoint:** `POST /api/follow/{user_id}`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -999,7 +1022,7 @@ Authorization: Bearer <access_token>
   "following": true,
   "follower_count": 151
 }
-```json
+```
 
 ### Unfollow User
 
@@ -1008,9 +1031,9 @@ Unfollow a user.
 **Endpoint:** `DELETE /api/follow/{user_id}`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -1018,7 +1041,7 @@ Authorization: Bearer <access_token>
   "following": false,
   "follower_count": 150
 }
-```json
+```
 
 ### Get Followers
 
@@ -1044,7 +1067,7 @@ Get user's followers.
   "total": 150,
   "has_more": true
 }
-```json
+```
 
 ### Get Following
 
@@ -1065,9 +1088,9 @@ Get suggested users to follow.
 **Endpoint:** `GET /api/follow/suggestions`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -1082,7 +1105,7 @@ Authorization: Bearer <access_token>
     }
   ]
 }
-```json
+```
 
 ### Create Post
 
@@ -1091,9 +1114,9 @@ Create a social post.
 **Endpoint:** `POST /api/social/posts`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -1102,7 +1125,7 @@ Authorization: Bearer <access_token>
   "symbol": "AAPL",
   "tags": ["stocks", "tech"]
 }
-```json
+```
 
 **Response:** `201 Created`
 
@@ -1113,9 +1136,9 @@ Get social feed (posts from followed users).
 **Endpoint:** `GET /api/social/feed`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <access_token>
-```yaml
+```
 
 **Query Parameters:**
 - `symbol` (optional): Filter by symbol
@@ -1143,7 +1166,7 @@ Authorization: Bearer <access_token>
   ],
   "has_more": true
 }
-```json
+```
 
 ---
 
@@ -1156,9 +1179,9 @@ Get platform messaging statistics (admin only).
 **Endpoint:** `GET /api/admin/messaging/stats`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Query Parameters:**
 - `days_back` (optional): Days to look back (default: 30)
@@ -1172,7 +1195,7 @@ Authorization: Bearer <admin_token>
   "peak_hour": 14,
   "response_time_avg_seconds": 45.2
 }
-```json
+```
 
 ### Get Performance Metrics
 
@@ -1181,9 +1204,9 @@ Get system performance metrics (admin only).
 **Endpoint:** `GET /api/admin/messaging/performance`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -1194,7 +1217,7 @@ Authorization: Bearer <admin_token>
   "requests_per_second": 250,
   "avg_response_time_ms": 45
 }
-```json
+```
 
 ### Get Active Connections
 
@@ -1203,9 +1226,9 @@ Get active WebSocket connections (admin only).
 **Endpoint:** `GET /api/admin/messaging/connections`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -1217,7 +1240,7 @@ Authorization: Bearer <admin_token>
     "alerts": 100
   }
 }
-```json
+```
 
 ### Broadcast Message
 
@@ -1226,9 +1249,9 @@ Send broadcast message to all users (admin only).
 **Endpoint:** `POST /api/admin/messaging/broadcast`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Request Body:**
 ```json
@@ -1237,7 +1260,7 @@ Authorization: Bearer <admin_token>
   "message": "Scheduled maintenance tonight at 2 AM EST",
   "type": "system"
 }
-```json
+```
 
 **Response:** `200 OK`
 
@@ -1259,7 +1282,7 @@ Get current security monitoring status.
   "active_alerts": 0,
   "last_incident": "2025-01-28T10:00:00Z"
 }
-```json
+```
 
 ### Get Security Dashboard
 
@@ -1268,9 +1291,9 @@ Get comprehensive security dashboard (admin only).
 **Endpoint:** `GET /api/security/dashboard`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Response:** `200 OK`
 ```json
@@ -1287,7 +1310,7 @@ Authorization: Bearer <admin_token>
     }
   ]
 }
-```json
+```
 
 ### Block IP Address
 
@@ -1296,9 +1319,9 @@ Manually block an IP address (admin only).
 **Endpoint:** `POST /api/security/ip/{ip_address}/block`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Response:** `200 OK`
 
@@ -1309,9 +1332,9 @@ Unblock an IP address (admin only).
 **Endpoint:** `DELETE /api/security/ip/{ip_address}/unblock`
 
 **Headers:**
-```yaml
+```
 Authorization: Bearer <admin_token>
-```yaml
+```
 
 **Response:** `200 OK`
 
@@ -1330,7 +1353,7 @@ Check if API is running.
 {
   "ok": true
 }
-```json
+```
 
 ### Liveness Probe
 
@@ -1344,7 +1367,7 @@ Check if application is alive (Kubernetes).
   "status": "alive",
   "timestamp": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ### Readiness Probe
 
@@ -1360,7 +1383,7 @@ Check if application is ready to serve requests (Kubernetes).
   "redis": "connected",
   "timestamp": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ---
 
@@ -1376,7 +1399,7 @@ All errors follow this format:
   "error_code": "ERROR_CODE",
   "timestamp": "2025-01-29T12:00:00Z"
 }
-```json
+```
 
 ### HTTP Status Codes
 
@@ -1425,11 +1448,11 @@ All errors follow this format:
 
 Every response includes rate limit headers:
 
-```bash
+```
 X-RateLimit-Limit: 1000
 X-RateLimit-Remaining: 999
 X-RateLimit-Reset: 1706529600
-```bash
+```
 
 ### Rate Limit Exceeded Response
 
@@ -1439,7 +1462,7 @@ X-RateLimit-Reset: 1706529600
   "error_code": "RATE_LIMIT_EXCEEDED",
   "retry_after": 60
 }
-```json
+```
 
 ---
 
@@ -1448,9 +1471,9 @@ X-RateLimit-Reset: 1706529600
 ### Timestamps
 
 All timestamps are in ISO 8601 format (UTC):
-```bash
+```
 2025-01-29T12:00:00Z
-```bash
+```
 
 ### Pagination
 

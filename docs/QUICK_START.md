@@ -12,32 +12,30 @@
 ```powershell
 # Start ALL services at once
 .\start-servers.ps1
-```powershell
+```
 This automatically:
 - ✅ Starts Redis container (port 6379)
 - ✅ Starts Backend FastAPI (port 8000)
 - ✅ Starts Frontend Next.js (port 3000)
 
 ## Individual Service Management
-```bash
+```powershell
 # Redis management
 .\manage-redis.ps1 start    # Start Redis container
 .\manage-redis.ps1 status   # Check status
-```bash
 .\manage-redis.ps1 logs     # View logs
 .\manage-redis.ps1 shell    # Open Redis CLI
 .\manage-redis.ps1 restart  # Restart container
 
 # Backend (manual)
-# Backend management
-cd apps/backend && .\start-backend.ps1
-```powershell
+cd backend
+.\venv\Scripts\Activate.ps1
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 # Frontend (manual)
-# Frontend management
-cd apps/frontend && .\start-frontend.ps1
-```powershell
-```powershell
+cd frontend
+npm run dev
+```
 
 ---
 
@@ -63,7 +61,7 @@ cd apps/frontend && .\start-frontend.ps1
 # Manual API testing
 # See api/API_DOCUMENTATION.md for complete endpoint reference
 curl http://localhost:8000/api/v1/health  # Health check
-```markdown
+```
 
 **📖 For complete API examples and documentation:**
 - [`api/API_DOCUMENTATION.md`](api/API_DOCUMENTATION.md) - Complete API guide with all endpoints
@@ -84,7 +82,7 @@ pytest                    # All tests
 pytest --cov             # With coverage
 black . --check          # Format checking
 ruff check               # Linting
-```markdown
+```
 
 ---
 
@@ -155,7 +153,7 @@ docker-compose logs -f [service_name]
 
 # Restart specific service
 docker-compose restart backend
-```bash
+```
 
 ### Production Deployment
 ```powershell
@@ -167,7 +165,7 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ## Check deployment status
 docker-compose -f docker-compose.prod.yml ps
-```powershell
+```
 
 ---
 
@@ -205,7 +203,7 @@ docker-compose -f docker-compose.prod.yml ps
 
 # Console logging audit
 .\scripts\analysis\analyze-console-logging.ps1
-```powershell
+```
 
 ### Cleanup & Maintenance
 ```powershell
@@ -217,7 +215,7 @@ docker-compose -f docker-compose.prod.yml ps
 
 # Fix TypeScript 'any' types
 .\scripts\fixes\fix-all-implicit-any.ps1
-```powershell
+```
 
 ---
 
@@ -234,7 +232,7 @@ cd backend && pytest
 # Coverage reports
 npm run test:coverage  # Frontend
 pytest --cov          # Backend
-```bash
+```
 
 **📖 For complete testing documentation:**
 - [`guides/TESTING_GUIDE.md`](guides/TESTING_GUIDE.md) - Complete testing strategies and commands
@@ -257,7 +255,7 @@ docker logs lokifi-redis
 
 # Connect to Redis CLI
 docker exec -it lokifi-redis redis-cli
-```powershell
+```
 
 ### Backend Issues
 ```powershell
@@ -270,7 +268,7 @@ python -c "from app.database import get_db; print('Database OK')"
 
 # Manual dependency install
 pip install -r requirements.txt
-```bash
+```
 
 ### Frontend Issues
 ```powershell
@@ -285,7 +283,7 @@ npx tsc --noEmit
 
 # Reset Next.js cache
 npx next build --clean
-```powershell
+```
 
 ### Pre-commit Hook Issues
 ```powershell
@@ -296,7 +294,7 @@ npx husky --version
 
 # Reinstall hooks if needed
 npm run prepare
-```powershell
+```
 
 **📖 For detailed troubleshooting:**
 - [`guides/CODE_QUALITY.md`](guides/CODE_QUALITY.md) - Complete pre-commit setup and troubleshooting
@@ -317,7 +315,7 @@ npm run lighthouse
 
 # Bundle size analysis
 npm run analyze
-```bash
+```
 
 ### Monitoring Commands
 ```powershell
@@ -329,7 +327,7 @@ docker exec lokifi-redis redis-cli info memory
 
 # Monitor container resource usage
 docker stats --no-stream
-```powershell
+```
 
 ---
 

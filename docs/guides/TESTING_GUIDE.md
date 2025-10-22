@@ -7,7 +7,7 @@ This guide provides comprehensive information about the testing structure, conve
 
 ### Backend Tests (`apps/backend/tests/`)
 
-```python
+```
 tests/
 ├── api/                    # API endpoint tests
 │   ├── test_api.py
@@ -50,11 +50,11 @@ tests/
 └── security/               # Security-related tests
     ├── test_alert_system.py
     └── test_security_features.py
-```python
+```
 
 ### Frontend Tests (`apps/frontend/tests/`)
 
-```typescript
+```
 tests/
 ├── api/                    # API contract and integration tests
 │   └── contracts/
@@ -90,7 +90,7 @@ tests/
 │
 └── types/                  # TypeScript type tests
     └── (Type tests go here)
-```typescript
+```
 
 ## Naming Conventions
 
@@ -120,9 +120,9 @@ class TestAuthentication:
     async def test_login_with_valid_credentials(self, authenticated_client):
         """Test login with valid credentials"""
         # test code
-```python
+```
 
-### Frontend (TypeScript/JavaScript)
+### Frontend (TypeScript)
 - **Test files**: `<component-name>.test.tsx` or `<module-name>.test.ts`
 - **Test suites**: `describe('<Component/Feature Name>', () => {})`
 - **Test cases**: `it('should <expected behavior>', () => {})` or `test('<behavior>', () => {})`
@@ -144,14 +144,14 @@ describe('PriceChart', () => {
     expect(screen.getByText('$100.00')).toBeInTheDocument();
   });
 });
-```typescript
+```
 
 ## Test Types
 
 ### 1. Unit Tests
 **Purpose**: Test individual functions, classes, or components in isolation.
 
-**Location**: 
+**Location**:
 - Backend: `tests/unit/`
 - Frontend: `tests/unit/`
 
@@ -170,7 +170,7 @@ def test_calculate_portfolio_value():
         Asset(symbol="ETH", amount=10.0, price=3000)
     ])
     assert portfolio.total_value() == 80000
-```python
+```
 
 ### 2. Integration Tests
 **Purpose**: Test how multiple components work together.
@@ -190,12 +190,12 @@ async def test_user_registration_and_login_flow(client, db_session):
     # Register user
     response = await client.post("/api/auth/register", json=user_data)
     assert response.status_code == 201
-    
+
     # Login with registered user
     response = await client.post("/api/auth/login", json=login_data)
     assert response.status_code == 200
     assert "access_token" in response.json()
-```python
+```
 
 ### 3. End-to-End (E2E) Tests
 **Purpose**: Test complete user workflows from start to finish.
@@ -218,7 +218,7 @@ async def test_complete_notification_workflow(client, websocket_client):
     # Verify notification appears in UI
     # Clear notification
     # Verify notification cleared
-```python
+```
 
 ### 4. API Tests
 **Purpose**: Test REST API endpoints.
@@ -278,7 +278,7 @@ pytest -v
 
 # Run with output
 pytest -s
-```bash
+```
 
 ### Frontend Tests
 
@@ -297,7 +297,7 @@ npm test -- --watch
 
 # Run E2E tests
 npm run test:e2e
-```bash
+```
 
 ## Test Coverage
 
@@ -325,14 +325,14 @@ pytest --cov=app --cov-report=html
 cd apps/frontend
 npm run test:coverage
 # Open coverage/index.html
-```bash
+```
 
 ### Running CI Coverage Check
 
 ```bash
 # Run the enhanced CI protection script
 ./tools/ci-cd/enhanced-ci-protection.ps1
-```bash
+```
 
 ## Best Practices
 
@@ -387,10 +387,10 @@ npm run test:coverage
    async def test_feature_name(client):
        # Arrange
        data = {"key": "value"}
-       
+
        # Act
        response = await client.post("/api/endpoint", json=data)
-       
+
        # Assert
        assert response.status_code == 200
        assert response.json()["key"] == "value"
@@ -410,10 +410,10 @@ npm run test:coverage
      it('should render correctly', () => {
        // Arrange
        const props = { title: 'Test' };
-       
+
        // Act
        render(<ComponentName {...props} />);
-       
+
        // Assert
        expect(screen.getByText('Test')).toBeInTheDocument();
      });
@@ -432,7 +432,7 @@ pytest --pdb
 
 # Stop on first failure
 pytest -x
-```bash
+```
 
 ### Frontend
 ```bash
@@ -444,7 +444,7 @@ npm test -- -u
 
 # Run specific test with debugging
 npm test -- --testNamePattern="should render"
-```bash
+```
 
 ## Continuous Integration
 

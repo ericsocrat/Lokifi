@@ -50,7 +50,7 @@
   "arrowParens": "always",
   "endOfLine": "lf"
 }
-```json
+```
 
 ### ESLint Rules (Active)
 - ✅ TypeScript strict mode
@@ -75,7 +75,7 @@
 
 # TypeScript type safety analysis
 .\scripts\analysis\analyze-typescript-types.ps1
-```powershell
+```
 
 ### Analysis Results Examples
 ```powershell
@@ -88,7 +88,7 @@ Found 12 console.log statements:
 Recommendations:
    ✅ Replace with logger.debug() for development
    ✅ Use logger.error() for production errors
-```powershell
+```
 
 ```powershell
 # TypeScript type analysis
@@ -100,7 +100,7 @@ Found 3 'any' types:
 Suggestions:
    ✅ Define proper interface for API responses
    ✅ Use generic types for arrays
-```powershell
+```
 
 ---
 
@@ -133,7 +133,7 @@ logger.warn('API rate limit approaching', { remaining: 5 });
 
 // Errors requiring action
 logger.error('Data fetch failed', error, { context });
-```typescript
+```
 
 #### Specialized Logging
 ```typescript
@@ -148,7 +148,7 @@ logger.api('POST', '/api/v1/resource', { resourceId, status: 'created' });
 // Performance monitoring
 logger.perf('Chart render time', 45, 'ms');
 logger.perf('API response time', 234, 'ms');
-```typescript
+```
 
 ### Migration from console.log
 
@@ -156,7 +156,7 @@ logger.perf('API response time', 234, 'ms');
 ```typescript
 // Add to top of file
 import { logger } from '@/src/utils/logger';
-```typescript
+```
 
 #### Step 2: Replace Console Statements
 ```typescript
@@ -174,7 +174,7 @@ logger.error('API request failed', error, { endpoint, method });
 console.log(`Request took ${duration}ms`);
 // After: Performance tracking
 logger.perf('API request', duration, 'ms');
-```typescript
+```
 
 #### Step 3: Use Appropriate Levels
 ```typescript
@@ -189,7 +189,7 @@ logger.warn('Slow API response', { duration: 5000 });
 
 // Actual problems (action required)
 logger.error('Order failed', error, { orderId });
-```typescript
+```
 
 ---
 
@@ -212,7 +212,7 @@ interface ApiResponse {
 
 const response: ApiResponse = await fetch('/api/data');
 const items: AssetPrice[] = response.data;
-```typescript
+```
 
 #### Use Proper Interface Definitions
 ```typescript
@@ -240,7 +240,7 @@ interface PortfolioState {
   loading: boolean;
   error: string | null;
 }
-```typescript
+```
 
 #### Generic Types for Reusability
 ```typescript
@@ -263,7 +263,7 @@ function useApi<T>(endpoint: string): {
 } {
   // Implementation
 }
-```typescript
+```
 
 ---
 
@@ -307,7 +307,7 @@ export const PriceChart = ({ title, data, onUpdate }: Props) => {
     </div>
   );
 };
-```typescript
+```
 
 #### ✅ API Integration Standards
 ```typescript
@@ -333,7 +333,7 @@ async function fetchAssetPrice(symbol: string): Promise<AssetPrice> {
     throw error;
   }
 }
-```typescript
+```
 
 ---
 
@@ -353,7 +353,7 @@ const TradingView = lazy(() => import('./components/TradingView'));
 // ✅ Tree shaking friendly imports
 import { debounce } from 'lodash-es';
 // ❌ Avoid: import _ from 'lodash';
-```typescript
+```
 
 #### React Performance
 ```typescript
@@ -371,7 +371,7 @@ const handlePriceUpdate = useCallback((newPrice: number) => {
   setPrice(newPrice);
   logger.debug('Price updated', { newPrice });
 }, []);
-```typescript
+```
 
 ### Backend Performance
 ```python
@@ -390,7 +390,7 @@ async def get_cached_market_data(symbol: str) -> MarketData:
 class AssetPriceRequest(BaseModel):
     symbol: str = Field(..., regex=r'^[A-Z]{2,10}$')
     timeframe: str = Field('1d', regex=r'^(1d|1w|1m|3m|1y)$')
-```python
+```
 
 ---
 
@@ -407,7 +407,7 @@ const symbolSchema = z.string()
 function validateSymbol(symbol: string): boolean {
   return symbolSchema.safeParse(symbol).success;
 }
-```typescript
+```
 
 ```python
 # ✅ Backend validation
@@ -421,7 +421,7 @@ class AssetRequest(BaseModel):
         if not v.isalpha() or not v.isupper():
             raise ValueError('Symbol must be uppercase letters only')
         return v
-```python
+```
 
 ### Authentication & Authorization
 
@@ -439,7 +439,7 @@ const headers = {
   'Authorization': `Bearer ${authToken}`,
   'Content-Type': 'application/json',
 };
-```typescript
+```
 
 ---
 

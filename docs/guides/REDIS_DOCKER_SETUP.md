@@ -16,39 +16,7 @@ The Lokifi application now uses **Redis running in Docker** for caching instead 
 
 ## 🚀 Quick Start
 
-### Start All Servers (Recommended)
-```powershell
-.\start-servers.ps1
-```powershell
-This will:
-1. Check if Docker is running
-2. Start/create Redis container automatically
-3. Start Backend server
-4. Start Frontend server
-
-### Manual Redis Management
-```powershell
-# Start Redis
-.\manage-redis.ps1 start
-
-# Check status
-.\manage-redis.ps1 status
-
-# View logs
-.\manage-redis.ps1 logs
-
-# Open Redis CLI
-.\manage-redis.ps1 shell
-
-# Stop Redis
-.\manage-redis.ps1 stop
-
-# Restart Redis
-.\manage-redis.ps1 restart
-
-# Remove container
-.\manage-redis.ps1 remove
-```powershell
+**📖 For complete Redis setup and management commands:** See [`../QUICK_START.md`](../QUICK_START.md) - Redis Management section
 
 ### Using Docker Compose (Alternative)
 ```powershell
@@ -63,7 +31,7 @@ docker-compose -f docker-compose.redis.yml logs -f
 
 # Restart Redis
 docker-compose -f docker-compose.redis.yml restart
-```powershell
+```
 
 ---
 
@@ -104,7 +72,7 @@ docker --version
 # Check if Docker is running
 docker ps
 # Expected: Table showing running containers (may be empty)
-```powershell
+```
 
 ---
 
@@ -127,7 +95,7 @@ docker run -d --name lokifi-redis -p 6379:6379 ...
 
 # Starts existing container if stopped
 docker start lokifi-redis
-```powershell
+```
 
 ### 2. `manage-redis.ps1` (NEW)
 **Purpose**: Dedicated Redis container management
@@ -152,11 +120,10 @@ docker start lokifi-redis
 - Easy multi-service orchestration
 
 ### 4. `backend/.env`
-**No changes needed** - Connection string remains the same:
-```env
-REDIS_URL=redis://:23233@localhost:6379/0
-REDIS_PASSWORD=23233
-```env
+**No changes needed** - Connection configuration managed centrally.
+
+**📖 For complete environment configuration:**
+- [`../security/README.md`](../security/README.md) - Environment variables and security setup
 
 ---
 
@@ -175,7 +142,7 @@ docker start lokifi-redis
 
 # Method 4: Using Docker Compose
 docker-compose -f docker-compose.redis.yml up -d
-```powershell
+```
 
 ### Check Container Status
 ```powershell
@@ -187,7 +154,7 @@ docker ps --filter "name=lokifi-redis"
 
 # Check health
 docker inspect lokifi-redis --format='{{.State.Health.Status}}'
-```powershell
+```
 
 ### View Logs
 ```powershell
@@ -199,7 +166,7 @@ docker logs -f lokifi-redis
 
 # Last 100 lines
 docker logs --tail 100 lokifi-redis
-```powershell
+```
 
 ### Test Redis Connection
 ```powershell
@@ -212,7 +179,7 @@ docker exec -it lokifi-redis redis-cli -a 23233
 # Quick ping test
 docker exec lokifi-redis redis-cli -a 23233 ping
 # Expected: PONG
-```powershell
+```
 
 ### Stop Redis Container
 ```powershell
@@ -224,7 +191,7 @@ docker stop lokifi-redis
 
 # Using Docker Compose
 docker-compose -f docker-compose.redis.yml down
-```powershell
+```
 
 ### Remove Container (Clean Slate)
 ```powershell
@@ -235,7 +202,7 @@ docker-compose -f docker-compose.redis.yml down
 docker stop lokifi-redis
 docker rm lokifi-redis
 docker volume rm redis-data
-```powershell
+```
 
 ---
 
@@ -246,14 +213,14 @@ docker volume rm redis-data
 ```powershell
 # Download from: https://www.docker.com/products/docker-desktop
 # After installation, restart your computer
-```powershell
+```
 
 ### Issue: "Docker is not running"
 **Solution**: Start Docker Desktop
 ```powershell
 # Windows/Mac: Launch Docker Desktop from Start Menu/Applications
 # Wait for Docker icon in system tray to show "Running"
-```powershell
+```
 
 ### Issue: "Port 6379 already in use"
 **Solution**: Stop other Redis instances
@@ -266,7 +233,7 @@ docker stop lokifi-redis
 
 # Or stop system Redis
 Stop-Service Redis  # If Redis is installed as Windows service
-```powershell
+```
 
 ### Issue: "Container won't start"
 **Solution**: Check Docker logs
@@ -277,7 +244,7 @@ docker logs lokifi-redis
 # Remove and recreate container
 .\manage-redis.ps1 remove
 .\manage-redis.ps1 start
-```powershell
+```
 
 ### Issue: "Connection refused" from Backend
 **Solution**: Verify Redis is running
@@ -290,23 +257,19 @@ docker exec lokifi-redis redis-cli -a 23233 ping
 
 # Restart container
 .\manage-redis.ps1 restart
-```powershell
+```
 
 ### Issue: Backend says "Redis not available"
 **Solution**: Check connection settings
 ```powershell
-# Verify .env file
-cat backend/.env | Select-String "REDIS"
-
-# Should show:
-# REDIS_URL=redis://:23233@localhost:6379/0
-# REDIS_PASSWORD=23233
-
-# Test from backend directory
-cd backend
+# Test Redis connection
 python -c "import redis; r = redis.from_url('redis://:23233@localhost:6379/0'); print(r.ping())"
 # Expected: True
-```powershell
+```
+
+**📖 For backend directory navigation and configuration:**
+- [`../QUICK_START.md`](../QUICK_START.md) - Complete backend navigation guide
+- [`../security/README.md`](../security/README.md) - Complete environment configuration guide
 
 ---
 
@@ -382,10 +345,10 @@ docker stop $(docker ps -q)
 
 # Remove all stopped containers
 docker container prune
-```powershell
+```
 
 ### Redis Commands (in shell)
-```bash
+```redis
 # Test connection
 PING
 
@@ -403,7 +366,7 @@ FLUSHALL
 
 # Exit shell
 exit
-```bash
+```
 
 ---
 
@@ -416,7 +379,7 @@ After setup, verify everything works:
 - [ ] Redis container `lokifi-redis` is running
 - [ ] Backend connects to Redis (check logs for "Redis connected")
 - [ ] Frontend loads at http://localhost:3000
-- [ ] API responds at http://localhost:8000/api/health
+- [ ] API responds (see [`../api/API_REFERENCE.md`](../api/API_REFERENCE.md) for endpoints)
 - [ ] `.\manage-redis.ps1 status` shows "RUNNING" and "Connection successful"
 
 ---
@@ -435,9 +398,9 @@ After setup, verify everything works:
 
 ---
 
-**Status**: ✅ Redis on Docker - Fully Configured  
-**Date**: October 3, 2025  
-**Container**: lokifi-redis  
-**Management**: `.\manage-redis.ps1` or `.\start-servers.ps1`  
+**Status**: ✅ Redis on Docker - Fully Configured
+**Date**: October 3, 2025
+**Container**: lokifi-redis
+**Management**: `.\manage-redis.ps1` or `.\start-servers.ps1`
 
 The application now uses Redis in Docker for optimal caching performance! 🚀

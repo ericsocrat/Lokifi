@@ -49,7 +49,7 @@
 
 ### File Organization
 
-```bash
+```
 src/
 ├── components/       # React components
 ├── hooks/           # Custom React hooks
@@ -58,7 +58,7 @@ src/
 ├── types/           # TypeScript type definitions
 ├── services/        # API clients and external services
 └── app/             # Next.js app router pages
-```bash
+```
 
 ### Import Organization
 
@@ -77,7 +77,7 @@ import type { User } from '../types/user';
 
 // 4. Styles
 import styles from './Component.module.css';
-```typescript
+```
 
 ### Variable Declarations
 
@@ -92,7 +92,7 @@ counter++;
 
 // ❌ Never use var
 var x = 10; // DON'T DO THIS
-```typescript
+```
 
 ### Function Declarations
 
@@ -111,7 +111,7 @@ async function fetchUser(id: string): Promise<User> {
   const response = await fetch(`/api/users/${id}`);
   return response.json();
 }
-```typescript
+```
 
 ### Error Handling
 
@@ -135,7 +135,7 @@ function isApiError(error: unknown): error is ApiError {
     'message' in error
   );
 }
-```typescript
+```
 
 ### Comments
 
@@ -160,7 +160,7 @@ function calculateViewport(data: OHLCData[], canvasWidth: number): [number, numb
 // ❌ Don't state the obvious
 // Get the user's name
 const name = user.name;
-```typescript
+```
 
 ---
 
@@ -222,7 +222,7 @@ export function Component({ title, onSave }: ComponentProps) {
 
 // 5. Exports (if needed)
 export type { ComponentProps };
-```typescript
+```
 
 ### Component Best Practices
 
@@ -267,7 +267,7 @@ function useUserData(userId: string) {
     </Child>
   </Parent>
 </UserProvider>
-```typescript
+```
 
 ### Conditional Rendering
 
@@ -299,7 +299,7 @@ const renderContent = () => {
 };
 
 return <div>{renderContent()}</div>;
-```typescript
+```
 
 ---
 
@@ -307,7 +307,7 @@ return <div>{renderContent()}</div>;
 
 ### File Organization
 
-```python
+```
 backend/
 ├── app/
 │   ├── api/          # API routes
@@ -318,7 +318,7 @@ backend/
 │   └── utils/        # Utility functions
 ├── tests/            # Test files
 └── alembic/          # Database migrations
-```python
+```
 
 ### Code Style (PEP 8)
 
@@ -346,7 +346,7 @@ async def fetch_market_data(symbol: str) -> MarketData:
     async with httpx.AsyncClient() as client:
         response = await client.get(f"/api/market/{symbol}")
         return MarketData(**response.json())
-```python
+```
 
 ### Error Handling
 
@@ -373,7 +373,7 @@ except InsufficientFundsError:
 except PaymentError as e:
     logger.error(f"Payment failed: {e}")
     return {"error": "Payment processing failed"}
-```python
+```
 
 ### Dependency Injection (FastAPI)
 
@@ -395,7 +395,7 @@ async def get_user(
     current_user: User = Depends(get_current_user)
 ) -> User:
     return await db.get(User, user_id)
-```python
+```
 
 ---
 
@@ -420,7 +420,7 @@ refactor/extract-chart-logic
 
 # Documentation
 docs/update-api-documentation
-```bash
+```
 
 ### Commit Messages
 
@@ -441,7 +441,7 @@ feat: add real-time price updates to chart
 - Update chart state on price changes
 
 Closes #123
-```bash
+```
 
 ### Pull Request Guidelines
 
@@ -458,12 +458,12 @@ Closes #123
 
 ### Test File Organization
 
-```bash
+```
 tests/
 ├── unit/           # Unit tests
 ├── integration/    # Integration tests
 └── e2e/           # End-to-end tests
-```bash
+```
 
 ### Writing Good Tests
 
@@ -508,7 +508,7 @@ it('should call setState with correct value', () => {
 it('should display success message after form submission', () => {
   // ...
 });
-```typescript
+```
 
 ---
 
@@ -534,7 +534,7 @@ it('should display success message after form submission', () => {
 function calculateMA(data: number[], period: number): (number | null)[] {
   // Implementation
 }
-```typescript
+```
 
 ### README Requirements
 
@@ -575,7 +575,7 @@ const debouncedSearch = useMemo(
   () => debounce((query: string) => search(query), 300),
   []
 );
-```typescript
+```
 
 ### Backend Performance
 
@@ -606,7 +606,7 @@ def get_market_config(symbol: str) -> MarketConfig:
 @app.get("/users")
 async def list_users(skip: int = 0, limit: int = 100):
     return db.query(User).offset(skip).limit(limit).all()
-```python
+```
 
 ---
 
