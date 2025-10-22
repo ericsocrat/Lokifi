@@ -272,9 +272,8 @@ backend/
 - `START_HERE.md` - Getting started guide
 - `PROJECT_STATUS_CONSOLIDATED.md` - Current project status
 - `ARCHITECTURE_DIAGRAM.md` - System architecture
-- `docker-compose.yml` - Docker Compose configuration
-- `docker-compose.dev.yml` - Development Docker setup
-- `docker-compose.redis.yml` - Redis Docker setup
+
+> **Note:** Docker Compose configurations are now in `infra/docker/`
 
 ### Utility Scripts (Keep at Root)
 - `start-servers.ps1` - Main server launcher

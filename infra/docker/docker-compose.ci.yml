@@ -1,8 +1,13 @@
+# CI/CD Configuration
+# Purpose: Docker Compose for GitHub Actions CI/CD pipeline
+# Usage: Used by .github/workflows/ci.yml with pre-built images
+# Services: Uses lokifi-backend:latest image from CI build
+
 services:
   # Redis - Caching Layer
   redis:
-    image: redis:7-alpine
-    container_name: lokifi-redis-dev
+    image: redis:7.4-alpine
+    container_name: lokifi-redis-ci
     ports:
       - "6379:6379"
     command: redis-server --requirepass 23233
@@ -11,13 +16,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    networks:
-      - lokifi-network
 
   # PostgreSQL - Database
   postgres:
-    image: postgres:16-alpine
-    container_name: lokifi-postgres-dev
+    image: postgres:17-alpine
+    container_name: lokifi-postgres-ci
     environment:
       POSTGRES_USER: lokifi
       POSTGRES_PASSWORD: lokifi_dev_password
@@ -32,13 +35,11 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    networks:
-      - lokifi-network
 
   # Backend - FastAPI (Using pre-built image from CI)
   backend:
     image: lokifi-backend:latest
-    container_name: lokifi-backend-dev
+    container_name: lokifi-backend-ci
     command: ["./docker-entrypoint-ci.sh"]
     environment:
       # Database
@@ -97,13 +98,11 @@ services:
       timeout: 5s
       retries: 10
       start_period: 60s
-    networks:
-      - lokifi-network
 
   # Frontend - Next.js (Using pre-built image from CI)
   frontend:
     image: lokifi-frontend:latest
-    container_name: lokifi-frontend-dev
+    container_name: lokifi-frontend-ci
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:8000
       NODE_ENV: production
@@ -118,14 +117,12 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    networks:
-      - lokifi-network
 
 volumes:
   postgres-data:
     name: lokifi-postgres-data-ci
 
 networks:
-  lokifi-network:
+  default:
     name: lokifi-network-ci
     driver: bridge

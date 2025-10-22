@@ -7,23 +7,40 @@ services:
   backend:
     build:
       context: ../../apps/backend
+      dockerfile: Dockerfile.dev
+    container_name: lokifi-backend-dev
     working_dir: /app
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
     env_file:
       - ../../apps/backend/.env
+    environment:
+      # Database
+      DATABASE_URL: postgresql+asyncpg://lokifi:lokifi_dev_password@postgres:5432/lokifi_db
+      POSTGRES_PASSWORD: lokifi_dev_password
+
+      # Redis
+      REDIS_URL: redis://:23233@redis:6379/0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "23233"
+
+      # Development
+      DEBUG: "true"
+      ENVIRONMENT: development
+
+      # Python
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: /app
+    volumes:
+      - ../../apps/backend:/app
+      - backend-cache:/app/__pycache__
     healthcheck:
-      test:
-        [
-          "CMD",
-          "python",
-          "-c",
-          "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')",
-        ]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 5
       start_period: 30s
     depends_on:
       postgres:
@@ -34,52 +51,53 @@ services:
   frontend:
     build:
       context: ../../apps/frontend
-      target: prod
+      dockerfile: Dockerfile.dev
+    container_name: lokifi-frontend-dev
     working_dir: /app
-    user: node
-    command: ["npm", "run", "start"]
+    command: npm run dev
     ports:
       - "3000:3000"
     environment:
-      - NEXT_TELEMETRY_DISABLED=1
-      - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://backend:8000/api
-      - NODE_OPTIONS="--max_old_space_size=4096"
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 30s
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: development
+      NEXT_TELEMETRY_DISABLED: 1
+    volumes:
+      - ../../apps/frontend:/app
+      - frontend-node-modules:/app/node_modules
+      - frontend-next:/app/.next
     depends_on:
       backend:
         condition: service_healthy
 
   redis:
     image: redis:7.4-alpine
+    container_name: lokifi-redis-dev
     ports:
       - "6379:6379"
+    command: redis-server --requirepass 23233
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      test: ["CMD", "redis-cli", "-a", "23233", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
       start_period: 10s
 
   postgres:
     image: postgres:17-alpine
+    container_name: lokifi-postgres-dev
     environment:
-      POSTGRES_DB: lokifi
       POSTGRES_USER: lokifi
-      POSTGRES_PASSWORD: lokifi
+      POSTGRES_PASSWORD: lokifi_dev_password
+      POSTGRES_DB: lokifi_db
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U lokifi"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "pg_isready -U lokifi -d lokifi_db"]
+      interval: 5s
+      timeout: 3s
       retries: 5
       start_period: 30s
 
@@ -93,3 +111,15 @@ services:
 
 volumes:
   postgres_data:
+    name: lokifi-postgres-data-dev
+  backend-cache:
+    name: lokifi-backend-cache-dev
+  frontend-node-modules:
+    name: lokifi-frontend-node-modules-dev
+  frontend-next:
+    name: lokifi-frontend-next-dev
+
+networks:
+  default:
+    name: lokifi-network-dev
+    driver: bridge

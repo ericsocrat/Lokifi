@@ -8,12 +8,13 @@
 
 | File | Size | Purpose | When to Use |
 |------|------|---------|-------------|
-| `docker-compose.yml` | 2.27 KB | **Base development stack** | Daily local development |
+| `docker-compose.yml` | ~3.5 KB | **Base development stack** | Daily local development |
 | `docker-compose.override.yml` | 0.66 KB | **Dev hot-reload** | Auto-loaded for dev (hot-reload) |
+| `docker-compose.ci.yml` | 3.45 KB | **CI/CD pipeline** | GitHub Actions integration tests |
 | `docker-compose.prod-minimal.yml` | 1.89 KB | **Lean production** | Cloud deployment with managed DB |
 | `docker-compose.production.yml` | 7.18 KB | **Full production** | Self-hosted with complete monitoring |
 
-**Total**: 4 files, ~12 KB
+**Total**: 5 files, ~16 KB
 
 ### 🗑️ **Removed Files** (Cleanup: Oct 2025)
 - ❌ `docker-compose.redis.yml` - Base Redis sufficient for most use cases
@@ -62,7 +63,22 @@ docker compose -f docker-compose.production.yml up -d
 **What it does**: Complete production stack with everything
 **Includes**: backend, frontend, postgres, redis, traefik, prometheus, grafana, loki, promtail
 **Best for**: Self-hosted VPS, dedicated servers, full control
-**Features**: SSL/TLS auto-renewal, full observability stack, log aggregation---
+**Features**: SSL/TLS auto-renewal, full observability stack, log aggregation
+
+---
+
+### 🔵 **CI/CD**
+
+#### 5. `docker-compose.ci.yml` - **GITHUB ACTIONS**
+```bash
+docker compose -f docker-compose.ci.yml up -d
+```
+**What it does**: CI/CD pipeline for automated testing
+**Includes**: Pre-built backend/frontend images, postgres, redis
+**Best for**: GitHub Actions integration tests
+**Use when**: Running automated test suites in CI environment
+
+---
 
 ## 📖 **Usage Examples**
 

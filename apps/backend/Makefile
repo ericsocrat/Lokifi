@@ -219,7 +219,7 @@ monitor: ## 📊 Start monitoring services
 
 redis: ## 🔴 Start Redis server
 	@echo -e "$(CYAN)🔴 Starting Redis...$(NC)"
-	docker-compose -f docker-compose.redis.yml up -d
+	docker-compose -f ../../infra/docker/docker-compose.yml up -d redis
 
 # === MAINTENANCE ===
 clean: ## 🧹 Remove cache files and build artifacts

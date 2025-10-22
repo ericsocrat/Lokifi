@@ -47,8 +47,6 @@ New-Item -ItemType Directory -Path $configDir -Force | Out-Null
 
 $configFiles = @(
     "docker-compose.yml",
-    "docker-compose.dev.yml",
-    "docker-compose.redis.yml",
     ".env.example",
     "frontend\.env.local.example",
     "backend\.env.example",
@@ -224,3 +222,4 @@ if ($Compress) {
 Write-Host ""
 
 exit 0
+

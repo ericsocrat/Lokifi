@@ -90,7 +90,7 @@ jobs:
           docker run --rm lokifi-backend:latest cat docker-entrypoint-ci.sh || echo "⚠️ Entrypoint not found"
 
       - name: Start Services
-        run: docker compose -f apps/docker-compose.ci.yml up -d
+        run: docker compose -f infra/docker/docker-compose.ci.yml up -d
         timeout-minutes: 5
 
       - name: 📋 Show Backend Logs (First 50 lines)
@@ -134,7 +134,7 @@ jobs:
       - name: 🔍 Show Service Status
         run: |
           echo "📊 Docker Compose Services:"
-          docker compose -f apps/docker-compose.ci.yml ps
+          docker compose -f infra/docker/docker-compose.ci.yml ps
           echo ""
           echo "🐳 Container Status:"
           docker ps -a
@@ -152,19 +152,20 @@ jobs:
         if: failure()
         run: |
           echo "=== 🔴 Backend logs ==="
-          docker compose -f apps/docker-compose.ci.yml logs backend --tail=100
+          docker compose -f infra/docker/docker-compose.ci.yml logs backend --tail=100
           echo ""
           echo "=== 🔴 Frontend logs ==="
-          docker compose -f apps/docker-compose.ci.yml logs frontend --tail=100
+          docker compose -f infra/docker/docker-compose.ci.yml logs frontend --tail=100
           echo ""
           echo "=== 🔴 Redis logs ==="
-          docker compose -f apps/docker-compose.ci.yml logs redis --tail=100
+          docker compose -f infra/docker/docker-compose.ci.yml logs redis --tail=100
           echo ""
           echo "=== 🔴 PostgreSQL logs ==="
-          docker compose -f apps/docker-compose.ci.yml logs postgres --tail=100
+          docker compose -f infra/docker/docker-compose.ci.yml logs postgres --tail=100
 
       - name: 🧹 Cleanup
         if: always()
         run: |
-          docker compose -f apps/docker-compose.ci.yml down -v
+          docker compose -f infra/docker/docker-compose.ci.yml down -v
           docker system prune -f
+

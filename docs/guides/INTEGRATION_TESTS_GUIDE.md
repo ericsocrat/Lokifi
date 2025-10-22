@@ -17,7 +17,7 @@ Integration tests verify that all services (backend, frontend, database, Redis) 
 
 ```bash
 # 1. Start services
-docker compose -f apps/docker-compose.yml up -d
+docker compose -f infra/docker/docker-compose.yml up -d
 
 # 2. Wait for services to be ready (see API_REFERENCE.md for endpoint docs)
 curl http://localhost:8000/api/health  # Backend
@@ -31,7 +31,7 @@ npm ci --legacy-peer-deps
 - [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Comprehensive testing strategies and CI commands
 
 # 4. Stop services
-docker compose -f apps/docker-compose.yml down -v
+docker compose -f infra/docker/docker-compose.yml down -v
 ```
 
 ---
@@ -94,13 +94,13 @@ Integration tests use containerized environment variables.
 
 ```bash
 # Check service status
-docker compose -f apps/docker-compose.yml ps
+docker compose -f infra/docker/docker-compose.yml ps
 
 # View logs
-docker compose -f apps/docker-compose.yml logs
+docker compose -f infra/docker/docker-compose.yml logs
 
 # Restart services
-docker compose -f apps/docker-compose.yml restart
+docker compose -f infra/docker/docker-compose.yml restart
 ```
 
 ### Health Checks Failing
@@ -110,7 +110,7 @@ docker compose -f apps/docker-compose.yml restart
 docker exec -it lokifi-backend-dev curl http://localhost:8000/api/health
 
 # Check backend logs
-docker compose -f apps/docker-compose.yml logs backend
+docker compose -f infra/docker/docker-compose.yml logs backend
 ```
 
 ### Port Conflicts
@@ -132,7 +132,7 @@ netstat -ano | findstr "6379"
 docker exec -it lokifi-postgres-dev psql -U lokifi -d lokifi_db -c "SELECT 1;"
 
 # Check database logs
-docker compose -f apps/docker-compose.yml logs postgres
+docker compose -f infra/docker/docker-compose.yml logs postgres
 ```
 
 ---
@@ -176,25 +176,25 @@ Before pushing changes:
 
 ```bash
 # Start services
-docker compose -f apps/docker-compose.yml up -d
+docker compose -f infra/docker/docker-compose.yml up -d
 
 # Stop services
-docker compose -f apps/docker-compose.yml down
+docker compose -f infra/docker/docker-compose.yml down
 
 # Stop and remove volumes (clean slate)
-docker compose -f apps/docker-compose.yml down -v
+docker compose -f infra/docker/docker-compose.yml down -v
 
 # View logs
-docker compose -f apps/docker-compose.yml logs -f
+docker compose -f infra/docker/docker-compose.yml logs -f
 
 # View specific service logs
-docker compose -f apps/docker-compose.yml logs backend -f
+docker compose -f infra/docker/docker-compose.yml logs backend -f
 
 # Rebuild images
-docker compose -f apps/docker-compose.yml build --no-cache
+docker compose -f infra/docker/docker-compose.yml build --no-cache
 
 # Restart a service
-docker compose -f apps/docker-compose.yml restart backend
+docker compose -f infra/docker/docker-compose.yml restart backend
 
 # Execute command in container
 docker exec -it lokifi-backend-dev bash
@@ -267,7 +267,7 @@ Integration tests are passing when:
 
 ## 🔗 Related Documentation
 
-- [Docker Compose Configuration](../../apps/docker-compose.yml)
+- [Docker Compose Configuration](../../infra/docker/docker-compose.yml)
 - [Backend README](../../apps/backend/README.md)
 - [Frontend README](../../apps/frontend/README.md)
 - [Deployment Pipeline](../.github/workflows/lokifi-unified-pipeline.yml)
@@ -277,3 +277,4 @@ Integration tests are passing when:
 **Last Updated:** October 16, 2025
 **Status:** ✅ Active and Working
 **Maintained By:** DevOps Team
+
