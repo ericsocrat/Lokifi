@@ -53,6 +53,32 @@
 - **Solo dev workflow**: Skip detailed documentation during test creation - tests ARE the documentation
 - **No completion summaries**: Create tests, verify pass rate, move to next component immediately
 
+### Testing Best Practices
+**Smart Test Selection:**
+```bash
+# Run only changed files' tests (fast feedback)
+.\tools\test-runner.ps1 -Smart
+
+# Run full test suite before commit
+.\tools\test-runner.ps1 -PreCommit
+
+# Run all tests with coverage
+.\tools\test-runner.ps1 -All
+```
+
+**Coverage Improvement Workflow:**
+1. Identify low-coverage files: `npm run test:coverage`
+2. Focus on critical paths first (API routes, core business logic)
+3. Write behavior tests, not implementation tests
+4. Aim for 80%+ on new code, don't retroactively fix old code
+
+**Test Quality Guidelines:**
+- **Test user-facing behavior**, not internal implementation
+- **Mock external dependencies** (APIs, databases, external services)
+- **Use descriptive test names** that explain what's being tested
+- **Keep tests isolated** - each test should be independent
+- **Test edge cases** - empty arrays, null values, error states
+
 ### Task Tracking & Workflow
 - **CHECKLISTS.md**: Use for quality gates, deployment steps, and process standards
   - Pre-commit checks, deployment checklists, code review standards
@@ -127,6 +153,52 @@ export const ComponentName: FC<Props> = ({ prop1, prop2 }) => {
 };
 ```
 
+### Zustand Store Pattern
+```typescript
+import { create } from 'zustand';
+
+interface StoreState {
+  data: DataType[];
+  isLoading: boolean;
+  error: string | null;
+}
+
+interface StoreActions {
+  fetchData: () => Promise<void>;
+  updateData: (data: DataType) => void;
+  reset: () => void;
+}
+
+type Store = StoreState & StoreActions;
+
+export const useStore = create<Store>((set, get) => ({
+  // State
+  data: [],
+  isLoading: false,
+  error: null,
+
+  // Actions
+  fetchData: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch('/api/data');
+      const data = await response.json();
+      set({ data, isLoading: false });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
+  updateData: (newData) => {
+    set((state) => ({
+      data: [...state.data, newData]
+    }));
+  },
+
+  reset: () => set({ data: [], isLoading: false, error: null })
+}));
+```
+
 ### Backend Route Pattern
 ```python
 from fastapi import APIRouter, Depends
@@ -196,6 +268,190 @@ def test_function_name(client, db_session):
 3. Look for security vulnerabilities
 4. Ensure proper error handling
 5. Validate accessibility compliance
+
+## Security Best Practices
+
+### Frontend Security
+- **Never use `eval()` or `Function()` constructors** - XSS vulnerabilities
+- **Avoid `dangerouslySetInnerHTML`** - Use DOMPurify if absolutely needed
+- **Sanitize all user inputs** - Especially before API calls
+- **Use environment variables** - Never hardcode API keys or secrets
+- **Validate on both frontend and backend** - Defense in depth
+
+**Security Anti-Patterns to Avoid:**
+```typescript
+// ❌ BAD - XSS vulnerability
+<div dangerouslySetInnerHTML={{ __html: userInput }} />
+
+// ✅ GOOD - Safe rendering
+<div>{userInput}</div>
+
+// ❌ BAD - Exposed secrets
+const API_KEY = "sk-1234567890";
+
+// ✅ GOOD - Environment variables
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+// ❌ BAD - No input validation
+await fetch(`/api/users/${userId}`);
+
+// ✅ GOOD - Validated input
+const validId = parseInt(userId);
+if (isNaN(validId)) throw new Error('Invalid ID');
+await fetch(`/api/users/${validId}`);
+```
+
+### Backend Security
+- **Use Pydantic for validation** - All request/response models
+- **Implement rate limiting** - Prevent abuse
+- **Use parameterized queries** - Prevent SQL injection (SQLAlchemy handles this)
+- **Hash passwords** - Use bcrypt or Argon2
+- **Validate JWT tokens** - Check expiry and signature
+
+**Security Checklist:**
+- [ ] All endpoints require authentication where needed
+- [ ] Input validation on all request bodies
+- [ ] Rate limiting on public endpoints
+- [ ] CORS configured properly
+- [ ] Secrets in environment variables (never committed)
+- [ ] SQL queries use SQLAlchemy ORM (not raw SQL)
+
+## Common Anti-Patterns to Avoid
+
+### TypeScript Anti-Patterns
+```typescript
+// ❌ BAD - Implicit any
+function processData(data) { ... }
+
+// ✅ GOOD - Explicit types
+function processData(data: DataType): ResultType { ... }
+
+// ❌ BAD - console.log in production
+console.log('User data:', userData);
+
+// ✅ GOOD - Proper logging (or remove)
+// Use logger.info() or remove debug logs
+
+// ❌ BAD - Non-null assertion without check
+const value = data!.field!.value;
+
+// ✅ GOOD - Optional chaining
+const value = data?.field?.value;
+
+// ❌ BAD - Type assertion without validation
+const user = response as User;
+
+// ✅ GOOD - Type guards
+if (isUser(response)) {
+  const user = response;
+}
+```
+
+### React Anti-Patterns
+```typescript
+// ❌ BAD - Missing key in lists
+items.map(item => <Item {...item} />)
+
+// ✅ GOOD - Unique keys
+items.map(item => <Item key={item.id} {...item} />)
+
+// ❌ BAD - State mutation
+setState(state.push(item));
+
+// ✅ GOOD - Immutable update
+setState([...state, item]);
+
+// ❌ BAD - Prop drilling (3+ levels)
+<Parent data={data}>
+  <Child data={data}>
+    <GrandChild data={data} />
+
+// ✅ GOOD - Context or Zustand store
+const data = useStore(state => state.data);
+
+// ❌ BAD - useEffect without dependencies
+useEffect(() => {
+  fetchData();
+});
+
+// ✅ GOOD - Proper dependencies
+useEffect(() => {
+  fetchData();
+}, [fetchData]);
+```
+
+### FastAPI Anti-Patterns
+```python
+# ❌ BAD - No response model
+@router.get("/users")
+async def get_users():
+    return users
+
+# ✅ GOOD - Typed response
+@router.get("/users", response_model=List[UserResponse])
+async def get_users():
+    return users
+
+# ❌ BAD - No input validation
+@router.post("/users")
+async def create_user(data: dict):
+    ...
+
+# ✅ GOOD - Pydantic validation
+@router.post("/users", response_model=UserResponse)
+async def create_user(data: UserCreate):
+    ...
+
+# ❌ BAD - Blocking I/O
+@router.get("/data")
+async def get_data():
+    return requests.get("https://api.example.com")
+
+# ✅ GOOD - Async I/O
+@router.get("/data")
+async def get_data():
+    async with httpx.AsyncClient() as client:
+        return await client.get("https://api.example.com")
+```
+
+## Performance Optimization Patterns
+
+### React Performance
+```typescript
+// Use React.memo for expensive components
+export const ExpensiveComponent = React.memo(({ data }) => {
+  // Expensive rendering logic
+}, (prevProps, nextProps) => {
+  // Custom comparison for when to re-render
+  return prevProps.data.id === nextProps.data.id;
+});
+
+// Use useMemo for expensive computations
+const sortedData = useMemo(() => {
+  return data.sort((a, b) => a.value - b.value);
+}, [data]);
+
+// Use useCallback for stable function references
+const handleClick = useCallback(() => {
+  processData(data);
+}, [data]);
+
+// Lazy load components
+const HeavyComponent = lazy(() => import('./HeavyComponent'));
+```
+
+### Zustand Performance
+```typescript
+// ✅ GOOD - Selective subscriptions (avoid re-renders)
+const data = useStore(state => state.data);
+const isLoading = useStore(state => state.isLoading);
+
+// ❌ BAD - Subscribe to entire store
+const store = useStore();
+
+// ✅ GOOD - Shallow equality for objects
+const user = useStore(state => state.user, shallow);
+```
 
 ## Documentation References
 
