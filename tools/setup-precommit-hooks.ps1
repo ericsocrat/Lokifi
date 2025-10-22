@@ -27,12 +27,12 @@ param(
     [int]$CoverageThreshold = 15  # Minimum coverage to allow commits
 )
 
-$ErrorActionPreference = "Continue"
+$ErrorActionPreference = 'Continue'
 
-Write-Host ""
-Write-Host "🪝 PRE-COMMIT HOOKS SETUP" -ForegroundColor Cyan
-Write-Host "=" * 50 -ForegroundColor Gray
-Write-Host ""
+Write-Host ''
+Write-Host '🪝 PRE-COMMIT HOOKS SETUP' -ForegroundColor Cyan
+Write-Host '=' * 50 -ForegroundColor Gray
+Write-Host ''
 
 # Resolve repository root (actual Git root, not the tools folder)
 function Get-GitRoot {
@@ -42,18 +42,18 @@ function Get-GitRoot {
     } catch { }
 
     # Fallback: walk up from current script directory until .git is found
-    $dir = (Resolve-Path (Join-Path $PSScriptRoot ".."))
+    $dir = (Resolve-Path (Join-Path $PSScriptRoot '..'))
     while ($dir -and (Test-Path $dir)) {
-        if (Test-Path (Join-Path $dir ".git")) { return $dir }
+        if (Test-Path (Join-Path $dir '.git')) { return $dir }
         $parent = Split-Path $dir -Parent
         if ($parent -eq $dir) { break }
         $dir = $parent
     }
-    return (Resolve-Path (Join-Path $PSScriptRoot "..\.."))
+    return (Resolve-Path (Join-Path $PSScriptRoot '..\..'))
 }
 
 $repoRoot = Get-GitRoot
-$gitHooksDir = Join-Path $repoRoot ".git/hooks"
+$gitHooksDir = Join-Path $repoRoot '.git/hooks'
 
 # Ensure hooks directory exists
 if (-not (Test-Path $gitHooksDir)) {
@@ -64,9 +64,9 @@ if (-not (Test-Path $gitHooksDir)) {
 # UNINSTALL EXISTING HOOKS
 # ============================================
 if ($UninstallHooks) {
-    Write-Host "🗑️  Removing existing hooks..." -ForegroundColor Yellow
+    Write-Host '🗑️  Removing existing hooks...' -ForegroundColor Yellow
 
-    $hookFiles = @("pre-commit", "pre-push", "commit-msg")
+    $hookFiles = @('pre-commit', 'pre-push', 'commit-msg')
 
     foreach ($hook in $hookFiles) {
         $hookPath = Join-Path $gitHooksDir $hook
@@ -76,17 +76,17 @@ if ($UninstallHooks) {
         }
     }
 
-    Write-Host ""
-    Write-Host "🎉 All hooks removed successfully!" -ForegroundColor Green
+    Write-Host ''
+    Write-Host '🎉 All hooks removed successfully!' -ForegroundColor Green
     return
 }
 
 # ============================================
 # CREATE PRE-COMMIT HOOK
 # ============================================
-Write-Host "🔧 Creating pre-commit hook..." -ForegroundColor Yellow
+Write-Host '🔧 Creating pre-commit hook...' -ForegroundColor Yellow
 
-$enforceStrictParam = if ($Strict) { "-EnforceStrict" } else { "" }
+$enforceStrictParam = if ($Strict) { '-EnforceStrict' } else { '' }
 $preCommitCoverage = [int]$CoverageThreshold
 
 $preCommitHook = @"
@@ -152,24 +152,24 @@ else
 fi
 "@
 
-$preCommitPath = Join-Path $gitHooksDir "pre-commit"
+$preCommitPath = Join-Path $gitHooksDir 'pre-commit'
 $preCommitHook | Out-File -FilePath $preCommitPath -Encoding UTF8 -NoNewline
 
 # Make hook executable (Windows - no chmod needed, but set for cross-platform)
 try {
-    if (Get-Command "chmod" -ErrorAction SilentlyContinue) {
+    if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
         & chmod +x $preCommitPath
     }
 } catch {
     # Ignore chmod errors on Windows
 }
 
-Write-Host "   ✅ Created pre-commit hook" -ForegroundColor Green
+Write-Host '   ✅ Created pre-commit hook' -ForegroundColor Green
 
 # ============================================
 # CREATE PRE-PUSH HOOK
 # ============================================
-Write-Host "🔧 Creating pre-push hook..." -ForegroundColor Yellow
+Write-Host '🔧 Creating pre-push hook...' -ForegroundColor Yellow
 
 $prePushCoverage = [int]$CoverageThreshold + 5
 
@@ -237,23 +237,23 @@ else
 fi
 "@
 
-$prePushPath = Join-Path $gitHooksDir "pre-push"
+$prePushPath = Join-Path $gitHooksDir 'pre-push'
 $prePushHook | Out-File -FilePath $prePushPath -Encoding UTF8 -NoNewline
 
 try {
-    if (Get-Command "chmod" -ErrorAction SilentlyContinue) {
+    if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
         & chmod +x $prePushPath
     }
 } catch {
     # Ignore chmod errors
 }
 
-Write-Host "   ✅ Created pre-push hook" -ForegroundColor Green
+Write-Host '   ✅ Created pre-push hook' -ForegroundColor Green
 
 # ============================================
 # CREATE COMMIT-MSG HOOK
 # ============================================
-Write-Host "🔧 Creating commit-msg hook..." -ForegroundColor Yellow
+Write-Host '🔧 Creating commit-msg hook...' -ForegroundColor Yellow
 
 $commitMsgHook = @"
 #!/bin/sh
@@ -311,23 +311,23 @@ else
 fi
 "@
 
-$commitMsgPath = Join-Path $gitHooksDir "commit-msg"
+$commitMsgPath = Join-Path $gitHooksDir 'commit-msg'
 $commitMsgHook | Out-File -FilePath $commitMsgPath -Encoding UTF8 -NoNewline
 
 try {
-    if (Get-Command "chmod" -ErrorAction SilentlyContinue) {
+    if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
         & chmod +x $commitMsgPath
     }
 } catch {
     # Ignore chmod errors
 }
 
-Write-Host "   ✅ Created commit-msg hook" -ForegroundColor Green
+Write-Host '   ✅ Created commit-msg hook' -ForegroundColor Green
 
 # ============================================
 # CREATE HOOK BYPASS SCRIPT
 # ============================================
-Write-Host "🔧 Creating hook bypass utility..." -ForegroundColor Yellow
+Write-Host '🔧 Creating hook bypass utility...' -ForegroundColor Yellow
 
 $bypassScript = @"
 #!/usr/bin/env pwsh
@@ -398,98 +398,98 @@ if (-not `$Commit -and -not `$Push) {
 Write-Host ""
 "@
 
-$bypassPath = Join-Path $PSScriptRoot "bypass-hooks.ps1"
+$bypassPath = Join-Path $PSScriptRoot 'bypass-hooks.ps1'
 $bypassScript | Out-File -FilePath $bypassPath -Encoding UTF8
 
-Write-Host "   ✅ Created bypass utility: bypass-hooks.ps1" -ForegroundColor Green
+Write-Host '   ✅ Created bypass utility: bypass-hooks.ps1' -ForegroundColor Green
 
 # ============================================
 # TEST HOOKS
 # ============================================
-Write-Host ""
-Write-Host "🧪 Testing hook installation..." -ForegroundColor Yellow
+Write-Host ''
+Write-Host '🧪 Testing hook installation...' -ForegroundColor Yellow
 
 $testPassed = 0
 $totalTests = 3
 
 # Test pre-commit hook
 if (Test-Path $preCommitPath) {
-    Write-Host "   ✅ pre-commit hook installed" -ForegroundColor Green
+    Write-Host '   ✅ pre-commit hook installed' -ForegroundColor Green
     $testPassed++
 } else {
-    Write-Host "   ❌ pre-commit hook missing" -ForegroundColor Red
+    Write-Host '   ❌ pre-commit hook missing' -ForegroundColor Red
 }
 
 # Test pre-push hook
 if (Test-Path $prePushPath) {
-    Write-Host "   ✅ pre-push hook installed" -ForegroundColor Green
+    Write-Host '   ✅ pre-push hook installed' -ForegroundColor Green
     $testPassed++
 } else {
-    Write-Host "   ❌ pre-push hook missing" -ForegroundColor Red
+    Write-Host '   ❌ pre-push hook missing' -ForegroundColor Red
 }
 
 # Test commit-msg hook
 if (Test-Path $commitMsgPath) {
-    Write-Host "   ✅ commit-msg hook installed" -ForegroundColor Green
+    Write-Host '   ✅ commit-msg hook installed' -ForegroundColor Green
     $testPassed++
 } else {
-    Write-Host "   ❌ commit-msg hook missing" -ForegroundColor Red
+    Write-Host '   ❌ commit-msg hook missing' -ForegroundColor Red
 }
 
 # ============================================
 # SUMMARY
 # ============================================
-Write-Host ""
-Write-Host "=" * 50 -ForegroundColor Gray
-Write-Host ""
-Write-Host "🎯 HOOK SETUP SUMMARY" -ForegroundColor Cyan
-Write-Host ""
+Write-Host ''
+Write-Host '=' * 50 -ForegroundColor Gray
+Write-Host ''
+Write-Host '🎯 HOOK SETUP SUMMARY' -ForegroundColor Cyan
+Write-Host ''
 
-Write-Host "   📊 Installation: $testPassed/$totalTests hooks installed" -ForegroundColor $(if ($testPassed -eq $totalTests) { "Green" } else { "Red" })
-Write-Host "   🔒 Mode: $(if ($Strict) { 'Strict (blocks on any failure)' } else { 'Relaxed (warnings for minor issues)' })" -ForegroundColor $(if ($Strict) { "Red" } else { "Yellow" })
+Write-Host "   📊 Installation: $testPassed/$totalTests hooks installed" -ForegroundColor $(if ($testPassed -eq $totalTests) { 'Green' } else { 'Red' })
+Write-Host "   🔒 Mode: $(if ($Strict) { 'Strict (blocks on any failure)' } else { 'Relaxed (warnings for minor issues)' })" -ForegroundColor $(if ($Strict) { 'Red' } else { 'Yellow' })
 Write-Host "   📈 Coverage Threshold: $CoverageThreshold%" -ForegroundColor Gray
-Write-Host ""
+Write-Host ''
 
-Write-Host "🪝 Installed Hooks:" -ForegroundColor Yellow
-Write-Host "   🔍 pre-commit: Quality gates before each commit" -ForegroundColor Gray
-Write-Host "   🚀 pre-push: Comprehensive checks before push" -ForegroundColor Gray
-Write-Host "   📝 commit-msg: Enforces conventional commit format" -ForegroundColor Gray
-Write-Host ""
+Write-Host '🪝 Installed Hooks:' -ForegroundColor Yellow
+Write-Host '   🔍 pre-commit: Quality gates before each commit' -ForegroundColor Gray
+Write-Host '   🚀 pre-push: Comprehensive checks before push' -ForegroundColor Gray
+Write-Host '   📝 commit-msg: Enforces conventional commit format' -ForegroundColor Gray
+Write-Host ''
 
-Write-Host "🎯 What Happens Now:" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "   Every commit will:" -ForegroundColor White
-Write-Host "     • Run quality gates (maintainability, security, complexity)" -ForegroundColor Gray
+Write-Host '🎯 What Happens Now:' -ForegroundColor Cyan
+Write-Host ''
+Write-Host '   Every commit will:' -ForegroundColor White
+Write-Host '     • Run quality gates (maintainability, security, complexity)' -ForegroundColor Gray
 Write-Host "     • Check test coverage (minimum $CoverageThreshold%)" -ForegroundColor Gray
-Write-Host "     • Scan for security vulnerabilities" -ForegroundColor Gray
-Write-Host "     • Validate commit message format" -ForegroundColor Gray
-Write-Host ""
-Write-Host "   Every push will:" -ForegroundColor White
-Write-Host "     • Run comprehensive protection analysis" -ForegroundColor Gray
+Write-Host '     • Scan for security vulnerabilities' -ForegroundColor Gray
+Write-Host '     • Validate commit message format' -ForegroundColor Gray
+Write-Host ''
+Write-Host '   Every push will:' -ForegroundColor White
+Write-Host '     • Run comprehensive protection analysis' -ForegroundColor Gray
 Write-Host "     • Require higher coverage threshold ($($CoverageThreshold + 5)%)" -ForegroundColor Gray
-Write-Host "     • Execute test suite" -ForegroundColor Gray
-Write-Host "     • Generate protection report" -ForegroundColor Gray
-Write-Host ""
+Write-Host '     • Execute test suite' -ForegroundColor Gray
+Write-Host '     • Generate protection report' -ForegroundColor Gray
+Write-Host ''
 
 if ($testPassed -eq $totalTests) {
-    Write-Host "🎉 All hooks installed successfully!" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "🔧 Test your setup:" -ForegroundColor Cyan
-    Write-Host "   1. Make a small change to a file" -ForegroundColor Gray
+    Write-Host '🎉 All hooks installed successfully!' -ForegroundColor Green
+    Write-Host ''
+    Write-Host '🔧 Test your setup:' -ForegroundColor Cyan
+    Write-Host '   1. Make a small change to a file' -ForegroundColor Gray
     Write-Host "   2. Run: git add . && git commit -m 'test: verify hooks working'" -ForegroundColor Gray
-    Write-Host "   3. Watch the quality gates run automatically!" -ForegroundColor Gray
-    Write-Host ""
-    Write-Host "🚨 Emergency Commands:" -ForegroundColor Yellow
+    Write-Host '   3. Watch the quality gates run automatically!' -ForegroundColor Gray
+    Write-Host ''
+    Write-Host '🚨 Emergency Commands:' -ForegroundColor Yellow
     Write-Host "   .\tools\bypass-hooks.ps1 -Commit 'emergency: critical fix'  # Skip all hooks" -ForegroundColor Gray
-    Write-Host "   git commit --no-verify                                       # Skip pre-commit" -ForegroundColor Gray
-    Write-Host "   git push --no-verify                                         # Skip pre-push" -ForegroundColor Gray
+    Write-Host '   git commit --no-verify                                       # Skip pre-commit' -ForegroundColor Gray
+    Write-Host '   git push --no-verify                                         # Skip pre-push' -ForegroundColor Gray
 } else {
-    Write-Host "⚠️  Some hooks failed to install. Check file permissions." -ForegroundColor Yellow
+    Write-Host '⚠️  Some hooks failed to install. Check file permissions.' -ForegroundColor Yellow
 }
 
-Write-Host ""
-Write-Host "📚 Documentation:" -ForegroundColor Cyan
-Write-Host "   Test Runner: .\tools\test-runner.ps1 --help" -ForegroundColor Gray
-Write-Host "   Codebase Analyzer: .\tools\codebase-analyzer.ps1" -ForegroundColor Gray
-Write-Host "   Hook Management: .\tools\setup-precommit-hooks.ps1 -UninstallHooks" -ForegroundColor Gray
-Write-Host ""
+Write-Host ''
+Write-Host '📚 Documentation:' -ForegroundColor Cyan
+Write-Host '   Test Runner: .\tools\test-runner.ps1 --help' -ForegroundColor Gray
+Write-Host '   Codebase Analyzer: .\tools\codebase-analyzer.ps1' -ForegroundColor Gray
+Write-Host '   Hook Management: .\tools\setup-precommit-hooks.ps1 -UninstallHooks' -ForegroundColor Gray
+Write-Host ''

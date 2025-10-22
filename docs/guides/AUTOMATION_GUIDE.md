@@ -26,7 +26,7 @@ This guide provides complete documentation for Lokifi's automation systems, from
 **📖 For API testing scripts:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for comprehensive testing automation
 
 #### Code Quality Analysis
-- **`analyze-and-optimize.ps1`** - 6-phase health analysis
+- **`codebase-analyzer.ps1`** - 6-phase health analysis
 - **`analyze-console-logging.ps1`** - Console.log audit
 - **`analyze-typescript-types.ps1`** - Type safety validation
 
@@ -337,7 +337,7 @@ jobs:
 New-OrganizedDocument "FEATURE_GUIDE.md" -Content "# New Feature..."
 
 # Run code quality analysis
-.\scripts\analysis\analyze-and-optimize.ps1
+.\\tools\\codebase-analyzer.ps1
 
 # Organize any loose files
 Invoke-UltimateDocumentOrganization

@@ -68,13 +68,13 @@
 ### Code Quality Scripts
 ```powershell
 # Comprehensive 6-phase analysis
-.\scripts\analysis\analyze-and-optimize.ps1
+.\\tools\\codebase-analyzer.ps1
 
 # Console logging audit
-.\scripts\analysis\analyze-console-logging.ps1
+.\\tools\\analyze-console-logging.ps1
 
 # TypeScript type safety analysis
-.\scripts\analysis\analyze-typescript-types.ps1
+.\\tools\\analyze-typescript-types.ps1
 ```
 
 ### Analysis Results Examples

@@ -108,11 +108,11 @@ lokifi/
 
 ## 🔧 Scripts Structure (`scripts/`)
 
-### `scripts/analysis/`
+### `tools/`
 **Purpose:** Code quality and health analysis tools
 
 **Files:**
-- `analyze-and-optimize.ps1` - Comprehensive health check (6 phases)
+- `codebase-analyzer.ps1` - Comprehensive health check (6 phases)
 - `analyze-console-logging.ps1` - Console.log audit
 - `analyze-typescript-types.ps1` - TypeScript any type analysis
 
@@ -125,13 +125,13 @@ lokifi/
 **Usage:**
 ```powershell
 # Run comprehensive analysis
-.\scripts\analysis\analyze-and-optimize.ps1
+.\\tools\\codebase-analyzer.ps1
 
 # Check console logging
-.\scripts\analysis\analyze-console-logging.ps1
+.\\tools\\analyze-console-logging.ps1
 
 # Audit TypeScript types
-.\scripts\analysis\analyze-typescript-types.ps1
+.\\tools\\analyze-typescript-types.ps1
 ```
 
 ---
@@ -318,9 +318,9 @@ Example: SPRINT_PLAN.md → docs/project-management/SPRINT_PLAN.md
 
 ### When creating new scripts:
 
-**Analysis/Auditing** → `scripts/analysis/`
+**Analysis/Auditing** → `tools/`
 ```
-Example: analyze-dependencies.ps1 → scripts/analysis/analyze-dependencies.ps1
+Example: analyze-dependencies.ps1 → tools/analyze-dependencies.ps1
 ```
 
 **Cleanup/Maintenance** → `scripts/cleanup/`
@@ -354,7 +354,7 @@ Example: deploy-production.ps1 → scripts/deployment/deploy-production.ps1
 | Set up the project | `docs/guides/QUICK_START_GUIDE.md` |
 | Find all commands | `docs/guides/QUICK_REFERENCE_GUIDE.md` |
 | Deploy to production | `docs/guides/DEPLOYMENT_GUIDE.md` |
-| Check code quality | Run `scripts/analysis/analyze-and-optimize.ps1` |
+| Check code quality | Run `tools/codebase-analyzer.ps1` |
 | View optimization history | `docs/optimization-reports/` |
 | Fix TypeScript errors | Run `scripts/fixes/fix-all-implicit-any.ps1` |
 | Test APIs | Run `test-api.ps1` (root) |
@@ -394,7 +394,7 @@ Use the `organize-repository.ps1` script to automatically organize files:
 # This will:
 # - Move optimization reports to docs/optimization-reports/
 # - Move guides to docs/guides/
-# - Move analysis scripts to scripts/analysis/
+# - Move analysis scripts to tools/
 # - Move cleanup scripts to scripts/cleanup/
 # - Move fix scripts to scripts/fixes/
 ```
