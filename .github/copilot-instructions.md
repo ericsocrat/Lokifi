@@ -253,6 +253,40 @@ Copilot will automatically use these installed extensions:
 - **Console Ninja** - For runtime debugging context
 - **TODO Tree** - For task tracking and code annotation visualization
 
+## Project Analysis & Reporting
+
+### Codebase Analyzer
+For project metrics, estimates, and stakeholder documentation, use the comprehensive codebase analyzer:
+
+```bash
+# Full analysis with project estimates
+.\tools\scripts\analysis\codebase-analyzer.ps1
+
+# Export to JSON for CI/CD integration
+.\tools\scripts\analysis\codebase-analyzer.ps1 -OutputFormat json
+
+# Region-specific cost estimates (US, EU, Asia, Remote)
+.\tools\scripts\analysis\codebase-analyzer.ps1 -Region eu -Detailed
+
+# Compare with previous analysis
+.\tools\scripts\analysis\codebase-analyzer.ps1 -CompareWith "path/to/previous-report.md"
+```
+
+**Provides**:
+- Project metrics and technical debt analysis
+- Cost estimates with region-based pricing
+- Git history insights (commits, contributors, churn)
+- Multiple export formats (Markdown, JSON, CSV, HTML)
+- Maintenance cost projections (1/3/5 years)
+- CI/CD integration support
+
+### Ad-hoc Code Analysis
+For quick code analysis tasks, prefer interactive Copilot queries:
+- **TypeScript type checking**: Use `@workspace` to find `any` types and suggest improvements
+- **Console.log scanning**: Ask Copilot to find and suggest logger replacements
+- **Dependency checks**: Run `npm outdated` or `npm audit` directly
+- **Code quality**: Use `@workspace` context to analyze patterns and suggest refactoring
+
 ## Tips for Best Results
 
 ### Use Workspace Context

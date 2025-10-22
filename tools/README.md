@@ -8,9 +8,6 @@ Utility scripts and automation tools for the Lokifi platform.
 
 ```
 tools/
-├── analysis/           # AI Code Analysis
-│   ├── ai-code-analysis.ps1          # AI-powered code analysis
-│   └── predictive-analysis.ps1       # Predictive code quality
 ├── ci-cd/              # CI/CD Utilities
 │   ├── protection-dashboard.ps1      # Coverage/protection reporting
 │   └── boost-test-coverage.ps1       # Test coverage utilities
@@ -18,7 +15,7 @@ tools/
 │   ├── setup-precommit-hooks.ps1     # Pre-commit hook setup
 │   └── bypass-hooks.ps1              # Emergency hook bypass
 ├── scripts/            # Utility Scripts
-│   ├── analysis/       # Code analysis tools
+│   ├── analysis/       # Code analysis (codebase-analyzer.ps1)
 │   ├── cleanup/        # Cleanup utilities
 │   ├── data/           # Data fetching tools
 │   ├── fixes/          # Automated fix scripts
@@ -162,14 +159,15 @@ Start-Process .\tools\templates\dashboard.html
 - **cleanup-docs.ps1**: Documentation cleanup utility
 - **test-runner.ps1**: Comprehensive test execution with advanced features
 
-### Analysis Tools (`analysis/` & `scripts/analysis/`)
-- **codebase-analyzer.ps1**: Comprehensive codebase statistics and metrics (1570 lines)
-- **analyze-and-optimize.ps1**: 6-phase health analysis (widely referenced in docs)
-- **analyze-console-logging.ps1**: Console.log audit and cleanup
-- **analyze-typescript-types.ps1**: Type safety validation
-- **check-dependencies.ps1**: Dependency analysis and security checks
-- **ai-code-analysis.ps1**: AI-powered code analysis
-- **predictive-analysis.ps1**: Predictive code quality analysis
+### Analysis Tools (`scripts/analysis/`)
+- **codebase-analyzer.ps1**: Comprehensive codebase statistics, metrics, and project estimates (1570 lines, 84 KB)
+  - Project metrics and technical debt analysis
+  - Cost estimates with region-based pricing (US, EU, Asia, Remote)
+  - Git history insights (commits, contributors, churn)
+  - Multiple export formats (Markdown, JSON, CSV, HTML)
+  - CI/CD integration support
+  - **Use for**: Project reports, stakeholder documentation, estimation
+  - **Note**: For ad-hoc analysis, use Copilot with `@workspace` context
 
 ### Cleanup Tools (`scripts/cleanup/`)
 - **cleanup-master.ps1**: Master cleanup utility for project maintenance
@@ -213,4 +211,4 @@ For specific tools:
 
 ---
 
-**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 18 active automation tools
+**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 12 active automation tools

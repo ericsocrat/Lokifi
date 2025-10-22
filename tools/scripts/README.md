@@ -19,26 +19,29 @@ scripts/
 
 ## � **Analysis Scripts** (`analysis/`)
 
-**Purpose**: Code analysis, metrics, and quality assessment tools.
+**Purpose**: Codebase metrics, project estimates, and technical documentation.
 
 ### Available Scripts:
-- `codebase-analyzer.ps1` - Comprehensive codebase analysis (1570 lines, v2.0)
-- `analyze-and-optimize.ps1` - 6-phase repository health check
-- `analyze-console-logging.ps1` - Console.log audit and recommendations
-- `analyze-typescript-types.ps1` - TypeScript type safety analysis
-- `check-dependencies.ps1` - Dependency health and security checks
+- `codebase-analyzer.ps1` - Comprehensive codebase analysis with project estimates (1570 lines, 84 KB, v2.0)
+  - Project metrics and technical debt analysis
+  - Cost estimates with region-based pricing (US, EU, Asia, Remote)
+  - Git history insights (commits, contributors, churn)
+  - Multiple export formats (Markdown, JSON, CSV, HTML)
+  - Maintenance cost projections (1/3/5 years)
 
 ### Usage:
 ```powershell
-# Full codebase analysis
+# Full codebase analysis with estimates
 .\scripts\analysis\codebase-analyzer.ps1
 
-# Quick health check
-.\scripts\analysis\analyze-and-optimize.ps1
+# Export to JSON for CI/CD integration
+.\scripts\analysis\codebase-analyzer.ps1 -OutputFormat json
 
-# Type safety validation
-.\scripts\analysis\analyze-typescript-types.ps1
+# Region-specific cost estimates
+.\scripts\analysis\codebase-analyzer.ps1 -Region eu -Detailed
 ```
+
+**Note**: For ad-hoc code analysis (TypeScript types, console.log scanning, dependency checks), use **GitHub Copilot** with `@workspace` context or run `npm outdated`, `npm audit` directly.
 
 ---
 
@@ -153,5 +156,5 @@ python .\scripts\security\generate_secrets.py
 ---
 
 *Last Updated: October 22, 2025*
-*Active Scripts: 18 automation tools*
+*Active Scripts: 12 automation tools*
 *Categories: 5 functional areas*
