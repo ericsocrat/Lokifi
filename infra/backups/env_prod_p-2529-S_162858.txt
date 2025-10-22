@@ -1,9 +1,0 @@
-# Lokifi Production Environment
-ENVIRONMENT=production
-DEBUG=false
-DATABASE_URL=sqlite:///./fynix_production.db
-REDIS_URL=redis://redis:6379/0
-SECRET_KEY=change-this-in-production
-ALLOWED_HOSTS=localhost,127.0.0.1
-LOG_LEVEL=INFO
-MAX_WORKERS=4
