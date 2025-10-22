@@ -569,7 +569,7 @@ function Invoke-TestRunner {
     if ($SelfTest) {
         return Invoke-SelfTest
     }
-    
+
     Initialize-TestEnvironment
 
     Write-Host ''
@@ -577,7 +577,7 @@ function Invoke-TestRunner {
     Write-Host '║           Lokifi Test Runner - Comprehensive Suite        ║' -ForegroundColor Cyan
     Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
     Write-Host ''
-    
+
     # Show dry-run warning
     if ($DryRun) {
         Write-TestLog 'DRY RUN MODE - No tests will be executed' -Level Warning

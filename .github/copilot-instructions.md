@@ -121,16 +121,14 @@ lokifi/
 │       ├── docker-compose.yml              # Local development
 │       ├── docker-compose.production.yml   # Full production
 │       └── docker-compose.prod-minimal.yml # Production (cloud DB)
-└── tools/                # Automation & Utility Scripts
-    ├── test-runner.ps1   # Comprehensive test execution
-    ├── hooks/            # Git hook management
-    │   └── setup-precommit-hooks.ps1
-    ├── scripts/          # Organized utility scripts
-    │   ├── analysis/     # Codebase analyzer
-    │   ├── cleanup/      # Cleanup utilities
-    │   ├── data/         # Data fetching (universal-fetcher.js)
-    │   └── security/     # Security scanner & secret generation
-    └── templates/        # HTML/Dashboard templates
+└── tools/                           # Automation & Utility Scripts (Flat Structure)
+    ├── test-runner.ps1              # Comprehensive test execution
+    ├── codebase-analyzer.ps1        # Project metrics & cost estimates
+    ├── cleanup-master.ps1           # Cleanup utilities
+    ├── security-scanner.ps1         # Security scanning
+    ├── setup-precommit-hooks.ps1    # Git pre-commit hooks
+    ├── universal-fetcher.js         # Universal data fetching
+    └── templates/                   # HTML/Dashboard templates
 ```
 
 ## Common Patterns

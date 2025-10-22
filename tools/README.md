@@ -8,17 +8,15 @@ Utility scripts and automation tools for the Lokifi platform.
 
 ```
 tools/
-├── hooks/              # Git Hook Management
-│   └── setup-precommit-hooks.ps1     # Pre-commit hook setup & bypass
-├── scripts/            # Utility Scripts
-│   ├── analysis/       # Code analysis (codebase-analyzer.ps1)
-│   ├── cleanup/        # Cleanup utilities (cleanup-master.ps1)
-│   ├── data/           # Data fetching (universal-fetcher.js)
-│   └── security/       # Security tools (security-scanner.ps1, generate_secrets.py)
-├── templates/          # HTML/Dashboard Templates
-│   └── dashboard.html  # Coverage dashboard template
-├── test-runner.ps1     # Comprehensive test runner with coverage & protection
-└── README.md           # This file
+├── test-runner.ps1              # Comprehensive test runner with coverage & protection
+├── codebase-analyzer.ps1        # Project metrics, cost estimates & technical debt analysis
+├── cleanup-master.ps1           # Automated cleanup utilities (logs, cache, temp files)
+├── security-scanner.ps1         # Security vulnerability scanning & secret detection
+├── setup-precommit-hooks.ps1    # Git pre-commit hook setup & bypass management
+├── universal-fetcher.js         # Universal data fetching utility (APIs, files, etc.)
+├── templates/                   # HTML/Dashboard Templates
+│   └── dashboard.html           # Coverage dashboard template
+└── README.md                    # This file
 ```
 
 ---
@@ -119,7 +117,7 @@ Automated test coverage utilities:
 
 ### Pre-commit Hook Setup
 ```powershell
-.\tools\hooks\setup-precommit-hooks.ps1
+.\tools\setup-precommit-hooks.ps1
 ```
 
 **What it does**:
@@ -149,33 +147,53 @@ Start-Process .\tools\templates\dashboard.html
 
 ## 📚 Available Scripts
 
-### Root Level
-- **cleanup-docs.ps1**: Documentation cleanup utility
-### Root Tools
-- **test-runner.ps1**: Comprehensive test execution with coverage, protection dashboards, and trend analysis
+### **test-runner.ps1**
+Comprehensive test execution with coverage, protection dashboards, and trend analysis
+- Smart test selection (changed files only)
+- Pre-commit validation
+- Full suite with coverage
+- Self-test and dry-run modes
+- Environment validation (Python, Node.js, npm, git)
+- File logging with timestamps
 
-### Analysis Tools (`scripts/analysis/`)
-- **codebase-analyzer.ps1**: Comprehensive codebase statistics, metrics, and project estimates (1570 lines, 82 KB)
-  - Project metrics and technical debt analysis
-  - Cost estimates with region-based pricing (US, EU, Asia, Remote)
-  - Git history insights (commits, contributors, churn)
-  - Multiple export formats (Markdown, JSON, CSV, HTML)
-  - CI/CD integration support
-  - **Use for**: Project reports, stakeholder documentation, estimation
-  - **Note**: For ad-hoc analysis, use Copilot with `@workspace` context
+### **codebase-analyzer.ps1**
+Comprehensive codebase statistics, metrics, and project estimates (1570 lines, 82 KB)
+- Project metrics and technical debt analysis
+- Cost estimates with region-based pricing (US, EU, Asia, Remote)
+- Git history insights (commits, contributors, churn)
+- Multiple export formats (Markdown, JSON, CSV, HTML)
+- CI/CD integration support
+- **Use for**: Project reports, stakeholder documentation, estimation
+- **Note**: For ad-hoc analysis, use Copilot with `@workspace` context
 
-### Cleanup Tools (`scripts/cleanup/`)
-- **cleanup-master.ps1**: Master cleanup utility (docs, branches, scripts, cache, optimization)
+### **cleanup-master.ps1**
+Master cleanup utility for maintaining codebase hygiene
+- Documentation cleanup (duplicates, orphans, broken links)
+- Git branch cleanup (merged, stale branches)
+- Script consolidation and organization
+- Cache and temporary file cleanup
+- Build artifact optimization
 
-### Data Tools (`scripts/data/`)
-- **universal-fetcher.js**: Universal asset fetching (consolidated 19 scripts into one!)
+### **security-scanner.ps1**
+Comprehensive security scanning and vulnerability detection
+- Dependency vulnerability scanning (npm, pip)
+- Code pattern analysis (secrets, dangerous functions)
+- Security scoring and recommendations
+- Detailed remediation guidance
 
-### Security Tools (`scripts/security/`)
-- **generate_secrets.py**: Secure secret generation for production environments
-- **security-scanner.ps1**: Comprehensive security scanning (dependencies, code patterns, scoring)
+### **setup-precommit-hooks.ps1**
+Git pre-commit hook setup with bypass functionality
+- ESLint and Prettier integration
+- Automated code quality checks
+- Bypass mode for emergency commits
+- Integrated with Husky (frontend)
 
-### Git Hooks (`hooks/`)
-- **setup-precommit-hooks.ps1**: Pre-commit hook setup with bypass functionality
+### **universal-fetcher.js**
+Universal asset fetching utility (consolidated 19 scripts into one!)
+- API data fetching with retry logic
+- File downloads with progress tracking
+- Multiple source support (HTTP, FTP, S3)
+- Configurable caching and validation
 
 ---
 
