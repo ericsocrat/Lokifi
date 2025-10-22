@@ -47,74 +47,129 @@ scripts/
 
 ## 🧹 **Cleanup Scripts** (`cleanup/`)
 
-**Purpose**: Repository cleanup and maintenance automation.
+**Purpose**: Repository cleanup, maintenance, and optimization.
 
 ### Available Scripts:
-- `cleanup-master.ps1` - Master cleanup utility for project maintenance
+- `cleanup-master.ps1` - Comprehensive cleanup utility
+  - Documentation consolidation and archiving
+  - Old Git branches cleanup
+  - Scripts and cache cleanup
+  - Deep optimization modes
 
 ### Usage:
 ```powershell
-# Run master cleanup
-.\scripts\cleanup\cleanup-master.ps1
+# Documentation cleanup (default)
+.\scripts\cleanup\cleanup-master.ps1 -Scope Docs
+
+# Clean old branches
+.\scripts\cleanup\cleanup-master.ps1 -Scope Branches
+
+# Deep cache cleanup
+.\scripts\cleanup\cleanup-master.ps1 -Scope Deep
+
+# Full cleanup with optimization
+.\scripts\cleanup\cleanup-master.ps1 -Scope All -Optimize
 ```
 
 ---
 
 ## 📦 **Data Scripts** (`data/`)
 
-**Purpose**: Data fetching and processing utilities.
+**Purpose**: Asset data fetching and processing (consolidated 19 scripts into one!).
 
 ### Available Scripts:
-- `universal-fetcher.js` - Universal data fetching tool
+- `universal-fetcher.js` - Universal asset fetching tool
+  - Cryptocurrencies (CoinGecko API)
+  - US & International stocks
+  - Commodities & Indexes
+  - Smart caching & rate limiting
 
 ### Usage:
 ```bash
-# Fetch data
-node .\scripts\data\universal-fetcher.js
+# Fetch all assets
+node .\scripts\data\universal-fetcher.js --all
+
+# Top 500 cryptocurrencies
+node .\scripts\data\universal-fetcher.js --crypto --limit 500
+
+# US stocks only
+node .\scripts\data\universal-fetcher.js --stocks --market us
 ```
 
 ---
 
 ## 🔧 **Fix Scripts** (`fixes/`)
 
-**Purpose**: Automated code fixes and corrections.
+**Purpose**: Automated TypeScript and code quality fixes.
 
 ### Available Scripts:
-- `universal-fixer.ps1` - Automated fix tool for common issues
+- `universal-fixer.ps1` - Intelligent TypeScript fixer
+  - Implicit 'any' type fixes
+  - Zustand store type issues
+  - Alert/performance optimizations
 
 ### Usage:
 ```powershell
-# Run automated fixes
-.\scripts\fixes\universal-fixer.ps1
+# Fix all implicit 'any' types
+.\scripts\fixes\universal-fixer.ps1 -Target Any -Backup
+
+# Fix Zustand store issues
+.\scripts\fixes\universal-fixer.ps1 -Target Zustand
+
+# Preview fixes without applying
+.\scripts\fixes\universal-fixer.ps1 -Target All -DryRun
 ```
 
 ---
 
 ## 🔒 **Security Scripts** (`security/`)
 
-**Purpose**: Security automation, dependency protection, and secret management.
+**Purpose**: Security scanning, secret generation, and vulnerability protection.
 
 ### Available Scripts:
-- `dependency_protection.ps1` - Dependency vulnerability protection
-- `generate_secrets.py` - Secure secret generation
+- `generate_secrets.py` - Secure secret generation for production
+- `security-scanner.ps1` - Comprehensive security scanner (moved from root)
+  - Dependency vulnerability scanning
+  - Code pattern analysis
+  - Security score calculation
 
 ### Usage:
 ```powershell
-# Run dependency protection
-.\scripts\security\dependency_protection.ps1
-
-# Generate secure secrets
+# Generate production secrets
 python .\scripts\security\generate_secrets.py
+
+# Quick security scan (root level)
+.\security-scanner.ps1 -Quick
+
+# Deep security analysis (root level)
+.\security-scanner.ps1 -Deep
 ```
+
+**Note**: `security-scanner.ps1` is located at `tools/scripts/security-scanner.ps1` (root scripts folder).
 
 ---
 
 ## 📋 **Root Level Scripts**
 
 ### Available Scripts:
-- `coverage-dashboard.ps1` - Coverage visualization and reporting
-- `doc-generator.ps1` - Documentation generation (test/API/component docs)
-- `security-scanner.ps1` - Comprehensive security scanning
+- `test-runner.ps1` - Comprehensive test runner (consolidates coverage, protection dashboards)
+- `security-scanner.ps1` - Security scanning (see Security Scripts section above)
+
+### Usage:
+```powershell
+# Run all tests with coverage
+.\test-runner.ps1
+
+# Security scan
+.\security-scanner.ps1
+```
+
+**Note on Removed Tools**:
+- **Documentation Generation**: Use GitHub Copilot with `@workspace` context
+- **Coverage Dashboards**: Integrated into `test-runner.ps1`
+- **Protection Dashboards**: Integrated into `test-runner.ps1`
+- **Dependency Protection**: Integrated into `security-scanner.ps1`
+- **Bypass Hooks**: Integrated into `setup-precommit-hooks.ps1`
 
 ---
 
@@ -156,5 +211,5 @@ python .\scripts\security\generate_secrets.py
 ---
 
 *Last Updated: October 22, 2025*
-*Active Scripts: 12 automation tools*
+*Active Scripts: 7 focused automation tools*
 *Categories: 5 functional areas*

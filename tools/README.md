@@ -8,22 +8,17 @@ Utility scripts and automation tools for the Lokifi platform.
 
 ```
 tools/
-├── ci-cd/              # CI/CD Utilities
-│   ├── protection-dashboard.ps1      # Coverage/protection reporting
-│   └── boost-test-coverage.ps1       # Test coverage utilities
 ├── hooks/              # Git Hook Management
-│   ├── setup-precommit-hooks.ps1     # Pre-commit hook setup
-│   └── bypass-hooks.ps1              # Emergency hook bypass
+│   └── setup-precommit-hooks.ps1     # Pre-commit hook setup & bypass
 ├── scripts/            # Utility Scripts
 │   ├── analysis/       # Code analysis (codebase-analyzer.ps1)
-│   ├── cleanup/        # Cleanup utilities
-│   ├── data/           # Data fetching tools
-│   ├── fixes/          # Automated fix scripts
-│   └── security/       # Security tools
+│   ├── cleanup/        # Cleanup utilities (cleanup-master.ps1)
+│   ├── data/           # Data fetching (universal-fetcher.js)
+│   ├── fixes/          # Automated fixes (universal-fixer.ps1)
+│   └── security/       # Security tools (security-scanner.ps1, generate_secrets.py)
 ├── templates/          # HTML/Dashboard Templates
 │   └── dashboard.html  # Coverage dashboard template
-├── cleanup-docs.ps1    # Documentation cleanup
-├── test-runner.ps1     # Comprehensive test runner
+├── test-runner.ps1     # Comprehensive test runner with coverage & protection
 └── README.md           # This file
 ```
 
@@ -157,10 +152,11 @@ Start-Process .\tools\templates\dashboard.html
 
 ### Root Level
 - **cleanup-docs.ps1**: Documentation cleanup utility
-- **test-runner.ps1**: Comprehensive test execution with advanced features
+### Root Tools
+- **test-runner.ps1**: Comprehensive test execution with coverage, protection dashboards, and trend analysis
 
 ### Analysis Tools (`scripts/analysis/`)
-- **codebase-analyzer.ps1**: Comprehensive codebase statistics, metrics, and project estimates (1570 lines, 84 KB)
+- **codebase-analyzer.ps1**: Comprehensive codebase statistics, metrics, and project estimates (1570 lines, 82 KB)
   - Project metrics and technical debt analysis
   - Cost estimates with region-based pricing (US, EU, Asia, Remote)
   - Git history insights (commits, contributors, churn)
@@ -170,22 +166,29 @@ Start-Process .\tools\templates\dashboard.html
   - **Note**: For ad-hoc analysis, use Copilot with `@workspace` context
 
 ### Cleanup Tools (`scripts/cleanup/`)
-- **cleanup-master.ps1**: Master cleanup utility for project maintenance
+- **cleanup-master.ps1**: Master cleanup utility (docs, branches, scripts, cache, optimization)
 
 ### Data Tools (`scripts/data/`)
-- **universal-fetcher.js**: Universal data fetching utility
+- **universal-fetcher.js**: Universal asset fetching (consolidated 19 scripts into one!)
 
 ### Fix Tools (`scripts/fixes/`)
-- **universal-fixer.ps1**: Automated code fixes and corrections
+- **universal-fixer.ps1**: Automated TypeScript fixes (any types, Zustand, alerts, performance)
 
 ### Security Tools (`scripts/security/`)
-- **dependency_protection.ps1**: Dependency security scanning
-- **generate_secrets.py**: Secure secret generation
-- **security-scanner.ps1**: Comprehensive security scanning
+- **generate_secrets.py**: Secure secret generation for production environments
+- **security-scanner.ps1**: Comprehensive security scanning (dependencies, code patterns, scoring)
 
-### Utility Scripts (`scripts/`)
-- **coverage-dashboard.ps1**: Coverage visualization and reporting
-- **doc-generator.ps1**: Documentation generation (test/API/component docs)
+### Git Hooks (`hooks/`)
+- **setup-precommit-hooks.ps1**: Pre-commit hook setup with bypass functionality
+
+---
+
+## 📝 **Documentation Generation**
+
+**Note**: For documentation generation, use **GitHub Copilot** with `@workspace` context:
+- Test documentation: Ask Copilot to generate based on test files
+- API documentation: Ask Copilot to extract from FastAPI routes
+- Component docs: Ask Copilot to analyze React components
 
 ---
 
@@ -211,4 +214,4 @@ For specific tools:
 
 ---
 
-**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 12 active automation tools
+**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 7 focused automation tools
