@@ -88,32 +88,6 @@ git push
 
 See `docs/DEVELOPER_WORKFLOW.md` for complete workflows and troubleshooting.
 
----
-
-## �️ CI/CD Tools
-
-### Protection Dashboard
-Monitor test coverage and protection metrics:
-
-```powershell
-.\tools\ci-cd\protection-dashboard.ps1
-```
-
-**Features**:
-- Real-time coverage statistics
-- Quality gate monitoring
-- Test execution metrics
-
-### Coverage Booster
-Automated test coverage utilities:
-
-```powershell
-.\tools\ci-cd\boost-test-coverage.ps1 -Target 25
-```
-
----
-
-## 🔧 Git Hooks
 
 ### Pre-commit Hook Setup
 ```powershell
@@ -222,8 +196,10 @@ When adding tools or scripts:
 **Primary Resource**: `docs/DEVELOPER_WORKFLOW.md`
 
 For specific tools:
-- **Coverage issues**: Check `.\tools\ci-cd\protection-dashboard.ps1`
-- **Git hooks**: See `.\tools\hooks\setup-precommit-hooks.ps1 -Help`
+- **Test runner**: Run `.\tools\test-runner.ps1 -Help` for options
+- **Codebase analysis**: Run `.\tools\codebase-analyzer.ps1` for project metrics
+- **Security scanning**: Run `.\tools\security-scanner.ps1` for vulnerability checks
+- **Git hooks**: Run `.\tools\setup-precommit-hooks.ps1` to configure
 - **General workflow**: Read `docs/DEVELOPER_WORKFLOW.md`
 
 ---

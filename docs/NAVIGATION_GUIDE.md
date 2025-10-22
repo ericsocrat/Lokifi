@@ -116,9 +116,9 @@ For historical reference:
 ## 🛠️ Development Tools
 
 ### Scripts
-**Location:** `tools/scripts/`
+**Location:** `tools/` (flat structure)
 - See [`tools/README.md`](../tools/README.md) for complete tool documentation
-- Various PowerShell scripts for development automation
+- 7 ultra-lean automation scripts (test-runner, codebase-analyzer, cleanup-master, security-scanner, etc.)
 
 ## 📊 Current Documentation Status
 **Last Updated:** October 20, 2025
