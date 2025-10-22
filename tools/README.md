@@ -2,25 +2,31 @@
 
 Utility scripts and automation tools for the Lokifi platform.
 
-> **Note**: Previously contained `lokifi.ps1` (10,499 lines). Removed on October 19, 2025 in favor of standard tools. See `docs/DEVELOPER_WORKFLOW.md` for complete guide using docker-compose, npm, git, and other industry-standard tools.
-
 ---
 
-## � Structure
+## 📂 Structure
 
 ```
 tools/
+├── analysis/           # AI Code Analysis
+│   ├── ai-code-analysis.ps1          # AI-powered code analysis
+│   └── predictive-analysis.ps1       # Predictive code quality
 ├── ci-cd/              # CI/CD Utilities
 │   ├── protection-dashboard.ps1      # Coverage/protection reporting
 │   └── boost-test-coverage.ps1       # Test coverage utilities
 ├── hooks/              # Git Hook Management
-│   └── setup-precommit-hooks.ps1     # Pre-commit hook setup
+│   ├── setup-precommit-hooks.ps1     # Pre-commit hook setup
+│   └── bypass-hooks.ps1              # Emergency hook bypass
 ├── scripts/            # Utility Scripts
 │   ├── analysis/       # Code analysis tools
-│   ├── archive/        # Archived/obsolete scripts
-│   └── test-intelligence.ps1
+│   ├── cleanup/        # Cleanup utilities
+│   ├── data/           # Data fetching tools
+│   ├── fixes/          # Automated fix scripts
+│   └── security/       # Security tools
 ├── templates/          # HTML/Dashboard Templates
 │   └── dashboard.html  # Coverage dashboard template
+├── cleanup-docs.ps1    # Documentation cleanup
+├── test-runner.ps1     # Comprehensive test runner
 └── README.md           # This file
 ```
 
@@ -152,27 +158,40 @@ Start-Process .\tools\templates\dashboard.html
 
 ## 📚 Available Scripts
 
-### Analysis Tools (`scripts/analysis/`)
-- **codebase-analyzer.ps1**: Codebase statistics and metrics
-- **test-intelligence.ps1**: Test impact analysis
+### Root Level
+- **cleanup-docs.ps1**: Documentation cleanup utility
+- **test-runner.ps1**: Comprehensive test execution with advanced features
 
-### Archive (`scripts/archive/`)
-Historical scripts for reference (no longer actively used):
-- Obsolete CI/CD scripts (archived 2025-10-19)
-- Legacy test utilities
+### Analysis Tools (`analysis/` & `scripts/analysis/`)
+- **codebase-analyzer.ps1**: Comprehensive codebase statistics and metrics (1570 lines)
+- **analyze-and-optimize.ps1**: 6-phase health analysis (widely referenced in docs)
+- **analyze-console-logging.ps1**: Console.log audit and cleanup
+- **analyze-typescript-types.ps1**: Type safety validation
+- **check-dependencies.ps1**: Dependency analysis and security checks
+- **ai-code-analysis.ps1**: AI-powered code analysis
+- **predictive-analysis.ps1**: Predictive code quality analysis
 
----
+### Cleanup Tools (`scripts/cleanup/`)
+- **cleanup-master.ps1**: Master cleanup utility for project maintenance
 
-## 🎯 Migration from lokifi.ps1
+### Data Tools (`scripts/data/`)
+- **universal-fetcher.js**: Universal data fetching utility
 
-**Previous command** → **Standard tool**:
-- `.\lokifi.ps1 servers` → `docker-compose up`
-- `.\lokifi.ps1 test` → `npm test` (frontend) or `pytest` (backend)
-- `.\lokifi.ps1 validate` → `npm run lint` or `npm run typecheck`
-- `.\lokifi.ps1 dev` → `npm run dev` or `uvicorn app.main:app --reload`
-- `.\lokifi.ps1 git -Component commit` → `git commit`
+### Fix Tools (`scripts/fixes/`)
+- **universal-fixer.ps1**: Automated code fixes and corrections
 
-**Why removed?**: 99% redundancy with standard tools. See `docs/LOKIFI_PS1_DELETION_COMPLETE.md` for full analysis.
+### Security Tools (`scripts/security/`)
+- **dependency_protection.ps1**: Dependency security scanning
+- **generate_secrets.py**: Secure secret generation
+- **security-scanner.ps1**: Comprehensive security scanning
+
+### Utility Scripts (`scripts/`)
+- **coverage-dashboard.ps1**: Coverage visualization
+- **doc-generator.ps1**: Documentation generation
+- **estimate.ps1**: Project estimation tool
+- **create-prs.ps1**: PR automation
+- **COMPREHENSIVE_MODE_TEST.ps1**: Testing mode validation
+- **TEST_SCANNING_MODES.ps1**: Scan mode testing
 
 ---
 
@@ -198,6 +217,4 @@ For specific tools:
 
 ---
 
-**Status**: Active
-**Last Updated**: October 19, 2025
-**Note**: lokifi.ps1 removed (10,499 lines) - use standard tools instead
+**Status**: Active • **Last Updated**: October 22, 2025 • **Total Scripts**: 30+ active automation tools

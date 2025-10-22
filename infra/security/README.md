@@ -10,8 +10,6 @@
 security/
 ├── ⚙️ configs/                  # Security configurations and environment files
 ├── 🔍 audit-tools/             # Security auditing and analysis scripts
-├── 🧪 testing/                 # Security testing and validation scripts
-├── 📜 certificates/            # SSL/TLS certificates and crypto materials
 ├── 🛡️ dependency_protection/   # Dependency vulnerability protection
 └── 📚 DEPENDENCY_PROTECTION_GUIDE.md # Security documentation
 ```
@@ -72,49 +70,6 @@ python audit-tools/validate_security.py
 # Enhance security posture
 python audit-tools/security_enhancer.py
 ```
-
----
-
-## 🧪 **Security Testing** (`testing/`)
-
-**Purpose**: Security-focused testing frameworks and validation scripts.
-
-### Available Tests:
-- `test_enhanced_security.py` - Enhanced security feature testing
-- `test_security_enhancements.py` - Security improvement validation
-
-### Testing Categories:
-- **Authentication Testing**: Login and session security
-- **Authorization Testing**: Access control validation
-- **Input Validation**: SQL injection and XSS prevention
-- **Data Protection**: Encryption and privacy compliance
-
-### Test Execution:
-```bash
-# Run security test suite
-python testing/test_enhanced_security.py
-
-# Validate security enhancements
-python testing/test_security_enhancements.py
-```
-
----
-
-## 📜 **Certificates Management** (`certificates/`)
-
-**Purpose**: SSL/TLS certificate storage and cryptographic key management.
-
-### Certificate Types:
-- **SSL/TLS Certificates**: Web server encryption
-- **Code Signing**: Application integrity verification
-- **Client Certificates**: Mutual authentication
-- **CA Certificates**: Certificate authority trust chain
-
-### Management Features:
-- **Automated Renewal**: Certificate lifecycle management
-- **Key Rotation**: Regular cryptographic key updates
-- **Secure Storage**: Encrypted certificate storage
-- **Access Auditing**: Certificate usage tracking
 
 ---
 
@@ -237,7 +192,7 @@ python testing/test_security_enhancements.py
 
 ---
 
-*Last Updated: September 30, 2025*  
-*Security Tools: 6 specialized components*  
-*Compliance Standards: 4 major frameworks*  
+*Last Updated: September 30, 2025*
+*Security Tools: 6 specialized components*
+*Compliance Standards: 4 major frameworks*
 *Security Maturity: Enterprise-grade implementation*

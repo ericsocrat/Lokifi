@@ -19,6 +19,17 @@
 - **Cache**: Redis
 - **Testing**: Pytest with coverage
 
+### Infrastructure & Deployment
+- **Containerization**: Docker & Docker Compose
+- **Production Server**: Traefik reverse proxy with auto SSL
+- **Domain**: lokifi.com (hosted on Cloudflare)
+- **Production URL**: www.lokifi.com
+- **API URL**: api.www.lokifi.com
+- **Email Addresses**:
+  - hello@lokifi.com (general inquiries)
+  - admin@lokifi.com (administrative)
+  - support@lokifi.com (customer support)
+
 ## Code Style & Standards
 
 ### TypeScript/JavaScript
@@ -59,20 +70,31 @@
 
 ```
 lokifi/
-├── frontend/          # Next.js application
-│   ├── app/          # Next.js App Router pages
-│   ├── components/   # React components
-│   ├── lib/          # Utilities and helpers
-│   ├── hooks/        # Custom React hooks
-│   └── tests/        # Vitest test files
-├── backend/          # FastAPI application
-│   ├── app/          # Main application code
-│   │   ├── api/      # API routes
-│   │   ├── core/     # Core functionality
-│   │   ├── models/   # SQLAlchemy models
-│   │   └── services/ # Business logic
-│   └── tests/        # Pytest test files
-└── docs/             # Documentation
+├── apps/
+│   ├── frontend/          # Next.js application
+│   │   ├── app/          # Next.js App Router pages
+│   │   ├── components/   # React components
+│   │   ├── lib/          # Utilities and helpers
+│   │   ├── hooks/        # Custom React hooks
+│   │   └── tests/        # Vitest test files
+│   └── backend/          # FastAPI application
+│       ├── app/          # Main application code
+│       │   ├── api/      # API routes
+│       │   ├── core/     # Core functionality
+│       │   ├── models/   # SQLAlchemy models
+│       │   └── services/ # Business logic
+│       └── tests/        # Pytest test files
+├── docs/                 # Documentation
+│   ├── deployment/       # Production deployment guides
+│   ├── guides/           # Development guides
+│   └── security/         # Security documentation
+└── infra/                # Infrastructure & DevOps
+    └── docker/           # Docker configurations
+        ├── .env          # Production secrets (gitignored)
+        ├── .env.example  # Template for .env
+        ├── docker-compose.yml              # Local development
+        ├── docker-compose.production.yml   # Full production
+        └── docker-compose.prod-minimal.yml # Production (cloud DB)
 ```
 
 ## Common Patterns
@@ -172,8 +194,33 @@ When suggesting code or answering questions, prefer these docs:
 - **Standards**: `/docs/CODING_STANDARDS.md`
 - **Architecture**: `/docs/REPOSITORY_STRUCTURE.md`
 - **Copilot Guide**: `/.vscode/COPILOT_GUIDE.md`
+- **Deployment**: `/docs/deployment/README.md` - Production deployment guides
+- **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
+- **DNS Configuration**: `/docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup
 
 ## Common Commands
+
+### Docker & Infrastructure
+```bash
+# Local Development (from infra/docker/)
+docker compose up              # Start all services (PostgreSQL, Redis, Backend, Frontend)
+docker compose down            # Stop all services
+docker compose down -v         # Stop and remove volumes (fresh start)
+docker compose logs -f         # View all logs
+docker compose logs -f backend # View specific service logs
+
+# Production Deployment (see docs/deployment/)
+docker compose -f docker-compose.production.yml up -d      # Full stack with Traefik
+docker compose -f docker-compose.prod-minimal.yml up -d    # Minimal (cloud database)
+```
+
+**Important Docker Notes:**
+- Local development uses `docker-compose.yml` (localhost, simple passwords)
+- Production uses `docker-compose.production.yml` or `docker-compose.prod-minimal.yml`
+- `.env` file contains production secrets (gitignored)
+- `.env.example` is the template (safe to commit)
+- See `/infra/docker/LOCAL_DEVELOPMENT.md` for local dev guide
+- See `/docs/deployment/` for production deployment guides
 
 ### Frontend
 ```bash

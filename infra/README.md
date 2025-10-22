@@ -12,7 +12,6 @@ infra/
 ├── 🌐 nginx/             # Nginx configurations and load balancing
 ├── 📊 monitoring/        # Monitoring and observability configs
 ├── 🔒 security/          # Security tooling & configs
-├── ⚡ performance-tests/ # Load & performance testing
 ├── 🔑 ssl/               # SSL certificates and security configs
 ├── 📝 redis/             # Redis configuration files
 └── 📄 Makefile           # Build and deployment automation

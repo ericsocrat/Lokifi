@@ -1,5 +1,7 @@
 # 🐳 Docker Compose Configurations
 
+> **Requirements**: Docker Desktop v4.48.0+ (or Docker Engine v28.5.1+ with Docker Compose v2.40.0+)
+
 **Streamlined Setup** - We've simplified from 7 to 4 essential compose files for clarity and maintainability.
 
 ---
@@ -153,15 +155,37 @@ Are you developing locally?
 
 ## 📚 **Additional Resources**
 
+### Development
+- **Local Development Guide**: `LOCAL_DEVELOPMENT.md` - Quick start for local Docker setup
 - **Main Infrastructure Docs**: `../README.md`
 - **Backend Setup**: `../../apps/backend/README.md`
 - **Redis Guide**: `../../docs/guides/REDIS_DOCKER_SETUP.md`
+
+### Production Deployment
+- **Deployment Overview**: `../../docs/deployment/README.md` - Complete deployment navigation
+- **Quick Deploy**: `../../docs/deployment/QUICK_DEPLOY.md` - 3-step deployment guide
+- **Deployment Checklist**: `../../docs/deployment/PRODUCTION_DEPLOYMENT_CHECKLIST.md` - Full guide
+- **DNS Configuration**: `../../docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup for www.lokifi.com
 - **SSL Setup**: `../ssl/SSL_SETUP_INSTRUCTIONS.md`
 - **Monitoring**: `../monitoring/README.md`
+
+### Environment Configuration
+- **Template**: `.env.example` - Safe template for environment variables
+- **Production Secrets**: `.env` - Gitignored file with production passwords (see `.env.example`)
 
 ---
 
 ## ⚙️ **Configuration Details**
+
+### Production Domain Configuration
+- **Domain**: lokifi.com (hosted on **Cloudflare**)
+- **Frontend**: https://www.lokifi.com
+- **Backend API**: https://api.www.lokifi.com
+- **Traefik Dashboard**: https://traefik.www.lokifi.com
+- **Email Addresses**:
+  - `hello@lokifi.com` - General inquiries
+  - `admin@lokifi.com` - Administrative (used for SSL certificates)
+  - `support@lokifi.com` - Customer support
 
 ### Service Versions (Standardized)
 - **Redis**: `redis:7.4-alpine`
@@ -180,6 +204,14 @@ All services include health checks with:
 ### Networks
 - **Development**: Bridge network (auto-created)
 - **Production**: Custom bridge `lokifi-network` (172.20.0.0/16)
+
+### Security & Secrets
+- **Environment File**: `.env` (gitignored) - Contains production passwords and API keys
+- **Template**: `.env.example` - Safe template to copy from
+- **Password Strength**: All production passwords are 32-64 character cryptographically secure strings
+- **Redis Authentication**: Enabled in production with `REDIS_PASSWORD`
+- **Database Credentials**: Separate passwords for PostgreSQL in production
+- **Resource Limits**: CPU and RAM limits configured to prevent resource exhaustion
 
 ---
 

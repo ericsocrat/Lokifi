@@ -2,7 +2,7 @@
   // ============================================
   // LOKIFI WORKSPACE SETTINGS - FULLY OPTIMIZED
   // Optimized for: Next.js 15 + FastAPI + Vitest + Pytest
-  // Last Updated: October 18, 2025
+  // Last Updated: October 22, 2025
   // Optimization Level: Production-Ready ⭐
   // ============================================
 
@@ -229,6 +229,22 @@
   "python.analysis.indexing": false,
   "isort.args": ["--profile", "black"],
   "black-formatter.args": ["--line-length", "100"],
+
+  // ===== POWERSHELL - SCRIPT CONFIGURATION =====
+  "[powershell]": {
+    "editor.defaultFormatter": "ms-vscode.powershell",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+    "editor.rulers": [120]
+  },
+  "powershell.integratedConsole.showOnStartup": false,
+  "powershell.codeFormatting.preset": "OTBS",
+  "powershell.codeFormatting.autoCorrectAliases": true,
+  "powershell.codeFormatting.useConstantStrings": true,
+  "powershell.codeFormatting.useCorrectCasing": true,
+  "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
+  "powershell.codeFormatting.addWhitespaceAroundPipe": true,
 
   // ===== VITEST (NEW!) =====
   "vitest.enable": true,
@@ -589,9 +605,11 @@
   // Enable search capabilities (requires GitHub Copilot with search enabled)
   "github.copilot.chat.search.enabled": true,
 
-  // Advanced settings for better code generation (optimized for 50-75 line suggestions)
+  // Advanced settings for better code generation (optimized for comprehensive responses)
   "github.copilot.advanced": {
-    "length": 600,
+    "length": 5000,
+    "temperature": "",
+    "top_p": 1,
     "stops": {
       "*": ["\n\n\n"],
       "python": ["\ndef ", "\nclass ", "\nif ", "\n\n#"],
@@ -599,7 +617,8 @@
       "typescript": ["\nfunction ", "\nclass ", "\nif ", "\ninterface ", "\ntype ", "\n\n//"],
       "typescriptreact": ["\nfunction ", "\nclass ", "\nif ", "\ninterface ", "\ntype ", "\nconst ", "\n\n//"],
       "javascriptreact": ["\nfunction ", "\nclass ", "\nif ", "\nconst ", "\n\n//"]
-    }
+    },
+    "inlineSuggestCount": 3
   },
 
   // Inline suggestions
@@ -715,13 +734,6 @@
   "[sql]": {
     "editor.defaultFormatter": "mtxr.sqltools",
     "editor.tabSize": 2
-  },
-
-  // ===== POWERSHELL =====
-  "[powershell]": {
-    "editor.tabSize": 4,
-    "editor.insertSpaces": true,
-    "files.encoding": "utf8bom"
   },
 
   // ===== VERSION LENS =====

@@ -8,65 +8,81 @@
 
 ```
 scripts/
-├── 🚀 development/        # Development workflow scripts
-├── 📦 deployment/         # Production deployment scripts
-├── 🧪 testing/           # Testing automation scripts
-├── 🔒 security/          # Security-related scripts
-├── 📊 monitoring/        # Monitoring and performance scripts
-└── 🛠️ utilities/         # General utility scripts
+├── � analysis/          # Code analysis and quality tools
+├── � cleanup/           # Cleanup and maintenance scripts
+├── � data/              # Data fetching and processing
+├── � fixes/             # Automated fix scripts
+└── � security/          # Security scanning and protection
 ```
 
 ---
 
-## 🚀 **Development Scripts** (`development/`)
+## � **Analysis Scripts** (`analysis/`)
 
-**Purpose**: Scripts for local development workflow and environment setup.
+**Purpose**: Code analysis, metrics, and quality assessment tools.
 
 ### Available Scripts:
-- `dev.ps1` - Main development environment launcher
-- `local_development_enhancer.py` - Enhanced local development setup
+- `codebase-analyzer.ps1` - Comprehensive codebase analysis (1570 lines, v2.0)
+- `analyze-and-optimize.ps1` - 6-phase repository health check
+- `analyze-console-logging.ps1` - Console.log audit and recommendations
+- `analyze-typescript-types.ps1` - TypeScript type safety analysis
+- `check-dependencies.ps1` - Dependency health and security checks
 
 ### Usage:
 ```powershell
-# Start development environment
-.\scripts\development\dev.ps1
+# Full codebase analysis
+.\scripts\analysis\codebase-analyzer.ps1
 
-# Enhance local development setup
-python .\scripts\development\local_development_enhancer.py
+# Quick health check
+.\scripts\analysis\analyze-and-optimize.ps1
+
+# Type safety validation
+.\scripts\analysis\analyze-typescript-types.ps1
 ```
 
 ---
 
-## 📦 **Deployment Scripts** (`deployment/`)
+## 🧹 **Cleanup Scripts** (`cleanup/`)
 
-**Purpose**: Production deployment and infrastructure setup scripts.
+**Purpose**: Repository cleanup and maintenance automation.
 
 ### Available Scripts:
-- `deploy.sh` - Main deployment script
-- `production_setup.py` - Production environment configuration
+- `cleanup-master.ps1` - Master cleanup utility for project maintenance
+
+### Usage:
+```powershell
+# Run master cleanup
+.\scripts\cleanup\cleanup-master.ps1
+```
+
+---
+
+## 📦 **Data Scripts** (`data/`)
+
+**Purpose**: Data fetching and processing utilities.
+
+### Available Scripts:
+- `universal-fetcher.js` - Universal data fetching tool
 
 ### Usage:
 ```bash
-# Deploy to production
-./scripts/deployment/deploy.sh
-
-# Setup production environment
-python scripts/deployment/production_setup.py
+# Fetch data
+node .\scripts\data\universal-fetcher.js
 ```
 
 ---
 
-## 🧪 **Testing Scripts** (`testing/`)
+## 🔧 **Fix Scripts** (`fixes/`)
 
-**Purpose**: Automated testing and quality assurance scripts.
+**Purpose**: Automated code fixes and corrections.
 
 ### Available Scripts:
-- `final_system_test.py` - Comprehensive system testing
+- `universal-fixer.ps1` - Automated fix tool for common issues
 
 ### Usage:
 ```powershell
-# Run comprehensive system tests
-python .\scripts\testing\final_system_test.py
+# Run automated fixes
+.\scripts\fixes\universal-fixer.ps1
 ```
 
 ---
@@ -90,45 +106,16 @@ python .\scripts\security\generate_secrets.py
 
 ---
 
-## 📊 **Monitoring Scripts** (`monitoring/`)
-
-**Purpose**: Performance monitoring and system health checks.
+## � **Root Level Scripts**
 
 ### Available Scripts:
-- `start_monitoring.bat` - Start monitoring services
-- `performance_monitor.py` - Performance metrics collection
-
-### Usage:
-```powershell
-# Start monitoring
-.\scripts\monitoring\start_monitoring.bat
-
-# Monitor performance
-python .\scripts\monitoring\performance_monitor.py
-```
-
----
-
-## 🛠️ **Utilities Scripts** (`utilities/`)
-
-**Purpose**: General utility scripts and system maintenance tools.
-
-### Available Scripts:
-- `backup_script.bat` - System backup automation
-- `comprehensive_analysis.py` - System analysis and reporting
-- `immediate_actions.py` - Quick action automation
-
-### Usage:
-```powershell
-# Create system backup
-.\scripts\utilities\backup_script.bat
-
-# Run system analysis
-python .\scripts\utilities\comprehensive_analysis.py
-
-# Execute immediate actions
-python .\scripts\utilities\immediate_actions.py
-```
+- `coverage-dashboard.ps1` - Coverage visualization and reporting
+- `doc-generator.ps1` - Documentation generation
+- `estimate.ps1` - Project estimation tool
+- `create-prs.ps1` - PR automation
+- `security-scanner.ps1` - Comprehensive security scanning
+- `COMPREHENSIVE_MODE_TEST.ps1` - Testing mode validation
+- `TEST_SCANNING_MODES.ps1` - Scan mode testing
 
 ---
 
@@ -169,6 +156,6 @@ python .\scripts\utilities\immediate_actions.py
 
 ---
 
-*Last Updated: September 30, 2025*  
-*Scripts Organized: 12 automation scripts*  
-*Categories: 6 functional areas*
+*Last Updated: October 22, 2025*
+*Active Scripts: 20+ automation tools*
+*Categories: 5 functional areas*
