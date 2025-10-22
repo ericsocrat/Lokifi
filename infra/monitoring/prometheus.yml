@@ -1,3 +1,8 @@
+# Production Prometheus Configuration
+# Used by: docker-compose.production.yml
+# Purpose: Monitors services using Docker service names for container networking
+# Targets: backend:8000, frontend:3000, redis:6379
+
 global:
   scrape_interval: 15s
 

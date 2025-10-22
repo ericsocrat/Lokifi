@@ -1,3 +1,8 @@
+# Development/Standalone Monitoring Configuration
+# Used by: docker-compose.monitoring.yml
+# Purpose: Monitors services using localhost for standalone monitoring stack
+# Targets: localhost:8000, localhost:3000
+
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
