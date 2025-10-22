@@ -90,8 +90,8 @@ colors.trading.down      // #EF4444
 colors.trading.downLight // #F87171
 
 // Usage example
-const priceColor = price > 0 
-  ? colors.trading.up 
+const priceColor = price > 0
+  ? colors.trading.up
   : colors.trading.down;
 ```n
 ### Background Layers
@@ -230,23 +230,23 @@ typography.fontSize['2xl'] // 24px - Large headings
 
 ```tsx
 // Text input
-<input 
-  type="text" 
-  className="input" 
+<input
+  type="text"
+  className="input"
   placeholder="Enter amount"
 />
 
 // Input with error
-<input 
-  type="text" 
-  className="input input-error" 
+<input
+  type="text"
+  className="input input-error"
   placeholder="Invalid email"
 />
 
 // Focused input (automatic)
-<input 
-  type="text" 
-  className="input focus-glow" 
+<input
+  type="text"
+  className="input focus-glow"
   placeholder="Auto focus glow"
 />
 ```n
@@ -385,7 +385,7 @@ const buttonStyle = {
 
 ```tsx
 // ❌ Bad - Inline styles
-<button style={{ 
+<button style={{
   backgroundColor: '#3B82F6',
   color: 'white',
   padding: '8px 16px',
@@ -437,7 +437,7 @@ import { colors } from '@/lib/theme';
 
 function TradingCard({ symbol, price, change }) {
   const isPositive = change > 0;
-  
+
   return (
     <div className="card-hover">
       <div className="flex items-center justify-between mb-4">
@@ -446,11 +446,11 @@ function TradingCard({ symbol, price, change }) {
           {isPositive ? '+' : ''}{change}%
         </span>
       </div>
-      
+
       <p className="font-mono text-2xl font-bold">
         ${price.toLocaleString()}
       </p>
-      
+
       <button className="btn-primary w-full mt-4">
         Trade Now
       </button>
@@ -469,7 +469,7 @@ function ChartHeader({ symbol, timeframe, onTimeframeChange }) {
           <h2 className="text-xl font-semibold">{symbol}</h2>
           <span className="badge-primary">{timeframe}</span>
         </div>
-        
+
         <div className="flex gap-2">
           {['1D', '1W', '1M', '1Y'].map((tf) => (
             <button
@@ -493,14 +493,14 @@ import { getTradingColor } from '@/lib/theme';
 
 function PriceDisplay({ price, change }) {
   const changeColor = getTradingColor(change);
-  
+
   return (
     <div className="glass-light p-6 rounded-xl">
       <div className="font-mono text-4xl font-bold mb-2">
         ${price.toLocaleString()}
       </div>
-      
-      <div 
+
+      <div
         className="text-lg font-semibold"
         style={{ color: changeColor }}
       >
@@ -515,18 +515,18 @@ function PriceDisplay({ price, change }) {
 ```tsx
 function TradeModal({ isOpen, onClose }) {
   if (!isOpen) return null;
-  
+
   return (
     <div className="modal-backdrop animate-fade-in">
       <div className="modal-content animate-scale-in">
         <h2 className="text-2xl font-bold mb-4">Place Order</h2>
-        
-        <input 
-          type="number" 
-          className="input mb-4" 
+
+        <input
+          type="number"
+          className="input mb-4"
           placeholder="Amount"
         />
-        
+
         <div className="flex gap-2">
           <button className="btn-success flex-1">
             Buy
@@ -535,7 +535,7 @@ function TradeModal({ isOpen, onClose }) {
             Sell
           </button>
         </div>
-        
+
         <button className="btn-ghost w-full mt-2" onClick={onClose}>
           Cancel
         </button>
@@ -551,12 +551,12 @@ import { getAssetTypeColor } from '@/lib/theme';
 
 function AssetBadge({ type }) {
   const color = getAssetTypeColor(type);
-  
+
   return (
-    <span 
+    <span
       className="badge"
-      style={{ 
-        backgroundColor: `${color}20`, 
+      style={{
+        backgroundColor: `${color}20`,
         color: color,
         borderColor: `${color}40`,
       }}
@@ -643,6 +643,6 @@ Planned additions to the theme system:
 
 ---
 
-**Last Updated**: October 2, 2025  
-**Version**: 1.0.0  
+**Last Updated**: October 2, 2025
+**Version**: 1.0.0
 **Maintained by**: Lokifi Team
