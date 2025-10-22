@@ -34,7 +34,7 @@
 - [`INTEGRATION_TESTS_GUIDE.md`](guides/INTEGRATION_TESTS_GUIDE.md) - **MOVED:** Integration testing
 - [`TESTING_GUIDE.md`](guides/TESTING_GUIDE.md) - Testing strategies and examples
 - [`CODE_QUALITY.md`](guides/CODE_QUALITY.md) - **Consolidated:** Quality standards guide
-- [`AUTOMATION.md`](guides/AUTOMATION.md) - **Consolidated:** Complete automation guide
+- [`AUTOMATION_GUIDE.md`](guides/AUTOMATION_GUIDE.md) - **Consolidated:** Complete automation guide
 
 #### Workflow & Operations
 - [`PULL_REQUEST_GUIDE.md`](guides/PULL_REQUEST_GUIDE.md) - **Consolidated:** PR workflow guide
@@ -59,7 +59,7 @@
 ### Planning & Roadmaps
 **Location:** `docs/plans/`
 
-- [`FIX_PLAN.md`](plans/FIX_PLAN.md) - Issue resolution planning
+- [`UI_API_ROUTING_FIX.md`](plans/UI_API_ROUTING_FIX.md) - UI and API routing issue resolution
 
 ### Security Documentation
 **Location:** `docs/security/`
@@ -81,7 +81,7 @@
 
 #### Testing & Debugging
 - `CI_CD_DEBUG_ANALYSIS.md` - Debugging automation issues
-- `GITHUB_ACTIONS_BILLING_SOLVED.md` - Billing configuration
+- `GITHUB_ACTIONS_BILLING_ISSUE.md` - Billing configuration and resolution
 - `PIPELINE_FIXES_COMPLETE.md` - Pipeline fixes
 - `WORKFLOW_CONSOLIDATION_ANALYSIS.md` - Workflow optimization
 
@@ -104,13 +104,13 @@
 - [`TESTING_GUIDE.md`](guides/TESTING_GUIDE.md) - Complete testing strategies and examples
 - [`INTEGRATION_TESTS_GUIDE.md`](guides/INTEGRATION_TESTS_GUIDE.md) - Integration testing guide
 - [`CODE_QUALITY.md`](guides/CODE_QUALITY.md) - Quality standards and automation
-- [`AUTOMATION.md`](guides/AUTOMATION.md) - Complete automation guide
+- [`AUTOMATION_GUIDE.md`](guides/AUTOMATION_GUIDE.md) - Complete automation guide
 
 ### Archive & Legacy
 **Note:** Most audit, analysis, and deployment documentation has been consolidated into the main guides above.
 
 For historical reference:
-- [`plans/FIX_PLAN.md`](plans/FIX_PLAN.md) - Issue resolution planning
+- [`plans/UI_API_ROUTING_FIX.md`](plans/UI_API_ROUTING_FIX.md) - UI and API routing issue resolution
 - See [`security/`](security/) for security documentation
 
 ## 🛠️ Development Tools
@@ -152,7 +152,7 @@ This documentation has been optimized and consolidated. For current development 
 
 **DevOps Engineers:**
 1. [`QUICK_START.md`](QUICK_START.md) - All service management commands
-2. [`guides/AUTOMATION.md`](guides/AUTOMATION.md) - Complete automation guide
+2. [`guides/AUTOMATION_GUIDE.md`](guides/AUTOMATION_GUIDE.md) - Complete automation guide
 3. [`security/`](security/) - Security configuration
 
 **QA/Testers:**
@@ -163,7 +163,7 @@ This documentation has been optimized and consolidated. For current development 
 **Project Managers:**
 1. [`README.md`](README.md) - Project overview
 2. [`CHECKLISTS.md`](CHECKLISTS.md) - Development checklists
-3. [`plans/FIX_PLAN.md`](plans/FIX_PLAN.md) - Issue resolution planning
+3. [`plans/UI_API_ROUTING_FIX.md`](plans/UI_API_ROUTING_FIX.md) - Issue resolution planning
 
 ## 📝 Contributing Documentation
 

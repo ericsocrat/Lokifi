@@ -63,7 +63,7 @@ Welcome to the comprehensive documentation index for Lokifi - A modern financial
 
 ### Quality & Automation
 - [Code Quality](guides/CODE_QUALITY.md)
-- [Automation Guide](guides/AUTOMATION.md)
+- [Automation Guide](guides/AUTOMATION_GUIDE.md)
 
 ### Infrastructure
 - [PostgreSQL Setup](guides/POSTGRESQL_SETUP_GUIDE.md)

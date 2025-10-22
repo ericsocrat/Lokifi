@@ -25,7 +25,7 @@ Testing strategies and quality assurance:
 - [`TESTING_GUIDE.md`](./guides/TESTING_GUIDE.md) - Complete testing strategies
 - [`INTEGRATION_TESTS_GUIDE.md`](./guides/INTEGRATION_TESTS_GUIDE.md) - Integration testing
 - [`CODE_QUALITY.md`](./guides/CODE_QUALITY.md) - Quality standards and automation
-- [`AUTOMATION.md`](./guides/AUTOMATION.md) - Complete automation guide
+- [`AUTOMATION_GUIDE.md`](./guides/AUTOMATION_GUIDE.md) - Complete automation guide
 
 ### 🔄 [Workflow & Operations](./guides/)
 Pull requests, optimization, and setup:
@@ -52,7 +52,7 @@ Security configuration and best practices:
 
 ### 📋 [Planning](./plans/)
 Issue resolution and project planning:
-- [`FIX_PLAN.md`](./plans/FIX_PLAN.md) - Issue resolution planning
+- [`UI_API_ROUTING_FIX.md`](./plans/UI_API_ROUTING_FIX.md) - UI and API routing issue resolution
 
 ## 🎯 Quick Navigation
 
@@ -64,7 +64,7 @@ Issue resolution and project planning:
 
 ### For DevOps Engineers
 1. Review [`QUICK_START.md`](./QUICK_START.md) - All service management
-2. Check [`guides/AUTOMATION.md`](./guides/AUTOMATION.md) - Complete automation
+2. Check [`guides/AUTOMATION_GUIDE.md`](./guides/AUTOMATION_GUIDE.md) - Complete automation
 3. Review [`security/README.md`](./security/README.md) - Security setup
 
 ### For QA/Testers
@@ -75,7 +75,7 @@ Issue resolution and project planning:
 ### For Project Managers
 1. Check [`README.md`](./README.md) - Project overview
 2. Review [`CHECKLISTS.md`](./CHECKLISTS.md) - Development checklists
-3. Check [`plans/FIX_PLAN.md`](./plans/FIX_PLAN.md) - Issue planning
+3. Check [`plans/UI_API_ROUTING_FIX.md`](./plans/UI_API_ROUTING_FIX.md) - Issue planning
 
 ## 📋 Documentation Standards
 

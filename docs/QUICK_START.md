@@ -180,7 +180,7 @@ docker-compose -f docker-compose.prod.yml ps
 ### Technical Guides
 - **`docs/api/API_REFERENCE.md`** - Complete API documentation
 - **`docs/guides/TESTING_GUIDE.md`** - Testing strategies and examples
-- **`docs/guides/AUTOMATION.md`** - Development automation guide
+- **`docs/guides/AUTOMATION_GUIDE.md`** - Development automation guide
 - **`docs/security/README.md`** - Security configuration guide
 
 ### Configuration Files

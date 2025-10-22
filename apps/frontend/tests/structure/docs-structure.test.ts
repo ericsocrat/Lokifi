@@ -342,6 +342,7 @@ describe('Documentation Folder Structure', () => {
           consolidatedFiles: ['api/API_DOCUMENTATION.md', 'api/API_REFERENCE.md'],
           exceptions: [
             'guides/QUICK_REFERENCE.md', // Code quality quick reference (not API)
+            'plans/UI_API_ROUTING_FIX.md', // Fix plan for API routing issues (not API docs)
           ],
         },
         {
