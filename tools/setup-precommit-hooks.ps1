@@ -489,7 +489,7 @@ if ($testPassed -eq $totalTests) {
 
 Write-Host ""
 Write-Host "📚 Documentation:" -ForegroundColor Cyan
-Write-Host "   Enhanced Protection: .\enhanced-ci-protection.ps1 --help" -ForegroundColor Gray
-Write-Host "   Coverage Boost: .\boost-test-coverage.ps1 --help" -ForegroundColor Gray
-Write-Host "   Hook Management: .\setup-precommit-hooks.ps1 -UninstallHooks" -ForegroundColor Gray
+Write-Host "   Test Runner: .\tools\test-runner.ps1 --help" -ForegroundColor Gray
+Write-Host "   Codebase Analyzer: .\tools\codebase-analyzer.ps1" -ForegroundColor Gray
+Write-Host "   Hook Management: .\tools\setup-precommit-hooks.ps1 -UninstallHooks" -ForegroundColor Gray
 Write-Host ""

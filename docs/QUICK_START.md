@@ -199,14 +199,14 @@ docker compose ps
 
 ### Analysis & Optimization
 ```powershell
-# Comprehensive code analysis (6-phase health check)
-.\scripts\analysis\analyze-and-optimize.ps1
+# Comprehensive codebase analysis with project metrics
+.\tools\codebase-analyzer.ps1
 
-# TypeScript type safety analysis
-.\scripts\analysis\analyze-typescript-types.ps1
+# Run all tests with coverage
+.\tools\test-runner.ps1 -Coverage
 
-# Console logging audit
-.\scripts\analysis\analyze-console-logging.ps1
+# Security scanning
+.\tools\security-scanner.ps1
 ```
 
 ### Cleanup & Maintenance

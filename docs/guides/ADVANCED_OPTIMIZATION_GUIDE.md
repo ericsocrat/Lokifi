@@ -236,8 +236,8 @@ npm outdated && npm update
 **Monthly:**
 - Update dependencies
 - Review and archive old documentation
-- Run comprehensive analysis (`.\analyze-and-optimize.ps1`)
-- Check for security updates
+- Run comprehensive analysis (`.\tools\codebase-analyzer.ps1`)
+- Check for security updates (`.\tools\security-scanner.ps1`)
 
 **Quarterly:**
 - Refactor identified large files
@@ -311,13 +311,13 @@ git log --all --grep="TODO"
 ## 🛠️ Tools and Scripts
 
 ### Analysis Tools
-- `analyze-and-optimize.ps1` - Comprehensive repository scan
-- `fix-implicit-any-alerts.ps1` - TypeScript type fixes
-- `fix-zustand-proper.ps1` - Zustand middleware fixes
+- `tools/codebase-analyzer.ps1` - Comprehensive project metrics and technical debt analysis
+- `tools/test-runner.ps1` - Test execution with coverage and validation
+- `tools/security-scanner.ps1` - Security vulnerability scanning
 
 ### Development Tools
-- `start-servers.ps1` - Launch all services
-- `manage-redis.ps1` - Redis management
+- `tools/cleanup-master.ps1` - Repository cleanup utilities
+- `tools/setup-precommit-hooks.ps1` - Git pre-commit hook setup
 
 **📖 For testing scripts:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for comprehensive testing workflows
 

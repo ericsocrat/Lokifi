@@ -14,26 +14,22 @@ Complete documentation for Lokifi's CI/CD implementation.
 ## 🛠️ Tools Reference
 
 ### Core Tools
-- **Test Scripts**: Automated test runners in `apps/*/tests/`
-- **protection-dashboard.ps1**: Real-time CI/CD monitoring
-- **enhanced-ci-protection.ps1**: Advanced quality gates
-- **boost-test-coverage.ps1**: Intelligent test generation
+- **Test Runner**: `tools/test-runner.ps1` - Comprehensive test execution with coverage
+- **Codebase Analyzer**: `tools/codebase-analyzer.ps1` - Project metrics and technical debt analysis
+- **Security Scanner**: `tools/security-scanner.ps1` - Vulnerability scanning and secret detection
 
-### CI/CD Tools
-- **setup-precommit-hooks.ps1**: Git hooks automation
-- **enable-ci-protection.ps1**: Basic protection setup
-- **advanced-ci-enhancements.ps1**: Next-gen features
+### Git Hooks
+- **setup-precommit-hooks.ps1**: Pre-commit validation with quality gates
 
-### Analysis Tools
-- **ai-code-analysis.ps1**: AI-powered code analysis
-- **predictive-analysis.ps1**: Failure prediction
+### Cleanup & Maintenance
+- **cleanup-master.ps1**: Repository cleanup (docs, branches, cache)
 
 ## 🚀 Quick Start
 
-1. **Setup Protection**: `.\tools\setup-precommit-hooks.ps1`
-2. **Check Status**: `.\tools\protection-dashboard.ps1`
-3. **Boost Coverage**: `.\tools\boost-test-coverage.ps1 -Target 25`
-4. **Monitor**: `.\tools\protection-dashboard.ps1 -Watch`
+1. **Setup Git Hooks**: `.\tools\setup-precommit-hooks.ps1`
+2. **Run Tests**: `.\tools\test-runner.ps1 -PreCommit`
+3. **Analyze Codebase**: `.\tools\codebase-analyzer.ps1`
+4. **Security Scan**: `.\tools\security-scanner.ps1`
 
 ## 📊 Current Metrics
 
