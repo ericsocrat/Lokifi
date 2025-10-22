@@ -48,7 +48,7 @@ Design system and architecture documentation:
 Security configuration and best practices:
 - [`README.md`](./security/README.md) - Security overview
 - [`ENHANCED_SECURITY_SETUP.md`](./security/ENHANCED_SECURITY_SETUP.md) - Advanced security
-- [`SECURITY_ALERT_REPOSITORY.md`](./security/SECURITY_ALERT_REPOSITORY.md) - Security alerts
+- [`ENVIRONMENT_CONFIGURATION.md`](./security/ENVIRONMENT_CONFIGURATION.md) - Environment variables
 
 ### 📋 [Planning](./plans/)
 Issue resolution and project planning:

@@ -66,8 +66,7 @@
 
 - [`README.md`](security/README.md) - Security overview
 - [`ENHANCED_SECURITY_SETUP.md`](security/ENHANCED_SECURITY_SETUP.md) - Advanced security
-- [`SECURITY_ALERT_REPOSITORY.md`](security/SECURITY_ALERT_REPOSITORY.md) - Security alerts
-- `PHASE_2_DATETIME_FIXER_COMPLETE.md` - DateTime fixer completion
+- [`ENVIRONMENT_CONFIGURATION.md`](security/ENVIRONMENT_CONFIGURATION.md) - Environment variables
 
 ### Continuous Integration & DevOps
 **Location:** `docs/ci-cd/`

@@ -247,7 +247,7 @@ pytest tests/test_specific.py- `docs/guides/` - Setup and reference guides
 
 - `docs/development/` - Development documentation
 
-### Development Workflow
+## 🔄 Development Workflow
 
 ### 🔧 Scripts
 
