@@ -522,7 +522,7 @@ cd Lokifi && docker-compose up -d
 
 **📖 For complete setup instructions:**
 - [`QUICK_START.md`](../QUICK_START.md) - Complete installation and setup guide
-- [`START_HERE.md`](../START_HERE.md) - Step-by-step getting started guide
+- [`QUICK_START.md`](../QUICK_START.md) - Step-by-step getting started guide
 
 ### Daily Development
 

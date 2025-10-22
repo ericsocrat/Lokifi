@@ -7,8 +7,8 @@ Welcome to the comprehensive documentation for the Lokifi project. This director
 ### � [Quick Start](./QUICK_START.md)
 **Start here!** Consolidated quick reference with all essential commands and workflows.
 
-### 📖 [Essential Documentation](./START_HERE.md)
-Project overview and getting started guide for new developers.
+### 📖 [Essential Documentation](./archive/START_HERE.md)
+Project overview and getting started guide for new developers (archived).
 
 ### ✅ [Development Checklists](./CHECKLISTS.md)
 Complete development checklists for code quality, testing, and deployment.
@@ -57,10 +57,10 @@ Issue resolution and project planning:
 ## 🎯 Quick Navigation
 
 ### For New Developers
-1. Start with [`START_HERE.md`](./START_HERE.md) - Project overview
-2. Review [`QUICK_START.md`](./QUICK_START.md) - Essential commands
-3. Check [`guides/CODING_STANDARDS.md`](./guides/CODING_STANDARDS.md) - Code standards
-4. Set up with [`guides/VSCODE_SETUP.md`](./guides/VSCODE_SETUP.md) - Development environment
+1. Start with [`QUICK_START.md`](./QUICK_START.md) - Essential commands and quick reference
+2. Check [`guides/CODING_STANDARDS.md`](./guides/CODING_STANDARDS.md) - Code standards
+3. Set up with [`guides/VSCODE_SETUP.md`](./guides/VSCODE_SETUP.md) - Development environment
+4. Review [`archive/START_HERE.md`](./archive/START_HERE.md) - Detailed project overview (archived)
 
 ### For DevOps Engineers
 1. Review [`QUICK_START.md`](./QUICK_START.md) - All service management

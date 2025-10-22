@@ -8,4 +8,4 @@
 ## Theme & UI
 - [THEME_DOCUMENTATION.md](THEME_DOCUMENTATION.md) - Complete theme system documentation
 
-See [../INDEX.md](../INDEX.md) for complete documentation index.
+See [../README.md](../README.md) for complete documentation index.

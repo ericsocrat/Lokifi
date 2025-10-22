@@ -24,4 +24,4 @@ This folder contains comprehensive development guides for the Lokifi project.
 - [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - Deployment procedures
 - [PULL_REQUEST_GUIDE.md](PULL_REQUEST_GUIDE.md) - PR workflow
 
-See [../INDEX.md](../INDEX.md) for complete documentation index.
+See [../README.md](../README.md) for complete documentation index.
