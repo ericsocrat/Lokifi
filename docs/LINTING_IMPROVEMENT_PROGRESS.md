@@ -1,7 +1,7 @@
 # Linting & Code Quality Improvement Progress
 
 **Last Updated**: October 24, 2025  
-**Related Issue**: [Gradual Linting & Code Quality Improvement Roadmap](https://github.com/ericsocrat/Lokifi/issues/XX)  
+**Related Issue**: TBD - [Gradual Linting & Code Quality Improvement Roadmap]  
 **Related PR**: [PR #27 - Workflow Optimizations Validation](https://github.com/ericsocrat/Lokifi/pull/27)
 
 ## Overview
@@ -75,7 +75,7 @@ This document tracks progress on the gradual improvement plan to address technic
 
 **Recommendation**: Continue gradual improvement targeting 50-100 fixes per sprint, focusing on:
 1. Service layer API types
-2. Component event handlers  
+2. Component event handlers (especially type annotations for callbacks and props)
 3. Utility function parameters
 4. Store action payloads
 
@@ -224,7 +224,7 @@ This gradual improvement initiative will be complete when:
 
 ## References
 
-- [Original Issue](https://github.com/ericsocrat/Lokifi/issues/XX)
+- [Original Issue](TBD) - Full roadmap (issue number TBD)
 - [PR #27 - Workflow Optimizations](https://github.com/ericsocrat/Lokifi/pull/27)
 - [Coding Standards](../CODING_STANDARDS.md)
 - [Test Quick Reference](../TEST_QUICK_REFERENCE.md)
