@@ -7,5 +7,18 @@ exclude = [
 ]
 
 [lint]
-select = ["E","F","I","UP"]
+select = [
+  "E",    # PEP 8 errors
+  "F",    # Pyflakes
+  "I",    # isort
+  "UP",   # pyupgrade
+  "S",    # flake8-bandit (security)
+  "B",    # flake8-bugbear (likely bugs)
+  "A",    # flake8-builtins (shadowing built-ins)
+  "RUF",  # Ruff-specific rules
+  "PERF", # Performance anti-patterns
+]
 ignore = ["E203","E266","E501"]
+
+[lint.mccabe]
+max-complexity = 10  # Flag complex functions

@@ -16,6 +16,11 @@ mypy==1.18.2
 ruff==0.13.2
 black==25.9.0
 
+# Security Scanning
+pip-audit==2.7.3
+bandit==1.7.10
+safety==3.2.11
+
 # Test Utilities
 pytest-mock==3.14.0
 pytest-timeout==2.3.1
