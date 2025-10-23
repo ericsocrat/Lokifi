@@ -65,6 +65,29 @@ jobs:
       needs.changes.outputs.e2e == 'true' ||
       github.event.inputs.test_suite == 'critical'
     timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     defaults:
       run:
         working-directory: apps/frontend
@@ -129,6 +152,29 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'e2e-full') ||
       github.event.inputs.test_suite == 'full'
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     strategy:
       fail-fast: false
       matrix:

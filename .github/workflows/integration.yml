@@ -56,6 +56,19 @@ jobs:
     if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.api == 'true'
     timeout-minutes: 8
     services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       redis:
         image: redis:7-alpine
         ports:
@@ -92,6 +105,7 @@ jobs:
           curl -f http://localhost:8000/health || exit 1
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
           TESTING: 1
 
@@ -181,25 +195,25 @@ jobs:
     if: needs.changes.outputs.backend == 'true'
     timeout-minutes: 10
     services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
         options: >-
           --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      postgres:
-        image: postgres:15-alpine
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_DB: lokifi_test
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -228,7 +242,7 @@ jobs:
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lokifi_test
+          DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
           TESTING: 1
 
       - name: 🧪 Run integration tests
@@ -236,7 +250,7 @@ jobs:
         run: pytest tests/integration/ -v --tb=short -m integration
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/lokifi_test
+          DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
           TESTING: 1
 
