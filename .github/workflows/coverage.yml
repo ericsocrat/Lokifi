@@ -58,7 +58,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ['18', '20', '22']
+        node-version: ["18", "20", "22"]
     defaults:
       run:
         working-directory: apps/frontend
@@ -70,7 +70,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📦 Install dependencies
@@ -80,7 +80,7 @@ jobs:
         run: npm run test:coverage
         env:
           NODE_ENV: test
-        continue-on-error: ${{ matrix.node-version != '20' }}  # Only fail on primary version
+        continue-on-error: ${{ matrix.node-version != '20' }} # Only fail on primary version
 
       - name: 📊 Upload coverage to Codecov
         if: matrix.node-version == '20'
@@ -130,7 +130,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ["3.10", "3.11", "3.12"]
     defaults:
       run:
         working-directory: apps/backend
@@ -152,7 +152,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          cache: "pip"
           cache-dependency-path: |
             apps/backend/requirements.txt
             apps/backend/requirements-dev.txt
@@ -168,7 +168,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           TESTING: 1
           REDIS_URL: redis://localhost:6379/0
-        continue-on-error: ${{ matrix.python-version != '3.11' }}  # Only fail on primary version
+        continue-on-error: ${{ matrix.python-version != '3.11' }} # Only fail on primary version
 
       - name: 📊 Upload coverage to Codecov
         if: matrix.python-version == '3.11'
@@ -197,16 +197,7 @@ jobs:
           echo "## 📊 Backend Coverage Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f coverage.json ]; then
-            python -c '
-import json
-with open("coverage.json") as f:
-    data = json.load(f)
-    total = data["totals"]
-    print("| Metric | Coverage |")
-    print("|--------|----------|")
-    print(f"| Lines | {total[\"percent_covered\"]:.2f}% |")
-    print(f"| Statements | {total[\"num_statements\"]} / {total[\"covered_lines\"]} |")
-            ' >> $GITHUB_STEP_SUMMARY
+            python -c "import json; data = json.load(open('coverage.json')); total = data['totals']; print('| Metric | Coverage |'); print('|--------|----------|'); print(f\"| Lines | {total['percent_covered']:.2f}% |\"); print(f\"| Statements | {total['num_statements']} / {total['covered_lines']} |\")" >> $GITHUB_STEP_SUMMARY
           fi
 
   # Auto-update coverage documentation

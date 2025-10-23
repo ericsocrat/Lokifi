@@ -6,9 +6,9 @@ Location: apps/backend/tests/unit/test_logger.py
 
 import json
 import logging
-from io import StringIO
 
 import pytest
+
 from app.utils.logger import (
     ColoredFormatter,
     LoggerContext,

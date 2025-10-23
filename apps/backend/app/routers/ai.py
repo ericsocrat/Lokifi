@@ -10,6 +10,10 @@ import json
 import logging
 from datetime import UTC, datetime
 
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import Response, StreamingResponse
+from sqlalchemy.orm import Session
+
 from app.api.deps import get_current_user, get_db
 from app.db.models import AIMessage, User
 from app.schemas.ai_schemas import (
@@ -35,12 +39,9 @@ from app.services.multimodal_ai_service import (
     UnsupportedFileTypeError,
     multimodal_ai_service,
 )
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import Response, StreamingResponse
 
 # Notification Integration
 from scripts.notification_integration_helpers import trigger_ai_response_notification
-from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -331,7 +332,7 @@ async def export_conversations(
         logger.error(f"Export error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Export failed: {str(e)}",
+            detail=f"Export failed: {e!s}",
         )
 
 
@@ -376,7 +377,7 @@ async def import_conversations(
         logger.error(f"Import error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Import failed: {str(e)}",
+            detail=f"Import failed: {e!s}",
         )
 
 

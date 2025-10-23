@@ -20,7 +20,6 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Any, Optional
 
 # Log levels
 DEBUG = logging.DEBUG
@@ -125,8 +124,8 @@ class LoggerAdapter(logging.LoggerAdapter):
 
 def setup_logger(
     name: str = "lokifi",
-    level: Optional[int] = None,
-    structured: Optional[bool] = None,
+    level: int | None = None,
+    structured: bool | None = None,
 ) -> logging.Logger:
     """
     Set up a logger with appropriate formatting based on environment
@@ -264,7 +263,7 @@ def log_function_call(func):
             return result
         except Exception as e:
             func_logger.error(
-                f"Error in {func.__name__}: {str(e)}",
+                f"Error in {func.__name__}: {e!s}",
                 extra={"function": func.__name__, "error": str(e)},
                 exc_info=True,
             )
@@ -301,19 +300,19 @@ def critical(message: str, exc_info: bool = True, **kwargs):
 
 # Export commonly used items
 __all__ = [
-    "logger",
-    "get_logger",
-    "setup_logger",
-    "LoggerContext",
-    "log_function_call",
-    "debug",
-    "info",
-    "warning",
-    "error",
-    "critical",
+    "CRITICAL",
     "DEBUG",
+    "ERROR",
     "INFO",
     "WARNING",
-    "ERROR",
-    "CRITICAL",
+    "LoggerContext",
+    "critical",
+    "debug",
+    "error",
+    "get_logger",
+    "info",
+    "log_function_call",
+    "logger",
+    "setup_logger",
+    "warning",
 ]

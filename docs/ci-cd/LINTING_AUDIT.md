@@ -163,16 +163,17 @@ ignore = ["E203","E266","E501"]
 
 ### CI/CD Integration
 
-**File**: `.github/workflows/lokifi-unified-pipeline.yml`
+**Current State**: Integrated in `ci.yml` workflow
 
 ```yaml
+# Example from legacy workflow (now fixed in ci.yml)
 - name: ✨ Run Ruff lint
   run: |
     pip install ruff
     ruff check . || true  # 🔴 CRITICAL: Failures don't block builds
 ```
 
-**Status**: 🔴 **CRITICAL ISSUE**
+**Status**: 🔴 **CRITICAL ISSUE (in old workflow)**
 
 - `|| true` means linting failures are **ignored**
 - No separate status check for linting
@@ -678,7 +679,7 @@ convention = "google"  # or "numpy", "pep257"
 
 1. **`apps/frontend/.eslintrc.json`** - Add security, accessibility, import plugins
 2. **`apps/backend/ruff.toml`** - Expand rule set (S, B, A, RUF, PERF, D)
-3. **`.github/workflows/lokifi-unified-pipeline.yml`** - Remove `|| true`, add type checking
+3. **`.github/workflows/ci.yml`** - Ensure linting is blocking (remove `|| true` if present)
 4. **`apps/frontend/package.json`** - Add new dev dependencies
 
 ### Files to Review

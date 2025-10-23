@@ -4,11 +4,11 @@ Tests for app.services.crypto_data_service
 Comprehensive test suite using mocks
 """
 
-from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
+
 from app.services.crypto_data_service import CryptoDataService
 
 # ============================================================
@@ -146,7 +146,6 @@ class TestCryptoDataServiceIntegration:
     @patch("app.services.crypto_data_service.advanced_redis_client")
     async def test_fetch_with_cache_cycle(self, mock_redis, sample_market_data):
         """Test full fetch cycle with caching"""
-        import json
 
         # First call: cache miss
         mock_redis.client = MagicMock()

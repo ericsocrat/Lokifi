@@ -137,10 +137,10 @@ class HuggingFaceProvider(AIProvider):
         
         except httpx.RequestError as e:
             logger.error(f"Hugging Face request error: {e}")
-            raise ProviderError(f"Hugging Face connection error: {str(e)}")
+            raise ProviderError(f"Hugging Face connection error: {e!s}")
         except Exception as e:
             logger.error(f"Unexpected Hugging Face error: {e}")
-            raise ProviderError(f"Hugging Face error: {str(e)}")
+            raise ProviderError(f"Hugging Face error: {e!s}")
         finally:
             await self.client.aclose()
     

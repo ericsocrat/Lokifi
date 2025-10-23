@@ -1,31 +1,31 @@
-"use client";
-import { API } from "@/lib/api";
-import { symbolStore } from "@/lib/symbolStore";
-import { timeframeStore } from "@/lib/timeframeStore";
-import { useRef, useState } from "react";
+'use client';
+import { API } from '@/lib/api';
+import { symbolStore } from '@/stores/symbolStore';
+import { timeframeStore } from '@/stores/timeframeStore';
+import { useRef, useState } from 'react';
 
 const PRESETS = [
-  { label: "llama3.1 (Ollama)", value: "llama3.1" },
-  { label: "qwen2.5 (Ollama)", value: "qwen2.5" },
-  { label: "Custom…", value: "__custom__" },
+  { label: 'llama3.1 (Ollama)', value: 'llama3.1' },
+  { label: 'qwen2.5 (Ollama)', value: 'qwen2.5' },
+  { label: 'Custom…', value: '__custom__' },
 ] as const;
 
 export default function CopilotChat() {
-  const [q, setQ] = useState("");
-  const [log, setLog] = useState("");
+  const [q, setQ] = useState('');
+  const [log, setLog] = useState('');
   const [preset, setPreset] = useState<string>(PRESETS[0].value);
-  const [customModel, setCustomModel] = useState<string>("");
+  const [customModel, setCustomModel] = useState<string>('');
   const [useChartCtx, setUseChartCtx] = useState<boolean>(true);
   const esRef = useRef<EventSource | null>(null);
 
   const ask = () => {
     esRef.current?.close();
-    setLog("");
-    const ctx = useChartCtx ? symbolStore.get() : "";
-    const tf = useChartCtx ? timeframeStore.get() : "";
-    const url = `${API}/chat/stream?q=${encodeURIComponent(q)}$1${ctx ? `&ctx_symbols=${encodeURIComponent(ctx)}` : ""}${tf ? `&ctx_timeframe=${encodeURIComponent(tf)}` : ""}`;
+    setLog('');
+    const ctx = useChartCtx ? symbolStore.get() : '';
+    const tf = useChartCtx ? timeframeStore.get() : '';
+    const url = `${API}/chat/stream?q=${encodeURIComponent(q)}$1${ctx ? `&ctx_symbols=${encodeURIComponent(ctx)}` : ''}${tf ? `&ctx_timeframe=${encodeURIComponent(tf)}` : ''}`;
     const es = new EventSource(url);
-    es.onmessage = (e: any) => setLog(prev => prev + e.data);
+    es.onmessage = (e: any) => setLog((prev) => prev + e.data);
     es.onerror = () => es.close();
     esRef.current = es;
   };
@@ -42,10 +42,12 @@ export default function CopilotChat() {
             aria-label="Model preset"
           >
             {PRESETS.map((p: any) => (
-              <option key={p.value} value={p.value}>{p.label}</option>
+              <option key={p.value} value={p.value}>
+                {p.label}
+              </option>
             ))}
           </select>
-          {preset === "__custom__" && (
+          {preset === '__custom__' && (
             <input
               value={customModel}
               onChange={(e: any) => setCustomModel(e.target.value)}
@@ -55,7 +57,11 @@ export default function CopilotChat() {
           )}
         </div>
         <label className="flex items-center gap-2 text-sm opacity-90">
-          <input type="checkbox" checked={useChartCtx} onChange={(e: any) => setUseChartCtx(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={useChartCtx}
+            onChange={(e: any) => setUseChartCtx(e.target.checked)}
+          />
           Use chart as context (send active symbol)
         </label>
         <div className="flex gap-2">
@@ -65,7 +71,9 @@ export default function CopilotChat() {
             className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             placeholder="Ask about BTC, AAPL, RSI, news..."
           />
-          <button onClick={ask} className="px-3 py-2 rounded-xl bg-electric hover:brightness-110">Ask</button>
+          <button onClick={ask} className="px-3 py-2 rounded-xl bg-electric hover:brightness-110">
+            Ask
+          </button>
         </div>
         <pre className="whitespace-pre-wrap text-sm mt-1 opacity-90">{log}</pre>
       </div>

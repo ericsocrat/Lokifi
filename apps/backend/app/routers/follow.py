@@ -5,6 +5,9 @@ J6.1 Enhanced with notification integration.
 
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.auth_deps import get_current_user, get_current_user_optional
 from app.db.database import get_db
 from app.models.user import User
@@ -22,11 +25,9 @@ from app.schemas.follow import (
     UnfollowRequest,
 )
 from app.services.follow_service import FollowService
-from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 
 # Notification Integration
 from scripts.notification_integration_helpers import trigger_follow_notification
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/follow", tags=["follow"])
 
@@ -298,7 +299,7 @@ async def bulk_follow_users(
         except HTTPException as e:
             errors.append(f"User {user_id}: {e.detail}")
         except Exception as e:
-            errors.append(f"User {user_id}: {str(e)}")
+            errors.append(f"User {user_id}: {e!s}")
 
     message = f"Successfully followed {success_count} users"
     if errors:
@@ -331,7 +332,7 @@ async def bulk_unfollow_users(
         except HTTPException as e:
             errors.append(f"User {user_id}: {e.detail}")
         except Exception as e:
-            errors.append(f"User {user_id}: {str(e)}")
+            errors.append(f"User {user_id}: {e!s}")
 
     message = f"Successfully unfollowed {success_count} users"
     if errors:

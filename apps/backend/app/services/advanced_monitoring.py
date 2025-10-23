@@ -334,7 +334,7 @@ class AdvancedMonitoringSystem:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in continuous monitoring: {str(e)}")
+                logger.error(f"Error in continuous monitoring: {e!s}")
                 await asyncio.sleep(10)  # Wait before retrying
                 
     async def stop_background_tasks(self):

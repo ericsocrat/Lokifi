@@ -632,10 +632,10 @@ def get_analytics() -> AnalyticsQueryBuilder:
 
 # Export main classes and functions
 __all__ = [
-    "DatabaseDialect",
-    "CrossDatabaseQuery",
     "AnalyticsQueryBuilder",
     "CompatibilityTester",
-    "initialize_analytics",
+    "CrossDatabaseQuery",
+    "DatabaseDialect",
     "get_analytics",
+    "initialize_analytics",
 ]

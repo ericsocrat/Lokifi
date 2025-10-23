@@ -375,4 +375,4 @@ async def notification_stats_websocket(websocket: WebSocket):
 """
 
 # Export manager and router
-__all__ = ["ws_manager", "websocket_router", "NotificationWebSocketManager"]
+__all__ = ["NotificationWebSocketManager", "websocket_router", "ws_manager"]

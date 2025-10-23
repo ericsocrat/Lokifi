@@ -4,9 +4,9 @@ Final Comprehensive System Test
 Test all security enhancements with proper environment loading
 """
 
-import sys
-import os
 import asyncio
+import os
+import sys
 from pathlib import Path
 
 # Add the backend directory to the path
@@ -38,8 +38,8 @@ async def run_comprehensive_test():
         # Test 1: Core Security Modules
         print("\n1️⃣ Testing Core Security Modules...")
         from app.utils.enhanced_validation import InputSanitizer
-        from app.utils.security_alerts import SecurityAlertManager, Alert, AlertPriority
-        from app.utils.security_logger import SecuritySeverity, SecurityEventType
+        from app.utils.security_alerts import Alert, AlertPriority, SecurityAlertManager
+        from app.utils.security_logger import SecurityEventType, SecuritySeverity
         print("✅ All security modules imported")
         
         # Test 2: Bleach Integration

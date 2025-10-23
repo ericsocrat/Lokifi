@@ -3,12 +3,13 @@
 import logging
 from datetime import datetime
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, Field
+
 from app.services.crypto_discovery_service import CryptoDiscoveryService
 from app.services.historical_price_service import HistoricalPriceService, PeriodType
 from app.services.smart_price_service import SmartPriceService
 from app.services.unified_asset_service import UnifiedAssetService
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1/prices", tags=["prices"])

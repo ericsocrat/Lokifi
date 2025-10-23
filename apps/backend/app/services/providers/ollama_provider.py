@@ -103,10 +103,10 @@ class OllamaProvider(AIProvider):
             )
         except httpx.RequestError as e:
             logger.error(f"Ollama request error: {e}")
-            raise ProviderError(f"Ollama connection error: {str(e)}")
+            raise ProviderError(f"Ollama connection error: {e!s}")
         except Exception as e:
             logger.error(f"Unexpected Ollama error: {e}")
-            raise ProviderError(f"Ollama error: {str(e)}")
+            raise ProviderError(f"Ollama error: {e!s}")
         finally:
             await self.client.aclose()
     

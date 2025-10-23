@@ -347,7 +347,7 @@ export default function PriceChart() {
                 : new Date(String(c.time)).getTime() / 1000,
       }));
       view = sliceByTimeWindow(
-        allWithNumTime as unknown as import('@/lib/lod').Candle[],
+        allWithNumTime as unknown as import('@/utils/lod').Candle[],
         fromSec,
         toSec
       ) as unknown as Candle[];

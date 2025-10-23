@@ -137,7 +137,7 @@
 
 **Old Architecture** (Monolithic):
 ```
-lokifi-unified-pipeline.yml (17 minutes)
+Legacy unified pipeline (17 minutes) [ARCHIVED]
 ├── Install dependencies
 ├── Run all tests (unit + integration + E2E)
 ├── Linting + type checking

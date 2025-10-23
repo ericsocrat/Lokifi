@@ -144,7 +144,7 @@ async def main():
     ]
     
     all_fixed = True
-    for i, (issue, result) in enumerate(zip(issues, results), 1):
+    for i, (issue, result) in enumerate(zip(issues, results, strict=False), 1):
         status = "✅ FIXED" if result else "❌ STILL PRESENT"
         print(f"{i}. {issue}: {status}")
         if not result:

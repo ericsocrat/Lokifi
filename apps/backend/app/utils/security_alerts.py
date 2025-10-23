@@ -494,8 +494,8 @@ async def send_medium_alert(title: str, message: str, event_type: SecurityEventT
 __all__ = [
     'Alert',
     'AlertChannel',
-    'AlertPriority',
     'AlertConfiguration',
+    'AlertPriority',
     'SecurityAlertManager',
     'security_alert_manager',
     'send_critical_alert',

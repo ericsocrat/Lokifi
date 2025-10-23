@@ -373,7 +373,7 @@ class J53PerformanceMonitor:
                 "system_failure",
                 0,
                 0,
-                f"Performance monitoring system failed: {str(e)}",
+                f"Performance monitoring system failed: {e!s}",
                 "Check monitoring system configuration and logs",
             )
             new_alerts.append(alert)

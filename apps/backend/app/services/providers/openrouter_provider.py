@@ -140,10 +140,10 @@ class OpenRouterProvider(AIProvider):
         
         except httpx.RequestError as e:
             logger.error(f"OpenRouter request error: {e}")
-            raise ProviderError(f"OpenRouter connection error: {str(e)}")
+            raise ProviderError(f"OpenRouter connection error: {e!s}")
         except Exception as e:
             logger.error(f"Unexpected OpenRouter error: {e}")
-            raise ProviderError(f"OpenRouter error: {str(e)}")
+            raise ProviderError(f"OpenRouter error: {e!s}")
         finally:
             await self.client.aclose()
     

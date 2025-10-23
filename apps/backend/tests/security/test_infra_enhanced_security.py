@@ -4,6 +4,7 @@ Test Enhanced Security Features
 """
 
 import sys
+
 sys.path.append('.')
 
 def test_enhanced_security():
@@ -29,7 +30,7 @@ def test_enhanced_security():
             cleaned = InputSanitizer.sanitize_html(dangerous_html)
             print(f"  ⚠️ Dangerous HTML not fully blocked: {cleaned}")
         except ValueError:
-            print(f"  ✅ Dangerous HTML properly blocked by security validation")
+            print("  ✅ Dangerous HTML properly blocked by security validation")
         
         # Test input sanitization
         print("\n🔍 Testing Input Sanitization...")

@@ -18,7 +18,16 @@ select = [
   "RUF",  # Ruff-specific rules
   "PERF", # Performance anti-patterns
 ]
-ignore = ["E203","E266","E501"]
+ignore = [
+  "E203",   # Whitespace before ':'
+  "E266",   # Too many leading '#' for block comment
+  "E501",   # Line too long (handled by formatter)
+  "B008",   # Do not perform function call in defaults (FastAPI Depends pattern)
+  "S101",   # Use of assert (allowed in tests)
+  "S311",   # Non-cryptographic random (OK for non-security use)
+  "S105",   # Possible hardcoded password (many false positives)
+  "S106",   # Possible hardcoded password in argument
+]
 
 [lint.mccabe]
 max-complexity = 10  # Flag complex functions

@@ -36,7 +36,7 @@ async def register(
         result = await auth_service.register_user(user_data)
     except Exception as e:
         import traceback
-        print(f"❌ Registration Error: {str(e)}")
+        print(f"❌ Registration Error: {e!s}")
         print(traceback.format_exc())
         raise
     
@@ -94,7 +94,7 @@ async def login(
         response = JSONResponse(content=response_content)
     except Exception as e:
         import traceback
-        print(f"❌ Login Error: {str(e)}")
+        print(f"❌ Login Error: {e!s}")
         print(traceback.format_exc())
         raise
     
@@ -217,7 +217,7 @@ async def google_oauth(
         
     except httpx.RequestError as e:
         # Log the error for debugging
-        print(f"❌ Google OAuth Request Error: {str(e)}")
+        print(f"❌ Google OAuth Request Error: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Unable to verify Google token. Please try again later."
@@ -227,7 +227,7 @@ async def google_oauth(
         raise
     except Exception as e:
         # Log unexpected errors
-        print(f"❌ Google OAuth Unexpected Error: {str(e)}")
+        print(f"❌ Google OAuth Unexpected Error: {e!s}")
         import traceback
         print(traceback.format_exc())
         raise HTTPException(

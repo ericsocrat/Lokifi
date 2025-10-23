@@ -1,7 +1,6 @@
 /**
  * API client with response validation using zod
  */
-import { z } from 'zod';
 import type {
   HealthResponse,
   OHLCRequest,
@@ -9,7 +8,8 @@ import type {
   SymbolSearchRequest,
   SymbolsResponse,
   TickerResponse,
-} from '../types/api';
+} from 'types/api';
+import { z } from 'zod';
 
 // Zod schemas for validation
 const OHLCBarSchema = z.object({

@@ -6,6 +6,7 @@ Tests all enhanced security features and measures
 import asyncio
 import time
 
+
 # Test security components
 def test_input_validation():
     """Test enhanced input validation"""
@@ -114,11 +115,7 @@ def test_security_logger():
     """Test security event logging"""
     print("📝 Testing Security Logger...")
     
-    from app.utils.security_logger import (
-        security_monitor, 
-        log_auth_failure, 
-        log_suspicious_request
-    )
+    from app.utils.security_logger import log_auth_failure, log_suspicious_request, security_monitor
     
     passed = 0
     total = 3

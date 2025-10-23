@@ -408,7 +408,7 @@ class ConversationImporter:
         except json.JSONDecodeError as e:
             return {
                 "success": False,
-                "error": f"Invalid JSON: {str(e)}",
+                "error": f"Invalid JSON: {e!s}",
                 "imported_conversations": 0,
                 "imported_messages": 0,
             }
@@ -496,7 +496,7 @@ class ConversationImporter:
 
             except Exception as e:
                 errors.append(
-                    f"Error importing conversation '{conv_data.get('title', 'Unknown')}': {str(e)}"
+                    f"Error importing conversation '{conv_data.get('title', 'Unknown')}': {e!s}"
                 )
                 continue
 
@@ -506,7 +506,7 @@ class ConversationImporter:
             db.rollback()
             return {
                 "success": False,
-                "error": f"Database error: {str(e)}",
+                "error": f"Database error: {e!s}",
                 "imported_conversations": 0,
                 "imported_messages": 0,
             }

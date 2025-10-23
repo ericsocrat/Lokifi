@@ -1,17 +1,22 @@
+import type { Shape } from '@/stores/drawStore';
+import type { IChartApi, ISeriesApi } from 'lightweight-charts';
 
-import type { IChartApi, ISeriesApi } from "lightweight-charts";
-import type { Shape } from "@/lib/drawStore";
-
-export type PluginKind = "tool" | "overlay" | "indicator";
+export type PluginKind = 'tool' | 'overlay' | 'indicator';
 
 export interface PluginCtx {
   chart: IChartApi;
-  candle: ISeriesApi<"Candlestick">;
+  candle: ISeriesApi<'Candlestick'>;
   canvas: HTMLCanvasElement;
   symbol(): string;
   timeframe(): string;
-  snap(t:number, p:number): { t:number, p:number };
-  xy(e: PointerEvent): { x:number, y:number, t:number, p:number, snapped: { t:number, p:number } };
+  snap(t: number, p: number): { t: number; p: number };
+  xy(e: PointerEvent): {
+    x: number;
+    y: number;
+    t: number;
+    p: number;
+    snapped: { t: number; p: number };
+  };
   draw: {
     add(shape: Shape): void;
     update(id: string, updater: (s: Shape) => Shape): void;
@@ -23,7 +28,7 @@ export interface PluginCtx {
 export interface ToolPlugin {
   id: string;
   label: string;
-  kind: "tool";
+  kind: 'tool';
   mount?(ctx: PluginCtx): void;
   unmount?(): void;
   onPointerDown?(e: PointerEvent, ctx: PluginCtx): boolean | void;
@@ -32,5 +37,3 @@ export interface ToolPlugin {
 }
 
 export type LokifiPlugin = ToolPlugin; // extend later
-
-

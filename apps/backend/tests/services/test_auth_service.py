@@ -5,19 +5,13 @@ Comprehensive test suite using generated mocks and fixtures
 """
 
 import uuid
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from datetime import UTC
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi import HTTPException, status
-from tests.fixtures.fixture_auth_fixed import (
-    sample_token_response,
-    sample_user_login_request,
-    sample_user_register_request,
-    sample_user_response,
-)
 
 # Import mocks and fixtures
-from tests.fixtures.mock_auth_service import mock_db_query_result, mock_db_session
 
 # Import module under test
 try:
@@ -37,7 +31,7 @@ except ImportError as e:
 @pytest.fixture
 def mock_user():
     """Mock user object"""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     user = Mock(spec=User)
     user.id = uuid.uuid4()
@@ -46,15 +40,15 @@ def mock_user():
     user.full_name = "Test User"
     user.is_active = True
     user.is_verified = False
-    user.created_at = datetime.now(timezone.utc)
-    user.updated_at = datetime.now(timezone.utc)
+    user.created_at = datetime.now(UTC)
+    user.updated_at = datetime.now(UTC)
     return user
 
 
 @pytest.fixture
 def mock_profile():
     """Mock profile object"""
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     profile = Mock(spec=Profile)
     profile.id = uuid.uuid4()
@@ -66,8 +60,8 @@ def mock_profile():
     profile.is_public = True
     profile.follower_count = 0
     profile.following_count = 0
-    profile.created_at = datetime.now(timezone.utc)
-    profile.updated_at = datetime.now(timezone.utc)
+    profile.created_at = datetime.now(UTC)
+    profile.updated_at = datetime.now(UTC)
     return profile
 
 
@@ -90,7 +84,7 @@ class TestAuthServiceRegistration:
         self, auth_service, mock_db_session, sample_user_register_request
     ):
         """Test successful user registration"""
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         # Mock database queries
         mock_db_session.execute = AsyncMock(
@@ -104,9 +98,9 @@ class TestAuthServiceRegistration:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(timezone.utc)
+                    obj.created_at = datetime.now(UTC)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(UTC)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -310,7 +304,7 @@ class TestAuthServiceIntegration:
         self, auth_service, mock_db_session, sample_user_register_request
     ):
         """Test complete registration workflow"""
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         # Mock no existing user or username
         mock_db_session.execute = AsyncMock(
@@ -323,9 +317,9 @@ class TestAuthServiceIntegration:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(timezone.utc)
+                    obj.created_at = datetime.now(UTC)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(UTC)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -353,7 +347,7 @@ class TestAuthServiceIntegration:
         self, mock_db_session, sample_user_register_request, sample_user_login_request
     ):
         """Test login immediately after registration"""
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         auth_service = AuthService(mock_db_session)
 
@@ -368,9 +362,9 @@ class TestAuthServiceIntegration:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(timezone.utc)
+                    obj.created_at = datetime.now(UTC)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(UTC)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -383,8 +377,8 @@ class TestAuthServiceIntegration:
         mock_user.is_active = True
         mock_user.full_name = "Test User"
         mock_user.is_verified = False
-        mock_user.created_at = datetime.now(timezone.utc)
-        mock_user.updated_at = datetime.now(timezone.utc)
+        mock_user.created_at = datetime.now(UTC)
+        mock_user.updated_at = datetime.now(UTC)
 
         mock_profile = Mock(spec=Profile)
         mock_profile.id = uuid.uuid4()
@@ -396,8 +390,8 @@ class TestAuthServiceIntegration:
         mock_profile.is_public = True
         mock_profile.follower_count = 0
         mock_profile.following_count = 0
-        mock_profile.created_at = datetime.now(timezone.utc)
-        mock_profile.updated_at = datetime.now(timezone.utc)
+        mock_profile.created_at = datetime.now(UTC)
+        mock_profile.updated_at = datetime.now(UTC)
 
         with patch("app.services.auth_service.validate_email", return_value=True), patch(
             "app.services.auth_service.validate_password_strength", return_value=True
@@ -433,7 +427,7 @@ class TestAuthServiceEdgeCases:
     @pytest.mark.asyncio
     async def test_register_with_empty_username(self, auth_service, mock_db_session):
         """Test registration with None/empty username"""
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         from app.schemas.auth import UserRegisterRequest
 
@@ -454,9 +448,9 @@ class TestAuthServiceEdgeCases:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(timezone.utc)
+                    obj.created_at = datetime.now(UTC)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(UTC)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -475,7 +469,7 @@ class TestAuthServiceEdgeCases:
     @pytest.mark.asyncio
     async def test_login_with_special_characters_in_email(self, auth_service, mock_db_session):
         """Test login with special characters in email"""
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         from app.schemas.auth import UserLoginRequest
 
@@ -488,8 +482,8 @@ class TestAuthServiceEdgeCases:
         mock_user.full_name = "Test User"
         mock_user.is_active = True
         mock_user.is_verified = False
-        mock_user.created_at = datetime.now(timezone.utc)
-        mock_user.updated_at = datetime.now(timezone.utc)
+        mock_user.created_at = datetime.now(UTC)
+        mock_user.updated_at = datetime.now(UTC)
 
         mock_profile = Mock(spec=Profile)
         mock_profile.id = uuid.uuid4()
@@ -501,8 +495,8 @@ class TestAuthServiceEdgeCases:
         mock_profile.is_public = True
         mock_profile.follower_count = 0
         mock_profile.following_count = 0
-        mock_profile.created_at = datetime.now(timezone.utc)
-        mock_profile.updated_at = datetime.now(timezone.utc)
+        mock_profile.created_at = datetime.now(UTC)
+        mock_profile.updated_at = datetime.now(UTC)
 
         mock_db_session.execute = AsyncMock(
             return_value=Mock(one_or_none=Mock(return_value=(mock_user, mock_profile)))

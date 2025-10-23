@@ -365,10 +365,10 @@ websocket_jwt_auth = WebSocketJWTAuth()
 
 # Export main classes and functions
 __all__ = [
+    "AuthenticatedWebSocketManager",
     "WebSocketJWTAuth",
-    "AuthenticatedWebSocketManager", 
-    "websocket_endpoint_with_auth",
-    "handle_typing_indicator",
     "authenticated_websocket_manager",
+    "handle_typing_indicator",
+    "websocket_endpoint_with_auth",
     "websocket_jwt_auth"
 ]

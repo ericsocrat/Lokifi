@@ -12,4 +12,4 @@ async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
     })
     if res.get("s") != "ok":
         return []
-    return [{"ts": int(t*1000), "o": o, "h": h, "low": low, "c": c, "v": v} for t,o,h,low,c,v in zip(res["t"], res["o"], res["h"], res["l"], res["c"], res.get("v", [0]*len(res["t"])))]
+    return [{"ts": int(t*1000), "o": o, "h": h, "low": low, "c": c, "v": v} for t,o,h,low,c,v in zip(res["t"], res["o"], res["h"], res["l"], res["c"], res.get("v", [0]*len(res["t"])), strict=False)]

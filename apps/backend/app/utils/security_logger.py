@@ -353,14 +353,14 @@ async def log_unauthorized_access(client_ip: str, endpoint: str, user_id: str | 
 # Export main components
 __all__ = [
     'SecurityEvent',
-    'SecurityEventType', 
-    'SecuritySeverity',
+    'SecurityEventType',
     'SecurityMonitor',
-    'security_monitor',
+    'SecuritySeverity',
     'log_auth_failure',
     'log_auth_success',
+    'log_input_validation_failure',
     'log_rate_limit_exceeded',
     'log_suspicious_request',
-    'log_input_validation_failure',
-    'log_unauthorized_access'
+    'log_unauthorized_access',
+    'security_monitor'
 ]

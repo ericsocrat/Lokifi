@@ -1,11 +1,12 @@
 import uuid
 
 import pytest
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy import select
+
 from app.db.database import get_db_session
 from app.main import app
 from app.models.notification_models import Notification, NotificationType
-from httpx import ASGITransport, AsyncClient
-from sqlalchemy import select
 
 
 @pytest.fixture

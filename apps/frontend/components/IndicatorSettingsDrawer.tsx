@@ -1,80 +1,149 @@
-"use client";
-import { useEffect, useState } from "react";
-import { indicatorStore } from "@/lib/indicatorStore";
-import { symbolStore } from "@/lib/symbolStore";
+'use client';
+import { indicatorStore } from '@/stores/indicatorStore';
+import { symbolStore } from '@/stores/symbolStore';
+import { useEffect, useState } from 'react';
 
 type State = ReturnType<typeof indicatorStore.get>;
 
-export default function IndicatorSettingsDrawer(){
+export default function IndicatorSettingsDrawer() {
   const [s, setS] = useState<State>(indicatorStore.get());
   const [open, setOpen] = useState<boolean>(false);
   useEffect(() => {
     const unsub = indicatorStore.subscribe(setS);
-    return () => { unsub(); };
+    return () => {
+      unsub();
+    };
   }, []);
 
-  const setParam = (key: keyof State["params"]) => (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setParam = (key: keyof State['params']) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = Number(e.target.value);
-    if (Number.isFinite(v) && v > 0) indicatorStore.set({ params: { ...s.params, [key]: v } as any });
+    if (Number.isFinite(v) && v > 0)
+      indicatorStore.set({ params: { ...s.params, [key]: v } as any });
   };
 
   return (
     <div className="rounded-2xl border border-neutral-800">
-      <button onClick={()=> setOpen(!open)} className="w-full px-3 py-2 text-left font-semibold">
-        Indicator Settings {open ? "▾" : "▸"}
+      <button onClick={() => setOpen(!open)} className="w-full px-3 py-2 text-left font-semibold">
+        Indicator Settings {open ? '▾' : '▸'}
       </button>
       {open && (
         <div className="p-3 grid grid-cols-2 gap-3 text-sm">
           <div className="col-span-2 font-medium opacity-80">Bollinger Bands</div>
           <label className="flex items-center gap-2">
             Period
-            <input type="number" value={s.params.bbPeriod} onChange={setParam("bbPeriod")} className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded" />
+            <input
+              type="number"
+              value={s.params.bbPeriod}
+              onChange={setParam('bbPeriod')}
+              className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded"
+            />
           </label>
           <label className="flex items-center gap-2">
             Mult
-            <input type="number" step="0.5" value={s.params.bbMult} onChange={setParam("bbMult")} className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded" />
+            <input
+              type="number"
+              step="0.5"
+              value={s.params.bbMult}
+              onChange={setParam('bbMult')}
+              className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded"
+            />
           </label>
 
           <div className="col-span-2 font-medium opacity-80 mt-2">VWMA</div>
           <label className="flex items-center gap-2">
             Period
-            <input type="number" value={s.params.vwmaPeriod} onChange={setParam("vwmaPeriod")} className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded" />
+            <input
+              type="number"
+              value={s.params.vwmaPeriod}
+              onChange={setParam('vwmaPeriod')}
+              className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded"
+            />
           </label>
 
           <div className="col-span-2 font-medium opacity-80 mt-2">StdDev Channels</div>
           <label className="flex items-center gap-2">
             Period
-            <input type="number" value={s.params.stddevPeriod} onChange={setParam("stddevPeriod")} className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded" />
+            <input
+              type="number"
+              value={s.params.stddevPeriod}
+              onChange={setParam('stddevPeriod')}
+              className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded"
+            />
           </label>
           <label className="flex items-center gap-2">
             Mult
-            <input type="number" step="0.5" value={s.params.stddevMult} onChange={setParam("stddevMult")} className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded" />
+            <input
+              type="number"
+              step="0.5"
+              value={s.params.stddevMult}
+              onChange={setParam('stddevMult')}
+              className="w-20 px-2 py-1 bg-neutral-900 border border-neutral-800 rounded"
+            />
           </label>
           <div className="col-span-2 font-medium opacity-80 mt-2">Bollinger Band Fill</div>
-<label className="flex items-center gap-2">
-  Theme
-  <select value={s.style.bbFillColor} onChange={(e)=> indicatorStore.setStyle("bbFillColor", e.target.value)} className="px-2 py-1 bg-neutral-900 border border-neutral-800 rounded">
-    <option value="#22d3ee">Default</option>
-    <option value="#ef4444">Red</option>
-    <option value="#22c55e">Green</option>
-    <option value="#3b82f6">Blue</option>
-  </select>
-</label>
+          <label className="flex items-center gap-2">
+            Theme
+            <select
+              value={s.style.bbFillColor}
+              onChange={(e) => indicatorStore.setStyle('bbFillColor', e.target.value)}
+              className="px-2 py-1 bg-neutral-900 border border-neutral-800 rounded"
+            >
+              <option value="#22d3ee">Default</option>
+              <option value="#ef4444">Red</option>
+              <option value="#22c55e">Green</option>
+              <option value="#3b82f6">Blue</option>
+            </select>
+          </label>
           <label className="flex items-center gap-2">
             Color
-            <input type="color" value={s.style.bbFillColor} onChange={(e)=> indicatorStore.set({ style: { ...s.style, bbFillColor: e.target.value } as any })} className="w-10 h-8 bg-transparent" />
+            <input
+              type="color"
+              value={s.style.bbFillColor}
+              onChange={(e) =>
+                indicatorStore.set({ style: { ...s.style, bbFillColor: e.target.value } as any })
+              }
+              className="w-10 h-8 bg-transparent"
+            />
           </label>
           <label className="flex items-center gap-2">
             Opacity
-            <input type="range" min={0} max={1} step={0.05} value={s.style.bbFillOpacity} onChange={(e)=> indicatorStore.set({ style: { ...s.style, bbFillOpacity: Number(e.target.value) } as any })} />
-            <span className="tabular-nums">{Math.round(s.style.bbFillOpacity*100)}%</span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.05}
+              value={s.style.bbFillOpacity}
+              onChange={(e) =>
+                indicatorStore.set({
+                  style: { ...s.style, bbFillOpacity: Number(e.target.value) } as any,
+                })
+              }
+            />
+            <span className="tabular-nums">{Math.round(s.style.bbFillOpacity * 100)}%</span>
           </label>
 
           <div className="col-span-2 mt-3 flex gap-2 flex-wrap">
-  <button onClick={()=> indicatorStore.reset()} className="px-3 py-2 rounded-xl border border-neutral-700 hover:bg-neutral-900">Reset to defaults</button>
-  <button onClick={()=> indicatorStore.saveForSymbol(symbolStore.get())} className="px-3 py-2 rounded-xl border border-neutral-700 hover:bg-neutral-900">Save for {symbolStore.get()}</button>
-  <button onClick={()=> { indicatorStore.clearForSymbol(symbolStore.get()); }} className="px-3 py-2 rounded-xl border border-rose-700 hover:bg-neutral-900">Clear {symbolStore.get()} preset</button>
-</div>
+            <button
+              onClick={() => indicatorStore.reset()}
+              className="px-3 py-2 rounded-xl border border-neutral-700 hover:bg-neutral-900"
+            >
+              Reset to defaults
+            </button>
+            <button
+              onClick={() => indicatorStore.saveForSymbol(symbolStore.get())}
+              className="px-3 py-2 rounded-xl border border-neutral-700 hover:bg-neutral-900"
+            >
+              Save for {symbolStore.get()}
+            </button>
+            <button
+              onClick={() => {
+                indicatorStore.clearForSymbol(symbolStore.get());
+              }}
+              className="px-3 py-2 rounded-xl border border-rose-700 hover:bg-neutral-900"
+            >
+              Clear {symbolStore.get()} preset
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -87,6 +87,7 @@
 
 **Configuration** (works well):
 ```yaml
+# From current ci.yml workflow
 - uses: actions/setup-node@v4
   with:
     node-version: 20
@@ -168,7 +169,7 @@
 
 **Evidence**:
 ```yaml
-# File: .github/workflows/lokifi-unified-pipeline.yml
+# Legacy workflow example (archived)
 visual-regression:
   steps:
     - name: 🎭 Install Playwright browsers
@@ -404,8 +405,8 @@ updates:
 **Implementation**:
 
 ```yaml
-# File: .github/workflows/lokifi-unified-pipeline.yml
-# In visual-regression job:
+# Example for current e2e.yml workflow:
+# In visual-regression or e2e job:
 
 - name: 📦 Cache Playwright browsers
   uses: actions/cache@v4
@@ -470,8 +471,7 @@ updates:
 **Implementation**:
 
 ```yaml
-# File: .github/workflows/lokifi-unified-pipeline.yml
-# backend-test job:
+# Example for current ci.yml backend jobs:
 
 - name: 📚 Install dependencies
   run: |

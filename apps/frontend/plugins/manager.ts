@@ -1,18 +1,17 @@
-
-"use client";
-import type { LokifiPlugin, PluginCtx, ToolPlugin } from "./types";
-import type { IChartApi, ISeriesApi } from "lightweight-charts";
-import { drawStore, type Shape } from "@/lib/drawStore";
-import { symbolStore } from "@/lib/symbolStore";
-import { timeframeStore } from "@/lib/timeframeStore";
+'use client';
+import { drawStore, type Shape } from '@/stores/drawStore';
+import { symbolStore } from '@/stores/symbolStore';
+import { timeframeStore } from '@/stores/timeframeStore';
+import type { IChartApi, ISeriesApi } from 'lightweight-charts';
+import type { LokifiPlugin, PluginCtx, ToolPlugin } from './types';
 
 export type { PluginManager };
 
 interface Env {
   chart: IChartApi;
-  candle: ISeriesApi<"Candlestick">;
+  candle: ISeriesApi<'Candlestick'>;
   canvas: HTMLCanvasElement;
-  snap: (t: number, p: number) => { t: number, p: number };
+  snap: (t: number, p: number) => { t: number; p: number };
 }
 
 type SafeEnv = {
@@ -24,7 +23,7 @@ class PluginManager {
   private env: Env | null = null;
   private _activeToolId: string | null = null;
 
-  register(p: LokifiPlugin){
+  register(p: LokifiPlugin) {
     if (this.plugins.find((x: any) => x.id === p.id)) return;
     this.plugins.push(p);
     if (this.env) p.mount?.(this.ctx());
@@ -62,38 +61,42 @@ class PluginManager {
     this.env = null;
   }
 
-  setActiveTool(id: string | null){
+  setActiveTool(id: string | null) {
     this._activeToolId = id;
     // also ensure cursor mode in drawStore when plugin active (so our canvas accepts events)
     // Consumers will check hasActiveTool()
   }
-  get activeToolId(){ return this._activeToolId; }
-  hasActiveTool(){ return !!this._activeToolId; }
+  get activeToolId() {
+    return this._activeToolId;
+  }
+  hasActiveTool() {
+    return !!this._activeToolId;
+  }
 
   private ctx(): PluginCtx {
-    if (!this.env) throw new Error("Plugin env not set");
+    if (!this.env) throw new Error('Plugin env not set');
     const { chart, candle, canvas, snap } = this.env;
 
     const getPointerPosition = (e: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+        y: e.clientY - rect.top,
       };
     };
 
-    const getTimeAndPrice = (x: number, y: number): { time: number, price: number } => {
+    const getTimeAndPrice = (x: number, y: number): { time: number; price: number } => {
       const timeScale = chart.timeScale();
       const time = Number(timeScale.coordinateToTime(x));
 
       // Ensure the candlestick series exists and has the coordinateToPrice method
       if (typeof candle?.coordinateToPrice !== 'function') {
-        throw new Error("Candlestick series not properly initialized");
+        throw new Error('Candlestick series not properly initialized');
       }
       const price = candle.coordinateToPrice(y);
 
       if (!timeScale || !Number.isFinite(time) || typeof price !== 'number') {
-        throw new Error("Invalid coordinate conversion");
+        throw new Error('Invalid coordinate conversion');
       }
 
       return { time, price };
@@ -145,8 +148,8 @@ class PluginManager {
           } catch (err) {
             console.error('Error clearing selection:', err);
           }
-        }
-      }
+        },
+      },
     };
   }
 
@@ -193,5 +196,3 @@ class PluginManager {
 }
 
 export const pluginManager = new PluginManager();
-
-

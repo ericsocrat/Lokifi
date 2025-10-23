@@ -1,6 +1,6 @@
 'use client';
-import { EXPERIMENTAL_PLUGINS } from '@/lib/flags';
-import { pluginSettingsStore } from '@/lib/pluginSettingsStore';
+import { EXPERIMENTAL_PLUGINS } from '@/constants/flags';
+import { pluginSettingsStore } from '@/stores/pluginSettingsStore';
 import { useEffect, useState } from 'react';
 
 type Settings = ReturnType<typeof pluginSettingsStore.get>;
@@ -36,7 +36,9 @@ export default function PluginSettingsDrawer({
             <span>Width mode</span>
             <select
               value={s.channelWidthMode as any}
-              onChange={(e: any) => pluginSettingsStore.set('channelWidthMode', e.target.value as any)}
+              onChange={(e: any) =>
+                pluginSettingsStore.set('channelWidthMode', e.target.value as any)
+              }
               className="ml-auto px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
             >
               <option value="percent">% of price</option>
@@ -127,4 +129,3 @@ export default function PluginSettingsDrawer({
     </div>
   );
 }
-

@@ -314,12 +314,12 @@ class AdvancedStressTester:
                             await asyncio.sleep(random.uniform(0.5, 2.0))  # Variable delay
                             
                         except Exception as e:
-                            errors.append(f"WebSocket send error: {str(e)}")
+                            errors.append(f"WebSocket send error: {e!s}")
                             break
                             
             except Exception as e:
                 failed_connections += 1
-                errors.append(f"WebSocket connection error: {str(e)}")
+                errors.append(f"WebSocket connection error: {e!s}")
         
         # Start all WebSocket clients
         tasks = [asyncio.create_task(websocket_client()) for _ in range(concurrent_connections)]
@@ -466,7 +466,7 @@ class AdvancedStressTester:
                     gc.collect()
                     
                 except Exception as e:
-                    print(f"❌ Test {config.name} failed: {str(e)}")
+                    print(f"❌ Test {config.name} failed: {e!s}")
                     logger.error(f"Test failed: {config.name}", exc_info=True)
             
             # WebSocket Load Test
@@ -475,7 +475,7 @@ class AdvancedStressTester:
                 await asyncio.sleep(5)
                 gc.collect()
             except Exception as e:
-                print(f"❌ WebSocket test failed: {str(e)}")
+                print(f"❌ WebSocket test failed: {e!s}")
                 logger.error("WebSocket test failed", exc_info=True)
             
             # Endurance Test: 50 users for 2+ hours (simplified for demo)
@@ -491,7 +491,7 @@ class AdvancedStressTester:
                 )
                 await self.run_load_test(endurance_config)
             except Exception as e:
-                print(f"❌ Endurance test failed: {str(e)}")
+                print(f"❌ Endurance test failed: {e!s}")
                 logger.error("Endurance test failed", exc_info=True)
             
         finally:
@@ -592,7 +592,7 @@ async def main():
                     return
                 print("✅ Server is running and responsive")
     except Exception as e:
-        print(f"❌ Cannot connect to server: {str(e)}")
+        print(f"❌ Cannot connect to server: {e!s}")
         print("   Please ensure the server is running on http://localhost:8000")
         return
     
@@ -622,7 +622,7 @@ async def main():
         print("\n📄 Detailed results saved to: comprehensive_stress_test_results.json")
         
     except Exception as e:
-        print(f"❌ Stress testing failed: {str(e)}")
+        print(f"❌ Stress testing failed: {e!s}")
         logger.error("Stress testing failed", exc_info=True)
 
 if __name__ == "__main__":

@@ -147,7 +147,7 @@ class DatabaseOptimizer:
                 index_used=False,
                 full_table_scan=True,
                 timestamp=datetime.now(UTC),
-                optimization_suggestions=[f"Analysis failed: {str(e)}"]
+                optimization_suggestions=[f"Analysis failed: {e!s}"]
             )
 
     def _generate_basic_suggestions(self, query: str, execution_time_ms: float) -> list[str]:
@@ -216,7 +216,7 @@ class DatabaseOptimizer:
                 suggestions.append("High buffer usage - consider increasing shared_buffers")
                 
         except Exception as e:
-            suggestions.append(f"EXPLAIN analysis error: {str(e)}")
+            suggestions.append(f"EXPLAIN analysis error: {e!s}")
             
         return suggestions
 
@@ -536,12 +536,12 @@ class CacheOptimizer:
                         results["keys_warmed"] += 1
                         
                 except Exception as e:
-                    results["errors"].append(f"Failed to warm {key}: {str(e)}")
+                    results["errors"].append(f"Failed to warm {key}: {e!s}")
             
             results["warming_time_ms"] = (time.time() - start_time) * 1000
             
         except Exception as e:
-            results["errors"].append(f"Cache warming failed: {str(e)}")
+            results["errors"].append(f"Cache warming failed: {e!s}")
         
         return results
 

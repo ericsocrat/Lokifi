@@ -66,7 +66,7 @@ async def search_symbols(
         return SymbolSearchResponse(symbols=symbols, total=len(symbols), query=q)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Search failed: {e!s}")
 
 
 @router.get("/symbols/{symbol}", response_model=Symbol)
@@ -162,7 +162,7 @@ async def get_ohlc_data(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to fetch OHLC data: {str(e)}"
+            status_code=500, detail=f"Failed to fetch OHLC data: {e!s}"
         )
 
 

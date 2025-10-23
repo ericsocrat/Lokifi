@@ -1,7 +1,6 @@
 'use client';
-import { drawStore, type Tool } from '@/lib/drawStore';
-import { EXPERIMENTAL_PLUGINS } from '@/lib/flags';
-import { pluginManager } from '@/plugins/registry';
+import { EXPERIMENTAL_PLUGINS } from '@/constants/flags';
+import { drawStore, type Tool } from '@/stores/drawStore';
 import {
   Boxes,
   Brackets,
@@ -13,6 +12,7 @@ import {
   Ruler,
   Waves,
 } from 'lucide-react';
+import { pluginManager } from 'plugins/registry';
 import { useEffect, useState } from 'react';
 
 const TOOLS: { key: Tool; label: string; icon: React.ReactNode; shortcut?: string }[] = [

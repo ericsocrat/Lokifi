@@ -1,4 +1,4 @@
-import { pluginSettingsStore } from '@/lib/pluginSettingsStore';
+import { pluginSettingsStore } from '@/stores/pluginSettingsStore';
 import type { ToolPlugin } from './types';
 const ghostKey = '__lokifiGhost';
 
@@ -49,4 +49,3 @@ export const fibExtended: ToolPlugin = {
     return !!(fibExtended as any)._state?.a;
   },
 };
-

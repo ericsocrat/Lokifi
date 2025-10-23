@@ -7,7 +7,6 @@ complete, and follows best practices.
 Phase 1.6 Task 2: API Contract Testing
 """
 
-import json
 
 import pytest
 from fastapi.testclient import TestClient

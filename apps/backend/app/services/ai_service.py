@@ -12,6 +12,7 @@ from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 from typing import Any
 
+from sqlalchemy.exc import IntegrityError
 
 from app.db.db import get_session
 from app.db.models import AIMessage, AIThread
@@ -22,7 +23,6 @@ from app.services.content_moderation import (
     moderate_ai_input,
     moderate_ai_output,
 )
-from sqlalchemy.exc import IntegrityError
 
 logger = logging.getLogger(__name__)
 

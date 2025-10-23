@@ -19,7 +19,7 @@ jobs:
   check-size:
     name: Label PR by Size
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📊 Analyze PR size
         id: analyze
@@ -27,7 +27,7 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request;
-            
+
             // Get PR files
             const { data: files } = await github.rest.pulls.listFiles({
               owner: context.repo.owner,
@@ -35,18 +35,18 @@ jobs:
               pull_number: pr.number,
               per_page: 100
             });
-            
+
             // Calculate metrics
             const filesChanged = files.length;
             const additions = files.reduce((sum, file) => sum + file.additions, 0);
             const deletions = files.reduce((sum, file) => sum + file.deletions, 0);
             const totalChanges = additions + deletions;
-            
+
             // Determine size category
             let sizeLabel = 'size-xs';
             let sizeEmoji = '🔹';
             let recommendation = 'Perfect size for review!';
-            
+
             if (totalChanges < 50) {
               sizeLabel = 'size-xs';
               sizeEmoji = '🔹';
@@ -68,7 +68,7 @@ jobs:
               sizeEmoji = '🔴';
               recommendation = '🚨 Extra large PR - this will be difficult to review. Please split into smaller PRs.';
             }
-            
+
             core.setOutput('size-label', sizeLabel);
             core.setOutput('size-emoji', sizeEmoji);
             core.setOutput('files-changed', filesChanged);
@@ -76,7 +76,7 @@ jobs:
             core.setOutput('deletions', deletions);
             core.setOutput('total-changes', totalChanges);
             core.setOutput('recommendation', recommendation);
-            
+
             core.info(`PR size: ${totalChanges} lines changed, ${filesChanged} files`);
             core.info(`Label: ${sizeLabel}`);
 
@@ -86,14 +86,14 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const sizeLabels = ['size-xs', 'size-s', 'size-m', 'size-l', 'size-xl'];
-            
+
             // Get current labels
             const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number
             });
-            
+
             // Remove old size labels
             for (const label of currentLabels) {
               if (sizeLabels.includes(label.name)) {
@@ -113,19 +113,19 @@ jobs:
           script: |
             const pr = context.payload.pull_request;
             const sizeLabel = '${{ steps.analyze.outputs.size-label }}';
-            
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number,
               labels: [sizeLabel]
             });
-            
+
             core.info(`Added label: ${sizeLabel}`);
 
       - name: 💬 Add size comment (for large PRs)
         if: |
-          steps.analyze.outputs.size-label == 'size-l' || 
+          steps.analyze.outputs.size-label == 'size-l' ||
           steps.analyze.outputs.size-label == 'size-xl'
         uses: actions/github-script@v7
         with:
@@ -137,55 +137,55 @@ jobs:
             const additions = '${{ steps.analyze.outputs.additions }}';
             const deletions = '${{ steps.analyze.outputs.deletions }}';
             const recommendation = `${{ steps.analyze.outputs.recommendation }}`;
-            
+
             const commentBody = `## ${sizeEmoji} PR Size Analysis
-            
+
             ${recommendation}
-            
+
             ### 📊 Metrics
-            
+
             - **Files changed**: ${filesChanged}
             - **Lines added**: ${additions}
             - **Lines deleted**: ${deletions}
             - **Total changes**: ${totalChanges}
-            
+
             ### 💡 Why smaller PRs are better:
-            
+
             - **Easier to review**: Reviewers can understand changes quickly
             - **Faster feedback**: Smaller PRs get reviewed and merged faster
             - **Fewer bugs**: Smaller changes are easier to test thoroughly
             - **Better git history**: Each PR tells a clear story
             - **Easier to revert**: If something breaks, smaller PRs are easier to roll back
-            
+
             ### 🔄 How to split this PR:
-            
+
             1. **By feature**: Separate different features into different PRs
             2. **By layer**: Split frontend and backend changes
             3. **By task**: Refactoring, new features, and bug fixes in separate PRs
             4. **By dependencies**: Create dependent PRs (base PR → feature PR)
-            
+
             ### 📚 Resources
-            
+
             - [Small PRs Best Practices](https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md)
             - [Why Small PRs Matter](https://testing.googleblog.com/2017/06/code-health-too-many-comments-on-your.html)
-            
+
             ---
-            
+
             *This is an automated message from the [PR Size Check workflow](/.github/workflows/pr-size-check.yml)*
             `;
-            
+
             // Check if we already commented
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: pr.number
             });
-            
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes('PR Size Analysis')
             );
-            
+
             if (botComment) {
               // Update existing comment
               await github.rest.issues.updateComment({

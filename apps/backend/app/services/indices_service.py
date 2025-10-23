@@ -7,6 +7,7 @@ import logging
 from datetime import UTC, datetime
 
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 from app.core.redis_client import RedisClient
@@ -137,7 +138,7 @@ class IndicesService:
                 resp.raise_for_status()
                 data = resp.json()
 
-                if "Global Quote" in data and data["Global Quote"]:
+                if data.get("Global Quote"):
                     quote = data["Global Quote"]
 
                     # Parse Alpha Vantage response

@@ -8,6 +8,9 @@ NO database required - pure unit tests for maximum coverage.
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from fastapi import HTTPException
+from jose import jwt
+
 from app.core.config import settings
 from app.core.security import (
     create_access_token,
@@ -17,8 +20,6 @@ from app.core.security import (
     verify_jwt_token,
     verify_password,
 )
-from fastapi import HTTPException
-from jose import JWTError, jwt
 
 
 class TestPasswordHashing:

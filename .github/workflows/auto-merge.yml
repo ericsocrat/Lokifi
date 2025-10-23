@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
     inputs:
       pr-number:
-        description: 'PR number to auto-merge (if eligible)'
+        description: "PR number to auto-merge (if eligible)"
         required: true
         type: number
 
@@ -33,10 +33,10 @@ jobs:
   auto-merge:
     name: Auto-merge Dependabot PR
     runs-on: ubuntu-latest
-    
+
     # Only run for Dependabot PRs
     if: github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
-    
+
     steps:
       - name: 🔍 Check if PR is from Dependabot
         id: check-author
@@ -44,23 +44,23 @@ jobs:
         with:
           script: |
             const prNumber = context.payload.pull_request?.number || context.payload.inputs?.['pr-number'];
-            
+
             if (!prNumber) {
               core.setFailed('No PR number found');
               return;
             }
-            
+
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: prNumber
             });
-            
+
             const isDependabot = pr.user.login === 'dependabot[bot]';
             core.setOutput('is-dependabot', isDependabot);
             core.setOutput('pr-number', prNumber);
             core.setOutput('pr-title', pr.title);
-            
+
             if (!isDependabot) {
               core.setFailed('PR is not from Dependabot');
             }
@@ -76,7 +76,7 @@ jobs:
         run: |
           UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
           echo "Update type: $UPDATE_TYPE"
-          
+
           # Only auto-merge patch and minor updates
           if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]] || [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
             echo "✅ Safe to auto-merge (patch/minor update)"
@@ -92,25 +92,25 @@ jobs:
         with:
           script: |
             const prNumber = ${{ steps.check-author.outputs.pr-number }};
-            
+
             // Wait up to 10 minutes for checks to complete
             const maxWaitTime = 10 * 60 * 1000; // 10 minutes
             const pollInterval = 30 * 1000; // 30 seconds
             const startTime = Date.now();
-            
+
             while (Date.now() - startTime < maxWaitTime) {
               const { data: pr } = await github.rest.pulls.get({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber
               });
-              
+
               // Check if PR is mergeable
               if (pr.mergeable_state === 'clean' || pr.mergeable_state === 'unstable') {
                 core.info('✅ All checks passed - PR is ready to merge');
                 return;
               }
-              
+
               if (pr.mergeable_state === 'blocked') {
                 core.info(`⏳ Waiting for checks... (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`);
                 await new Promise(resolve => setTimeout(resolve, pollInterval));
@@ -119,7 +119,7 @@ jobs:
                 return;
               }
             }
-            
+
             core.setFailed('⏱️ Timeout waiting for checks to complete');
 
       - name: 🔀 Enable auto-merge
@@ -128,7 +128,7 @@ jobs:
         with:
           script: |
             const prNumber = ${{ steps.check-author.outputs.pr-number }};
-            
+
             try {
               await github.rest.pulls.merge({
                 owner: context.repo.owner,
@@ -138,9 +138,9 @@ jobs:
                 commit_title: '${{ steps.check-author.outputs.pr-title }}',
                 commit_message: 'Auto-merged by Dependabot auto-merge workflow'
               });
-              
+
               core.info('✅ Successfully auto-merged PR');
-              
+
               // Add comment to PR
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
@@ -148,7 +148,7 @@ jobs:
                 issue_number: prNumber,
                 body: `🤖 **Auto-merged** this Dependabot PR after all checks passed.\n\n**Update type**: \`${{ steps.metadata.outputs.update-type }}\`\n**Package**: \`${{ steps.metadata.outputs.dependency-names }}\`\n**Old version**: \`${{ steps.metadata.outputs.previous-version }}\`\n**New version**: \`${{ steps.metadata.outputs.new-version }}\``
               });
-              
+
             } catch (error) {
               core.setFailed(`Failed to merge PR: ${error.message}`);
             }
@@ -159,14 +159,14 @@ jobs:
         with:
           script: |
             const prNumber = ${{ steps.check-author.outputs.pr-number }};
-            
+
             await github.rest.issues.addLabels({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
               labels: ['dependencies', 'needs-review']
             });
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -185,7 +185,7 @@ jobs:
           echo "**Package**: ${{ steps.metadata.outputs.dependency-names }}" >> $GITHUB_STEP_SUMMARY
           echo "**Version**: ${{ steps.metadata.outputs.previous-version }} → ${{ steps.metadata.outputs.new-version }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "${{ steps.validate-update.outputs.should-merge }}" == "true" ]]; then
             echo "**Action**: ✅ Auto-merged (patch/minor update)" >> $GITHUB_STEP_SUMMARY
           else
