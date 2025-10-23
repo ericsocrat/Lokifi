@@ -169,7 +169,7 @@ class PerformanceProfiler:
                 await asyncio.sleep(1)
 
     def add_metric(self, name: str, value: float, unit: str, category: str = "general", 
-                   metadata: dict[str, Any] = None):
+                   metadata: dict[str, Any] | None = None):
         """Add a custom performance metric"""
         metric = PerformanceMetric(
             name=name,

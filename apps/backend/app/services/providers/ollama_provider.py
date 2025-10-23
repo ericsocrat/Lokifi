@@ -183,7 +183,7 @@ class OllamaProvider(AIProvider):
                 
                 if response.status_code == 200:
                     # Just consume the stream, don't need to process it
-                    async for line in response.aiter_lines():
+                    async for _line in response.aiter_lines():
                         pass
                     return True
                 

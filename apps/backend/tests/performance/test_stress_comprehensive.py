@@ -293,7 +293,7 @@ class AdvancedStressTester:
                     successful_connections += 1
                     
                     # Send messages periodically
-                    client_start = time.time()
+                    time.time()
                     while time.time() < end_time:
                         try:
                             # Send message
@@ -304,7 +304,7 @@ class AdvancedStressTester:
                             
                             # Wait for response (with timeout)
                             try:
-                                response = await asyncio.wait_for(websocket.recv(), timeout=5.0)
+                                await asyncio.wait_for(websocket.recv(), timeout=5.0)
                                 recv_time = time.time()
                                 response_times.append((recv_time - send_time) * 1000)
                                 messages_received += 1

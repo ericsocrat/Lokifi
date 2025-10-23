@@ -131,7 +131,7 @@ Question: {q}"""
         providers.append(("openai_compat", lambda: _stream_openai_compatible(prompt, settings.openai_base, settings.openai_api_key, model)))
 
     last_err: Exception | None = None
-    for name, starter in providers:
+    for _name, starter in providers:
         try:
             async for chunk in starter():
                 yield chunk

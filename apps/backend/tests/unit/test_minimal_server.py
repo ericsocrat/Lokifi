@@ -16,7 +16,7 @@ async def test_minimal_server():
     try:
         # Test basic FastAPI
         from fastapi import FastAPI
-        app = FastAPI(title="Test")
+        FastAPI(title="Test")
         print("✅ FastAPI working")
         
         # Test security modules

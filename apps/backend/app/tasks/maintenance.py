@@ -273,7 +273,7 @@ def collect_storage_metrics_task() -> dict[str, Any]:
 
 
 @celery_app.task(name="app.tasks.maintenance.emergency_cleanup_task")
-def emergency_cleanup_task(force_delete_days: int = None) -> dict[str, Any]:
+def emergency_cleanup_task(force_delete_days: int | None = None) -> dict[str, Any]:
     """Emergency cleanup task for critical storage situations"""
     try:
         import asyncio

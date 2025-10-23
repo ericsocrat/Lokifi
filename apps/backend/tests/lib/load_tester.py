@@ -454,7 +454,7 @@ class ComprehensiveLoadTester:
         api_task = asyncio.create_task(self.run_api_load_test(100, 30))
         
         # Wait for completion
-        websocket_report, api_report = await asyncio.gather(websocket_task, api_task)
+        _websocket_report, _api_report = await asyncio.gather(websocket_task, api_task)
         
         logger.info("Comprehensive load test completed")
         return self.results

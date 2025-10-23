@@ -6,6 +6,7 @@ Provides comprehensive mocks for external dependencies
 """
 from unittest.mock import AsyncMock, Mock
 
+import httpx
 import pytest
 
 # ============================================================================

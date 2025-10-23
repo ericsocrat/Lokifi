@@ -218,7 +218,7 @@ class PerformanceAnalyzer:
         
         # Recent anomalies
         recent_anomalies = []
-        for timestamp, anomalies in list(self.anomaly_detection.items())[-10:]:
+        for _timestamp, anomalies in list(self.anomaly_detection.items())[-10:]:
             if anomalies:
                 recent_anomalies.extend(anomalies)
         

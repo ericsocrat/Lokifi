@@ -24,7 +24,7 @@ async def test_database_connection():
         
         # Test session creation
         session_count = 0
-        async for session in db_manager.get_session():
+        async for _session in db_manager.get_session():
             session_count += 1
             print("✅ Database session created successfully")
             if session_count >= 1:  # Just test one session

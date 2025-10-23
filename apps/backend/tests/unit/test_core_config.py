@@ -373,7 +373,7 @@ class TestRedisSentinelSettings:
         """Should load sentinel settings from environment"""
         # Note: JSON list parsing might require special handling in pydantic-settings
         # This test documents expected behavior
-        settings = Settings()
+        Settings()
         # Pydantic-settings might parse this automatically or require custom validation
         # The actual behavior depends on pydantic-settings version and configuration
 
@@ -384,6 +384,6 @@ class TestModelConfig:
     def test_extra_ignore_allows_unknown_env_vars(self):
         """Should ignore unknown environment variables"""
         # This test documents that extra="ignore" is set in model_config
-        settings = Settings()
+        Settings()
         # With extra="ignore", unknown env vars won't cause validation errors
         # This is already tested implicitly by other tests not failing with extra env vars

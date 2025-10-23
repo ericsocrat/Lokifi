@@ -184,7 +184,7 @@ class UnifiedAssetService:
     async def get_all_assets(
         self,
         limit_per_type: int = 10,
-        types: list[str] = ["crypto", "stocks", "indices", "forex"],
+        types: list[str] | None = None,
         force_refresh: bool = False
     ) -> dict[str, list[dict]]:
         """
@@ -202,6 +202,8 @@ class UnifiedAssetService:
         from app.services.forex_service import ForexService
         from app.services.stock_service import StockService
         
+        if types is None:
+            types = ["crypto", "stocks", "indices", "forex"]
         logger.info(f"🔄 Fetching unified assets: {types} (limit: {limit_per_type})")
         
         result = {}

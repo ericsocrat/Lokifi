@@ -12,6 +12,7 @@ from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
 from typing import Any
 
+import sentry_sdk
 from sqlalchemy.exc import IntegrityError
 
 from app.db.db import get_session

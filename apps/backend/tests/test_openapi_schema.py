@@ -148,8 +148,8 @@ def test_openapi_schema_security_schemes(client: TestClient):
     paths = schema.get("paths", {})
     has_secured_endpoints = False
 
-    for path, methods in paths.items():
-        for method, details in methods.items():
+    for methods in paths.values():
+        for details in methods.values():
             if "security" in details:
                 has_secured_endpoints = True
                 break

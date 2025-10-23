@@ -253,7 +253,7 @@ class RedisClient:
             logger.warning(f"Failed to get WebSocket sessions for {user_id}: {e}")
             return []
     
-    async def add_websocket_session(self, user_id: str, session_id: str, metadata: dict[str, Any] = None):
+    async def add_websocket_session(self, user_id: str, session_id: str, metadata: dict[str, Any] | None = None):
         """Add WebSocket session tracking"""
         if metadata is None:
             metadata = {"connected_at": datetime.now().isoformat()}

@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 class RedisCache:
     """Redis caching utility with smart TTL management"""
     
-    def __init__(self, redis_url: str = None):
+    def __init__(self, redis_url: str | None = None):
         settings = Settings()
         self.redis_url = redis_url or getattr(settings, 'REDIS_URL', 'redis://localhost:6379/0')
         self._client: redis.Redis | None = None

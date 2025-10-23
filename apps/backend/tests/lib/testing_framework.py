@@ -484,7 +484,7 @@ class AdvancedTestFramework:
             
             # Try to connect to WebSocket endpoint
             try:
-                async with websockets.connect(f"{ws_url}/ws") as websocket:
+                async with websockets.connect(f"{ws_url}/ws"):
                     self.print_test("WebSocket Connection", "PASS", "Connection established")
                     passed += 1
             except websockets.exceptions.ConnectionClosed:

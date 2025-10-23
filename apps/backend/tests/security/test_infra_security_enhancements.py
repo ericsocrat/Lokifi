@@ -34,13 +34,13 @@ def test_input_validation():
     for test_input, should_pass, description in test_cases:
         try:
             if "email" in description.lower():
-                result = InputSanitizer.validate_email(test_input)
+                InputSanitizer.validate_email(test_input)
             elif "username" in description.lower():
-                result = InputSanitizer.validate_username(test_input.lower())
+                InputSanitizer.validate_username(test_input.lower())
             elif "url" in description.lower():
-                result = InputSanitizer.validate_url(test_input)
+                InputSanitizer.validate_url(test_input)
             else:
-                result = InputSanitizer.sanitize_string(test_input)
+                InputSanitizer.sanitize_string(test_input)
             
             if should_pass:
                 print(f"  ✅ {description}: PASS")
@@ -81,7 +81,7 @@ def test_rate_limiter():
             print("  ❌ Normal usage: FAIL")
         
         # Test 2: Rapid requests should eventually hit limit
-        for i in range(50):  # Exceed normal API limit
+        for _i in range(50):  # Exceed normal API limit
             allowed, retry_after = await limiter.check_rate_limit(test_client, "api")
         
         # Last request should be rate limited
@@ -122,7 +122,7 @@ def test_security_logger():
     
     try:
         # Test 1: Log authentication failure
-        initial_suspicious = len(security_monitor.suspicious_ips)
+        len(security_monitor.suspicious_ips)
         log_auth_failure("192.168.1.100", "testuser", "/api/auth/login")
         print("  ✅ Auth failure logging: PASS")
         passed += 1

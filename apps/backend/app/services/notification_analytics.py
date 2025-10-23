@@ -209,7 +209,7 @@ class NotificationAnalytics:
     
     async def get_user_engagement_metrics(
         self,
-        user_id: str = None,
+        user_id: str | None = None,
         days: int = 30,
         start_date: datetime | None = None,
         end_date: datetime | None = None
