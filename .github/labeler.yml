@@ -5,123 +5,123 @@
 # Frontend changes
 frontend:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/frontend/**/*'
-      - 'package.json'
-      - 'package-lock.json'
+      - any-glob-to-any-file:
+          - "apps/frontend/**/*"
+          - "package.json"
+          - "package-lock.json"
 
 # Backend changes
 backend:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/backend/**/*'
+      - any-glob-to-any-file:
+          - "apps/backend/**/*"
 
 # CI/CD changes
 ci-cd:
   - changed-files:
-    - any-glob-to-any-file:
-      - '.github/workflows/**/*'
-      - '.github/actions/**/*'
+      - any-glob-to-any-file:
+          - ".github/workflows/**/*"
+          - ".github/actions/**/*"
 
 # Documentation changes
 documentation:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'docs/**/*'
-      - '**/*.md'
-      - 'README.md'
+      - any-glob-to-any-file:
+          - "docs/**/*"
+          - "**/*.md"
+          - "README.md"
 
 # Dependency changes
 dependencies:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/frontend/package.json'
-      - 'apps/frontend/package-lock.json'
-      - 'apps/backend/requirements.txt'
-      - 'apps/backend/requirements-dev.txt'
+      - any-glob-to-any-file:
+          - "apps/frontend/package.json"
+          - "apps/frontend/package-lock.json"
+          - "apps/backend/requirements.txt"
+          - "apps/backend/requirements-dev.txt"
 
 # Infrastructure changes
 infrastructure:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'infra/**/*'
-      - 'apps/docker-compose*.yml'
-      - '**/Dockerfile*'
+      - any-glob-to-any-file:
+          - "infra/**/*"
+          - "apps/docker-compose*.yml"
+          - "**/Dockerfile*"
 
 # Testing changes
 testing:
   - changed-files:
-    - any-glob-to-any-file:
-      - '**/tests/**/*'
-      - '**/*.test.ts'
-      - '**/*.test.tsx'
-      - '**/*.spec.ts'
-      - '**/test_*.py'
-      - 'apps/frontend/playwright.config.ts'
-      - 'apps/backend/pytest.ini'
+      - any-glob-to-any-file:
+          - "**/tests/**/*"
+          - "**/*.test.ts"
+          - "**/*.test.tsx"
+          - "**/*.spec.ts"
+          - "**/test_*.py"
+          - "apps/frontend/playwright.config.ts"
+          - "apps/backend/pytest.ini"
 
 # Configuration changes
 configuration:
   - changed-files:
-    - any-glob-to-any-file:
-      - '**/*.config.js'
-      - '**/*.config.ts'
-      - '**/*.config.mjs'
-      - '**/*.toml'
-      - '**/*.ini'
-      - '**/.eslintrc*'
-      - '**/tsconfig.json'
+      - any-glob-to-any-file:
+          - "**/*.config.js"
+          - "**/*.config.ts"
+          - "**/*.config.mjs"
+          - "**/*.toml"
+          - "**/*.ini"
+          - "**/.eslintrc*"
+          - "**/tsconfig.json"
 
 # Security changes
 security:
   - changed-files:
-    - any-glob-to-any-file:
-      - '.github/workflows/*security*.yml'
-      - '**/security/**/*'
-      - 'docs/security/**/*'
+      - any-glob-to-any-file:
+          - ".github/workflows/*security*.yml"
+          - "**/security/**/*"
+          - "docs/security/**/*"
 
 # Performance changes
 performance:
   - changed-files:
-    - any-glob-to-any-file:
-      - '**/performance/**/*'
-      - 'infra/performance-tests/**/*'
+      - any-glob-to-any-file:
+          - "**/performance/**/*"
+          - "infra/performance-tests/**/*"
 
 # Database changes
 database:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/backend/alembic/**/*'
-      - 'apps/backend/app/models/**/*'
-      - '**/migrations/**/*'
+      - any-glob-to-any-file:
+          - "apps/backend/alembic/**/*"
+          - "apps/backend/app/models/**/*"
+          - "**/migrations/**/*"
 
 # API changes
 api:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/backend/app/api/**/*'
-      - 'apps/backend/app/routers/**/*'
-      - 'docs/api/**/*'
+      - any-glob-to-any-file:
+          - "apps/backend/app/api/**/*"
+          - "apps/backend/app/routers/**/*"
+          - "docs/api/**/*"
 
 # UI/Components changes
 ui:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/frontend/components/**/*'
-      - 'apps/frontend/app/**/*'
-      - 'apps/frontend/styles/**/*'
+      - any-glob-to-any-file:
+          - "apps/frontend/components/**/*"
+          - "apps/frontend/app/**/*"
+          - "apps/frontend/styles/**/*"
 
 # E2E test related (for triggering full E2E suite)
 e2e-full:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/frontend/tests/e2e/**/*'
-      - 'apps/frontend/playwright.config.ts'
+      - any-glob-to-any-file:
+          - "apps/frontend/tests/e2e/**/*"
+          - "apps/frontend/playwright.config.ts"
 
 # Visual regression related (for triggering visual tests)
 visual-regression:
   - changed-files:
-    - any-glob-to-any-file:
-      - 'apps/frontend/tests/visual/**/*'
-      - 'apps/frontend/components/**/*'
-      - 'apps/frontend/styles/**/*'
+      - any-glob-to-any-file:
+          - "apps/frontend/tests/visual/**/*"
+          - "apps/frontend/components/**/*"
+          - "apps/frontend/styles/**/*"

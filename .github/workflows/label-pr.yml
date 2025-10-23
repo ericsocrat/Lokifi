@@ -38,21 +38,21 @@ jobs:
         with:
           script: |
             const labels = context.payload.pull_request.labels.map(l => l.name);
-            
+
             if (labels.length > 0) {
               const comment = `👋 Thanks for your contribution!
-              
+
               🏷️ **Auto-applied labels**: ${labels.map(l => \`\`${l}\`\`).join(', ')}
-              
+
               These labels help determine which CI/CD workflows will run:
               - \`frontend\`: Triggers frontend-specific tests
-              - \`backend\`: Triggers backend-specific tests  
+              - \`backend\`: Triggers backend-specific tests
               - \`e2e-full\`: Runs full E2E test suite (all browsers)
               - \`visual-regression\`: Runs visual regression tests
               - \`performance\`: Runs performance tests
-              
+
               Labels are automatically updated when you push new commits.`;
-              
+
               github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,

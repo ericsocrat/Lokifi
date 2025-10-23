@@ -72,8 +72,8 @@ jobs:
       - name: 🐍 Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
           cache-dependency-path: |
             apps/backend/requirements.txt
             apps/backend/requirements-dev.txt
@@ -132,8 +132,8 @@ jobs:
       - name: 🟢 Setup Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
           cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📦 Install dependencies
@@ -210,8 +210,8 @@ jobs:
       - name: 🐍 Setup Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          cache: 'pip'
+          python-version: "3.11"
+          cache: "pip"
           cache-dependency-path: |
             apps/backend/requirements.txt
             apps/backend/requirements-dev.txt
@@ -282,7 +282,7 @@ jobs:
         run: |
           # Check backend health
           curl -f http://localhost:8000/health || exit 1
-          
+
           # Check frontend accessibility
           curl -f http://localhost:3000 || exit 1
 
@@ -290,7 +290,7 @@ jobs:
         run: |
           # Basic API connectivity
           curl -f http://localhost:8000/api/v1/health || exit 1
-          
+
           # Frontend can reach backend
           docker compose -f apps/docker-compose.ci.yml logs frontend | grep -q "ready" || exit 1
 

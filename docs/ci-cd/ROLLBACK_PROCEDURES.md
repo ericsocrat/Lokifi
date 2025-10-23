@@ -1,8 +1,8 @@
 # CI/CD Workflow Rollback Procedures
 
-> **Document Version**: 1.0  
-> **Last Updated**: October 23, 2025  
-> **Status**: Active Safety Documentation  
+> **Document Version**: 1.0
+> **Last Updated**: October 23, 2025
+> **Status**: Active Safety Documentation
 > **Purpose**: Emergency procedures to revert CI/CD workflow changes
 
 ## 📋 Overview
@@ -99,7 +99,7 @@ git push origin main
 
 ### Scenario 1: Keep Phase 1, Rollback Phase 2
 
-**Keep**: Caching optimizations (Phase 1)  
+**Keep**: Caching optimizations (Phase 1)
 **Rollback**: Separated workflows (Phase 2)
 
 ```bash
@@ -123,7 +123,7 @@ git push origin main
 
 ### Scenario 2: Keep CI Only, Rollback Others
 
-**Keep**: Fast feedback workflow (ci.yml)  
+**Keep**: Fast feedback workflow (ci.yml)
 **Rollback**: Coverage, integration, E2E workflows
 
 ```bash
@@ -330,5 +330,5 @@ After rollback, verify:
 
 ---
 
-**Last Tested**: Never (preventive documentation)  
+**Last Tested**: Never (preventive documentation)
 **Next Review**: After first rollback or 6 months (whichever comes first)
