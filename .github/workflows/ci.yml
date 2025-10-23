@@ -1,0 +1,243 @@
+name: ⚡ CI - Fast Feedback
+
+# Fast feedback workflow: Runs in ~3 minutes
+# Purpose: Quick validation of code quality, types, and unit tests
+# Runs on: Every push and pull request
+# Strategy: Only unit tests (no integration), parallel execution, aggressive caching
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+      - 'fix/**'
+      - 'test/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+# Cancel in-progress runs for same workflow + branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Detect which parts of codebase changed
+  changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      workflows: ${{ steps.filter.outputs.workflows }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/frontend/**'
+              - 'package.json'
+              - 'package-lock.json'
+            backend:
+              - 'apps/backend/**'
+              - 'apps/backend/requirements.txt'
+              - 'apps/backend/requirements-dev.txt'
+            workflows:
+              - '.github/workflows/**'
+
+  # Frontend: Linting, Type Checking, Unit Tests
+  frontend-fast:
+    name: 🎨 Frontend Fast Checks
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.workflows == 'true'
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: 🔍 ESLint (Code Quality)
+        run: npm run lint
+        continue-on-error: false
+
+      - name: 🔒 Security Linting
+        run: npm run lint:security
+        continue-on-error: false
+
+      - name: ♿ Accessibility Linting
+        run: npm run lint:a11y
+        continue-on-error: true  # Warnings only for now
+
+      - name: 🔍 TypeScript Type Check
+        run: npm run typecheck
+        continue-on-error: false
+
+      - name: 🧪 Unit Tests (Vitest)
+        run: npm run test:unit
+        env:
+          NODE_ENV: test
+
+      - name: 📊 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-results
+          path: apps/frontend/test-results/
+          retention-days: 7
+          compression-level: 9
+
+  # Backend: Linting, Type Checking, Unit Tests
+  backend-fast:
+    name: 🔧 Backend Fast Checks
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.workflows == 'true'
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: apps/backend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: |
+            apps/backend/requirements.txt
+            apps/backend/requirements-dev.txt
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: ✨ Ruff Lint (Code Quality)
+        run: ruff check .
+        continue-on-error: false
+
+      - name: 🎨 Ruff Format Check
+        run: ruff format --check .
+        continue-on-error: false
+
+      - name: 🔍 Type Check (mypy)
+        run: mypy app --config-file=mypy.ini
+        continue-on-error: false
+
+      - name: 🔒 Security Check (bandit)
+        run: bandit -r app/ -f json -o bandit-report.json
+        continue-on-error: true  # Informational for now
+
+      - name: 📦 Dependency Audit (pip-audit)
+        run: pip-audit --desc --format json --output pip-audit-report.json
+        continue-on-error: true  # Informational for now
+
+      - name: 🧪 Unit Tests (pytest)
+        run: pytest tests/unit/ -v --tb=short --maxfail=5
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          TESTING: 1
+        continue-on-error: false
+
+      - name: 📊 Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-security-reports
+          path: |
+            apps/backend/bandit-report.json
+            apps/backend/pip-audit-report.json
+          retention-days: 7
+          compression-level: 9
+          if-no-files-found: ignore
+
+  # Security: npm audit
+  security-npm:
+    name: 🔒 NPM Security Audit
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.workflows == 'true'
+    timeout-minutes: 3
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: 🔒 NPM Audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true  # Informational only
+
+  # Summary Job: All checks must pass
+  ci-success:
+    name: ✅ CI Fast Feedback Success
+    runs-on: ubuntu-latest
+    needs:
+      - changes
+      - frontend-fast
+      - backend-fast
+      - security-npm
+    if: always()
+    steps:
+      - name: 🎯 Check job statuses
+        run: |
+          echo "Frontend: ${{ needs.frontend-fast.result }}"
+          echo "Backend: ${{ needs.backend-fast.result }}"
+          echo "Security: ${{ needs.security-npm.result }}"
+
+          # Fail if any critical job failed
+          if [ "${{ needs.frontend-fast.result }}" = "failure" ] || \
+             [ "${{ needs.backend-fast.result }}" = "failure" ]; then
+            echo "❌ Fast feedback checks failed"
+            exit 1
+          fi
+
+          echo "✅ All fast feedback checks passed!"
+
+      - name: 📝 Generate summary
+        if: always()
+        run: |
+          echo "## ⚡ Fast Feedback Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend Fast Checks | ${{ needs.frontend-fast.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend Fast Checks | ${{ needs.backend-fast.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| NPM Security Audit | ${{ needs.security-npm.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Expected Time**: ~3 minutes" >> $GITHUB_STEP_SUMMARY
+          echo "**Purpose**: Fast feedback on code quality, types, and unit tests" >> $GITHUB_STEP_SUMMARY
