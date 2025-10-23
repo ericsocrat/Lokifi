@@ -1,28 +1,35 @@
 import uuid
 
 import pytest
+from app.db.database import get_db_session
+from app.main import app
 from app.models.notification_models import Notification, NotificationType
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
-
-from app.db.database import get_db_session
-from app.main import app
 
 
 @pytest.fixture
 def anyio_backend():
     return "asyncio"
 
+
 async def _register(client, email, username):
-    return await client.post("/api/auth/register", json={
-        "email": email,
-        "password": "testpassword123",
-        "full_name": username.title(),
-        "username": username
-    })
+    return await client.post(
+        "/api/auth/register",
+        json={
+            "email": email,
+            "password": "testpassword123",
+            "full_name": username.title(),
+            "username": username,
+        },
+    )
+
 
 async def _login(client, email):
-    return await client.post("/api/auth/login", json={"email": email, "password": "testpassword123"})
+    return await client.post(
+        "/api/auth/login", json={"email": email, "password": "testpassword123"}
+    )
+
 
 @pytest.mark.anyio
 async def test_follow_creates_notification():
@@ -46,8 +53,7 @@ async def test_follow_creates_notification():
         async for db in get_db_session():
             result = await db.execute(
                 select(Notification).where(
-                    Notification.user_id == bob_id,
-                    Notification.type == NotificationType.FOLLOW
+                    Notification.user_id == bob_id, Notification.type == NotificationType.FOLLOW
                 )
             )
             initial_count = len(result.scalars().all())
@@ -63,12 +69,12 @@ async def test_follow_creates_notification():
                 select(Notification).where(
                     Notification.user_id == bob_id,
                     Notification.type == NotificationType.FOLLOW,
-                    Notification.related_user_id == alice_id
+                    Notification.related_user_id == alice_id,
                 )
             )
             notifications = result.scalars().all()
             assert len(notifications) == initial_count + 1
-            
+
             # Verify notification content
             notification = notifications[-1]  # Get the latest one
             assert notification.type == NotificationType.FOLLOW
@@ -88,7 +94,7 @@ async def test_follow_creates_notification():
                 select(Notification).where(
                     Notification.user_id == bob_id,
                     Notification.type == NotificationType.FOLLOW,
-                    Notification.related_user_id == alice_id
+                    Notification.related_user_id == alice_id,
                 )
             )
             final_notifications = result.scalars().all()

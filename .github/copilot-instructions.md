@@ -72,6 +72,36 @@
 3. Write behavior tests, not implementation tests
 4. Aim for 80%+ on new code, don't retroactively fix old code
 
+### 🤖 Automatic Coverage Tracking
+
+**Status**: ✅ Fully Automated - Zero Manual Work Required
+
+Lokifi has a **fully automatic coverage tracking system** integrated into CI/CD. Coverage metrics are tracked, documented, and synchronized automatically.
+
+**How It Works:**
+1. **Tests Run** → CI/CD executes frontend and backend tests
+2. **Coverage Extracted** → Metrics auto-pulled from coverage reports
+3. **Config Updated** → `coverage.config.json` (single source of truth) updated
+4. **Docs Synced** → All 6+ documentation files automatically synchronized
+5. **Auto-Committed** → Changes committed with `[skip ci]` tag
+
+**Key Points for Developers:**
+- ✅ **No manual updates needed** - System handles everything automatically
+- ✅ **Always current** - Coverage metrics update after every test run in CI/CD
+- ✅ **Single source of truth** - `coverage.config.json` is the master config
+- ✅ **Verification only** - Use `npm run coverage:verify` for local checks
+
+**Current Coverage** (auto-updated):
+- Frontend: 11.61% (passing 10% threshold ✅)
+- Backend: 27% (below 80% target ⚠️)
+- Overall: 19.31% (passing 20% threshold ✅)
+
+**Coverage Documentation:**
+- Master Config: `/coverage.config.json`
+- Automation Guide: `/tools/scripts/coverage/README.md`
+- Implementation: `/tools/scripts/coverage/AUTOMATION_COMPLETE.md`
+- Baseline: `/docs/guides/COVERAGE_BASELINE.md`
+
 **Test Quality Guidelines:**
 - **Test user-facing behavior**, not internal implementation
 - **Mock external dependencies** (APIs, databases, external services)

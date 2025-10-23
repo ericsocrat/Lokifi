@@ -1,0 +1,35 @@
+{
+  "name": "lokifi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lokifi - Full-stack financial application",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "coverage:sync": "pwsh -ExecutionPolicy Bypass -File tools/scripts/coverage/sync-coverage-everywhere.ps1",
+    "coverage:sync:dryrun": "pwsh -ExecutionPolicy Bypass -File tools/scripts/coverage/sync-coverage-everywhere.ps1 -DryRun",
+    "coverage:verify": "pwsh -ExecutionPolicy Bypass -File tools/scripts/coverage/sync-coverage-everywhere.ps1 -Verify",
+    "test:frontend": "cd apps/frontend && npm test",
+    "test:backend": "cd apps/backend && pytest",
+    "test:all": "npm run test:frontend && npm run test:backend"
+  },
+  "workspaces": [
+    "apps/frontend",
+    "apps/backend"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ericsocrat/Lokifi.git"
+  },
+  "keywords": [
+    "finance",
+    "trading",
+    "portfolio",
+    "nextjs",
+    "fastapi"
+  ],
+  "author": "Eric Socrat",
+  "license": "UNLICENSED"
+}

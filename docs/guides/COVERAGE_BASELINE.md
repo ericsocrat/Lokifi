@@ -1,7 +1,7 @@
 # Test Coverage Baseline
 
-> **Generated**: October 23, 2025  
-> **Branch**: `test/workflow-optimizations-validation`  
+> **Generated**: October 23, 2025
+> **Branch**: `test/workflow-optimizations-validation`
 > **Commit**: 3dfa239a
 
 This document establishes the test coverage baseline for the Lokifi project. Coverage metrics help track code quality and identify areas needing additional tests.
@@ -11,19 +11,19 @@ This document establishes the test coverage baseline for the Lokifi project. Cov
 | Component | Lines | Branches | Functions | Statements |
 |-----------|-------|----------|-----------|------------|
 | **Frontend** | 11.61% | 88.7% | 84.69% | 11.61% |
-| **Backend** | 26.65% | N/A | N/A | 26.65% |
+| **Backend** | 27% | N/A | N/A | 26.65% |
 
 ## 🎯 Frontend Coverage (Apps/Frontend)
 
-**Test Framework**: Vitest 3.2.4 with @vitest/coverage-v8  
-**Total Tests**: 2,542 passing, 15 skipped  
-**Test Files**: 96 files  
+**Test Framework**: Vitest 3.2.4 with @vitest/coverage-v8
+**Total Tests**: 2,542 passing, 15 skipped
+**Test Files**: 96 files
 **Execution Time**: ~50 seconds
 
 ### Detailed Metrics
 
 ```
-Lines:      4,516 / 38,895 covered (11.61%)
+Lines:      N/A / N/A covered (11.61%)
 Branches:   88.7% (excellent)
 Functions:  84.69% (excellent)
 Statements: 11.61%
@@ -66,15 +66,15 @@ Interactive coverage dashboard available at:
 
 ## 🐍 Backend Coverage (Apps/Backend)
 
-**Test Framework**: Pytest with pytest-cov  
-**Total Tests**: 761 collected (after duplicate fix)  
-**Test Structure**: Fixed duplicate test file naming  
+**Test Framework**: Pytest with pytest-cov
+**Total Tests**: 789 collected (after duplicate fix)
+**Test Structure**: Fixed duplicate test file naming
 **Execution Time**: ~5 seconds (collection)
 
 ### Detailed Metrics
 
 ```
-Statements: 26.65% coverage
+Statements: 27% coverage
 Total Statements: ~15,000 (estimated)
 Covered Statements: ~4,000
 ```
@@ -148,9 +148,53 @@ Use tools to run only relevant tests:
 pytest tests/api/test_auth.py -v
 ```
 
+## 🤖 Fully Automatic Coverage Updates
+
+**Status**: ✅ Fully Automated - Zero Manual Work Required
+
+Lokifi uses a **fully automatic coverage tracking system** integrated into CI/CD. This document and all coverage metrics are automatically updated after every test run.
+
+### How Automation Works
+
+1. **Tests Run** → CI/CD executes frontend and backend tests
+2. **Coverage Extracted** → Metrics automatically pulled from coverage reports:
+   - Frontend: `apps/frontend/coverage-dashboard/data.json`
+   - Backend: `apps/backend/coverage.json`
+3. **Config Updated** → `coverage.config.json` updated with latest metrics
+4. **Docs Synced** → This file and 5+ other docs automatically synchronized
+5. **Auto-Committed** → Changes committed with `[skip ci]` tag to prevent loops
+
+**Result**: Coverage metrics are always current across all files with zero manual intervention!
+
+### What Gets Updated Automatically
+
+Every time tests run in CI/CD (push to main/develop, PR merge), these files are updated:
+- ✅ `coverage.config.json` - Master configuration
+- ✅ `docs/guides/COVERAGE_BASELINE.md` - This file
+- ✅ `.github/workflows/lokifi-unified-pipeline.yml` - CI/CD thresholds
+- ✅ `.github/copilot-instructions.md` - AI context
+- ✅ `README.md` - Coverage badges and stats
+- ✅ `docs/ci-cd/README.md` - CI/CD documentation
+
+### CI/CD Integration
+
+- **Workflow**: `.github/workflows/lokifi-unified-pipeline.yml`
+- **Job**: `auto-update-coverage` (runs after frontend-test + backend-test)
+- **Triggers**: Push to main/develop, PR merges, test file changes
+- **Frequency**: Every test run
+- **Manual Override**: Rarely needed - run `npm run coverage:sync` for offline work
+
+### Learn More
+
+- **Implementation Details**: [tools/scripts/coverage/AUTOMATION_COMPLETE.md](../../tools/scripts/coverage/AUTOMATION_COMPLETE.md)
+- **Automation Guide**: [tools/scripts/coverage/README.md](../../tools/scripts/coverage/README.md)
+- **System Status**: [tools/scripts/coverage/STATUS.md](../../tools/scripts/coverage/STATUS.md)
+
+> 💡 **Developer Note**: You don't need to update coverage metrics manually. The system handles everything automatically!
+
 ## 📋 Coverage Tracking
 
-### How to Generate Coverage Reports
+### How to Generate Coverage Reports (Local Development)
 
 #### Frontend
 ```bash
@@ -173,12 +217,18 @@ pytest --cov=app --cov-report=html --cov-report=term
 cd htmlcov && python -m http.server 8080
 ```
 
-### Automated Coverage Tracking
+### Local Verification (Rarely Needed)
 
-Coverage is automatically tracked in:
-- GitHub Actions CI/CD (when configured)
-- Pre-commit hooks (optional)
-- Coverage dashboard trends (`coverage-dashboard/trends.json`)
+```bash
+# Verify coverage is in sync
+npm run coverage:verify
+
+# Manual sync if working offline
+npm run coverage:sync
+
+# Preview sync changes without applying
+npm run coverage:sync:dryrun
+```
 
 ## 🎨 Coverage Visualization
 
@@ -264,5 +314,5 @@ coverage: {
 
 ---
 
-**Last Updated**: October 23, 2025  
+**Last Updated**: October 23, 2025
 **Next Review**: November 23, 2025 (1 month)

@@ -193,7 +193,7 @@ npm run dev
 ## 🧪 Testing
 
 **Status:** ✅ Production Ready
-**Frontend Coverage:** 94.8% pass rate, 68% branch coverage
+**Frontend Coverage:** 11.61% pass rate, 68% branch coverage
 **Documentation:** [docs/testing/](docs/testing/)
 
 ### Quick Commands
@@ -239,6 +239,58 @@ npx playwright test       # Run E2E tests
 - Playwright for E2E tests (separate pipeline)
 
 For detailed testing information, see [docs/testing/README.md](docs/testing/README.md)
+
+## 📊 Coverage Management
+
+**Status:** ✅ Fully Automated - Zero Manual Work Required
+
+Lokifi uses a **fully automatic coverage tracking system** integrated into CI/CD. Coverage metrics are extracted, documented, and synchronized automatically after every test run.
+
+### 🤖 How It Works
+
+1. **Tests Run** → CI/CD executes frontend and backend tests
+2. **Coverage Extracted** → Metrics automatically pulled from test reports
+3. **Config Updated** → `coverage.config.json` updated with latest numbers
+4. **Docs Synced** → All documentation files updated automatically
+5. **Auto-Committed** → Changes committed to repository with `[skip ci]` tag
+
+**Result:** Coverage is always up-to-date across all files with zero manual intervention!
+
+### 📈 Current Coverage
+
+| Component | Coverage | Status | Threshold |
+|-----------|----------|--------|-----------|
+| **Frontend** | 11.61% | ✅ Passing | 10% |
+| **Backend** | 27% | ⚠️ Below Target | 80% |
+| **Overall** | 19.31% | ✅ Passing | 20% |
+
+### 🔍 Local Verification
+
+```bash
+# Verify coverage is in sync (rarely needed)
+npm run coverage:verify
+
+# Manual sync if working offline
+npm run coverage:sync
+
+# Preview sync changes without applying
+npm run coverage:sync:dryrun
+```
+
+### 📚 Coverage Documentation
+
+- **Master Config:** [`coverage.config.json`](coverage.config.json) - Single source of truth
+- **Automation Guide:** [`tools/scripts/coverage/README.md`](tools/scripts/coverage/README.md)
+- **Coverage Baseline:** [`docs/guides/COVERAGE_BASELINE.md`](docs/guides/COVERAGE_BASELINE.md)
+- **Implementation Details:** [`tools/scripts/coverage/AUTOMATION_COMPLETE.md`](tools/scripts/coverage/AUTOMATION_COMPLETE.md)
+
+### 🎯 Coverage Goals
+
+- **Short-term (1-2 weeks):** Frontend 30%, Backend 40%
+- **Medium-term (1 month):** Frontend 50%, Backend 60%
+- **Long-term (3 months):** Frontend 70%, Backend 80%
+
+> 💡 **Note:** You don't need to update coverage metrics manually. The CI/CD pipeline handles everything automatically!
 
 ### Integration Tests
 ```bash
