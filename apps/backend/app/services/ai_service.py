@@ -13,8 +13,6 @@ from datetime import UTC, datetime
 from typing import Any
 
 import sentry_sdk
-from sqlalchemy.exc import IntegrityError
-
 from app.db.db import get_session
 from app.db.models import AIMessage, AIThread
 from app.services.ai_provider import ProviderError, StreamChunk
@@ -24,6 +22,7 @@ from app.services.content_moderation import (
     moderate_ai_input,
     moderate_ai_output,
 )
+from sqlalchemy.exc import IntegrityError
 
 logger = logging.getLogger(__name__)
 

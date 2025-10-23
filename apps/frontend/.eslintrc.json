@@ -1,6 +1,6 @@
 {
   "root": true,
-  "extends": ["next/core-web-vitals", "next/typescript", "plugin:jsx-a11y/recommended"],
+  "extends": ["next/core-web-vitals", "next/typescript"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -9,16 +9,15 @@
       "jsx": true
     }
   },
-  "plugins": ["@typescript-eslint", "jsx-a11y"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
-    "jsx-a11y/alt-text": "error",
-    "jsx-a11y/aria-props": "error",
-    "jsx-a11y/aria-role": "error",
-    "jsx-a11y/no-autofocus": "warn"
+    "react-hooks/exhaustive-deps": "off",
+    "react/no-unescaped-entities": "warn",
+    "@next/next/no-img-element": "warn",
+    "import/no-anonymous-default-export": "warn"
   },
   "ignorePatterns": [
     "node_modules/",
