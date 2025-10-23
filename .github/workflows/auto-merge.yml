@@ -1,0 +1,197 @@
+# Auto-merge Dependabot PRs
+# Automatically merges Dependabot PRs that pass all required checks
+# Only merges patch and minor updates (not major breaking changes)
+# Reduces manual PR review burden for dependency updates
+
+name: 🤖 Auto-merge Dependabot
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  pull_request_review:
+    types:
+      - submitted
+  check_suite:
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: 'PR number to auto-merge (if eligible)'
+        required: true
+        type: number
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge Dependabot PR
+    runs-on: ubuntu-latest
+    
+    # Only run for Dependabot PRs
+    if: github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: 🔍 Check if PR is from Dependabot
+        id: check-author
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.pull_request?.number || context.payload.inputs?.['pr-number'];
+            
+            if (!prNumber) {
+              core.setFailed('No PR number found');
+              return;
+            }
+            
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber
+            });
+            
+            const isDependabot = pr.user.login === 'dependabot[bot]';
+            core.setOutput('is-dependabot', isDependabot);
+            core.setOutput('pr-number', prNumber);
+            core.setOutput('pr-title', pr.title);
+            
+            if (!isDependabot) {
+              core.setFailed('PR is not from Dependabot');
+            }
+
+      - name: 📊 Check Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔐 Validate update type
+        id: validate-update
+        run: |
+          UPDATE_TYPE="${{ steps.metadata.outputs.update-type }}"
+          echo "Update type: $UPDATE_TYPE"
+          
+          # Only auto-merge patch and minor updates
+          if [[ "$UPDATE_TYPE" == "version-update:semver-patch" ]] || [[ "$UPDATE_TYPE" == "version-update:semver-minor" ]]; then
+            echo "✅ Safe to auto-merge (patch/minor update)"
+            echo "should-merge=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️ Major update detected - requires manual review"
+            echo "should-merge=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: ⏳ Wait for required checks
+        if: steps.validate-update.outputs.should-merge == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.check-author.outputs.pr-number }};
+            
+            // Wait up to 10 minutes for checks to complete
+            const maxWaitTime = 10 * 60 * 1000; // 10 minutes
+            const pollInterval = 30 * 1000; // 30 seconds
+            const startTime = Date.now();
+            
+            while (Date.now() - startTime < maxWaitTime) {
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+              
+              // Check if PR is mergeable
+              if (pr.mergeable_state === 'clean' || pr.mergeable_state === 'unstable') {
+                core.info('✅ All checks passed - PR is ready to merge');
+                return;
+              }
+              
+              if (pr.mergeable_state === 'blocked') {
+                core.info(`⏳ Waiting for checks... (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`);
+                await new Promise(resolve => setTimeout(resolve, pollInterval));
+              } else {
+                core.setFailed(`❌ PR is not mergeable (state: ${pr.mergeable_state})`);
+                return;
+              }
+            }
+            
+            core.setFailed('⏱️ Timeout waiting for checks to complete');
+
+      - name: 🔀 Enable auto-merge
+        if: steps.validate-update.outputs.should-merge == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.check-author.outputs.pr-number }};
+            
+            try {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                merge_method: 'squash',
+                commit_title: '${{ steps.check-author.outputs.pr-title }}',
+                commit_message: 'Auto-merged by Dependabot auto-merge workflow'
+              });
+              
+              core.info('✅ Successfully auto-merged PR');
+              
+              // Add comment to PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: `🤖 **Auto-merged** this Dependabot PR after all checks passed.\n\n**Update type**: \`${{ steps.metadata.outputs.update-type }}\`\n**Package**: \`${{ steps.metadata.outputs.dependency-names }}\`\n**Old version**: \`${{ steps.metadata.outputs.previous-version }}\`\n**New version**: \`${{ steps.metadata.outputs.new-version }}\``
+              });
+              
+            } catch (error) {
+              core.setFailed(`Failed to merge PR: ${error.message}`);
+            }
+
+      - name: 📝 Add label for skipped PRs
+        if: steps.validate-update.outputs.should-merge == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.check-author.outputs.pr-number }};
+            
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              labels: ['dependencies', 'needs-review']
+            });
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `⚠️ **Manual review required** for this major version update.\n\n**Update type**: \`${{ steps.metadata.outputs.update-type }}\`\n**Package**: \`${{ steps.metadata.outputs.dependency-names }}\`\n**Old version**: \`${{ steps.metadata.outputs.previous-version }}\`\n**New version**: \`${{ steps.metadata.outputs.new-version }}\`\n\nPlease review the changelog and test thoroughly before merging.`
+            });
+
+      - name: 📊 Generate summary
+        if: always()
+        run: |
+          echo "## 🤖 Dependabot Auto-merge Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**PR**: #${{ steps.check-author.outputs.pr-number }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Title**: ${{ steps.check-author.outputs.pr-title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Update type**: ${{ steps.metadata.outputs.update-type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Package**: ${{ steps.metadata.outputs.dependency-names }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version**: ${{ steps.metadata.outputs.previous-version }} → ${{ steps.metadata.outputs.new-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ steps.validate-update.outputs.should-merge }}" == "true" ]]; then
+            echo "**Action**: ✅ Auto-merged (patch/minor update)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Action**: ⚠️ Requires manual review (major update)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Policy**:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Auto-merge: patch and minor updates" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚠️ Manual review: major updates" >> $GITHUB_STEP_SUMMARY
