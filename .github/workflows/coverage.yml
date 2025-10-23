@@ -135,6 +135,19 @@ jobs:
       run:
         working-directory: apps/backend
     services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
       redis:
         image: redis:7-alpine
         ports:
@@ -167,6 +180,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           TESTING: 1
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
         continue-on-error: ${{ matrix.python-version != '3.11' }} # Only fail on primary version
 
