@@ -8,7 +8,7 @@ name: 🧹 Stale Bot
 on:
   schedule:
     # Run daily at 1 AM UTC
-    - cron: '0 1 * * *'
+    - cron: "0 1 * * *"
   workflow_dispatch:
 
 permissions:
@@ -26,131 +26,131 @@ jobs:
           # ==========================================
           # Stale Detection Settings
           # ==========================================
-          
+
           # Days before marking as stale
-          days-before-stale: 60  # Issues
-          days-before-pr-stale: 45  # PRs (shorter for faster feedback)
-          
+          days-before-stale: 60 # Issues
+          days-before-pr-stale: 45 # PRs (shorter for faster feedback)
+
           # Days before closing after marked stale
-          days-before-close: 7  # Both issues and PRs
+          days-before-close: 7 # Both issues and PRs
           days-before-pr-close: 7
-          
+
           # ==========================================
           # Labels
           # ==========================================
-          
-          stale-issue-label: 'stale'
-          stale-pr-label: 'stale'
-          
+
+          stale-issue-label: "stale"
+          stale-pr-label: "stale"
+
           # Don't mark as stale if these labels are present
-          exempt-issue-labels: 'pinned,security,bug,enhancement,help-wanted,good-first-issue'
-          exempt-pr-labels: 'pinned,security,work-in-progress,dependencies'
-          
+          exempt-issue-labels: "pinned,security,bug,enhancement,help-wanted,good-first-issue"
+          exempt-pr-labels: "pinned,security,work-in-progress,dependencies"
+
           # ==========================================
           # Messages
           # ==========================================
-          
+
           stale-issue-message: |
             👋 This issue has been automatically marked as stale because it has not had recent activity.
-            
+
             **It will be closed in 7 days if no further activity occurs.**
-            
+
             If you believe this issue is still relevant:
             - Add a comment explaining why
             - Add the `pinned` label to prevent auto-closure
             - Update the issue with new information
-            
+
             Thank you for your contributions! 🙏
-          
+
           stale-pr-message: |
             👋 This pull request has been automatically marked as stale because it has not had recent activity.
-            
+
             **It will be closed in 7 days if no further activity occurs.**
-            
+
             If this PR is still being worked on:
             - Add a comment with an update
             - Add the `work-in-progress` label
             - Rebase with the latest main branch
             - Request a review if ready
-            
+
             Thank you for your contributions! 🙏
-          
+
           close-issue-message: |
             🔒 This issue has been automatically closed due to inactivity.
-            
+
             If you believe this was closed in error:
             - Reopen the issue
             - Add the `pinned` label to prevent future auto-closure
             - Provide an update on the status
-            
+
             Thank you! 🙏
-          
+
           close-pr-message: |
             🔒 This pull request has been automatically closed due to inactivity.
-            
+
             If you'd like to continue work on this:
             - Reopen the PR
             - Rebase with main
             - Add a comment with your progress
             - Request a review when ready
-            
+
             Thank you! 🙏
-          
+
           # ==========================================
           # Behavior Settings
           # ==========================================
-          
+
           # Don't mark stale if recently updated
           days-before-issue-stale: 60
-          
+
           # Remove stale label when activity resumes
           remove-stale-when-updated: true
           remove-pr-stale-when-updated: true
-          
+
           # Only process this many items per run (rate limiting)
           operations-per-run: 100
-          
+
           # ==========================================
           # Assignee Settings
           # ==========================================
-          
+
           # Don't mark stale if assigned (someone is actively working)
-          exempt-all-assignees: false  # Set to true if you want assigned items to never go stale
-          
+          exempt-all-assignees: false # Set to true if you want assigned items to never go stale
+
           # Don't mark stale if these assignees are present
-          exempt-assignees: 'ericsocrat'  # Project maintainer
-          
+          exempt-assignees: "ericsocrat" # Project maintainer
+
           # ==========================================
           # Milestone Settings
           # ==========================================
-          
+
           # Don't mark stale if part of a milestone
           exempt-all-milestones: true
-          
+
           # ==========================================
           # Additional Options
           # ==========================================
-          
+
           # Mark as stale even if there's an assignee
           # exempt-all-assignees: false
-          
+
           # Process stale items created before this date
           # start-date: '2024-01-01T00:00:00Z'
-          
+
           # Only mark as stale, don't auto-close
           # days-before-close: -1
-          
+
           # Disable stale for issues (only PRs)
           # days-before-stale: -1
-          
+
           # Enable debug output
           debug-only: false
-          
+
           # Ascending order (oldest first)
           ascending: true
-          
+
           # Delete branch when PR is closed
-          delete-branch: false  # Set to true to auto-delete PR branches
+          delete-branch: false # Set to true to auto-delete PR branches
 
       - name: 📊 Generate summary
         if: always()
