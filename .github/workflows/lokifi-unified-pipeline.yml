@@ -62,6 +62,10 @@ jobs:
       - name: 📚 Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: 🔍 Run TypeScript type check
+        run: npm run typecheck
+        # NEW: Type checking enforced in CI/CD
+
       - name: 🧪 Run tests with coverage (with retry)
         uses: nick-invision/retry@v3
         with:
@@ -302,13 +306,21 @@ jobs:
         run: echo "PYTHONPATH=$GITHUB_WORKSPACE/apps/backend" >> $GITHUB_ENV
 
       - name: ✨ Run Ruff lint
-        run: ruff check . || true
+        working-directory: apps/backend
+        run: ruff check .
+        # REMOVED: || true - Linting failures now BLOCK builds (enforced quality gate)
         # REMOVED: Redundant 'pip install ruff' (already in requirements-dev.txt)
+
+      - name: 🔍 Run mypy type check
+        working-directory: apps/backend
+        run: mypy app --config-file=mypy.ini
+        # NEW: Type checking enforced in CI/CD
 
       - name: 🧪 Run pytest
         working-directory: apps/backend
         run: |
-          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml:coverage.xml --cov-report=term -m "not contract" --timeout=300 || true
+          PYTHONPATH=$GITHUB_WORKSPACE/apps/backend pytest --cov=. --cov-report=xml:coverage.xml --cov-report=term -m "not contract" --timeout=300
+        # REMOVED: || true - Test failures now BLOCK builds
         # REMOVED: Redundant 'pip install pytest pytest-cov' (already in requirements-dev.txt)
 
       - name: 📊 Upload coverage
