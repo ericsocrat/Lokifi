@@ -1,3 +1,6 @@
+import type { Drawing } from './drawings';
+import type { Alert } from '@/lib/utils/alerts';
+
 export interface Layer {
   id: string;
   name: string;
@@ -23,7 +26,7 @@ export interface AutoLabels {
 export interface ChartState {
   symbol: string;
   timeframe: string;
-  drawings: any[];
+  drawings: Drawing[];
   drawingSettings: {
     lineWidth: number;
     color: string;
@@ -36,7 +39,7 @@ export interface ChartState {
   indicatorSettings: IndicatorSettings;
   autoLabels: AutoLabels;
   activeTool: string | null;
-  alerts: any[];
+  alerts: Alert[];
   hotkeys: Record<string, string>;
   updateIndicatorSettings: (settings: Partial<IndicatorSettings>) => void;
   toggleLayerVisibility: (layerId: string) => void;
