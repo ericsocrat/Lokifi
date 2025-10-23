@@ -1,0 +1,305 @@
+# Workflow Summary Reporter
+# Posts PR comments with workflow execution metrics
+# Helps track optimization progress and identify bottlenecks
+
+name: 📊 Workflow Summary
+
+on:
+  workflow_run:
+    workflows:
+      - "⚡ Fast Feedback (CI)"
+      - "📈 Coverage Tracking"
+      - "🔗 Integration Tests"
+      - "🎭 E2E Tests"
+    types:
+      - completed
+
+permissions:
+  pull-requests: write
+  actions: read
+  contents: read
+
+jobs:
+  summary:
+    name: Generate Summary
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request'
+    
+    steps:
+      - name: Get PR Number
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              head: `${context.repo.owner}:${context.payload.workflow_run.head_branch}`
+            });
+            
+            if (pullRequests.length === 0) {
+              console.log('No open PR found for this branch');
+              return null;
+            }
+            
+            const pr = pullRequests[0];
+            console.log(`Found PR #${pr.number}`);
+            return pr.number;
+          result-encoding: string
+
+      - name: Get Workflow Run Details
+        id: workflow
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const { data: run } = await github.rest.actions.getWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            // Get jobs for timing breakdown
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            // Calculate metrics
+            const startTime = new Date(run.created_at);
+            const endTime = new Date(run.updated_at);
+            const totalDuration = Math.round((endTime - startTime) / 1000); // seconds
+            
+            // Job breakdown
+            const jobStats = jobs.jobs.map(job => {
+              const jobStart = new Date(job.started_at);
+              const jobEnd = new Date(job.completed_at);
+              const jobDuration = Math.round((jobEnd - jobStart) / 1000);
+              
+              return {
+                name: job.name,
+                status: job.conclusion,
+                duration: jobDuration,
+                steps: job.steps?.length || 0
+              };
+            });
+            
+            // Sort by duration (longest first)
+            jobStats.sort((a, b) => b.duration - a.duration);
+            
+            return {
+              workflowName: run.name,
+              status: run.conclusion,
+              totalDuration,
+              jobs: jobStats,
+              runUrl: run.html_url,
+              attempt: run.run_attempt,
+              billableTime: run.run_duration_ms ? Math.round(run.run_duration_ms / 1000) : totalDuration
+            };
+
+      - name: Get Cache Statistics
+        id: cache
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const runId = context.payload.workflow_run.id;
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: runId
+            });
+            
+            let cacheHits = 0;
+            let cacheMisses = 0;
+            let totalCaches = 0;
+            
+            // Parse job logs for cache statistics
+            jobs.jobs.forEach(job => {
+              job.steps?.forEach(step => {
+                const stepName = step.name.toLowerCase();
+                
+                // actions/cache patterns
+                if (stepName.includes('cache')) {
+                  totalCaches++;
+                  
+                  // Check if cache was hit (heuristic based on step conclusion)
+                  if (step.conclusion === 'success' && step.number < 5) {
+                    cacheHits++;
+                  } else if (step.conclusion === 'success' && step.number >= 5) {
+                    cacheMisses++;
+                  }
+                }
+                
+                // setup-node, setup-python cache
+                if (stepName.includes('setup node') || stepName.includes('setup python')) {
+                  totalCaches++;
+                  cacheHits++; // These are usually hits if setup is fast
+                }
+              });
+            });
+            
+            const cacheHitRate = totalCaches > 0 
+              ? Math.round((cacheHits / totalCaches) * 100) 
+              : 0;
+            
+            return {
+              hits: cacheHits,
+              misses: cacheMisses,
+              total: totalCaches,
+              hitRate: cacheHitRate
+            };
+
+      - name: Compare with Baseline
+        id: compare
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Baseline times from PERFORMANCE_BASELINE.md
+            const baselines = {
+              '⚡ Fast Feedback (CI)': 180,  // 3 minutes
+              '📈 Coverage Tracking': 360,    // 6 minutes
+              '🔗 Integration Tests': 600,    // 10 minutes
+              '🎭 E2E Tests': 900              // 15 minutes
+            };
+            
+            const workflow = ${{ steps.workflow.outputs.result }};
+            const baseline = baselines[workflow.workflowName] || 600;
+            const actual = workflow.totalDuration;
+            
+            const percentChange = Math.round(((actual - baseline) / baseline) * 100);
+            const improvement = baseline - actual;
+            
+            return {
+              baseline,
+              actual,
+              percentChange,
+              improvement,
+              faster: actual < baseline
+            };
+
+      - name: Post PR Comment
+        if: steps.pr.outputs.result != 'null'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = ${{ steps.pr.outputs.result }};
+            if (!prNumber) {
+              console.log('No PR number found, skipping comment');
+              return;
+            }
+            
+            const workflow = ${{ steps.workflow.outputs.result }};
+            const cache = ${{ steps.cache.outputs.result }};
+            const compare = ${{ steps.compare.outputs.result }};
+            
+            // Format duration as MM:SS
+            const formatDuration = (seconds) => {
+              const mins = Math.floor(seconds / 60);
+              const secs = seconds % 60;
+              return `${mins}:${secs.toString().padStart(2, '0')}`;
+            };
+            
+            // Status emoji
+            const statusEmoji = workflow.status === 'success' ? '✅' : 
+                                workflow.status === 'failure' ? '❌' : '⚠️';
+            
+            // Comparison indicator
+            const comparisonEmoji = compare.faster ? '🚀' : '🐌';
+            const comparisonText = compare.faster 
+              ? `${Math.abs(compare.percentChange)}% faster (saved ${compare.improvement}s)` 
+              : `${Math.abs(compare.percentChange)}% slower (+${Math.abs(compare.improvement)}s)`;
+            
+            // Build job breakdown table
+            const jobTable = workflow.jobs
+              .map(job => {
+                const statusIcon = job.status === 'success' ? '✅' : 
+                                   job.status === 'failure' ? '❌' : '⚠️';
+                return `| ${statusIcon} ${job.name} | ${formatDuration(job.duration)} | ${job.steps} |`;
+              })
+              .join('\n');
+            
+            // Cache statistics
+            const cacheEmoji = cache.hitRate >= 80 ? '🎯' : 
+                               cache.hitRate >= 50 ? '📊' : '⚠️';
+            
+            const comment = `## ${statusEmoji} ${workflow.workflowName}
+
+### ⏱️ Performance
+- **Total Duration**: ${formatDuration(workflow.totalDuration)} ${comparisonEmoji}
+- **Baseline**: ${formatDuration(compare.baseline)}
+- **Result**: ${comparisonText}
+- **Billable Time**: ${formatDuration(workflow.billableTime)}
+- **Attempt**: #${workflow.attempt}
+
+### 📦 Cache Performance ${cacheEmoji}
+- **Hit Rate**: ${cache.hitRate}% (${cache.hits}/${cache.total})
+- **Cache Hits**: ${cache.hits}
+- **Cache Misses**: ${cache.misses}
+
+### 🔨 Job Breakdown
+| Job | Duration | Steps |
+|-----|----------|-------|
+${jobTable}
+
+---
+[View Full Run](${workflow.runUrl}) | [CI/CD Docs](https://github.com/${context.repo.owner}/${context.repo.repo}/tree/main/docs/ci-cd)
+
+<details>
+<summary>💡 Optimization Tips</summary>
+
+${cache.hitRate < 80 ? '- ⚠️ **Low cache hit rate**: Consider pre-warming caches on main branch\n' : ''}
+${compare.faster ? '- ✅ **Great performance**: Workflow is faster than baseline\n' : '- ⚠️ **Slower than baseline**: Check job logs for bottlenecks\n'}
+${workflow.jobs.some(j => j.duration > 300) ? '- 🐌 **Long-running jobs detected**: Consider splitting or parallelizing\n' : ''}
+${workflow.totalDuration > compare.baseline * 1.2 ? '- 🚨 **Performance regression**: Review recent changes that may have slowed down CI/CD\n' : ''}
+
+</details>
+`;
+            
+            // Find existing comment to update
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes(workflow.workflowName)
+            );
+            
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+              console.log(`Updated comment ${botComment.id}`);
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: comment
+              });
+              console.log('Created new comment');
+            }
+
+      - name: Check for Performance Regression
+        if: steps.pr.outputs.result != 'null'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const compare = ${{ steps.compare.outputs.result }};
+            const workflow = ${{ steps.workflow.outputs.result }};
+            
+            // Fail if >20% slower than baseline
+            if (!compare.faster && Math.abs(compare.percentChange) > 20) {
+              core.setFailed(
+                `⚠️ Performance regression detected: ${workflow.workflowName} is ${Math.abs(compare.percentChange)}% slower than baseline (${compare.actual}s vs ${compare.baseline}s)`
+              );
+            }
