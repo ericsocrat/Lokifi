@@ -1,4 +1,4 @@
-name: ⚡ CI - Fast Feedback
+name: ⚡ Fast Feedback (CI)
 
 # Fast feedback workflow: Runs in ~3 minutes
 # Purpose: Quick validation of code quality, types, and unit tests
@@ -68,10 +68,10 @@ jobs:
         run: |
           echo "Downloading actionlint..."
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          
+
           echo "Running actionlint on all workflow files..."
           ./actionlint -color -verbose
-        
+
       - name: 📊 Upload actionlint results
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,4 +1,4 @@
-name: 📊 Coverage Tracking
+name: � Coverage Tracking
 
 # Coverage workflow: Runs in ~4 minutes
 # Purpose: Track code coverage, generate reports, auto-update documentation
@@ -217,8 +217,8 @@ with open("coverage.json") as f:
       - frontend-coverage
       - backend-coverage
     if: |
-      always() && 
-      github.event_name == 'push' && 
+      always() &&
+      github.event_name == 'push' &&
       github.ref == 'refs/heads/main'
     timeout-minutes: 5
     steps:
@@ -266,7 +266,7 @@ with open("coverage.json") as f:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
+
           if [ -n "$(git status --porcelain)" ]; then
             git add coverage.config.json README.md || true
             git commit -m "chore(coverage): Auto-update coverage metrics [skip ci]" || true
