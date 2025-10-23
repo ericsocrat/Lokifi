@@ -1,5 +1,12 @@
 # 🚀 Lokifi
 
+[![CI - Fast Feedback](https://github.com/ericsocrat/Lokifi/actions/workflows/ci.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/ci.yml)
+[![Coverage Tracking](https://github.com/ericsocrat/Lokifi/actions/workflows/coverage.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/coverage.yml)
+[![Integration Tests](https://github.com/ericsocrat/Lokifi/actions/workflows/integration.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/integration.yml)
+[![E2E Tests](https://github.com/ericsocrat/Lokifi/actions/workflows/e2e.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/e2e.yml)
+[![Security Scanning](https://github.com/ericsocrat/Lokifi/actions/workflows/security-scan.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/security-scan.yml)
+[![codecov](https://codecov.io/gh/ericsocrat/Lokifi/branch/main/graph/badge.svg)](https://codecov.io/gh/ericsocrat/Lokifi)
+
 **Market + Social + AI ├── 🎯 apps/                  # Application code
 │   ├── backend/            # FastAPI Python backend
 │   ├── frontend/           # Next.js React application
