@@ -6,7 +6,7 @@ import html
 import logging
 import re
 from collections.abc import Callable
-from typing import Any
+from typing import Any, ClassVar
 
 from fastapi import HTTPException, status
 
@@ -21,13 +21,13 @@ class InputValidator:
     USERNAME_PATTERN = re.compile(r'^[a-zA-Z0-9_]{3,30}$')
     
     # Dangerous patterns to detect
-    SQL_INJECTION_PATTERNS = [
+    SQL_INJECTION_PATTERNS: ClassVar[list[str]] = [
         r"('|(\x27)|(\x2D){2}|;|\||\*|(\x28)|(\x29)|(\x22)|(\x00)|(\n)|(\r))",
         r"(exec(\s|\+)+(s|x)p\w+)",
         r"((select|insert|delete|update|create|drop|exec(ute){0,1}|alter|declare|exec)(.+)?\s+(from|into|table|database|index|on))",
     ]
     
-    XSS_PATTERNS = [
+    XSS_PATTERNS: ClassVar[list[str]] = [
         r"<script[^>]*>.*?</script>",
         r"javascript:",
         r"on\w+\s*=",

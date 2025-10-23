@@ -5,6 +5,7 @@ Replaces mock data with actual market indices
 
 import logging
 from datetime import UTC, datetime
+from typing import ClassVar
 
 import httpx
 
@@ -23,7 +24,7 @@ class IndicesService:
     """
 
     # Mapping of our symbols to API symbols
-    INDICES_MAP = {
+    INDICES_MAP: ClassVar[dict[str, dict[str, str]]] = {
         # US Indices
         "SPX": {"av": "SPX", "yahoo": "^GSPC", "name": "S&P 500"},
         "DJI": {"av": "DJI", "yahoo": "^DJI", "name": "Dow Jones Industrial Average"},

@@ -4,6 +4,7 @@ Centralized security settings and constants
 """
 
 import os
+from typing import ClassVar
 
 
 class SecurityConfig:
@@ -24,7 +25,7 @@ class SecurityConfig:
     JWT_REFRESH_TOKEN_EXPIRE_DAYS = 7
     
     # Rate limiting (requests per window)
-    RATE_LIMITS = {
+    RATE_LIMITS: ClassVar[dict[str, dict[str, int]]] = {
         "auth": {"requests": 5, "window": 300},      # 5 requests per 5 minutes
         "api": {"requests": 100, "window": 60},      # 100 requests per minute  
         "websocket": {"requests": 50, "window": 60}, # 50 connections per minute
@@ -33,13 +34,13 @@ class SecurityConfig:
     }
     
     # CORS settings
-    PRODUCTION_CORS_ORIGINS = [
+    PRODUCTION_CORS_ORIGINS: ClassVar[list[str]] = [
         "https://lokifi.app",
         "https://www.lokifi.app", 
         "https://api.lokifi.app"
     ]
     
-    DEVELOPMENT_CORS_ORIGINS = [
+    DEVELOPMENT_CORS_ORIGINS: ClassVar[list[str]] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "http://localhost:8000",
@@ -47,7 +48,7 @@ class SecurityConfig:
     ]
     
     # Security headers
-    SECURITY_HEADERS = {
+    SECURITY_HEADERS: ClassVar[dict[str, str]] = {
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY", 
         "X-XSS-Protection": "1; mode=block",
@@ -76,13 +77,13 @@ class SecurityConfig:
     MIN_USERNAME_LENGTH = 3
     
     # Sensitive data patterns (for logging exclusion)
-    SENSITIVE_PATTERNS = [
+    SENSITIVE_PATTERNS: ClassVar[list[str]] = [
         r'password', r'secret', r'token', r'key', r'auth',
         r'credential', r'private', r'confidential'
     ]
     
     # File upload security
-    ALLOWED_UPLOAD_TYPES = {
+    ALLOWED_UPLOAD_TYPES: ClassVar[dict[str, list[str]]] = {
         'image': ['jpg', 'jpeg', 'png', 'gif', 'webp'],
         'document': ['pdf', 'txt', 'csv'],
         'data': ['json', 'csv', 'xlsx']

@@ -10,7 +10,7 @@ import time
 from collections import defaultdict, deque
 from collections.abc import AsyncGenerator
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, ClassVar
 
 import sentry_sdk
 from sqlalchemy.exc import IntegrityError
@@ -115,7 +115,7 @@ class SafetyFilter:
     """Content safety filter for AI inputs and outputs."""
 
     # Patterns for potentially harmful content
-    HARMFUL_PATTERNS = [
+    HARMFUL_PATTERNS: ClassVar[list[str]] = [
         r"\b(?:hack|exploit|vulnerability|bypass)\b.*\b(?:system|security|admin)\b",
         r"\b(?:generate|create|make)\b.*\b(?:virus|malware|trojan)\b",
         r"\b(?:illegal|ilegal)\b.*\b(?:download|stream|torrent)\b",
@@ -124,7 +124,7 @@ class SafetyFilter:
     ]
 
     # Patterns for inappropriate requests
-    INAPPROPRIATE_PATTERNS = [
+    INAPPROPRIATE_PATTERNS: ClassVar[list[str]] = [
         r"\b(?:nude|naked|sexual)\b.*\b(?:image|photo|picture)\b",
         r"\b(?:drug|cocaine|heroin|meth)\b.*\b(?:make|create|synthesize)\b",
     ]

@@ -32,7 +32,6 @@ ignore = [
   "F403",   # undefined-local-with-import-star (105 - existing pattern)
   "F405",   # undefined-local-with-import-star-usage (69 - existing pattern)
   "S113",   # request-without-timeout (39 - many false positives)
-  "RUF012", # mutable-class-default (15 - potential bugs, review later)
   "PERF401", # manual-list-comprehension (12 - performance micro-opt)
   "S110",   # try-except-pass (8 - intentional in some cases)
   "RUF006", # asyncio-dangling-task (7 - needs careful review)
