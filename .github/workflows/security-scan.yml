@@ -1,0 +1,308 @@
+# Security Scanning with SARIF Upload
+# Runs comprehensive security scans and uploads results to GitHub Security tab
+# Integrates with GitHub Code Scanning for vulnerability tracking
+
+name: 🔐 Security Scanning
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  schedule:
+    # Run weekly on Monday at 3 AM UTC
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  # Detect changes to skip unnecessary scans on PRs
+  changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    if: github.event_name != 'schedule'
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/frontend/**'
+              - 'package.json'
+              - 'package-lock.json'
+            backend:
+              - 'apps/backend/**'
+              - 'apps/backend/requirements*.txt'
+
+  # Frontend Security Scanning
+  frontend-security:
+    name: 🎨 Frontend Security
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      always() &&
+      (github.event_name == 'schedule' || 
+       github.event_name == 'workflow_dispatch' ||
+       needs.changes.outputs.frontend == 'true')
+    timeout-minutes: 10
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        working-directory: apps/frontend
+        run: npm ci
+
+      - name: 🔍 Run ESLint with security plugin (SARIF)
+        working-directory: apps/frontend
+        run: |
+          npx eslint . \
+            --config eslint-security.config.mjs \
+            --format @microsoft/eslint-formatter-sarif \
+            --output-file eslint-security.sarif
+        continue-on-error: true
+
+      - name: 📊 Upload ESLint SARIF to GitHub Security
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: apps/frontend/eslint-security.sarif
+          category: eslint-security
+          wait-for-processing: true
+
+      - name: 🔒 Run npm audit (JSON format)
+        working-directory: apps/frontend
+        run: |
+          npm audit --json > npm-audit.json || true
+          
+          # Convert npm audit JSON to SARIF
+          cat > convert-npm-audit.js << 'EOF'
+          const fs = require('fs');
+          const auditData = JSON.parse(fs.readFileSync('npm-audit.json', 'utf8'));
+          
+          const sarif = {
+            version: "2.1.0",
+            "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+            runs: [{
+              tool: {
+                driver: {
+                  name: "npm audit",
+                  version: "1.0.0",
+                  informationUri: "https://docs.npmjs.com/cli/v10/commands/npm-audit"
+                }
+              },
+              results: []
+            }]
+          };
+          
+          // Extract vulnerabilities
+          if (auditData.vulnerabilities) {
+            Object.entries(auditData.vulnerabilities).forEach(([pkg, vuln]) => {
+              const severity = vuln.severity || 'warning';
+              const level = severity === 'critical' || severity === 'high' ? 'error' : 
+                           severity === 'moderate' ? 'warning' : 'note';
+              
+              sarif.runs[0].results.push({
+                ruleId: `npm-audit/${pkg}`,
+                level: level,
+                message: {
+                  text: `${pkg}: ${vuln.via[0]?.title || 'Vulnerability detected'}`
+                },
+                locations: [{
+                  physicalLocation: {
+                    artifactLocation: {
+                      uri: "package.json"
+                    }
+                  }
+                }]
+              });
+            });
+          }
+          
+          fs.writeFileSync('npm-audit.sarif', JSON.stringify(sarif, null, 2));
+          EOF
+          
+          node convert-npm-audit.js
+        continue-on-error: true
+
+      - name: 📊 Upload npm audit SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: apps/frontend/npm-audit.sarif
+          category: npm-audit
+          wait-for-processing: true
+
+  # Backend Security Scanning
+  backend-security:
+    name: 🔧 Backend Security
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      always() &&
+      (github.event_name == 'schedule' || 
+       github.event_name == 'workflow_dispatch' ||
+       needs.changes.outputs.backend == 'true')
+    timeout-minutes: 10
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: apps/backend/requirements-dev.txt
+
+      - name: 📦 Install dependencies
+        working-directory: apps/backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+          pip install bandit[sarif] pip-audit
+
+      - name: 🔍 Run Bandit (SARIF output)
+        working-directory: apps/backend
+        run: |
+          bandit -r app/ \
+            -f sarif \
+            -o bandit-results.sarif \
+            --severity-level low \
+            --confidence-level low
+        continue-on-error: true
+
+      - name: 📊 Upload Bandit SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: apps/backend/bandit-results.sarif
+          category: bandit
+          wait-for-processing: true
+
+      - name: 🔒 Run pip-audit (SARIF output)
+        working-directory: apps/backend
+        run: |
+          pip-audit \
+            --format json \
+            --output pip-audit.json || true
+          
+          # Convert pip-audit JSON to SARIF
+          cat > convert-pip-audit.py << 'EOF'
+          import json
+          
+          with open('pip-audit.json', 'r') as f:
+              audit_data = json.load(f)
+          
+          sarif = {
+              "version": "2.1.0",
+              "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+              "runs": [{
+                  "tool": {
+                      "driver": {
+                          "name": "pip-audit",
+                          "version": "1.0.0",
+                          "informationUri": "https://github.com/pypa/pip-audit"
+                      }
+                  },
+                  "results": []
+              }]
+          }
+          
+          # Extract vulnerabilities
+          for vuln in audit_data.get('vulnerabilities', []):
+              package = vuln.get('name', 'unknown')
+              description = vuln.get('description', 'Vulnerability detected')
+              severity = 'error'  # pip-audit vulnerabilities are always critical
+              
+              sarif["runs"][0]["results"].append({
+                  "ruleId": f"pip-audit/{package}",
+                  "level": severity,
+                  "message": {
+                      "text": f"{package}: {description}"
+                  },
+                  "locations": [{
+                      "physicalLocation": {
+                          "artifactLocation": {
+                              "uri": "requirements.txt"
+                          }
+                      }
+                  }]
+              })
+          
+          with open('pip-audit.sarif', 'w') as f:
+              json.dump(sarif, f, indent=2)
+          EOF
+          
+          python convert-pip-audit.py
+        continue-on-error: true
+
+      - name: 📊 Upload pip-audit SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: apps/backend/pip-audit.sarif
+          category: pip-audit
+          wait-for-processing: true
+
+  # Security Summary
+  security-summary:
+    name: 📊 Security Summary
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-security
+      - backend-security
+    if: always()
+    steps:
+      - name: 🎯 Check security scan results
+        run: |
+          echo "Frontend Security: ${{ needs.frontend-security.result }}"
+          echo "Backend Security: ${{ needs.backend-security.result }}"
+          
+          # This is informational - don't fail the workflow
+          if [ "${{ needs.frontend-security.result }}" = "failure" ] || \
+             [ "${{ needs.backend-security.result }}" = "failure" ]; then
+            echo "⚠️ Security scans found issues - check GitHub Security tab"
+          else
+            echo "✅ All security scans completed successfully"
+          fi
+
+      - name: 📝 Generate summary
+        if: always()
+        run: |
+          echo "## 🔐 Security Scanning Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend Security | ${{ needs.frontend-security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend Security | ${{ needs.backend-security.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Scans Performed**:" >> $GITHUB_STEP_SUMMARY
+          echo "- ESLint Security Plugin (frontend)" >> $GITHUB_STEP_SUMMARY
+          echo "- npm audit (frontend dependencies)" >> $GITHUB_STEP_SUMMARY
+          echo "- Bandit (backend code)" >> $GITHUB_STEP_SUMMARY
+          echo "- pip-audit (backend dependencies)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 [View detailed results in Security tab](https://github.com/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
