@@ -221,6 +221,13 @@ jobs:
         run: pip-audit --desc --format json --output pip-audit-report.json
         continue-on-error: true # Informational for now
 
+      - name: 🗃️ Setup database schema
+        run: alembic upgrade head
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          TESTING: 1
+
       - name: 🧪 Unit Tests (pytest)
         run: pytest tests/unit/ -v --tb=short --maxfail=5 -m "not config_validation"
         env:
