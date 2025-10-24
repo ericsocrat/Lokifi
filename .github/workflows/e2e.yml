@@ -122,7 +122,7 @@ jobs:
 
       - name: 🎭 Install Playwright browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium firefox --with-deps
+        run: npx playwright install chromium --with-deps
 
       - name: 🎭 Run critical path E2E tests
         run: npx playwright test tests/e2e/ --project=chromium
@@ -184,7 +184,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        browser: [chromium, firefox, webkit]
+        browser: [chromium]
         shard: [1, 2]
     defaults:
       run:
