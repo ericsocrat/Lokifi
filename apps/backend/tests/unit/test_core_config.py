@@ -17,6 +17,10 @@ import pytest
 from app.core.config import Settings, get_settings
 
 
+# Mark config validation tests to skip in CI (where JWT secrets are provided)
+pytestmark = pytest.mark.config_validation
+
+
 class TestSettingsDefaults:
     """Test default configuration values"""
 

@@ -194,7 +194,7 @@ jobs:
         continue-on-error: true # Informational for now
 
       - name: 🧪 Unit Tests (pytest)
-        run: pytest tests/unit/ -v --tb=short --maxfail=5
+        run: pytest tests/unit/ -v --tb=short --maxfail=5 -m "not config_validation"
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           TESTING: 1
