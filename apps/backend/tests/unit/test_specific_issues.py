@@ -107,6 +107,7 @@ def test_scheduler_issues():
         return False
 
 
+@pytest.mark.asyncio
 async def test_monitoring_alerts():
     """Test if monitoring system triggers false alerts"""
     print("\n4️⃣ TESTING MONITORING ALERTS")
