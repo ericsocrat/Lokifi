@@ -2,7 +2,8 @@ import { expect, test } from '@playwright/test';
 
 test.describe('Visual Regression Tests', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    // Navigate to chart page where canvas elements are present
+    await page.goto('/chart');
     // Wait for page to be fully loaded
     await page.waitForLoadState('networkidle');
   });
