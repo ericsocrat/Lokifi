@@ -105,8 +105,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔧 Rebuild Rollup native bindings
-        run: npm rebuild rollup
+      - name: 🔧 Fix Rollup native bindings
+        run: |
+          npm install --no-save @rollup/rollup-linux-x64-gnu || true
+          npm rebuild rollup || true
         continue-on-error: true
 
       - name: 🎭 Cache Playwright browsers
@@ -201,8 +203,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔧 Rebuild Rollup native bindings
-        run: npm rebuild rollup
+      - name: 🔧 Fix Rollup native bindings
+        run: |
+          npm install --no-save @rollup/rollup-linux-x64-gnu || true
+          npm rebuild rollup || true
         continue-on-error: true
 
       - name: 🎭 Cache Playwright browsers
@@ -269,8 +273,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔧 Rebuild Rollup native bindings
-        run: npm rebuild rollup
+      - name: 🔧 Fix Rollup native bindings
+        run: |
+          npm install --no-save @rollup/rollup-linux-x64-gnu || true
+          npm rebuild rollup || true
         continue-on-error: true
 
       - name: 🎭 Cache Playwright browsers
@@ -348,8 +354,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔧 Rebuild Rollup native bindings
-        run: npm rebuild rollup
+      - name: 🔧 Fix Rollup native bindings
+        run: |
+          npm install --no-save @rollup/rollup-linux-x64-gnu || true
+          npm rebuild rollup || true
         continue-on-error: true
 
       - name: 🎭 Cache Playwright browsers
