@@ -612,14 +612,31 @@ env:
 
 When debugging CI failures, follow this systematic approach:
 
-1. **Categorize errors** - Separate false positives from real failures
-2. **Look for patterns** - Do multiple workflows fail with similar errors?
-3. **Check service configurations** - Are PostgreSQL/Redis available?
-4. **Verify credentials** - Are they consistent across workflows?
-5. **Compare working vs broken** - What's different between passing and failing workflows?
-6. **Fix root cause, not symptoms** - One fix can resolve multiple failures
+1. **Use GitHub CLI for quick status** - `gh pr checks <pr-number> --repo ericsocrat/Lokifi`
+2. **Get detailed logs** - `gh run view <run-id> --repo ericsocrat/Lokifi --log-failed`
+3. **Categorize errors** - Separate false positives from real failures
+4. **Look for patterns** - Do multiple workflows fail with similar errors?
+5. **Check service configurations** - Are PostgreSQL/Redis available?
+6. **Verify credentials** - Are they consistent across workflows?
+7. **Compare working vs broken** - What's different between passing and failing workflows?
+8. **Fix root cause, not symptoms** - One fix can resolve multiple failures
 
 **Example**: Sessions 8-9 resolved 7-8 failures by fixing one root cause (missing PostgreSQL services).
+
+**GitHub CLI Workflow Health Check Pattern**:
+```powershell
+# Step 1: Check PR status
+gh pr checks 27 --repo ericsocrat/Lokifi
+
+# Step 2: Get failing workflow run IDs
+gh run list --repo ericsocrat/Lokifi --branch <branch-name> --limit 5 --json name,conclusion,databaseId
+
+# Step 3: Analyze failure logs
+gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Pattern "Error|FAILED" -Context 2
+
+# Step 4: Document patterns and create fix tasks
+# Add to todo list with manage_todo_list tool
+```
 
 ## Documentation References
 
@@ -634,6 +651,35 @@ When suggesting code or answering questions, prefer these docs:
 - **DNS Configuration**: `/docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup
 
 ## Common Commands
+
+### GitHub CLI (Workflow Monitoring & Health Checks)
+```powershell
+# PR Status & Workflow Monitoring
+gh pr view 27 --repo ericsocrat/Lokifi              # View PR details
+gh pr checks 27 --repo ericsocrat/Lokifi            # Check all workflow statuses
+gh pr view 27 --json statusCheckRollup              # JSON format for parsing
+
+# Workflow Run Management
+gh run list --repo ericsocrat/Lokifi --branch test/workflow-optimizations-validation
+gh run view <run-id> --repo ericsocrat/Lokifi       # View specific run details
+gh run view <run-id> --repo ericsocrat/Lokifi --log-failed  # Get failure logs
+gh run rerun <run-id> --repo ericsocrat/Lokifi      # Rerun failed workflow
+
+# Security & Dependabot
+gh api /repos/ericsocrat/Lokifi/dependabot/alerts   # List Dependabot alerts
+gh api /repos/ericsocrat/Lokifi/code-scanning/alerts # CodeQL alerts
+
+# Workflow Health Check Examples
+gh pr checks 27 --repo ericsocrat/Lokifi | Select-String "failing|successful"
+gh run list --repo ericsocrat/Lokifi --limit 10 --json conclusion,name,displayTitle
+```
+
+**GitHub CLI Best Practices**:
+- **Always use `--repo ericsocrat/Lokifi`** to specify repository explicitly
+- **Parse JSON output** with `ConvertFrom-Json` for programmatic analysis
+- **Filter logs** with `Select-String` to reduce output size (avoid token overflow)
+- **Use `--limit`** parameter to control number of results
+- **Authenticated automatically** - gh CLI uses your GitHub login session
 
 ### Docker & Infrastructure
 ```bash
