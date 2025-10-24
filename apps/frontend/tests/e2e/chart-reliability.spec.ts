@@ -2,7 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Chart Reliability - Part A', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    // Navigate directly to /chart page where TradingWorkspace (with charts) is mounted
+    await page.goto('/chart');
+    await page.waitForLoadState('networkidle');
   });
 
   test('chart container has fixed height with responsive fallback', async ({ page }) => {

@@ -11,7 +11,9 @@ test.describe('Multi-Chart Layout', () => {
       window.sessionStorage.setItem('NEXT_PUBLIC_FLAG_MULTI_CHART', '1');
     });
     
-    await page.goto('/');
+    // Navigate directly to /chart page where TradingWorkspace (with charts) is mounted
+    await page.goto('/chart');
+    await page.waitForLoadState('networkidle');
   });
 
   test('should create 2x2 layout and show 4 charts', async ({ page }) => {
