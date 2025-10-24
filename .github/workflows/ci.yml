@@ -200,7 +200,7 @@ jobs:
           TESTING: 1
           LOKIFI_JWT_SECRET: test-jwt-secret-for-ci
           JWT_SECRET_KEY: test-jwt-key-for-ci
-          DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
         continue-on-error: false
 
