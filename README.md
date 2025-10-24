@@ -12,9 +12,9 @@
 A comprehensive financial platform combining advanced market analysis with social features and AI-powered insights.
 
 > 🔐 **Security Status**: CodeQL scanning enabled | Dependabot active | Branch protection configured
-> 
+>
 > � **Test Coverage**: Frontend 11.61% | Backend 27% | Overall 19.31%
-> 
+>
 > � **CI/CD**: Standardized PostgreSQL 16 across all workflows | 30 automated checks
 
 ---

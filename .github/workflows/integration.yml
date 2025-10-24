@@ -287,7 +287,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: 🔨 Build and start services
-        working-directory: apps
+        working-directory: infra/docker
         run: |
           docker compose -f docker-compose.ci.yml up -d --build
           sleep 10
@@ -306,16 +306,16 @@ jobs:
           curl -f http://localhost:8000/api/v1/health || exit 1
 
           # Frontend can reach backend
-          docker compose -f apps/docker-compose.ci.yml logs frontend | grep -q "ready" || exit 1
+          docker compose -f infra/docker/docker-compose.ci.yml logs frontend | grep -q "ready" || exit 1
 
       - name: 📋 View logs on failure
         if: failure()
         run: |
-          docker compose -f apps/docker-compose.ci.yml logs
+          docker compose -f infra/docker/docker-compose.ci.yml logs
 
       - name: 🛑 Stop services
         if: always()
-        working-directory: apps
+        working-directory: infra/docker
         run: docker compose -f docker-compose.ci.yml down -v
 
   # Summary Job: All integration tests passed

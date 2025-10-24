@@ -3,11 +3,11 @@
 on:
   push:
     paths:
-      - 'frontend/**'
+      - 'apps/frontend/**'
       - '.github/workflows/frontend-ci.yml'
   pull_request:
     paths:
-      - 'frontend/**'
+      - 'apps/frontend/**'
 
 jobs:
   build-test:
@@ -30,17 +30,17 @@ jobs:
           run_install: false
 
       - name: Install deps
-        working-directory: frontend
+        working-directory: apps/frontend
         run: pnpm install --frozen-lockfile || pnpm install
 
       - name: Typecheck
-        working-directory: frontend
+        working-directory: apps/frontend
         run: pnpm run typecheck || npx tsc -p tsconfig.json --noEmit
 
       - name: Tests
-        working-directory: frontend
+        working-directory: apps/frontend
         run: pnpm run test || echo "No tests or vitest not configured"
 
       - name: Build
-        working-directory: frontend
+        working-directory: apps/frontend
         run: pnpm run build

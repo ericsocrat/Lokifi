@@ -313,7 +313,7 @@ jobs:
      api-contracts:
        services:
          redis: {...}  # Only Redis, no PostgreSQL!
-     
+
      backend-integration:
        services:
          postgres:
@@ -361,7 +361,7 @@ services:
       --health-interval 10s
       --health-timeout 5s
       --health-retries 5
-  
+
   redis:
     image: redis:7-alpine
     ports:
