@@ -25,7 +25,12 @@ def test_register_user():
     response = client.post("/api/auth/register", json=user_data)
 
     # Should succeed (or fail gracefully if DB not available)
-    assert response.status_code in [200, 201, 500, 503]  # Allow DB connection errors in test
+    assert response.status_code in [
+        200,
+        201,
+        500,
+        503,
+    ]  # Allow DB connection errors in test
 
 
 def test_login_invalid_credentials():

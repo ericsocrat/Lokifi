@@ -29,7 +29,12 @@ def sample_crypto_data():
 @pytest.fixture
 def mock_user():
     """Mock user for authentication tests"""
-    return {"id": 1, "email": "test@example.com", "username": "testuser", "is_active": True}
+    return {
+        "id": 1,
+        "email": "test@example.com",
+        "username": "testuser",
+        "is_active": True,
+    }
 
 
 @pytest.fixture

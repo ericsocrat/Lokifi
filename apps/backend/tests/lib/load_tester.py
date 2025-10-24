@@ -144,7 +144,9 @@ class WebSocketLoadTester:
 
                             # Wait for response
                             try:
-                                response = await asyncio.wait_for(websocket.recv(), timeout=5.0)
+                                response = await asyncio.wait_for(
+                                    websocket.recv(), timeout=5.0
+                                )
                                 msg_end = time.time()
 
                                 results.append(
@@ -189,7 +191,10 @@ class WebSocketLoadTester:
                                 duration_ms=0,
                                 success=False,
                                 error=str(e),
-                                metadata={"message_count": message_count, "user_id": user_id},
+                                metadata={
+                                    "message_count": message_count,
+                                    "user_id": user_id,
+                                },
                             )
                         )
 
@@ -281,14 +286,20 @@ class WebSocketLoadTester:
         failed_results = [r for r in results if not r.success]
 
         # Calculate response time statistics
-        response_times = [r.duration_ms for r in successful_results if r.duration_ms > 0]
+        response_times = [
+            r.duration_ms for r in successful_results if r.duration_ms > 0
+        ]
 
         avg_response_time = statistics.mean(response_times) if response_times else 0
         p95_response_time = (
-            statistics.quantiles(response_times, n=20)[18] if len(response_times) >= 20 else 0
+            statistics.quantiles(response_times, n=20)[18]
+            if len(response_times) >= 20
+            else 0
         )
         p99_response_time = (
-            statistics.quantiles(response_times, n=100)[98] if len(response_times) >= 100 else 0
+            statistics.quantiles(response_times, n=100)[98]
+            if len(response_times) >= 100
+            else 0
         )
 
         return LoadTestReport(
@@ -300,7 +311,9 @@ class WebSocketLoadTester:
             total_operations=len(results),
             successful_operations=len(successful_results),
             failed_operations=len(failed_results),
-            operations_per_second=len(results) / total_duration if total_duration > 0 else 0,
+            operations_per_second=(
+                len(results) / total_duration if total_duration > 0 else 0
+            ),
             avg_response_time_ms=avg_response_time,
             p95_response_time_ms=p95_response_time,
             p99_response_time_ms=p99_response_time,
@@ -364,7 +377,9 @@ class APILoadTester:
             # Execute API request
             start_time = time.time()
             try:
-                async with self.session.request(method, f"{self.base_url}{endpoint}") as response:
+                async with self.session.request(
+                    method, f"{self.base_url}{endpoint}"
+                ) as response:
                     content = await response.read()
                     end_time = time.time()
 
@@ -494,7 +509,9 @@ class ComprehensiveLoadTester:
         logger.info("Starting comprehensive system load test")
 
         # Run parallel load tests
-        websocket_task = asyncio.create_task(self.run_websocket_load_test(500, 3))  # Moderate load
+        websocket_task = asyncio.create_task(
+            self.run_websocket_load_test(500, 3)
+        )  # Moderate load
         api_task = asyncio.create_task(self.run_api_load_test(100, 30))
 
         # Wait for completion
@@ -524,9 +541,11 @@ class ComprehensiveLoadTester:
             test_summary = {
                 "concurrent_users": report.concurrent_users,
                 "total_operations": report.total_operations,
-                "success_rate": (report.successful_operations / report.total_operations * 100)
-                if report.total_operations > 0
-                else 0,
+                "success_rate": (
+                    (report.successful_operations / report.total_operations * 100)
+                    if report.total_operations > 0
+                    else 0
+                ),
                 "avg_response_time_ms": report.avg_response_time_ms,
                 "operations_per_second": report.operations_per_second,
             }

@@ -157,7 +157,9 @@ class TestCryptoDataServiceIntegration:
         mock_response.status_code = 200
 
         async with CryptoDataService() as service:
-            with patch.object(service.client, "get", return_value=mock_response) as mock_get:
+            with patch.object(
+                service.client, "get", return_value=mock_response
+            ) as mock_get:
                 result1 = await service.get_simple_price(["bitcoin"], ["usd"])
                 assert result1 == sample_market_data
                 assert mock_get.call_count == 1
@@ -186,7 +188,9 @@ class TestCryptoDataServiceEdgeCases:
 
         async with CryptoDataService() as service:
             with patch.object(
-                service.client, "get", side_effect=httpx.NetworkError("Connection failed")
+                service.client,
+                "get",
+                side_effect=httpx.NetworkError("Connection failed"),
             ):
                 with pytest.raises(httpx.NetworkError):
                     await service.get_simple_price(["bitcoin"], ["usd"])
@@ -200,7 +204,9 @@ class TestCryptoDataServiceEdgeCases:
 
         async with CryptoDataService() as service:
             with patch.object(
-                service.client, "get", side_effect=httpx.TimeoutException("Request timed out")
+                service.client,
+                "get",
+                side_effect=httpx.TimeoutException("Request timed out"),
             ):
                 with pytest.raises(httpx.TimeoutException):
                     await service.get_simple_price(["bitcoin"], ["usd"])
@@ -223,7 +229,9 @@ class TestCryptoDataServiceEdgeCases:
     @pytest.mark.asyncio
     async def test_redis_unavailable(self):
         """Test graceful handling when Redis is unavailable"""
-        with patch("app.services.crypto_data_service.advanced_redis_client.client", None):
+        with patch(
+            "app.services.crypto_data_service.advanced_redis_client.client", None
+        ):
             service = CryptoDataService()
 
             # Should not crash

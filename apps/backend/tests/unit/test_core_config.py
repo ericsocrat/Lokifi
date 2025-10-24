@@ -310,7 +310,9 @@ class TestCloudStorageSettings:
         assert settings.AWS_S3_BUCKET == "my-bucket"
         assert settings.AWS_CLOUDFRONT_URL == "https://cdn.example.com"
         assert settings.AWS_ACCESS_KEY_ID == "AKIAIOSFODNN7EXAMPLE"
-        assert settings.AWS_SECRET_ACCESS_KEY == "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        assert (
+            settings.AWS_SECRET_ACCESS_KEY == "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+        )
 
 
 class TestOAuthSettings:
@@ -324,7 +326,10 @@ class TestOAuthSettings:
 
     @patch.dict(
         os.environ,
-        {"GOOGLE_CLIENT_ID": "client_id_123", "GOOGLE_CLIENT_SECRET": "client_secret_456"},
+        {
+            "GOOGLE_CLIENT_ID": "client_id_123",
+            "GOOGLE_CLIENT_SECRET": "client_secret_456",
+        },
         clear=False,
     )
     def test_oauth_settings_from_environment(self):
@@ -344,7 +349,9 @@ class TestDatabaseReplicaSettings:
 
     @patch.dict(
         os.environ,
-        {"DATABASE_REPLICA_URL": "postgresql+asyncpg://lokifi:lokifi2025@replica:5432/lokifi"},
+        {
+            "DATABASE_REPLICA_URL": "postgresql+asyncpg://lokifi:lokifi2025@replica:5432/lokifi"
+        },
         clear=False,
     )
     def test_replica_url_from_environment(self):

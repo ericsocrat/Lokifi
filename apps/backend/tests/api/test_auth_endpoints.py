@@ -83,7 +83,9 @@ def test_auth_endpoints():
         data = response.json()
         print("✅ /me endpoint works with authentication")
         print(f"   User: {data['user']['full_name']}")
-        print(f"   Profile: {data['profile']['display_name'] if data['profile'] else 'No profile'}")
+        print(
+            f"   Profile: {data['profile']['display_name'] if data['profile'] else 'No profile'}"
+        )
     else:
         print(f"❌ /me endpoint failed: {response.status_code} - {response.text}")
 

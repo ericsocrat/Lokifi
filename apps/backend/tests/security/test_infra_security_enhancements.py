@@ -116,7 +116,11 @@ def test_security_logger():
     """Test security event logging"""
     print("📝 Testing Security Logger...")
 
-    from app.utils.security_logger import log_auth_failure, log_suspicious_request, security_monitor
+    from app.utils.security_logger import (
+        log_auth_failure,
+        log_suspicious_request,
+        security_monitor,
+    )
 
     passed = 0
     total = 3
@@ -130,7 +134,10 @@ def test_security_logger():
 
         # Test 2: Log suspicious request
         log_suspicious_request(
-            "192.168.1.101", "/api/users", "SQL injection pattern", "suspicious-scanner/1.0"
+            "192.168.1.101",
+            "/api/users",
+            "SQL injection pattern",
+            "suspicious-scanner/1.0",
         )
         print("  ✅ Suspicious request logging: PASS")
         passed += 1

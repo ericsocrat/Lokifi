@@ -56,7 +56,11 @@ async def test_follow_flow_basic():
         if login.status_code != 200:
             pytest.skip("Login failed; skipping follow flow")
 
-        bob_user_id = r2.json().get("user", {}).get("id") if r2.status_code in [200, 201] else None
+        bob_user_id = (
+            r2.json().get("user", {}).get("id")
+            if r2.status_code in [200, 201]
+            else None
+        )
         if not bob_user_id:
             pytest.skip("Bob user not created; skipping follow flow")
 
@@ -77,17 +81,25 @@ async def test_follow_flow_basic():
         )
         assert follow_resp2.status_code in [200, 409]
 
-        followers_list = await client.get(f"/api/follow/{bob_user_id}/followers", headers=headers)
+        followers_list = await client.get(
+            f"/api/follow/{bob_user_id}/followers", headers=headers
+        )
         assert followers_list.status_code == 200
         data = followers_list.json()
         assert isinstance(data, dict)
         assert "followers" in data
 
         unfollow_resp = await client.request(
-            "DELETE", "/api/follow/unfollow", json={"user_id": bob_user_id}, headers=headers
+            "DELETE",
+            "/api/follow/unfollow",
+            json={"user_id": bob_user_id},
+            headers=headers,
         )
         assert unfollow_resp.status_code in [200]
         unfollow_resp2 = await client.request(
-            "DELETE", "/api/follow/unfollow", json={"user_id": bob_user_id}, headers=headers
+            "DELETE",
+            "/api/follow/unfollow",
+            json={"user_id": bob_user_id},
+            headers=headers,
         )
         assert unfollow_resp2.status_code in [200]

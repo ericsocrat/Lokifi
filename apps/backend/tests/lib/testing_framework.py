@@ -98,7 +98,9 @@ class AdvancedTestFramework:
         if details:
             print(f"   {Colors.WHITE}{details}{Colors.END}")
 
-    def record_test(self, category: str, test_name: str, status: str, details: Any = None):
+    def record_test(
+        self, category: str, test_name: str, status: str, details: Any = None
+    ):
         """Record test result"""
         if category not in self.test_results:
             self.test_results[category] = {}
@@ -132,10 +134,14 @@ class AdvancedTestFramework:
                             )
                             passed += 1
                         else:
-                            self.print_test("Health Check", "FAIL", f"Unhealthy status: {data}")
+                            self.print_test(
+                                "Health Check", "FAIL", f"Unhealthy status: {data}"
+                            )
                     else:
                         self.print_test(
-                            "Health Check", "FAIL", f"Status code: {response.status_code}"
+                            "Health Check",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     self.print_test("Health Check", "FAIL", f"Exception: {e}")
@@ -145,11 +151,15 @@ class AdvancedTestFramework:
                 try:
                     response = await client.get(f"{self.base_url}/docs")
                     if response.status_code == 200:
-                        self.print_test("API Documentation", "PASS", "Swagger UI accessible")
+                        self.print_test(
+                            "API Documentation", "PASS", "Swagger UI accessible"
+                        )
                         passed += 1
                     else:
                         self.print_test(
-                            "API Documentation", "FAIL", f"Status code: {response.status_code}"
+                            "API Documentation",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     self.print_test("API Documentation", "FAIL", f"Exception: {e}")
@@ -162,14 +172,20 @@ class AdvancedTestFramework:
                         schema = response.json()
                         if "paths" in schema and "components" in schema:
                             self.print_test(
-                                "OpenAPI Schema", "PASS", f"Endpoints: {len(schema['paths'])}"
+                                "OpenAPI Schema",
+                                "PASS",
+                                f"Endpoints: {len(schema['paths'])}",
                             )
                             passed += 1
                         else:
-                            self.print_test("OpenAPI Schema", "FAIL", "Invalid schema format")
+                            self.print_test(
+                                "OpenAPI Schema", "FAIL", "Invalid schema format"
+                            )
                     else:
                         self.print_test(
-                            "OpenAPI Schema", "FAIL", f"Status code: {response.status_code}"
+                            "OpenAPI Schema",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     self.print_test("OpenAPI Schema", "FAIL", f"Exception: {e}")
@@ -179,11 +195,15 @@ class AdvancedTestFramework:
                 try:
                     response = await client.options(f"{self.base_url}/health")
                     cors_headers = [
-                        h for h in response.headers.keys() if h.lower().startswith("access-control")
+                        h
+                        for h in response.headers.keys()
+                        if h.lower().startswith("access-control")
                     ]
                     if cors_headers:
                         self.print_test(
-                            "CORS Headers", "PASS", f"Headers: {', '.join(cors_headers)}"
+                            "CORS Headers",
+                            "PASS",
+                            f"Headers: {', '.join(cors_headers)}",
                         )
                         passed += 1
                     else:
@@ -235,15 +255,21 @@ class AdvancedTestFramework:
                         # User might already exist
                         data = response.json()
                         if "already registered" in str(data).lower():
-                            self.print_test("User Registration", "PASS", "User already exists")
+                            self.print_test(
+                                "User Registration", "PASS", "User already exists"
+                            )
                             passed += 1
                         else:
                             self.print_test(
-                                "User Registration", "FAIL", f"Registration error: {data}"
+                                "User Registration",
+                                "FAIL",
+                                f"Registration error: {data}",
                             )
                     else:
                         self.print_test(
-                            "User Registration", "FAIL", f"Status code: {response.status_code}"
+                            "User Registration",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
 
                 except Exception as e:
@@ -253,11 +279,15 @@ class AdvancedTestFramework:
                 total += 1
                 try:
                     login_data = {
-                        "username": self.test_user["email"],  # Might use email as username
+                        "username": self.test_user[
+                            "email"
+                        ],  # Might use email as username
                         "password": self.test_user["password"],
                     }
 
-                    response = await client.post(f"{self.base_url}/auth/token", data=login_data)
+                    response = await client.post(
+                        f"{self.base_url}/auth/token", data=login_data
+                    )
 
                     if response.status_code == 200:
                         data = response.json()
@@ -270,7 +300,9 @@ class AdvancedTestFramework:
                             )
                             passed += 1
                         else:
-                            self.print_test("User Login", "FAIL", "No access token in response")
+                            self.print_test(
+                                "User Login", "FAIL", "No access token in response"
+                            )
                     else:
                         self.print_test(
                             "User Login", "FAIL", f"Status code: {response.status_code}"
@@ -284,28 +316,38 @@ class AdvancedTestFramework:
                 if self.auth_token:
                     try:
                         headers = {"Authorization": f"Bearer {self.auth_token}"}
-                        response = await client.get(f"{self.base_url}/auth/me", headers=headers)
+                        response = await client.get(
+                            f"{self.base_url}/auth/me", headers=headers
+                        )
 
                         if response.status_code == 200:
                             user_data = response.json()
                             if "email" in user_data:
                                 self.print_test(
-                                    "Protected Endpoint", "PASS", f"User: {user_data.get('email')}"
+                                    "Protected Endpoint",
+                                    "PASS",
+                                    f"User: {user_data.get('email')}",
                                 )
                                 passed += 1
                             else:
                                 self.print_test(
-                                    "Protected Endpoint", "FAIL", "Invalid user data format"
+                                    "Protected Endpoint",
+                                    "FAIL",
+                                    "Invalid user data format",
                                 )
                         else:
                             self.print_test(
-                                "Protected Endpoint", "FAIL", f"Status code: {response.status_code}"
+                                "Protected Endpoint",
+                                "FAIL",
+                                f"Status code: {response.status_code}",
                             )
 
                     except Exception as e:
                         self.print_test("Protected Endpoint", "FAIL", f"Exception: {e}")
                 else:
-                    self.print_test("Protected Endpoint", "SKIP", "No auth token available")
+                    self.print_test(
+                        "Protected Endpoint", "SKIP", "No auth token available"
+                    )
 
                 # Test unauthorized access
                 total += 1
@@ -327,7 +369,9 @@ class AdvancedTestFramework:
                         )
 
                 except Exception as e:
-                    self.print_test("Unauthorized Access Block", "FAIL", f"Exception: {e}")
+                    self.print_test(
+                        "Unauthorized Access Block", "FAIL", f"Exception: {e}"
+                    )
 
         except Exception as e:
             self.print_test("Authentication Tests", "FAIL", f"Setup failed: {e}")
@@ -365,7 +409,9 @@ class AdvancedTestFramework:
                 async with engine.begin() as conn:
                     result = await conn.execute(text("SELECT 1"))
                     if result.fetchone()[0] == 1:
-                        self.print_test("Database Connection", "PASS", f"Engine: {engine.name}")
+                        self.print_test(
+                            "Database Connection", "PASS", f"Engine: {engine.name}"
+                        )
                         passed += 1
                     else:
                         self.print_test("Database Connection", "FAIL", "Query failed")
@@ -380,17 +426,21 @@ class AdvancedTestFramework:
                 async with engine.begin() as conn:
                     if "sqlite" in settings.DATABASE_URL:
                         result = await conn.execute(
-                            text("""
+                            text(
+                                """
                             SELECT name FROM sqlite_master 
                             WHERE type='table' AND name NOT LIKE 'sqlite_%'
-                        """)
+                        """
+                            )
                         )
                     else:
                         result = await conn.execute(
-                            text("""
+                            text(
+                                """
                             SELECT tablename FROM pg_tables 
                             WHERE schemaname = 'public'
-                        """)
+                        """
+                            )
                         )
 
                     tables = [row[0] for row in result.fetchall()]
@@ -400,7 +450,9 @@ class AdvancedTestFramework:
 
                     if len(found_tables) >= 2:
                         self.print_test(
-                            "Table Structure", "PASS", f"Found tables: {', '.join(tables)}"
+                            "Table Structure",
+                            "PASS",
+                            f"Found tables: {', '.join(tables)}",
                         )
                         passed += 1
                     else:
@@ -422,7 +474,9 @@ class AdvancedTestFramework:
                 alembic_cfg = Config(str(backend_dir / "alembic.ini"))
                 alembic_cfg.set_main_option(
                     "sqlalchemy.url",
-                    settings.DATABASE_URL.replace("+aiosqlite", "").replace("+asyncpg", ""),
+                    settings.DATABASE_URL.replace("+aiosqlite", "").replace(
+                        "+asyncpg", ""
+                    ),
                 )
 
                 # Check current revision
@@ -433,11 +487,15 @@ class AdvancedTestFramework:
 
                 if current_rev:
                     self.print_test(
-                        "Migration System", "PASS", f"Current revision: {current_rev[:12]}"
+                        "Migration System",
+                        "PASS",
+                        f"Current revision: {current_rev[:12]}",
                     )
                     passed += 1
                 else:
-                    self.print_test("Migration System", "FAIL", "No migration revision found")
+                    self.print_test(
+                        "Migration System", "FAIL", "No migration revision found"
+                    )
 
             except Exception as e:
                 self.print_test("Migration System", "FAIL", f"Exception: {e}")
@@ -472,11 +530,15 @@ class AdvancedTestFramework:
 
                 if response.status_code == 200 and response_time < 1.0:
                     self.print_test(
-                        "Response Time", "PASS", f"Health endpoint: {response_time:.3f}s"
+                        "Response Time",
+                        "PASS",
+                        f"Health endpoint: {response_time:.3f}s",
                     )
                     passed += 1
                 else:
-                    self.print_test("Response Time", "FAIL", f"Too slow: {response_time:.3f}s")
+                    self.print_test(
+                        "Response Time", "FAIL", f"Too slow: {response_time:.3f}s"
+                    )
 
         except Exception as e:
             self.print_test("Response Time", "FAIL", f"Exception: {e}")
@@ -492,13 +554,17 @@ class AdvancedTestFramework:
                 start_time = time.time()
 
                 # Make 10 concurrent requests
-                tasks = [make_request(client, f"{self.base_url}/health") for _ in range(10)]
+                tasks = [
+                    make_request(client, f"{self.base_url}/health") for _ in range(10)
+                ]
                 responses = await asyncio.gather(*tasks, return_exceptions=True)
 
                 end_time = time.time()
 
                 successful = sum(
-                    1 for r in responses if hasattr(r, "status_code") and r.status_code == 200
+                    1
+                    for r in responses
+                    if hasattr(r, "status_code") and r.status_code == 200
                 )
 
                 if successful >= 8:  # Allow 80% success rate
@@ -510,7 +576,9 @@ class AdvancedTestFramework:
                     passed += 1
                 else:
                     self.print_test(
-                        "Concurrent Requests", "FAIL", f"Only {successful}/10 successful"
+                        "Concurrent Requests",
+                        "FAIL",
+                        f"Only {successful}/10 successful",
                     )
 
         except Exception as e:
@@ -528,10 +596,14 @@ class AdvancedTestFramework:
             memory_mb = process.memory_info().rss / 1024 / 1024
 
             if memory_mb < 500:  # Less than 500MB for test process
-                self.print_test("Memory Usage", "PASS", f"Test process: {memory_mb:.1f}MB")
+                self.print_test(
+                    "Memory Usage", "PASS", f"Test process: {memory_mb:.1f}MB"
+                )
                 passed += 1
             else:
-                self.print_test("Memory Usage", "FAIL", f"High memory usage: {memory_mb:.1f}MB")
+                self.print_test(
+                    "Memory Usage", "FAIL", f"High memory usage: {memory_mb:.1f}MB"
+                )
 
         except ImportError:
             self.print_test("Memory Usage", "SKIP", "psutil not available")
@@ -558,30 +630,42 @@ class AdvancedTestFramework:
         # Test WebSocket connection
         total += 1
         try:
-            ws_url = self.base_url.replace("http://", "ws://").replace("https://", "wss://")
+            ws_url = self.base_url.replace("http://", "ws://").replace(
+                "https://", "wss://"
+            )
 
             # Try to connect to WebSocket endpoint
             try:
                 async with websockets.connect(f"{ws_url}/ws"):
-                    self.print_test("WebSocket Connection", "PASS", "Connection established")
+                    self.print_test(
+                        "WebSocket Connection", "PASS", "Connection established"
+                    )
                     passed += 1
             except websockets.exceptions.ConnectionClosed:
                 self.print_test(
-                    "WebSocket Connection", "PASS", "Connection established (then closed)"
+                    "WebSocket Connection",
+                    "PASS",
+                    "Connection established (then closed)",
                 )
                 passed += 1
             except Exception as e:
                 if "404" in str(e) or "not found" in str(e).lower():
                     self.print_test(
-                        "WebSocket Connection", "SKIP", "No WebSocket endpoint configured"
+                        "WebSocket Connection",
+                        "SKIP",
+                        "No WebSocket endpoint configured",
                     )
                 else:
                     self.print_test("WebSocket Connection", "FAIL", f"Exception: {e}")
 
         except Exception as e:
-            self.print_test("WebSocket Connection", "SKIP", f"WebSocket testing unavailable: {e}")
+            self.print_test(
+                "WebSocket Connection", "SKIP", f"WebSocket testing unavailable: {e}"
+            )
 
-        success_rate = (passed / total * 100) if total > 0 else 100  # Skip doesn't count as failure
+        success_rate = (
+            (passed / total * 100) if total > 0 else 100
+        )  # Skip doesn't count as failure
         self.record_test(
             "websocket",
             "overall",
@@ -599,7 +683,9 @@ class AdvancedTestFramework:
         total = 0
 
         if not self.auth_token:
-            self.print_test("Social Features", "SKIP", "No authentication token available")
+            self.print_test(
+                "Social Features", "SKIP", "No authentication token available"
+            )
             return True
 
         headers = {"Authorization": f"Bearer {self.auth_token}"}
@@ -609,19 +695,30 @@ class AdvancedTestFramework:
                 # Test profile endpoint
                 total += 1
                 try:
-                    response = await client.get(f"{self.base_url}/social/profile", headers=headers)
-                    if response.status_code in [200, 404]:  # 404 is OK if profile doesn't exist yet
+                    response = await client.get(
+                        f"{self.base_url}/social/profile", headers=headers
+                    )
+                    if response.status_code in [
+                        200,
+                        404,
+                    ]:  # 404 is OK if profile doesn't exist yet
                         self.print_test(
-                            "Profile Endpoint", "PASS", f"Status: {response.status_code}"
+                            "Profile Endpoint",
+                            "PASS",
+                            f"Status: {response.status_code}",
                         )
                         passed += 1
                     else:
                         self.print_test(
-                            "Profile Endpoint", "FAIL", f"Status code: {response.status_code}"
+                            "Profile Endpoint",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     if "404" in str(e) or "not found" in str(e).lower():
-                        self.print_test("Profile Endpoint", "SKIP", "Endpoint not implemented")
+                        self.print_test(
+                            "Profile Endpoint", "SKIP", "Endpoint not implemented"
+                        )
                     else:
                         self.print_test("Profile Endpoint", "FAIL", f"Exception: {e}")
 
@@ -633,16 +730,22 @@ class AdvancedTestFramework:
                     )
                     if response.status_code in [200, 404]:
                         self.print_test(
-                            "Followers Endpoint", "PASS", f"Status: {response.status_code}"
+                            "Followers Endpoint",
+                            "PASS",
+                            f"Status: {response.status_code}",
                         )
                         passed += 1
                     else:
                         self.print_test(
-                            "Followers Endpoint", "FAIL", f"Status code: {response.status_code}"
+                            "Followers Endpoint",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     if "404" in str(e) or "not found" in str(e).lower():
-                        self.print_test("Followers Endpoint", "SKIP", "Endpoint not implemented")
+                        self.print_test(
+                            "Followers Endpoint", "SKIP", "Endpoint not implemented"
+                        )
                     else:
                         self.print_test("Followers Endpoint", "FAIL", f"Exception: {e}")
 
@@ -677,38 +780,56 @@ class AdvancedTestFramework:
                 # Test AI chat endpoint
                 total += 1
                 try:
-                    response = await client.get(f"{self.base_url}/ai/threads", headers=headers)
+                    response = await client.get(
+                        f"{self.base_url}/ai/threads", headers=headers
+                    )
                     if response.status_code in [200, 404]:
                         self.print_test(
-                            "AI Threads Endpoint", "PASS", f"Status: {response.status_code}"
+                            "AI Threads Endpoint",
+                            "PASS",
+                            f"Status: {response.status_code}",
                         )
                         passed += 1
                     else:
                         self.print_test(
-                            "AI Threads Endpoint", "FAIL", f"Status code: {response.status_code}"
+                            "AI Threads Endpoint",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     if "404" in str(e) or "not found" in str(e).lower():
-                        self.print_test("AI Threads Endpoint", "SKIP", "Endpoint not implemented")
+                        self.print_test(
+                            "AI Threads Endpoint", "SKIP", "Endpoint not implemented"
+                        )
                     else:
-                        self.print_test("AI Threads Endpoint", "FAIL", f"Exception: {e}")
+                        self.print_test(
+                            "AI Threads Endpoint", "FAIL", f"Exception: {e}"
+                        )
 
                 # Test AI models endpoint
                 total += 1
                 try:
-                    response = await client.get(f"{self.base_url}/ai/models", headers=headers)
+                    response = await client.get(
+                        f"{self.base_url}/ai/models", headers=headers
+                    )
                     if response.status_code in [200, 404]:
                         self.print_test(
-                            "AI Models Endpoint", "PASS", f"Status: {response.status_code}"
+                            "AI Models Endpoint",
+                            "PASS",
+                            f"Status: {response.status_code}",
                         )
                         passed += 1
                     else:
                         self.print_test(
-                            "AI Models Endpoint", "FAIL", f"Status code: {response.status_code}"
+                            "AI Models Endpoint",
+                            "FAIL",
+                            f"Status code: {response.status_code}",
                         )
                 except Exception as e:
                     if "404" in str(e) or "not found" in str(e).lower():
-                        self.print_test("AI Models Endpoint", "SKIP", "Endpoint not implemented")
+                        self.print_test(
+                            "AI Models Endpoint", "SKIP", "Endpoint not implemented"
+                        )
                     else:
                         self.print_test("AI Models Endpoint", "FAIL", f"Exception: {e}")
 
@@ -747,10 +868,14 @@ class AdvancedTestFramework:
                     rate_limited = any(status == 429 for status in responses)
 
                     if rate_limited:
-                        self.print_test("Rate Limiting", "PASS", "Rate limiting detected")
+                        self.print_test(
+                            "Rate Limiting", "PASS", "Rate limiting detected"
+                        )
                         passed += 1
                     else:
-                        self.print_test("Rate Limiting", "SKIP", "No rate limiting detected")
+                        self.print_test(
+                            "Rate Limiting", "SKIP", "No rate limiting detected"
+                        )
 
                 except Exception as e:
                     self.print_test("Rate Limiting", "FAIL", f"Exception: {e}")
@@ -760,15 +885,21 @@ class AdvancedTestFramework:
                 if self.base_url.startswith("http://"):
                     try:
                         https_url = self.base_url.replace("http://", "https://")
-                        response = await client.get(f"{https_url}/health", follow_redirects=False)
+                        response = await client.get(
+                            f"{https_url}/health", follow_redirects=False
+                        )
 
                         if response.status_code in [200, 301, 302]:
                             self.print_test(
-                                "HTTPS Support", "PASS", f"HTTPS available: {response.status_code}"
+                                "HTTPS Support",
+                                "PASS",
+                                f"HTTPS available: {response.status_code}",
                             )
                             passed += 1
                         else:
-                            self.print_test("HTTPS Support", "SKIP", "HTTPS not configured")
+                            self.print_test(
+                                "HTTPS Support", "SKIP", "HTTPS not configured"
+                            )
                     except Exception:
                         self.print_test("HTTPS Support", "SKIP", "HTTPS not available")
                 else:
@@ -818,7 +949,9 @@ class AdvancedTestFramework:
                         )
 
                 except Exception as e:
-                    self.print_test("SQL Injection Protection", "FAIL", f"Exception: {e}")
+                    self.print_test(
+                        "SQL Injection Protection", "FAIL", f"Exception: {e}"
+                    )
 
         except Exception as e:
             self.print_test("Security Tests", "FAIL", f"Setup failed: {e}")
@@ -843,7 +976,9 @@ class AdvancedTestFramework:
             if test["status"] == "PASS"
         )
 
-        overall_success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
+        overall_success_rate = (
+            (passed_tests / total_tests * 100) if total_tests > 0 else 0
+        )
 
         report = {
             "timestamp": datetime.now().isoformat(),
@@ -851,13 +986,15 @@ class AdvancedTestFramework:
                 "total_tests": total_tests,
                 "passed_tests": passed_tests,
                 "success_rate": round(overall_success_rate, 2),
-                "status": "EXCELLENT"
-                if overall_success_rate >= 90
-                else "GOOD"
-                if overall_success_rate >= 75
-                else "FAIR"
-                if overall_success_rate >= 50
-                else "POOR",
+                "status": (
+                    "EXCELLENT"
+                    if overall_success_rate >= 90
+                    else (
+                        "GOOD"
+                        if overall_success_rate >= 75
+                        else "FAIR" if overall_success_rate >= 50 else "POOR"
+                    )
+                ),
             },
             "categories": self.test_results,
             "recommendations": [],
@@ -885,7 +1022,9 @@ class AdvancedTestFramework:
         """Run all test suites"""
         self.print_header("Lokifi Advanced Testing Framework - Full Test Suite")
 
-        print(f"{Colors.WHITE}Running comprehensive tests on: {self.base_url}{Colors.END}")
+        print(
+            f"{Colors.WHITE}Running comprehensive tests on: {self.base_url}{Colors.END}"
+        )
         print(
             f"{Colors.WHITE}Test execution started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{Colors.END}"
         )
@@ -916,26 +1055,35 @@ class AdvancedTestFramework:
 
         # Save test report
         report_file = (
-            backend_dir / f"advanced_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+            backend_dir
+            / f"advanced_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         )
         try:
             with open(report_file, "w") as f:
                 json.dump(report, f, indent=2)
 
             self.print_section("Test Report Summary")
-            print(f"📊 Total Tests: {Colors.BOLD}{report['summary']['total_tests']}{Colors.END}")
-            print(f"✅ Passed: {Colors.GREEN}{report['summary']['passed_tests']}{Colors.END}")
+            print(
+                f"📊 Total Tests: {Colors.BOLD}{report['summary']['total_tests']}{Colors.END}"
+            )
+            print(
+                f"✅ Passed: {Colors.GREEN}{report['summary']['passed_tests']}{Colors.END}"
+            )
             print(
                 f"📈 Success Rate: {Colors.BOLD}{report['summary']['success_rate']:.1f}%{Colors.END}"
             )
-            print(f"🎯 Overall Status: {Colors.BOLD}{report['summary']['status']}{Colors.END}")
+            print(
+                f"🎯 Overall Status: {Colors.BOLD}{report['summary']['status']}{Colors.END}"
+            )
 
             if report["recommendations"]:
                 print(f"\n{Colors.YELLOW}💡 Recommendations:{Colors.END}")
                 for rec in report["recommendations"]:
                     print(f"   • {rec}")
 
-            print(f"\n📋 Detailed report saved: {Colors.CYAN}{report_file.name}{Colors.END}")
+            print(
+                f"\n📋 Detailed report saved: {Colors.CYAN}{report_file.name}{Colors.END}"
+            )
 
         except Exception as e:
             self.print_test("Report Generation", "FAIL", f"Could not save report: {e}")
@@ -948,7 +1096,9 @@ async def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="Lokifi Advanced Testing Framework")
-    parser.add_argument("--url", default="http://localhost:8002", help="Base URL for testing")
+    parser.add_argument(
+        "--url", default="http://localhost:8002", help="Base URL for testing"
+    )
     parser.add_argument("--category", help="Run specific test category")
 
     args = parser.parse_args()

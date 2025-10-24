@@ -107,10 +107,22 @@ class TestAuthServiceRegistration:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
-            patch("app.services.auth_service.hash_password", return_value="hashed_password"),
-            patch("app.services.auth_service.create_access_token", return_value="access_token"),
-            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
+            patch(
+                "app.services.auth_service.hash_password",
+                return_value="hashed_password",
+            ),
+            patch(
+                "app.services.auth_service.create_access_token",
+                return_value="access_token",
+            ),
+            patch(
+                "app.services.auth_service.create_refresh_token",
+                return_value="refresh_token",
+            ),
         ):
             result = await auth_service.register_user(sample_user_register_request)
 
@@ -124,7 +136,9 @@ class TestAuthServiceRegistration:
             mock_db_session.commit.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_register_user_invalid_email(self, auth_service, sample_user_register_request):
+    async def test_register_user_invalid_email(
+        self, auth_service, sample_user_register_request
+    ):
         """Test registration with invalid email"""
         with patch("app.services.auth_service.validate_email", return_value=False):
             with pytest.raises(HTTPException) as exc_info:
@@ -134,11 +148,16 @@ class TestAuthServiceRegistration:
             assert "Invalid email format" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_register_user_weak_password(self, auth_service, sample_user_register_request):
+    async def test_register_user_weak_password(
+        self, auth_service, sample_user_register_request
+    ):
         """Test registration with weak password"""
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=False),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=False,
+            ),
         ):
             with pytest.raises(HTTPException) as exc_info:
                 await auth_service.register_user(sample_user_register_request)
@@ -158,7 +177,10 @@ class TestAuthServiceRegistration:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
         ):
             with pytest.raises(HTTPException) as exc_info:
                 await auth_service.register_user(sample_user_register_request)
@@ -187,7 +209,10 @@ class TestAuthServiceRegistration:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
         ):
             with pytest.raises(HTTPException) as exc_info:
                 await auth_service.register_user(sample_user_register_request)
@@ -206,7 +231,12 @@ class TestAuthServiceLogin:
 
     @pytest.mark.asyncio
     async def test_login_user_success(
-        self, auth_service, mock_db_session, sample_user_login_request, mock_user, mock_profile
+        self,
+        auth_service,
+        mock_db_session,
+        sample_user_login_request,
+        mock_user,
+        mock_profile,
     ):
         """Test successful user login"""
         # Mock database query returning user and profile
@@ -216,8 +246,14 @@ class TestAuthServiceLogin:
 
         with (
             patch("app.services.auth_service.verify_password", return_value=True),
-            patch("app.services.auth_service.create_access_token", return_value="access_token"),
-            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+            patch(
+                "app.services.auth_service.create_access_token",
+                return_value="access_token",
+            ),
+            patch(
+                "app.services.auth_service.create_refresh_token",
+                return_value="refresh_token",
+            ),
         ):
             result = await auth_service.login_user(sample_user_login_request)
 
@@ -232,7 +268,9 @@ class TestAuthServiceLogin:
     ):
         """Test login with non-existent user"""
         # Mock no user found
-        mock_db_session.execute = AsyncMock(return_value=Mock(one_or_none=Mock(return_value=None)))
+        mock_db_session.execute = AsyncMock(
+            return_value=Mock(one_or_none=Mock(return_value=None))
+        )
 
         with pytest.raises(HTTPException) as exc_info:
             await auth_service.login_user(sample_user_login_request)
@@ -242,7 +280,12 @@ class TestAuthServiceLogin:
 
     @pytest.mark.asyncio
     async def test_login_user_wrong_password(
-        self, auth_service, mock_db_session, sample_user_login_request, mock_user, mock_profile
+        self,
+        auth_service,
+        mock_db_session,
+        sample_user_login_request,
+        mock_user,
+        mock_profile,
     ):
         """Test login with incorrect password"""
         # Mock user found but password verification fails
@@ -259,7 +302,12 @@ class TestAuthServiceLogin:
 
     @pytest.mark.asyncio
     async def test_login_user_inactive_account(
-        self, auth_service, mock_db_session, sample_user_login_request, mock_user, mock_profile
+        self,
+        auth_service,
+        mock_db_session,
+        sample_user_login_request,
+        mock_user,
+        mock_profile,
     ):
         """Test login with inactive account"""
         # Mock user found but account is inactive
@@ -279,7 +327,12 @@ class TestAuthServiceLogin:
 
     @pytest.mark.asyncio
     async def test_login_user_no_password_hash(
-        self, auth_service, mock_db_session, sample_user_login_request, mock_user, mock_profile
+        self,
+        auth_service,
+        mock_db_session,
+        sample_user_login_request,
+        mock_user,
+        mock_profile,
     ):
         """Test login when user has no password hash"""
         # Mock user with no password hash
@@ -330,15 +383,24 @@ class TestAuthServiceIntegration:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
             patch("app.services.auth_service.hash_password", return_value="hashed"),
-            patch("app.services.auth_service.create_access_token", return_value="access"),
-            patch("app.services.auth_service.create_refresh_token", return_value="refresh"),
+            patch(
+                "app.services.auth_service.create_access_token", return_value="access"
+            ),
+            patch(
+                "app.services.auth_service.create_refresh_token", return_value="refresh"
+            ),
         ):
             result = await auth_service.register_user(sample_user_register_request)
 
             # Verify all database objects were created
-            assert mock_db_session.add.call_count >= 3  # User, Profile, NotificationPreference
+            assert (
+                mock_db_session.add.call_count >= 3
+            )  # User, Profile, NotificationPreference
             assert mock_db_session.commit.called
 
             # Verify response structure
@@ -397,10 +459,22 @@ class TestAuthServiceIntegration:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
-            patch("app.services.auth_service.hash_password", return_value="hashed_password"),
-            patch("app.services.auth_service.create_access_token", return_value="access_token"),
-            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
+            patch(
+                "app.services.auth_service.hash_password",
+                return_value="hashed_password",
+            ),
+            patch(
+                "app.services.auth_service.create_access_token",
+                return_value="access_token",
+            ),
+            patch(
+                "app.services.auth_service.create_refresh_token",
+                return_value="refresh_token",
+            ),
         ):
             # Register
             reg_result = await auth_service.register_user(sample_user_register_request)
@@ -408,7 +482,9 @@ class TestAuthServiceIntegration:
 
             # Mock login query
             mock_db_session.execute = AsyncMock(
-                return_value=Mock(one_or_none=Mock(return_value=(mock_user, mock_profile)))
+                return_value=Mock(
+                    one_or_none=Mock(return_value=(mock_user, mock_profile))
+                )
             )
 
             with patch("app.services.auth_service.verify_password", return_value=True):
@@ -458,22 +534,33 @@ class TestAuthServiceEdgeCases:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
             patch("app.services.auth_service.hash_password", return_value="hashed"),
-            patch("app.services.auth_service.create_access_token", return_value="access"),
-            patch("app.services.auth_service.create_refresh_token", return_value="refresh"),
+            patch(
+                "app.services.auth_service.create_access_token", return_value="access"
+            ),
+            patch(
+                "app.services.auth_service.create_refresh_token", return_value="refresh"
+            ),
         ):
             result = await auth_service.register_user(request)
             assert result is not None
 
     @pytest.mark.asyncio
-    async def test_login_with_special_characters_in_email(self, auth_service, mock_db_session):
+    async def test_login_with_special_characters_in_email(
+        self, auth_service, mock_db_session
+    ):
         """Test login with special characters in email"""
         from datetime import datetime
 
         from app.schemas.auth import UserLoginRequest
 
-        request = UserLoginRequest(email="test+special@example.com", password="password123")
+        request = UserLoginRequest(
+            email="test+special@example.com", password="password123"
+        )
 
         mock_user = Mock(spec=User)
         mock_user.id = uuid.uuid4()
@@ -504,8 +591,12 @@ class TestAuthServiceEdgeCases:
 
         with (
             patch("app.services.auth_service.verify_password", return_value=True),
-            patch("app.services.auth_service.create_access_token", return_value="access"),
-            patch("app.services.auth_service.create_refresh_token", return_value="refresh"),
+            patch(
+                "app.services.auth_service.create_access_token", return_value="access"
+            ),
+            patch(
+                "app.services.auth_service.create_refresh_token", return_value="refresh"
+            ),
         ):
             result = await auth_service.login_user(request)
             assert result is not None
@@ -522,7 +613,10 @@ class TestAuthServiceEdgeCases:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
             patch("app.services.auth_service.hash_password", return_value="hashed"),
         ):
             with pytest.raises(Exception) as exc_info:
@@ -535,7 +629,9 @@ class TestAuthServiceEdgeCases:
         self, auth_service, mock_db_session, sample_user_login_request
     ):
         """Test handling of database errors during login"""
-        mock_db_session.execute = AsyncMock(side_effect=Exception("Database connection lost"))
+        mock_db_session.execute = AsyncMock(
+            side_effect=Exception("Database connection lost")
+        )
 
         with pytest.raises(Exception) as exc_info:
             await auth_service.login_user(sample_user_login_request)
@@ -555,7 +651,10 @@ class TestAuthServiceEdgeCases:
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
-            patch("app.services.auth_service.validate_password_strength", return_value=True),
+            patch(
+                "app.services.auth_service.validate_password_strength",
+                return_value=True,
+            ),
             patch("app.services.auth_service.hash_password", return_value="hashed"),
             patch(
                 "app.services.auth_service.create_access_token",

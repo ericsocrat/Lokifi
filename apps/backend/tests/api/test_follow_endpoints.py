@@ -9,7 +9,9 @@ BASE_URL = "http://localhost:8000"
 
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Requires live server - run manually or in integration test suite")
+@pytest.mark.skip(
+    reason="Requires live server - run manually or in integration test suite"
+)
 def create_test_user(email: str, username: str, full_name: str):
     """Helper to create or login a test user."""
     user_data = {
@@ -33,7 +35,9 @@ def create_test_user(email: str, username: str, full_name: str):
 
 
 @pytest.mark.integration
-@pytest.mark.skip(reason="Requires live server - run manually or in integration test suite")
+@pytest.mark.skip(
+    reason="Requires live server - run manually or in integration test suite"
+)
 def test_follow_graph():
     print("🧪 Testing Phase J3 Follow Graph Endpoints")
     print("=" * 60)
@@ -42,7 +46,9 @@ def test_follow_graph():
     print("\n👥 Step 1: Create test users...")
 
     # Main user (Alice)
-    alice_cookies = create_test_user("alice@example.com", "alice_test", "Alice Test User")
+    alice_cookies = create_test_user(
+        "alice@example.com", "alice_test", "Alice Test User"
+    )
     if not alice_cookies:
         print("❌ Failed to create Alice")
         return
@@ -56,16 +62,22 @@ def test_follow_graph():
     print("✅ Bob created/logged in")
 
     # Charlie
-    charlie_cookies = create_test_user("charlie@example.com", "charlie_test", "Charlie Test User")
+    charlie_cookies = create_test_user(
+        "charlie@example.com", "charlie_test", "Charlie Test User"
+    )
     if not charlie_cookies:
         print("❌ Failed to create Charlie")
         return
     print("✅ Charlie created/logged in")
 
     # Get user profiles to get IDs
-    alice_profile = requests.get(f"{BASE_URL}/api/profile/me", cookies=alice_cookies).json()
+    alice_profile = requests.get(
+        f"{BASE_URL}/api/profile/me", cookies=alice_cookies
+    ).json()
     bob_profile = requests.get(f"{BASE_URL}/api/profile/me", cookies=bob_cookies).json()
-    charlie_profile = requests.get(f"{BASE_URL}/api/profile/me", cookies=charlie_cookies).json()
+    charlie_profile = requests.get(
+        f"{BASE_URL}/api/profile/me", cookies=charlie_cookies
+    ).json()
 
     alice_user_id = alice_profile["user_id"]
     bob_user_id = bob_profile["user_id"]
@@ -88,15 +100,21 @@ def test_follow_graph():
         print("✅ Alice follows Bob")
         print(f"   Follow ID: {follow_result['id']}")
     else:
-        print(f"❌ Alice -> Bob follow failed: {response.status_code} - {response.text}")
+        print(
+            f"❌ Alice -> Bob follow failed: {response.status_code} - {response.text}"
+        )
 
     # Bob follows Charlie
     follow_data = {"user_id": charlie_user_id}
-    response = requests.post(f"{BASE_URL}/api/follow/follow", json=follow_data, cookies=bob_cookies)
+    response = requests.post(
+        f"{BASE_URL}/api/follow/follow", json=follow_data, cookies=bob_cookies
+    )
     if response.status_code == 200:
         print("✅ Bob follows Charlie")
     else:
-        print(f"❌ Bob -> Charlie follow failed: {response.status_code} - {response.text}")
+        print(
+            f"❌ Bob -> Charlie follow failed: {response.status_code} - {response.text}"
+        )
 
     # Charlie follows Alice (mutual follow)
     follow_data = {"user_id": alice_user_id}
@@ -106,7 +124,9 @@ def test_follow_graph():
     if response.status_code == 200:
         print("✅ Charlie follows Alice")
     else:
-        print(f"❌ Charlie -> Alice follow failed: {response.status_code} - {response.text}")
+        print(
+            f"❌ Charlie -> Alice follow failed: {response.status_code} - {response.text}"
+        )
 
     # Alice follows Charlie (creating mutual follow)
     follow_data = {"user_id": charlie_user_id}
@@ -116,12 +136,16 @@ def test_follow_graph():
     if response.status_code == 200:
         print("✅ Alice follows Charlie (mutual)")
     else:
-        print(f"❌ Alice -> Charlie follow failed: {response.status_code} - {response.text}")
+        print(
+            f"❌ Alice -> Charlie follow failed: {response.status_code} - {response.text}"
+        )
 
     # Step 3: Check follow status
     print("\n🔍 Step 3: Check follow status...")
 
-    response = requests.get(f"{BASE_URL}/api/follow/status/{bob_user_id}", cookies=alice_cookies)
+    response = requests.get(
+        f"{BASE_URL}/api/follow/status/{bob_user_id}", cookies=alice_cookies
+    )
     if response.status_code == 200:
         status_data = response.json()
         print("✅ Alice -> Bob status check")
@@ -153,7 +177,9 @@ def test_follow_graph():
     # Step 5: Get following list
     print("\n👥 Step 5: Get following list...")
 
-    response = requests.get(f"{BASE_URL}/api/follow/me/following", cookies=alice_cookies)
+    response = requests.get(
+        f"{BASE_URL}/api/follow/me/following", cookies=alice_cookies
+    )
     if response.status_code == 200:
         following_data = response.json()
         print("✅ Alice's following list")
@@ -243,7 +269,9 @@ def test_follow_graph():
     # Step 11: Verify unfollow
     print("\n🔍 Step 11: Verify unfollow...")
 
-    response = requests.get(f"{BASE_URL}/api/follow/status/{bob_user_id}", cookies=alice_cookies)
+    response = requests.get(
+        f"{BASE_URL}/api/follow/status/{bob_user_id}", cookies=alice_cookies
+    )
     if response.status_code == 200:
         status_data = response.json()
         print("✅ Post-unfollow status check")
@@ -257,7 +285,9 @@ def test_follow_graph():
 
     bulk_follow_data = [bob_user_id, charlie_user_id]
     response = requests.post(
-        f"{BASE_URL}/api/follow/bulk/follow", json=bulk_follow_data, cookies=alice_cookies
+        f"{BASE_URL}/api/follow/bulk/follow",
+        json=bulk_follow_data,
+        cookies=alice_cookies,
     )
     if response.status_code == 200:
         bulk_result = response.json()

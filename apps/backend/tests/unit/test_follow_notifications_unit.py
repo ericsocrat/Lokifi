@@ -54,7 +54,8 @@ async def test_follow_creates_notification():
         async for db in get_db_session():
             result = await db.execute(
                 select(Notification).where(
-                    Notification.user_id == bob_id, Notification.type == NotificationType.FOLLOW
+                    Notification.user_id == bob_id,
+                    Notification.type == NotificationType.FOLLOW,
                 )
             )
             initial_count = len(result.scalars().all())

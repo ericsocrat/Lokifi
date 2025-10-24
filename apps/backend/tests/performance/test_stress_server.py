@@ -96,7 +96,11 @@ async def mark_notification_read(notification_id: str):
     # Simulate database update
     await asyncio.sleep(random.uniform(0.01, 0.03))
 
-    return {"status": "success", "notification_id": notification_id, "marked_read": True}
+    return {
+        "status": "success",
+        "notification_id": notification_id,
+        "marked_read": True,
+    }
 
 
 @app.get("/api/v1/ai/threads")

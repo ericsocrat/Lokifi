@@ -77,9 +77,13 @@ async def test_mutual_follows_and_counters():
         assert sa["following_count"] >= 2
 
         # Unfollow Carol and ensure counts drop (idempotent)
-        unf_carol = await client.delete(f"/api/follow/{carol_id}", headers=headers_alice)
+        unf_carol = await client.delete(
+            f"/api/follow/{carol_id}", headers=headers_alice
+        )
         assert unf_carol.status_code == 200
-        unf_carol2 = await client.delete(f"/api/follow/{carol_id}", headers=headers_alice)
+        unf_carol2 = await client.delete(
+            f"/api/follow/{carol_id}", headers=headers_alice
+        )
         assert unf_carol2.status_code == 200
         stats_after = await client.get("/api/follow/stats/me", headers=headers_alice)
         assert stats_after.json()["following_count"] <= sa["following_count"]
@@ -100,7 +104,9 @@ async def test_suggestions_basic():
         token = login.cookies.get("access_token")
         headers = {"Authorization": f"Bearer {token}"}
         # Get suggestions (may be empty early but should return 200 schema)
-        sugg = await client.get("/api/follow/suggestions?page=1&page_size=5", headers=headers)
+        sugg = await client.get(
+            "/api/follow/suggestions?page=1&page_size=5", headers=headers
+        )
         assert sugg.status_code == 200
         body = sugg.json()
         assert "suggestions" in body and "page" in body

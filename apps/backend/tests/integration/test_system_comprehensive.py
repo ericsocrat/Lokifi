@@ -105,7 +105,9 @@ async def run_comprehensive_test():
         security_route_count = len(
             [r.path for r in app.routes if hasattr(r, "path") and "/security" in r.path]
         )
-        print(f"✅ {route_count} total routes, {security_route_count} security endpoints")
+        print(
+            f"✅ {route_count} total routes, {security_route_count} security endpoints"
+        )
 
         # Test 6: Security Configuration
         print("\n6️⃣ Testing Security Configuration...")

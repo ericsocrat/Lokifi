@@ -85,14 +85,19 @@ class SmokeTestSuite:
                         passed=response.status == expected_status,
                         response_time_ms=response_time_ms,
                         status_code=response.status,
-                        response_data=response_data
-                        if isinstance(response_data, dict)
-                        else {"text": response_data},
+                        response_data=(
+                            response_data
+                            if isinstance(response_data, dict)
+                            else {"text": response_data}
+                        ),
                     )
 
             elif method.upper() == "POST":
                 async with self.session.post(
-                    url, json=data, headers=headers, timeout=aiohttp.ClientTimeout(total=10)
+                    url,
+                    json=data,
+                    headers=headers,
+                    timeout=aiohttp.ClientTimeout(total=10),
                 ) as response:
                     response_time_ms = (time.time() - start_time) * 1000
 
@@ -106,9 +111,11 @@ class SmokeTestSuite:
                         passed=response.status == expected_status,
                         response_time_ms=response_time_ms,
                         status_code=response.status,
-                        response_data=response_data
-                        if isinstance(response_data, dict)
-                        else {"text": response_data},
+                        response_data=(
+                            response_data
+                            if isinstance(response_data, dict)
+                            else {"text": response_data}
+                        ),
                     )
 
             else:
@@ -187,7 +194,9 @@ class SmokeTestSuite:
         start_time = time.time()
 
         try:
-            ws_url = self.base_url.replace("http://", "ws://").replace("https://", "wss://")
+            ws_url = self.base_url.replace("http://", "ws://").replace(
+                "https://", "wss://"
+            )
             ws_url = f"{ws_url}/ws/test"
 
             async with websockets.connect(ws_url, timeout=5) as websocket:
@@ -269,7 +278,9 @@ class SmokeTestSuite:
                 if asyncio.iscoroutine(test_coro):
                     # Single test
                     result = await test_coro
-                    results = [result] if isinstance(result, SmokeTestResult) else result
+                    results = (
+                        [result] if isinstance(result, SmokeTestResult) else result
+                    )
                 else:
                     # Multiple tests
                     results = await test_coro
@@ -278,9 +289,11 @@ class SmokeTestSuite:
                     "tests": len(results),
                     "passed": sum(1 for r in results if r.passed),
                     "failed": sum(1 for r in results if not r.passed),
-                    "avg_response_time": sum(r.response_time_ms for r in results) / len(results)
-                    if results
-                    else 0,
+                    "avg_response_time": (
+                        sum(r.response_time_ms for r in results) / len(results)
+                        if results
+                        else 0
+                    ),
                     "details": results,
                 }
 
@@ -289,7 +302,9 @@ class SmokeTestSuite:
 
                 for result in results:
                     status = "✅" if result.passed else "❌"
-                    print(f"  {status} {result.test_name} ({result.response_time_ms:.1f}ms)")
+                    print(
+                        f"  {status} {result.test_name} ({result.response_time_ms:.1f}ms)"
+                    )
                     if not result.passed and result.error_message:
                         print(f"      Error: {result.error_message}")
 
@@ -313,7 +328,9 @@ class SmokeTestSuite:
             "total_tests": total_tests,
             "passed_tests": passed_tests,
             "failed_tests": total_tests - passed_tests,
-            "success_rate": (passed_tests / total_tests * 100) if total_tests > 0 else 0,
+            "success_rate": (
+                (passed_tests / total_tests * 100) if total_tests > 0 else 0
+            ),
             "categories": category_results,
         }
 
@@ -354,12 +371,16 @@ class SmokeTestSuite:
 """
 
         for category, results in summary["categories"].items():
-            status_icon = "✅" if results.get("passed", 0) == results.get("tests", 0) else "❌"
+            status_icon = (
+                "✅" if results.get("passed", 0) == results.get("tests", 0) else "❌"
+            )
             report += f"### {category} {status_icon}\n"
             report += f"- Tests: {results.get('tests', 0)}\n"
             report += f"- Passed: {results.get('passed', 0)}\n"
             report += f"- Failed: {results.get('failed', 0)}\n"
-            report += f"- Avg Response Time: {results.get('avg_response_time', 0):.1f}ms\n\n"
+            report += (
+                f"- Avg Response Time: {results.get('avg_response_time', 0):.1f}ms\n\n"
+            )
 
         return report
 
