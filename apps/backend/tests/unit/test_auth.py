@@ -7,9 +7,6 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
-# Mark as config_validation to skip in CI (requires database + JWT secrets)
-pytestmark = pytest.mark.config_validation
-
 client = TestClient(app)
 
 
