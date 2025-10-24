@@ -297,6 +297,15 @@ def test_function_name(client, db_session):
 4. Ensure proper error handling
 5. Validate accessibility compliance
 
+### When Modifying CI/CD Workflows
+1. **Standardize service configurations** - Use consistent PostgreSQL/Redis versions
+2. **Centralize credentials** - Single source of truth for database credentials
+3. **Health checks required** - All services need proper health check configurations
+4. **Service availability** - Every test category needs its own database/cache services
+5. **Version consistency** - Use postgres:16-alpine + redis:7-alpine everywhere
+6. **Credential standard** - Always use lokifi:lokifi2025 for PostgreSQL
+7. **Test locally first** - Run actionlint/yaml-lint before pushing workflow changes
+
 ## Security Best Practices
 
 ### Frontend Security
@@ -481,6 +490,75 @@ const store = useStore();
 const user = useStore(state => state.user, shallow);
 ```
 
+## CI/CD & Workflow Standards
+
+### Service Configuration Standards (Sessions 8-9 Learnings)
+
+**Database Service Configuration** (REQUIRED for all test workflows):
+```yaml
+services:
+  postgres:
+    image: postgres:16-alpine  # ✅ Standardized version
+    env:
+      POSTGRES_USER: lokifi    # ✅ Standardized credentials
+      POSTGRES_PASSWORD: lokifi2025
+      POSTGRES_DB: lokifi_test
+    ports:
+      - 5432:5432
+    options: >-
+      --health-cmd "pg_isready -U lokifi"
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 5
+  
+  redis:
+    image: redis:7-alpine      # ✅ Standardized version
+    ports:
+      - 6379:6379
+    options: >-
+      --health-cmd "redis-cli ping"
+      --health-interval 10s
+      --health-timeout 5s
+      --health-retries 5
+```
+
+**Environment Variables** (REQUIRED for database connections):
+```yaml
+env:
+  DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
+  REDIS_URL: redis://localhost:6379/0
+  TESTING: 1
+```
+
+### CI/CD Anti-Patterns (Sessions 8-9)
+
+**❌ Common Mistakes**:
+1. **Missing services in test workflows** → E2E/integration tests fail silently
+2. **Inconsistent credentials** → Tests pass in one workflow, fail in another
+3. **Version drift** → Different postgres versions (15 vs 16) cause compatibility issues
+4. **No health checks** → Tests start before services are ready
+5. **Duplicate upload steps** → CodeQL/SARIF conflicts
+
+**✅ Solutions**:
+1. **Every test workflow needs services** - Integration, E2E, coverage all need PostgreSQL + Redis
+2. **Single source of truth** - lokifi:lokifi2025 everywhere
+3. **Standardize versions** - postgres:16-alpine + redis:7-alpine
+4. **Always use health checks** - Wait for services to be ready
+5. **Let actions handle uploads** - Don't duplicate upload steps
+
+### Root Cause Analysis Approach
+
+When debugging CI failures, follow this systematic approach:
+
+1. **Categorize errors** - Separate false positives from real failures
+2. **Look for patterns** - Do multiple workflows fail with similar errors?
+3. **Check service configurations** - Are PostgreSQL/Redis available?
+4. **Verify credentials** - Are they consistent across workflows?
+5. **Compare working vs broken** - What's different between passing and failing workflows?
+6. **Fix root cause, not symptoms** - One fix can resolve multiple failures
+
+**Example**: Sessions 8-9 resolved 7-8 failures by fixing one root cause (missing PostgreSQL services).
+
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
@@ -488,6 +566,7 @@ When suggesting code or answering questions, prefer these docs:
 - **Standards**: `/docs/CODING_STANDARDS.md`
 - **Architecture**: `/docs/REPOSITORY_STRUCTURE.md`
 - **Copilot Guide**: `/.vscode/COPILOT_GUIDE.md`
+- **Sessions 8-9**: `/docs/SESSION_8_9_SECURITY_AND_CI_RESOLUTION.md` - Security + CI learnings
 - **Deployment**: `/docs/deployment/README.md` - Production deployment guides
 - **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
 - **DNS Configuration**: `/docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup

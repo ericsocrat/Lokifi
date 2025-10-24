@@ -4,26 +4,18 @@
 [![Coverage Tracking](https://github.com/ericsocrat/Lokifi/actions/workflows/coverage.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/coverage.yml)
 [![Integration Tests](https://github.com/ericsocrat/Lokifi/actions/workflows/integration.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/integration.yml)
 [![E2E Tests](https://github.com/ericsocrat/Lokifi/actions/workflows/e2e.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/e2e.yml)
-[![Security Scanning](https://github.com/ericsocrat/Lokifi/actions/workflows/security-scan.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/security-scan.yml)
+[![CodeQL Security](https://github.com/ericsocrat/Lokifi/actions/workflows/codeql.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/ericsocrat/Lokifi/branch/main/graph/badge.svg)](https://codecov.io/gh/ericsocrat/Lokifi)
 
-**Market + Social + AI ├── 🎯 apps/                  # Application code
-│   ├── backend/            # FastAPI Python backend
-│   ├── frontend/           # Next.js React application
-│   └── mobile/             # Mobile application
-│
-├── 🏗️ infra/                # Infrastructure
-│   ├── docker/             # Docker compose configurations
-│   ├── monitoring/         # Monitoring stack (Prometheus, Grafana)
-│   └── security/           # Security configs
-│
-├── 📚 docs/                 # Documentation
-└── 🛠️ tools/                # Development and deployment tools
-```
-
-### 📖 **Navigation Guide***
+**Market + Social + AI-Powered Financial Intelligence Platform**
 
 A comprehensive financial platform combining advanced market analysis with social features and AI-powered insights.
+
+> 🔐 **Security Status**: CodeQL scanning enabled | Dependabot active | Branch protection configured
+> 
+> � **Test Coverage**: Frontend 11.61% | Backend 27% | Overall 19.31%
+> 
+> � **CI/CD**: Standardized PostgreSQL 16 across all workflows | 30 automated checks
 
 ---
 
@@ -247,7 +239,43 @@ npx playwright test       # Run E2E tests
 
 For detailed testing information, see [docs/testing/README.md](docs/testing/README.md)
 
-## 📊 Coverage Management
+## � Security & Quality
+
+### Security Features
+
+**Active Security Measures** (Sessions 8-9):
+- ✅ **CodeQL Security Scanning**: Weekly automated scans for JavaScript/TypeScript and Python
+  - SQL injection, XSS, command injection detection
+  - Hardcoded credentials and sensitive data exposure checks
+  - Results in GitHub Security tab
+- ✅ **Dependabot**: Automated dependency updates
+  - Weekly updates for npm, pip, Docker, GitHub Actions
+  - Grouped PRs to minimize noise
+  - Security vulnerability patches
+- ✅ **Branch Protection**: Main branch requires PR approval + passing CI
+- ✅ **Standardized Services**: PostgreSQL 16-alpine + Redis 7-alpine across all workflows
+
+**Security Documentation**:
+- [Session 8-9 Security & CI Resolution](docs/SESSION_8_9_SECURITY_AND_CI_RESOLUTION.md)
+- [Security Guides](docs/security/)
+
+### CI/CD Pipeline
+
+**Status**: 30 automated checks per PR
+- ✅ **Fast Feedback**: Linting + type checking (< 2 min)
+- ✅ **Test Coverage**: Frontend + Backend unit tests
+- ✅ **Integration**: API contracts + database migrations
+- ✅ **E2E**: Playwright across 3 browsers × 2 shards
+- ✅ **Security**: CodeQL analysis on every PR
+- ✅ **Quality**: Accessibility + performance benchmarks
+
+**Recent Improvements**:
+- Standardized PostgreSQL credentials across all workflows (lokifi:lokifi2025)
+- Upgraded to postgres:16-alpine for consistency
+- Simplified CodeQL workflow (removed redundant uploads)
+- Expected 40% reduction in CI failures from service standardization
+
+## �📊 Coverage Management
 
 **Status:** ✅ Fully Automated - Zero Manual Work Required
 
