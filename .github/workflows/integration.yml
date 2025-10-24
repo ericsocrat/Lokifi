@@ -108,6 +108,8 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
           TESTING: 1
+          LOKIFI_JWT_SECRET: test-secret-key-for-integration-tests
+          JWT_SECRET_KEY: test-secret-key-for-integration-tests
 
       - name: 📋 Run API contract tests (schemathesis)
         working-directory: apps/backend
