@@ -18,7 +18,7 @@ def test_profile_endpoints():
     print("\n📝 Step 1: Register a test user...")
     user_data = {
         "email": "profiletest@example.com",
-        "password": "testpassword123",
+        "password": "TestUser123!",
         "full_name": "Profile Test User",
         "username": "profiletester",
     }

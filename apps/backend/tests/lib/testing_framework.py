@@ -70,7 +70,7 @@ class AdvancedTestFramework:
         }
         self.test_user = {
             "email": "test@lokifi.dev",
-            "password": "TestPassword123!",
+            "password": "TestUser123!!",
             "username": "testuser",
             "full_name": "Test User",
         }

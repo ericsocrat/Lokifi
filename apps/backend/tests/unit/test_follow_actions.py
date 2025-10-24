@@ -16,7 +16,7 @@ async def _register(client, email, username):
         "/api/auth/register",
         json={
             "email": email,
-            "password": "testpassword123",
+            "password": "TestUser123!",
             "full_name": username.title(),
             "username": username,
         },
@@ -25,7 +25,7 @@ async def _register(client, email, username):
 
 async def _login(client, email):
     return await client.post(
-        "/api/auth/login", json={"email": email, "password": "testpassword123"}
+        "/api/auth/login", json={"email": email, "password": "TestUser123!"}
     )
 
 

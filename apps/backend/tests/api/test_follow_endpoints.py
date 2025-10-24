@@ -14,7 +14,7 @@ def create_test_user(email: str, username: str, full_name: str):
     """Helper to create or login a test user."""
     user_data = {
         "email": email,
-        "password": "testpassword123",
+        "password": "TestUser123!",
         "full_name": full_name,
         "username": username,
     }
@@ -24,7 +24,7 @@ def create_test_user(email: str, username: str, full_name: str):
         return response.cookies
     elif response.status_code == 409:
         # User exists, try login
-        login_data = {"email": email, "password": "testpassword123"}
+        login_data = {"email": email, "password": "TestUser123!"}
         response = requests.post(f"{BASE_URL}/api/auth/login", json=login_data)
         if response.status_code == 200:
             return response.cookies

@@ -39,7 +39,7 @@ def test_auth_endpoints():
     print("\n📝 Testing user registration...")
     user_data = {
         "email": "test@example.com",
-        "password": "testpassword123",
+        "password": "TestUser123!",
         "full_name": "Test User",
         "username": "testuser",
     }

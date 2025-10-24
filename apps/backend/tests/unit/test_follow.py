@@ -31,7 +31,7 @@ async def test_follow_flow_basic():
             "/api/auth/register",
             json={
                 "email": alice_email,
-                "password": "testpassword123",
+                "password": "TestUser123!",
                 "full_name": "Alice User",
                 "username": alice_username,
             },
@@ -40,7 +40,7 @@ async def test_follow_flow_basic():
             "/api/auth/register",
             json={
                 "email": bob_email,
-                "password": "testpassword123",
+                "password": "TestUser123!",
                 "full_name": "Bob User",
                 "username": bob_username,
             },
@@ -51,7 +51,7 @@ async def test_follow_flow_basic():
             pytest.skip("Registration failed due to server error")
 
         login = await client.post(
-            "/api/auth/login", json={"email": alice_email, "password": "testpassword123"}
+            "/api/auth/login", json={"email": alice_email, "password": "TestUser123!"}
         )
         if login.status_code != 200:
             pytest.skip("Login failed; skipping follow flow")

@@ -27,7 +27,7 @@ class TestPasswordHashing:
 
     def test_hash_password_creates_hash(self):
         """Hash function should create a non-empty hash"""
-        password = "TestPassword123!"
+        password = "TestUser123!!"
         hashed = hash_password(password)
 
         assert hashed is not None
@@ -36,7 +36,7 @@ class TestPasswordHashing:
 
     def test_hash_password_different_each_time(self):
         """Same password should produce different hashes (salted)"""
-        password = "TestPassword123!"
+        password = "TestUser123!!"
         hash1 = hash_password(password)
         hash2 = hash_password(password)
 
