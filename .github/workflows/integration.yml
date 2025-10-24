@@ -179,6 +179,7 @@ jobs:
           path: apps/frontend/playwright-report/
           retention-days: 7
           compression-level: 9
+          if-no-files-found: ignore
 
       - name: 📝 Generate accessibility summary
         if: always()

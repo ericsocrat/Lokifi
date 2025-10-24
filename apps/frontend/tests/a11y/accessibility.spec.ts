@@ -14,7 +14,10 @@ test.describe('Accessibility Tests', () => {
 
     // Log violations for debugging
     if (accessibilityScanResults.violations.length > 0) {
-      console.log('WCAG Violations found:', JSON.stringify(accessibilityScanResults.violations, null, 2));
+      console.log(
+        'WCAG Violations found:',
+        JSON.stringify(accessibilityScanResults.violations, null, 2)
+      );
     }
 
     // Allow test to pass with warnings for now - will fix violations incrementally
@@ -29,7 +32,7 @@ test.describe('Accessibility Tests', () => {
   test('Form inputs have labels', async ({ page }) => {
     // Check if inputs have associated labels
     const inputs = await page.locator('input').all();
-    
+
     if (inputs.length === 0) {
       console.log('No form inputs found on page');
       return;
@@ -45,7 +48,11 @@ test.describe('Accessibility Tests', () => {
           const label = document.querySelector(`label[for="${id}"]`);
           if (label) return true;
         }
-        return el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby') || el.hasAttribute('placeholder');
+        return (
+          el.hasAttribute('aria-label') ||
+          el.hasAttribute('aria-labelledby') ||
+          el.hasAttribute('placeholder')
+        );
       });
 
       if (hasLabel) {
@@ -63,7 +70,7 @@ test.describe('Accessibility Tests', () => {
 
   test('Buttons are keyboard accessible', async ({ page }) => {
     const buttons = await page.locator('button, [role="button"]').all();
-    
+
     if (buttons.length === 0) {
       console.log('No buttons found on page');
       return;
@@ -114,7 +121,7 @@ test.describe('Accessibility Tests', () => {
   test('Skip to main content link exists', async ({ page }) => {
     const skipLink = page.locator('a[href="#main"], a:has-text("Skip to content")').first();
 
-    if (await skipLink.count() > 0) {
+    if ((await skipLink.count()) > 0) {
       expect(await skipLink.count()).toBeGreaterThan(0);
     } else {
       console.log('No skip link found - consider adding for better accessibility');
@@ -122,9 +129,7 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('Color contrast meets WCAG standards', async ({ page }) => {
-    const contrastResults = await new AxeBuilder({ page })
-      .withTags(['wcag2aa'])
-      .analyze();
+    const contrastResults = await new AxeBuilder({ page }).withTags(['wcag2aa']).analyze();
 
     const contrastViolations = contrastResults.violations.filter(
       (v: any) => v.id === 'color-contrast'
@@ -159,7 +164,7 @@ test.describe('Accessibility Tests', () => {
     const headingStructure = await Promise.all(
       headings.map(async (h) => ({
         tag: await h.evaluate((el) => el.tagName.toLowerCase()),
-        text: (await h.textContent())?.substring(0, 50)
+        text: (await h.textContent())?.substring(0, 50),
       }))
     );
     console.log('Heading structure:', headingStructure);
@@ -174,7 +179,9 @@ test.describe('Accessibility Tests', () => {
 
   test('Focus management in modals', async ({ page }) => {
     // Try to open a modal
-    const modalTrigger = page.locator('[data-testid*="modal"], button:has-text("Settings")').first();
+    const modalTrigger = page
+      .locator('[data-testid*="modal"], button:has-text("Settings")')
+      .first();
 
     const modalCount = await modalTrigger.count();
     if (modalCount === 0) {
@@ -189,7 +196,7 @@ test.describe('Accessibility Tests', () => {
       // Check if focus is trapped in modal
       const focusedElement = await page.locator(':focus');
       const focusCount = await focusedElement.count();
-      
+
       if (focusCount === 0) {
         console.log('⚠ Modal opened but no element focused');
         return; // Soft fail - log warning but pass test
@@ -200,14 +207,16 @@ test.describe('Accessibility Tests', () => {
       const newFocusedElement = await page.locator(':focus');
 
       // Check if focus stays within modal
-      const isInModal = await newFocusedElement.evaluate((el: any) => {
-        return el.closest('[role="dialog"], [role="alertdialog"], [data-modal]') !== null;
-      }).catch(() => false);
+      const isInModal = await newFocusedElement
+        .evaluate((el: any) => {
+          return el.closest('[role="dialog"], [role="alertdialog"], [data-modal]') !== null;
+        })
+        .catch(() => false);
 
       if (!isInModal) {
         console.log('⚠ Focus may not be trapped in modal');
       }
-      
+
       // Test passes - modal focus management is functional
       expect(true).toBeTruthy();
     } catch (error) {
@@ -217,13 +226,9 @@ test.describe('Accessibility Tests', () => {
   });
 
   test('ARIA attributes are used correctly', async ({ page }) => {
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa'])
-      .analyze();
+    const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
 
-    const ariaViolations = results.violations.filter((v: any) =>
-      v.id.startsWith('aria-')
-    );
+    const ariaViolations = results.violations.filter((v: any) => v.id.startsWith('aria-'));
 
     expect(ariaViolations).toEqual([]);
   });
@@ -251,7 +256,7 @@ test.describe('Accessibility Tests', () => {
   test('Chart canvas has proper ARIA labels', async ({ page }) => {
     const canvas = page.locator('canvas').first();
 
-    if (await canvas.count() > 0) {
+    if ((await canvas.count()) > 0) {
       const hasAriaLabel = await canvas.evaluate((el: any) => {
         return (
           el.hasAttribute('aria-label') ||
@@ -268,15 +273,15 @@ test.describe('Accessibility Tests', () => {
 
   test('No accessibility violations with screen reader', async ({ page }) => {
     // Simulate screen reader by checking all text content is accessible
-    const results = await new AxeBuilder({ page })
-      .withTags(['cat.name-role-value'])
-      .analyze();
+    const results = await new AxeBuilder({ page }).withTags(['cat.name-role-value']).analyze();
 
     expect(results.violations).toEqual([]);
   });
 
   test('Touch targets are at least 44x44 pixels', async ({ page }) => {
-    const interactiveElements = await page.locator('button, a, input[type="checkbox"], input[type="radio"]').all();
+    const interactiveElements = await page
+      .locator('button, a, input[type="checkbox"], input[type="radio"]')
+      .all();
 
     for (const element of interactiveElements) {
       const boundingBox = await element.boundingBox();
@@ -284,10 +289,11 @@ test.describe('Accessibility Tests', () => {
       if (boundingBox) {
         if (boundingBox.width < 44 || boundingBox.height < 44) {
           const text = await element.textContent();
-          console.log(`⚠ Small touch target: ${text?.substring(0, 30)} (${boundingBox.width}x${boundingBox.height})`);
+          console.log(
+            `⚠ Small touch target: ${text?.substring(0, 30)} (${boundingBox.width}x${boundingBox.height})`
+          );
         }
       }
     }
   });
 });
-

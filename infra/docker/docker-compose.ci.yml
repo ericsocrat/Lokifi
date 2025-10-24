@@ -38,6 +38,9 @@ services:
 
   # Backend - FastAPI (Using pre-built image from CI)
   backend:
+    build:
+      context: ../../apps/backend
+      dockerfile: Dockerfile
     image: lokifi-backend:latest
     container_name: lokifi-backend-ci
     command: ["./docker-entrypoint-ci.sh"]
@@ -101,6 +104,9 @@ services:
 
   # Frontend - Next.js (Using pre-built image from CI)
   frontend:
+    build:
+      context: ../../apps/frontend
+      dockerfile: Dockerfile
     image: lokifi-frontend:latest
     container_name: lokifi-frontend-ci
     environment:

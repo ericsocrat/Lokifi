@@ -100,6 +100,7 @@ jobs:
           path: apps/frontend/coverage/
           retention-days: 30
           compression-level: 9
+          if-no-files-found: warn
 
       - name: 📊 Coverage summary
         if: matrix.node-version == '20'

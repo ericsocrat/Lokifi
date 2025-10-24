@@ -134,6 +134,7 @@ jobs:
           path: apps/frontend/test-results/
           retention-days: 7
           compression-level: 9
+          if-no-files-found: ignore
 
   # Backend: Linting, Type Checking, Unit Tests
   backend-fast:
