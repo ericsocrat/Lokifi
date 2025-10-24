@@ -248,7 +248,7 @@ async def get_alert_configuration(current_user: dict[str, Any] = Depends(get_cur
 
 
 @router.post("/security/alerts/test")
-async def test_security_alerts(current_user: dict[str, Any] = Depends(get_current_user)):
+async def send_test_alert(current_user: dict[str, Any] = Depends(get_current_user)):
     """Send a test security alert (admin only)"""
 
     from app.utils.security_alerts import send_medium_alert

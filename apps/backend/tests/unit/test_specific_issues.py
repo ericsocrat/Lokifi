@@ -8,9 +8,12 @@ import os
 import sys
 import time
 
+import pytest
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
+@pytest.mark.asyncio
 async def test_database_connection():
     """Test database connection issues"""
     print("1️⃣ TESTING DATABASE CONNECTION")
@@ -39,6 +42,7 @@ async def test_database_connection():
         return False
 
 
+@pytest.mark.asyncio
 async def test_redis_connection():
     """Test Redis connection issues"""
     print("\n2️⃣ TESTING REDIS CONNECTION")
