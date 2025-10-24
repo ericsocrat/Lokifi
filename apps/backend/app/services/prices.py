@@ -20,9 +20,10 @@ async def _try_chain(tasks: Iterable[Callable[[], Awaitable[Any]]]):
                 return data
         except Exception:
             continue  # Continue to next provider instead of raising
-    
+
     # Don't raise exception, return empty list so fallback can be used
     return []
+
 
 async def get_ohlc(symbol: str, timeframe: str, limit: int):
     key = f"ohlc:{symbol}:{timeframe}:{limit}"
@@ -31,16 +32,20 @@ async def get_ohlc(symbol: str, timeframe: str, limit: int):
         return cached
 
     if _is_equity(symbol):
-        data = await _try_chain([
-            lambda: polygon.fetch_ohlc(symbol, timeframe, limit),
-            lambda: finnhub.fetch_ohlc(symbol, timeframe, limit),
-            lambda: alphavantage.fetch_ohlc(symbol, timeframe, limit),
-        ])
+        data = await _try_chain(
+            [
+                lambda: polygon.fetch_ohlc(symbol, timeframe, limit),
+                lambda: finnhub.fetch_ohlc(symbol, timeframe, limit),
+                lambda: alphavantage.fetch_ohlc(symbol, timeframe, limit),
+            ]
+        )
     else:
-        data = await _try_chain([
-            lambda: coingecko.fetch_ohlc(symbol, timeframe, limit),
-            lambda: cmc.fetch_ohlc(symbol, timeframe, limit),
-        ])
+        data = await _try_chain(
+            [
+                lambda: coingecko.fetch_ohlc(symbol, timeframe, limit),
+                lambda: cmc.fetch_ohlc(symbol, timeframe, limit),
+            ]
+        )
 
     await redis_json_set(key, data, ttl=60)
     return data

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import csv
 import io
@@ -160,9 +160,7 @@ def list_positions(
     with get_session() as db:
         u = _user_by_handle(db, me)
         rows = (
-            db.execute(
-                select(PortfolioPosition).where(PortfolioPosition.user_id == u.id)
-            )
+            db.execute(select(PortfolioPosition).where(PortfolioPosition.user_id == u.id))
             .scalars()
             .all()
         )
@@ -271,11 +269,7 @@ async def import_text(
             qty = float(row.get("qty", "0"))
             cb = float(row.get("cost_basis", "0"))
             tags_raw = row.get("tags") or ""
-            tags = (
-                [t.strip() for t in tags_raw.split(",") if t.strip()]
-                if tags_raw
-                else None
-            )
+            tags = [t.strip() for t in tags_raw.split(",") if t.strip()] if tags_raw else None
         except Exception:
             continue
         await add_or_update_position(
@@ -298,9 +292,7 @@ def portfolio_summary(
     with get_session() as db:
         u = _user_by_handle(db, me)
         rows = (
-            db.execute(
-                select(PortfolioPosition).where(PortfolioPosition.user_id == u.id)
-            )
+            db.execute(select(PortfolioPosition).where(PortfolioPosition.user_id == u.id))
             .scalars()
             .all()
         )
@@ -323,11 +315,7 @@ def portfolio_summary(
                 "current_price": cur,
                 "market_value": val,
                 "unrealized_pl": val - cost_val,
-                "pl_pct": (
-                    ((cur - r.cost_basis) / r.cost_basis * 100.0)
-                    if r.cost_basis
-                    else 0.0
-                ),
+                "pl_pct": (((cur - r.cost_basis) / r.cost_basis * 100.0) if r.cost_basis else 0.0),
             }
         else:
             by_symbol[r.symbol] = {  # type: ignore

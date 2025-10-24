@@ -9,5 +9,5 @@ class EventSourceResponse(StreamingResponse):
 
     async def _wrap(self, agen):
         async for event in agen:
-            yield f"event: {event.get('event','message')}\n".encode()
+            yield f"event: {event.get('event', 'message')}\n".encode()
             yield f"data: {event['data']}\n\n".encode()

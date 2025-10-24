@@ -27,9 +27,11 @@ import websockets
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class LoadTestResult:
     """Individual load test operation result"""
+
     operation: str
     start_time: float
     end_time: float
@@ -43,9 +45,11 @@ class LoadTestResult:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
+
 @dataclass
 class LoadTestScenario:
     """Load test scenario configuration"""
+
     name: str
     description: str
     concurrent_users: int
@@ -54,9 +58,11 @@ class LoadTestScenario:
     ramp_up_seconds: int = 30
     ramp_down_seconds: int = 30
 
+
 @dataclass
 class LoadTestReport:
     """Comprehensive load test report"""
+
     scenario_name: str
     start_time: datetime
     end_time: datetime
@@ -76,15 +82,16 @@ class LoadTestReport:
     def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
-            'start_time': self.start_time.isoformat(),
-            'end_time': self.end_time.isoformat(),
-            'results': [r.to_dict() for r in self.results]
+            "start_time": self.start_time.isoformat(),
+            "end_time": self.end_time.isoformat(),
+            "results": [r.to_dict() for r in self.results],
         }
+
 
 class WebSocketLoadTester:
     """
     High-scale WebSocket connection load testing.
-    
+
     Simulates thousands of concurrent WebSocket connections
     with realistic message patterns and connection lifecycles.
     """
@@ -94,30 +101,34 @@ class WebSocketLoadTester:
         self.connections: list[websockets.WebSocketServerProtocol] = []
         self.results: list[LoadTestResult] = []
 
-    async def simulate_user_connection(self, user_id: str, duration_seconds: int) -> list[LoadTestResult]:
+    async def simulate_user_connection(
+        self, user_id: str, duration_seconds: int
+    ) -> list[LoadTestResult]:
         """Simulate a single user's WebSocket connection and interactions"""
         results = []
-        
+
         try:
             # Connect
             start_time = time.time()
             async with websockets.connect(f"{self.base_url}/ws/{user_id}") as websocket:
                 connect_time = time.time()
-                
+
                 # Record connection time
-                results.append(LoadTestResult(
-                    operation="websocket_connect",
-                    start_time=start_time,
-                    end_time=connect_time,
-                    duration_ms=(connect_time - start_time) * 1000,
-                    success=True,
-                    metadata={"user_id": user_id}
-                ))
+                results.append(
+                    LoadTestResult(
+                        operation="websocket_connect",
+                        start_time=start_time,
+                        end_time=connect_time,
+                        duration_ms=(connect_time - start_time) * 1000,
+                        success=True,
+                        metadata={"user_id": user_id},
+                    )
+                )
 
                 # Simulate user interactions
                 end_time = time.time() + duration_seconds
                 message_count = 0
-                
+
                 while time.time() < end_time:
                     try:
                         # Send periodic messages
@@ -127,59 +138,73 @@ class WebSocketLoadTester:
                                 "type": "ping",
                                 "user_id": user_id,
                                 "timestamp": time.time(),
-                                "message_id": message_count
+                                "message_id": message_count,
                             }
                             await websocket.send(json.dumps(message))
-                            
+
                             # Wait for response
                             try:
                                 response = await asyncio.wait_for(websocket.recv(), timeout=5.0)
                                 msg_end = time.time()
-                                
-                                results.append(LoadTestResult(
-                                    operation="websocket_message",
-                                    start_time=msg_start,
-                                    end_time=msg_end,
-                                    duration_ms=(msg_end - msg_start) * 1000,
-                                    success=True,
-                                    response_size=len(response),
-                                    metadata={"message_count": message_count, "user_id": user_id}
-                                ))
+
+                                results.append(
+                                    LoadTestResult(
+                                        operation="websocket_message",
+                                        start_time=msg_start,
+                                        end_time=msg_end,
+                                        duration_ms=(msg_end - msg_start) * 1000,
+                                        success=True,
+                                        response_size=len(response),
+                                        metadata={
+                                            "message_count": message_count,
+                                            "user_id": user_id,
+                                        },
+                                    )
+                                )
                             except TimeoutError:
-                                results.append(LoadTestResult(
-                                    operation="websocket_message",
-                                    start_time=msg_start,
-                                    end_time=time.time(),
-                                    duration_ms=(time.time() - msg_start) * 1000,
-                                    success=False,
-                                    error="timeout",
-                                    metadata={"message_count": message_count, "user_id": user_id}
-                                ))
+                                results.append(
+                                    LoadTestResult(
+                                        operation="websocket_message",
+                                        start_time=msg_start,
+                                        end_time=time.time(),
+                                        duration_ms=(time.time() - msg_start) * 1000,
+                                        success=False,
+                                        error="timeout",
+                                        metadata={
+                                            "message_count": message_count,
+                                            "user_id": user_id,
+                                        },
+                                    )
+                                )
 
                         message_count += 1
                         await asyncio.sleep(random.uniform(0.1, 1.0))  # Random delay
 
                     except Exception as e:
-                        results.append(LoadTestResult(
-                            operation="websocket_message",
-                            start_time=time.time(),
-                            end_time=time.time(),
-                            duration_ms=0,
-                            success=False,
-                            error=str(e),
-                            metadata={"message_count": message_count, "user_id": user_id}
-                        ))
+                        results.append(
+                            LoadTestResult(
+                                operation="websocket_message",
+                                start_time=time.time(),
+                                end_time=time.time(),
+                                duration_ms=0,
+                                success=False,
+                                error=str(e),
+                                metadata={"message_count": message_count, "user_id": user_id},
+                            )
+                        )
 
         except Exception as e:
-            results.append(LoadTestResult(
-                operation="websocket_connect",
-                start_time=start_time,
-                end_time=time.time(),
-                duration_ms=(time.time() - start_time) * 1000,
-                success=False,
-                error=str(e),
-                metadata={"user_id": user_id}
-            ))
+            results.append(
+                LoadTestResult(
+                    operation="websocket_connect",
+                    start_time=start_time,
+                    end_time=time.time(),
+                    duration_ms=(time.time() - start_time) * 1000,
+                    success=False,
+                    error=str(e),
+                    metadata={"user_id": user_id},
+                )
+            )
 
         return results
 
@@ -187,22 +212,22 @@ class WebSocketLoadTester:
         """Run WebSocket load test scenario"""
         logger.info(f"Starting WebSocket load test: {scenario.name}")
         start_time = datetime.now(UTC)
-        
+
         all_results = []
         tasks = []
 
         # Ramp up users gradually
         users_per_second = scenario.concurrent_users / scenario.ramp_up_seconds
-        
+
         for i in range(scenario.concurrent_users):
             user_id = f"load_test_user_{i}"
-            
+
             # Create user simulation task
             task = asyncio.create_task(
                 self.simulate_user_connection(user_id, scenario.duration_seconds)
             )
             tasks.append(task)
-            
+
             # Ramp up delay
             if i % int(users_per_second) == 0:
                 await asyncio.sleep(1)
@@ -210,7 +235,7 @@ class WebSocketLoadTester:
         # Wait for all tasks to complete
         logger.info(f"Waiting for {len(tasks)} user simulations to complete...")
         task_results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Collect results
         for result in task_results:
             if isinstance(result, list):
@@ -219,14 +244,19 @@ class WebSocketLoadTester:
                 logger.error(f"Task failed: {result}")
 
         end_time = datetime.now(UTC)
-        
+
         # Generate report
         return self._generate_report(scenario, start_time, end_time, all_results)
 
-    def _generate_report(self, scenario: LoadTestScenario, start_time: datetime, 
-                        end_time: datetime, results: list[LoadTestResult]) -> LoadTestReport:
+    def _generate_report(
+        self,
+        scenario: LoadTestScenario,
+        start_time: datetime,
+        end_time: datetime,
+        results: list[LoadTestResult],
+    ) -> LoadTestReport:
         """Generate comprehensive load test report"""
-        
+
         if not results:
             return LoadTestReport(
                 scenario_name=scenario.name,
@@ -243,19 +273,23 @@ class WebSocketLoadTester:
                 p99_response_time_ms=0,
                 error_rate_percent=100,
                 results=[],
-                resource_usage={}
+                resource_usage={},
             )
 
         total_duration = (end_time - start_time).total_seconds()
         successful_results = [r for r in results if r.success]
         failed_results = [r for r in results if not r.success]
-        
+
         # Calculate response time statistics
         response_times = [r.duration_ms for r in successful_results if r.duration_ms > 0]
-        
+
         avg_response_time = statistics.mean(response_times) if response_times else 0
-        p95_response_time = statistics.quantiles(response_times, n=20)[18] if len(response_times) >= 20 else 0
-        p99_response_time = statistics.quantiles(response_times, n=100)[98] if len(response_times) >= 100 else 0
+        p95_response_time = (
+            statistics.quantiles(response_times, n=20)[18] if len(response_times) >= 20 else 0
+        )
+        p99_response_time = (
+            statistics.quantiles(response_times, n=100)[98] if len(response_times) >= 100 else 0
+        )
 
         return LoadTestReport(
             scenario_name=scenario.name,
@@ -272,13 +306,14 @@ class WebSocketLoadTester:
             p99_response_time_ms=p99_response_time,
             error_rate_percent=(len(failed_results) / len(results)) * 100,
             results=results,
-            resource_usage={}  # Will be populated by system monitoring
+            resource_usage={},  # Will be populated by system monitoring
         )
+
 
 class APILoadTester:
     """
     Comprehensive API endpoint load testing.
-    
+
     Simulates realistic API usage patterns with authentication,
     various endpoints, and different request types.
     """
@@ -295,10 +330,12 @@ class APILoadTester:
         if self.session:
             await self.session.close()
 
-    async def simulate_api_user(self, user_id: str, scenario: LoadTestScenario) -> list[LoadTestResult]:
+    async def simulate_api_user(
+        self, user_id: str, scenario: LoadTestScenario
+    ) -> list[LoadTestResult]:
         """Simulate API user with realistic usage patterns"""
         results = []
-        
+
         # Simulate user session
         for operation_count in range(scenario.operations_per_user):
             # Random API endpoint selection based on realistic usage patterns
@@ -310,12 +347,12 @@ class APILoadTester:
                 ("GET", "/api/v1/profile/me", 0.15),  # 15% profile checks
                 ("GET", "/api/v1/social/feed", 0.15),  # 15% feed checks
             ]
-            
+
             # Weighted random selection
             rand = random.random()
             cumulative = 0
             selected_endpoint = endpoints[0]  # Default
-            
+
             for method, endpoint, weight in endpoints:
                 cumulative += weight
                 if rand <= cumulative:
@@ -323,46 +360,50 @@ class APILoadTester:
                     break
 
             method, endpoint = selected_endpoint
-            
+
             # Execute API request
             start_time = time.time()
             try:
                 async with self.session.request(method, f"{self.base_url}{endpoint}") as response:
                     content = await response.read()
                     end_time = time.time()
-                    
-                    results.append(LoadTestResult(
+
+                    results.append(
+                        LoadTestResult(
+                            operation=f"api_{method.lower()}_{endpoint.replace('/', '_')}",
+                            start_time=start_time,
+                            end_time=end_time,
+                            duration_ms=(end_time - start_time) * 1000,
+                            success=200 <= response.status < 400,
+                            status_code=response.status,
+                            response_size=len(content),
+                            metadata={
+                                "user_id": user_id,
+                                "endpoint": endpoint,
+                                "method": method,
+                                "operation_count": operation_count,
+                            },
+                        )
+                    )
+
+            except Exception as e:
+                end_time = time.time()
+                results.append(
+                    LoadTestResult(
                         operation=f"api_{method.lower()}_{endpoint.replace('/', '_')}",
                         start_time=start_time,
                         end_time=end_time,
                         duration_ms=(end_time - start_time) * 1000,
-                        success=200 <= response.status < 400,
-                        status_code=response.status,
-                        response_size=len(content),
+                        success=False,
+                        error=str(e),
                         metadata={
                             "user_id": user_id,
                             "endpoint": endpoint,
                             "method": method,
-                            "operation_count": operation_count
-                        }
-                    ))
-
-            except Exception as e:
-                end_time = time.time()
-                results.append(LoadTestResult(
-                    operation=f"api_{method.lower()}_{endpoint.replace('/', '_')}",
-                    start_time=start_time,
-                    end_time=end_time,
-                    duration_ms=(end_time - start_time) * 1000,
-                    success=False,
-                    error=str(e),
-                    metadata={
-                        "user_id": user_id,
-                        "endpoint": endpoint,
-                        "method": method,
-                        "operation_count": operation_count
-                    }
-                ))
+                            "operation_count": operation_count,
+                        },
+                    )
+                )
 
             # Random delay between requests
             await asyncio.sleep(random.uniform(0.1, 2.0))
@@ -373,7 +414,7 @@ class APILoadTester:
         """Run API load test scenario"""
         logger.info(f"Starting API load test: {scenario.name}")
         start_time = datetime.now(UTC)
-        
+
         all_results = []
         tasks = []
 
@@ -385,22 +426,23 @@ class APILoadTester:
 
         # Wait for completion
         task_results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Collect results
         for result in task_results:
             if isinstance(result, list):
                 all_results.extend(result)
 
         end_time = datetime.now(UTC)
-        
+
         # Generate report using WebSocket tester's method (reusable)
         ws_tester = WebSocketLoadTester()
         return ws_tester._generate_report(scenario, start_time, end_time, all_results)
 
+
 class ComprehensiveLoadTester:
     """
     Comprehensive system load testing orchestrator.
-    
+
     Coordinates WebSocket, API, database, and cache load testing
     to provide complete system performance validation.
     """
@@ -410,8 +452,9 @@ class ComprehensiveLoadTester:
         self.api_tester = APILoadTester()
         self.results: dict[str, LoadTestReport] = {}
 
-    async def run_websocket_load_test(self, concurrent_connections: int = 1000, 
-                                    duration_minutes: int = 5) -> LoadTestReport:
+    async def run_websocket_load_test(
+        self, concurrent_connections: int = 1000, duration_minutes: int = 5
+    ) -> LoadTestReport:
         """Run high-scale WebSocket load test"""
         scenario = LoadTestScenario(
             name=f"websocket_load_{concurrent_connections}_users",
@@ -420,15 +463,16 @@ class ComprehensiveLoadTester:
             duration_seconds=duration_minutes * 60,
             operations_per_user=100,
             ramp_up_seconds=30,
-            ramp_down_seconds=30
+            ramp_down_seconds=30,
         )
-        
+
         report = await self.websocket_tester.run_load_test(scenario)
         self.results[scenario.name] = report
         return report
 
-    async def run_api_load_test(self, concurrent_users: int = 100, 
-                              operations_per_user: int = 50) -> LoadTestReport:
+    async def run_api_load_test(
+        self, concurrent_users: int = 100, operations_per_user: int = 50
+    ) -> LoadTestReport:
         """Run comprehensive API load test"""
         scenario = LoadTestScenario(
             name=f"api_load_{concurrent_users}_users",
@@ -437,9 +481,9 @@ class ComprehensiveLoadTester:
             duration_seconds=300,  # 5 minutes
             operations_per_user=operations_per_user,
             ramp_up_seconds=20,
-            ramp_down_seconds=20
+            ramp_down_seconds=20,
         )
-        
+
         async with self.api_tester:
             report = await self.api_tester.run_load_test(scenario)
             self.results[scenario.name] = report
@@ -448,14 +492,14 @@ class ComprehensiveLoadTester:
     async def run_comprehensive_load_test(self) -> dict[str, LoadTestReport]:
         """Run comprehensive system load test across all components"""
         logger.info("Starting comprehensive system load test")
-        
+
         # Run parallel load tests
         websocket_task = asyncio.create_task(self.run_websocket_load_test(500, 3))  # Moderate load
         api_task = asyncio.create_task(self.run_api_load_test(100, 30))
-        
+
         # Wait for completion
         _websocket_report, _api_report = await asyncio.gather(websocket_task, api_task)
-        
+
         logger.info("Comprehensive load test completed")
         return self.results
 
@@ -469,7 +513,7 @@ class ComprehensiveLoadTester:
             "overall_success_rate": 0,
             "total_operations": 0,
             "avg_response_time_ms": 0,
-            "test_summaries": {}
+            "test_summaries": {},
         }
 
         total_successful = 0
@@ -480,27 +524,34 @@ class ComprehensiveLoadTester:
             test_summary = {
                 "concurrent_users": report.concurrent_users,
                 "total_operations": report.total_operations,
-                "success_rate": (report.successful_operations / report.total_operations * 100) if report.total_operations > 0 else 0,
+                "success_rate": (report.successful_operations / report.total_operations * 100)
+                if report.total_operations > 0
+                else 0,
                 "avg_response_time_ms": report.avg_response_time_ms,
-                "operations_per_second": report.operations_per_second
+                "operations_per_second": report.operations_per_second,
             }
-            
+
             summary["test_summaries"][test_name] = test_summary
-            
+
             total_successful += report.successful_operations
             total_operations += report.total_operations
-            
+
             # Collect response times
             for result in report.results:
                 if result.success and result.duration_ms > 0:
                     all_response_times.append(result.duration_ms)
 
         # Calculate overall metrics
-        summary["overall_success_rate"] = (total_successful / total_operations * 100) if total_operations > 0 else 0
+        summary["overall_success_rate"] = (
+            (total_successful / total_operations * 100) if total_operations > 0 else 0
+        )
         summary["total_operations"] = total_operations
-        summary["avg_response_time_ms"] = statistics.mean(all_response_times) if all_response_times else 0
+        summary["avg_response_time_ms"] = (
+            statistics.mean(all_response_times) if all_response_times else 0
+        )
 
         return summary
+
 
 # Global comprehensive load tester
 comprehensive_load_tester = ComprehensiveLoadTester()

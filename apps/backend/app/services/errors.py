@@ -1,4 +1,4 @@
-﻿class ProviderError(Exception):
+class ProviderError(Exception):
     """Generic data provider error."""
 
 

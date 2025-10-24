@@ -7,7 +7,6 @@ complete, and follows best practices.
 Phase 1.6 Task 2: API Contract Testing
 """
 
-
 import pytest
 from fastapi.testclient import TestClient
 from openapi_core import Spec
@@ -161,9 +160,9 @@ def test_openapi_schema_security_schemes(client: TestClient):
         components = schema.get("components", {})
         security_schemes = components.get("securitySchemes", {})
 
-        assert (
-            len(security_schemes) > 0
-        ), "If endpoints use security, security schemes should be defined"
+        assert len(security_schemes) > 0, (
+            "If endpoints use security, security schemes should be defined"
+        )
 
 
 def test_openapi_schema_can_be_parsed_by_openapi_core(client: TestClient):

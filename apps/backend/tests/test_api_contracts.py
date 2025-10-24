@@ -35,7 +35,7 @@ def test_api_responses_are_json():
     """Test that API endpoints return JSON."""
     # Test a few key endpoints (with correct API prefix)
     endpoints = ["/api/health"]
-    
+
     for endpoint in endpoints:
         response = client.get(endpoint)
         if response.status_code == 200:
@@ -46,7 +46,7 @@ def test_api_responses_are_json():
 def test_full_contract_suite():
     """
     Full property-based contract tests.
-    
+
     To run: pytest -m contract tests/test_api_contracts.py
     """
     pass

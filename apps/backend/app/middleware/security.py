@@ -70,7 +70,7 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         process_time = time.time() - start_time
         if process_time > 1.0:  # Log requests taking more than 1 second
             logger.warning(
-                f"Slow request: {request.method} {request.url.path} " f"({process_time:.3f}s)"
+                f"Slow request: {request.method} {request.url.path} ({process_time:.3f}s)"
             )
 
         return response

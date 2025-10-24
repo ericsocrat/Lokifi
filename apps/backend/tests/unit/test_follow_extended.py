@@ -1,4 +1,5 @@
 """Extended tests for follow graph (mutual follows, suggestions pagination, counters integrity)."""
+
 import uuid
 
 import pytest
@@ -11,16 +12,24 @@ from app.main import app
 def anyio_backend():
     return "asyncio"
 
+
 async def _register(client, email, username):
-    return await client.post("/api/auth/register", json={
-        "email": email,
-        "password": "testpassword123",
-        "full_name": username.title(),
-        "username": username
-    })
+    return await client.post(
+        "/api/auth/register",
+        json={
+            "email": email,
+            "password": "testpassword123",
+            "full_name": username.title(),
+            "username": username,
+        },
+    )
+
 
 async def _login(client, email):
-    return await client.post("/api/auth/login", json={"email": email, "password": "testpassword123"})
+    return await client.post(
+        "/api/auth/login", json={"email": email, "password": "testpassword123"}
+    )
+
 
 @pytest.mark.anyio
 async def test_mutual_follows_and_counters():
@@ -28,10 +37,10 @@ async def test_mutual_follows_and_counters():
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # Create three users A,B,C
         suffix = uuid.uuid4().hex[:6]
-        emails = {k: f"{k}_{suffix}@ex.com" for k in ["alice","bob","carol"]}
+        emails = {k: f"{k}_{suffix}@ex.com" for k in ["alice", "bob", "carol"]}
         usernames = {k: f"{k}{suffix}" for k in emails}
         r = {k: await _register(client, emails[k], usernames[k]) for k in emails}
-        assert all(resp.status_code in (200,201,409) for resp in r.values())
+        assert all(resp.status_code in (200, 201, 409) for resp in r.values())
 
         # Login as alice
         login = await _login(client, emails["alice"])
@@ -50,7 +59,9 @@ async def test_mutual_follows_and_counters():
         login_bob = await _login(client, emails["bob"])
         token_bob = login_bob.cookies.get("access_token")
         headers_bob = {"Authorization": f"Bearer {token_bob}"}
-        fr_bob = await client.post(f"/api/follow/{r['alice'].json()['user']['id']}", headers=headers_bob)
+        fr_bob = await client.post(
+            f"/api/follow/{r['alice'].json()['user']['id']}", headers=headers_bob
+        )
         assert fr_bob.status_code == 200
 
         # Mutual follows endpoint (alice perspective with bob)
@@ -73,6 +84,7 @@ async def test_mutual_follows_and_counters():
         stats_after = await client.get("/api/follow/stats/me", headers=headers_alice)
         assert stats_after.json()["following_count"] <= sa["following_count"]
 
+
 @pytest.mark.anyio
 async def test_suggestions_basic():
     transport = ASGITransport(app=app)
@@ -82,7 +94,7 @@ async def test_suggestions_basic():
         regs = []
         for i, e in enumerate(emails):
             regs.append(await _register(client, e, f"user{i}{suffix}"))
-        assert all(r.status_code in (200,201,409) for r in regs)
+        assert all(r.status_code in (200, 201, 409) for r in regs)
         # Login as first user
         login = await _login(client, emails[0])
         token = login.cookies.get("access_token")

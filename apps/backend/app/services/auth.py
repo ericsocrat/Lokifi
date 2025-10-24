@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from fastapi import HTTPException
 from jose import JWTError, jwt
@@ -10,6 +10,7 @@ settings = get_settings()
 JWT_SECRET = settings.get_jwt_secret()  # Will raise error if not set
 JWT_ALG = "HS256"
 
+
 def auth_handle_from_header(authorization: str | None) -> str | None:
     if not authorization or not authorization.lower().startswith("bearer "):
         return None
@@ -19,6 +20,7 @@ def auth_handle_from_header(authorization: str | None) -> str | None:
         return data.get("sub")
     except JWTError:
         return None
+
 
 def require_handle(authorization: str | None, supplied_handle: str | None = None) -> str:
     """

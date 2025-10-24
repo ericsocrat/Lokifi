@@ -11,8 +11,10 @@ from app.services.indicators import ema, rsi, sma
 
 DEFAULT_MODEL = "llama3.1"  # good default in Ollama
 
+
 def _fmt_pct(x: float) -> str:
     return f"{x:+.2f}%"
+
 
 async def _compose_symbol_context(symbol: str, timeframe: str = "1h", limit: int = 200) -> str:
     candles = await prices_svc.get_ohlc(symbol, timeframe, limit)
@@ -21,7 +23,7 @@ async def _compose_symbol_context(symbol: str, timeframe: str = "1h", limit: int
     closes = [c["c"] for c in candles]
     last = candles[-1]
     prev = candles[-2] if len(candles) > 1 else last
-    chg = (last["c"]/prev["c"] - 1.0) * 100 if prev["c"] else 0.0
+    chg = (last["c"] / prev["c"] - 1.0) * 100 if prev["c"] else 0.0
     s20 = sma(closes, 20)
     s50 = sma(closes, 50)
     e20 = ema(closes, 20)
@@ -48,22 +50,31 @@ async def _compose_symbol_context(symbol: str, timeframe: str = "1h", limit: int
         title = n.get("title") or ""
         news_lines.append(f"  • {src}: {title}")
 
-    lines = [f"- {symbol} ({timeframe}): close={last['c']:.2f} ({_fmt_pct(chg)})",
-             f"  SMA20={s20v:.2f}  SMA50={s50v:.2f}  EMA20={e20v:.2f}  RSI14={rsiv:.1f}" if all(v is not None for v in [s20v,s50v,e20v,rsiv]) else "  Indicators: insufficient data",
-             f"  Signal: {cross}" if cross else "  Signal: —"]
+    lines = [
+        f"- {symbol} ({timeframe}): close={last['c']:.2f} ({_fmt_pct(chg)})",
+        f"  SMA20={s20v:.2f}  SMA50={s50v:.2f}  EMA20={e20v:.2f}  RSI14={rsiv:.1f}"
+        if all(v is not None for v in [s20v, s50v, e20v, rsiv])
+        else "  Indicators: insufficient data",
+        f"  Signal: {cross}" if cross else "  Signal: —",
+    ]
     if news_lines:
         lines.append("  Recent news:")
         lines.extend(news_lines)
     return "\n".join(lines) + "\n"
 
+
 async def _build_context(ctx_symbols: str | None, timeframe: str = "1h") -> str:
-    if not ctx_symbols: 
+    if not ctx_symbols:
         return ""
     symbols = [s.strip() for s in ctx_symbols.split(",") if s.strip()]
-    sections = [await _compose_symbol_context(sym, timeframe=timeframe, limit=200) for sym in symbols[:5]]
+    sections = [
+        await _compose_symbol_context(sym, timeframe=timeframe, limit=200) for sym in symbols[:5]
+    ]
     return "Market context for your query:\n" + "\n".join(sections) + "\n"
 
+
 DEFAULT_MODEL = "llama3.1"  # good default in Ollama
+
 
 async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str, None]:
     host = settings.OLLAMA_BASE_URL or "http://localhost:11434"
@@ -73,7 +84,7 @@ async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str, 
         "messages": [{"role": "user", "content": prompt}],
         "stream": True,
         # modest defaults to keep latency low
-        "options": {"temperature": 0.2, "mirostat": 0}
+        "options": {"temperature": 0.2, "mirostat": 0},
     }
     async with httpx.AsyncClient(timeout=None) as client:
         async with client.stream("POST", url, json=payload) as resp:
@@ -90,7 +101,10 @@ async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str, 
                 if data.get("done"):
                     break
 
-async def _stream_openai_compatible(prompt: str, base_url: str, api_key: str | None, model: str | None) -> AsyncGenerator[str, None]:
+
+async def _stream_openai_compatible(
+    prompt: str, base_url: str, api_key: str | None, model: str | None
+) -> AsyncGenerator[str, None]:
     url = f"{base_url.rstrip('/')}/v1/chat/completions"
     headers = {"Content-Type": "application/json"}
     if api_key:
@@ -107,7 +121,7 @@ async def _stream_openai_compatible(prompt: str, base_url: str, api_key: str | N
             async for line in resp.aiter_lines():
                 if not line or not line.startswith("data:"):
                     continue
-                chunk = line[len("data:"):].strip()
+                chunk = line[len("data:") :].strip()
                 if chunk == "[DONE]":
                     break
                 try:
@@ -120,15 +134,33 @@ async def _stream_openai_compatible(prompt: str, base_url: str, api_key: str | N
                     if part:
                         yield part
 
-async def stream_answer(q: str, user: dict, ctx_symbols: str | None, ctx_timeframe: str | None = None, model: str | None = None) -> AsyncGenerator[str, None]:
-    prompt = q if not ctx_symbols else f"""Context symbols: {ctx_symbols}
+
+async def stream_answer(
+    q: str,
+    user: dict,
+    ctx_symbols: str | None,
+    ctx_timeframe: str | None = None,
+    model: str | None = None,
+) -> AsyncGenerator[str, None]:
+    prompt = (
+        q
+        if not ctx_symbols
+        else f"""Context symbols: {ctx_symbols}
 Question: {q}"""
+    )
     # Provider chain: Ollama -> OpenAI-compatible -> fallback
     providers: list[tuple[str, Any]] = []
     if settings.OLLAMA_BASE_URL:
         providers.append(("ollama", lambda: _stream_ollama(prompt, model)))
     if settings.openai_base:
-        providers.append(("openai_compat", lambda: _stream_openai_compatible(prompt, settings.openai_base, settings.openai_api_key, model)))
+        providers.append(
+            (
+                "openai_compat",
+                lambda: _stream_openai_compatible(
+                    prompt, settings.openai_base, settings.openai_api_key, model
+                ),
+            )
+        )
 
     last_err: Exception | None = None
     for _name, starter in providers:

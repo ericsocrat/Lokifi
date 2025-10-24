@@ -6,6 +6,7 @@ class PostCreate(BaseModel):
     symbols: list[str] | None = None
     media_url: str | None = None
 
+
 class PostOut(BaseModel):
     id: int
     user_id: int

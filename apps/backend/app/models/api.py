@@ -1,6 +1,7 @@
 """
 OpenAPI contract generation and validation for Lokifi API
 """
+
 from datetime import UTC, datetime
 from typing import Any
 
@@ -10,6 +11,7 @@ from pydantic import BaseModel, Field
 # Base response models
 class APIResponse(BaseModel):
     """Base API response with metadata"""
+
     success: bool = True
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     version: str = "1.0.0"
@@ -17,6 +19,7 @@ class APIResponse(BaseModel):
 
 class ErrorResponse(APIResponse):
     """Error response model"""
+
     success: bool = False
     error: str
     code: str
@@ -26,6 +29,7 @@ class ErrorResponse(APIResponse):
 # Symbol models
 class Symbol(BaseModel):
     """Symbol information"""
+
     symbol: str = Field(..., description="Trading symbol (e.g., BTCUSDT)")
     name: str = Field(..., description="Human readable name")
     base_asset: str = Field(..., description="Base asset (e.g., BTC)")
@@ -38,6 +42,7 @@ class Symbol(BaseModel):
 
 class SymbolsResponse(APIResponse):
     """Response for /api/symbols endpoint"""
+
     data: list[Symbol]
     total: int = Field(..., description="Total number of symbols")
 
@@ -45,6 +50,7 @@ class SymbolsResponse(APIResponse):
 # OHLC models
 class OHLCBar(BaseModel):
     """Single OHLC bar"""
+
     timestamp: int = Field(..., description="Unix timestamp in milliseconds")
     open: float = Field(..., description="Opening price")
     high: float = Field(..., description="Highest price")
@@ -55,6 +61,7 @@ class OHLCBar(BaseModel):
 
 class OHLCResponse(APIResponse):
     """Response for /api/ohlc endpoint"""
+
     data: list[OHLCBar]
     symbol: str = Field(..., description="Requested symbol")
     timeframe: str = Field(..., description="Requested timeframe")
@@ -65,6 +72,7 @@ class OHLCResponse(APIResponse):
 # Market data models
 class TickerData(BaseModel):
     """Real-time ticker data"""
+
     symbol: str
     price: float
     change_24h: float
@@ -76,12 +84,14 @@ class TickerData(BaseModel):
 
 class TickerResponse(APIResponse):
     """Response for ticker data"""
+
     data: TickerData
 
 
 # Indicator models
 class IndicatorValue(BaseModel):
     """Indicator calculation result"""
+
     timestamp: int
     value: float
     metadata: dict[str, Any] | None = None
@@ -89,6 +99,7 @@ class IndicatorValue(BaseModel):
 
 class IndicatorResponse(APIResponse):
     """Response for indicator calculations"""
+
     data: list[IndicatorValue]
     indicator: str = Field(..., description="Indicator name")
     parameters: dict[str, Any] = Field(..., description="Calculation parameters")
@@ -97,18 +108,21 @@ class IndicatorResponse(APIResponse):
 # WebSocket models
 class WSMessage(BaseModel):
     """WebSocket message base"""
+
     type: str = Field(..., description="Message type")
     timestamp: int = Field(default_factory=lambda: int(datetime.now(UTC).timestamp() * 1000))
 
 
 class WSTickerMessage(WSMessage):
     """WebSocket ticker update"""
+
     type: str = "ticker"
     data: TickerData
 
 
 class WSOHLCMessage(WSMessage):
     """WebSocket OHLC update"""
+
     type: str = "ohlc"
     symbol: str
     timeframe: str
@@ -117,6 +131,7 @@ class WSOHLCMessage(WSMessage):
 
 class WSErrorMessage(WSMessage):
     """WebSocket error message"""
+
     type: str = "error"
     error: str
     code: str
@@ -125,6 +140,7 @@ class WSErrorMessage(WSMessage):
 # Request models
 class OHLCRequest(BaseModel):
     """Request for OHLC data"""
+
     symbol: str = Field(..., description="Trading symbol")
     timeframe: str = Field(..., description="Timeframe (1m, 5m, 1h, 1d, etc.)")
     from_timestamp: int | None = Field(None, description="Start timestamp (ms)")
@@ -134,6 +150,7 @@ class OHLCRequest(BaseModel):
 
 class SymbolSearchRequest(BaseModel):
     """Request for symbol search"""
+
     query: str | None = Field(None, description="Search query")
     exchange: str | None = Field(None, description="Filter by exchange")
     type: str | None = Field(None, description="Filter by symbol type")
@@ -145,6 +162,7 @@ class SymbolSearchRequest(BaseModel):
 # Health check model
 class HealthResponse(APIResponse):
     """Health check response"""
+
     status: str = Field("healthy", description="Service status")
     uptime: float = Field(..., description="Uptime in seconds")
     api_version: str = Field(..., description="API version")

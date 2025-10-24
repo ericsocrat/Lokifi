@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from typing import Any
 
@@ -9,9 +9,11 @@ from app.services.prices import fetch_ohlc
 
 router = APIRouter()
 
+
 @router.get("/health")
 def health() -> dict:
     return {"ok": True}
+
 
 @router.get("/ohlc")
 def get_ohlc(

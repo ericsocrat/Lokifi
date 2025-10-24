@@ -6,10 +6,11 @@ import requests
 
 BASE_URL = "http://localhost:8000"
 
+
 def test_auth_endpoints():
     print("🧪 Testing Phase J Authentication Endpoints")
     print("=" * 50)
-    
+
     # Test health check first
     try:
         response = requests.get(f"{BASE_URL}/api/health")
@@ -21,7 +22,7 @@ def test_auth_endpoints():
     except requests.exceptions.ConnectionError:
         print("❌ Cannot connect to backend server. Is it running?")
         return
-    
+
     # Test auth check without token
     print("\n📋 Testing auth check without token...")
     response = requests.get(f"{BASE_URL}/api/auth/check")
@@ -33,35 +34,34 @@ def test_auth_endpoints():
             print("❌ Auth check should show not authenticated")
     else:
         print(f"❌ Auth check failed: {response.status_code}")
-    
+
     # Test user registration
     print("\n📝 Testing user registration...")
     user_data = {
         "email": "test@example.com",
         "password": "testpassword123",
         "full_name": "Test User",
-        "username": "testuser"
+        "username": "testuser",
     }
-    
+
     response = requests.post(f"{BASE_URL}/api/auth/register", json=user_data)
     if response.status_code in [200, 201]:
         print("✅ User registration successful")
         register_data = response.json()
         print(f"   User ID: {register_data['user']['id']}")
         print(f"   Email: {register_data['user']['email']}")
-        print(f"   Username: {register_data['profile']['username'] if register_data['profile'] else 'N/A'}")
-        
+        print(
+            f"   Username: {register_data['profile']['username'] if register_data['profile'] else 'N/A'}"
+        )
+
         # Save cookies for later tests
         cookies = response.cookies
     elif response.status_code == 409:
         print("ℹ️  User already exists, trying login instead...")
-        
+
         # Test login
-        login_data = {
-            "email": user_data["email"],
-            "password": user_data["password"]
-        }
-        
+        login_data = {"email": user_data["email"], "password": user_data["password"]}
+
         response = requests.post(f"{BASE_URL}/api/auth/login", json=login_data)
         if response.status_code == 200:
             print("✅ User login successful")
@@ -75,7 +75,7 @@ def test_auth_endpoints():
     else:
         print(f"❌ Registration failed: {response.status_code} - {response.text}")
         return
-    
+
     # Test /me endpoint with cookies
     print("\n👤 Testing /me endpoint with authentication...")
     response = requests.get(f"{BASE_URL}/api/auth/me", cookies=cookies)
@@ -86,7 +86,7 @@ def test_auth_endpoints():
         print(f"   Profile: {data['profile']['display_name'] if data['profile'] else 'No profile'}")
     else:
         print(f"❌ /me endpoint failed: {response.status_code} - {response.text}")
-    
+
     # Test auth check with token
     print("\n🔐 Testing auth check with token...")
     response = requests.get(f"{BASE_URL}/api/auth/check", cookies=cookies)
@@ -100,7 +100,7 @@ def test_auth_endpoints():
             print("❌ Auth check should show authenticated")
     else:
         print(f"❌ Auth check with token failed: {response.status_code}")
-    
+
     # Test logout
     print("\n👋 Testing logout...")
     response = requests.post(f"{BASE_URL}/api/auth/logout", cookies=cookies)
@@ -110,9 +110,10 @@ def test_auth_endpoints():
         print(f"   Message: {data['message']}")
     else:
         print(f"❌ Logout failed: {response.status_code}")
-    
+
     print("\n" + "=" * 50)
     print("🎉 Phase J Authentication Tests Complete!")
+
 
 if __name__ == "__main__":
     test_auth_endpoints()

@@ -76,7 +76,9 @@ async def get_threads(
     """Get user's AI chat threads."""
     try:
         threads = await ai_service.get_user_threads(
-            user_id=current_user.id, limit=min(limit, 100), offset=offset  # Cap at 100
+            user_id=current_user.id,
+            limit=min(limit, 100),
+            offset=offset,  # Cap at 100
         )
         return [AIThreadResponse.model_validate(thread) for thread in threads]
     except Exception as e:

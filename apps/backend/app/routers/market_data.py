@@ -59,9 +59,7 @@ async def search_symbols(
     - **limit**: Maximum number of results
     """
     try:
-        symbols = await symbol_directory.search_symbols(
-            query=q, asset_type=asset_type, limit=limit
-        )
+        symbols = await symbol_directory.search_symbols(query=q, asset_type=asset_type, limit=limit)
 
         return SymbolSearchResponse(symbols=symbols, total=len(symbols), query=q)
 
@@ -71,7 +69,7 @@ async def search_symbols(
 
 @router.get("/symbols/{symbol}", response_model=Symbol)
 async def get_symbol_info(
-    symbol: str = Path(..., description="Symbol ticker (e.g., AAPL, BTCUSD)")
+    symbol: str = Path(..., description="Symbol ticker (e.g., AAPL, BTCUSD)"),
 ):
     """
     Get detailed information for a specific symbol.
@@ -111,9 +109,7 @@ async def list_symbols(
 @router.get("/ohlc/{symbol}", response_model=OHLCResponse)
 async def get_ohlc_data(
     symbol: str = Path(..., description="Symbol ticker"),
-    timeframe: str = Query(
-        "1D", description="Timeframe (1m, 5m, 15m, 30m, 1h, 1D, 1W, 1M)"
-    ),
+    timeframe: str = Query("1D", description="Timeframe (1m, 5m, 15m, 30m, 1h, 1D, 1W, 1M)"),
     limit: int = Query(100, ge=1, le=1000, description="Number of bars to return"),
     start_date: datetime | None = Query(None, description="Start date (ISO format)"),
     end_date: datetime | None = Query(None, description="End date (ISO format)"),
@@ -161,9 +157,7 @@ async def get_ohlc_data(
         )
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to fetch OHLC data: {e!s}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to fetch OHLC data: {e!s}")
 
 
 @router.get("/market/overview", response_model=MarketOverview)
@@ -194,9 +188,7 @@ async def get_market_overview():
 
 @router.get("/symbols/popular", response_model=list[Symbol])
 async def get_popular_symbols(
-    limit: int = Query(
-        20, ge=1, le=100, description="Number of popular symbols to return"
-    )
+    limit: int = Query(20, ge=1, le=100, description="Number of popular symbols to return"),
 ):
     """
     Get a list of popular/featured symbols for quick access.
@@ -236,9 +228,7 @@ async def get_popular_symbols(
 @router.get("/symbols/{symbol}/similar", response_model=list[Symbol])
 async def get_similar_symbols(
     symbol: str = Path(..., description="Base symbol to find similar symbols for"),
-    limit: int = Query(
-        10, ge=1, le=50, description="Number of similar symbols to return"
-    ),
+    limit: int = Query(10, ge=1, le=50, description="Number of similar symbols to return"),
 ):
     """
     Get symbols similar to the given symbol (same sector/industry).
@@ -254,9 +244,7 @@ async def get_similar_symbols(
             sym.symbol != base_symbol.symbol
             and sym.is_active
             and sym.asset_type == base_symbol.asset_type
-            and (
-                sym.sector == base_symbol.sector or sym.industry == base_symbol.industry
-            )
+            and (sym.sector == base_symbol.sector or sym.industry == base_symbol.industry)
         ):
             similar_symbols.append(sym)
 

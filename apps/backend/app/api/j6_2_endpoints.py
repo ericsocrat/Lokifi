@@ -211,9 +211,7 @@ async def send_batched_notification_endpoint(
             }
         )
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to send batched notification: {e!s}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to send batched notification: {e!s}")
 
 
 @router.post("/schedule")

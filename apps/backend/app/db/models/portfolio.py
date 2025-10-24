@@ -13,11 +13,14 @@ class Portfolio(Base):
     benchmark_symbol: Mapped[str | None] = mapped_column(String(16))
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
 
+
 class Holding(Base):
     __tablename__ = "holdings"
     id: Mapped[int] = mapped_column(primary_key=True)
-    portfolio_id: Mapped[int] = mapped_column(ForeignKey("portfolios.id", ondelete="CASCADE"), index=True)
+    portfolio_id: Mapped[int] = mapped_column(
+        ForeignKey("portfolios.id", ondelete="CASCADE"), index=True
+    )
     symbol: Mapped[str] = mapped_column(String(16), index=True)
-    quantity: Mapped[float] = mapped_column(Numeric(20,8))
-    cost_basis: Mapped[float] = mapped_column(Numeric(20,8))
+    quantity: Mapped[float] = mapped_column(Numeric(20, 8))
+    cost_basis: Mapped[float] = mapped_column(Numeric(20, 8))
     created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())

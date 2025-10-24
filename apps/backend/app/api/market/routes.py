@@ -4,7 +4,6 @@ Market Data API Endpoints
 Provides real-time stock and crypto prices with automatic API key fallback
 """
 
-
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
@@ -17,12 +16,14 @@ router = APIRouter(prefix="/market", tags=["real-time-market"])
 
 class BatchRequest(BaseModel):
     """Request model for batch price fetching"""
+
     stocks: list[str] = []
     cryptos: list[str] = []
 
 
 class PriceResponse(BaseModel):
     """Response model for price data"""
+
     symbol: str
     price: float
     change: float | None = None
@@ -38,7 +39,7 @@ class PriceResponse(BaseModel):
 async def get_stock_price_endpoint(symbol: str):
     """
     Get real-time stock price
-    
+
     Uses multiple API providers with automatic fallback:
     - Finnhub (primary)
     - Polygon (backup)
@@ -48,7 +49,7 @@ async def get_stock_price_endpoint(symbol: str):
     # For now, return mock data
     raise HTTPException(
         status_code=501,
-        detail="Real-time stock prices coming soon. Service integration in progress."
+        detail="Real-time stock prices coming soon. Service integration in progress.",
     )
 
 
@@ -56,7 +57,7 @@ async def get_stock_price_endpoint(symbol: str):
 async def get_crypto_price_endpoint(symbol: str):
     """
     Get real-time cryptocurrency price
-    
+
     Uses multiple API providers with automatic fallback:
     - CoinGecko (primary)
     - CoinMarketCap (backup)
@@ -65,7 +66,7 @@ async def get_crypto_price_endpoint(symbol: str):
     # For now, return mock data
     raise HTTPException(
         status_code=501,
-        detail="Real-time crypto prices coming soon. Service integration in progress."
+        detail="Real-time crypto prices coming soon. Service integration in progress.",
     )
 
 
@@ -73,19 +74,18 @@ async def get_crypto_price_endpoint(symbol: str):
 async def batch_fetch_prices_endpoint(request: BatchRequest):
     """
     Batch fetch multiple assets in parallel
-    
+
     Request body:
     {
         "stocks": ["AAPL", "MSFT", "GOOGL"],
         "cryptos": ["BTC", "ETH", "SOL"]
     }
-    
+
     Returns prices for all requested assets
     """
     # TODO: Implement with TypeScript service
     raise HTTPException(
-        status_code=501,
-        detail="Batch fetching coming soon. Service integration in progress."
+        status_code=501, detail="Batch fetching coming soon. Service integration in progress."
     )
 
 
@@ -93,26 +93,20 @@ async def batch_fetch_prices_endpoint(request: BatchRequest):
 async def get_api_status():
     """
     Get API provider availability status
-    
+
     Returns which API providers are currently active and available
     Does not expose sensitive key information
     """
     # TODO: Implement with TypeScript service
-    raise HTTPException(
-        status_code=501,
-        detail="API status endpoint coming soon."
-    )
+    raise HTTPException(status_code=501, detail="API status endpoint coming soon.")
 
 
 @router.get("/stats")
 async def get_api_stats_endpoint():
     """
     Get detailed API usage statistics (Admin only)
-    
+
     Shows request counts, rate limits, and utilization for each provider
     """
     # TODO: Implement with TypeScript service
-    raise HTTPException(
-        status_code=501,
-        detail="API stats endpoint coming soon."
-    )
+    raise HTTPException(status_code=501, detail="API stats endpoint coming soon.")

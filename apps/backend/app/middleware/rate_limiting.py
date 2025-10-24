@@ -68,8 +68,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
 
         if not is_allowed:
             logger.warning(
-                f"Rate limit exceeded for {client_ip} on {request.url.path} "
-                f"(type: {limit_type})"
+                f"Rate limit exceeded for {client_ip} on {request.url.path} (type: {limit_type})"
             )
 
             # Return rate limit exceeded response

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 import asyncio
 import json
@@ -14,14 +14,17 @@ from app.services.auth import auth_handle_from_header, require_handle
 
 router = APIRouter()
 
+
 class PriceThresholdConfig(BaseModel):
     direction: Literal["above", "below"] = "above"
     price: float
+
 
 class PctChangeConfig(BaseModel):
     direction: Literal["up", "down", "abs"] = "abs"
     window_minutes: int = Field(60, ge=1, le=1440)
     threshold_pct: float = 1.0
+
 
 class CreateAlert(BaseModel):
     type: Literal["price_threshold", "pct_change"]
@@ -31,14 +34,17 @@ class CreateAlert(BaseModel):
     config: dict[str, Any]
     handle: str | None = None  # optional legacy; must match token if provided
 
+
 @router.on_event("startup")
 async def _startup():
     await store.load()
     evaluator.start()
 
+
 @router.on_event("shutdown")
 async def _shutdown():
     await evaluator.stop()
+
 
 @router.get("/alerts")
 async def list_alerts(authorization: str | None = Header(None)) -> list[dict[str, Any]]:
@@ -51,8 +57,11 @@ async def list_alerts(authorization: str | None = Header(None)) -> list[dict[str
             visible.append(a.__dict__)
     return visible
 
+
 @router.post("/alerts")
-async def create_alert(payload: CreateAlert, authorization: str | None = Header(None)) -> dict[str, Any]:
+async def create_alert(
+    payload: CreateAlert, authorization: str | None = Header(None)
+) -> dict[str, Any]:
     me = require_handle(authorization, payload.handle)
     # Validate config
     try:
@@ -67,8 +76,11 @@ async def create_alert(payload: CreateAlert, authorization: str | None = Header(
 
     a = Alert(
         id=__import__("uuid").uuid4().hex,
-        type=payload.type, symbol=payload.symbol, timeframe=payload.timeframe,
-        active=True, created_at=time.time(),
+        type=payload.type,
+        symbol=payload.symbol,
+        timeframe=payload.timeframe,
+        active=True,
+        created_at=time.time(),
         min_interval_sec=payload.min_interval_sec,
         last_triggered_at=None,
         config=payload.config,
@@ -77,8 +89,11 @@ async def create_alert(payload: CreateAlert, authorization: str | None = Header(
     await store.add(a)
     return a.__dict__
 
+
 @router.delete("/alerts/{alert_id}")
-async def delete_alert(alert_id: str = Path(...), authorization: str | None = Header(None)) -> dict[str, Any]:
+async def delete_alert(
+    alert_id: str = Path(...), authorization: str | None = Header(None)
+) -> dict[str, Any]:
     me = require_handle(authorization)
     alerts = await store.list()
     target = next((a for a in alerts if a.id == alert_id), None)
@@ -89,8 +104,11 @@ async def delete_alert(alert_id: str = Path(...), authorization: str | None = He
     ok = await store.remove(alert_id)
     return {"deleted": ok, "id": alert_id}
 
+
 @router.post("/alerts/{alert_id}/toggle")
-async def toggle_alert(alert_id: str, active: bool = Query(...), authorization: str | None = Header(None)) -> dict[str, Any]:
+async def toggle_alert(
+    alert_id: str, active: bool = Query(...), authorization: str | None = Header(None)
+) -> dict[str, Any]:
     me = require_handle(authorization)
     alerts = await store.list()
     target = next((a for a in alerts if a.id == alert_id), None)
@@ -102,6 +120,7 @@ async def toggle_alert(alert_id: str, active: bool = Query(...), authorization: 
     if not a:
         raise HTTPException(status_code=404, detail="Alert not found")
     return {"id": a.id, "active": a.active}
+
 
 @router.get("/alerts/stream")
 async def stream_alerts(

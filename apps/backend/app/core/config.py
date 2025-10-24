@@ -43,7 +43,6 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str | None = Field(default=None, alias="GOOGLE_CLIENT_ID")
     GOOGLE_CLIENT_SECRET: str | None = Field(default=None, alias="GOOGLE_CLIENT_SECRET")
 
-
     # Phase J: Email
     SMTP_HOST: str = Field(default="localhost", alias="SMTP_HOST")
     SMTP_PORT: int = Field(default=1025, alias="SMTP_PORT")
