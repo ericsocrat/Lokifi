@@ -16,14 +16,14 @@ test.describe('Multi-Chart Layout', () => {
           high: basePrice + Math.random() * 500,
           low: basePrice - Math.random() * 500,
           close: basePrice + Math.random() * 200 - 100,
-          volume: Math.random() * 1000000
+          volume: Math.random() * 1000000,
         };
       });
 
       route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify({ candles: mockCandles })
+        body: JSON.stringify({ candles: mockCandles }),
       });
     });
 
@@ -36,7 +36,7 @@ test.describe('Multi-Chart Layout', () => {
     // Navigate directly to /chart page where TradingWorkspace (with charts) is mounted
     await page.goto('/chart');
     await page.waitForLoadState('networkidle');
-    
+
     // Wait a bit longer for chart to initialize with mocked data
     await page.waitForTimeout(2000);
   });

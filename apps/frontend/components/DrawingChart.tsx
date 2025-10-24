@@ -417,6 +417,7 @@ export const DrawingChart: React.FC = () => {
     <ChartErrorBoundary>
       <div
         ref={containerRef}
+        data-testid="chart-container"
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
