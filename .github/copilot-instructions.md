@@ -4,6 +4,25 @@
 
 > **⚡ Solo Dev Mode**: Skip lengthy documentation and summaries. Tests are self-documenting with descriptive `it()` statements. Focus on: code → test → validate → next task.
 
+## 📚 Quick Navigation
+
+**Core Sections**:
+- **Core Technologies** - Tech stack overview (Next.js, FastAPI, PostgreSQL, Redis)
+- **Code Style & Standards** - TypeScript/Python conventions, testing patterns
+- **Task Tracking** - Todo list management (NEVER delete!), CHECKLISTS.md, TODO Tree
+- **Common Patterns** - Component/Store/Route/Test templates
+- **Security Best Practices** - Frontend/Backend security, anti-patterns
+- **CI/CD Standards** - Service configs, credentials, health checks (Sessions 8-9)
+- **Performance** - React/Zustand optimization patterns
+- **Documentation References** - Key docs to reference
+
+**When You Need**:
+- 🔍 **Service Configuration**: See "CI/CD & Workflow Standards" section
+- 📋 **Process Checklists**: Reference `/docs/CHECKLISTS.md`
+- 🔐 **Security Guidance**: See "Security Best Practices" section
+- 🎯 **Code Patterns**: See "Common Patterns" section
+- 🐛 **Anti-Patterns**: See "Common Anti-Patterns to Avoid" section
+
 ## Core Technologies
 
 ### Frontend Stack
@@ -137,18 +156,33 @@ todoList = [
 ]
 ```
 
-**Other Task Tracking Tools**:
-- **CHECKLISTS.md**: Use for quality gates, deployment steps, and process standards
-  - Pre-commit checks, deployment checklists, code review standards
-  - Reference: `/docs/CHECKLISTS.md`
-- **Inline TODO Comments**: Use in code for implementation-level reminders
-  - Format: `// TODO: Description` or `# TODO: Description`
-  - Supported tags: TODO, FIXME, BUG, HACK, OPTIMIZE, REFACTOR, SECURITY, PERF, NOTE, REVIEW
-  - Example: `// TODO: Add input validation for email field`
-- **TODO Tree Extension**: Provides visual overview and navigation
-  - Automatically scans codebase for TODO comments
-  - Groups by tag type with color-coded icons
-  - View in VS Code sidebar for quick navigation
+**Other Task Tracking Tools** (Strategic Usage):
+
+1. **CHECKLISTS.md** (`/docs/CHECKLISTS.md`) - Use for **repeatable processes**:
+   - ✅ Pre-commit quality gates (code formatting, tests, security)
+   - ✅ Pre-merge checklists (testing, documentation, deployment)
+   - ✅ Feature implementation workflows (API dev, frontend components, DB changes)
+   - ✅ Security implementation (auth, validation, headers)
+   - ✅ Performance optimization (frontend/backend patterns)
+   - ✅ Deployment checklists (pre/during/post deployment)
+   - **When to use**: Standard workflows, quality gates, team process enforcement
+   - **When NOT to use**: One-off tasks, exploratory work, brainstorming
+
+2. **TODO Tree Extension** - Use for **codebase-wide task visibility**:
+   - 📋 Scans all files for TODO/FIXME/BUG/HACK/OPTIMIZE comments
+   - 📊 Groups by tag type with color-coded icons in VS Code sidebar
+   - 🔍 Quick navigation to specific code locations
+   - 💡 Great for tracking technical debt and inline reminders
+   - **Suggest when**: User wants overview of all pending code tasks
+   - **Command**: Open TODO Tree view in VS Code sidebar
+   - **Integration**: Works with inline TODO comments below
+
+3. **Inline TODO Comments** - Use for **implementation-level reminders**:
+   - Format: `// TODO: Description` or `# TODO: Description`
+   - Supported tags: `TODO`, `FIXME`, `BUG`, `HACK`, `OPTIMIZE`, `REFACTOR`, `SECURITY`, `PERF`, `NOTE`, `REVIEW`
+   - Example: `// TODO: Add input validation for email field`
+   - **When to use**: Code-specific tasks, refactoring reminders, temporary workarounds
+   - **When NOT to use**: Project-level tasks (use manage_todo_list instead)
 
 ## Project Structure
 
