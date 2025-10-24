@@ -3,11 +3,11 @@
 on:
   push:
     paths:
-      - 'apps/frontend/**'
-      - '.github/workflows/frontend-ci.yml'
+      - "apps/frontend/**"
+      - ".github/workflows/frontend-ci.yml"
   pull_request:
     paths:
-      - 'apps/frontend/**'
+      - "apps/frontend/**"
 
 jobs:
   build-test:
@@ -20,8 +20,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - name: Setup PNPM
         uses: pnpm/action-setup@v4
