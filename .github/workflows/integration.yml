@@ -308,7 +308,7 @@ jobs:
       - name: 🔍 Check service health
         run: |
           # Check backend health
-          curl -f http://localhost:8000/health || exit 1
+          curl -f http://localhost:8000/api/health || exit 1
 
           # Check frontend accessibility
           curl -f http://localhost:3000 || exit 1
@@ -316,7 +316,7 @@ jobs:
       - name: 🧪 Run integration smoke tests
         run: |
           # Basic API connectivity
-          curl -f http://localhost:8000/api/v1/health || exit 1
+          curl -f http://localhost:8000/api/health || exit 1
 
           # Frontend can reach backend
           docker compose -f infra/docker/docker-compose.ci.yml logs frontend | grep -q "ready" || exit 1
