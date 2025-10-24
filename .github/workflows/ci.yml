@@ -179,7 +179,7 @@ jobs:
         continue-on-error: false
 
       - name: 🔍 Type Check (mypy)
-        run: mypy app --config-file=mypy.ini
+        run: mypy . --config-file=mypy.ini
         continue-on-error: false
 
       - name: 🔒 Security Check (bandit)
