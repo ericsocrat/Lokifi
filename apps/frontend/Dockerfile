@@ -2,8 +2,8 @@ FROM node:22-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN apk add --no-cache python3 make g++ git
-# Use npm ci for reproducible installs and allow legacy peer deps to avoid ERESOLVE in older lockfiles
-RUN npm ci --legacy-peer-deps
+# Use npm install instead of npm ci to handle package-lock.json discrepancies
+RUN npm install --legacy-peer-deps
 RUN npm cache clean --force
 
 FROM node:22-alpine AS dev

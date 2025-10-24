@@ -258,7 +258,7 @@ jobs:
 
       - name: 🧪 Run integration tests
         working-directory: apps/backend
-        run: pytest tests/integration/ -v --tb=short -m integration
+        run: pytest tests/integration/ -v --tb=short
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
