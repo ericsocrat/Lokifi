@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test.describe('Chart Reliability - Part A', () => {
   test.beforeEach(async ({ page }) => {
     // Mock the OHLC API endpoint with realistic candle data
-    await page.route('**/ohlc?*', (route) => {
+    await page.route('**/api/ohlc?**', (route) => {
       const mockCandles = Array.from({ length: 100 }, (_, i) => {
         const time = Date.now() / 1000 - (100 - i) * 3600; // Hourly candles
         const basePrice = 50000 + Math.random() * 1000;
@@ -27,6 +27,9 @@ test.describe('Chart Reliability - Part A', () => {
     // Navigate directly to /chart page where TradingWorkspace (with charts) is mounted
     await page.goto('/chart');
     await page.waitForLoadState('networkidle');
+    
+    // Wait a bit longer for chart to initialize with mocked data
+    await page.waitForTimeout(2000);
   });
 
   test('chart container has fixed height with responsive fallback', async ({ page }) => {
