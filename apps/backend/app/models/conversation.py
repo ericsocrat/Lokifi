@@ -134,6 +134,7 @@ class Message(Base):
     conversation = relationship("Conversation", back_populates="messages")
     sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_messages")
     receipts = relationship("MessageReceipt", back_populates="message")
+    reactions = relationship("MessageReaction", back_populates="message")
 
     # Indexes for performance
     __table_args__ = (
