@@ -180,7 +180,7 @@ jobs:
 
       - name: 🔍 Type Check (mypy)
         run: mypy . --config-file=mypy.ini
-        continue-on-error: true  # Temporarily non-blocking - see TODO below
+        continue-on-error: true # Temporarily non-blocking - see TODO below
         # TODO: Fix ~500+ type annotation issues and make this blocking again
         # Reference: Session 10 commit 5d583f30 documents all type issues
         # Post-merge task: Incrementally fix type annotations and re-enable strict mode
@@ -198,6 +198,10 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           TESTING: 1
+          LOKIFI_JWT_SECRET: test-jwt-secret-for-ci
+          JWT_SECRET_KEY: test-jwt-key-for-ci
+          DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
+          REDIS_URL: redis://localhost:6379/0
         continue-on-error: false
 
       - name: 📊 Upload security reports
