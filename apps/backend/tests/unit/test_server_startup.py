@@ -7,10 +7,13 @@ import asyncio
 import os
 import sys
 
+import pytest
+
 # Add the backend directory to Python path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
+@pytest.mark.asyncio
 async def test_server_components():
     """Test individual server components"""
     print("🔍 Testing J5 server components...")
