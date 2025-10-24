@@ -30,10 +30,8 @@ jobs:
         include:
           - language: javascript-typescript
             build-mode: none
-            working-directory: ./apps/frontend
           - language: python
             build-mode: none
-            working-directory: ./apps/backend
 
     steps:
       - name: Checkout repository
@@ -53,22 +51,3 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
-          output: sarif-results
-          upload: true
-
-      # Upload results to GitHub Security tab
-      - name: Upload CodeQL results to Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        with:
-          sarif_file: sarif-results/${{ matrix.language }}.sarif
-          category: "/language:${{ matrix.language }}"
-
-      # Optional: Upload results as artifact for review
-      - name: Upload CodeQL results as artifact
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: codeql-results-${{ matrix.language }}
-          path: sarif-results/${{ matrix.language }}.sarif
-          retention-days: 30
