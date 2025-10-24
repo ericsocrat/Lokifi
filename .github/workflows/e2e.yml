@@ -105,6 +105,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: 🔧 Rebuild Rollup native bindings
+        run: npm rebuild rollup
+        continue-on-error: true
+
       - name: 🎭 Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -197,6 +201,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: 🔧 Rebuild Rollup native bindings
+        run: npm rebuild rollup
+        continue-on-error: true
+
       - name: 🎭 Cache Playwright browsers
         uses: actions/cache@v4
         id: playwright-cache
@@ -260,6 +268,10 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: 🔧 Rebuild Rollup native bindings
+        run: npm rebuild rollup
+        continue-on-error: true
 
       - name: 🎭 Cache Playwright browsers
         uses: actions/cache@v4
@@ -335,6 +347,10 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: 🔧 Rebuild Rollup native bindings
+        run: npm rebuild rollup
+        continue-on-error: true
 
       - name: 🎭 Cache Playwright browsers
         uses: actions/cache@v4

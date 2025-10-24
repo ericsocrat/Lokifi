@@ -17,7 +17,7 @@ ruff==0.13.2
 black==25.9.0
 
 # Security Scanning
-pip-audit==2.7.3
+pip_audit==2.9.0
 bandit==1.7.10
 safety==3.2.11
 

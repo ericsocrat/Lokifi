@@ -105,7 +105,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔍 ESLint (Code Quality)
+      - name: � Rebuild Rollup native bindings
+        run: npm rebuild rollup
+        continue-on-error: true
+
+      - name: �🔍 ESLint (Code Quality)
         run: npm run lint
         continue-on-error: false
 
@@ -227,7 +231,11 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔒 NPM Audit
+      - name: � Rebuild Rollup native bindings
+        run: npm rebuild rollup
+        continue-on-error: true
+
+      - name: �🔒 NPM Audit
         run: npm audit --audit-level=moderate
         continue-on-error: true # Informational only
 
