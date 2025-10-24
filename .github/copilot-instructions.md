@@ -110,6 +110,34 @@ Lokifi has a **fully automatic coverage tracking system** integrated into CI/CD.
 - **Test edge cases** - empty arrays, null values, error states
 
 ### Task Tracking & Workflow
+
+**Todo List Management** (Copilot's `manage_todo_list` tool):
+- **NEVER delete existing todos** - Always preserve user's task history
+- **Strategic reordering**: When adding new tasks, merge with existing todos and reorder by priority
+- **Priority order**: CRITICAL → HIGH → MEDIUM → LOW → COMPLETED (move to bottom)
+- **Status transitions**: not-started → in-progress → completed
+- **Mark in-progress** before starting work on a task
+- **Mark completed** immediately after finishing (don't batch completions)
+- **Preserve context**: Keep detailed descriptions, commit references, file paths
+- **Read first**: Always call `read` operation before `write` to see existing todos
+
+**Example Priority Reordering**:
+```javascript
+// ❌ BAD - Deleting existing todos
+todoList = [newTask1, newTask2, newTask3]  // Lost user's previous tasks!
+
+// ✅ GOOD - Merging and reordering
+todoList = [
+  ...criticalTasks,     // User's urgent tasks first
+  ...newHighPriority,   // New important tasks
+  ...existingMedium,    // Preserve existing medium priority
+  ...newMedium,         // Add new medium priority
+  ...existingLow,       // Keep low priority tasks
+  ...completedTasks     // Completed tasks at bottom
+]
+```
+
+**Other Task Tracking Tools**:
 - **CHECKLISTS.md**: Use for quality gates, deployment steps, and process standards
   - Pre-commit checks, deployment checklists, code review standards
   - Reference: `/docs/CHECKLISTS.md`
@@ -510,7 +538,7 @@ services:
       --health-interval 10s
       --health-timeout 5s
       --health-retries 5
-  
+
   redis:
     image: redis:7-alpine      # ✅ Standardized version
     ports:
