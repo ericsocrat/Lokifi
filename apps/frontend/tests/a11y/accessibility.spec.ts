@@ -4,6 +4,8 @@ import { expect, test } from '@playwright/test';
 test.describe('Accessibility Tests', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
+    // Wait for automatic redirect from home to markets page
+    await page.waitForURL('**/markets', { timeout: 5000 });
     await page.waitForLoadState('networkidle');
   });
 
