@@ -102,7 +102,7 @@ jobs:
         run: |
           uvicorn app.main:app --host 0.0.0.0 --port 8000 &
           sleep 5
-          curl -f http://localhost:8000/health || exit 1
+          curl -f http://localhost:8000/api/health || exit 1
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
@@ -253,6 +253,8 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           TESTING: 1
+          LOKIFI_JWT_SECRET: test-secret-key-for-integration-tests
+          JWT_SECRET_KEY: test-secret-key-for-integration-tests
 
       - name: 🧪 Run integration tests
         working-directory: apps/backend
@@ -262,6 +264,8 @@ jobs:
           DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
           TESTING: 1
+          LOKIFI_JWT_SECRET: test-secret-key-for-integration-tests
+          JWT_SECRET_KEY: test-secret-key-for-integration-tests
 
       - name: 📊 Upload integration test results
         if: always()
