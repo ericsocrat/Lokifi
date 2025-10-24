@@ -2,7 +2,14 @@
 
 > **Project Context**: Lokifi is a full-stack financial application with Next.js frontend, FastAPI backend, and Redis caching.
 
-> **⚡ Solo Dev Mode**: Skip lengthy documentation and summaries. Tests are self-documenting with descriptive `it()` statements. Focus on: code → test → validate → next task.
+> **🎯 Quality-First Philosophy**: Take whatever time, commits, and tokens needed to achieve world-class code quality, structure, and tests. No rush - systematic, thorough work is valued over speed. Multiple debugging sessions and deep root cause analysis are encouraged.
+
+> **✅ Session Best Practices**: 
+> - Systematic root cause analysis > quick symptom fixes
+> - Deep log investigation reveals issues status checks miss
+> - Multiple commits per issue are fine - prefer atomic, well-documented changes
+> - Token budget is generous - use it for thorough analysis
+> - Marathon debugging sessions are acceptable for complex issues
 
 ## 📚 Quick Navigation
 
