@@ -251,7 +251,7 @@ jobs:
           alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
-          DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           TESTING: 1
 
       - name: 🧪 Run integration tests
@@ -259,7 +259,7 @@ jobs:
         run: pytest tests/integration/ -v --tb=short -m integration
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
-          DATABASE_URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi_test
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
           TESTING: 1
 
