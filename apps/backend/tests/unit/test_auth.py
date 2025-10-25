@@ -3,14 +3,17 @@ Tests for authentication endpoints.
 """
 
 import pytest
+from app.main import app
 from fastapi.testclient import TestClient
 
-from app.main import app
 
-client = TestClient(app)
+@pytest.fixture
+def client():
+    """Create a fresh test client for each test to ensure test isolation."""
+    return TestClient(app)
 
 
-def test_register_user():
+def test_register_user(client):
     """Test user registration."""
     user_data = {
         "email": "test@example.com",
@@ -30,7 +33,7 @@ def test_register_user():
     ]  # Allow DB connection errors in test
 
 
-def test_login_invalid_credentials():
+def test_login_invalid_credentials(client):
     """Test login with invalid credentials."""
     login_data = {"email": "nonexistent@example.com", "password": "wrongpassword"}
 
@@ -40,7 +43,7 @@ def test_login_invalid_credentials():
     assert response.status_code in [401, 500, 503]
 
 
-def test_check_auth_status_without_token():
+def test_check_auth_status_without_token(client):
     """Test checking auth status without token."""
     response = client.get("/api/auth/check")
 
@@ -50,7 +53,7 @@ def test_check_auth_status_without_token():
         assert data["user_id"] is None
 
 
-def test_me_endpoint_without_token():
+def test_me_endpoint_without_token(client):
     """Test /me endpoint without token."""
     response = client.get("/api/auth/me")
 
@@ -58,7 +61,7 @@ def test_me_endpoint_without_token():
     assert response.status_code in [401, 500, 503]
 
 
-def test_logout():
+def test_logout(client):
     """Test logout endpoint."""
     response = client.post("/api/auth/logout")
 
