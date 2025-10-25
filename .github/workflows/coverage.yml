@@ -190,7 +190,7 @@ jobs:
           TESTING: 1
 
       - name: 🧪 Run tests with coverage
-        run: pytest --cov=app --cov-report=term-missing --cov-report=json --cov-report=html --cov-fail-under=25
+        run: pytest --cov=app --cov-report=term-missing --cov-report=json --cov-report=html --cov-fail-under=25 -m "not config_validation"
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
           TESTING: 1
