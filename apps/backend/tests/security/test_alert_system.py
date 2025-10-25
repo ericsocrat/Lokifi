@@ -7,9 +7,12 @@ import asyncio
 import os
 import sys
 
+import pytest
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
+@pytest.mark.asyncio
 async def test_alert_system():
     """Test the complete alert system"""
     print("🚨 TESTING SECURITY ALERT SYSTEM")
