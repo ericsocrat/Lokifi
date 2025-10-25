@@ -131,11 +131,12 @@ describe('Project Configuration Files', () => {
 
     it('should have proper VS Code workspace integration', () => {
       // VS Code should be configured to use these project settings
-      const vscodeSettingsPath = join(process.cwd(), '.vscode', 'settings.json');
+      // Note: .vscode is at repository root, not in apps/frontend/
+      const vscodeSettingsPath = join(process.cwd(), '..', '..', '.vscode', 'settings.json');
       expect(existsSync(vscodeSettingsPath)).toBe(true);
 
       // Extensions should be recommended for the tech stack
-      const vscodeExtensionsPath = join(process.cwd(), '.vscode', 'extensions.json');
+      const vscodeExtensionsPath = join(process.cwd(), '..', '..', '.vscode', 'extensions.json');
       expect(existsSync(vscodeExtensionsPath)).toBe(true);
     });
   });

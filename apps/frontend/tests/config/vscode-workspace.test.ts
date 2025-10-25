@@ -34,7 +34,8 @@ function parseJSONC(content: string): any {
 }
 
 describe('VS Code Workspace Integration', () => {
-  const vscodeDir = join(process.cwd(), '.vscode');
+  // Note: .vscode is at repository root, not in apps/frontend/
+  const vscodeDir = join(process.cwd(), '..', '..', '.vscode');
 
   describe('Configuration Files Exist', () => {
     const requiredConfigs = [

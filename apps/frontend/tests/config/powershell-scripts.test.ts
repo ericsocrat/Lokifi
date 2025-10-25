@@ -129,7 +129,8 @@ describe('PowerShell Scripts', () => {
 
   describe('Script Integration', () => {
     it('should match VS Code tasks configuration', () => {
-      const tasksPath = join(process.cwd(), '.vscode', 'tasks.json');
+      // Note: .vscode is at repository root, not in apps/frontend/
+      const tasksPath = join(process.cwd(), '..', '..', '.vscode', 'tasks.json');
 
       if (existsSync(tasksPath)) {
         const tasks = JSON.parse(readFileSync(tasksPath, 'utf-8'));

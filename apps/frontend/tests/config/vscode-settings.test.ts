@@ -25,7 +25,8 @@ function parseJSONC(content: string): any {
 }
 
 describe('VS Code Configuration', () => {
-  const vscodeDir = join(process.cwd(), '.vscode');
+  // Note: .vscode is at repository root, not in apps/frontend/
+  const vscodeDir = join(process.cwd(), '..', '..', '.vscode');
   const settingsPath = join(vscodeDir, 'settings.json');
   const tasksPath = join(vscodeDir, 'tasks.json');
   const launchPath = join(vscodeDir, 'launch.json');
