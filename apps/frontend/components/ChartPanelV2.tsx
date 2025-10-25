@@ -1,17 +1,17 @@
 'use client';
+import { bollinger, ema, macd, rsi, stddevChannels, vwap, vwma } from '@/charts/indicators';
 import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
 import { ChartLoadingState } from '@/components/ChartLoadingState';
 import ChartSidebar from '@/components/ChartSidebar';
 import { API } from '@/lib/api';
-import { drawStore } from '@/lib/drawStore';
-import { indicatorStore } from '@/lib/indicatorStore';
-import { bollinger, ema, macd, rsi, stddevChannels, vwap, vwma } from '@/lib/indicators';
-import { symbolStore } from '@/lib/symbolStore';
-import { timeframeStore } from '@/lib/timeframeStore';
 import type { OHLCResponse } from '@/lib/types';
-import { pluginManager } from '@/plugins/registry';
+import { drawStore } from '@/stores/drawStore';
+import { indicatorStore } from '@/stores/indicatorStore';
+import { symbolStore } from '@/stores/symbolStore';
+import { timeframeStore } from '@/stores/timeframeStore';
 import { ColorType, createChart, IChartApi, Time } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
+import { pluginManager } from 'plugins/registry';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
 
@@ -230,7 +230,9 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     }));
 
     // Ensure timestamps are monotonic
-    const sortedCandles = normalizedCandles.sort((a: any, b: any) => Number(a.time) - Number(b.time));
+    const sortedCandles = normalizedCandles.sort(
+      (a: any, b: any) => Number(a.time) - Number(b.time)
+    );
     candleSeries.setData(sortedCandles);
 
     // Prepare indicator data
@@ -535,5 +537,3 @@ const ChartPanel = dynamic(
 );
 
 export default ChartPanel;
-
-

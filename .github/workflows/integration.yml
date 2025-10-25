@@ -1,0 +1,353 @@
+name: 🔗 Integration Tests
+
+# Integration workflow: Runs in ~8 minutes
+# Purpose: Test API contracts, accessibility, service integration
+# Runs on: Pull requests to main/develop
+# Strategy: Docker services (Redis, PostgreSQL), parallel execution
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+# Cancel in-progress runs for same workflow + branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Detect which parts of codebase changed
+  changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/frontend/**'
+              - '.github/workflows/integration.yml'
+            backend:
+              - 'apps/backend/**'
+              - '.github/workflows/integration.yml'
+            api:
+              - 'apps/backend/app/api/**'
+              - 'apps/backend/app/models/**'
+              - '.github/workflows/integration.yml'
+
+  # API Contract Testing with Schemathesis
+  api-contracts:
+    name: 📋 API Contract Tests
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true' || needs.changes.outputs.api == 'true'
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            apps/backend/requirements.txt
+            apps/backend/requirements-dev.txt
+
+      - name: 📦 Install dependencies
+        working-directory: apps/backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: 🚀 Start FastAPI server
+        working-directory: apps/backend
+        run: |
+          uvicorn app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+          curl -f http://localhost:8000/api/health || exit 1
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          REDIS_URL: redis://localhost:6379/0
+          TESTING: 1
+          LOKIFI_JWT_SECRET: test-secret-key-for-integration-tests
+          JWT_SECRET_KEY: test-secret-key-for-integration-tests
+
+      - name: 📋 Run API contract tests (schemathesis)
+        working-directory: apps/backend
+        run: |
+          schemathesis run http://localhost:8000/openapi.json \
+            --checks all \
+            --hypothesis-max-examples=50 \
+            --base-url=http://localhost:8000 \
+            --report
+        continue-on-error: true
+
+      - name: 📊 Upload contract test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-contract-results
+          path: apps/backend/schemathesis-report.html
+          retention-days: 7
+          compression-level: 9
+          if-no-files-found: ignore
+
+  # Accessibility Testing
+  accessibility:
+    name: ♿ Accessibility Tests
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: � Setup E2E Environment
+        uses: ./.github/actions/setup-e2e
+        with:
+          browser: chromium
+
+      - name: ♿ Run accessibility tests
+        run: npm run test:a11y
+        env:
+          CI: true
+
+      - name: 📊 Upload accessibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-report
+          path: apps/frontend/playwright-report/
+          retention-days: 7
+          compression-level: 9
+          if-no-files-found: ignore
+
+      - name: 📝 Generate accessibility summary
+        if: always()
+        run: |
+          echo "## ♿ Accessibility Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Tests completed. Check artifacts for detailed report." >> $GITHUB_STEP_SUMMARY
+
+  # Integration Tests with Services
+  backend-integration:
+    name: 🔧 Backend Integration Tests
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: |
+            apps/backend/requirements.txt
+            apps/backend/requirements-dev.txt
+
+      - name: 📦 Install dependencies
+        working-directory: apps/backend
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: 🗃️ Run database migrations
+        working-directory: apps/backend
+        run: |
+          alembic upgrade head
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          TESTING: 1
+          LOKIFI_JWT_SECRET: test-secret-key-for-integration-tests
+          JWT_SECRET_KEY: test-secret-key-for-integration-tests
+
+      - name: 🧪 Run integration tests
+        working-directory: apps/backend
+        run: pytest tests/integration/ -v --tb=short
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          REDIS_URL: redis://localhost:6379/0
+          TESTING: 1
+          LOKIFI_JWT_SECRET: test-secret-key-for-integration-tests
+          JWT_SECRET_KEY: test-secret-key-for-integration-tests
+
+      - name: 📊 Upload integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-integration-results
+          path: apps/backend/test-results/
+          retention-days: 7
+          compression-level: 9
+          if-no-files-found: ignore
+
+  # Frontend-Backend Integration (Full Stack)
+  fullstack-integration:
+    name: 🔗 Full Stack Integration
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.backend == 'true'
+    timeout-minutes: 10
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐳 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 📦 Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: 🔨 Build and start services
+        working-directory: infra/docker
+        run: |
+          docker compose -f docker-compose.ci.yml up -d --build
+          sleep 10
+
+      - name: 🔍 Check service health
+        run: |
+          # Check backend health
+          curl -f http://localhost:8000/api/health || exit 1
+
+          # Check frontend accessibility
+          curl -f http://localhost:3000 || exit 1
+
+      - name: 🧪 Run integration smoke tests
+        run: |
+          # Basic API connectivity
+          curl -f http://localhost:8000/api/health || exit 1
+
+          # Frontend is accessible (already checked in health step above)
+          echo "✅ Full stack integration smoke tests passed"
+
+      - name: 📋 View logs on failure
+        if: failure()
+        run: |
+          docker compose -f infra/docker/docker-compose.ci.yml logs
+
+      - name: 🛑 Stop services
+        if: always()
+        working-directory: infra/docker
+        run: docker compose -f docker-compose.ci.yml down -v
+
+  # Summary Job: All integration tests passed
+  integration-success:
+    name: ✅ Integration Tests Complete
+    runs-on: ubuntu-latest
+    needs:
+      - api-contracts
+      - accessibility
+      - backend-integration
+      - fullstack-integration
+    if: always()
+    steps:
+      - name: 🎯 Check job statuses
+        run: |
+          echo "API Contracts: ${{ needs.api-contracts.result }}"
+          echo "Accessibility: ${{ needs.accessibility.result }}"
+          echo "Backend Integration: ${{ needs.backend-integration.result }}"
+          echo "Full Stack: ${{ needs.fullstack-integration.result }}"
+
+          # Fail if any critical job failed
+          if [ "${{ needs.backend-integration.result }}" = "failure" ] || \
+             [ "${{ needs.fullstack-integration.result }}" = "failure" ]; then
+            echo "❌ Critical integration tests failed"
+            exit 1
+          fi
+
+          echo "✅ All integration tests passed!"
+
+      - name: 📝 Generate summary
+        if: always()
+        run: |
+          echo "## 🔗 Integration Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| API Contracts | ${{ needs.api-contracts.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Accessibility | ${{ needs.accessibility.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend Integration | ${{ needs.backend-integration.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Full Stack | ${{ needs.fullstack-integration.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Expected Time**: ~8-10 minutes" >> $GITHUB_STEP_SUMMARY
+          echo "**Services**: Redis, PostgreSQL, Docker Compose" >> $GITHUB_STEP_SUMMARY

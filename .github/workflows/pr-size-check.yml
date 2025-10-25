@@ -1,0 +1,234 @@
+# Pull Request Size Check
+# Adds labels to PRs based on size to encourage smaller, reviewable changes
+# Large PRs are harder to review and more likely to contain bugs
+
+name: 📏 PR Size Check
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+# Cancel in-progress runs for same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  check-size:
+    name: Label PR by Size
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📊 Analyze PR size
+        id: analyze
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Get PR files
+            const { data: files } = await github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number,
+              per_page: 100
+            });
+
+            // Calculate metrics
+            const filesChanged = files.length;
+            const additions = files.reduce((sum, file) => sum + file.additions, 0);
+            const deletions = files.reduce((sum, file) => sum + file.deletions, 0);
+            const totalChanges = additions + deletions;
+
+            // Determine size category
+            let sizeLabel = 'size-xs';
+            let sizeEmoji = '🔹';
+            let recommendation = 'Perfect size for review!';
+
+            if (totalChanges < 50) {
+              sizeLabel = 'size-xs';
+              sizeEmoji = '🔹';
+              recommendation = 'Perfect size for review!';
+            } else if (totalChanges < 200) {
+              sizeLabel = 'size-s';
+              sizeEmoji = '🔸';
+              recommendation = 'Good size for review.';
+            } else if (totalChanges < 500) {
+              sizeLabel = 'size-m';
+              sizeEmoji = '🟡';
+              recommendation = 'Medium size - consider splitting if possible.';
+            } else if (totalChanges < 1000) {
+              sizeLabel = 'size-l';
+              sizeEmoji = '🟠';
+              recommendation = '⚠️ Large PR - strongly consider splitting into smaller PRs.';
+            } else {
+              sizeLabel = 'size-xl';
+              sizeEmoji = '🔴';
+              recommendation = '🚨 Extra large PR - this will be difficult to review. Please split into smaller PRs.';
+            }
+
+            core.setOutput('size-label', sizeLabel);
+            core.setOutput('size-emoji', sizeEmoji);
+            core.setOutput('files-changed', filesChanged);
+            core.setOutput('additions', additions);
+            core.setOutput('deletions', deletions);
+            core.setOutput('total-changes', totalChanges);
+            core.setOutput('recommendation', recommendation);
+
+            core.info(`PR size: ${totalChanges} lines changed, ${filesChanged} files`);
+            core.info(`Label: ${sizeLabel}`);
+
+      - name: 🏷️ Remove old size labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const sizeLabels = ['size-xs', 'size-s', 'size-m', 'size-l', 'size-xl'];
+
+            // Get current labels
+            const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            // Remove old size labels
+            for (const label of currentLabels) {
+              if (sizeLabels.includes(label.name)) {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: label.name
+                });
+                core.info(`Removed label: ${label.name}`);
+              }
+            }
+
+      - name: 🏷️ Add size label
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const sizeLabel = '${{ steps.analyze.outputs.size-label }}';
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number,
+              labels: [sizeLabel]
+            });
+
+            core.info(`Added label: ${sizeLabel}`);
+
+      - name: 💬 Add size comment (for large PRs)
+        if: |
+          steps.analyze.outputs.size-label == 'size-l' ||
+          steps.analyze.outputs.size-label == 'size-xl'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const sizeEmoji = '${{ steps.analyze.outputs.size-emoji }}';
+            const filesChanged = '${{ steps.analyze.outputs.files-changed }}';
+            const totalChanges = '${{ steps.analyze.outputs.total-changes }}';
+            const additions = '${{ steps.analyze.outputs.additions }}';
+            const deletions = '${{ steps.analyze.outputs.deletions }}';
+            const recommendation = `${{ steps.analyze.outputs.recommendation }}`;
+
+            const commentBody = `## ${sizeEmoji} PR Size Analysis
+
+            ${recommendation}
+
+            ### 📊 Metrics
+
+            - **Files changed**: ${filesChanged}
+            - **Lines added**: ${additions}
+            - **Lines deleted**: ${deletions}
+            - **Total changes**: ${totalChanges}
+
+            ### 💡 Why smaller PRs are better:
+
+            - **Easier to review**: Reviewers can understand changes quickly
+            - **Faster feedback**: Smaller PRs get reviewed and merged faster
+            - **Fewer bugs**: Smaller changes are easier to test thoroughly
+            - **Better git history**: Each PR tells a clear story
+            - **Easier to revert**: If something breaks, smaller PRs are easier to roll back
+
+            ### 🔄 How to split this PR:
+
+            1. **By feature**: Separate different features into different PRs
+            2. **By layer**: Split frontend and backend changes
+            3. **By task**: Refactoring, new features, and bug fixes in separate PRs
+            4. **By dependencies**: Create dependent PRs (base PR → feature PR)
+
+            ### 📚 Resources
+
+            - [Small PRs Best Practices](https://github.com/google/eng-practices/blob/master/review/developer/small-cls.md)
+            - [Why Small PRs Matter](https://testing.googleblog.com/2017/06/code-health-too-many-comments-on-your.html)
+
+            ---
+
+            *This is an automated message from the [PR Size Check workflow](/.github/workflows/pr-size-check.yml)*
+            `;
+
+            // Check if we already commented
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pr.number
+            });
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('PR Size Analysis')
+            );
+
+            if (botComment) {
+              // Update existing comment
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+              core.info('Updated existing size comment');
+            } else {
+              // Create new comment
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                body: commentBody
+              });
+              core.info('Created size comment');
+            }
+
+      - name: 📊 Generate summary
+        if: always()
+        run: |
+          echo "## 📏 PR Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.analyze.outputs.size-emoji }} **Size**: \`${{ steps.analyze.outputs.size-label }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Metrics**:" >> $GITHUB_STEP_SUMMARY
+          echo "- Files changed: ${{ steps.analyze.outputs.files-changed }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Lines added: +${{ steps.analyze.outputs.additions }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Lines deleted: -${{ steps.analyze.outputs.deletions }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Total changes: ${{ steps.analyze.outputs.total-changes }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Recommendation**: ${{ steps.analyze.outputs.recommendation }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Size Guidelines**:" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔹 XS: <50 lines (perfect)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔸 S: 50-200 lines (good)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🟡 M: 200-500 lines (medium)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🟠 L: 500-1000 lines (consider splitting)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔴 XL: >1000 lines (should split)" >> $GITHUB_STEP_SUMMARY

@@ -110,8 +110,9 @@ async def run_database_migrations():
         logger.info("🗄️ Running database migrations...")
 
         # Import Alembic components
-        from alembic import command
         from alembic.config import Config
+
+        from alembic import command
 
         # Configure Alembic
         alembic_cfg = Config("alembic.ini")

@@ -1,12 +1,17 @@
+# Development Overrides
+# Purpose: Hot-reload and volume mounts for active development
+# Usage: Auto-loaded with docker-compose.yml by default
+# Features: Live code reload, mounted source directories
+
 services:
   frontend:
     profiles: ["dev"]
     build:
-      context: ./frontend
+      context: ../../apps/frontend
       target: dev
     command: ["npm", "run", "dev"]
     volumes:
-      - ./frontend:/app
+      - ../../apps/frontend:/app
     environment:
       - NEXT_PUBLIC_API_BASE=http://backend:8000/api
     ports:

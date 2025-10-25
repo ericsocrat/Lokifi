@@ -1,0 +1,349 @@
+name: 🎭 E2E Tests
+
+# E2E workflow: Runs in 6-15 minutes (progressive)
+# Purpose: End-to-end testing with Playwright, visual regression
+# Runs on: Pull requests (critical path), main (full suite), releases (all tests)
+# Strategy: Progressive execution based on branch and labels
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - "release/**"
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: "Test suite to run"
+        required: true
+        default: "critical"
+        type: choice
+        options:
+          - critical
+          - full
+          - visual
+
+# Cancel in-progress runs for same workflow + branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Detect which parts of codebase changed
+  changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      e2e: ${{ steps.filter.outputs.e2e }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/frontend/**'
+              - '.github/workflows/e2e.yml'
+            e2e:
+              - 'apps/frontend/tests/e2e/**'
+              - '.github/workflows/e2e.yml'
+              - 'apps/frontend/playwright.config.ts'
+
+  # Critical Path E2E Tests (Always run on PRs)
+  e2e-critical:
+    name: 🎭 E2E Critical Path
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      needs.changes.outputs.frontend == 'true' ||
+      needs.changes.outputs.e2e == 'true' ||
+      github.event.inputs.test_suite == 'critical'
+    timeout-minutes: 8
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: � Setup E2E environment
+        uses: ./.github/actions/setup-e2e
+        with:
+          browser: chromium
+
+      - name: 🎭 Run critical path E2E tests
+        run: npx playwright test tests/e2e/ --project=chromium
+        env:
+          CI: true
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 📊 Upload E2E report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-critical-report
+          path: apps/frontend/playwright-report/
+          retention-days: 7
+          compression-level: 9
+
+      - name: 📸 Upload test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-critical-screenshots
+          path: apps/frontend/test-results/
+          retention-days: 7
+          compression-level: 9
+
+  # Full E2E Test Suite (Main branch and manual)
+  e2e-full:
+    name: 🎭 E2E Full Suite
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      github.ref == 'refs/heads/main' ||
+      contains(github.event.pull_request.labels.*.name, 'e2e-full') ||
+      github.event.inputs.test_suite == 'full'
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium]
+        shard: [1, 2]
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: � Setup E2E environment
+        uses: ./.github/actions/setup-e2e
+        with:
+          browser: ${{ matrix.browser }}
+
+      - name: 🎭 Run full E2E test suite
+        run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2 --ignore-snapshots
+        env:
+          CI: true
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 📊 Upload E2E report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-full-${{ matrix.browser }}-${{ matrix.shard }}-report
+          path: apps/frontend/playwright-report/
+          retention-days: 7
+          compression-level: 9
+
+      - name: 📸 Upload test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-full-${{ matrix.browser }}-${{ matrix.shard }}-screenshots
+          path: apps/frontend/test-results/
+          retention-days: 7
+          compression-level: 9
+
+  # Visual Regression Testing (Release branches only)
+  visual-regression:
+    name: 📸 Visual Regression
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      contains(github.ref, 'release/') ||
+      contains(github.event.pull_request.labels.*.name, 'visual-regression') ||
+      github.event.inputs.test_suite == 'visual'
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: � Setup E2E environment
+        uses: ./.github/actions/setup-e2e
+        with:
+          browser: chromium
+
+      - name: 📸 Run visual regression tests
+        run: |
+          # Only run chromium project (no webkit/firefox dependencies)
+          npm run test:visual -- --project=chromium
+        env:
+          CI: true
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 📊 Upload visual regression report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-report
+          path: apps/frontend/playwright-report/
+          retention-days: 30
+          compression-level: 9
+
+      - name: 📸 Upload visual diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-regression-diffs
+          path: apps/frontend/test-results/
+          retention-days: 30
+          compression-level: 9
+
+      - name: 💬 Comment on PR with visual changes
+        if: github.event_name == 'pull_request' && failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '⚠️ Visual regression tests detected changes. Please review the [visual diffs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) before merging.'
+            })
+
+  # Performance Testing (Critical user journeys)
+  e2e-performance:
+    name: ⚡ Performance Tests
+    runs-on: ubuntu-latest
+    needs: changes
+    if: |
+      github.ref == 'refs/heads/main' ||
+      contains(github.event.pull_request.labels.*.name, 'performance')
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🚀 Setup E2E Environment
+        uses: ./.github/actions/setup-e2e
+        with:
+          browser: chromium
+
+      - name: ⚡ Run performance tests
+        run: |
+          echo "⚠️ Performance tests directory not yet created"
+          echo "📝 TODO: Create tests/performance/ directory with Playwright performance tests"
+          echo "✅ Skipping for now - no tests to run"
+          exit 0
+        env:
+          CI: true
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 📊 Upload performance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: apps/frontend/playwright-report/
+          retention-days: 30
+          compression-level: 9
+
+  # Summary Job: E2E tests complete
+  e2e-success:
+    name: ✅ E2E Tests Complete
+    runs-on: ubuntu-latest
+    needs:
+      - e2e-critical
+      - e2e-full
+      - visual-regression
+      - e2e-performance
+    if: always()
+    steps:
+      - name: 🎯 Check job statuses
+        run: |
+          echo "Critical Path: ${{ needs.e2e-critical.result }}"
+          echo "Full Suite: ${{ needs.e2e-full.result }}"
+          echo "Visual Regression: ${{ needs.visual-regression.result }}"
+          echo "Performance: ${{ needs.e2e-performance.result }}"
+
+          # Critical path must pass
+          if [ "${{ needs.e2e-critical.result }}" = "failure" ]; then
+            echo "❌ Critical E2E tests failed"
+            exit 1
+          fi
+
+          # Full suite is optional but should pass if ran
+          if [ "${{ needs.e2e-full.result }}" = "failure" ]; then
+            echo "⚠️ Full E2E suite failed (non-critical)"
+          fi
+
+          echo "✅ E2E tests passed!"
+
+      - name: 📝 Generate summary
+        if: always()
+        run: |
+          echo "## 🎭 E2E Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test Suite | Status | Duration |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|----------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Critical Path | ${{ needs.e2e-critical.result }} | ~6 min |" >> $GITHUB_STEP_SUMMARY
+          echo "| Full Suite | ${{ needs.e2e-full.result }} | ~12 min |" >> $GITHUB_STEP_SUMMARY
+          echo "| Visual Regression | ${{ needs.visual-regression.result }} | ~12 min |" >> $GITHUB_STEP_SUMMARY
+          echo "| Performance | ${{ needs.e2e-performance.result }} | ~10 min |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Progressive Execution**:" >> $GITHUB_STEP_SUMMARY
+          echo "- PRs: Critical path only (~6 min)" >> $GITHUB_STEP_SUMMARY
+          echo "- Main: Full suite (~12 min)" >> $GITHUB_STEP_SUMMARY
+          echo "- Release: All tests (~15 min)" >> $GITHUB_STEP_SUMMARY

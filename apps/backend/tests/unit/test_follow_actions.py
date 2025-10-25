@@ -10,26 +10,34 @@ from app.main import app
 def anyio_backend():
     return "asyncio"
 
+
 async def _register(client, email, username):
-    return await client.post("/api/auth/register", json={
-        "email": email,
-        "password": "testpassword123",
-        "full_name": username.title(),
-        "username": username
-    })
+    return await client.post(
+        "/api/auth/register",
+        json={
+            "email": email,
+            "password": "TestUser123!",
+            "full_name": username.title(),
+            "username": username,
+        },
+    )
+
 
 async def _login(client, email):
-    return await client.post("/api/auth/login", json={"email": email, "password": "testpassword123"})
+    return await client.post(
+        "/api/auth/login", json={"email": email, "password": "TestUser123!"}
+    )
+
 
 @pytest.mark.anyio
 async def test_follow_action_response_and_noop():
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         suffix = uuid.uuid4().hex[:6]
-        emails = {k: f"{k}_{suffix}@ex.com" for k in ["alice","bob"]}
+        emails = {k: f"{k}_{suffix}@ex.com" for k in ["alice", "bob"]}
         usernames = {k: f"{k}{suffix}" for k in emails}
         r = {k: await _register(client, emails[k], usernames[k]) for k in emails}
-        assert all(resp.status_code in (200,201,409) for resp in r.values())
+        assert all(resp.status_code in (200, 201, 409) for resp in r.values())
 
         login_alice = await _login(client, emails["alice"])
         token_alice = login_alice.cookies.get("access_token")

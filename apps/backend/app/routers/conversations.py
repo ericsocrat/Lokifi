@@ -35,8 +35,11 @@ from app.services.message_search_service import (
 from app.services.rate_limit_service import RateLimitService
 from app.services.websocket_manager import connection_manager
 
-# J6.1 Notification Integration
-from scripts.setup_j6_integration import process_mentions_in_content, trigger_dm_notification
+# Notification Integration
+from scripts.notification_integration_helpers import (
+    process_mentions_in_content,
+    trigger_dm_notification,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -52,9 +55,7 @@ async def create_or_get_dm_conversation(
     """Create or get existing direct message conversation with another user."""
     try:
         conv_service = ConversationService(db)
-        return await conv_service.get_or_create_dm_conversation(
-            current_user.id, other_user_id
-        )
+        return await conv_service.get_or_create_dm_conversation(current_user.id, other_user_id)
     except Exception as e:
         logger.error(f"Error creating DM conversation: {e}")
         raise HTTPException(
@@ -73,9 +74,7 @@ async def get_user_conversations(
     """Get user's conversations with pagination."""
     try:
         conv_service = ConversationService(db)
-        return await conv_service.get_user_conversations(
-            current_user.id, page, page_size
-        )
+        return await conv_service.get_user_conversations(current_user.id, page, page_size)
     except Exception as e:
         logger.error(f"Error getting conversations: {e}")
         raise HTTPException(
@@ -95,17 +94,13 @@ async def get_conversation(
         conv_service = ConversationService(db)
 
         # This method doesn't exist yet, let's use get_user_conversations and filter
-        conversations = await conv_service.get_user_conversations(
-            current_user.id, 1, 100
-        )
+        conversations = await conv_service.get_user_conversations(current_user.id, 1, 100)
 
         for conv in conversations.conversations:
             if conv.id == conversation_id:
                 return conv
 
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
     except HTTPException:
         raise
     except Exception as e:
@@ -116,9 +111,7 @@ async def get_conversation(
         )
 
 
-@router.get(
-    "/conversations/{conversation_id}/messages", response_model=MessagesListResponse
-)
+@router.get("/conversations/{conversation_id}/messages", response_model=MessagesListResponse)
 async def get_conversation_messages(
     conversation_id: uuid.UUID,
     page: int = Query(1, ge=1, description="Page number"),
@@ -140,9 +133,7 @@ async def get_conversation_messages(
         )
 
 
-@router.post(
-    "/conversations/{conversation_id}/messages", response_model=MessageResponse
-)
+@router.post("/conversations/{conversation_id}/messages", response_model=MessageResponse)
 async def send_message(
     conversation_id: uuid.UUID,
     message_data: MessageCreate,
@@ -209,9 +200,7 @@ async def send_message(
         participant_ids = {p.user_id for p in participants}
 
         # Broadcast new message via WebSocket
-        await connection_manager.broadcast_new_message(
-            message_response, participant_ids
-        )
+        await connection_manager.broadcast_new_message(message_response, participant_ids)
 
         # J6.1 Notification Integration: Trigger DM notifications
         try:
@@ -327,9 +316,7 @@ async def mark_messages_read(
         )
 
 
-@router.delete(
-    "/conversations/{conversation_id}/messages/{message_id}", status_code=204
-)
+@router.delete("/conversations/{conversation_id}/messages/{message_id}", status_code=204)
 async def delete_message(
     conversation_id: uuid.UUID,
     message_id: uuid.UUID,
@@ -408,9 +395,7 @@ async def search_messages(
             query=q, content_type=content_type, conversation_id=conversation_id
         )
 
-        return await search_service.search_messages(
-            current_user.id, search_filter, page, page_size
-        )
+        return await search_service.search_messages(current_user.id, search_filter, page, page_size)
 
     except Exception as e:
         logger.error(f"Error searching messages: {e}")
@@ -419,9 +404,7 @@ async def search_messages(
         )
 
 
-@router.post(
-    "/conversations/{conversation_id}/messages/{message_id}/report", status_code=204
-)
+@router.post("/conversations/{conversation_id}/messages/{message_id}/report", status_code=204)
 async def report_message(
     conversation_id: uuid.UUID,
     message_id: uuid.UUID,
@@ -432,9 +415,7 @@ async def report_message(
     """Report a message for moderation review."""
     try:
         moderation_service = MessageModerationService(db)
-        success = await moderation_service.report_message(
-            message_id, current_user.id, reason
-        )
+        success = await moderation_service.report_message(message_id, current_user.id, reason)
 
         if not success:
             raise HTTPException(
@@ -461,9 +442,7 @@ async def get_user_analytics(
     """Get user's messaging analytics and statistics."""
     try:
         analytics_service = MessageAnalyticsService(db)
-        stats = await analytics_service.get_user_message_stats(
-            current_user.id, days_back
-        )
+        stats = await analytics_service.get_user_message_stats(current_user.id, days_back)
 
         return {
             "user_id": str(stats.user_id),
@@ -471,9 +450,7 @@ async def get_user_analytics(
             "period_days": days_back,
             "total_messages": stats.total_messages,
             "total_conversations": stats.total_conversations,
-            "avg_messages_per_conversation": round(
-                stats.avg_messages_per_conversation, 2
-            ),
+            "avg_messages_per_conversation": round(stats.avg_messages_per_conversation, 2),
             "most_active_day": stats.most_active_day,
             "most_active_hour": stats.most_active_hour,
         }
@@ -535,9 +512,7 @@ async def get_trending_conversations(
     """Get trending conversations based on recent activity."""
     try:
         analytics_service = MessageAnalyticsService(db)
-        trending = await analytics_service.get_trending_conversations(
-            current_user.id, limit
-        )
+        trending = await analytics_service.get_trending_conversations(current_user.id, limit)
 
         return {
             "trending_conversations": trending,

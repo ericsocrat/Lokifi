@@ -70,16 +70,18 @@ GRANT ALL PRIVILEGES ON DATABASE lokifi TO lokifi;
 ```
 
 ### 2. Update Backend Configuration
-The `DATABASE_URL` environment variable needs to be set. We'll update the backend to use:
-```
-postgresql+asyncpg://lokifi:lokifi123@localhost:5432/lokifi
-```
+
+**📖 For complete environment configuration:**
+- See [Environment Configuration Guide](../security/ENVIRONMENT_CONFIGURATION.md#database-configuration) for `DATABASE_URL` setup and examples
+
+The `DATABASE_URL` environment variable will be set in `backend/.env`.
 
 ### 3. Run Database Migrations
 ```powershell
-cd backend
 python -m alembic upgrade head
 ```
+
+**📖 For directory navigation:** See [`../QUICK_START.md`](../QUICK_START.md) for complete backend setup workflows
 
 ## Quick Start Commands
 

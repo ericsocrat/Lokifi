@@ -13,7 +13,7 @@ export * from './alerts';
 export * from './alignment';
 export * from './drawings';
 export * from './exporters';
-export * from './geom';
+// export * from './geom'; // Conflicts with './drawings' (Point) and './measure' (clamp)
 export * from './globalHotkeys';
 export * from './hotkeys';
 export * from './io';
@@ -25,7 +25,7 @@ export * from './share';
 export * from './share2';
 export * from './social';
 export * from './storage';
-export * from './styles';
+// export * from './styles'; // Conflicts with './drawings' (DEFAULT_STYLE, DrawingStyle)
 export * from './svg';
 export * from './timeframes';
 export * from './toast';

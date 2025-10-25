@@ -13,6 +13,8 @@ from datetime import UTC, datetime
 from typing import Any
 
 import sentry_sdk
+from sqlalchemy.exc import IntegrityError
+
 from app.db.db import get_session
 from app.db.models import AIMessage, AIThread
 from app.services.ai_provider import ProviderError, StreamChunk
@@ -22,7 +24,6 @@ from app.services.content_moderation import (
     moderate_ai_input,
     moderate_ai_output,
 )
-from sqlalchemy.exc import IntegrityError
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +210,7 @@ class AIService:
             except IntegrityError as e:
                 db.rollback()
                 logger.error(f"Failed to create AI thread: {e}")
-                sentry_sdk.capture_exception(e)
+                logger.error("AI service error", exc_info=True)
                 raise
 
     async def get_user_threads(
@@ -315,7 +316,7 @@ class AIService:
                 provider = await get_ai_provider(provider_name)
             except Exception as e:
                 logger.error(f"Failed to get AI provider: {e}")
-                sentry_sdk.capture_exception(e)
+                logger.error("AI service error", exc_info=True)
                 raise ProviderError("AI service temporarily unavailable")
 
             # Prepare conversation history
@@ -406,7 +407,7 @@ class AIService:
             except Exception as e:
                 logger.error(f"AI generation error: {e}")
 
-                # Capture exception in Sentry with context
+                # Log exception with context
                 sentry_sdk.capture_exception(
                     e,
                     extras={

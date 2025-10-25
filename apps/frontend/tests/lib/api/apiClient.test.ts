@@ -260,7 +260,7 @@ describe('APIClient', () => {
 
       server.use(
         http.get(`${API_URL}/api/ticker/:symbol`, ({ params }) => {
-          expect(params.symbol).toBe('BTCUSD');
+          expect(params['symbol']).toBe('BTCUSD');
           return HttpResponse.json(mockTicker);
         })
       );
@@ -437,15 +437,8 @@ describe('APIClient', () => {
 
       server.use(
         http.get(`${API_URL}/api/symbols`, async () => {
-          await new Promise((resolve, reject) => {
-            setTimeout(() => {
-              firstRequestAborted = true;
-              reject(new Error('Aborted'));
-            }, 50);
-          }).catch(() => {
-            firstRequestAborted = true;
-            throw new Error('Aborted');
-          });
+          // Simulate a slow request that can be aborted
+          await new Promise((resolve) => setTimeout(resolve, 100));
 
           return HttpResponse.json({
             success: true,
@@ -460,12 +453,15 @@ describe('APIClient', () => {
       // Start first request
       const firstPromise = client.getSymbols();
 
-      // Start second request (should abort first)
+      // Start second request quickly (should abort first)
       await new Promise((resolve) => setTimeout(resolve, 10));
       const secondPromise = client.getSymbols();
 
       // First request should be aborted
       await expect(firstPromise).rejects.toThrow();
+
+      // Second request should succeed
+      await expect(secondPromise).resolves.toBeDefined();
     });
   });
 

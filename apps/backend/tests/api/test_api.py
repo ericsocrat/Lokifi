@@ -2,8 +2,9 @@ import asyncio
 
 import pytest
 import pytest_asyncio
-from app.main import app
 from httpx import ASGITransport, AsyncClient
+
+from app.main import app
 
 
 @pytest_asyncio.fixture
@@ -31,13 +32,15 @@ class TestHealthEndpoints:
         response = await client.get("/api/health")
         assert response.status_code == 200
         data = response.json()
-        assert data["ok"] == True  # Actual endpoint returns {"ok": True}
+        assert data["ok"]  # Actual endpoint returns {"ok": True}
 
 
 class TestSymbolsAPI:
     """Test symbols API endpoints"""
 
-    @pytest.mark.skip(reason="Symbols endpoint not yet implemented - needs /api/v1/symbols")
+    @pytest.mark.skip(
+        reason="Symbols endpoint not yet implemented - needs /api/v1/symbols"
+    )
     @pytest.mark.asyncio
     async def test_get_symbols(self, client: AsyncClient):
         """Test getting all symbols"""
@@ -54,7 +57,9 @@ class TestSymbolsAPI:
         for field in required_fields:
             assert field in symbol
 
-    @pytest.mark.skip(reason="Symbols endpoint not yet implemented - needs /api/v1/symbols")
+    @pytest.mark.skip(
+        reason="Symbols endpoint not yet implemented - needs /api/v1/symbols"
+    )
     @pytest.mark.asyncio
     async def test_search_symbols(self, client: AsyncClient):
         """Test symbol search functionality"""
@@ -67,7 +72,9 @@ class TestSymbolsAPI:
         symbols = [s for s in data["symbols"] if "AAPL" in s["symbol"]]
         assert len(symbols) > 0
 
-    @pytest.mark.skip(reason="Symbols endpoint not yet implemented - needs /api/v1/symbols")
+    @pytest.mark.skip(
+        reason="Symbols endpoint not yet implemented - needs /api/v1/symbols"
+    )
     @pytest.mark.asyncio
     async def test_filter_symbols_by_type(self, client: AsyncClient):
         """Test filtering symbols by type"""
@@ -98,7 +105,15 @@ class TestOHLCAPI:
 
         if len(data["data"]) > 0:
             ohlc_item = data["data"][0]
-            required_fields = ["symbol", "timestamp", "open", "high", "low", "close", "volume"]
+            required_fields = [
+                "symbol",
+                "timestamp",
+                "open",
+                "high",
+                "low",
+                "close",
+                "volume",
+            ]
             for field in required_fields:
                 assert field in ohlc_item
 

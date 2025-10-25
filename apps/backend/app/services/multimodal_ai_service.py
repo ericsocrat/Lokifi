@@ -144,7 +144,7 @@ class MultiModalAIService:
 
         except Exception as e:
             logger.error(f"Image analysis failed: {e}")
-            yield f"Sorry, I encountered an error analyzing the image: {str(e)}"
+            yield f"Sorry, I encountered an error analyzing the image: {e!s}"
 
     async def analyze_document_with_ai(
         self, document_text: str, user_prompt: str, filename: str, user_id: int, thread_id: int
@@ -181,7 +181,7 @@ class MultiModalAIService:
 
         except Exception as e:
             logger.error(f"Document analysis failed: {e}")
-            yield f"Sorry, I encountered an error analyzing the document: {str(e)}"
+            yield f"Sorry, I encountered an error analyzing the document: {e!s}"
 
     async def _validate_file(self, file: UploadFile) -> None:
         """Validate uploaded file."""
@@ -256,7 +256,7 @@ class MultiModalAIService:
             }
 
         except Exception as e:
-            raise FileProcessingError(f"Failed to process image: {str(e)}")
+            raise FileProcessingError(f"Failed to process image: {e!s}")
 
     async def _process_document(
         self, content: bytes, filename: str, extension: str
@@ -293,7 +293,7 @@ class MultiModalAIService:
             }
 
         except Exception as e:
-            raise FileProcessingError(f"Failed to process document: {str(e)}")
+            raise FileProcessingError(f"Failed to process document: {e!s}")
 
     async def _extract_pdf_text(self, content: bytes) -> str:
         """Extract text from PDF."""
@@ -304,7 +304,7 @@ class MultiModalAIService:
             return "PDF content extraction not available - install PyPDF2 for full support"
 
         except Exception as e:
-            raise FileProcessingError(f"Failed to extract PDF text: {str(e)}")
+            raise FileProcessingError(f"Failed to extract PDF text: {e!s}")
 
     async def _extract_docx_text(self, content: bytes) -> str:
         """Extract text from DOCX."""
@@ -315,7 +315,7 @@ class MultiModalAIService:
             return "DOCX content extraction not available - install python-docx for full support"
 
         except Exception as e:
-            raise FileProcessingError(f"Failed to extract DOCX text: {str(e)}")
+            raise FileProcessingError(f"Failed to extract DOCX text: {e!s}")
 
     async def get_file_processing_stats(self, user_id: int, days_back: int = 30) -> dict[str, Any]:
         """Get file processing statistics for a user."""

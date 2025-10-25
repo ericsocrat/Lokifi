@@ -15,6 +15,7 @@ from app.db.database import Base
 
 class ReactionType(str, Enum):
     """Available reaction types."""
+
     LIKE = "like"
     LOVE = "love"
     LAUGH = "laugh"
@@ -27,41 +28,31 @@ class ReactionType(str, Enum):
 
 class MessageReaction(Base):
     """Message reaction model."""
-    
+
     __tablename__ = "message_reactions"
-    
+
     # Composite primary key
     message_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("messages.id", ondelete="CASCADE"),
-        primary_key=True
+        UUID(as_uuid=True), ForeignKey("messages.id", ondelete="CASCADE"), primary_key=True
     )
-    
+
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("users.id", ondelete="CASCADE"),
-        primary_key=True
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
-    
-    reaction_type: Mapped[ReactionType] = mapped_column(
-        String(20),
-        primary_key=True,
-        index=True
-    )
-    
+
+    reaction_type: Mapped[ReactionType] = mapped_column(String(20), primary_key=True, index=True)
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        default=lambda: datetime.now(UTC),
-        index=True
+        DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True
     )
-    
+
     # Relationships
     message = relationship("Message", back_populates="reactions")
     user = relationship("User")
-    
+
     # Constraints
     __table_args__ = (
         # User can only have one reaction type per message
-        UniqueConstraint('message_id', 'user_id', name='unique_user_message_reaction'),
+        UniqueConstraint("message_id", "user_id", name="unique_user_message_reaction"),
     )

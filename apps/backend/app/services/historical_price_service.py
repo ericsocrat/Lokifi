@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Literal
 
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -185,7 +186,7 @@ class HistoricalPriceService:
                     duration = time.time() - start_time
                     performance_metrics.record_request(cached=True, duration=duration)
                     logger.info(
-                        f"✅ Cache hit for {symbol} history ({period}) - {duration*1000:.1f}ms"
+                        f"✅ Cache hit for {symbol} history ({period}) - {duration * 1000:.1f}ms"
                     )
                     return [HistoricalPricePoint(**point) for point in cached_data]
 
@@ -204,7 +205,7 @@ class HistoricalPriceService:
                 duration = time.time() - start_time
                 performance_metrics.record_request(cached=False, duration=duration)
                 logger.info(
-                    f"📊 Fetched {len(data)} data points for {symbol} ({period}) - {duration*1000:.1f}ms"
+                    f"📊 Fetched {len(data)} data points for {symbol} ({period}) - {duration * 1000:.1f}ms"
                 )
             else:
                 duration = time.time() - start_time
@@ -258,7 +259,8 @@ class HistoricalPriceService:
                 )
                 return [
                     HistoricalPricePoint(
-                        timestamp=int(point[0] / 1000), price=point[1]  # Convert to seconds
+                        timestamp=int(point[0] / 1000),
+                        price=point[1],  # Convert to seconds
                     )
                     for point in data["prices"]
                 ]

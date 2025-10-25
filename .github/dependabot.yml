@@ -1,8 +1,28 @@
 version: 2
 updates:
+  # GitHub Actions - Check weekly for security updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "02:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "ci-cd"
+      - "security"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    reviewers:
+      - "ericsocrat"
+    assignees:
+      - "ericsocrat"
+
   # Frontend dependencies (npm)
   - package-ecosystem: "npm"
-    directory: "/frontend"
+    directory: "/apps/frontend"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -47,7 +67,7 @@ updates:
 
   # Backend dependencies (pip)
   - package-ecosystem: "pip"
-    directory: "/backend"
+    directory: "/apps/backend"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -83,7 +103,7 @@ updates:
 
   # Docker dependencies
   - package-ecosystem: "docker"
-    directory: "/backend"
+    directory: "/apps/backend"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -95,7 +115,7 @@ updates:
       prefix: "chore(docker)"
 
   - package-ecosystem: "docker"
-    directory: "/frontend"
+    directory: "/apps/frontend"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -105,15 +125,3 @@ updates:
       - "docker"
     commit-message:
       prefix: "chore(docker)"
-
-  # GitHub Actions
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 3
-    labels:
-      - "dependencies"
-      - "ci/cd"
-    commit-message:
-      prefix: "chore(ci)"

@@ -6,7 +6,7 @@
  * Updated: Added jest-axe for accessibility testing
  */
 
-import * as matchers from '@testing-library/jest-dom/matchers';
+import * as matchers from '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
 import { toHaveNoViolations } from 'jest-axe';
 import { afterAll, afterEach, beforeAll, expect } from 'vitest';

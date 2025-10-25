@@ -1,0 +1,134 @@
+# CI/CD Configuration
+# Purpose: Docker Compose for GitHub Actions CI/CD pipeline
+# Usage: Used by .github/workflows/ci.yml with pre-built images
+# Services: Uses lokifi-backend:latest image from CI build
+
+services:
+  # Redis - Caching Layer
+  redis:
+    image: redis:7.4-alpine
+    container_name: lokifi-redis-ci
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 23233
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "23233", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # PostgreSQL - Database
+  postgres:
+    image: postgres:17-alpine
+    container_name: lokifi-postgres-ci
+    environment:
+      POSTGRES_USER: lokifi
+      POSTGRES_PASSWORD: lokifi_dev_password
+      POSTGRES_DB: lokifi_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lokifi -d lokifi_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Backend - FastAPI (Using pre-built image from CI)
+  backend:
+    build:
+      context: ../../apps/backend
+      dockerfile: Dockerfile
+    image: lokifi-backend:latest
+    container_name: lokifi-backend-ci
+    command: ["./docker-entrypoint-ci.sh"]
+    environment:
+      # Database
+      DATABASE_URL: postgresql+asyncpg://lokifi:lokifi_dev_password@postgres:5432/lokifi_db
+      POSTGRES_PASSWORD: lokifi_dev_password
+
+      # Redis
+      REDIS_URL: redis://:23233@redis:6379/0
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: "23233"
+
+      # API Keys (loaded from .env file in CI)
+      ALPHAVANTAGE_KEY: ${ALPHAVANTAGE_KEY:-demo-key-for-ci}
+      FINNHUB_KEY: ${FINNHUB_KEY:-demo-key-for-ci}
+      POLYGON_API_KEY: ${POLYGON_API_KEY:-demo-key-for-ci}
+      CMC_KEY: ${CMC_KEY:-demo-key-for-ci}
+      COINGECKO_API_KEY: ${COINGECKO_API_KEY:-demo-key-for-ci}
+      NEWSAPI_KEY: ${NEWSAPI_KEY:-demo-key-for-ci}
+      MARKETAUX_API_KEY: ${MARKETAUX_API_KEY:-demo-key-for-ci}
+      FMP_KEY: ${FMP_KEY:-demo-key-for-ci}
+
+      # JWT
+      LOKIFI_JWT_SECRET: ${LOKIFI_JWT_SECRET:-test-secret-for-ci}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-test-secret-for-ci}
+      LOKIFI_JWT_TTL_MIN: ${LOKIFI_JWT_TTL_MIN:-1440}
+
+      # API Configuration
+      API_PREFIX: ${API_PREFIX:-/api}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:3000}
+
+      # Google OAuth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-851935422649-1690h3al2cc3f5qm4j59emd6j88g4lq7.apps.googleusercontent.com}
+
+      # Sentry
+      ENABLE_SENTRY: "false"
+      SENTRY_ENVIRONMENT: ci
+
+      # Development
+      DEBUG: "true"
+      ENVIRONMENT: ci
+
+      # Python
+      PYTHONUNBUFFERED: 1
+      PYTHONPATH: /app
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # Frontend - Next.js (Using pre-built image from CI)
+  frontend:
+    build:
+      context: ../../apps/frontend
+      dockerfile: Dockerfile
+    image: lokifi-frontend:latest
+    container_name: lokifi-frontend-ci
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  postgres-data:
+    name: lokifi-postgres-data-ci
+
+networks:
+  default:
+    name: lokifi-network-ci
+    driver: bridge

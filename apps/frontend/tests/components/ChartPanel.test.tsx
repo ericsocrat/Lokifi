@@ -1,19 +1,19 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import ChartPanel from './ChartPanel';
+import ChartPanel from '../../components/ChartPanelV2';
 
 // Mock the dependencies
 vi.mock('lightweight-charts', () => {
   const createChart = vi.fn(() => {
     const timeScale = () => ({
       subscribeVisibleTimeRangeChange: vi.fn(),
-      setVisibleRange: vi.fn()
+      setVisibleRange: vi.fn(),
     });
     const candleSeries = {
       setData: vi.fn(),
       priceToCoordinate: vi.fn(() => 0),
-      timeToCoordinate: vi.fn(() => 0)
+      timeToCoordinate: vi.fn(() => 0),
     };
     const lineSeries = { setData: vi.fn() };
     const histSeries = { setData: vi.fn() };
@@ -25,14 +25,14 @@ vi.mock('lightweight-charts', () => {
       addHistogramSeries: vi.fn(() => histSeries),
       addAreaSeries: vi.fn(() => areaSeries),
       applyOptions: vi.fn(),
-      remove: vi.fn()
+      remove: vi.fn(),
     };
   });
   return { createChart };
 });
 
 vi.mock('@/lib/api', () => ({
-  API: 'http://localhost:8000'
+  API: 'http://localhost:8000',
 }));
 
 vi.mock('swr', () => ({
@@ -40,21 +40,21 @@ vi.mock('swr', () => ({
     data: {
       candles: [
         { ts: 1000000, o: 100, h: 110, l: 90, c: 105, v: 1000 },
-        { ts: 2000000, o: 105, h: 115, l: 95, c: 110, v: 1200 }
-      ]
-    }
-  }))
+        { ts: 2000000, o: 105, h: 115, l: 95, c: 110, v: 1200 },
+      ],
+    },
+  })),
 }));
 
 // Mock child components to avoid pulling in their full implementations in tests
-vi.mock('@/components/DrawToolbar', () => ({
-  default: () => React.createElement('div')
+vi.mock('@/components/DrawingToolbar', () => ({
+  DrawingToolbar: () => React.createElement('div'),
 }));
 vi.mock('@/components/PluginSideToolbar', () => ({
-  default: () => React.createElement('div')
+  default: () => React.createElement('div'),
 }));
 vi.mock('@/components/LeftDock', () => ({
-  default: () => React.createElement('div')
+  default: () => React.createElement('div'),
 }));
 
 describe('ChartPanel', () => {
@@ -75,15 +75,15 @@ describe('ChartPanel', () => {
     const chartOptions = {
       height: expect.any(Number),
       layout: {
-        background: { color: "#0a0a0a" },
-        textColor: "#e5e7eb"
+        background: { color: '#0a0a0a' },
+        textColor: '#e5e7eb',
       },
       grid: {
-        vertLines: { color: "#1f2937" },
-        horzLines: { color: "#1f2937" }
+        vertLines: { color: '#1f2937' },
+        horzLines: { color: '#1f2937' },
       },
-      rightPriceScale: { borderColor: "#374151" },
-      timeScale: { timeVisible: true }
+      rightPriceScale: { borderColor: '#374151' },
+      timeScale: { timeVisible: true },
     };
 
     // Verify createChart was called with correct options

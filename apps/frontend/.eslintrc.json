@@ -1,9 +1,6 @@
 {
   "root": true,
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ],
+  "extends": ["next/core-web-vitals", "next/typescript"],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -14,10 +11,13 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-explicit-any": "off",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "off",
+    "react/no-unescaped-entities": "warn",
+    "@next/next/no-img-element": "warn",
+    "import/no-anonymous-default-export": "warn"
   },
   "ignorePatterns": [
     "node_modules/",

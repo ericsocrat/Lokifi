@@ -1,12 +1,12 @@
 'use client';
-import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
-import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
-import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Point, useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
+import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 
@@ -417,6 +417,7 @@ export const DrawingChart: React.FC = () => {
     <ChartErrorBoundary>
       <div
         ref={containerRef}
+        data-testid="chart-container"
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
@@ -435,4 +436,3 @@ export const DrawingChart: React.FC = () => {
     </ChartErrorBoundary>
   );
 };
-

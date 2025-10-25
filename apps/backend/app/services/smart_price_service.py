@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 
@@ -226,7 +227,7 @@ class SmartPriceService:
             stock_tasks = [self.get_price(symbol, force_refresh) for symbol in uncached_stocks]
             stock_results = await asyncio.gather(*stock_tasks, return_exceptions=True)
 
-            for symbol, result in zip(uncached_stocks, stock_results):
+            for symbol, result in zip(uncached_stocks, stock_results, strict=False):
                 if not isinstance(result, Exception) and result:
                     results[symbol] = result
 

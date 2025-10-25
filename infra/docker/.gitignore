@@ -1,0 +1,13 @@
+# Environment files with secrets
+.env
+
+# Backups (if created during updates)
+backups/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp

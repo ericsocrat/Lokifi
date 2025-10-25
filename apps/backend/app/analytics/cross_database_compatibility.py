@@ -145,7 +145,7 @@ class CrossDatabaseQuery:
         elif self.is_sqlite:
             # SQLite: REGEXP (requires extension, fallback to LIKE)
             logger.warning("SQLite REGEXP requires extension, using LIKE fallback")
-            return column.like(f'%{pattern.replace(".*", "%")}%')
+            return column.like(f"%{pattern.replace('.*', '%')}%")
 
         else:
             return column.like(f"%{pattern}%")
@@ -632,10 +632,10 @@ def get_analytics() -> AnalyticsQueryBuilder:
 
 # Export main classes and functions
 __all__ = [
-    "DatabaseDialect",
-    "CrossDatabaseQuery",
     "AnalyticsQueryBuilder",
     "CompatibilityTester",
-    "initialize_analytics",
+    "CrossDatabaseQuery",
+    "DatabaseDialect",
     "get_analytics",
+    "initialize_analytics",
 ]

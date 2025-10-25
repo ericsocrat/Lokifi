@@ -20,23 +20,52 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Log files
+*.log
+logs/
+infra/logs/
+
+# Backup files
+*.bak
+infra/backups/
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
 # Python (if any tools/scripts)
 __pycache__/
 *.pyc
 .venv/
 venv/
 backend/venv/
-frontend/node_modules/
-frontend/.next/
-frontend/out/
-frontend/.env.local
 backend/__pycache__/
 backend/.pytest_cache/
 backend/.venv/
 backend/.env
 backend/data/*
 !backend/data/.gitkeep
-# OS/IDE
+
+# Apps structure (actual paths)
+apps/backend/venv/
+apps/backend/__pycache__/
+apps/backend/.pytest_cache/
+apps/backend/.venv/
+apps/backend/.env
+apps/backend/data/*
+!apps/backend/data/.gitkeep
+apps/frontend/node_modules/
+apps/frontend/.next/
+apps/frontend/out/
+apps/frontend/.env.local
+
+# OS/IDE duplicates (cleanup)
 frontend/frontend/
 frontend/backend/
 

@@ -2,7 +2,6 @@
 Authentication router with login, register, and OAuth endpoints.
 """
 
-
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -26,107 +25,104 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
 
 
 @router.post("/register", response_model=AuthUserResponse)
-async def register(
-    user_data: UserRegisterRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def register(user_data: UserRegisterRequest, db: AsyncSession = Depends(get_db)):
     """Register a new user."""
     try:
         auth_service = AuthService(db)
         result = await auth_service.register_user(user_data)
     except Exception as e:
         import traceback
-        print(f"❌ Registration Error: {str(e)}")
+
+        print(f"❌ Registration Error: {e!s}")
         print(traceback.format_exc())
         raise
-    
+
     # Set HTTP-only cookie with access token
-    response_content = jsonable_encoder({
-        "user": result["user"],
-        "profile": result["profile"],
-        "access_token": result["tokens"].access_token,
-        "refresh_token": result["tokens"].refresh_token,
-        "token_type": result["tokens"].token_type,
-        "expires_in": result["tokens"].expires_in
-    })
+    response_content = jsonable_encoder(
+        {
+            "user": result["user"],
+            "profile": result["profile"],
+            "access_token": result["tokens"].access_token,
+            "refresh_token": result["tokens"].refresh_token,
+            "token_type": result["tokens"].token_type,
+            "expires_in": result["tokens"].expires_in,
+        }
+    )
     response = JSONResponse(content=response_content)
-    
+
     response.set_cookie(
         key="access_token",
         value=result["tokens"].access_token,
         max_age=result["tokens"].expires_in,
         httponly=True,
         secure=False,  # Set to False for local/testing; enforce True in production
-        samesite="lax"
+        samesite="lax",
     )
-    
-    response.set_cookie(
-        key="refresh_token", 
-        value=result["tokens"].refresh_token,
-        max_age=30 * 24 * 60 * 60,  # 30 days
-        httponly=True,
-        secure=False,
-        samesite="lax"
-    )
-    
-    return response
 
-
-@router.post("/login", response_model=AuthUserResponse)
-async def login(
-    login_data: UserLoginRequest,
-    db: AsyncSession = Depends(get_db)
-):
-    """Login a user."""
-    try:
-        auth_service = AuthService(db)
-        result = await auth_service.login_user(login_data)
-        
-        # Set HTTP-only cookie with access token
-        response_content = jsonable_encoder({
-            "user": result["user"],
-            "profile": result["profile"],
-            "access_token": result["tokens"].access_token,
-            "refresh_token": result["tokens"].refresh_token,
-            "token_type": result["tokens"].token_type,
-            "expires_in": result["tokens"].expires_in
-        })
-        response = JSONResponse(content=response_content)
-    except Exception as e:
-        import traceback
-        print(f"❌ Login Error: {str(e)}")
-        print(traceback.format_exc())
-        raise
-    
-    response.set_cookie(
-        key="access_token",
-        value=result["tokens"].access_token,
-        max_age=result["tokens"].expires_in,
-        httponly=True,
-        secure=False,
-        samesite="lax"
-    )
-    
     response.set_cookie(
         key="refresh_token",
         value=result["tokens"].refresh_token,
         max_age=30 * 24 * 60 * 60,  # 30 days
         httponly=True,
         secure=False,
-        samesite="lax"
+        samesite="lax",
     )
-    
+
+    return response
+
+
+@router.post("/login", response_model=AuthUserResponse)
+async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)):
+    """Login a user."""
+    try:
+        auth_service = AuthService(db)
+        result = await auth_service.login_user(login_data)
+
+        # Set HTTP-only cookie with access token
+        response_content = jsonable_encoder(
+            {
+                "user": result["user"],
+                "profile": result["profile"],
+                "access_token": result["tokens"].access_token,
+                "refresh_token": result["tokens"].refresh_token,
+                "token_type": result["tokens"].token_type,
+                "expires_in": result["tokens"].expires_in,
+            }
+        )
+        response = JSONResponse(content=response_content)
+    except Exception as e:
+        import traceback
+
+        print(f"❌ Login Error: {e!s}")
+        print(traceback.format_exc())
+        raise
+
+    response.set_cookie(
+        key="access_token",
+        value=result["tokens"].access_token,
+        max_age=result["tokens"].expires_in,
+        httponly=True,
+        secure=False,
+        samesite="lax",
+    )
+
+    response.set_cookie(
+        key="refresh_token",
+        value=result["tokens"].refresh_token,
+        max_age=30 * 24 * 60 * 60,  # 30 days
+        httponly=True,
+        secure=False,
+        samesite="lax",
+    )
+
     return response
 
 
 @router.post("/google", response_model=AuthUserResponse)
-async def google_oauth(
-    oauth_data: GoogleOAuthRequest,
-    db: AsyncSession = Depends(get_db)
-):
+async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depends(get_db)):
     """
     Authenticate with Google OAuth using ID token.
-    
+
     The @react-oauth/google library provides an ID token (JWT) that contains
     user information. We verify this token with Google's tokeninfo endpoint.
     """
@@ -136,103 +132,106 @@ async def google_oauth(
             google_response = await client.get(
                 f"https://oauth2.googleapis.com/tokeninfo?id_token={oauth_data.token}"
             )
-            
+
             if google_response.status_code != 200:
-                error_detail = google_response.json().get("error_description", "Invalid Google token")
+                error_detail = google_response.json().get(
+                    "error_description", "Invalid Google token"
+                )
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=f"Google token verification failed: {error_detail}"
+                    detail=f"Google token verification failed: {error_detail}",
                 )
-            
+
             user_info = google_response.json()
-        
+
         # Validate token audience (security check)
         if user_info.get("aud") != settings.GOOGLE_CLIENT_ID:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token audience"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token audience"
             )
-        
+
         # Validate token expiration (Google should handle this, but double-check)
         import time
+
         exp = user_info.get("exp")
         if exp and int(exp) < time.time():
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token has expired"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
             )
-        
+
         # Extract user information
         email = user_info.get("email")
         name = user_info.get("name", email)
         google_id = user_info.get("sub")  # 'sub' is the user ID in ID tokens
         email_verified = user_info.get("email_verified", False)
-        
+
         if not email or not google_id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Unable to get user information from Google"
+                detail="Unable to get user information from Google",
             )
-        
+
         if not email_verified:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Google email not verified"
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Google email not verified"
             )
-        
+
         # Create or get user
         auth_service = AuthService(db)
         result = await auth_service.create_user_from_oauth(email, name, google_id)
-        
+
         # Set HTTP-only cookie with access token
-        response_content = jsonable_encoder({
-            "user": result["user"],
-            "profile": result["profile"],
-            "access_token": result["tokens"].access_token,
-            "refresh_token": result["tokens"].refresh_token,
-            "token_type": result["tokens"].token_type,
-            "expires_in": result["tokens"].expires_in
-        })
+        response_content = jsonable_encoder(
+            {
+                "user": result["user"],
+                "profile": result["profile"],
+                "access_token": result["tokens"].access_token,
+                "refresh_token": result["tokens"].refresh_token,
+                "token_type": result["tokens"].token_type,
+                "expires_in": result["tokens"].expires_in,
+            }
+        )
         response = JSONResponse(content=response_content)
-        
+
         response.set_cookie(
             key="access_token",
             value=result["tokens"].access_token,
             max_age=result["tokens"].expires_in,
             httponly=True,
             secure=False,
-            samesite="lax"
+            samesite="lax",
         )
-        
+
         response.set_cookie(
             key="refresh_token",
             value=result["tokens"].refresh_token,
             max_age=30 * 24 * 60 * 60,  # 30 days
             httponly=True,
             secure=False,
-            samesite="lax"
+            samesite="lax",
         )
-        
+
         return response
-        
+
     except httpx.RequestError as e:
         # Log the error for debugging
-        print(f"❌ Google OAuth Request Error: {str(e)}")
+        print(f"❌ Google OAuth Request Error: {e!s}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Unable to verify Google token. Please try again later."
+            detail="Unable to verify Google token. Please try again later.",
         )
     except HTTPException:
         # Re-raise HTTP exceptions (validation errors, etc.)
         raise
     except Exception as e:
         # Log unexpected errors
-        print(f"❌ Google OAuth Unexpected Error: {str(e)}")
+        print(f"❌ Google OAuth Unexpected Error: {e!s}")
         import traceback
+
         print(traceback.format_exc())
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred during Google authentication."
+            detail="An unexpected error occurred during Google authentication.",
         )
 
 
@@ -240,42 +239,36 @@ async def google_oauth(
 async def logout():
     """Logout a user by clearing cookies."""
     response = JSONResponse(content={"message": "Successfully logged out", "success": True})
-    
+
     # Clear cookies
     response.delete_cookie(key="access_token")
     response.delete_cookie(key="refresh_token")
-    
+
     return response
 
 
 @router.get("/me", response_model=AuthUserResponse)
 async def get_current_user_info(
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db)
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
     """Get current user information."""
     # Get user's profile
     from sqlalchemy import select
 
     from app.models.profile import Profile
-    
+
     stmt = select(Profile).where(Profile.user_id == current_user.id)
     result = await db.execute(stmt)
     profile = result.scalar_one_or_none()
-    
-    return {
-        "user": current_user,
-        "profile": profile
-    }
+
+    return {"user": current_user, "profile": profile}
 
 
 @router.get("/check", response_model=dict)
-async def check_auth_status(
-    current_user: User = Depends(get_current_user_optional)
-):
+async def check_auth_status(current_user: User = Depends(get_current_user_optional)):
     """Check authentication status."""
     return {
         "authenticated": current_user is not None,
         "user_id": str(current_user.id) if current_user else None,
-        "email": current_user.email if current_user else None
+        "email": current_user.email if current_user else None,
     }

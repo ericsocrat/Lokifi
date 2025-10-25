@@ -1,5 +1,5 @@
 import { setVisibleBarCoords } from '@/lib/charts/chartMap'
-import { startPriceFeed } from '@/lib/price-feed'
+import { startPriceFeed } from '@/api/price-feed'
 import type { IChartApi, ISeriesApi, Time, SeriesDataPoint } from '@/src/types/lightweight-charts'
 
 /**

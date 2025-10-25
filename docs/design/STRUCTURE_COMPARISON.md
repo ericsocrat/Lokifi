@@ -7,20 +7,20 @@
 ## 📊 Three Levels of Structure
 
 ### **Level 1: Good Structure (Basic)** ⭐⭐⭐
-```
+```bash
 my-project/
 ├── src/
 ├── tests/
 ├── docs/
 └── config/
-```
-**Used by**: Small projects, MVPs, solo developers  
+```bash
+**Used by**: Small projects, MVPs, solo developers
 **Rating**: 3/5 - Gets the job done
 
 ---
 
 ### **Level 2: Great Structure (Current Lokifi v2.0)** ⭐⭐⭐⭐
-```
+```powershell
 lokifi/
 ├── apps/           # Applications
 │   ├── backend/
@@ -31,18 +31,18 @@ lokifi/
 │   ├── monitoring/
 │   └── security/
 ├── tools/          # DevOps
-│   ├── lokifi.ps1
+│   ├── test-runner.ps1
 │   └── scripts/
 └── docs/           # Documentation
-```
-**Used by**: Growing startups, small teams (3-10 people)  
-**Rating**: 4/5 - Industry standard, production-ready  
+```powershell
+**Used by**: Growing startups, small teams (3-10 people)
+**Rating**: 4/5 - Industry standard, production-ready
 **You are here!** ✅
 
 ---
 
 ### **Level 3: World-Class Structure (v3.0 Vision)** ⭐⭐⭐⭐⭐
-```
+```powershell
 lokifi/
 ├── apps/           # User-facing applications
 │   ├── web/
@@ -76,7 +76,7 @@ lokifi/
 │   └── security/
 │
 ├── tools/          # DevOps & automation
-│   ├── cli/        (evolved lokifi.ps1)
+│   ├── cli/        (future CLI tools)
 │   ├── generators/ ← NEW!
 │   ├── linters/    ← NEW!
 │   └── benchmarks/ ← NEW!
@@ -95,9 +95,9 @@ lokifi/
     ├── workflows/  (12+ workflows)
     ├── actions/    ← NEW! (custom actions)
     └── CODEOWNERS  ← NEW!
-```
-**Used by**: Google, Microsoft, Meta, Netflix, Stripe  
-**Rating**: 5/5 - Enterprise-grade, hyper-scalable  
+```powershell
+**Used by**: Google, Microsoft, Meta, Netflix, Stripe
+**Rating**: 5/5 - Enterprise-grade, hyper-scalable
 **Future goal!** 🚀
 
 ---
@@ -142,7 +142,7 @@ lokifi/
 
 ## 📈 Growth Path
 
-```
+```bash
 Stage 1: MVP (Level 1)
    ↓ Team: 1-2 people
    ↓ Users: <1K
@@ -164,7 +164,7 @@ Stage 4: Hyper-Growth (Level 3+)
    Team: 50-500 people
    Users: 1M-100M
    Revenue: $10M-1B ARR
-```
+```bash
 
 ---
 
@@ -196,7 +196,7 @@ Stage 4: Hyper-Growth (Level 3+)
 ## 🎨 Visual Structure Comparison
 
 ### **Current (Level 2)** - "One Backend"
-```
+```bash
          ┌──────────────┐
          │  Frontend    │
          └──────┬───────┘
@@ -208,10 +208,10 @@ Stage 4: Hyper-Growth (Level 3+)
          ┌──────▼───────┐
          │   Database   │
          └──────────────┘
-```
+```bash
 
 ### **World-Class (Level 3)** - "Many Services"
-```
+```bash
 ┌──────────┐  ┌──────────┐  ┌──────────┐
 │   Web    │  │  Mobile  │  │  Admin   │
 └────┬─────┘  └────┬─────┘  └────┬─────┘
@@ -235,7 +235,7 @@ Stage 4: Hyper-Growth (Level 3+)
             │   Database   │
             │   (Sharded)  │
             └──────────────┘
-```
+```bash
 
 ---
 
@@ -334,4 +334,3 @@ See detailed documentation in:
 - `apps/mobile/README.md` - Future mobile app
 
 **Status**: You're at 70% of world-class already! 🎉
-

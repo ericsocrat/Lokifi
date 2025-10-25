@@ -440,7 +440,7 @@
         }
 
         function runCoverage() {
-            alert('Run: .\\tools\\lokifi.ps1 test-trends');
+            alert('Run: npm run test:coverage');
         }
 
         function runTests() {
@@ -448,7 +448,7 @@
         }
 
         function getSuggestions() {
-            alert('Run: .\\tools\\lokifi.ps1 test-suggest');
+            alert('Check test coverage report and add tests for uncovered code');
         }
 
         function exportReport() {
@@ -456,7 +456,7 @@
         }
 
         function analyzeFile(file) {
-            alert(`Run: .\\tools\\lokifi.ps1 test-impact -FilePath "${file}"`);
+            alert(`Analyze test coverage for: ${file}`);
         }
 
         // Load dashboard on page load

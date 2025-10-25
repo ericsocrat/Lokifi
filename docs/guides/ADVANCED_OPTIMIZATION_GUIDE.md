@@ -99,7 +99,7 @@ if (hasKindProperty(drawing)) {
    ```python
    # File: backend/app/services/auth_service.py:143
    # TODO: Track failed login attempts for account lockout
-   
+
    # Implementation:
    # - Add failed_attempts counter to User model
    # - Implement Redis-based temporary lockout
@@ -110,7 +110,7 @@ if (hasKindProperty(drawing)) {
    ```python
    # File: backend/app/routers/ohlc.py:45
    # TODO: Fix real API providers later
-   
+
    # Currently using mock data
    # Need to integrate:
    # - CoinGecko for crypto
@@ -122,7 +122,7 @@ if (hasKindProperty(drawing)) {
    ```python
    # File: backend/app/routers/conversations.py:366
    # TODO: Broadcast message deletion via WebSocket
-   
+
    # Implementation needed for real-time updates
    ```
 
@@ -167,15 +167,12 @@ async with httpx.AsyncClient() as client:
 
 #### Frontend Package Updates Available:
 ```bash
-# Check what's outdated
-cd frontend
-npm outdated
+# Check what's outdated and update dependencies
+npm outdated && npm update
 
-# Update non-breaking changes
-npm update
-
-# For major updates, test carefully:
-npm install <package>@latest
+**📖 For major updates and testing:**
+- [`../QUICK_START.md`](../QUICK_START.md) - Initial setup and installation guide
+- [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Testing strategies for updates
 ```
 
 **Recommendation:** Schedule monthly dependency review
@@ -207,13 +204,13 @@ npm install <package>@latest
 # .github/workflows/quality.yml
 - name: TypeScript Check
   run: npm run typecheck
-  
+
 - name: ESLint
   run: npm run lint
-  
+
 - name: Python Type Check
   run: mypy backend/app
-  
+
 - name: Python Linting
   run: ruff check backend/app
 ```
@@ -239,8 +236,8 @@ npm install <package>@latest
 **Monthly:**
 - Update dependencies
 - Review and archive old documentation
-- Run comprehensive analysis (`.\analyze-and-optimize.ps1`)
-- Check for security updates
+- Run comprehensive analysis (`.\tools\codebase-analyzer.ps1`)
+- Check for security updates (`.\tools\security-scanner.ps1`)
 
 **Quarterly:**
 - Refactor identified large files
@@ -254,10 +251,13 @@ npm install <package>@latest
 
 ### 1. Run Next.js Build
 ```bash
-cd frontend
+# From frontend directory:
 npm run build
 ```
 **Impact:** Clears 8 auto-generated validator errors
+
+**📖 For complete build workflows:**
+- [`../QUICK_START.md`](../QUICK_START.md) - Development and build commands
 
 ### 2. Add Explicit Types to Common Patterns
 ```typescript
@@ -311,14 +311,15 @@ git log --all --grep="TODO"
 ## 🛠️ Tools and Scripts
 
 ### Analysis Tools
-- `analyze-and-optimize.ps1` - Comprehensive repository scan
-- `fix-implicit-any-alerts.ps1` - TypeScript type fixes
-- `fix-zustand-proper.ps1` - Zustand middleware fixes
+- `tools/codebase-analyzer.ps1` - Comprehensive project metrics and technical debt analysis
+- `tools/test-runner.ps1` - Test execution with coverage and validation
+- `tools/security-scanner.ps1` - Security vulnerability scanning
 
 ### Development Tools
-- `start-servers.ps1` - Launch all services
-- `manage-redis.ps1` - Redis management
-- `test-api.ps1` - API testing
+- `tools/cleanup-master.ps1` - Repository cleanup utilities
+- `tools/setup-precommit-hooks.ps1` - Git pre-commit hook setup
+
+**📖 For testing scripts:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for comprehensive testing workflows
 
 ### Cleanup Tools
 - `cleanup-repo.ps1` - Documentation cleanup
@@ -333,7 +334,9 @@ git log --all --grep="TODO"
 - **OPTIMIZATION_PROGRESS.md** - Current optimization status
 - **CLEANUP_SUMMARY.md** - Repository cleanup details
 - **PROJECT_STATUS_CONSOLIDATED.md** - Project overview
-- **DEVELOPMENT_SETUP.md** - Development environment
+- **DEVELOPMENT_ENVIRONMENT.md** - Development configuration
+
+**📖 For complete development setup:** See [`../QUICK_START.md`](../QUICK_START.md) for comprehensive installation guide
 
 ---
 
@@ -348,7 +351,7 @@ git log --all --grep="TODO"
 - [FastAPI Performance Tips](https://fastapi.tiangolo.com/async/)
 
 ### Code Quality
-- [Clean Code Principles](https://github.com/ryanmcdermott/clean-code-javascript)
+- [Clean Code Principles](https://github.com/ryanmcdermott/clean-code-typescript)
 - [Python Best Practices](https://docs.python-guide.org/)
 
 ---

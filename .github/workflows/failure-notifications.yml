@@ -1,0 +1,216 @@
+# Workflow Failure Notifications
+# Creates GitHub issues when critical workflows fail on main branch
+# Helps catch production issues quickly and provides visibility
+
+name: 🚨 Failure Notifications
+
+on:
+  workflow_run:
+    workflows:
+      - "⚡ Fast Feedback (CI)"
+      - "📈 Coverage Tracking"
+      - "🔗 Integration Tests"
+      - "🔐 Security Scanning"
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  issues: write
+  actions: read
+
+jobs:
+  notify-failure:
+    name: Create Issue on Failure
+    runs-on: ubuntu-latest
+
+    # Only run if the workflow failed
+    if: github.event.workflow_run.conclusion == 'failure'
+
+    steps:
+      - name: 🔍 Get workflow details
+        id: workflow-details
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowRun = context.payload.workflow_run;
+
+            // Get failed jobs
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: workflowRun.id
+            });
+
+            const failedJobs = jobs.jobs.filter(job => job.conclusion === 'failure');
+
+            // Format failed jobs with links
+            const failedJobsList = failedJobs.map(job =>
+              `- [${job.name}](${job.html_url}) (${job.conclusion})`
+            ).join('\n');
+
+            // Get commit details
+            const { data: commit } = await github.rest.repos.getCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: workflowRun.head_sha
+            });
+
+            core.setOutput('workflow-name', workflowRun.name);
+            core.setOutput('workflow-url', workflowRun.html_url);
+            core.setOutput('commit-sha', workflowRun.head_sha.substring(0, 7));
+            core.setOutput('commit-message', commit.commit.message.split('\n')[0]);
+            core.setOutput('commit-author', commit.commit.author.name);
+            core.setOutput('commit-url', commit.html_url);
+            core.setOutput('failed-jobs', failedJobsList || 'No specific jobs found');
+            core.setOutput('run-number', workflowRun.run_number);
+
+      - name: 🔍 Check for existing issue
+        id: check-issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowName = '${{ steps.workflow-details.outputs.workflow-name }}';
+            const issueTitle = `🚨 ${workflowName} failed on main branch`;
+
+            // Search for existing open issue
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'ci-failure,automated',
+              per_page: 100
+            });
+
+            const existingIssue = issues.find(issue =>
+              issue.title === issueTitle
+            );
+
+            if (existingIssue) {
+              core.info(`Found existing issue: #${existingIssue.number}`);
+              core.setOutput('issue-exists', 'true');
+              core.setOutput('issue-number', existingIssue.number);
+            } else {
+              core.info('No existing issue found');
+              core.setOutput('issue-exists', 'false');
+            }
+
+      - name: 📝 Create failure issue
+        id: create-issue
+        if: steps.check-issue.outputs.issue-exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowName = '${{ steps.workflow-details.outputs.workflow-name }}';
+            const workflowUrl = '${{ steps.workflow-details.outputs.workflow-url }}';
+            const commitSha = '${{ steps.workflow-details.outputs.commit-sha }}';
+            const commitMessage = '${{ steps.workflow-details.outputs.commit-message }}';
+            const commitAuthor = '${{ steps.workflow-details.outputs.commit-author }}';
+            const commitUrl = '${{ steps.workflow-details.outputs.commit-url }}';
+            const failedJobs = `${{ steps.workflow-details.outputs.failed-jobs }}`;
+            const runNumber = '${{ steps.workflow-details.outputs.run-number }}';
+
+            const issueBody = `## 🚨 Workflow Failure Alert
+
+            The **${workflowName}** workflow failed on the \`main\` branch.
+
+            ### 📋 Details
+
+            - **Workflow**: [${workflowName} #${runNumber}](${workflowUrl})
+            - **Commit**: [${commitSha}](${commitUrl}) by ${commitAuthor}
+            - **Message**: ${commitMessage}
+            - **Branch**: main
+            - **Time**: ${new Date().toISOString()}
+
+            ### ❌ Failed Jobs
+
+            ${failedJobs}
+
+            ### 🔍 Next Steps
+
+            1. Review the [workflow run logs](${workflowUrl})
+            2. Check if this is a flaky test or a real issue
+            3. If real issue: create a fix PR
+            4. If flaky test: re-run the workflow or update the test
+            5. Close this issue once resolved
+
+            ### 📚 Resources
+
+            - [CI/CD Optimization Guide](/docs/ci-cd/OPTIMIZATION_SUMMARY.md)
+            - [Rollback Procedures](/docs/ci-cd/ROLLBACK_PROCEDURES.md)
+
+            ---
+
+            *This issue was automatically created by the [Failure Notifications workflow](/.github/workflows/failure-notifications.yml)*
+            `;
+
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `🚨 ${workflowName} failed on main branch`,
+              body: issueBody,
+              labels: ['ci-failure', 'automated', 'priority-high', 'bug']
+            });
+
+            core.info(`Created issue: #${issue.number}`);
+            core.setOutput('issue-number', issue.number);
+            core.setOutput('issue-url', issue.html_url);
+
+      - name: 💬 Add comment to existing issue
+        if: steps.check-issue.outputs.issue-exists == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = ${{ steps.check-issue.outputs.issue-number }};
+            const workflowUrl = '${{ steps.workflow-details.outputs.workflow-url }}';
+            const commitSha = '${{ steps.workflow-details.outputs.commit-sha }}';
+            const commitMessage = '${{ steps.workflow-details.outputs.commit-message }}';
+            const commitUrl = '${{ steps.workflow-details.outputs.commit-url }}';
+            const runNumber = '${{ steps.workflow-details.outputs.run-number }}';
+
+            const commentBody = `## 🔄 Another Failure Detected
+
+            The workflow failed again on \`main\` branch.
+
+            - **Run**: [#${runNumber}](${workflowUrl})
+            - **Commit**: [${commitSha}](${commitUrl})
+            - **Message**: ${commitMessage}
+            - **Time**: ${new Date().toISOString()}
+
+            **Action required**: This is a recurring failure. Please prioritize fixing this issue.
+            `;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: commentBody
+            });
+
+            // Add priority-critical label for recurring failures
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              labels: ['priority-critical']
+            });
+
+            core.info(`Added comment to issue #${issueNumber}`);
+
+      - name: 📊 Generate summary
+        if: always()
+        run: |
+          echo "## 🚨 Failure Notification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow**: ${{ steps.workflow-details.outputs.workflow-name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ❌ Failed" >> $GITHUB_STEP_SUMMARY
+          echo "**Commit**: [${{ steps.workflow-details.outputs.commit-sha }}](${{ steps.workflow-details.outputs.commit-url }})" >> $GITHUB_STEP_SUMMARY
+          echo "**Message**: ${{ steps.workflow-details.outputs.commit-message }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ steps.check-issue.outputs.issue-exists }}" == "true" ]]; then
+            echo "**Action**: 💬 Added comment to existing issue #${{ steps.check-issue.outputs.issue-number }}" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Action**: 📝 Created new issue [#${{ steps.create-issue.outputs.issue-number }}](${{ steps.create-issue.outputs.issue-url }})" >> $GITHUB_STEP_SUMMARY
+          fi

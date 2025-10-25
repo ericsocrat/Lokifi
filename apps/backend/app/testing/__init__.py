@@ -16,8 +16,8 @@ from .performance.baseline_analyzer import (
 )
 
 __all__ = [
-    "performance_analyzer",
     "SystemPerformanceAnalyzer",
+    "performance_analyzer",
     # 'comprehensive_load_tester',  # TODO: Implement comprehensive load tester
     # 'ComprehensiveLoadTester'
 ]

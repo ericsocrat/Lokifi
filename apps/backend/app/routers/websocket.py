@@ -49,9 +49,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await connection_manager.disconnect(websocket, user_id)
 
 
-async def handle_websocket_message(
-    websocket: WebSocket, user_id: uuid.UUID, message: str
-):
+async def handle_websocket_message(websocket: WebSocket, user_id: uuid.UUID, message: str):
     """Handle incoming WebSocket message from client."""
     try:
         # Parse message
@@ -97,9 +95,7 @@ async def handle_typing_indicator(user_id: uuid.UUID, data: dict[str, Any]):
             participant_ids = {p.user_id for p in participants}
 
             if user_id not in participant_ids:
-                logger.warning(
-                    f"User {user_id} not authorized for conversation {conversation_id}"
-                )
+                logger.warning(f"User {user_id} not authorized for conversation {conversation_id}")
                 return
 
             # Broadcast typing indicator
@@ -217,9 +213,7 @@ async def notification_websocket_endpoint(websocket: WebSocket):
                 # Handle notification-specific messages
                 if message.get("type") == "ping":
                     await websocket.send_text(
-                        json.dumps(
-                            {"type": "pong", "timestamp": message.get("timestamp")}
-                        )
+                        json.dumps({"type": "pong", "timestamp": message.get("timestamp")})
                     )
                 elif message.get("type") == "mark_read":
                     # Handle mark notification as read
@@ -229,14 +223,10 @@ async def notification_websocket_endpoint(websocket: WebSocket):
                             notification_service,
                         )
 
-                        await notification_service.mark_as_read(
-                            notification_id, user_id_str
-                        )
+                        await notification_service.mark_as_read(notification_id, user_id_str)
 
                         # Send updated unread count
-                        unread_count = await notification_service.get_unread_count(
-                            user_id_str
-                        )
+                        unread_count = await notification_service.get_unread_count(user_id_str)
                         await websocket.send_text(
                             json.dumps(
                                 {

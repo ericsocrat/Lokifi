@@ -376,11 +376,7 @@ class SymbolDirectory:
 
     def get_symbols_by_type(self, asset_type: AssetType) -> list[Symbol]:
         """Get all symbols of a specific type"""
-        return [
-            s
-            for s in self.symbols.values()
-            if s.asset_type == asset_type and s.is_active
-        ]
+        return [s for s in self.symbols.values() if s.asset_type == asset_type and s.is_active]
 
 
 class OHLCAggregator:
@@ -443,10 +439,7 @@ class OHLCAggregator:
         # Check cache first
         if cache_key in self.cache:
             cached_data = self.cache[cache_key]
-            if (
-                cached_data
-                and (datetime.now() - cached_data[0].timestamp) < self.cache_ttl
-            ):
+            if cached_data and (datetime.now() - cached_data[0].timestamp) < self.cache_ttl:
                 return cached_data[:limit]
 
         # Try each provider in order
@@ -513,9 +506,7 @@ class OHLCAggregator:
         }
 
         if not self.session:  # Defensive (should be initialized in initialize())
-            raise RuntimeError(
-                "OHLCAggregator session not initialized. Call initialize() first."
-            )
+            raise RuntimeError("OHLCAggregator session not initialized. Call initialize() first.")
         async with self.session.get(url, params=params) as response:
             if response.status != 200:
                 raise Exception(f"HTTP {response.status}")
@@ -565,9 +556,7 @@ class OHLCAggregator:
             params["interval"] = self._convert_timeframe_av(timeframe)
 
         if not self.session:
-            raise RuntimeError(
-                "OHLCAggregator session not initialized. Call initialize() first."
-            )
+            raise RuntimeError("OHLCAggregator session not initialized. Call initialize() first.")
         async with self.session.get(config.base_url, params=params) as response:
             if response.status != 200:
                 raise Exception(f"HTTP {response.status}")
@@ -629,9 +618,7 @@ class OHLCAggregator:
         }
 
         if not self.session:
-            raise RuntimeError(
-                "OHLCAggregator session not initialized. Call initialize() first."
-            )
+            raise RuntimeError("OHLCAggregator session not initialized. Call initialize() first.")
         async with self.session.get(url, params=params) as response:
             if response.status != 200:
                 raise Exception(f"HTTP {response.status}")
@@ -666,9 +653,7 @@ class OHLCAggregator:
 
             return ohlc_data
 
-    async def _generate_mock_data(
-        self, symbol: str, timeframe: str, limit: int
-    ) -> list[OHLCData]:
+    async def _generate_mock_data(self, symbol: str, timeframe: str, limit: int) -> list[OHLCData]:
         """Generate mock OHLC data for testing"""
 
         import random

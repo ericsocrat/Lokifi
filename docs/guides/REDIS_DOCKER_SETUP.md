@@ -1,68 +1,48 @@
-# 🐳 Redis on Docker - Setup Complete
+# 🐳 Redis Docker Setup Guide
 
-## ✅ What Changed
+> **⚠️ DEPRECATION NOTICE (Oct 2025)**:
+> The separate `docker-compose.redis.yml` HA cluster config has been removed.
+> Redis 7.4 is now included in `infra/docker/docker-compose.yml` - sufficient for most production workloads.
+> References to `docker-compose.redis.yml` in this guide are historical.
 
-The Lokifi application now uses **Redis running in Docker** for caching instead of a local Redis installation.
+## ✅ What You Get
 
-### Benefits of Docker Redis:
-- ✅ **Easy setup** - No manual Redis installation needed
-- ✅ **Consistent environment** - Same Redis version across all machines
-- ✅ **Data persistence** - Redis data saved in Docker volumes
-- ✅ **Auto-restart** - Container restarts automatically
-- ✅ **Isolated** - Doesn't conflict with other Redis installations
-- ✅ **Easy management** - Simple commands to start/stop/monitor
+Redis runs as part of the standard Docker Compose stack - no separate Redis installation needed.
+
+### Benefits:
+- ✅ **Easy setup** - Included in infra/docker/docker-compose.yml
+- ✅ **Consistent environment** - Redis 7.4-alpine across all environments
+- ✅ **Data persistence** - Disabled in dev, enabled in production.yml
+- ✅ **Health checks** - Automatic monitoring and restart
+- ✅ **Isolated** - No conflicts with system Redis
+- ✅ **Production-ready** - Good for most workloads without HA complexity
 
 ---
 
 ## 🚀 Quick Start
 
-### Start All Servers (Recommended)
-```powershell
-.\start-servers.ps1
-```
-This will:
-1. Check if Docker is running
-2. Start/create Redis container automatically
-3. Start Backend server
-4. Start Frontend server
+### Development
+```bash
+# Redis starts automatically with the stack
+docker compose up
 
-### Manual Redis Management
-```powershell
-# Start Redis
-.\manage-redis.ps1 start
+# Check Redis is running
+docker compose ps redis
 
-# Check status
-.\manage-redis.ps1 status
+# View Redis logs
+docker compose logs redis -f
 
-# View logs
-.\manage-redis.ps1 logs
-
-# Open Redis CLI
-.\manage-redis.ps1 shell
-
-# Stop Redis
-.\manage-redis.ps1 stop
-
-# Restart Redis
-.\manage-redis.ps1 restart
-
-# Remove container
-.\manage-redis.ps1 remove
+# Restart Redis only
+docker compose restart redis
 ```
 
-### Using Docker Compose (Alternative)
-```powershell
-# Start Redis
-docker-compose -f docker-compose.redis.yml up -d
+### Production
+```bash
+# Self-hosted with persistent Redis
+docker compose -f docker-compose.production.yml up -d
 
-# Stop Redis
-docker-compose -f docker-compose.redis.yml down
-
-# View logs
-docker-compose -f docker-compose.redis.yml logs -f
-
-# Restart Redis
-docker-compose -f docker-compose.redis.yml restart
+# Cloud deployment (managed Redis recommended)
+docker compose -f docker-compose.prod-minimal.yml up -d
 ```
 
 ---
@@ -152,11 +132,10 @@ docker start lokifi-redis
 - Easy multi-service orchestration
 
 ### 4. `backend/.env`
-**No changes needed** - Connection string remains the same:
-```env
-REDIS_URL=redis://:23233@localhost:6379/0
-REDIS_PASSWORD=23233
-```
+**No changes needed** - Connection configuration managed centrally.
+
+**📖 For complete environment configuration:**
+- [`../security/README.md`](../security/README.md) - Environment variables and security setup
 
 ---
 
@@ -295,18 +274,14 @@ docker exec lokifi-redis redis-cli -a 23233 ping
 ### Issue: Backend says "Redis not available"
 **Solution**: Check connection settings
 ```powershell
-# Verify .env file
-cat backend/.env | Select-String "REDIS"
-
-# Should show:
-# REDIS_URL=redis://:23233@localhost:6379/0
-# REDIS_PASSWORD=23233
-
-# Test from backend directory
-cd backend
+# Test Redis connection
 python -c "import redis; r = redis.from_url('redis://:23233@localhost:6379/0'); print(r.ping())"
 # Expected: True
 ```
+
+**📖 For backend directory navigation and configuration:**
+- [`../QUICK_START.md`](../QUICK_START.md) - Complete backend navigation guide
+- [`../security/README.md`](../security/README.md) - Complete environment configuration guide
 
 ---
 
@@ -416,7 +391,7 @@ After setup, verify everything works:
 - [ ] Redis container `lokifi-redis` is running
 - [ ] Backend connects to Redis (check logs for "Redis connected")
 - [ ] Frontend loads at http://localhost:3000
-- [ ] API responds at http://localhost:8000/api/health
+- [ ] API responds (see [`../api/API_REFERENCE.md`](../api/API_REFERENCE.md) for endpoints)
 - [ ] `.\manage-redis.ps1 status` shows "RUNNING" and "Connection successful"
 
 ---
@@ -435,9 +410,9 @@ After setup, verify everything works:
 
 ---
 
-**Status**: ✅ Redis on Docker - Fully Configured  
-**Date**: October 3, 2025  
-**Container**: lokifi-redis  
-**Management**: `.\manage-redis.ps1` or `.\start-servers.ps1`  
+**Status**: ✅ Redis on Docker - Fully Configured
+**Date**: October 3, 2025
+**Container**: lokifi-redis
+**Management**: `.\manage-redis.ps1` or `.\start-servers.ps1`
 
 The application now uses Redis in Docker for optimal caching performance! 🚀

@@ -1,10 +1,15 @@
-version: '3.8'
+# Full Production Stack Configuration
+# Purpose: Complete production deployment with all infrastructure
+# Usage: docker compose -f docker-compose.production.yml up -d
+# Services: backend, frontend, postgres, redis, traefik, prometheus, grafana, loki, promtail
+# Features: SSL/TLS (Traefik), monitoring stack, log aggregation, health checks
+# Best for: Self-hosted production deployments with full observability
 
 services:
   # Frontend Service
   frontend:
     build:
-      context: ./frontend
+      context: ../../apps/frontend
       dockerfile: Dockerfile.prod
       args:
         - NEXT_PUBLIC_API_URL=http://backend:8000
@@ -14,12 +19,12 @@ services:
       - "80:3000"
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URL=https://api.www.lokifi.com
     depends_on:
       - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:3000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -28,7 +33,7 @@ services:
       - lokifi-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`lokifi.example.com`)"
+      - "traefik.http.routers.frontend.rule=Host(`www.lokifi.com`)"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
     logging:
@@ -40,7 +45,7 @@ services:
   # Backend Service
   backend:
     build:
-      context: ./backend
+      context: ../../apps/backend
       dockerfile: Dockerfile.prod
     image: lokifi/backend:latest
     container_name: lokifi-backend
@@ -59,7 +64,7 @@ services:
       - redis
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -68,7 +73,7 @@ services:
       - lokifi-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.lokifi.example.com`)"
+      - "traefik.http.routers.backend.rule=Host(`api.www.lokifi.com`)"
       - "traefik.http.routers.backend.tls=true"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
     logging:
@@ -79,7 +84,7 @@ services:
 
   # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
     container_name: lokifi-postgres
     environment:
       - POSTGRES_DB=lokifi
@@ -87,7 +92,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ../../apps/backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
     restart: unless-stopped
@@ -106,7 +111,7 @@ services:
 
   # Redis Cache
   redis:
-    image: redis:7-alpine
+    image: redis:7.4-alpine
     container_name: lokifi-redis
     ports:
       - "6379:6379"
@@ -139,7 +144,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.email=admin@lokifi.example.com"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@www.lokifi.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
@@ -152,7 +157,7 @@ services:
       - lokifi-network
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.lokifi.example.com`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.www.lokifi.com`)"
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.service=api@internal"
     restart: unless-stopped
@@ -162,15 +167,15 @@ services:
     image: prom/prometheus:latest
     container_name: lokifi-prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--web.enable-lifecycle'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle"
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     networks:
       - lokifi-network
@@ -186,7 +191,7 @@ services:
       - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ../monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
     networks:
       - lokifi-network
     depends_on:
@@ -213,7 +218,7 @@ services:
     volumes:
       - /var/log:/var/log:ro
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+      - ../monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
     command: -config.file=/etc/promtail/config.yml
     networks:
       - lokifi-network

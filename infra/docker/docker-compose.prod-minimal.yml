@@ -1,0 +1,115 @@
+# Minimal Production Configuration
+# Purpose: Lightweight production setup without database (uses external DB)
+# Usage: docker compose -f docker-compose.prod-minimal.yml up
+# Services: backend, frontend, redis (no postgres, no monitoring)
+# Best for: Cloud deployments with managed databases
+
+services:
+  backend:
+    build:
+      context: ../../apps/backend
+      dockerfile: Dockerfile.prod
+    container_name: lokifi-backend-prod
+    working_dir: /app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4
+    ports:
+      - "8000:8000"
+    env_file:
+      - ../../apps/backend/.env
+    environment:
+      # Override for production domains
+      - FRONTEND_ORIGIN=https://www.lokifi.com
+      - CORS_ORIGINS=["https://www.lokifi.com"]
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-change_this_password}@redis:6379/0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 2G
+        reservations:
+          cpus: "1"
+          memory: 1G
+
+  frontend:
+    build:
+      context: ../../apps/frontend
+      dockerfile: Dockerfile.prod
+      target: runner
+      args:
+        - NEXT_PUBLIC_API_URL=https://api.www.lokifi.com
+    container_name: lokifi-frontend-prod
+    working_dir: /app
+    user: nextjs
+    command: ["npm", "run", "start"]
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=https://api.www.lokifi.com/api
+      - NEXT_PUBLIC_API_BASE=https://api.www.lokifi.com
+      - NODE_OPTIONS="--max_old_space_size=4096"
+    healthcheck:
+      test:
+        ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: lokifi-redis-prod
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:-change_this_password} --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-change_this_password}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "redis-cli",
+          "-a",
+          "${REDIS_PASSWORD:-change_this_password}",
+          "ping",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+volumes:
+  redis_data:

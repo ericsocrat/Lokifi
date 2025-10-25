@@ -24,9 +24,11 @@ import psutil
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class PerformanceMetric:
     """Individual performance metric measurement"""
+
     name: str
     value: float
     unit: str
@@ -37,13 +39,15 @@ class PerformanceMetric:
     def to_dict(self) -> dict[str, Any]:
         return {
             **asdict(self),
-            'timestamp': self.timestamp.isoformat(),
-            'metadata': self.metadata or {}
+            "timestamp": self.timestamp.isoformat(),
+            "metadata": self.metadata or {},
         }
+
 
 @dataclass
 class ResourceUtilization:
     """System resource utilization snapshot"""
+
     cpu_percent: float
     memory_percent: float
     memory_used_mb: float
@@ -54,14 +58,13 @@ class ResourceUtilization:
     timestamp: datetime
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            **asdict(self),
-            'timestamp': self.timestamp.isoformat()
-        }
+        return {**asdict(self), "timestamp": self.timestamp.isoformat()}
+
 
 @dataclass
 class PerformanceBaseline:
     """Complete performance baseline measurement"""
+
     test_name: str
     start_time: datetime
     end_time: datetime
@@ -72,19 +75,20 @@ class PerformanceBaseline:
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'test_name': self.test_name,
-            'start_time': self.start_time.isoformat(),
-            'end_time': self.end_time.isoformat(),
-            'duration_seconds': self.duration_seconds,
-            'metrics': [m.to_dict() for m in self.metrics],
-            'resource_snapshots': [r.to_dict() for r in self.resource_snapshots],
-            'summary': self.summary
+            "test_name": self.test_name,
+            "start_time": self.start_time.isoformat(),
+            "end_time": self.end_time.isoformat(),
+            "duration_seconds": self.duration_seconds,
+            "metrics": [m.to_dict() for m in self.metrics],
+            "resource_snapshots": [r.to_dict() for r in self.resource_snapshots],
+            "summary": self.summary,
         }
+
 
 class PerformanceProfiler:
     """
     Advanced performance profiling system for comprehensive system analysis.
-    
+
     Provides automated performance measurement, bottleneck identification,
     and baseline establishment across all system components.
     """
@@ -102,19 +106,19 @@ class PerformanceProfiler:
         self.resource_snapshots = []
         self.start_time = datetime.now(UTC)
         self.monitoring_active = True
-        
+
         logger.info(f"Starting performance profiling: {test_name}")
-        
+
         # Start resource monitoring
         self._monitoring_task = asyncio.create_task(self._monitor_resources())
-        
+
         return self
 
     async def stop_profiling(self, test_name: str = "system_baseline") -> PerformanceBaseline:
         """Stop profiling and generate baseline report"""
         end_time = datetime.now(UTC)
         self.monitoring_active = False
-        
+
         if self._monitoring_task:
             self._monitoring_task.cancel()
             try:
@@ -132,7 +136,7 @@ class PerformanceProfiler:
             duration_seconds=duration,
             metrics=self.metrics.copy(),
             resource_snapshots=self.resource_snapshots.copy(),
-            summary=summary
+            summary=summary,
         )
 
         logger.info(f"Performance profiling complete: {test_name} ({duration:.2f}s)")
@@ -145,7 +149,7 @@ class PerformanceProfiler:
                 # Get system resource utilization
                 cpu_percent = psutil.cpu_percent(interval=1)
                 memory = psutil.virtual_memory()
-                disk = psutil.disk_usage('/')
+                disk = psutil.disk_usage("/")
                 network = psutil.net_io_counters()
 
                 snapshot = ResourceUtilization(
@@ -156,7 +160,7 @@ class PerformanceProfiler:
                     disk_usage_percent=disk.percent,
                     network_bytes_sent=network.bytes_sent,
                     network_bytes_recv=network.bytes_recv,
-                    timestamp=datetime.now(UTC)
+                    timestamp=datetime.now(UTC),
                 )
 
                 self.resource_snapshots.append(snapshot)
@@ -168,8 +172,14 @@ class PerformanceProfiler:
                 logger.error(f"Error monitoring resources: {e}")
                 await asyncio.sleep(1)
 
-    def add_metric(self, name: str, value: float, unit: str, category: str = "general", 
-                   metadata: dict[str, Any] = None):
+    def add_metric(
+        self,
+        name: str,
+        value: float,
+        unit: str,
+        category: str = "general",
+        metadata: dict[str, Any] | None = None,
+    ):
         """Add a custom performance metric"""
         metric = PerformanceMetric(
             name=name,
@@ -177,7 +187,7 @@ class PerformanceProfiler:
             unit=unit,
             timestamp=datetime.now(UTC),
             category=category,
-            metadata=metadata or {}
+            metadata=metadata or {},
         )
         self.metrics.append(metric)
 
@@ -194,7 +204,7 @@ class PerformanceProfiler:
                 value=duration * 1000,  # Convert to milliseconds
                 unit="ms",
                 category=category,
-                metadata={"operation": operation_name}
+                metadata={"operation": operation_name},
             )
 
     def _generate_summary(self) -> dict[str, Any]:
@@ -203,9 +213,9 @@ class PerformanceProfiler:
             return {}
 
         summary = {
-            'total_metrics': len(self.metrics),
-            'total_snapshots': len(self.resource_snapshots),
-            'categories': {}
+            "total_metrics": len(self.metrics),
+            "total_snapshots": len(self.resource_snapshots),
+            "categories": {},
         }
 
         # Summarize metrics by category
@@ -216,40 +226,43 @@ class PerformanceProfiler:
             metrics_by_category[metric.category].append(metric.value)
 
         for category, values in metrics_by_category.items():
-            summary['categories'][category] = {
-                'count': len(values),
-                'avg': statistics.mean(values),
-                'min': min(values),
-                'max': max(values),
-                'p50': statistics.median(values),
-                'p95': statistics.quantiles(values, n=20)[18] if len(values) >= 20 else max(values),
-                'p99': statistics.quantiles(values, n=100)[98] if len(values) >= 100 else max(values)
+            summary["categories"][category] = {
+                "count": len(values),
+                "avg": statistics.mean(values),
+                "min": min(values),
+                "max": max(values),
+                "p50": statistics.median(values),
+                "p95": statistics.quantiles(values, n=20)[18] if len(values) >= 20 else max(values),
+                "p99": statistics.quantiles(values, n=100)[98]
+                if len(values) >= 100
+                else max(values),
             }
 
         # Summarize resource utilization
         if self.resource_snapshots:
             cpu_values = [s.cpu_percent for s in self.resource_snapshots]
             memory_values = [s.memory_percent for s in self.resource_snapshots]
-            
-            summary['resource_utilization'] = {
-                'cpu': {
-                    'avg': statistics.mean(cpu_values),
-                    'max': max(cpu_values),
-                    'min': min(cpu_values)
+
+            summary["resource_utilization"] = {
+                "cpu": {
+                    "avg": statistics.mean(cpu_values),
+                    "max": max(cpu_values),
+                    "min": min(cpu_values),
                 },
-                'memory': {
-                    'avg': statistics.mean(memory_values),
-                    'max': max(memory_values),
-                    'min': min(memory_values)
-                }
+                "memory": {
+                    "avg": statistics.mean(memory_values),
+                    "max": max(memory_values),
+                    "min": min(memory_values),
+                },
             }
 
         return summary
 
+
 class SystemPerformanceAnalyzer:
     """
     Comprehensive system performance analysis and bottleneck identification.
-    
+
     Analyzes system performance across all components and identifies
     optimization opportunities and performance bottlenecks.
     """
@@ -260,12 +273,8 @@ class SystemPerformanceAnalyzer:
     async def analyze_database_performance(self) -> dict[str, Any]:
         """Analyze database performance characteristics"""
         from app.core.database import db_manager
-        
-        results = {
-            'connection_pool': {},
-            'query_performance': {},
-            'connection_time': 0
-        }
+
+        results = {"connection_pool": {}, "query_performance": {}, "connection_time": 0}
 
         # Measure database connection time
         async with self.profiler.measure_operation("db_connection", "database"):
@@ -275,7 +284,7 @@ class SystemPerformanceAnalyzer:
                     await session.execute("SELECT 1")
                     break
             except Exception as e:
-                results['connection_error'] = str(e)
+                results["connection_error"] = str(e)
 
         # Measure query performance for notifications
         try:
@@ -286,28 +295,24 @@ class SystemPerformanceAnalyzer:
                         "SELECT COUNT(*) FROM notifications WHERE created_at > NOW() - INTERVAL '1 hour'"
                     )
                     count = result.scalar()
-                    results['query_performance']['recent_notifications'] = count
+                    results["query_performance"]["recent_notifications"] = count
                     break
         except Exception as e:
-            results['query_error'] = str(e)
+            results["query_error"] = str(e)
 
         return results
 
     async def analyze_redis_performance(self) -> dict[str, Any]:
         """Analyze Redis cache performance"""
         from app.core.advanced_redis_client import advanced_redis_client
-        
-        results = {
-            'connection_status': 'unknown',
-            'cache_operations': {},
-            'memory_usage': {}
-        }
+
+        results = {"connection_status": "unknown", "cache_operations": {}, "memory_usage": {}}
 
         try:
             # Test Redis availability
             async with self.profiler.measure_operation("redis_ping", "cache"):
                 available = await advanced_redis_client.is_available()
-                results['connection_status'] = 'connected' if available else 'disconnected'
+                results["connection_status"] = "connected" if available else "disconnected"
 
             if available:
                 # Test cache operations
@@ -316,57 +321,57 @@ class SystemPerformanceAnalyzer:
 
                 # Test SET operation
                 async with self.profiler.measure_operation("redis_set", "cache"):
-                    await advanced_redis_client.set_with_layer(test_key, json.dumps(test_value), 'memory', 60)
+                    await advanced_redis_client.set_with_layer(
+                        test_key, json.dumps(test_value), "memory", 60
+                    )
 
                 # Test GET operation
                 async with self.profiler.measure_operation("redis_get", "cache"):
-                    retrieved = await advanced_redis_client.get_with_fallback(test_key, ['memory', 'distributed'])
+                    retrieved = await advanced_redis_client.get_with_fallback(
+                        test_key, ["memory", "distributed"]
+                    )
 
-                results['cache_operations']['set_success'] = True
-                results['cache_operations']['get_success'] = retrieved is not None
+                results["cache_operations"]["set_success"] = True
+                results["cache_operations"]["get_success"] = retrieved is not None
 
                 # Get cache metrics
                 metrics = await advanced_redis_client.get_metrics()
-                results['cache_metrics'] = metrics
+                results["cache_metrics"] = metrics
 
         except Exception as e:
-            results['error'] = str(e)
+            results["error"] = str(e)
 
         return results
 
     async def analyze_websocket_performance(self) -> dict[str, Any]:
         """Analyze WebSocket manager performance"""
         from app.websockets.advanced_websocket_manager import get_websocket_manager
-        
-        results = {
-            'manager_status': 'unknown',
-            'connection_capacity': 0,
-            'analytics': {}
-        }
+
+        results = {"manager_status": "unknown", "connection_capacity": 0, "analytics": {}}
 
         try:
             ws_manager = get_websocket_manager()
-            
+
             # Get current analytics
             analytics = ws_manager.get_analytics()
-            results['analytics'] = analytics
-            results['manager_status'] = 'operational'
-            
+            results["analytics"] = analytics
+            results["manager_status"] = "operational"
+
             # Check connection pool capacity
-            if hasattr(ws_manager, 'connection_pool'):
+            if hasattr(ws_manager, "connection_pool"):
                 pool = ws_manager.connection_pool
-                results['connection_capacity'] = getattr(pool, 'max_connections', 10000)
-                results['current_connections'] = len(pool.connections)
+                results["connection_capacity"] = getattr(pool, "max_connections", 10000)
+                results["current_connections"] = len(pool.connections)
 
         except Exception as e:
-            results['error'] = str(e)
+            results["error"] = str(e)
 
         return results
 
     async def run_comprehensive_analysis(self) -> PerformanceBaseline:
         """Run comprehensive system performance analysis"""
         logger.info("Starting comprehensive performance analysis")
-        
+
         await self.profiler.start_profiling("comprehensive_system_analysis")
 
         # Analyze each component
@@ -390,15 +395,16 @@ class SystemPerformanceAnalyzer:
             logger.error(f"Error during comprehensive analysis: {e}")
 
         baseline = await self.profiler.stop_profiling("comprehensive_system_analysis")
-        
+
         # Add component analysis to baseline summary
-        baseline.summary['component_analysis'] = {
-            'database': db_results,
-            'redis': redis_results,
-            'websocket': ws_results
+        baseline.summary["component_analysis"] = {
+            "database": db_results,
+            "redis": redis_results,
+            "websocket": ws_results,
         }
 
         return baseline
+
 
 # Global performance analyzer instance
 performance_analyzer = SystemPerformanceAnalyzer()

@@ -1,0 +1,144 @@
+# CODEOWNERS - Automatic PR Reviewer Assignment
+# Documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Syntax:
+#   <file-pattern> @username @org/team-name
+#
+# Order matters: Last matching pattern takes precedence
+# Use teams for better management (requires organization)
+
+# ========================================
+# Default Owner (Fallback)
+# ========================================
+# If no specific owner matches, assign to project lead
+* @ericsocrat
+
+# ========================================
+# Frontend Code
+# ========================================
+# All frontend files
+/apps/frontend/ @ericsocrat
+/apps/frontend/app/ @ericsocrat
+/apps/frontend/components/ @ericsocrat
+/apps/frontend/lib/ @ericsocrat
+/apps/frontend/hooks/ @ericsocrat
+
+# Frontend configuration
+/apps/frontend/package.json @ericsocrat
+/apps/frontend/tsconfig.json @ericsocrat
+/apps/frontend/next.config.mjs @ericsocrat
+/apps/frontend/tailwind.config.ts @ericsocrat
+
+# Frontend tests
+/apps/frontend/tests/ @ericsocrat
+
+# ========================================
+# Backend Code
+# ========================================
+# All backend files
+/apps/backend/ @ericsocrat
+/apps/backend/app/ @ericsocrat
+/apps/backend/services/ @ericsocrat
+
+# Backend configuration
+/apps/backend/requirements*.txt @ericsocrat
+/apps/backend/pyproject.toml @ericsocrat
+/apps/backend/alembic/ @ericsocrat
+
+# Backend tests
+/apps/backend/tests/ @ericsocrat
+
+# ========================================
+# Infrastructure & DevOps
+# ========================================
+# Docker files
+/infra/docker/ @ericsocrat
+/apps/backend/Dockerfile* @ericsocrat
+/apps/frontend/Dockerfile* @ericsocrat
+docker-compose*.yml @ericsocrat
+
+# CI/CD workflows
+/.github/workflows/ @ericsocrat
+/.github/actions/ @ericsocrat
+
+# GitHub configuration
+/.github/CODEOWNERS @ericsocrat
+/.github/dependabot.yml @ericsocrat
+/.github/labeler.yml @ericsocrat
+
+# ========================================
+# Documentation
+# ========================================
+# All documentation
+/docs/ @ericsocrat
+README.md @ericsocrat
+*.md @ericsocrat
+
+# CI/CD documentation (requires DevOps approval)
+/docs/ci-cd/ @ericsocrat
+
+# ========================================
+# Security-Sensitive Files
+# ========================================
+# Security configurations (require extra review)
+**/security/ @ericsocrat
+**/*security* @ericsocrat
+**/.env.example @ericsocrat
+
+# Authentication & Authorization
+/apps/backend/app/core/security.py @ericsocrat
+/apps/backend/app/core/auth.py @ericsocrat
+
+# ========================================
+# Database & Migrations
+# ========================================
+# Database migrations (require careful review)
+/apps/backend/alembic/versions/ @ericsocrat
+/apps/backend/app/models/ @ericsocrat
+
+# ========================================
+# Testing Configuration
+# ========================================
+# Test configuration files
+pytest.ini @ericsocrat
+vitest.config.ts @ericsocrat
+playwright.config.ts @ericsocrat
+.github/workflows/*test*.yml @ericsocrat
+
+# ========================================
+# Dependency Management
+# ========================================
+# Package files (security implications)
+package.json @ericsocrat
+package-lock.json @ericsocrat
+requirements.txt @ericsocrat
+requirements-dev.txt @ericsocrat
+
+# ========================================
+# Build & Deployment
+# ========================================
+# Build configurations
+/infra/ @ericsocrat
+Makefile @ericsocrat
+/apps/backend/Makefile @ericsocrat
+
+# ========================================
+# Special Cases
+# ========================================
+# Root configuration files
+/.gitignore @ericsocrat
+/.gitattributes @ericsocrat
+/LICENSE @ericsocrat
+
+# Workspace configuration
+lokifi.code-workspace @ericsocrat
+
+# ========================================
+# Future Team Assignments (Examples)
+# ========================================
+# Uncomment and update when you have teams:
+# /apps/frontend/ @org/frontend-team
+# /apps/backend/ @org/backend-team
+# /infra/ @org/devops-team
+# /docs/ @org/docs-team
+# /.github/workflows/ @org/devops-team @org/platform-team

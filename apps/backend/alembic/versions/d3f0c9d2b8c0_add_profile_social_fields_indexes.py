@@ -5,6 +5,7 @@ Revises: a2255ce489df
 Create Date: 2025-09-28 17:25:00.000000
 
 """
+
 from collections.abc import Sequence
 
 import sqlalchemy as sa
@@ -12,18 +13,24 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision: str = 'd3f0c9d2b8c0'
-down_revision: str | Sequence[str] | None = 'a2255ce489df'
+revision: str = "d3f0c9d2b8c0"
+down_revision: str | Sequence[str] | None = "a2255ce489df"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
     """Upgrade schema: add is_public & counters to profiles; add indexes to follows."""
-    with op.batch_alter_table('profiles') as batch_op:
-        batch_op.add_column(sa.Column('is_public', sa.Boolean(), server_default='true', nullable=False))
-        batch_op.add_column(sa.Column('follower_count', sa.Integer(), server_default='0', nullable=False))
-        batch_op.add_column(sa.Column('following_count', sa.Integer(), server_default='0', nullable=False))
+    with op.batch_alter_table("profiles") as batch_op:
+        batch_op.add_column(
+            sa.Column("is_public", sa.Boolean(), server_default="true", nullable=False)
+        )
+        batch_op.add_column(
+            sa.Column("follower_count", sa.Integer(), server_default="0", nullable=False)
+        )
+        batch_op.add_column(
+            sa.Column("following_count", sa.Integer(), server_default="0", nullable=False)
+        )
 
     # Backfill counts (safe no-op initially)
     # Backfill follower_count (number of users following this user)
@@ -49,15 +56,15 @@ def upgrade() -> None:
     """)
 
     # Indexes on follows
-    op.create_index('ix_follows_follower_id', 'follows', ['follower_id'])
-    op.create_index('ix_follows_followee_id', 'follows', ['followee_id'])
+    op.create_index("ix_follows_follower_id", "follows", ["follower_id"])
+    op.create_index("ix_follows_followee_id", "follows", ["followee_id"])
 
 
 def downgrade() -> None:
     """Downgrade schema: drop added columns and indexes."""
-    op.drop_index('ix_follows_followee_id', table_name='follows')
-    op.drop_index('ix_follows_follower_id', table_name='follows')
-    with op.batch_alter_table('profiles') as batch_op:
-        batch_op.drop_column('following_count')
-        batch_op.drop_column('follower_count')
-        batch_op.drop_column('is_public')
+    op.drop_index("ix_follows_followee_id", table_name="follows")
+    op.drop_index("ix_follows_follower_id", table_name="follows")
+    with op.batch_alter_table("profiles") as batch_op:
+        batch_op.drop_column("following_count")
+        batch_op.drop_column("follower_count")
+        batch_op.drop_column("is_public")

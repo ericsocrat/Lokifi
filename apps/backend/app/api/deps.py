@@ -2,7 +2,6 @@
 Dependencies for Lokifi API endpoints.
 """
 
-
 from fastapi import Depends, Header, HTTPException
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
@@ -41,28 +40,26 @@ def _user_by_handle(db: Session, handle: str) -> User | None:
 
 
 def get_current_user(
-    authorization: str | None = Header(None),
-    db: Session = Depends(get_db)
+    authorization: str | None = Header(None), db: Session = Depends(get_db)
 ) -> User:
     """Get current authenticated user."""
     handle = _auth_handle(authorization)
     if not handle:
         raise HTTPException(status_code=401, detail="Unauthorized")
-    
+
     user = _user_by_handle(db, handle)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     return user
 
 
 def get_current_user_optional(
-    authorization: str | None = Header(None),
-    db: Session = Depends(get_db)
+    authorization: str | None = Header(None), db: Session = Depends(get_db)
 ) -> User | None:
     """Get current user if authenticated, otherwise None."""
     handle = _auth_handle(authorization)
     if not handle:
         return None
-    
+
     return _user_by_handle(db, handle)

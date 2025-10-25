@@ -26,8 +26,8 @@ from app.schemas.follow import (
 )
 from app.services.follow_service import FollowService
 
-# J6.1 Notification Integration
-from scripts.setup_j6_integration import trigger_follow_notification
+# Notification Integration
+from scripts.notification_integration_helpers import trigger_follow_notification
 
 router = APIRouter(prefix="/follow", tags=["follow"])
 
@@ -66,9 +66,7 @@ async def follow_user(
             # Get target user details for notification
             from sqlalchemy import select
 
-            target_user_result = await db.execute(
-                select(User).where(User.id == user_id)
-            )
+            target_user_result = await db.execute(select(User).where(User.id == user_id))
             target_user = target_user_result.scalar_one_or_none()
 
             if target_user:
@@ -242,9 +240,7 @@ async def get_mutual_follows(
 @router.get("/suggestions", response_model=SuggestedUsersResponse)
 async def get_follow_suggestions(
     page: int = Query(1, ge=1, description="Page number"),
-    page_size: int = Query(
-        10, ge=1, le=50, description="Number of suggestions per page"
-    ),
+    page_size: int = Query(10, ge=1, le=50, description="Number of suggestions per page"),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -298,14 +294,12 @@ async def bulk_follow_users(
 
     for user_id in user_ids:
         try:
-            await follow_service.follow_user(
-                follower_id=current_user.id, followee_id=user_id
-            )
+            await follow_service.follow_user(follower_id=current_user.id, followee_id=user_id)
             success_count += 1
         except HTTPException as e:
             errors.append(f"User {user_id}: {e.detail}")
         except Exception as e:
-            errors.append(f"User {user_id}: {str(e)}")
+            errors.append(f"User {user_id}: {e!s}")
 
     message = f"Successfully followed {success_count} users"
     if errors:
@@ -333,14 +327,12 @@ async def bulk_unfollow_users(
 
     for user_id in user_ids:
         try:
-            await follow_service.unfollow_user(
-                follower_id=current_user.id, followee_id=user_id
-            )
+            await follow_service.unfollow_user(follower_id=current_user.id, followee_id=user_id)
             success_count += 1
         except HTTPException as e:
             errors.append(f"User {user_id}: {e.detail}")
         except Exception as e:
-            errors.append(f"User {user_id}: {str(e)}")
+            errors.append(f"User {user_id}: {e!s}")
 
     message = f"Successfully unfollowed {success_count} users"
     if errors:
@@ -358,6 +350,4 @@ async def get_user_follow_stats(
     """Get follow statistics for a user."""
     follow_service = FollowService(db)
     current_user_id = current_user.id if current_user else None
-    return await follow_service.get_follow_stats(
-        user_id=user_id, current_user_id=current_user_id
-    )
+    return await follow_service.get_follow_stats(user_id=user_id, current_user_id=current_user_id)

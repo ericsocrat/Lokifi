@@ -1,0 +1,327 @@
+name: 📈 Coverage Tracking
+
+# Coverage workflow: Runs in ~4 minutes
+# Purpose: Track code coverage, generate reports, auto-update documentation
+# Runs on: Pull requests and main branch
+# Strategy: Comprehensive coverage with matrix testing, auto-updates
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+# Cancel in-progress runs for same workflow + branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Detect which parts of codebase changed
+  changes:
+    name: 🔍 Detect Changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      frontend: ${{ steps.filter.outputs.frontend }}
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🎯 Check changed files
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - 'apps/frontend/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - '.github/workflows/coverage.yml'
+            backend:
+              - 'apps/backend/**'
+              - 'apps/backend/requirements.txt'
+              - 'apps/backend/requirements-dev.txt'
+              - '.github/workflows/coverage.yml'
+
+  # Frontend Coverage with Matrix Testing
+  frontend-coverage:
+    name: 🎨 Frontend Coverage (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ["18", "20", "22"]
+    defaults:
+      run:
+        working-directory: apps/frontend
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: apps/frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: 🧪 Run tests with coverage
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+        continue-on-error: ${{ matrix.node-version != '20' }} # Only fail on primary version
+
+      - name: 📊 Upload coverage to Codecov
+        if: matrix.node-version == '20'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: apps/frontend/coverage/coverage-final.json
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+
+      - name: 📈 Upload coverage artifact
+        if: matrix.node-version == '20'
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-node-${{ matrix.node-version }}
+          path: apps/frontend/coverage/
+          retention-days: 14
+          compression-level: 9
+          if-no-files-found: warn
+
+      - name: 📊 Coverage summary
+        if: matrix.node-version == '20'
+        run: |
+          echo "## 📊 Frontend Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const fs = require('fs');
+              const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json'));
+              const total = summary.total;
+              console.log('| Metric | Coverage |');
+              console.log('|--------|----------|');
+              console.log('| Lines | ' + total.lines.pct + '% |');
+              console.log('| Statements | ' + total.statements.pct + '% |');
+              console.log('| Functions | ' + total.functions.pct + '% |');
+              console.log('| Branches | ' + total.branches.pct + '% |');
+            " >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Backend Coverage with Matrix Testing
+  backend-coverage:
+    name: 🔧 Backend Coverage (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    defaults:
+      run:
+        working-directory: apps/backend
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: lokifi
+          POSTGRES_PASSWORD: lokifi2025
+          POSTGRES_DB: lokifi_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U lokifi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+          cache-dependency-path: |
+            apps/backend/requirements.txt
+            apps/backend/requirements-dev.txt
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: 🗃️ Setup database schema
+        run: alembic upgrade head
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          TESTING: 1
+
+      - name: 🧪 Run tests with coverage
+        run: pytest --cov=app --cov-report=term-missing --cov-report=json --cov-report=html --cov-fail-under=25 -m "not config_validation"
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          TESTING: 1
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          REDIS_URL: redis://localhost:6379/0
+          LOKIFI_JWT_SECRET: test-jwt-secret-for-coverage
+          JWT_SECRET_KEY: test-jwt-key-for-coverage
+        continue-on-error: ${{ matrix.python-version != '3.11' }} # Only fail on primary version
+
+      - name: 📊 Upload coverage to Codecov
+        if: matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: apps/backend/coverage.json
+          flags: backend
+          name: backend-coverage
+          fail_ci_if_error: false
+
+      - name: 📈 Upload coverage artifact
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-python-${{ matrix.python-version }}
+          path: |
+            apps/backend/htmlcov/
+            apps/backend/coverage.json
+          retention-days: 14
+          compression-level: 9
+
+      - name: 📊 Coverage summary
+        if: matrix.python-version == '3.11'
+        run: |
+          echo "## 📊 Backend Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage.json ]; then
+            python -c "import json; data = json.load(open('coverage.json')); total = data['totals']; print('| Metric | Coverage |'); print('|--------|----------|'); print(f\"| Lines | {total['percent_covered']:.2f}% |\"); print(f\"| Statements | {total['num_statements']} / {total['covered_lines']} |\")" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Auto-update coverage documentation
+  update-coverage-docs:
+    name: 📝 Update Coverage Documentation
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-coverage
+      - backend-coverage
+    if: |
+      always() &&
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    timeout-minutes: 5
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📥 Download frontend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage-node-20
+          path: apps/frontend/coverage/
+        continue-on-error: true
+
+      - name: 📥 Download backend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage-python-3.11
+          path: apps/backend/
+        continue-on-error: true
+
+      - name: 📊 Update coverage documentation
+        run: |
+          # Extract frontend coverage
+          if [ -f apps/frontend/coverage/coverage-summary.json ]; then
+            FRONTEND_COV=$(node -e 'const fs = require("fs"); const summary = JSON.parse(fs.readFileSync("apps/frontend/coverage/coverage-summary.json")); console.log(summary.total.lines.pct);')
+          else
+            FRONTEND_COV="N/A"
+          fi
+
+          # Extract backend coverage
+          if [ -f apps/backend/coverage.json ]; then
+            BACKEND_COV=$(python3 -c 'import json; data = json.load(open("apps/backend/coverage.json")); print(f"{data[\"totals\"][\"percent_covered\"]:.2f}")')
+          else
+            BACKEND_COV="N/A"
+          fi
+
+          # Log coverage values
+          echo "Frontend Coverage: ${FRONTEND_COV}%"
+          echo "Backend Coverage: ${BACKEND_COV}%"
+
+      - name: 📝 Commit coverage updates
+        if: success()
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git add coverage.config.json README.md || true
+            git commit -m "chore(coverage): Auto-update coverage metrics [skip ci]" || true
+            git push || true
+          fi
+
+  # Summary Job: Coverage thresholds met
+  coverage-success:
+    name: ✅ Coverage Checks Complete
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-coverage
+      - backend-coverage
+    if: always()
+    steps:
+      - name: 🎯 Check coverage results
+        run: |
+          echo "Frontend Coverage: ${{ needs.frontend-coverage.result }}"
+          echo "Backend Coverage: ${{ needs.backend-coverage.result }}"
+
+          # Fail if any coverage job failed on primary versions
+          if [ "${{ needs.frontend-coverage.result }}" = "failure" ] || \
+             [ "${{ needs.backend-coverage.result }}" = "failure" ]; then
+            echo "❌ Coverage thresholds not met"
+            exit 1
+          fi
+
+          echo "✅ All coverage checks passed!"
+
+      - name: 📝 Generate summary
+        if: always()
+        run: |
+          echo "## 📊 Coverage Tracking Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Component | Status | Matrix |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|--------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend | ${{ needs.frontend-coverage.result }} | Node 18, 20, 22 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend | ${{ needs.backend-coverage.result }} | Python 3.10, 3.11, 3.12 |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Expected Time**: ~4-6 minutes (matrix parallel execution)" >> $GITHUB_STEP_SUMMARY
+          echo "**Coverage Threshold**: Frontend 10%, Backend 25%" >> $GITHUB_STEP_SUMMARY

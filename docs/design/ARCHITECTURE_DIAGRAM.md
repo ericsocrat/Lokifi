@@ -260,7 +260,7 @@ Cache Hit Rates (Expected):
        ▼                      │
 ┌─────────────┐       subscribe/unsubscribe
 │   ACTIVE    │──────────────►│
-└──────┬──────┘       
+└──────┬──────┘
        │
        │ client.disconnect()
        │ or error

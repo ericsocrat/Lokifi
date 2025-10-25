@@ -1,20 +1,25 @@
+# Production Prometheus Configuration
+# Used by: docker-compose.production.yml
+# Purpose: Monitors services using Docker service names for container networking
+# Targets: backend:8000, frontend:3000, redis:6379
+
 global:
   scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'lokifi-backend'
+  - job_name: "lokifi-backend"
     static_configs:
-      - targets: ['backend:8000']
-    metrics_path: '/api/health'
+      - targets: ["backend:8000"]
+    metrics_path: "/api/health"
     scrape_interval: 30s
 
-  - job_name: 'lokifi-frontend'
+  - job_name: "lokifi-frontend"
     static_configs:
-      - targets: ['frontend:3000']
-    metrics_path: '/api/health'
+      - targets: ["frontend:3000"]
+    metrics_path: "/api/health"
     scrape_interval: 30s
 
-  - job_name: 'redis'
+  - job_name: "redis"
     static_configs:
-      - targets: ['redis:6379']
+      - targets: ["redis:6379"]
     scrape_interval: 30s

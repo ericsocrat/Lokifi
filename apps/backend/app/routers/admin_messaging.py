@@ -32,31 +32,30 @@ async def get_admin_user(current_user: User = Depends(get_current_user)) -> User
 async def get_platform_messaging_stats(
     days_back: int = Query(30, ge=1, le=365),
     admin_user: User = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     """Get platform-wide messaging statistics (admin only)."""
     try:
         analytics_service = MessageAnalyticsService(db)
         stats = await analytics_service.get_platform_statistics()
-        
+
         return {
             **stats,
             "requested_by": admin_user.username,
-            "request_time": datetime.now(UTC).isoformat()
+            "request_time": datetime.now(UTC).isoformat(),
         }
-    
+
     except Exception as e:
         logger.error(f"Error getting platform stats: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get platform statistics"
+            detail="Failed to get platform statistics",
         )
 
 
 @router.get("/admin/messaging/performance")
 async def get_performance_metrics(
-    minutes_back: int = Query(10, ge=1, le=60),
-    admin_user: User = Depends(get_admin_user)
+    minutes_back: int = Query(10, ge=1, le=60), admin_user: User = Depends(get_admin_user)
 ):
     """Get performance metrics and system health."""
     try:
@@ -65,7 +64,7 @@ async def get_performance_metrics(
         api_performance = performance_monitor.get_api_performance()
         websocket_stats = performance_monitor.get_websocket_stats()
         alerts = performance_monitor.check_system_alerts()
-        
+
         return {
             "timestamp": datetime.now(UTC).isoformat(),
             "period_minutes": minutes_back,
@@ -75,198 +74,184 @@ async def get_performance_metrics(
                     "service": hc.service,
                     "status": hc.status,
                     "response_time_ms": hc.response_time_ms,
-                    "details": hc.details
-                } for hc in health_checks
+                    "details": hc.details,
+                }
+                for hc in health_checks
             ],
             "api_performance": api_performance,
             "websocket_stats": websocket_stats,
             "alerts": alerts,
-            "system_status": "healthy" if not alerts else "degraded"
+            "system_status": "healthy" if not alerts else "degraded",
         }
-    
+
     except Exception as e:
         logger.error(f"Error getting performance metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get performance metrics"
+            detail="Failed to get performance metrics",
         )
 
 
 @router.get("/admin/messaging/moderation")
 async def get_moderation_stats(
-    admin_user: User = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db)
+    admin_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
 ):
     """Get message moderation statistics and blocked words."""
     try:
         moderation_service = MessageModerationService(db)
-        
+
         return {
             "blocked_words_count": len(moderation_service.get_blocked_words()),
             "blocked_words": moderation_service.get_blocked_words()[:20],  # First 20 for preview
             "user_warning_counts": len(moderation_service.user_warning_counts),
             "total_warnings_issued": sum(moderation_service.user_warning_counts.values()),
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
-    
+
     except Exception as e:
         logger.error(f"Error getting moderation stats: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get moderation statistics"
+            detail="Failed to get moderation statistics",
         )
 
 
 @router.post("/admin/messaging/moderation/blocked-words")
 async def add_blocked_words(
-    words: list[str],
-    admin_user: User = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db)
+    words: list[str], admin_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
 ):
     """Add words to the blocked list."""
     try:
         moderation_service = MessageModerationService(db)
         moderation_service.add_blocked_words(words)
-        
+
         logger.info(f"Admin {admin_user.username} added blocked words: {words}")
-        
+
         return {
             "added_words": words,
             "total_blocked_words": len(moderation_service.get_blocked_words()),
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
-    
+
     except Exception as e:
         logger.error(f"Error adding blocked words: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to add blocked words"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to add blocked words"
         )
 
 
 @router.delete("/admin/messaging/moderation/blocked-words")
 async def remove_blocked_words(
-    words: list[str],
-    admin_user: User = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db)
+    words: list[str], admin_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
 ):
     """Remove words from the blocked list."""
     try:
         moderation_service = MessageModerationService(db)
         moderation_service.remove_blocked_words(words)
-        
+
         logger.info(f"Admin {admin_user.username} removed blocked words: {words}")
-        
+
         return {
             "removed_words": words,
             "total_blocked_words": len(moderation_service.get_blocked_words()),
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
-    
+
     except Exception as e:
         logger.error(f"Error removing blocked words: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to remove blocked words"
+            detail="Failed to remove blocked words",
         )
 
 
 @router.get("/admin/messaging/connections")
-async def get_active_connections(
-    admin_user: User = Depends(get_admin_user)
-):
+async def get_active_connections(admin_user: User = Depends(get_admin_user)):
     """Get active WebSocket connection information."""
     try:
         online_users = connection_manager.get_online_users()
         websocket_stats = performance_monitor.get_websocket_stats()
-        
+
         return {
             "total_connections": len(online_users),
             "online_user_ids": [str(uid) for uid in online_users],
             "connection_stats": websocket_stats,
             "redis_connected": connection_manager.redis_client is not None,
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
-    
+
     except Exception as e:
         logger.error(f"Error getting connection info: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to get connection information"
+            detail="Failed to get connection information",
         )
 
 
 @router.post("/admin/messaging/broadcast")
-async def admin_broadcast_message(
-    message: str,
-    admin_user: User = Depends(get_admin_user)
-):
+async def admin_broadcast_message(message: str, admin_user: User = Depends(get_admin_user)):
     """Send administrative broadcast message to all connected users."""
     try:
         online_users = connection_manager.get_online_users()
-        
+
         admin_message = {
             "type": "admin_broadcast",
             "message": message,
             "sender": "System Administrator",
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
-        
+
         # Send to all connected users
         for user_id in online_users:
-            await connection_manager.send_personal_message(
-                str(admin_message),
-                user_id
-            )
-        
+            await connection_manager.send_personal_message(str(admin_message), user_id)
+
         logger.info(f"Admin {admin_user.username} sent broadcast: {message}")
-        
+
         return {
             "message": message,
             "sent_to_users": len(online_users),
-            "timestamp": admin_message["timestamp"]
+            "timestamp": admin_message["timestamp"],
         }
-    
+
     except Exception as e:
         logger.error(f"Error sending admin broadcast: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to send broadcast message"
+            detail="Failed to send broadcast message",
         )
 
 
 @router.get("/admin/messaging/health")
 async def comprehensive_health_check(
-    admin_user: User = Depends(get_admin_user),
-    db: AsyncSession = Depends(get_db)
+    admin_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
 ):
     """Comprehensive health check for all messaging services."""
     try:
         health_checks = await performance_monitor.run_health_checks()
-        
+
         # Additional service-specific checks
         analytics_service = MessageAnalyticsService(db)
         # Note: Moderation service will be used for future content moderation features
-        
+
         # Test basic functionality
         try:
             await analytics_service.get_platform_statistics()
             analytics_healthy = True
         except Exception:
             analytics_healthy = False
-        
+
         overall_status = "healthy"
         failed_services = []
-        
+
         for hc in health_checks:
             if hc.status != "healthy":
                 overall_status = "degraded"
                 failed_services.append(hc.service)
-        
+
         if not analytics_healthy:
             overall_status = "degraded"
             failed_services.append("analytics")
-        
+
         return {
             "overall_status": overall_status,
             "failed_services": failed_services,
@@ -276,20 +261,20 @@ async def comprehensive_health_check(
                     "status": hc.status,
                     "response_time_ms": hc.response_time_ms,
                     "details": hc.details,
-                    "timestamp": hc.timestamp.isoformat()
-                } for hc in health_checks
+                    "timestamp": hc.timestamp.isoformat(),
+                }
+                for hc in health_checks
             ],
             "additional_checks": {
                 "analytics_service": "healthy" if analytics_healthy else "unhealthy",
                 "moderation_service": "healthy",  # Basic instantiation test
-                "websocket_manager": "healthy"
+                "websocket_manager": "healthy",
             },
-            "timestamp": datetime.now(UTC).isoformat()
+            "timestamp": datetime.now(UTC).isoformat(),
         }
-    
+
     except Exception as e:
         logger.error(f"Error in comprehensive health check: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Health check failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Health check failed"
         )

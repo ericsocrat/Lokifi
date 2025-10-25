@@ -4,8 +4,9 @@ Provides endpoints for fetching crypto market data, prices, and market overview
 """
 
 import httpx
-from app.core.config import settings
 from fastapi import APIRouter, HTTPException, Query
+
+from app.core.config import settings
 
 router = APIRouter(prefix="/crypto", tags=["crypto"])
 

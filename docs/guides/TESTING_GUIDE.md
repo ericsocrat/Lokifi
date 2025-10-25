@@ -122,7 +122,7 @@ class TestAuthentication:
         # test code
 ```
 
-### Frontend (TypeScript/JavaScript)
+### Frontend (TypeScript)
 - **Test files**: `<component-name>.test.tsx` or `<module-name>.test.ts`
 - **Test suites**: `describe('<Component/Feature Name>', () => {})`
 - **Test cases**: `it('should <expected behavior>', () => {})` or `test('<behavior>', () => {})`
@@ -151,7 +151,7 @@ describe('PriceChart', () => {
 ### 1. Unit Tests
 **Purpose**: Test individual functions, classes, or components in isolation.
 
-**Location**: 
+**Location**:
 - Backend: `tests/unit/`
 - Frontend: `tests/unit/`
 
@@ -190,7 +190,7 @@ async def test_user_registration_and_login_flow(client, db_session):
     # Register user
     response = await client.post("/api/auth/register", json=user_data)
     assert response.status_code == 201
-    
+
     # Login with registered user
     response = await client.post("/api/auth/login", json=login_data)
     assert response.status_code == 200
@@ -331,7 +331,7 @@ npm run test:coverage
 
 ```bash
 # Run the enhanced CI protection script
-./tools/ci-cd/enhanced-ci-protection.ps1
+./tools/test-runner.ps1 -PreCommit
 ```
 
 ## Best Practices
@@ -387,10 +387,10 @@ npm run test:coverage
    async def test_feature_name(client):
        # Arrange
        data = {"key": "value"}
-       
+
        # Act
        response = await client.post("/api/endpoint", json=data)
-       
+
        # Assert
        assert response.status_code == 200
        assert response.json()["key"] == "value"
@@ -410,10 +410,10 @@ npm run test:coverage
      it('should render correctly', () => {
        // Arrange
        const props = { title: 'Test' };
-       
+
        // Act
        render(<ComponentName {...props} />);
-       
+
        // Assert
        expect(screen.getByText('Test')).toBeInTheDocument();
      });

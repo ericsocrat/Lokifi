@@ -6,10 +6,9 @@ Create Date: 2025-01-27 20:00:00.000000
 
 """
 
-
 # revision identifiers, used by Alembic.
-revision = 'j5_ai_chatbot'
-down_revision = 'cbfdce80331d'  # Points to initial migration
+revision = "j5_ai_chatbot"
+down_revision = "cbfdce80331d"  # Points to initial migration
 branch_labels = None
 depends_on = None
 

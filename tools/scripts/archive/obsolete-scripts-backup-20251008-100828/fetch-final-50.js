@@ -1,6 +1,0 @@
-const axios = require("axios");
-const fs = require("fs");
-const FINNHUB_API_KEY = "d38p06hr01qthpo0qskgd38p06hr01qthpo0qsl0";
-const SYMBOLS = ["QQQ","SPY","DIA","VTI","VOO","GLD","SLV","XLK","XLF","XLE","XLV","XLI","XLY","XLP","XLU","ARKK","ARKG","ARKW","V","MA","AXP","PYPL","SQ","BLK","MS","GS","JNJ","PFE","MRK","ABBV","LLY","GILD","PG","KO","PEP","WMT","COST","TGT","FCX","NEM","GOLD","AMT","PLD","CCI","EQIX","EFA","EEM","AGG","HYG"];
-console.log(`🚀 Fetching ${SYMBOLS.length} final stocks...`);
-async function fetch() {const results=[];for(let i=0;i<SYMBOLS.length;i++){const sym=SYMBOLS[i];try{const r=await axios.get(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FINNHUB_API_KEY}`);if(r.data.c&&r.data.c>0){results.push({symbol:sym,name:sym,type:"stock",price:r.data.c,change:r.data.d||0,changePercent:r.data.dp||0,volume:0,marketCap:0,high24h:r.data.h||r.data.c,low24h:r.data.l||r.data.c,previousClose:r.data.pc||r.data.c});console.log(`✓ ${sym} (${i+1}/${SYMBOLS.length})`);}if((i+1)%10===0)console.log(`Progress: ${i+1}/${SYMBOLS.length}`);await new Promise(r=>setTimeout(r,1100));}catch(e){console.log(`✗ ${sym}`);}}fs.writeFileSync("final-50-stocks.json",JSON.stringify(results,null,2));console.log(`✅ Done! ${results.length} saved`);process.exit(0);}fetch();

@@ -1,7 +1,7 @@
 # 🌟 World-Class Structure Vision for Lokifi
 
-**Date**: October 8, 2025  
-**Current Version**: 3.1.0-alpha, Structure v2.0  
+**Date**: October 8, 2025
+**Current Version**: 3.1.0-alpha, Structure v2.0
 **Vision**: Structure v3.0 (World-Class Edition)
 
 ---
@@ -15,16 +15,16 @@ A **world-class structure** for Lokifi would incorporate best practices from com
 ## 📊 Current State vs World-Class
 
 ### **Current Structure (v2.0)** ✅ Good
-```
+```bash
 lokifi/
 ├── apps/           # Applications
 ├── infra/          # Infrastructure
 └── tools/          # DevOps tools
-```
+```bash
 **Rating**: 7/10 - Industry standard, clear separation
 
 ### **World-Class Structure (v3.0)** 🌟 Elite
-```
+```bash
 lokifi/
 ├── apps/           # User-facing applications
 ├── packages/       # Shared libraries & SDK
@@ -34,7 +34,7 @@ lokifi/
 ├── internal/       # Internal tools & utilities
 ├── docs/           # Living documentation
 └── .github/        # GitHub automation
-```
+```bash
 **Rating**: 10/10 - Enterprise-grade, maximum scalability
 
 ---
@@ -42,7 +42,7 @@ lokifi/
 ## 🏗️ World-Class Structure Breakdown
 
 ### **1. `apps/` - User-Facing Applications**
-```
+```sql
 apps/
 ├── web/                    # Next.js web app (renamed from frontend)
 │   ├── app/               # Next.js 15 app directory
@@ -85,7 +85,7 @@ apps/
     │   ├── utils/
     │   └── templates/
     └── tests/
-```
+```sql
 
 **Key Principles:**
 - ✅ Each app is independently deployable
@@ -96,7 +96,7 @@ apps/
 ---
 
 ### **2. `packages/` - Shared Libraries & SDK** 🆕
-```
+```typescript
 packages/
 ├── ui/                     # Shared UI component library
 │   ├── src/
@@ -158,7 +158,7 @@ packages/
     │   ├── spacing.json
     │   └── breakpoints.json
     └── package.json
-```
+```typescript
 
 **Benefits:**
 - ✅ **DRY Principle**: Write once, use everywhere
@@ -176,7 +176,7 @@ packages/
 ---
 
 ### **3. `services/` - Backend Microservices** 🆕
-```
+```yaml
 services/
 ├── api-gateway/            # Main API gateway (current backend)
 │   ├── app/
@@ -249,7 +249,7 @@ services/
     │   └── dashboards/
     ├── tests/
     └── Dockerfile
-```
+```yaml
 
 **Benefits:**
 - ✅ **Scalability**: Scale services independently
@@ -267,7 +267,7 @@ services/
 ---
 
 ### **4. `infra/` - Infrastructure as Code** ⭐
-```
+```yaml
 infra/
 ├── terraform/              # Terraform IaC (NEW)
 │   ├── environments/
@@ -343,7 +343,7 @@ infra/
     ├── backup/
     ├── restore/
     └── disaster-recovery/
-```
+```yaml
 
 **Key Additions:**
 - ✅ **Terraform**: Multi-cloud infrastructure (AWS, Azure, GCP)
@@ -355,9 +355,9 @@ infra/
 ---
 
 ### **5. `tools/` - DevOps & Automation** ⭐
-```
+```markdown
 tools/
-├── cli/                    # DevOps CLI (lokifi.ps1 evolution)
+├── cli/                    # Future: DevOps CLI tools
 │   ├── src/
 │   │   ├── commands/
 │   │   │   ├── dev/       # Development commands
@@ -397,7 +397,7 @@ tools/
     ├── api/
     ├── frontend/
     └── database/
-```
+```markdown
 
 **Enhancements:**
 - ✅ **Plugin System**: Extensible CLI
@@ -408,7 +408,7 @@ tools/
 ---
 
 ### **6. `internal/` - Internal Tools** 🆕
-```
+```bash
 internal/
 ├── admin-scripts/          # Admin automation scripts
 │   ├── user-management/
@@ -431,7 +431,7 @@ internal/
     ├── feature-flags/
     ├── ab-tests/
     └── gradual-rollouts/
-```
+```bash
 
 **Purpose:**
 - ✅ Tools not for production deployment
@@ -442,7 +442,7 @@ internal/
 ---
 
 ### **7. `docs/` - Living Documentation** ⭐
-```
+```markdown
 docs/
 ├── architecture/           # Architecture decision records (ADR)
 │   ├── decisions/
@@ -495,7 +495,7 @@ docs/
     ├── week-1/
     ├── month-1/
     └── resources/
-```
+```markdown
 
 **Key Additions:**
 - ✅ **ADRs**: Document architectural decisions
@@ -507,7 +507,7 @@ docs/
 ---
 
 ### **8. `.github/` - GitHub Automation** ⭐
-```
+```yaml
 .github/
 ├── workflows/              # GitHub Actions workflows
 │   ├── ci-pr.yml          # PR validation
@@ -540,7 +540,7 @@ docs/
 ├── dependabot.yml          # Dependency updates
 ├── CODEOWNERS              # Code ownership (NEW)
 └── stale.yml              # Stale issue management
-```
+```yaml
 
 **Automation Benefits:**
 - ✅ **CI/CD**: Automated testing and deployment
@@ -554,7 +554,7 @@ docs/
 ## 🚀 Additional World-Class Features
 
 ### **9. Monorepo Management**
-```
+```json
 # Root package.json with workspaces
 {
   "name": "lokifi-monorepo",
@@ -576,7 +576,7 @@ docs/
 # Use Turborepo or Nx for smart caching
 turbo.json
 nx.json
-```
+```json
 
 **Benefits:**
 - ✅ **Smart Caching**: Build only what changed
@@ -593,7 +593,7 @@ nx.json
 ---
 
 ### **10. Testing Strategy**
-```
+```markdown
 # Test organization
 tests/
 ├── unit/                  # Unit tests (co-located)
@@ -615,7 +615,7 @@ tests/
 │   └── compliance/
 └── visual/                # Visual regression tests
     └── screenshots/
-```
+```markdown
 
 **Coverage Goals:**
 - ✅ Unit: 80%+ coverage
@@ -627,7 +627,7 @@ tests/
 ---
 
 ### **11. Configuration Management**
-```
+```env
 config/
 ├── environments/
 │   ├── .env.development
@@ -642,7 +642,7 @@ config/
 │   └── README.md         # Links to vault
 └── validation/
     └── config-schema.json
-```
+```env
 
 **Best Practices:**
 - ✅ Environment-specific configs
@@ -653,7 +653,7 @@ config/
 ---
 
 ### **12. Versioning & Releases**
-```
+```markdown
 # Semantic versioning
 CHANGELOG.md               # Auto-generated
 .changeset/                # Changesets for versioning
@@ -663,7 +663,7 @@ release-please-config.json # Automated releases
 v1.0.0                    # Major release
 v1.0.0-apps-web           # App-specific
 v1.0.0-packages-ui        # Package-specific
-```
+```markdown
 
 **Release Process:**
 1. Changesets track changes
@@ -896,4 +896,3 @@ The remaining 30% (v3.0) requires:
 3. **Aggressive**: Full v3.0 migration (3-4 months)
 
 Your choice! 🚀
-
