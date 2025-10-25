@@ -293,7 +293,9 @@ jobs:
         run: npx playwright install chromium --with-deps
 
       - name: 📸 Run visual regression tests
-        run: npm run test:visual
+        run: |
+          # Only run chromium project (no webkit/firefox dependencies)
+          npm run test:visual -- --project=chromium
         env:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000

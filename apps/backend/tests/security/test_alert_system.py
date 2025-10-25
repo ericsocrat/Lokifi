@@ -54,9 +54,7 @@ async def test_alert_system():
 
         # Check alert history
         if hasattr(alert_manager, "alert_history") and alert_manager.alert_history:
-            print(
-                f"✅ Alert logged in history ({len(alert_manager.alert_history)} alerts)"
-            )
+            print(f"✅ Alert logged in history ({len(alert_manager.alert_history)} alerts)")
 
         # Get alert configuration status
         config = alert_manager.config

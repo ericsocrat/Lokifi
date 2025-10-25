@@ -24,9 +24,11 @@ test.describe('Visual Regression Tests', () => {
 
   test('Dark mode renders correctly', async ({ page }) => {
     // Click theme toggle
-    const themeToggle = page.locator('[data-testid="theme-toggle"], button:has-text("Dark"), button:has-text("Theme")').first();
+    const themeToggle = page
+      .locator('[data-testid="theme-toggle"], button:has-text("Dark"), button:has-text("Theme")')
+      .first();
 
-    if (await themeToggle.count() > 0) {
+    if ((await themeToggle.count()) > 0) {
       await themeToggle.click();
       await page.waitForTimeout(500);
 
@@ -43,9 +45,11 @@ test.describe('Visual Regression Tests', () => {
     await page.waitForSelector('canvas', { timeout: 10000 });
 
     // Try to enable an indicator
-    const indicatorButton = page.locator('[data-testid*="indicator"], button:has-text("Indicators")').first();
+    const indicatorButton = page
+      .locator('[data-testid*="indicator"], button:has-text("Indicators")')
+      .first();
 
-    if (await indicatorButton.count() > 0) {
+    if ((await indicatorButton.count()) > 0) {
       await indicatorButton.click();
       await page.waitForTimeout(1000);
 
@@ -64,7 +68,7 @@ test.describe('Visual Regression Tests', () => {
     // Look for drawing tool buttons
     const toolButton = page.locator('[data-testid*="tool"], button[aria-label*="drawing"]').first();
 
-    if (await toolButton.count() > 0) {
+    if ((await toolButton.count()) > 0) {
       await toolButton.click();
       await page.waitForTimeout(500);
 
@@ -105,7 +109,7 @@ test.describe('Visual Regression Tests', () => {
     // Look for timeframe or symbol controls
     const controlsPanel = page.locator('[data-testid*="controls"], [class*="controls"]').first();
 
-    if (await controlsPanel.count() > 0) {
+    if ((await controlsPanel.count()) > 0) {
       await expect(page).toHaveScreenshot('chart-controls.png', {
         maxDiffPixels: 100,
         threshold: 0.2,
@@ -147,4 +151,3 @@ test.describe('Visual Regression Tests', () => {
     });
   });
 });
-

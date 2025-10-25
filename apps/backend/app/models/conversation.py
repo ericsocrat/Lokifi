@@ -6,12 +6,12 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, func
+from app.db.database import Base
+from sqlalchemy import Boolean, DateTime
 from sqlalchemy import Enum as SqlEnum
+from sqlalchemy import ForeignKey, Index, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
-from app.db.database import Base
 
 
 class ContentType(str, Enum):

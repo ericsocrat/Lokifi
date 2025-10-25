@@ -6,13 +6,12 @@ Endpoints for monitoring security events and system health
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from fastapi import APIRouter, Depends
-from fastapi.security import HTTPBearer
-
 from app.core.config import get_settings
 from app.core.security import get_current_user
 from app.utils.security_alerts import security_alert_manager
 from app.utils.security_logger import SecurityEventType, security_monitor
+from fastapi import APIRouter, Depends
+from fastapi.security import HTTPBearer
 
 router = APIRouter()
 security = HTTPBearer()

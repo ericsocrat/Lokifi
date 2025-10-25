@@ -79,4 +79,3 @@ def sample_user_login_request():
     from app.schemas.auth import UserLoginRequest
 
     return UserLoginRequest(email="test@example.com", password="TestPassword123!")
-

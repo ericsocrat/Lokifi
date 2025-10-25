@@ -63,9 +63,7 @@ async def test_redis_connection():
             else:
                 print("⚠️ Redis client not connected (expected in development)")
         else:
-            print(
-                "⚠️ Cannot determine Redis connection status (no 'is_connected' method)"
-            )
+            print("⚠️ Cannot determine Redis connection status (no 'is_connected' method)")
 
         print("✅ REDIS: No critical configuration issues")
         return True
@@ -124,9 +122,7 @@ async def test_monitoring_alerts():
                 time.time() - monitoring_system.startup_time
             )
             if grace_remaining > 0:
-                print(
-                    f"✅ Startup grace period active: {grace_remaining:.1f}s remaining"
-                )
+                print(f"✅ Startup grace period active: {grace_remaining:.1f}s remaining")
             else:
                 print("✅ Grace period expired - monitoring active")
         else:
