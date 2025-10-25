@@ -182,6 +182,13 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
+      - name: 🗃️ Setup database schema
+        run: alembic upgrade head
+        env:
+          PYTHONPATH: ${{ github.workspace }}/apps/backend
+          DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
+          TESTING: 1
+
       - name: 🧪 Run tests with coverage
         run: pytest --cov=app --cov-report=term-missing --cov-report=json --cov-report=html --cov-fail-under=25
         env:
