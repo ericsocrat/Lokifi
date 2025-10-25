@@ -89,7 +89,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🔍 Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -97,7 +97,7 @@ jobs:
           queries: security-extended,security-and-quality
 
       - name: 🔬 Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
 
@@ -184,7 +184,7 @@ jobs:
 
       - name: 📊 Upload npm audit SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: apps/frontend/npm-audit.sarif
           category: npm-audit
@@ -288,7 +288,7 @@ jobs:
 
       - name: 📊 Upload pip-audit SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: apps/backend/pip-audit.sarif
           category: pip-audit
