@@ -189,6 +189,8 @@ jobs:
           TESTING: 1
           DATABASE_URL: postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi_test
           REDIS_URL: redis://localhost:6379/0
+          LOKIFI_JWT_SECRET: test-jwt-secret-for-coverage
+          JWT_SECRET_KEY: test-jwt-key-for-coverage
         continue-on-error: ${{ matrix.python-version != '3.11' }} # Only fail on primary version
 
       - name: 📊 Upload coverage to Codecov
