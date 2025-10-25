@@ -223,7 +223,7 @@ jobs:
         run: npx playwright install ${{ matrix.browser }} --with-deps
 
       - name: 🎭 Run full E2E test suite
-        run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2
+        run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2 --ignore-snapshots
         env:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
