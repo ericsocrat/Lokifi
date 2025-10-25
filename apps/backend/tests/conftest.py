@@ -58,3 +58,25 @@ def auth_headers(mock_user):
     """Authorization headers for authenticated requests"""
     # This would generate actual JWT token in real implementation
     return {"Authorization": "Bearer mock_token"}
+
+
+@pytest.fixture
+def sample_user_register_request():
+    """Sample user registration request for testing"""
+    from app.schemas.auth import UserRegisterRequest
+
+    return UserRegisterRequest(
+        email="newuser@example.com",
+        password="SecurePass123!",
+        full_name="New Test User",
+        username="newuser",
+    )
+
+
+@pytest.fixture
+def sample_user_login_request():
+    """Sample user login request for testing"""
+    from app.schemas.auth import UserLoginRequest
+
+    return UserLoginRequest(email="test@example.com", password="TestPassword123!")
+
