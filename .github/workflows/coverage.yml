@@ -245,14 +245,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📥 Download frontend coverage
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: frontend-coverage-node-20
           path: apps/frontend/coverage/
         continue-on-error: true
 
       - name: 📥 Download backend coverage
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: backend-coverage-python-3.11
           path: apps/backend/
