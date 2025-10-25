@@ -80,7 +80,7 @@ msgpack==1.1.2
 multidict==6.7.0
 mypy==1.18.2
 mypy_extensions==1.1.0
-openai==1.57.2
+openai==2.6.1
 openapi-core==0.19.5
 openapi-schema-validator==0.6.3
 openapi-spec-validator==0.7.2
