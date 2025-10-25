@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: 📊 Analyze PR size
         id: analyze
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -86,7 +86,7 @@ jobs:
             core.info(`Label: ${sizeLabel}`);
 
       - name: 🏷️ Remove old size labels
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -113,7 +113,7 @@ jobs:
             }
 
       - name: 🏷️ Add size label
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr = context.payload.pull_request;
@@ -132,7 +132,7 @@ jobs:
         if: |
           steps.analyze.outputs.size-label == 'size-l' ||
           steps.analyze.outputs.size-label == 'size-xl'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const pr = context.payload.pull_request;
