@@ -81,7 +81,7 @@ jobs:
 
   #     - name: 📊 Upload actionlint results
   #       if: always()
-  #       uses: actions/upload-artifact@v4
+  #       uses: actions/upload-artifact@v5
   #       with:
   #         name: actionlint-results
   #         path: actionlint.log
@@ -135,7 +135,7 @@ jobs:
 
       - name: 📊 Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: frontend-test-results
           path: apps/frontend/test-results/
@@ -242,7 +242,7 @@ jobs:
 
       - name: 📊 Upload security reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: backend-security-reports
           path: |
