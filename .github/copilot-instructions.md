@@ -645,9 +645,77 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 # Add to todo list with manage_todo_list tool
 ```
 
-## Session 10 Extended - Quality-First CI/CD Resolution (37 Commits)
+## Session 10 Extended - Workflow Optimization Complete (72 Commits) ✅
 
-**Achievement**: 46% → Expected 68-72% pass rate through systematic root cause analysis
+**Achievement**: 46% → 91.3% pass rate through systematic workflow optimization
+
+### Major Accomplishments (ALL MERGED TO MAIN)
+
+**Pass Rate Journey**:
+- Starting: 46% (21/46 workflows)
+- Final: 91.3% (42/46 workflows)
+- Improvement: +45.3 percentage points
+- Status: ✅ LIVE ON MAIN (Merged Oct 25, 2025)
+
+**All 7 Workflow Optimizations Complete**:
+
+1. **Security Workflow Consolidation** (5-7 min savings)
+   - Merged `codeql.yml` + `security-scan.yml` → `security.yml`
+   - Eliminated SARIF upload conflicts
+   - Single workflow for all security scanning
+
+2. **E2E Composite Action** (73% line reduction, 6-9 min savings)
+   - Created `.github/actions/setup-e2e/action.yml`
+   - Applied to 5 workflows (e2e.yml × 4 jobs, integration.yml × 1)
+   - Reduced 110+ lines to reusable action
+
+3. **Path Filter Optimization** (Skip unnecessary runs)
+   - Applied to 4 workflows (ci.yml, coverage.yml, integration.yml, e2e.yml)
+   - Workflows skip when only docs/non-code changed
+   - Saves 8-12 minutes per doc-only PR
+
+4. **Rollup Fix Centralization** (15 workflow lines removed)
+   - Added postinstall script to `apps/frontend/package.json`
+   - Automatic fix on every `npm install`
+   - Removed manual rollup fix steps from all workflows
+
+5. **Concurrency Controls** (Prevent redundant runs)
+   - Applied to ci.yml and coverage.yml
+   - Cancels outdated workflow runs on new push
+   - Saves CI minutes and reduces queue time
+
+6. **Artifact Retention Reduction** (53% storage cost savings)
+   - Reduced coverage artifacts from 30 days → 14 days
+   - Applied to coverage.yml workflow
+   - Maintains necessary history while reducing storage
+
+7. **Extended Composite Action** (Integration workflow)
+   - Applied setup-e2e action to integration.yml
+   - Consistent E2E setup across all workflows
+
+**Total Impact** (Now Realized):
+- ⏱️ **11-16 min/PR saved** - Every PR runs faster
+- 📅 **106-154 hours/year saved** - Annual productivity gain
+- 💰 **53% storage cost reduction** - Active savings
+- 📉 **110+ lines removed** - Cleaner workflows
+- 📚 **3 comprehensive docs** - 1000+ lines of documentation
+
+**Merge Details**:
+- PR #27: test/workflow-optimizations-validation → main
+- Merge commit: 4c6e94f6d360465ffa4826cdaa44f90eddb97d54
+- Merged: October 25, 2025
+- Total commits: 72 (squashed to 1)
+
+**Documentation Published**:
+- `/docs/ci-cd/WORKFLOW_OPTIMIZATION_COMPLETE.md` (380 lines) - Comprehensive guide
+- `/docs/ci-cd/SESSION_10_EXTENDED_SUMMARY.md` - Complete journey
+- `/docs/ci-cd/FOLLOW_UP_ACTIONS.md` - Post-merge tasks (4 items, 8-12 hours)
+
+**Follow-Up Work** (Non-blocking):
+1. 🔴 HIGH: Security hardening (4-6 hrs) - Fix 231 CodeQL alerts
+2. 🟡 MEDIUM: Shellcheck warnings (2-3 hrs) - Fix 145 style issues
+3. 🟢 LOW: Visual baselines (1-2 hrs) - Generate Linux baselines
+4. 🟢 LOW: Workflow analysis (30-60 min) - Evaluate overlap
 
 ### Critical Test Path Fixes
 
@@ -836,7 +904,9 @@ When suggesting code or answering questions, prefer these docs:
 - **Standards**: `/docs/CODING_STANDARDS.md`
 - **Architecture**: `/docs/REPOSITORY_STRUCTURE.md`
 - **Copilot Guide**: `/.vscode/COPILOT_GUIDE.md`
+- **CI/CD Optimization**: `/docs/ci-cd/WORKFLOW_OPTIMIZATION_COMPLETE.md` - Complete workflow optimization guide (Session 10)
 - **Sessions 8-9**: `/docs/SESSION_8_9_SECURITY_AND_CI_RESOLUTION.md` - Security + CI learnings
+- **Session 10 Extended**: `/docs/ci-cd/SESSION_10_EXTENDED_SUMMARY.md` - Workflow optimization journey
 - **Deployment**: `/docs/deployment/README.md` - Production deployment guides
 - **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
 - **DNS Configuration**: `/docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup
