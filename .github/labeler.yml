@@ -119,9 +119,14 @@ e2e-full:
           - "apps/frontend/playwright.config.ts"
 
 # Visual regression related (for triggering visual tests)
+# NOTE: Disabled auto-labeling for components/styles to prevent false positives
+# Visual regression tests require Linux baselines (currently only Windows baselines exist)
+# Apply this label MANUALLY when visual regression testing is needed
+# TODO: Re-enable after Linux baselines are generated (see Todo #3)
 visual-regression:
   - changed-files:
       - any-glob-to-any-file:
           - "apps/frontend/tests/visual/**/*"
-          - "apps/frontend/components/**/*"
-          - "apps/frontend/styles/**/*"
+          # Commented out to prevent auto-labeling on every component/style change:
+          # - "apps/frontend/components/**/*"
+          # - "apps/frontend/styles/**/*"
