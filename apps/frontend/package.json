@@ -64,7 +64,7 @@
     "@axe-core/playwright": "^4.10.2",
     "@axe-core/react": "^4.10.2",
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
-    "@playwright/test": "^1.56.0",
+    "@playwright/test": "^1.56.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
@@ -89,7 +89,7 @@
     "supertest": "^7.1.4",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.2",
-    "vitest": "^3.2.4",
+    "vitest": "^4.0.3",
     "wait-on": "^9.0.1"
   },
   "lint-staged": {
