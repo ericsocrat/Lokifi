@@ -11,6 +11,19 @@ import { beforeAll, describe, expect, it } from 'vitest';
  * - Required functionality presence
  * - Security best practices
  */
+
+// Helper function to parse JSONC (JSON with Comments)
+function parseJSONC(content: string): any {
+  // Remove single-line comments
+  let cleaned = content.replace(/\/\/.*$/gm, '');
+  // Remove multi-line comments
+  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Remove trailing commas before closing brackets/braces
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+
+  return JSON.parse(cleaned);
+}
+
 describe('PowerShell Scripts', () => {
   const scriptsToTest = [
     {
@@ -133,7 +146,7 @@ describe('PowerShell Scripts', () => {
       const tasksPath = join(process.cwd(), '..', '..', '.vscode', 'tasks.json');
 
       if (existsSync(tasksPath)) {
-        const tasks = JSON.parse(readFileSync(tasksPath, 'utf-8'));
+        const tasks = parseJSONC(readFileSync(tasksPath, 'utf-8'));
 
         // Find tasks that reference PowerShell scripts
         const scriptTasks =

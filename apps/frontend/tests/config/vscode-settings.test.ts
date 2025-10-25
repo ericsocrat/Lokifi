@@ -103,15 +103,15 @@ describe('VS Code Configuration', () => {
   });
 
   describe('tasks.json', () => {
-    it('should exist and be valid JSON', () => {
+    it('should exist and be valid JSONC', () => {
       expect(existsSync(tasksPath)).toBe(true);
 
       const content = readFileSync(tasksPath, 'utf-8');
-      expect(() => JSON.parse(content)).not.toThrow();
+      expect(() => parseJSONC(content)).not.toThrow();
     });
 
-    it('should have correct task structure', () => {
-      const tasks = JSON.parse(readFileSync(tasksPath, 'utf-8'));
+    it('should have Redis server task', () => {
+      const tasks = parseJSONC(readFileSync(tasksPath, 'utf-8'));
 
       expect(tasks.version).toBe('2.0.0');
       expect(Array.isArray(tasks.tasks)).toBe(true);
@@ -119,7 +119,7 @@ describe('VS Code Configuration', () => {
     });
 
     it('should have valid PowerShell task commands', () => {
-      const tasks = JSON.parse(readFileSync(tasksPath, 'utf-8'));
+      const tasks = parseJSONC(readFileSync(tasksPath, 'utf-8'));
 
       for (const task of tasks.tasks) {
         expect(task.label).toBeDefined();
@@ -130,7 +130,7 @@ describe('VS Code Configuration', () => {
     });
 
     it('should reference existing PowerShell scripts', () => {
-      const tasks = JSON.parse(readFileSync(tasksPath, 'utf-8'));
+      const tasks = parseJSONC(readFileSync(tasksPath, 'utf-8'));
 
       for (const task of tasks.tasks) {
         if (task.command.includes('./start-frontend.ps1')) {
@@ -144,15 +144,15 @@ describe('VS Code Configuration', () => {
   });
 
   describe('launch.json', () => {
-    it('should exist and be valid JSON', () => {
+    it('should exist and be valid JSONC', () => {
       expect(existsSync(launchPath)).toBe(true);
 
       const content = readFileSync(launchPath, 'utf-8');
-      expect(() => JSON.parse(content)).not.toThrow();
+      expect(() => parseJSONC(content)).not.toThrow();
     });
 
     it('should have Next.js debug configuration', () => {
-      const launch = JSON.parse(readFileSync(launchPath, 'utf-8'));
+      const launch = parseJSONC(readFileSync(launchPath, 'utf-8'));
 
       expect(launch.version).toBe('0.2.0');
       expect(Array.isArray(launch.configurations)).toBe(true);

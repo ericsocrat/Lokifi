@@ -4,33 +4,14 @@ import { describe, expect, it } from 'vitest';
 
 // Helper function to parse JSONC (JSON with Comments)
 function parseJSONC(content: string): any {
-  try {
-    // Remove single-line comments
-    content = content.replace(/\/\/.*$/gm, '');
-    // Remove multi-line comments
-    content = content.replace(/\/\*[\s\S]*?\*\//g, '');
-    return JSON.parse(content);
-  } catch (error) {
-    // If parsing fails, try to fix common JSONC issues
-    // For launch.json, just check basic structure
-    const lines = content.split('\n');
-    const hasVersion = lines.some((line) => line.includes('"version"'));
-    const hasConfigurations = lines.some((line) => line.includes('"configurations"'));
-    if (hasVersion && hasConfigurations) {
-      return {
-        version: '0.2.0',
-        configurations: [
-          {
-            name: 'Launch Frontend (Next.js)',
-            runtimeExecutable: 'npm',
-            runtimeArgs: ['run', 'dev'],
-          },
-          { name: 'Debug Frontend Tests (Vitest)', program: 'vitest.mjs' },
-        ],
-      };
-    }
-    throw error;
-  }
+  // Remove single-line comments
+  let cleaned = content.replace(/\/\/.*$/gm, '');
+  // Remove multi-line comments
+  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
+  // Remove trailing commas before closing brackets/braces
+  cleaned = cleaned.replace(/,(\s*[}\]])/g, '$1');
+
+  return JSON.parse(cleaned);
 }
 
 describe('VS Code Workspace Integration', () => {
