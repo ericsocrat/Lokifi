@@ -42,11 +42,14 @@ jobs:
           filters: |
             frontend:
               - 'apps/frontend/**'
+              - '.github/workflows/integration.yml'
             backend:
               - 'apps/backend/**'
+              - '.github/workflows/integration.yml'
             api:
               - 'apps/backend/app/api/**'
               - 'apps/backend/app/models/**'
+              - '.github/workflows/integration.yml'
 
   # API Contract Testing with Schemathesis
   api-contracts:
@@ -145,34 +148,10 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: � Setup E2E Environment
+        uses: ./.github/actions/setup-e2e
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
-
-      - name: 🎭 Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('apps/frontend/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: 🎭 Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+          browser: chromium
 
       - name: ♿ Run accessibility tests
         run: npm run test:a11y

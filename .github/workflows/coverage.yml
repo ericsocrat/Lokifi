@@ -43,10 +43,12 @@ jobs:
               - 'apps/frontend/**'
               - 'package.json'
               - 'package-lock.json'
+              - '.github/workflows/coverage.yml'
             backend:
               - 'apps/backend/**'
               - 'apps/backend/requirements.txt'
               - 'apps/backend/requirements-dev.txt'
+              - '.github/workflows/coverage.yml'
 
   # Frontend Coverage with Matrix Testing
   frontend-coverage:
@@ -104,7 +106,7 @@ jobs:
         with:
           name: frontend-coverage-node-${{ matrix.node-version }}
           path: apps/frontend/coverage/
-          retention-days: 30
+          retention-days: 14
           compression-level: 9
           if-no-files-found: warn
 
@@ -218,7 +220,7 @@ jobs:
           path: |
             apps/backend/htmlcov/
             apps/backend/coverage.json
-          retention-days: 30
+          retention-days: 14
           compression-level: 9
 
       - name: 📊 Coverage summary

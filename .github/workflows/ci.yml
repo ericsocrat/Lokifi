@@ -46,10 +46,12 @@ jobs:
               - 'apps/frontend/**'
               - 'package.json'
               - 'package-lock.json'
+              - '.github/workflows/ci.yml'
             backend:
               - 'apps/backend/**'
               - 'apps/backend/requirements.txt'
               - 'apps/backend/requirements-dev.txt'
+              - '.github/workflows/ci.yml'
             workflows:
               - '.github/workflows/**'
 

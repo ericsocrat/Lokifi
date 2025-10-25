@@ -51,8 +51,10 @@ jobs:
           filters: |
             frontend:
               - 'apps/frontend/**'
+              - '.github/workflows/e2e.yml'
             e2e:
               - 'apps/frontend/tests/e2e/**'
+              - '.github/workflows/e2e.yml'
               - 'apps/frontend/playwright.config.ts'
 
   # Critical Path E2E Tests (Always run on PRs)
