@@ -10,13 +10,23 @@
 
 **These documents are DEPRECATED and should NOT be used for current development.**
 
-All workflows referenced here have been archived or replaced with optimized versions as of October 23, 2025 (PR #27).
+All workflows referenced here have been archived or replaced with optimized versions as of October 23, 2025 (PR #27) and Session 10 Extended (October 25, 2025).
 
 ---
 
 ## 📁 Archived Documents
 
-### Consolidated Explanation Docs (Merged into CI_CD_GUIDE.md)
+### Session 10 Extended Archives (October 25, 2025)
+
+| Document | Lines | Archived Date | Reason | Superseded By |
+|----------|-------|---------------|--------|---------------|
+| **CI-CD-COMPLETE.md** | 121 | Oct 25, 2025 | Earlier session (secret/environment fixes) | SESSION_10_EXTENDED_SUMMARY.md |
+| **CI-CD-FIXES.md** | 85 | Oct 25, 2025 | Earlier session (YAML/infrastructure fixes) | SESSION_10_EXTENDED_SUMMARY.md |
+| **OPTIMIZATION_SUMMARY.md** | 483 | Oct 25, 2025 | Consolidated into performance guide | PERFORMANCE_GUIDE.md |
+| **PERFORMANCE_OPTIMIZATION_ANALYSIS.md** | 401 | Oct 25, 2025 | Consolidated into performance guide | PERFORMANCE_GUIDE.md |
+| **WORKFLOW_CONSOLIDATION_ANALYSIS.md** | 259 | Oct 25, 2025 | Analysis complete, reference archived | WORKFLOW_AUDIT_REPORT.md |
+
+### Consolidated Explanation Docs (Merged October 23, 2025)
 
 | Document | Lines | Archived Date | Reason |
 |----------|-------|---------------|--------|

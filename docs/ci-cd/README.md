@@ -1,53 +1,98 @@
 # 🔄 CI/CD Documentation Index
 
 > **Purpose**: Centralized index for all CI/CD documentation, guides, and procedures.
-> **Last Updated**: October 23, 2025
-> **Status**: Current (Reflects PR #27 optimizations)
+> **Last Updated**: October 25, 2025
+> **Status**: Current (Post-Session 10 Extended, PR #27 optimizations)
 
 ---
 
-## 🎯 Start Here
+## 🚀 Quick Start
 
-**New to CI/CD?** → Read [CI_CD_GUIDE.md](./CI_CD_GUIDE.md) for comprehensive overview
-**Debugging workflows?** → See [Troubleshooting](#-troubleshooting) section
-**Making changes?** → Check [Current State](#-current-state) first
+**Choose your path**:
+
+- 🆕 **First time here?** → [CI_CD_GUIDE.md](./CI_CD_GUIDE.md) - Beginner-friendly explanation
+- 🐛 **Workflow failed?** → [Troubleshooting](#troubleshooting) - Common issues and fixes
+- ⚡ **Performance question?** → [PERFORMANCE_GUIDE.md](./PERFORMANCE_GUIDE.md) - Metrics and optimizations
+- 🔍 **Need workflow details?** → [WORKFLOW_AUDIT_REPORT.md](./WORKFLOW_AUDIT_REPORT.md) - Complete inventory
+- 🔄 **Adding new workflow?** → [CI_CD_GUIDE.md](./CI_CD_GUIDE.md) - How-to section
+- 🔐 **Security concerns?** → [PERFORMANCE_GUIDE.md](./PERFORMANCE_GUIDE.md) - Security improvements section
+
+---
+
+## 📋 Common Tasks
+
+| Task | Documentation | Quick Link |
+|------|---------------|------------|
+| **View workflow logs** | CI_CD_GUIDE.md | [Where to See CI/CD](./CI_CD_GUIDE.md#where-to-see-cicd-in-action) |
+| **Trigger workflow manually** | CI_CD_GUIDE.md | [Common Tasks](./CI_CD_GUIDE.md#common-tasks) |
+| **Fix failed workflow** | CI_CD_GUIDE.md | [Troubleshooting](./CI_CD_GUIDE.md#troubleshooting) |
+| **Emergency rollback** | ROLLBACK_PROCEDURES.md | [2-minute rollback](./ROLLBACK_PROCEDURES.md) |
+| **Update dependencies** | DEPENDENCY_MANAGEMENT.md | [Dependabot config](./DEPENDENCY_MANAGEMENT.md) |
+| **Check performance** | PERFORMANCE_GUIDE.md | [Metrics dashboard](./PERFORMANCE_GUIDE.md) |
 
 ---
 
 ## 📚 Documentation Categories
 
-### � Getting Started
+### 🎓 Getting Started
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
 | [**CI_CD_GUIDE.md**](./CI_CD_GUIDE.md) | Complete CI/CD guide - what it is, how it works, common tasks | Everyone (start here!) |
+| [**PERFORMANCE_GUIDE.md**](./PERFORMANCE_GUIDE.md) | Performance metrics, optimizations, cost savings, future plans | Developers, DevOps |
 
-### 📊 Current State
+### 📊 Current State & Analysis
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
 | [**WORKFLOW_AUDIT_REPORT.md**](./WORKFLOW_AUDIT_REPORT.md) | Current workflow state, quality metrics, protection score | Understand current CI/CD setup |
-| [**OPTIMIZATION_SUMMARY.md**](./OPTIMIZATION_SUMMARY.md) | Performance improvements, cost savings, optimization history | View what's been optimized |
+| [**SESSION_10_EXTENDED_SUMMARY.md**](./SESSION_10_EXTENDED_SUMMARY.md) | Recent CI fixes journey (46% → 91.3% pass rate) | Learn from recent optimizations |
+| [**FOLLOW_UP_ACTIONS.md**](./FOLLOW_UP_ACTIONS.md) | Pending improvements (CodeQL, shellcheck, visual regression) | See planned work |
 
-### 🛠️ How-To Guides
-
-| Document | Purpose | When to Use |
-|----------|---------|-------------|
-| [**DEPENDENCY_MANAGEMENT.md**](./DEPENDENCY_MANAGEMENT.md) | Automated dependency updates with Dependabot | Configure dependency automation |
-| [**ROLLBACK_PROCEDURES.md**](./ROLLBACK_PROCEDURES.md) | Emergency rollback to previous workflows | When optimizations cause critical issues |
-
-### 📋 Reference Documentation
+### � Reference Documentation
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
 | [**LINTING_AUDIT.md**](./LINTING_AUDIT.md) | Linting setup and configuration | Fix linting issues or add new rules |
-| [**PERFORMANCE_OPTIMIZATION_ANALYSIS.md**](./PERFORMANCE_OPTIMIZATION_ANALYSIS.md) | Performance optimization analysis | Deep dive into optimization strategies |
+| [**DEPENDENCY_MANAGEMENT.md**](./DEPENDENCY_MANAGEMENT.md) | Automated dependency updates with Dependabot | Configure dependency automation |
 
-### 📈 Analysis & Reports
+### 🛠️ Operational Procedures
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| [**WORKFLOW_AUDIT_REPORT.md**](./WORKFLOW_AUDIT_REPORT.md) | Current workflow audit and quality metrics | Review workflow health and status |
+| [**ROLLBACK_PROCEDURES.md**](./ROLLBACK_PROCEDURES.md) | Emergency rollback to previous workflows | When optimizations cause critical issues |
+
+---
+
+## � Documentation Structure
+
+```
+docs/ci-cd/
+├── 📖 Guides
+│   ├── CI_CD_GUIDE.md (beginner-friendly, comprehensive)
+│   └── PERFORMANCE_GUIDE.md (metrics, optimizations, cost analysis)
+│
+├── 📊 Current State
+│   ├── WORKFLOW_AUDIT_REPORT.md (workflow inventory & health)
+│   ├── SESSION_10_EXTENDED_SUMMARY.md (recent journey 46%→91.3%)
+│   └── FOLLOW_UP_ACTIONS.md (pending improvements)
+│
+├── 📋 Reference
+│   ├── LINTING_AUDIT.md (linting configuration reference)
+│   └── DEPENDENCY_MANAGEMENT.md (Dependabot setup)
+│
+├── 🛠️ Operational
+│   └── ROLLBACK_PROCEDURES.md (emergency recovery)
+│
+└── 📦 Archive (.archive/)
+    ├── Historical documentation
+    ├── Superseded analysis docs
+    └── Pre-optimization reference
+```
+
+---
+
+## 🔍 Troubleshooting
 
 ### 🗂️ Historical/Archive
 
