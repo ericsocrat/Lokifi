@@ -4,7 +4,7 @@
 [![Coverage Tracking](https://github.com/ericsocrat/Lokifi/actions/workflows/coverage.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/coverage.yml)
 [![Integration Tests](https://github.com/ericsocrat/Lokifi/actions/workflows/integration.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/integration.yml)
 [![E2E Tests](https://github.com/ericsocrat/Lokifi/actions/workflows/e2e.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/e2e.yml)
-[![CodeQL Security](https://github.com/ericsocrat/Lokifi/actions/workflows/codeql.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/codeql.yml)
+[![Security Analysis](https://github.com/ericsocrat/Lokifi/actions/workflows/security.yml/badge.svg)](https://github.com/ericsocrat/Lokifi/actions/workflows/security.yml)
 [![codecov](https://codecov.io/gh/ericsocrat/Lokifi/branch/main/graph/badge.svg)](https://codecov.io/gh/ericsocrat/Lokifi)
 
 **Market + Social + AI-Powered Financial Intelligence Platform**
