@@ -126,7 +126,7 @@ jobs:
 
       - name: 📊 Upload contract test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: api-contract-results
           path: apps/backend/schemathesis-report.html
@@ -160,7 +160,7 @@ jobs:
 
       - name: 📊 Upload accessibility report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: accessibility-report
           path: apps/frontend/playwright-report/
@@ -248,7 +248,7 @@ jobs:
 
       - name: 📊 Upload integration test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: backend-integration-results
           path: apps/backend/test-results/
