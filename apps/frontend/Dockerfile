@@ -1,4 +1,4 @@
-FROM node:22-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN apk add --no-cache python3 make g++ git
@@ -6,7 +6,7 @@ RUN apk add --no-cache python3 make g++ git
 RUN npm install --legacy-peer-deps
 RUN npm cache clean --force
 
-FROM node:22-alpine AS dev
+FROM node:25-alpine AS dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -18,7 +18,7 @@ RUN chown -R node:node /app
 USER node
 CMD ["npm", "run", "dev"]
 
-FROM node:22-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -35,7 +35,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV DOCKER_BUILD=true
 RUN npm run build
 
-FROM node:22-alpine AS prod
+FROM node:25-alpine AS prod
 WORKDIR /app
 
 # Copy standalone output
