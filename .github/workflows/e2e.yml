@@ -95,34 +95,10 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: � Setup E2E environment
+        uses: ./.github/actions/setup-e2e
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
-
-      - name: 🎭 Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('apps/frontend/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: 🎭 Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+          browser: chromium
 
       - name: 🎭 Run critical path E2E tests
         run: npx playwright test tests/e2e/ --project=chromium
@@ -193,34 +169,10 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: � Setup E2E environment
+        uses: ./.github/actions/setup-e2e
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
-
-      - name: 🎭 Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('apps/frontend/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: 🎭 Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install ${{ matrix.browser }} --with-deps
+          browser: ${{ matrix.browser }}
 
       - name: 🎭 Run full E2E test suite
         run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2 --ignore-snapshots
@@ -263,34 +215,10 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: � Setup E2E environment
+        uses: ./.github/actions/setup-e2e
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
-
-      - name: 🎭 Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('apps/frontend/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: 🎭 Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+          browser: chromium
 
       - name: 📸 Run visual regression tests
         run: |
@@ -346,34 +274,10 @@ jobs:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 🟢 Setup Node.js 20
-        uses: actions/setup-node@v4
+      - name: 🚀 Setup E2E Environment
+        uses: ./.github/actions/setup-e2e
         with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: apps/frontend/package-lock.json
-
-      - name: 📦 Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
-
-      - name: 🎭 Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('apps/frontend/package-lock.json') }}
-          restore-keys: |
-            playwright-${{ runner.os }}-
-
-      - name: 🎭 Install Playwright browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: npx playwright install chromium --with-deps
+          browser: chromium
 
       - name: ⚡ Run performance tests
         run: |

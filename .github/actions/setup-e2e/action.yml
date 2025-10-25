@@ -1,0 +1,66 @@
+name: "Setup E2E Test Environment"
+description: "Sets up Node.js, installs dependencies, and configures Playwright for E2E testing"
+inputs:
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "20"
+  browser:
+    description: 'Playwright browser to install (chromium, firefox, webkit, or "all")'
+    required: false
+    default: "chromium"
+  working-directory:
+    description: "Working directory for npm commands"
+    required: false
+    default: "apps/frontend"
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🟢 Setup Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: "npm"
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+    - name: 📦 Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm ci --legacy-peer-deps
+
+    - name: 🔧 Fix Rollup native bindings
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        npm install --no-save @rollup/rollup-linux-x64-gnu || true
+        npm rebuild rollup || true
+      continue-on-error: true
+
+    - name: 🎭 Cache Playwright browsers
+      uses: actions/cache@v4
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+        restore-keys: |
+          playwright-${{ runner.os }}-
+
+    - name: 🎭 Install Playwright browsers
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        if [ "${{ inputs.browser }}" = "all" ]; then
+          npx playwright install --with-deps
+        else
+          npx playwright install ${{ inputs.browser }} --with-deps
+        fi
+
+    - name: ✅ E2E environment ready
+      shell: bash
+      run: |
+        echo "✅ E2E test environment setup complete"
+        echo "- Node.js: ${{ inputs.node-version }}"
+        echo "- Browser: ${{ inputs.browser }}"
+        echo "- Working directory: ${{ inputs.working-directory }}"
