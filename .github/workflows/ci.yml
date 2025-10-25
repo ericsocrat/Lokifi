@@ -112,13 +112,7 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
-
-      - name: � ESLint (Code Quality)
+      - name: ✨ ESLint (Code Quality)
         run: npm run lint
         continue-on-error: false
 
@@ -281,12 +275,6 @@ jobs:
 
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
-
-      - name: 🔧 Fix Rollup native bindings
-        run: |
-          npm install --no-save @rollup/rollup-linux-x64-gnu || true
-          npm rebuild rollup || true
-        continue-on-error: true
 
       - name: � NPM Audit
         run: npm audit --audit-level=moderate

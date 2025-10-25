@@ -7,6 +7,7 @@
     "npm": ">=11.0.0"
   },
   "scripts": {
+    "postinstall": "npm rebuild rollup 2>/dev/null || true && (npm install --no-save @rollup/rollup-linux-x64-gnu 2>/dev/null || true)",
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",
