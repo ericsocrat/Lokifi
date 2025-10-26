@@ -163,7 +163,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium]
-        shard: [1, 2]
+        shard: [1, 2, 3, 4]  # Increased from 2 to 4 for faster parallel execution
     defaults:
       run:
         working-directory: apps/frontend
@@ -177,7 +177,7 @@ jobs:
           browser: ${{ matrix.browser }}
 
       - name: 🎭 Run full E2E test suite
-        run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/2 --ignore-snapshots
+        run: npx playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}/4 --ignore-snapshots
         env:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
