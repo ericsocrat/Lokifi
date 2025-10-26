@@ -33,7 +33,8 @@ export default defineConfig({
   // Fail the build on CI if you accidentally left test.only in the source code
   forbidOnly: !!process.env['CI'],
 
-  // Retry on CI only
+  // Retry on CI only (can be overridden per project)
+  // Default: 2 retries for critical tests, 1 for full/visual
   retries: process.env['CI'] ? 2 : 0,
 
   // Opt out of parallel tests on CI
@@ -70,6 +71,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
       },
+      retries: process.env['CI'] ? 2 : 0, // 2 retries for critical E2E tests
     },
 
     // Mobile testing (for responsive visual tests)
@@ -79,6 +81,7 @@ export default defineConfig({
         ...devices['iPhone 13'],
       },
       testMatch: ['**/visual/**/*.spec.ts'], // Only run visual tests on mobile
+      retries: process.env['CI'] ? 1 : 0, // 1 retry for visual tests
     },
 
     // Tablet testing (for responsive visual tests)
@@ -88,6 +91,7 @@ export default defineConfig({
         ...devices['iPad Pro'],
       },
       testMatch: ['**/visual/**/*.spec.ts'], // Only run visual tests on tablet
+      retries: process.env['CI'] ? 1 : 0, // 1 retry for visual tests
     },
   ],
 
