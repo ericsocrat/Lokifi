@@ -207,10 +207,12 @@ jobs:
 
       - name: 🔍 Type Check (mypy)
         run: mypy . --config-file=mypy.ini
-        continue-on-error: true # Temporarily non-blocking - see TODO below
-        # TODO: Fix ~500+ type annotation issues and make this blocking again
-        # Reference: Session 10 commit 5d583f30 documents all type issues
-        # Post-merge task: Incrementally fix type annotations and re-enable strict mode
+        continue-on-error: true # Non-blocking until errors reduced to manageable level
+        # Pragmatic type checking enabled (Session 10 Extended, H2 complete)
+        # Configuration: Catches real bugs (None errors, unreachable code) without requiring perfection
+        # Current error baseline: ~1640 errors (down from 1916 via config optimization)
+        # Incremental improvement plan: See docs/guides/TECHNICAL_DEBT.md
+        # Target: Reduce to ~500 errors, then make blocking (6-12 month roadmap)
 
       - name: 🔒 Security Check (bandit)
         run: bandit -r app/ -f json -o bandit-report.json

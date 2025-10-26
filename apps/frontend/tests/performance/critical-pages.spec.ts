@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 /**
  * Frontend Performance Tests
@@ -149,7 +149,8 @@ test.describe('Performance - Resource Loading', () => {
     await page.goto('/markets', { waitUntil: 'networkidle' });
 
     const resources = await page.evaluate(() => {
-      return performance.getEntriesByType('resource')
+      return performance
+        .getEntriesByType('resource')
         .filter((r: any) => r.name.endsWith('.js'))
         .map((r: any) => ({
           name: r.name,
@@ -160,7 +161,7 @@ test.describe('Performance - Resource Loading', () => {
 
     // Check that no single JS file is excessively large (>500KB)
     const largeFiles = resources.filter((r: any) => r.size > 500 * 1024);
-    
+
     if (largeFiles.length > 0) {
       console.warn('⚠️ Large JavaScript files detected:', largeFiles);
     }
@@ -174,7 +175,8 @@ test.describe('Performance - Resource Loading', () => {
     await page.goto('/markets', { waitUntil: 'networkidle' });
 
     const images = await page.evaluate(() => {
-      return performance.getEntriesByType('resource')
+      return performance
+        .getEntriesByType('resource')
         .filter((r: any) => r.name.match(/\.(png|jpg|jpeg|gif|webp|svg)$/i))
         .map((r: any) => ({
           name: r.name,
@@ -200,7 +202,7 @@ test.describe('Performance - Core Web Vitals', () => {
 
     const fcp = await page.evaluate(() => {
       const paintEntries = performance.getEntriesByType('paint');
-      const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+      const fcpEntry = paintEntries.find((entry) => entry.name === 'first-contentful-paint');
       return fcpEntry ? fcpEntry.startTime : null;
     });
 
