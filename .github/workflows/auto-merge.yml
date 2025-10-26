@@ -93,10 +93,11 @@ jobs:
           script: |
             const prNumber = ${{ steps.check-author.outputs.pr-number }};
 
-            // Wait up to 10 minutes for checks to complete
-            const maxWaitTime = 10 * 60 * 1000; // 10 minutes
-            const pollInterval = 30 * 1000; // 30 seconds
+            // Wait up to 20 minutes for checks to complete
+            const maxWaitTime = 20 * 60 * 1000; // 20 minutes (increased from 10)
+            const pollInterval = 30 * 1000; // Start at 30 seconds
             const startTime = Date.now();
+            let pollCount = 0;
 
             while (Date.now() - startTime < maxWaitTime) {
               const { data: pr } = await github.rest.pulls.get({
@@ -113,7 +114,11 @@ jobs:
 
               if (pr.mergeable_state === 'blocked') {
                 core.info(`⏳ Waiting for checks... (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`);
-                await new Promise(resolve => setTimeout(resolve, pollInterval));
+                
+                // Exponential backoff: 30s → 45s → 67s → 100s → 120s (max)
+                const delay = Math.min(pollInterval * Math.pow(1.5, pollCount), 120000);
+                await new Promise(resolve => setTimeout(resolve, delay));
+                pollCount++;
               } else {
                 core.setFailed(`❌ PR is not mergeable (state: ${pr.mergeable_state})`);
                 return;
