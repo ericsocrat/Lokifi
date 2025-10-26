@@ -276,17 +276,45 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: 📦 Cache Docker layers
+        id: cache
         uses: actions/cache@v4
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('**/Dockerfile') }}
+          key: ${{ runner.os }}-buildx-${{ hashFiles('apps/backend/**', 'apps/frontend/**', 'infra/docker/**') }}
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: 🔨 Build and start services
+      - name: � Check if rebuild needed
+        id: check-rebuild
+        run: |
+          # Check if Docker images exist and cache is valid
+          if docker images lokifi-backend:latest | grep -q lokifi-backend && \
+             docker images lokifi-frontend:latest | grep -q lokifi-frontend; then
+            echo "Images exist, checking if rebuild needed..."
+            
+            # If cache was restored (cache-hit), skip rebuild
+            if [ "${{ steps.cache.outputs.cache-hit }}" = "true" ]; then
+              echo "Cache hit - using existing images"
+              echo "rebuild=false" >> $GITHUB_OUTPUT
+            else
+              echo "Cache miss - rebuilding required"
+              echo "rebuild=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "Images don't exist - rebuilding required"
+            echo "rebuild=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: �🔨 Build and start services
         working-directory: infra/docker
         run: |
-          docker compose -f docker-compose.ci.yml up -d --build
+          if [ "${{ steps.check-rebuild.outputs.rebuild }}" = "true" ]; then
+            echo "🔨 Building Docker images..."
+            docker compose -f docker-compose.ci.yml up -d --build
+          else
+            echo "⚡ Using cached Docker images..."
+            docker compose -f docker-compose.ci.yml up -d --no-build
+          fi
           sleep 10
 
       - name: 🔍 Check service health
