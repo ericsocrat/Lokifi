@@ -1,9 +1,9 @@
 name: 📈 Coverage Tracking
 
 # Coverage workflow: Runs in ~4 minutes
-# Purpose: Track code coverage, generate reports, auto-update documentation
+# Purpose: Track code coverage and generate reports
 # Runs on: Pull requests and main branch
-# Strategy: Comprehensive coverage with matrix testing, auto-updates
+# Strategy: Comprehensive coverage with matrix testing across Python/Node versions
 
 on:
   pull_request:
@@ -224,70 +224,6 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f coverage.json ]; then
             python -c "import json; data = json.load(open('coverage.json')); total = data['totals']; print('| Metric | Coverage |'); print('|--------|----------|'); print(f\"| Lines | {total['percent_covered']:.2f}% |\"); print(f\"| Statements | {total['num_statements']} / {total['covered_lines']} |\")" >> $GITHUB_STEP_SUMMARY
-          fi
-
-  # Auto-update coverage documentation
-  update-coverage-docs:
-    name: 📝 Update Coverage Documentation
-    runs-on: ubuntu-latest
-    needs:
-      - frontend-coverage
-      - backend-coverage
-    if: |
-      always() &&
-      github.event_name == 'push' &&
-      github.ref == 'refs/heads/main'
-    timeout-minutes: 5
-    steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: 📥 Download frontend coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: frontend-coverage-node-20
-          path: apps/frontend/coverage/
-        continue-on-error: true
-
-      - name: 📥 Download backend coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-coverage-python-3.11
-          path: apps/backend/
-        continue-on-error: true
-
-      - name: 📊 Update coverage documentation
-        run: |
-          # Extract frontend coverage
-          if [ -f apps/frontend/coverage/coverage-summary.json ]; then
-            FRONTEND_COV=$(node -e 'const fs = require("fs"); const summary = JSON.parse(fs.readFileSync("apps/frontend/coverage/coverage-summary.json")); console.log(summary.total.lines.pct);')
-          else
-            FRONTEND_COV="N/A"
-          fi
-
-          # Extract backend coverage
-          if [ -f apps/backend/coverage.json ]; then
-            BACKEND_COV=$(python3 -c 'import json; data = json.load(open("apps/backend/coverage.json")); print(f"{data[\"totals\"][\"percent_covered\"]:.2f}")')
-          else
-            BACKEND_COV="N/A"
-          fi
-
-          # Log coverage values
-          echo "Frontend Coverage: ${FRONTEND_COV}%"
-          echo "Backend Coverage: ${BACKEND_COV}%"
-
-      - name: 📝 Commit coverage updates
-        if: success()
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-
-          if [ -n "$(git status --porcelain)" ]; then
-            git add coverage.config.json README.md || true
-            git commit -m "chore(coverage): Auto-update coverage metrics [skip ci]" || true
-            git push || true
           fi
 
   # Summary Job: Coverage thresholds met
