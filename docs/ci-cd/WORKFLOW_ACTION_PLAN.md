@@ -1,11 +1,11 @@
 # GitHub Actions Workflow - Consolidated Action Plan
 
 **Generated**: October 26, 2025
-**Last Updated**: October 26, 2025 (Phase 1: 4/4 ✅ | Phase 2: 3/3 ✅ | Phase 3: 5/5 ✅)
+**Last Updated**: October 26, 2025 (Phase 1: 4/4 ✅ | Phase 2: 3/3 ✅ | Phase 3: 6/10 ✅)
 **Based on**: Comprehensive audit of 10 workflows + 1 composite action + labeler.yml
 **Overall Grade**: 8.9/10 (Excellent)
 **Total Items**: 55 (23 issues + 32 enhancements)
-**Progress**: 12 completed ✅ | 17 remaining ⏳ | **Phases 1-3 COMPLETE**
+**Progress**: 13 completed ✅ | 16 remaining ⏳ | **Phase 3: 6 of 10 MEDIUM items complete**
 
 ---
 
@@ -35,9 +35,10 @@
 9. ~~🟡 **MEDIUM**: Add E2E retry logic~~ - ✅ Project-specific retries (30 min)
 10. ~~🟡 **MEDIUM**: Increase E2E shards~~ - ✅ 2→4 for faster feedback (30 min)
 11. ~~🟡 **MEDIUM**: Accessibility linting blocking~~ - ✅ Quality gate enforced (1 hr)
-12. 🟡 **MEDIUM**: Docker build cache check (1-2 hrs)
+12. ~~🟡 **MEDIUM**: Docker build cache check~~ - ✅ Smart cache validation (1 hr)
 13. 🟡 **HIGH**: Make mypy type checking blocking (~500 type issues, 8-10 hrs)
 14. 🟡 **HIGH**: Create actual performance tests (4-6 hours)
+15. 🟡 **MEDIUM**: Additional optimizations (4 remaining, 6-10 hrs)
 
 ---
 
@@ -400,6 +401,53 @@ The "231 alerts" mentioned in Session 10 documentation appears to be either:
 
 ---
 
+#### ✅ M6. Docker Build Cache Invalidation Check (COMPLETE)
+**Source**: integration.yml audit
+**Completion Date**: October 26, 2025
+**Status**: ✅ Smart Docker build cache with conditional rebuild
+**Time Taken**: 1 hour (as estimated)
+
+**Changes Implemented**:
+1. **Enhanced Cache Key**: Changed from `hashFiles('**/Dockerfile')` to include all source files
+   - Now tracks: `apps/backend/**`, `apps/frontend/**`, `infra/docker/**`
+   - More accurate cache invalidation when source code changes
+
+2. **Added Rebuild Check Step**: Validates if Docker images need rebuilding
+   - Checks if images exist in local Docker registry
+   - Validates cache hit status
+   - Sets `rebuild=true/false` output for conditional build
+
+3. **Conditional Build Logic**: Uses cache when valid
+   - Cache hit → `docker compose up -d --no-build` (uses existing images)
+   - Cache miss → `docker compose up -d --build` (rebuilds images)
+   - Fallback: Always rebuilds if images don't exist
+
+**Files Modified**:
+- `.github/workflows/integration.yml` - Updated fullstack-integration job
+
+**Impact**:
+- ⏱️ Saves 2-3 minutes per run when source unchanged
+- 💰 Better CI resource utilization
+- ✅ Maintains reliability (always rebuilds when needed)
+- 📊 Smarter cache strategy improves developer feedback time
+
+**Technical Details**:
+```yaml
+# Enhanced cache key (tracks all relevant source)
+key: ${{ runner.os }}-buildx-${{ hashFiles('apps/backend/**', 'apps/frontend/**', 'infra/docker/**') }}
+
+# Conditional rebuild
+if [ "${{ steps.check-rebuild.outputs.rebuild }}" = "true" ]; then
+  docker compose up -d --build
+else
+  docker compose up -d --no-build
+fi
+```
+
+**Commit**: 8aef5c9c
+
+---
+
 ### 🔴 CRITICAL (Blocking/Security Issues)
 **Impact**: Security vulnerabilities, incorrect configuration
 **Timeline**: Address within 1-2 weeks
@@ -729,18 +777,18 @@ visual-regression:
 ### 🟡 MEDIUM PRIORITY (Optimization)
 **Impact**: Performance improvements, better UX, reduced costs
 **Timeline**: Address within 1-2 months
-**Estimated Total**: 9-13 hours (5/10 complete, 7-11 hours remaining)
+**Estimated Total**: 9-13 hours (6/10 complete, 6-10 hours remaining)
 
-**Completed** (5/5 - 2 hr 25 min total):
+**Completed** (6/10 - 3 hr 25 min total):
 - ✅ M1: Auto-merge timeout 20 min (15 min)
 - ✅ M2: Artifact retention 14 days (10 min)
 - ✅ M3: E2E retry logic (30 min)
 - ✅ M4: E2E shards 2→4 (30 min)
 - ✅ M5: Accessibility linting blocking (1 hr)
+- ✅ M6: Docker build cache check (1 hr)
 
-**Remaining Work** (5/10 - 7-11 hours):
-- ⏳ M6: Docker build cache check (1-2 hrs)
-- ⏳ Phase 4-6 MEDIUM items (6-9 hrs)
+**Remaining Work** (4/10 - 6-10 hours):
+- ⏳ M7-M10: Phase 4-6 MEDIUM items (6-10 hrs)
 
 #### M1. Increase auto-merge Check Timeout to 20 Minutes
 **Source**: auto-merge.yml audit
