@@ -1,6 +1,6 @@
 # Visual Regression Baselines Guide
 
-**Last Updated**: October 26, 2025  
+**Last Updated**: October 26, 2025
 **Related Task**: H6 - Generate Linux Visual Regression Baselines
 
 ---
@@ -292,6 +292,6 @@ await expect(page).toHaveScreenshot('chart-with-data.png', {
 
 ---
 
-**Last Generated**: October 26, 2025  
-**Platform**: Linux (ubuntu-latest)  
+**Last Generated**: October 26, 2025
+**Platform**: Linux (ubuntu-latest)
 **Playwright Version**: Check `apps/frontend/package.json`

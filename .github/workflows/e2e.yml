@@ -313,11 +313,7 @@ jobs:
           browser: chromium
 
       - name: ⚡ Run performance tests
-        run: |
-          echo "⚠️ Performance tests directory not yet created"
-          echo "📝 TODO: Create tests/performance/ directory with Playwright performance tests"
-          echo "✅ Skipping for now - no tests to run"
-          exit 0
+        run: npm run test:performance
         env:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
@@ -328,7 +324,7 @@ jobs:
         with:
           name: performance-report
           path: apps/frontend/playwright-report/
-          retention-days: 30
+          retention-days: 14 # Match other E2E test retention
           compression-level: 9
 
   # Summary Job: E2E tests complete

@@ -64,9 +64,9 @@ export default defineConfig({
       // Backend: 25% (current 27%) | Frontend: 10% (current 11.61%) | Overall: 20% (current 19.31%)
       // See coverage.config.json for current metrics and improvement roadmap
       thresholds: {
-        branches: 80,  // Keep high for new code quality
+        branches: 80, // Keep high for new code quality
         functions: 80, // Keep high for new code quality
-        lines: 10,     // Realistic baseline - currently at 11.61%
+        lines: 10, // Realistic baseline - currently at 11.61%
         statements: 10, // Realistic baseline - currently at 11.61%
       },
       // Dashboard-specific thresholds for business logic utilities

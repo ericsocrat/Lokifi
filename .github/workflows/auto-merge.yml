@@ -114,7 +114,7 @@ jobs:
 
               if (pr.mergeable_state === 'blocked') {
                 core.info(`⏳ Waiting for checks... (${Math.round((Date.now() - startTime) / 1000)}s elapsed)`);
-                
+
                 // Exponential backoff: 30s → 45s → 67s → 100s → 120s (max)
                 const delay = Math.min(pollInterval * Math.pow(1.5, pollCount), 120000);
                 await new Promise(resolve => setTimeout(resolve, delay));
