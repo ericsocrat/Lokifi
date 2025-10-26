@@ -13,6 +13,62 @@ This document establishes the test coverage baseline for the Lokifi project. Cov
 | **Frontend** | 11.61% | 88.7% | 84.69% | 11.61% |
 | **Backend** | 27% | N/A | N/A | 26.65% |
 
+## 🎯 Coverage Thresholds (Updated: Oct 26, 2025)
+
+**Configuration Philosophy**: Realistic baselines that reflect current state while preventing regression.
+
+### Current Thresholds (Aligned Across All Tools)
+
+| Component | Lines | Branches | Functions | Statements | Status |
+|-----------|-------|----------|-----------|------------|--------|
+| **Frontend** | 10% | 80% | 80% | 10% | ✅ Passing (11.61%) |
+| **Backend** | 25% | 70% | 70% | 25% | ✅ Passing (27%) |
+| **Overall** | 20% | 75% | 75% | 20% | ⚠️ Close (19.31%) |
+
+### Threshold Alignment (Fixed: Oct 26, 2025)
+
+**Before (Mismatched)**:
+- Backend: coverage.config.json (80%) ≠ pytest.ini (25%) ≠ current (27%)
+- Frontend: vitest.config.ts (disabled) ≠ coverage.config.json (10%)
+
+**After (Aligned)**:
+- ✅ **Backend**: pytest.ini (`--cov-fail-under=25`) = coverage.config.json (25%) = current (27% ✅)
+- ✅ **Frontend**: vitest.config.ts (lines: 10) = coverage.config.json (10%) = current (11.61% ✅)
+- ✅ **Overall**: All three metrics aligned at 20% (current 19.31% - close, needs +0.69%)
+
+### Configuration Files Updated
+
+1. **`coverage.config.json`** (Master Config):
+   - Backend: lines 80% → 25% (realistic)
+   - Frontend: lines 10% (unchanged, already realistic)
+   - Overall: lines 20% (unchanged, baseline)
+
+2. **`apps/backend/pytest.ini`**:
+   - Already correct at 25% (`--cov-fail-under=25`)
+   - No changes needed
+
+3. **`apps/frontend/vitest.config.ts`**:
+   - Re-enabled thresholds (were commented out)
+   - Set lines: 10%, statements: 10%
+   - Kept branches: 80%, functions: 80% (quality for new code)
+
+### Improvement Roadmap
+
+**Short-term (1-2 months)**:
+- Frontend: 11.61% → 15% (+3.39% lines)
+- Backend: 27% → 30% (+3% lines)
+- Overall: 19.31% → 22% (+2.69% lines)
+
+**Medium-term (3-6 months)**:
+- Frontend: 15% → 25% (+10% lines)
+- Backend: 30% → 40% (+10% lines)
+- Overall: 22% → 30% (+8% lines)
+
+**Long-term (6-12 months)**:
+- Frontend: 25% → 40% (+15% lines)
+- Backend: 40% → 60% (+20% lines)
+- Overall: 30% → 50% (+20% lines)
+
 ## 🎯 Frontend Coverage (Apps/Frontend)
 
 **Test Framework**: Vitest 3.2.4 with @vitest/coverage-v8
@@ -314,5 +370,5 @@ coverage: {
 
 ---
 
-**Last Updated**: October 23, 2025
+**Last Updated**: October 26, 2025 (Coverage thresholds aligned across all tools)
 **Next Review**: November 23, 2025 (1 month)

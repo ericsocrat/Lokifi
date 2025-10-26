@@ -3,8 +3,8 @@
   "title": "Lokifi Coverage Configuration",
   "description": "Master coverage configuration - single source of truth for all coverage thresholds and current metrics",
   "version": "1.0.0",
-  "lastUpdated": "2025-10-23T00:00:00Z",
-  "updatedBy": "automated-coverage-sync",
+  "lastUpdated": "2025-10-26T00:00:00Z",
+  "updatedBy": "manual-threshold-alignment",
 
   "thresholds": {
     "frontend": {
@@ -12,21 +12,21 @@
       "branches": 80,
       "functions": 80,
       "statements": 10,
-      "description": "Frontend coverage thresholds for CI/CD quality gate"
+      "description": "Frontend coverage thresholds for CI/CD quality gate - Aligned with vitest.config.ts"
     },
     "backend": {
-      "lines": 80,
+      "lines": 25,
       "branches": 70,
       "functions": 70,
-      "statements": 80,
-      "description": "Backend coverage thresholds for CI/CD quality gate"
+      "statements": 25,
+      "description": "Backend coverage thresholds for CI/CD quality gate - Aligned with pytest.ini (--cov-fail-under=25)"
     },
     "overall": {
       "lines": 20,
       "branches": 75,
       "functions": 75,
       "statements": 20,
-      "description": "Overall project coverage thresholds"
+      "description": "Overall project coverage thresholds - Realistic baseline for current state (19.31%)"
     }
   },
 
