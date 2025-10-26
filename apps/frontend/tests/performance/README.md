@@ -11,7 +11,9 @@ This directory contains performance tests for Lokifi's frontend application. We 
 ## 🎯 What We Test
 
 ### 1. **Page Load Performance** (`critical-pages.spec.ts`)
+
 Tests performance metrics for critical user journeys:
+
 - **Homepage** (`/`)
 - **Markets** (`/markets`)
 - **Chart/Trading** (`/chart`)
@@ -19,17 +21,20 @@ Tests performance metrics for critical user journeys:
 - **Portfolio** (`/portfolio`)
 
 **Metrics Measured**:
+
 - DOM Content Loaded (< 2s)
 - Full Page Load (< 3s)
 - Response Time (< 1.5s)
 - First Contentful Paint (< 2s)
 
 ### 2. **Resource Loading**
+
 - **JavaScript Bundle Size**: Total JS < 2MB, individual files < 500KB
 - **Image Optimization**: Individual images < 200KB
 - **CSS Bundle Size**: Checked indirectly via load times
 
 ### 3. **Core Web Vitals**
+
 - **First Contentful Paint (FCP)**: < 2s
 - **Largest Contentful Paint (LCP)**: < 3s
 - **Cumulative Layout Shift (CLS)**: Measured but not enforced (future)
@@ -73,32 +78,32 @@ npx lhci autorun
 
 ### Page Load Budgets (Playwright)
 
-| Metric | Threshold | Description |
-|--------|-----------|-------------|
-| DOM Content Loaded | < 2s | Initial HTML parsed and DOM ready |
-| Full Page Load | < 3s | All resources loaded (images, scripts, etc.) |
-| Response Time | < 1.5s | Time from request to first byte |
-| First Contentful Paint | < 2s | First visual element painted |
+| Metric                 | Threshold | Description                                  |
+| ---------------------- | --------- | -------------------------------------------- |
+| DOM Content Loaded     | < 2s      | Initial HTML parsed and DOM ready            |
+| Full Page Load         | < 3s      | All resources loaded (images, scripts, etc.) |
+| Response Time          | < 1.5s    | Time from request to first byte              |
+| First Contentful Paint | < 2s      | First visual element painted                 |
 
 ### Lighthouse Budgets (LHCI)
 
-| Category | Minimum Score | Description |
-|----------|---------------|-------------|
-| Performance | 80% | Overall performance score |
-| Accessibility | 90% | A11y compliance |
-| Best Practices | 85% | Web best practices |
-| SEO | 85% | Search engine optimization |
+| Category       | Minimum Score | Description                |
+| -------------- | ------------- | -------------------------- |
+| Performance    | 80%           | Overall performance score  |
+| Accessibility  | 90%           | A11y compliance            |
+| Best Practices | 85%           | Web best practices         |
+| SEO            | 85%           | Search engine optimization |
 
 ### Core Web Vitals Budgets
 
-| Metric | Threshold | Category |
-|--------|-----------|----------|
-| FCP (First Contentful Paint) | < 2s | Good |
-| LCP (Largest Contentful Paint) | < 3s | Good |
-| CLS (Cumulative Layout Shift) | < 0.1 | Good |
-| TBT (Total Blocking Time) | < 300ms | Good |
-| Speed Index | < 3.5s | Good |
-| Time to Interactive | < 4s | Good |
+| Metric                         | Threshold | Category |
+| ------------------------------ | --------- | -------- |
+| FCP (First Contentful Paint)   | < 2s      | Good     |
+| LCP (Largest Contentful Paint) | < 3s      | Good     |
+| CLS (Cumulative Layout Shift)  | < 0.1     | Good     |
+| TBT (Total Blocking Time)      | < 300ms   | Good     |
+| Speed Index                    | < 3.5s    | Good     |
+| Time to Interactive            | < 4s      | Good     |
 
 ---
 
@@ -121,6 +126,7 @@ tests/performance/
 ### Playwright Configuration (`playwright.config.ts`)
 
 Performance tests use the default Playwright configuration with:
+
 - **Timeout**: 30s per test
 - **Retries**: 2 on CI, 0 locally
 - **Workers**: 1 on CI (serial), 4 locally (parallel)
@@ -129,6 +135,7 @@ Performance tests use the default Playwright configuration with:
 ### Lighthouse CI Configuration (`.lighthouserc.json`)
 
 Located at project root, configures:
+
 - **Number of runs**: 3 (median used)
 - **URLs tested**: 5 critical pages
 - **Preset**: Desktop performance
@@ -144,11 +151,13 @@ Located at project root, configures:
 Performance tests run in the `e2e-performance` job:
 
 **Triggers**:
+
 - Manual trigger (workflow_dispatch)
 - Main branch pushes
 - PRs with `performance` label
 
 **Steps**:
+
 1. Checkout repository
 2. Setup E2E environment (Node.js, npm, Playwright)
 3. Run performance tests
@@ -163,16 +172,19 @@ Performance tests run in the `e2e-performance` job:
 ### Test Failures
 
 **Problem**: Performance test fails with timeout
+
 ```
 Error: page.goto: Timeout 30000ms exceeded
 ```
 
 **Solutions**:
+
 - Check if dev server is running (`npm run dev`)
 - Increase timeout in `playwright.config.ts` for performance tests
 - Check network conditions (VPN, firewall)
 
 **Problem**: Performance threshold exceeded
+
 ```
 expect(loadTime).toBeLessThan(3000)
 Expected: < 3000
@@ -180,6 +192,7 @@ Received: 3456
 ```
 
 **Solutions**:
+
 - Run tests multiple times (performance varies)
 - Check system load (CPU, memory)
 - Profile slow page with Lighthouse
@@ -188,16 +201,19 @@ Received: 3456
 ### Lighthouse CI Failures
 
 **Problem**: LHCI fails to connect to server
+
 ```
 Error: Failed to connect to http://localhost:3000
 ```
 
 **Solutions**:
+
 - Build app first: `npm run build`
 - Start production server: `npm run start`
 - Wait for "ready on" message before running LHCI
 
 **Problem**: Performance score below threshold
+
 ```
 Assertion failed: categories:performance
 Expected: >= 0.8
@@ -205,6 +221,7 @@ Received: 0.73
 ```
 
 **Solutions**:
+
 - Analyze Lighthouse report HTML
 - Check for unoptimized images, large JS bundles
 - Review network requests
@@ -217,6 +234,7 @@ Received: 0.73
 ### Writing Performance Tests
 
 ✅ **DO**:
+
 - Test critical user journeys only
 - Use realistic test data
 - Wait for `networkidle` before measuring
@@ -224,6 +242,7 @@ Received: 0.73
 - Log warnings for soft limits (images, JS size)
 
 ❌ **DON'T**:
+
 - Test every single page (too slow)
 - Use unrealistic thresholds (< 1s load time)
 - Fail on soft limits (image size warnings)
@@ -259,6 +278,7 @@ Received: 0.73
 ## 🚀 Future Enhancements
 
 **Planned Improvements**:
+
 - [ ] API response time tests
 - [ ] UI interaction performance (button clicks, form submissions)
 - [ ] Memory leak detection
@@ -276,5 +296,5 @@ Received: 0.73
 
 ---
 
-**Last Updated**: October 26, 2025  
+**Last Updated**: October 26, 2025
 **Version**: 1.0 (Initial implementation - H4)
