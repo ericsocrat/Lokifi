@@ -236,7 +236,7 @@ jobs:
         with:
           name: visual-regression-report
           path: apps/frontend/playwright-report/
-          retention-days: 30
+          retention-days: 14  # Reduced from 30 to match coverage.yml
           compression-level: 9
 
       - name: 📸 Upload visual diffs
@@ -245,7 +245,7 @@ jobs:
         with:
           name: visual-regression-diffs
           path: apps/frontend/test-results/
-          retention-days: 30
+          retention-days: 14  # Reduced from 30 to match coverage.yml
           compression-level: 9
 
       - name: 💬 Comment on PR with visual changes
