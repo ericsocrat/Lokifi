@@ -68,8 +68,8 @@ jobs:
       always() &&
       (github.event_name == 'schedule' ||
        github.event_name == 'workflow_dispatch' ||
-       (needs.changes.outputs.frontend == 'true' && matrix.language == 'javascript-typescript') ||
-       (needs.changes.outputs.backend == 'true' && matrix.language == 'python'))
+       needs.changes.outputs.frontend == 'true' ||
+       needs.changes.outputs.backend == 'true')
     timeout-minutes: 360
     permissions:
       security-events: write
