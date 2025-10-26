@@ -1,11 +1,11 @@
 # GitHub Actions Workflow - Consolidated Action Plan
 
-**Generated**: October 26, 2025  
-**Last Updated**: October 26, 2025 (Phase 1: 4/4 ✅ | Phase 2 Quick Wins: 3/3 ✅)  
-**Based on**: Comprehensive audit of 10 workflows + 1 composite action + labeler.yml  
-**Overall Grade**: 8.9/10 (Excellent)  
-**Total Items**: 55 (23 issues + 32 enhancements)  
-**Progress**: 7 completed ✅ | 22 remaining ⏳ | **Phase 1 COMPLETE, Phase 2 Quick Wins COMPLETE**
+**Generated**: October 26, 2025
+**Last Updated**: October 26, 2025 (Phase 1: 4/4 ✅ | Phase 2: 3/3 ✅ | Phase 3 Quick Wins: 4/4 ✅)
+**Based on**: Comprehensive audit of 10 workflows + 1 composite action + labeler.yml
+**Overall Grade**: 8.9/10 (Excellent)
+**Total Items**: 55 (23 issues + 32 enhancements)
+**Progress**: 11 completed ✅ | 18 remaining ⏳ | **Phases 1-2 COMPLETE, Phase 3 Quick Wins COMPLETE**
 
 ---
 
@@ -30,8 +30,12 @@
 4. ~~🟡 **HIGH**: Re-enable actionlint~~ - ✅ Actionlint active (45 min)
 5. ~~🟡 **HIGH**: Add missing test artifacts~~ - ✅ Machine-readable artifacts (20 min)
 6. ~~🟡 **HIGH**: Make security checks actionable~~ - ✅ Hybrid policy + quick links (35 min)
-7. 🟡 **HIGH**: Make mypy type checking blocking (~500 type issues)
-8. 🟡 **HIGH**: Create actual performance tests (4-6 hours)
+7. ~~🟡 **MEDIUM**: Increase auto-merge timeout~~ - ✅ 20 min with backoff (15 min)
+8. ~~🟡 **MEDIUM**: Reduce artifact retention~~ - ✅ 14 days alignment (10 min)
+9. ~~🟡 **MEDIUM**: Add E2E retry logic~~ - ✅ Project-specific retries (30 min)
+10. ~~🟡 **MEDIUM**: Increase E2E shards~~ - ✅ 2→4 for faster feedback (30 min)
+11. 🟡 **HIGH**: Make mypy type checking blocking (~500 type issues)
+12. 🟡 **HIGH**: Create actual performance tests (4-6 hours)
 
 ---
 
@@ -136,16 +140,16 @@ The "231 alerts" mentioned in Session 10 documentation appears to be either:
 ---
 
 #### ✅ H1. Actionlint Validation Re-enabled (COMPLETE)
-**Source**: ci.yml audit + Session 10 follow-up  
-**Completion Date**: October 26, 2025  
-**Status**: ✅ Actionlint validation active, zero errors  
+**Source**: ci.yml audit + Session 10 follow-up
+**Completion Date**: October 26, 2025
+**Status**: ✅ Actionlint validation active, zero errors
 **Time Taken**: 45 minutes (vs 2-3 hrs estimated)
 
 **Issues Fixed**:
 1. **security.yml**: Removed `matrix.language` from job-level `if` condition
    - Matrix context not available at job scope
    - Fixed: Now runs both languages when frontend/backend changes detected
-   
+
 2. **ci.yml**: Re-enabled workflow-security job
    - Removed commented references that caused actionlint parsing errors
    - Re-added workflow-security to fast-feedback-success needs array
@@ -176,9 +180,9 @@ The "231 alerts" mentioned in Session 10 documentation appears to be either:
 ---
 
 #### ✅ H3. Test Result Artifacts Added (COMPLETE)
-**Source**: integration.yml audit  
-**Completion Date**: October 26, 2025  
-**Status**: ✅ Machine-readable artifacts for automation  
+**Source**: integration.yml audit
+**Completion Date**: October 26, 2025
+**Status**: ✅ Machine-readable artifacts for automation
 **Time Taken**: 20 minutes (vs 1 hr estimated)
 
 **Artifacts Added**:
@@ -186,7 +190,7 @@ The "231 alerts" mentioned in Session 10 documentation appears to be either:
    - Added `--junit-xml=schemathesis-results.xml` to schemathesis run
    - Uploads both HTML report (human-readable) and XML results (machine-readable)
    - Enables programmatic test result parsing and CI/CD integration
-   
+
 2. **accessibility job**: Added test results directory
    - Added `--reporter=html,json` to Playwright accessibility tests
    - Uploads both `playwright-report/` and `test-results/` directories
@@ -206,16 +210,16 @@ The "231 alerts" mentioned in Session 10 documentation appears to be either:
 ---
 
 #### ✅ H5. Security Checks Made Actionable (COMPLETE)
-**Source**: security.yml audit + Session 10 follow-up  
-**Completion Date**: October 26, 2025  
-**Status**: ✅ Hybrid security policy with blocking critical issues  
+**Source**: security.yml audit + Session 10 follow-up
+**Completion Date**: October 26, 2025
+**Status**: ✅ Hybrid security policy with blocking critical issues
 **Time Taken**: 35 minutes (vs 2-3 hrs estimated)
 
 **Hybrid Security Policy Implemented**:
 1. **CodeQL failures BLOCK workflow** (exit 1)
    - Critical code security issues must be fixed before merge
    - Provides clear failure message with Security tab link
-   
+
 2. **Dependency vulnerabilities remain informational**
    - Don't block workflow (updates need planning/testing)
    - Tracked separately via Dependabot
@@ -243,6 +247,119 @@ The "231 alerts" mentioned in Session 10 documentation appears to be either:
 - Dependencies tracked: Updates often need planning/testing
 
 **Commit**: 17d7cbe3
+
+---
+
+#### ✅ M1. Auto-merge Timeout Increased to 20 Minutes (COMPLETE)
+**Source**: auto-merge.yml audit
+**Completion Date**: October 26, 2025
+**Status**: ✅ Timeout increased with exponential backoff
+**Time Taken**: 15 minutes (as estimated)
+
+**Changes Implemented**:
+1. **Timeout increase**: 10 min → 20 min
+   - Sufficient time for full CI run (15-20 min typical)
+   - Prevents premature timeout on slow-running workflows
+
+2. **Exponential backoff**: 30s → 45s → 67s → 100s → 120s (max)
+   - Smarter polling reduces API calls
+   - Maintains responsiveness while waiting for checks
+   - More efficient use of GitHub API
+
+**Files Modified**:
+- `.github/workflows/auto-merge.yml` - Updated wait-for-checks step
+
+**Impact**:
+- ✅ Dependabot PRs have sufficient time for CI completion
+- ✅ Reduced API calls with intelligent polling
+- ✅ Fewer manual interventions for legitimate auto-merge candidates
+
+**Commit**: 8b28f0a5
+
+---
+
+#### ✅ M2. Visual Regression Artifact Retention Reduced (COMPLETE)
+**Source**: e2e.yml audit
+**Completion Date**: October 26, 2025
+**Status**: ✅ Artifact retention optimized
+**Time Taken**: 10 minutes (as estimated)
+
+**Changes Implemented**:
+1. **Visual regression report**: 30 days → 14 days
+2. **Visual diffs**: 30 days → 14 days
+3. **Alignment**: Matches coverage.yml retention policy
+
+**Files Modified**:
+- `.github/workflows/e2e.yml` - 2 artifact upload steps updated
+
+**Impact**:
+- ✅ 53% storage cost reduction for visual artifacts
+- ✅ Consistent retention policy across all workflows
+- ✅ Visual reports rarely accessed after 2 weeks (validated)
+
+**Commit**: a767ba56
+
+---
+
+#### ✅ M3. E2E Retry Logic Enhanced (COMPLETE)
+**Source**: e2e.yml audit + playwright.config.ts
+**Completion Date**: October 26, 2025
+**Status**: ✅ Project-specific retry configuration added
+**Time Taken**: 30 minutes (as estimated)
+
+**Changes Implemented**:
+1. **Chromium (critical E2E)**: 2 retries in CI
+   - Most resilient for critical path tests
+   - Handles occasional flakiness
+
+2. **Mobile/tablet (visual)**: 1 retry in CI
+   - Sufficient for visual regression tests
+   - Balance between reliability and speed
+
+3. **Local development**: 0 retries
+   - Fail fast for debugging
+   - Immediate feedback for developers
+
+**Files Modified**:
+- `apps/frontend/playwright.config.ts` - Added project-specific retries
+
+**Impact**:
+- ✅ Reduces false negatives from flaky tests
+- ✅ Critical tests more resilient (2 retries)
+- ✅ Visual tests have appropriate retry count (1)
+- ✅ Faster local feedback with 0 retries
+
+**Note**: Retries were already present at config level (2 in CI), this enhancement adds project-specific granularity for different test types.
+
+**Commit**: 0e2d4f5b
+
+---
+
+#### ✅ M4. E2E Full Suite Shards Increased (COMPLETE)
+**Source**: e2e.yml audit
+**Completion Date**: October 26, 2025
+**Status**: ✅ Shards increased for faster parallel execution
+**Time Taken**: 30 minutes (as estimated)
+
+**Changes Implemented**:
+1. **Shard count**: 2 → 4 shards
+2. **Matrix configuration**: `shard: [1, 2, 3, 4]`
+3. **Shard logic**: Updated to `--shard=${{ matrix.shard }}/4`
+
+**Files Modified**:
+- `.github/workflows/e2e.yml` - Full E2E test suite strategy matrix
+
+**Impact**:
+- ✅ Expected 50% reduction in E2E runtime (12 min → 6-8 min)
+- ✅ Better test distribution across 4 parallel jobs
+- ✅ Faster feedback for full E2E test suite
+
+**Trade-off Analysis**:
+- **Pro**: Significantly faster feedback on full E2E suite
+- **Con**: 2x CI minutes usage (4 jobs vs 2 jobs)
+- **Recommendation**: Monitor actual time savings in next PR with full E2E run
+
+**Commit**: 693f9a3b
 
 ---
 
@@ -317,8 +434,8 @@ fi
 ---
 
 ### 🟡 HIGH PRIORITY (Affects Functionality)
-**Impact**: Quality gates weakened, important features missing  
-**Timeline**: Address within 2-4 weeks  
+**Impact**: Quality gates weakened, important features missing
+**Timeline**: Address within 2-4 weeks
 **Estimated Total**: 13-17 hours (3/6 complete, 12-16 hours remaining)
 
 **Completed Quick Wins** (3/3 - 1 hr 40 min total):
@@ -575,7 +692,18 @@ visual-regression:
 ### 🟡 MEDIUM PRIORITY (Optimization)
 **Impact**: Performance improvements, better UX, reduced costs
 **Timeline**: Address within 1-2 months
-**Estimated Total**: 12-16 hours
+**Estimated Total**: 10-14 hours (4/10 complete, 8-12 hours remaining)
+
+**Completed Quick Wins** (4/4 - 1 hr 25 min total):
+- ✅ M1: Auto-merge timeout 20 min (15 min)
+- ✅ M2: Artifact retention 14 days (10 min)
+- ✅ M3: E2E retry logic (30 min)
+- ✅ M4: E2E shards 2→4 (30 min)
+
+**Remaining Work** (6/10 - 8-12 hours):
+- ⏳ M5: Accessibility linting blocking (1 hr)
+- ⏳ M6: Docker build cache check (1-2 hrs)
+- ⏳ Phase 4-6 MEDIUM items (6-9 hrs)
 
 #### M1. Increase auto-merge Check Timeout to 20 Minutes
 **Source**: auto-merge.yml audit
