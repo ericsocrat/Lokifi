@@ -72,3 +72,7 @@ frontend/backend/
 # Protection Reports (auto-generated on each commit)
 docs/reports/protection_report_*.md
 tools/docs/reports/protection_report_*.md
+
+# CI/CD Tools (downloaded binaries)
+actionlint
+actionlint.exe
