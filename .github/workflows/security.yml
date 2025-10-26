@@ -322,14 +322,22 @@ jobs:
           echo "Frontend Dependencies: ${{ needs.frontend-dependencies.result }}"
           echo "Backend Dependencies: ${{ needs.backend-dependencies.result }}"
 
-          # This is informational - don't fail the workflow
-          if [ "${{ needs.codeql.result }}" = "failure" ] || \
-             [ "${{ needs.frontend-dependencies.result }}" = "failure" ] || \
-             [ "${{ needs.backend-dependencies.result }}" = "failure" ]; then
-            echo "⚠️ Security scans found issues - check GitHub Security tab"
-          else
-            echo "✅ All security scans completed successfully"
+          # Hybrid approach: Fail workflow on critical security issues
+          # This ensures critical vulnerabilities block merges
+          if [ "${{ needs.codeql.result }}" = "failure" ]; then
+            echo "❌ CRITICAL: CodeQL analysis detected security issues"
+            echo "Check GitHub Security tab: https://github.com/${{ github.repository }}/security/code-scanning"
+            exit 1
           fi
+
+          if [ "${{ needs.frontend-dependencies.result }}" = "failure" ] || \
+             [ "${{ needs.backend-dependencies.result }}" = "failure" ]; then
+            echo "⚠️ WARNING: Dependency vulnerabilities detected"
+            echo "Review findings in Security tab - creating tracking issue"
+            # Don't exit 1 here - dependency issues tracked via issues, not blocking
+          fi
+
+          echo "✅ All critical security checks passed"
 
       - name: 📝 Generate summary
         if: always()
@@ -342,18 +350,22 @@ jobs:
           echo "| Frontend Dependencies | ${{ needs.frontend-dependencies.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Backend Dependencies | ${{ needs.backend-dependencies.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Security Policy** (Hybrid Approach):" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔴 **CodeQL failures BLOCK merges** - Critical code security issues must be fixed" >> $GITHUB_STEP_SUMMARY
+          echo "- 🟡 **Dependency vulnerabilities are tracked** - Issues created automatically for high-severity alerts" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Security Scanners**:" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔍 **CodeQL** - JavaScript/TypeScript & Python code analysis (231 alerts)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔍 **CodeQL** - JavaScript/TypeScript & Python code analysis" >> $GITHUB_STEP_SUMMARY
           echo "- 📦 **npm audit** - Frontend dependency vulnerabilities" >> $GITHUB_STEP_SUMMARY
           echo "- 📦 **pip-audit** - Backend dependency vulnerabilities" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**What was removed**:" >> $GITHUB_STEP_SUMMARY
-          echo "- ❌ ESLint security plugin (redundant with CodeQL)" >> $GITHUB_STEP_SUMMARY
-          echo "- ❌ Bandit (redundant with CodeQL Python analysis)" >> $GITHUB_STEP_SUMMARY
+          echo "**Quick Actions**:" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 [View Code Scanning Alerts](https://github.com/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 [View Dependabot Alerts](https://github.com/${{ github.repository }}/security/dependabot)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📈 [View Security Advisories](https://github.com/${{ github.repository }}/security/advisories)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🛡️ [Security Overview](https://github.com/${{ github.repository }}/security)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Benefits**:" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Single SARIF upload per category (no conflicts)" >> $GITHUB_STEP_SUMMARY
+          echo "**Optimization Benefits**:" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Single consolidated workflow (no SARIF conflicts)" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Reduced CI time by ~5-7 minutes" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ CodeQL provides more comprehensive analysis" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📊 [View detailed results in Security tab](https://github.com/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ CodeQL provides comprehensive analysis (ESLint/Bandit removed)" >> $GITHUB_STEP_SUMMARY
