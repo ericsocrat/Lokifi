@@ -121,7 +121,8 @@ jobs:
             --checks all \
             --hypothesis-max-examples=50 \
             --base-url=http://localhost:8000 \
-            --report
+            --report \
+            --junit-xml=schemathesis-results.xml
         continue-on-error: true
 
       - name: 📊 Upload contract test results
@@ -129,7 +130,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: api-contract-results
-          path: apps/backend/schemathesis-report.html
+          path: |
+            apps/backend/schemathesis-report.html
+            apps/backend/schemathesis-results.xml
           retention-days: 7
           compression-level: 9
           if-no-files-found: ignore
@@ -154,7 +157,7 @@ jobs:
           browser: chromium
 
       - name: ♿ Run accessibility tests
-        run: npm run test:a11y
+        run: npm run test:a11y -- --reporter=html,json
         env:
           CI: true
 
@@ -163,7 +166,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: accessibility-report
-          path: apps/frontend/playwright-report/
+          path: |
+            apps/frontend/playwright-report/
+            apps/frontend/test-results/
           retention-days: 7
           compression-level: 9
           if-no-files-found: ignore
@@ -328,8 +333,10 @@ jobs:
           echo "Backend Integration: ${{ needs.backend-integration.result }}"
           echo "Full Stack: ${{ needs.fullstack-integration.result }}"
 
-          # Fail if any critical job failed
-          if [ "${{ needs.backend-integration.result }}" = "failure" ] || \
+          # Fail if any critical job failed (all 4 test suites are critical)
+          if [ "${{ needs.api-contracts.result }}" = "failure" ] || \
+             [ "${{ needs.accessibility.result }}" = "failure" ] || \
+             [ "${{ needs.backend-integration.result }}" = "failure" ] || \
              [ "${{ needs.fullstack-integration.result }}" = "failure" ]; then
             echo "❌ Critical integration tests failed"
             exit 1
