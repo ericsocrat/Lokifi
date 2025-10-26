@@ -25,6 +25,11 @@ on:
           - critical
           - full
           - visual
+      update_snapshots:
+        description: "Update visual regression baselines (visual tests only)"
+        required: false
+        default: false
+        type: boolean
 
 # Cancel in-progress runs for same workflow + branch
 concurrency:
@@ -163,7 +168,7 @@ jobs:
       fail-fast: false
       matrix:
         browser: [chromium]
-        shard: [1, 2, 3, 4]  # Increased from 2 to 4 for faster parallel execution
+        shard: [1, 2, 3, 4] # Increased from 2 to 4 for faster parallel execution
     defaults:
       run:
         working-directory: apps/frontend
@@ -225,10 +230,36 @@ jobs:
       - name: 📸 Run visual regression tests
         run: |
           # Only run chromium project (no webkit/firefox dependencies)
-          npm run test:visual -- --project=chromium
+          if [ "${{ github.event.inputs.update_snapshots }}" == "true" ]; then
+            echo "🔄 Updating visual regression baselines for Linux..."
+            npm run test:visual -- --project=chromium --update-snapshots
+          else
+            echo "📸 Running visual regression tests..."
+            npm run test:visual -- --project=chromium
+          fi
         env:
           CI: true
           PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 💾 Commit updated snapshots
+        if: github.event.inputs.update_snapshots == 'true'
+        run: |
+          cd apps/frontend
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tests/visual-baselines/
+          if git diff --staged --quiet; then
+            echo "✅ No snapshot changes detected"
+          else
+            git commit -m "test: Update Linux visual regression baselines" \
+              -m "Generated via workflow_dispatch on ${{ runner.os }}" \
+              -m "Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+              -m "[skip ci]"
+            git push
+            echo "✅ Snapshots committed and pushed"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📊 Upload visual regression report
         if: always()
@@ -236,7 +267,7 @@ jobs:
         with:
           name: visual-regression-report
           path: apps/frontend/playwright-report/
-          retention-days: 14  # Reduced from 30 to match coverage.yml
+          retention-days: 14 # Reduced from 30 to match coverage.yml
           compression-level: 9
 
       - name: 📸 Upload visual diffs
@@ -245,7 +276,7 @@ jobs:
         with:
           name: visual-regression-diffs
           path: apps/frontend/test-results/
-          retention-days: 14  # Reduced from 30 to match coverage.yml
+          retention-days: 14 # Reduced from 30 to match coverage.yml
           compression-level: 9
 
       - name: 💬 Comment on PR with visual changes
