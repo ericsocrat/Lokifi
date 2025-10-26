@@ -120,7 +120,7 @@ jobs:
 
       - name: ♿ Accessibility Linting
         run: npm run lint:a11y
-        continue-on-error: true # Warnings only for now
+        continue-on-error: false  # Made blocking - enforces accessibility standards
 
       - name: 🔍 TypeScript Type Check
         run: npm run typecheck
