@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["router"]
+
 from datetime import timezone, datetime, timedelta
 
 from fastapi import APIRouter, Header, HTTPException

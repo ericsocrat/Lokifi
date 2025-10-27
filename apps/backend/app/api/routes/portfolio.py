@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["router"]
+
 import csv
 import io
 from datetime import timezone, datetime

@@ -8,6 +8,8 @@ RESTful API endpoints for monitoring and observability:
 - Alert management
 """
 
+__all__ = ["router"]
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.core.advanced_redis_client import advanced_redis_client

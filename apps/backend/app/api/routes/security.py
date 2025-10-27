@@ -3,9 +3,9 @@ Security Dashboard API Routes
 Endpoints for monitoring security events and system health
 """
 
-__all__ = ['router']
+__all__ = ["router"]
 
-from datetime import timezone, datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from app.core.config import get_settings

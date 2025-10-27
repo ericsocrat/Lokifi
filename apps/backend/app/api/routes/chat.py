@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["router"]
+
 import json
 import os
 from typing import Any

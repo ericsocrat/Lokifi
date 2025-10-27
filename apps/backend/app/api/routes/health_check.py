@@ -2,6 +2,8 @@
 Comprehensive health check endpoint for Phase K components
 """
 
+__all__ = ["router"]
+
 import time
 from typing import Any
 

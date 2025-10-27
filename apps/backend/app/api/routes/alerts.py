@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["router"]
+
 import asyncio
 import json
 import time

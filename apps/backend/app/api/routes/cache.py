@@ -3,6 +3,8 @@ Cache Management API Endpoints
 Provides cache statistics, management, and debugging tools
 """
 
+__all__ = ["router"]
+
 import logging
 from typing import Any
 
