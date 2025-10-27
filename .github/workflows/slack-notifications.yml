@@ -30,10 +30,8 @@ jobs:
     name: Send Slack Notification
     runs-on: ubuntu-latest
 
-    # Only run if workflow failed and Slack webhook is configured
-    if: |
-      github.event.workflow_run.conclusion == 'failure' &&
-      secrets.SLACK_WEBHOOK_URL != ''
+    # Only run if workflow failed (webhook check happens in step)
+    if: github.event.workflow_run.conclusion == 'failure'
 
     steps:
       - name: 🔍 Get workflow details
@@ -63,7 +61,7 @@ jobs:
             // Determine severity emoji
             let severityEmoji = '🔴';
             let severityText = 'High';
-            
+
             if (workflowRun.name.includes('Security')) {
               severityEmoji = '🚨';
               severityText = 'Critical';
@@ -175,7 +173,7 @@ jobs:
           echo "**Severity**: ${{ steps.details.outputs.severity-emoji }} ${{ steps.details.outputs.severity-text }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: [${{ steps.details.outputs.commit-sha }}](${{ steps.details.outputs.commit-url }})" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]]; then
             echo "**Action**: ✅ Slack notification sent successfully" >> $GITHUB_STEP_SUMMARY
           else
