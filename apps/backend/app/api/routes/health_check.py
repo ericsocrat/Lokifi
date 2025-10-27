@@ -7,13 +7,12 @@ __all__ = ["router"]
 import time
 from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.database import get_db_session
 from app.core.performance_monitor import performance_metrics
 from app.core.redis_client import RedisClient
 from app.core.redis_client import redis_client as _redis_client
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/health", tags=["health"])
 

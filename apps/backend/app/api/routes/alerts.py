@@ -7,12 +7,11 @@ import json
 import time
 from typing import Any, Literal
 
+from app.services.alerts import Alert, evaluator, hub, store
+from app.services.auth import auth_handle_from_header, require_handle
 from fastapi import APIRouter, Header, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
-
-from app.services.alerts import Alert, evaluator, hub, store
-from app.services.auth import auth_handle_from_header, require_handle
 
 router = APIRouter()
 

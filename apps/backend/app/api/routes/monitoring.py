@@ -10,12 +10,11 @@ RESTful API endpoints for monitoring and observability:
 
 __all__ = ["router"]
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.security import get_current_user
 from app.services.advanced_monitoring import monitoring_system
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["monitoring"])
 
@@ -256,9 +255,11 @@ async def get_monitoring_status():
                 "monitoring_interval": monitoring_system.monitoring_interval,
                 "health_checks_count": len(monitoring_system.health_checks),
                 "alert_rules_count": len(monitoring_system.alert_manager.alert_rules),
-                "last_check": monitoring_system.last_metrics.timestamp.isoformat()
-                if monitoring_system.last_metrics
-                else None,
+                "last_check": (
+                    monitoring_system.last_metrics.timestamp.isoformat()
+                    if monitoring_system.last_metrics
+                    else None
+                ),
             },
         }
     except Exception as e:

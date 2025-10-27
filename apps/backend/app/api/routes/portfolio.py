@@ -4,18 +4,17 @@ __all__ = ["router"]
 
 import csv
 import io
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
-
-from fastapi import APIRouter, Header, HTTPException, Query, Request
-from pydantic import BaseModel, Field
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from app.core.redis_cache import cache_portfolio_data
 from app.db.db import get_session, init_db
 from app.db.models import PortfolioPosition, User
 from app.services.auth import require_handle
+from fastapi import APIRouter, Header, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 # Optional alerts integration
 try:

@@ -1,6 +1,16 @@
 from __future__ import annotations
 
-__all__ = ["Base", "User", "PortfolioPosition", "Alert", "Message", "Conversation", "Follow", "Profile", "Notification"]
+__all__ = [
+    "Base",
+    "User",
+    "PortfolioPosition",
+    "Alert",
+    "Message",
+    "Conversation",
+    "Follow",
+    "Profile",
+    "Notification",
+]
 
 from datetime import datetime
 

@@ -3,7 +3,13 @@ Redis Cache Decorators for Frequently Accessed API Endpoints
 High-performance caching with intelligent TTL management
 """
 
-__all__ = ["cache", "cache_public_data", "cache_portfolio_data", "clear_all_cache", "get_cache_stats"]
+__all__ = [
+    "cache",
+    "cache_public_data",
+    "cache_portfolio_data",
+    "clear_all_cache",
+    "get_cache_stats",
+]
 
 import hashlib
 import json
@@ -14,9 +20,8 @@ from functools import wraps
 from typing import Any
 
 import redis.asyncio as redis
-from fastapi import Request
-
 from app.core.config import Settings
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 
