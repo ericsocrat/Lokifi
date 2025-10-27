@@ -329,22 +329,13 @@ This roadmap tracks the gradual improvement of code quality standards that were 
 - **Security**: 30 CodeQL alerts (all "note" severity, correctly deprioritized)
 - **Decision**: Analysis complete, bulk implementation deferred to future sprints
 
-**Next Sprint Recommendations**:
+**Sprint 2 Planning**: See [SPRINT_2_PLANNING.md](./plans/SPRINT_2_PLANNING.md) for detailed options and recommendations
 
-**Option A: Security & Code Quality** (Deprioritized after reassessment)
-- [ ] Fix CodeQL code quality alerts (30 total, all "note" severity)
-- [ ] Fix Shellcheck warnings (145 total)
-- Value: Code quality improvement, not security critical
-
-**Option B: Testing Infrastructure**
-- [ ] Generate Linux visual test baselines
-- [ ] Improve test coverage in critical paths
-- [ ] Add missing E2E scenarios
-
-**Option C: Documentation**
-- [ ] Complete API documentation
-- [ ] Add architecture diagrams
-- [ ] Update deployment guides
+**Quick Sprint 2 Options**:
+- ⭐ **Option A: Incremental TypeScript** (4-6 hrs) - RECOMMENDED: Fix 2-3 high-value Zustand stores
+- **Option B: Testing Infrastructure** (6-8 hrs) - Visual tests, coverage, E2E scenarios
+- **Option C: Code Quality** (3-4 hrs) - CodeQL fixes, Shellcheck warnings
+- **Option D: Documentation** (6-8 hrs) - API docs, architecture diagrams, deployment guides
 
 ### Original Sprint 1 Tasks (Deferred)
 
