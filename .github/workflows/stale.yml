@@ -43,8 +43,8 @@ jobs:
           stale-pr-label: "stale"
 
           # Don't mark as stale if these labels are present
-          exempt-issue-labels: "pinned,security,bug,enhancement,help-wanted,good-first-issue"
-          exempt-pr-labels: "pinned,security,work-in-progress,dependencies"
+          exempt-issue-labels: "pinned,security,bug,enhancement,help-wanted,good-first-issue,hotfix,urgent"
+          exempt-pr-labels: "pinned,security,work-in-progress,dependencies,hotfix,urgent"
 
           # ==========================================
           # Messages

@@ -80,6 +80,26 @@ security:
           - "**/security/**/*"
           - "docs/security/**/*"
 
+# Hotfix changes (critical security or production fixes)
+# Auto-labeled for security-related files
+# Can also be applied manually for urgent production fixes
+# Exempt from stale bot auto-closure
+hotfix:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/*/SECURITY.md"
+          - ".github/workflows/security.yml"
+          - "**/security/patches/**/*"
+
+# Urgent label (manual only)
+# No auto-labeling rules - applied manually by maintainers
+# Used for time-sensitive PRs requiring immediate review
+# Exempt from stale bot auto-closure
+# Examples: critical bug fixes, urgent feature requests, production issues
+# Note: This is a placeholder - label must be applied manually via GitHub UI
+# urgent:
+#   - Manual only
+
 # Performance changes
 performance:
   - changed-files:
