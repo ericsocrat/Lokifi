@@ -252,12 +252,47 @@ This roadmap tracks the gradual improvement of code quality standards that were 
 - 🎯 Focus Sprint 1 on smaller, high-impact items
 - 📚 Create shared type definitions as foundation for future work
 
-### Alternative Sprint 1 Focus Options
+### Security & Code Quality Reassessment (Oct 27, 2025) ✅
 
-**Option A: Security & Code Quality** (Recommended)
-- [ ] Fix CodeQL security alerts (231 total)
+**Analysis Complete**:
+- **CodeQL Alerts**: 30 open (not 231 as previously estimated)
+- **All Severity**: "note" level (lowest priority, code quality not security)
+- **Main Issue**: 20 polluting-import alerts (missing `__all__` in Python modules)
+- **Secondary**: 2 cyclic-import, 8 npm-audit (dependency warnings)
+
+**Modules Needing `__all__`** (20 Python files):
+- app.api.market.routes, app.api.routes.security, app.api.routes.social
+- app.core.redis_client, app.core.security_config
+- app.db.models.user, app.db.session
+- app.routers.smart_prices, app.routers.social, app.routers.websocket, app.routers.websocket_prices
+- app.services.providers.base, app.services.smart_notifications, app.services.smart_price_service
+- app.services.stock_service, app.services.timeframes, app.services.unified_asset_service, app.services.websocket_manager
+- app.utils.redis, app.utils.sse
+
+**Reassessment**: All CodeQL alerts are low-priority code quality issues, not security vulnerabilities. Better to focus on higher-value work.
+
+### Sprint 1 Recommended Focus (Oct 27, 2025)
+
+**PRIMARY RECOMMENDATION**: Fix remaining flaky test for 100% pass rate 🎯
+- Current: 97.1% (34/35 workflows)
+- Target: 100% (35/35 workflows)
+- Issue: E2E Critical Path timeout
+- Value: Clear metric achievement, CI/CD excellence
+- Estimated time: 2-4 hours
+
+**SECONDARY RECOMMENDATION**: Incremental TypeScript type fixes
+- Pick 2-3 high-value Zustand stores
+- Create shared type definitions
+- Document patterns for future systematic work
+- Value: Foundation for comprehensive type safety
+- Estimated time: 4-6 hours
+
+**Alternative Sprint 1 Options** (Original Analysis - Deprioritized)
+
+**Option A: Security & Code Quality** (Deprioritized after reassessment)
+- [ ] Fix CodeQL code quality alerts (30 total, all "note" severity)
 - [ ] Fix Shellcheck warnings (145 total)
-- [ ] Both automatable with clear value
+- Value: Code quality improvement, not security critical
 
 **Option B: Testing Infrastructure**
 - [ ] Generate Linux visual test baselines
