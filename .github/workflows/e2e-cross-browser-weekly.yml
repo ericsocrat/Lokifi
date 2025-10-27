@@ -1,0 +1,169 @@
+# Weekly Cross-Browser E2E Tests
+# Runs critical E2E tests across Chromium, Firefox, and Webkit
+# Scheduled weekly to catch browser-specific issues without slowing down PR feedback
+# Cost: ~45 min/week vs ~1500 min/month for full cross-browser on every PR
+
+name: 🌐 E2E Cross-Browser (Weekly)
+
+on:
+  schedule:
+    # Every Monday at 2 AM UTC (Sunday evening US time)
+    - cron: '0 2 * * 1'
+  workflow_dispatch:  # Allow manual trigger for testing
+
+permissions:
+  contents: read
+
+jobs:
+  e2e-critical-cross-browser:
+    name: Critical Tests - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    strategy:
+      fail-fast: false  # Test all browsers even if one fails
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🎭 Setup E2E environment
+        uses: ./.github/actions/setup-e2e
+        with:
+          browser: ${{ matrix.browser }}
+          working-directory: apps/frontend
+
+      - name: 🧪 Run critical path tests
+        working-directory: apps/frontend
+        run: |
+          npx playwright test \
+            tests/e2e/chart-reliability.spec.ts \
+            tests/e2e/multiChart.spec.ts \
+            --project=${{ matrix.browser }} \
+            --reporter=html,json \
+            --retries=1
+        env:
+          CI: true
+          PLAYWRIGHT_TEST_BASE_URL: http://localhost:3000
+
+      - name: 📊 Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}-${{ github.run_number }}
+          path: apps/frontend/playwright-report/
+          retention-days: 14
+
+      - name: 📊 Upload test results (JSON)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.browser }}-${{ github.run_number }}
+          path: apps/frontend/test-results/
+          retention-days: 14
+
+  summary:
+    name: Cross-Browser Test Summary
+    runs-on: ubuntu-latest
+    needs: e2e-critical-cross-browser
+    if: always()
+
+    steps:
+      - name: 📊 Generate summary
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowRun = context.payload.workflow_run || { id: context.runId };
+
+            // Get job results
+            const { data: jobs } = await github.rest.actions.listJobsForWorkflowRun({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: context.runId
+            });
+
+            const browserJobs = jobs.jobs.filter(job => 
+              job.name.includes('Critical Tests -')
+            );
+
+            let summary = '## 🌐 Weekly Cross-Browser E2E Test Summary\n\n';
+            summary += '**Date**: ' + new Date().toISOString().split('T')[0] + '\n';
+            summary += '**Run**: #' + context.runNumber + '\n\n';
+            summary += '### Test Results\n\n';
+            summary += '| Browser | Status | Duration |\n';
+            summary += '|---------|--------|----------|\n';
+
+            for (const job of browserJobs) {
+              const browser = job.name.split('- ')[1];
+              const status = job.conclusion === 'success' ? '✅ Passed' : '❌ Failed';
+              const duration = Math.round((new Date(job.completed_at) - new Date(job.started_at)) / 1000) + 's';
+              summary += `| ${browser} | ${status} | ${duration} |\n`;
+            }
+
+            summary += '\n### Coverage\n\n';
+            summary += '**Tests Run**: Critical path E2E tests\n';
+            summary += '- `chart-reliability.spec.ts`\n';
+            summary += '- `multiChart.spec.ts`\n\n';
+            summary += '**Browsers Validated**: Chromium, Firefox, Webkit\n';
+            summary += '**Target Coverage**: ~93% of user base\n\n';
+
+            const hasFailures = browserJobs.some(job => job.conclusion !== 'success');
+            if (hasFailures) {
+              summary += '### ⚠️ Action Required\n\n';
+              summary += 'Some browser tests failed. Please review:\n';
+              summary += '1. Check [test reports](../../actions/runs/' + context.runId + ') for details\n';
+              summary += '2. Identify browser-specific issues\n';
+              summary += '3. Create fix PR or issue for tracking\n';
+            } else {
+              summary += '### ✅ All Tests Passing\n\n';
+              summary += 'Critical functionality validated across all major browsers.\n';
+            }
+
+            summary += '\n---\n';
+            summary += '*This weekly validation ensures cross-browser compatibility ';
+            summary += 'without slowing down PR feedback loops. See ';
+            summary += '[Cross-Browser Strategy](../../docs/workflows/CROSS_BROWSER_STRATEGY.md) ';
+            summary += 'for more details.*\n';
+
+            core.summary.addRaw(summary);
+            await core.summary.write();
+
+            // Create issue for failures
+            if (hasFailures) {
+              const failedBrowsers = browserJobs
+                .filter(job => job.conclusion !== 'success')
+                .map(job => job.name.split('- ')[1])
+                .join(', ');
+
+              const issueBody = `## 🌐 Weekly Cross-Browser E2E Test Failure\n\n` +
+                `The weekly cross-browser E2E tests detected failures.\n\n` +
+                `### Failed Browsers\n\n${failedBrowsers}\n\n` +
+                `### Details\n\n` +
+                `- **Run**: [#${context.runNumber}](../../actions/runs/${context.runId})\n` +
+                `- **Date**: ${new Date().toISOString().split('T')[0]}\n` +
+                `- **Tests**: Critical path E2E tests\n\n` +
+                `### Next Steps\n\n` +
+                `1. Download test artifacts from [workflow run](../../actions/runs/${context.runId})\n` +
+                `2. Review screenshots and logs for failed tests\n` +
+                `3. Identify if issue is:\n` +
+                `   - Browser-specific CSS/JS issue\n` +
+                `   - Flaky test (re-run to confirm)\n` +
+                `   - Actual bug requiring fix\n` +
+                `4. Create fix PR or adjust tests as needed\n\n` +
+                `### Resources\n\n` +
+                `- [Cross-Browser Strategy](../../docs/workflows/CROSS_BROWSER_STRATEGY.md)\n` +
+                `- [E2E Test Documentation](../../docs/TEST_QUICK_REFERENCE.md)\n` +
+                `- [Playwright Debugging](https://playwright.dev/docs/debug)\n`;
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🌐 Weekly Cross-Browser E2E Failure - ${failedBrowsers}`,
+                body: issueBody,
+                labels: ['e2e', 'cross-browser', 'automated', 'testing']
+              });
+
+              core.info('Created issue for cross-browser failures');
+            }
