@@ -4,6 +4,8 @@ Enhanced Redis client for J6.2 with improved error handling, connection pooling,
 and notification caching capabilities.
 """
 
+__all__ = ["RedisClient", "redis_client"]
+
 import json
 import logging
 from datetime import datetime

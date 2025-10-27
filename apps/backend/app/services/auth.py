@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ["auth_handle_from_header", "require_handle", "JWT_SECRET", "JWT_ALG"]
+
 from fastapi import HTTPException
 from jose import JWTError, jwt
 
