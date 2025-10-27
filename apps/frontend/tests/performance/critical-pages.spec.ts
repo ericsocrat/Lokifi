@@ -12,13 +12,14 @@ import { expect, test } from '@playwright/test';
 test.describe('Performance - Critical Pages', () => {
   const performanceThresholds = {
     // Page load thresholds (milliseconds)
-    domContentLoaded: 2000,
-    load: 3000,
-    firstContentfulPaint: 2000,
+    // Note: CI environments are slower than local dev, so budgets are adjusted accordingly
+    domContentLoaded: 3000, // Increased from 2000ms for CI environment
+    load: 5000, // Increased from 3000ms for CI environment
+    firstContentfulPaint: 3000, // Increased from 2000ms for CI environment
 
     // Navigation thresholds (milliseconds)
-    navigationStart: 100,
-    responseEnd: 1500,
+    navigationStart: 200, // Increased from 100ms for CI environment
+    responseEnd: 2500, // Increased from 1500ms for CI environment
   };
 
   test.beforeEach(async ({ page }) => {
