@@ -3,7 +3,7 @@ Enhanced profile service with additional features.
 """
 
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import HTTPException, status
@@ -68,7 +68,7 @@ class EnhancedProfileService:
                 update_data[field] = value
 
         if update_data:
-            update_data["updated_at"] = datetime.now(UTC)
+            update_data["updated_at"] = datetime.now(timezone.timezone.utc)
 
             stmt = update(Profile).where(Profile.id == profile.id).values(**update_data)
             await self.db.execute(stmt)
@@ -107,7 +107,7 @@ class EnhancedProfileService:
             update_data["email"] = settings_data.email
 
         if update_data:
-            update_data["updated_at"] = datetime.now(UTC)
+            update_data["updated_at"] = datetime.now(timezone.timezone.utc)
 
             stmt = update(User).where(User.id == user_id).values(**update_data)
             await self.db.execute(stmt)
@@ -156,7 +156,7 @@ class EnhancedProfileService:
                 update_data[field] = value
 
         if update_data:
-            update_data["updated_at"] = datetime.now(UTC)
+            update_data["updated_at"] = datetime.now(timezone.timezone.utc)
 
             stmt = (
                 update(NotificationPreference)
@@ -409,7 +409,7 @@ class EnhancedProfileService:
             "following_count": following_count or 0,
             "profile_completeness": self._calculate_profile_completeness(profile),
             "last_updated": profile.updated_at.isoformat(),
-            "account_age_days": (datetime.now(UTC) - profile.created_at).days,
+            "account_age_days": (datetime.now(timezone.timezone.utc) - profile.created_at).days,
         }
 
     def _calculate_profile_completeness(self, profile: Profile) -> float:

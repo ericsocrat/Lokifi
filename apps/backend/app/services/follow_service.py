@@ -3,7 +3,7 @@ Follow service for managing follow relationships and social graph.
 """
 
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 
 from fastapi import HTTPException, status
 from sqlalchemy import and_, desc, exists, func, not_, select, update
@@ -407,7 +407,7 @@ class FollowService:
                     is_following=False,
                     follows_you=False,
                     mutual_follow=False,
-                    created_at=datetime.now(UTC),
+                    created_at=datetime.now(timezone.timezone.utc),
                 )
             )
         has_next = False
@@ -454,7 +454,7 @@ class FollowService:
 
     async def get_follow_activity(self, user_id: uuid.UUID) -> FollowActivityResponse:
         """Get recent follow activity for a user."""
-        seven_days_ago = datetime.now(UTC) - timedelta(days=7)
+        seven_days_ago = datetime.now(timezone.timezone.utc) - timedelta(days=7)
 
         # Recent followers
         recent_followers_stmt = (

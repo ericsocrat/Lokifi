@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import csv
 import io
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Query, Request
@@ -197,7 +197,7 @@ async def add_or_update_position(
                 PortfolioPosition.symbol == payload.symbol,
             )
         ).scalar_one_or_none()
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.timezone.utc)
         if existing:
             existing.qty = payload.qty
             existing.cost_basis = payload.cost_basis

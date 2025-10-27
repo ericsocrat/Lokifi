@@ -15,7 +15,7 @@ import time
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from fastapi import WebSocket, WebSocketDisconnect
@@ -42,7 +42,7 @@ class ConnectionMetrics:
     avg_response_time: float = 0.0
 
     def update_activity(self):
-        self.last_activity = datetime.now(UTC)
+        self.last_activity = datetime.now(timezone.utc)
 
     def record_sent(self, bytes_count: int):
         self.messages_sent += 1
@@ -109,7 +109,7 @@ class ConnectionPool:
 
         connection_id = str(uuid.uuid4())
 
-        metrics = ConnectionMetrics(connected_at=datetime.now(UTC), last_activity=datetime.now(UTC))
+        metrics = ConnectionMetrics(connected_at=datetime.now(timezone.utc), last_activity=datetime.now(timezone.utc))
 
         connection_info = ConnectionInfo(
             websocket=websocket,
@@ -359,7 +359,7 @@ class AdvancedWebSocketManager:
                 "data": {
                     "connection_id": connection_id,
                     "user_id": user_id,
-                    "server_time": datetime.now(UTC).isoformat(),
+                    "server_time": datetime.now(timezone.utc).isoformat(),
                     "features": ["notifications", "real_time_updates", "analytics"],
                 },
             }
@@ -372,7 +372,7 @@ class AdvancedWebSocketManager:
                     "type": "connect",
                     "user_id": user_id,
                     "connection_id": connection_id,
-                    "timestamp": datetime.now(UTC).isoformat(),
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
             )
 
@@ -408,9 +408,9 @@ class AdvancedWebSocketManager:
                         "user_id": connection_info.user_id,
                         "connection_id": connection_id,
                         "session_duration": (
-                            datetime.now(UTC) - connection_info.metrics.connected_at
+                            datetime.now(timezone.utc) - connection_info.metrics.connected_at
                         ).total_seconds(),
-                        "timestamp": datetime.now(UTC).isoformat(),
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
                 )
 
@@ -473,7 +473,7 @@ class AdvancedWebSocketManager:
                 "connections": len(connections),
                 "sent": sent_count,
                 "duration": duration,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -539,7 +539,7 @@ class AdvancedWebSocketManager:
 
     async def _handle_ping(self, connection_id: str):
         """Handle ping message"""
-        pong_message = {"type": "pong", "data": {"timestamp": datetime.now(UTC).isoformat()}}
+        pong_message = {"type": "pong", "data": {"timestamp": datetime.now(timezone.utc).isoformat()}}
         await self._send_to_connection(connection_id, pong_message)
 
     async def _handle_subscribe(self, connection_id: str, data: dict[str, Any]):
@@ -654,7 +654,7 @@ class AdvancedWebSocketManager:
                 await asyncio.sleep(60)  # Every minute
 
                 stale_connections = []
-                current_time = datetime.now(UTC)
+                current_time = datetime.now(timezone.utc)
 
                 for connection_id, connection_info in self.connection_pool.connections.items():
                     # Check for stale connections (no activity for 10 minutes)

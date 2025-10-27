@@ -1,6 +1,6 @@
 # J6 Enterprise Notification Event Emitters
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from app.models.user import User
@@ -47,13 +47,13 @@ class NotificationEventEmitter:
                     "follower_username": follower_user.username,
                     "follower_display_name": follower_user.display_name,
                     "follower_avatar": follower_user.avatar_url,
-                    "followed_at": datetime.now(UTC).isoformat(),
+                    "followed_at": datetime.now(timezone.timezone.utc).isoformat(),
                     "action_url": f"/profile/{follower_user.username}",
                     "action_text": "View Profile",
                 },
                 related_entity_type="user",
                 related_entity_id=str(follower_user.id),
-                expires_at=datetime.now(UTC) + timedelta(days=30),  # Expire after 30 days
+                expires_at=datetime.now(timezone.timezone.utc) + timedelta(days=30),  # Expire after 30 days
             )
 
             notification = await notification_service.create_notification(notification_data)
@@ -115,14 +115,14 @@ class NotificationEventEmitter:
                     "message_id": message_id,
                     "thread_id": thread_id,
                     "full_message": message_content,
-                    "sent_at": datetime.now(UTC).isoformat(),
+                    "sent_at": datetime.now(timezone.timezone.utc).isoformat(),
                     "action_url": f"/messages/{thread_id}",
                     "action_text": "Reply",
                     "preview": preview_content,
                 },
                 related_entity_type="message",
                 related_entity_id=message_id,
-                expires_at=datetime.now(UTC) + timedelta(days=7),  # Expire after 7 days
+                expires_at=datetime.now(timezone.timezone.utc) + timedelta(days=7),  # Expire after 7 days
                 email_enabled=True,  # Enable email for important DMs
                 push_enabled=True,  # Enable push notifications for DMs
             )
@@ -199,7 +199,7 @@ class NotificationEventEmitter:
                     "thread_id": thread_id,
                     "full_response": ai_response,
                     "processing_time_ms": processing_time_ms,
-                    "completed_at": datetime.now(UTC).isoformat(),
+                    "completed_at": datetime.now(timezone.timezone.utc).isoformat(),
                     "action_url": f"/ai/chat/{thread_id}",
                     "action_text": "View Response",
                     "preview": preview_response,
@@ -207,7 +207,7 @@ class NotificationEventEmitter:
                 },
                 related_entity_type="ai_message",
                 related_entity_id=message_id,
-                expires_at=datetime.now(UTC) + timedelta(days=3),  # Expire after 3 days
+                expires_at=datetime.now(timezone.timezone.utc) + timedelta(days=3),  # Expire after 3 days
             )
 
             notification = await notification_service.create_notification(notification_data)
@@ -266,13 +266,13 @@ class NotificationEventEmitter:
                     "preview": preview_content,
                     "context_type": context_type,
                     "context_id": context_id,
-                    "mentioned_at": datetime.now(UTC).isoformat(),
+                    "mentioned_at": datetime.now(timezone.timezone.utc).isoformat(),
                     "action_url": f"/{context_type}/{context_id}",
                     "action_text": "View",
                 },
                 related_entity_type=context_type,
                 related_entity_id=context_id,
-                expires_at=datetime.now(UTC) + timedelta(days=14),
+                expires_at=datetime.now(timezone.timezone.utc) + timedelta(days=14),
                 email_enabled=True,  # Enable email for mentions
             )
 
@@ -329,12 +329,12 @@ class NotificationEventEmitter:
                 payload={
                     "alert_type": alert_type,
                     "alert_data": alert_data or {},
-                    "issued_at": datetime.now(UTC).isoformat(),
+                    "issued_at": datetime.now(timezone.timezone.utc).isoformat(),
                     "system_source": "lokifi_core",
                 },
                 related_entity_type="system",
                 related_entity_id=alert_type,
-                expires_at=expires_at or datetime.now(UTC) + timedelta(days=30),
+                expires_at=expires_at or datetime.now(timezone.timezone.utc) + timedelta(days=30),
                 email_enabled=priority == NotificationPriority.URGENT,  # Email for urgent alerts
             )
 
@@ -385,14 +385,14 @@ class NotificationEventEmitter:
                         "follower_username": follower_user.username,
                         "follower_display_name": follower_user.display_name,
                         "follower_avatar": follower_user.avatar_url,
-                        "followed_at": datetime.now(UTC).isoformat(),
+                        "followed_at": datetime.now(timezone.timezone.utc).isoformat(),
                         "action_url": f"/profile/{follower_user.username}",
                         "action_text": "View Profile",
                         "bulk_follow": True,
                     },
                     related_entity_type="user",
                     related_entity_id=str(follower_user.id),
-                    expires_at=datetime.now(UTC) + timedelta(days=30),
+                    expires_at=datetime.now(timezone.timezone.utc) + timedelta(days=30),
                 )
                 notifications_data.append(notification_data)
 

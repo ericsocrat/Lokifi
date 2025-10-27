@@ -13,7 +13,7 @@ import json
 import logging
 import uuid
 from dataclasses import asdict, dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from enum import Enum
 from typing import Any
 from uuid import UUID
@@ -139,7 +139,7 @@ class SmartNotificationProcessor:
         await redis_client.client.set(
             schedule_key,
             json.dumps(asdict(notification_data), default=str),
-            ex=int((notification_data.scheduled_for - datetime.now(UTC)).total_seconds()) + 3600,
+            ex=int((notification_data.scheduled_for - datetime.now(timezone.timezone.utc)).total_seconds()) + 3600,
         )
 
         logger.info(f"Scheduled notification {schedule_id} for {notification_data.scheduled_for}")
@@ -181,13 +181,13 @@ class SmartNotificationProcessor:
         else:
             # Create new batch
             batch_id = str(uuid.uuid4())
-            delivery_time = datetime.now(UTC) + timedelta(minutes=5)  # 5-minute grouping window
+            delivery_time = datetime.now(timezone.timezone.utc) + timedelta(minutes=5)  # 5-minute grouping window
 
             new_batch = NotificationBatch(
                 batch_id=batch_id,
                 user_id=user_id_str,
                 notifications=[notification_data],
-                created_at=datetime.now(UTC),
+                created_at=datetime.now(timezone.timezone.utc),
                 strategy=BatchingStrategy.SMART_GROUPING,
                 delivery_time=delivery_time,
                 title_template="You have {count} new notifications",
@@ -320,7 +320,7 @@ class SmartNotificationProcessor:
 
         if await redis_client.is_available():
             analytics_data = {
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
                 "template": notification_data.template.value,
                 "channels": [c.value for c in notification_data.channels],
                 "priority": notification_data.priority.value,

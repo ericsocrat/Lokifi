@@ -2,7 +2,7 @@
 OpenAPI contract generation and validation for Lokifi API
 """
 
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -110,7 +110,7 @@ class WSMessage(BaseModel):
     """WebSocket message base"""
 
     type: str = Field(..., description="Message type")
-    timestamp: int = Field(default_factory=lambda: int(datetime.now(UTC).timestamp() * 1000))
+    timestamp: int = Field(default_factory=lambda: int(datetime.now(timezone.timezone.utc).timestamp() * 1000))
 
 
 class WSTickerMessage(WSMessage):

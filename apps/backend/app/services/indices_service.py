@@ -4,7 +4,7 @@ Replaces mock data with actual market indices
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 import httpx
 
@@ -154,7 +154,7 @@ class IndicesService:
                             "current_price": current_price,
                             "price_change_percentage_24h": change_percent,
                             "provider": "alpha_vantage",
-                            "last_updated": datetime.now(UTC).isoformat(),
+                            "last_updated": datetime.now(timezone.timezone.utc).isoformat(),
                         }
                     )
 
@@ -228,7 +228,7 @@ class IndicesService:
                                     "regularMarketChangePercent", 0
                                 ),
                                 "provider": "yahoo_finance",
-                                "last_updated": datetime.now(UTC).isoformat(),
+                                "last_updated": datetime.now(timezone.timezone.utc).isoformat(),
                             }
                         )
 

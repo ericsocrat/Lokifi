@@ -3,7 +3,7 @@ Admin and monitoring endpoints for J4 Direct Messages.
 """
 
 import logging
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -42,7 +42,7 @@ async def get_platform_messaging_stats(
         return {
             **stats,
             "requested_by": admin_user.username,
-            "request_time": datetime.now(UTC).isoformat(),
+            "request_time": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -66,7 +66,7 @@ async def get_performance_metrics(
         alerts = performance_monitor.check_system_alerts()
 
         return {
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
             "period_minutes": minutes_back,
             "metrics": metrics_summary,
             "health_checks": [
@@ -105,7 +105,7 @@ async def get_moderation_stats(
             "blocked_words": moderation_service.get_blocked_words()[:20],  # First 20 for preview
             "user_warning_counts": len(moderation_service.user_warning_counts),
             "total_warnings_issued": sum(moderation_service.user_warning_counts.values()),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -130,7 +130,7 @@ async def add_blocked_words(
         return {
             "added_words": words,
             "total_blocked_words": len(moderation_service.get_blocked_words()),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -154,7 +154,7 @@ async def remove_blocked_words(
         return {
             "removed_words": words,
             "total_blocked_words": len(moderation_service.get_blocked_words()),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -177,7 +177,7 @@ async def get_active_connections(admin_user: User = Depends(get_admin_user)):
             "online_user_ids": [str(uid) for uid in online_users],
             "connection_stats": websocket_stats,
             "redis_connected": connection_manager.redis_client is not None,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -198,7 +198,7 @@ async def admin_broadcast_message(message: str, admin_user: User = Depends(get_a
             "type": "admin_broadcast",
             "message": message,
             "sender": "System Administrator",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
         # Send to all connected users
@@ -270,7 +270,7 @@ async def comprehensive_health_check(
                 "moderation_service": "healthy",  # Basic instantiation test
                 "websocket_manager": "healthy",
             },
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:

@@ -3,7 +3,7 @@ Security Dashboard API Routes
 Endpoints for monitoring security events and system health
 """
 
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 from app.core.config import get_settings
@@ -83,7 +83,7 @@ async def block_ip_address(
     return {
         "message": f"IP address {ip_address} has been blocked",
         "blocked_ip": ip_address,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
     }
 
 
@@ -109,7 +109,7 @@ async def unblock_ip_address(
     return {
         "message": f"IP address {ip_address} has been unblocked",
         "unblocked_ip": ip_address,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
     }
 
 
@@ -178,7 +178,7 @@ async def security_health_check():
             "suspicious_activity": (
                 "normal" if summary.get("suspicious_ips", 0) < 10 else "elevated"
             ),
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
         overall_status = "healthy"
@@ -194,7 +194,7 @@ async def security_health_check():
             "status": "error",
             "error": "Security monitoring system error",
             "monitoring_active": False,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
 
@@ -264,7 +264,7 @@ async def send_test_alert(current_user: dict[str, Any] = Depends(get_current_use
         return {
             "success": success,
             "message": "Test alert sent successfully" if success else "Failed to send test alert",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:
@@ -272,7 +272,7 @@ async def send_test_alert(current_user: dict[str, Any] = Depends(get_current_use
             "success": False,
             "error": str(e),
             "message": "Failed to send test alert",
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
 
@@ -284,7 +284,7 @@ async def get_alert_history(
 ):
     """Get recent alert history (admin only)"""
 
-    cutoff_time = datetime.now(UTC) - timedelta(hours=hours)
+    cutoff_time = datetime.now(timezone.timezone.utc) - timedelta(hours=hours)
     recent_alerts = [
         {
             "title": alert.title,
@@ -306,5 +306,5 @@ async def get_alert_history(
         "total": len(recent_alerts),
         "timeframe_hours": hours,
         "severity_filter": severity,
-        "timestamp": datetime.now(UTC).isoformat(),
+        "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
     }

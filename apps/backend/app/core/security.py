@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import timezone, datetime, timedelta
 from typing import Any
 
 import jwt
@@ -54,7 +54,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_jwt_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """Create a JWT token."""
     to_encode = data.copy()
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.timezone.utc)
     if expires_delta:
         expire = now + expires_delta
     else:

@@ -5,7 +5,7 @@ J6.1 Enhanced with notification integration.
 
 import logging
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -516,7 +516,7 @@ async def get_trending_conversations(
 
         return {
             "trending_conversations": trending,
-            "generated_at": datetime.now(UTC).isoformat(),
+            "generated_at": datetime.now(timezone.timezone.utc).isoformat(),
         }
 
     except Exception as e:

@@ -3,7 +3,7 @@ Message reactions system for J4 Direct Messages.
 """
 
 import uuid
-from datetime import UTC, datetime
+from datetime import timezone, datetime
 from enum import Enum
 
 from sqlalchemy import DateTime, ForeignKey, String, UniqueConstraint
@@ -44,7 +44,7 @@ class MessageReaction(Base):
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), default=lambda: datetime.now(UTC), index=True
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.timezone.utc), index=True
     )
 
     # Relationships
