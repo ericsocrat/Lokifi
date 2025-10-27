@@ -897,6 +897,35 @@ run: |
 - Core learnings: This section
 - Detailed logs: (Reference external session docs if needed)
 
+## Documentation Management Guidelines
+
+**🔄 Update vs Create Philosophy**:
+- **Always update existing documents** instead of creating new ones
+- **Only create new documents** when no suitable existing document exists
+- **Archive or delete outdated documents** immediately after creating replacements
+- **Consolidate fragmented documentation** into comprehensive guides
+
+**Best Practices**:
+1. **Search first**: Use `grep_search` or `file_search` to find existing related documents
+2. **Update existing**: Prefer updating CHECKLISTS.md, TECHNICAL_ROADMAP.md, or existing guides
+3. **Avoid duplication**: Don't create SESSION_NOTES.md when TECHNICAL_ROADMAP.md exists
+4. **Archive outdated**: Move replaced documents to .archive/ folder with context
+5. **Document decisions**: Add to existing decision logs, not new files
+
+**Examples**:
+- ❌ **Bad**: Create `SESSION_11_NOTES.md` when `TECHNICAL_ROADMAP.md` already tracks progress
+- ✅ **Good**: Update `TECHNICAL_ROADMAP.md` Decision Log with new session findings
+- ❌ **Bad**: Create `DEPENDENCY_FIX_PLAN.md` when `DEPENDABOT_ACTION_PLAN.md` exists
+- ✅ **Good**: Update `DEPENDABOT_ACTION_PLAN.md` with new root cause analysis
+- ❌ **Bad**: Keep both old and new versions of same document
+- ✅ **Good**: Archive old version to `.archive/` folder, update references
+
+**Archive Structure**:
+- Use `.archive/` subfolder within category (e.g., `docs/guides/.archive/`)
+- Preserve historical documents for reference
+- Update parent README.md to explain archived content
+- Update all cross-references to point to new locations
+
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
