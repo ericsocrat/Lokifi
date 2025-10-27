@@ -177,21 +177,22 @@ docker compose ps
 
 ### Core Documentation
 - **`README.md`** - Project overview and setup
-- **`START_HERE.md`** - Complete getting started guide
-- **`DEVELOPER_WORKFLOW.md`** - Development best practices
-- **`REPOSITORY_STRUCTURE.md`** - File organization guide
+- **`START_HERE.md`** - Complete getting started guide (see `archive/`)
+- **`guides/DEVELOPER_WORKFLOW.md`** - Complete development setup & daily workflows ⭐
+- **`guides/REPOSITORY_STRUCTURE.md`** - File organization guide
 
 ### Technical Guides
-- **`docs/api/API_REFERENCE.md`** - Complete API documentation
-- **`docs/guides/TESTING_GUIDE.md`** - Testing strategies and examples
-- **`docs/guides/AUTOMATION_GUIDE.md`** - Development automation guide
-- **`docs/security/README.md`** - Security configuration guide
+- **`api/API_REFERENCE.md`** - Complete API documentation
+- **`guides/TESTING_GUIDE.md`** - Testing strategies and examples
+- **`guides/PULL_REQUEST_COMPLETE_GUIDE.md`** - Complete PR workflow ⭐
+- **`security/README.md`** - Security configuration guide
+- **`ci-cd/CI_CD_GUIDE.md`** - CI/CD pipelines and automation
 
 ### Configuration Files
-- **`frontend/package.json`** - Frontend dependencies and scripts
-- **`backend/requirements.txt`** - Python dependencies
+- **`apps/frontend/package.json`** - Frontend dependencies and scripts
+- **`apps/backend/requirements.txt`** - Python dependencies
 - **`.vscode/settings.json`** - VS Code workspace configuration
-- **`docker-compose.yml`** - Container orchestration
+- **`infra/docker/docker-compose.yml`** - Container orchestration
 
 ---
 
@@ -302,7 +303,7 @@ npm run prepare
 
 **📖 For detailed troubleshooting:**
 - [`guides/CODE_QUALITY.md`](guides/CODE_QUALITY.md) - Complete pre-commit setup and troubleshooting
-- [`guides/VSCODE_SETUP.md`](guides/VSCODE_SETUP.md) - IDE-specific quality tools setup
+- [`guides/DEVELOPER_WORKFLOW.md`](guides/DEVELOPER_WORKFLOW.md) - Complete development setup & workflows
 
 ---
 

@@ -190,14 +190,14 @@ services:
 
 ### PostgreSQL Setup
 For detailed PostgreSQL configuration, see:
-- [PostgreSQL Setup Guide](../guides/POSTGRESQL_SETUP_GUIDE.md)
+- [PostgreSQL Setup Guide](../guides/infrastructure/POSTGRESQL_SETUP.md)
 
 **Required variables:**
 - `DATABASE_URL` - PostgreSQL connection string
 
 ### Redis Setup
 For detailed Redis configuration, see:
-- [Redis Docker Setup Guide](../guides/REDIS_DOCKER_SETUP.md)
+- [Redis Setup Guide](../guides/infrastructure/REDIS_SETUP.md)
 
 **Required variables:**
 - `REDIS_URL` - Redis connection string with authentication

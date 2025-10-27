@@ -1,8 +1,16 @@
 # ✅ Lokifi Development Checklists
 
-**Last Updated:** October 20, 2025
+**Last Updated:** October 27, 2025
 **Purpose:** Comprehensive checklists for development workflow
 **Status:** Production Ready
+
+> **🔗 Related Documents**:
+> - **[Dependabot Action Plan](./ci-cd/dependencies/DEPENDABOT_ACTION_PLAN.md)** - � ISSUE: Dependabot lock file sync failures
+> - **[Technical Roadmap](./TECHNICAL_ROADMAP.md)** - Sprint planning and technical debt
+> - **[Dependency Management](./ci-cd/dependencies/DEPENDENCY_MANAGEMENT.md)** - Dependency best practices
+> - **[Workflow Optimization](./ci-cd/workflows/WORKFLOW_OPTIMIZATION_COMPLETE.md)** - CI/CD optimization results
+>
+> **✅ Main Branch Status**: HEALTHY - 91.3% pass rate maintained (verified Oct 27, 2025)
 
 ---
 
@@ -171,6 +179,208 @@
 - [ ] **Database credentials** secured
 - [ ] **Third-party API keys** protected
 - [ ] **Error messages** don't leak sensitive information
+
+---
+
+## 🤖 Dependabot PR Review Checklist
+
+> **� KNOWN ISSUE (Oct 27, 2025)**: Dependabot package-lock.json sync failures affecting all 7 dependency PRs
+>
+> **Reference:** [DEPENDABOT_ACTION_PLAN.md](./ci-cd/dependencies/DEPENDABOT_ACTION_PLAN.md) | [DEPENDENCY_MANAGEMENT.md](./ci-cd/dependencies/DEPENDENCY_MANAGEMENT.md)
+>
+> **Root Cause Identified**: Dependabot updates package.json but fails to sync package-lock.json
+> - Error: "npm ci can only install packages when your package.json and package-lock.json are in sync"
+> - Missing lock entries: React 19.2.0, Next.js 16.0.0, and 20+ dependencies
+> - **Main branch**: ✅ HEALTHY (91.3% pass rate maintained, PR #58 merged successfully)
+> - **Solution**: Manual dependency updates or fix Dependabot configuration
+> - **Security Impact**: Certifi 2024.12.14 → 2025.10.5 security patch delayed
+
+### Initial Assessment (Every PR)
+- [ ] **CI status checked** - All workflows must pass (90%+ pass rate minimum)
+- [ ] **Version change identified** - Patch/Minor/Major?
+- [ ] **Changelog reviewed** - Read release notes for breaking changes
+- [ ] **Impact scope assessed** - Frontend/Backend/Both/Infrastructure?
+- [ ] **Security classification** - Is this a security patch?
+
+### Risk Categorization
+**Patch Updates (e.g., 1.2.3 → 1.2.4):**
+- [ ] **Auto-merge eligible** - If CI passes and no breaking changes
+- [ ] **Review changelog** - Quick scan for unexpected changes
+- [ ] **Merge command**: `gh pr review <pr-number> --approve && gh pr merge <pr-number> --auto --squash`
+
+**Minor Updates (e.g., 1.2.0 → 1.3.0):**
+- [ ] **Breaking changes check** - Review changelog thoroughly
+- [ ] **Deprecation warnings** - Check for deprecated API usage
+- [ ] **Local testing** - Run affected test suites locally
+- [ ] **Bundle size impact** (frontend) - Check for significant increases
+- [ ] **Merge command**: `gh pr review <pr-number> --approve && gh pr merge <pr-number> --squash`
+
+**Major Updates (e.g., 1.0.0 → 2.0.0):**
+- [ ] **Breaking changes documented** - List all breaking changes
+- [ ] **Migration guide reviewed** - Follow official upgrade documentation
+- [ ] **Local full testing** - Run ALL tests, not just affected ones
+- [ ] **Production testing plan** - Prepare rollback strategy
+- [ ] **Code search** - Find all usages of affected APIs
+- [ ] **Team review** (if applicable) - Get second pair of eyes
+- [ ] **Merge command**: `gh pr review <pr-number> --approve && gh pr merge <pr-number> --squash`
+
+### Critical Dependency Review (High-Risk Updates)
+
+**Framework Updates (Next.js, React, FastAPI):**
+- [ ] **Dedicated sprint planned** - Don't rush framework upgrades
+- [ ] **All breaking changes documented** - Create comprehensive list
+- [ ] **Migration checklist created** - Step-by-step upgrade plan
+- [ ] **Rollback tested** - Ensure you can revert quickly
+- [ ] **Defer to issue**: `gh pr close <pr-number> --comment "Deferred to issue #<issue-number>"`
+
+**Database/Cache Updates (PostgreSQL, Redis, SQLAlchemy):**
+- [ ] **Connection compatibility verified** - Check driver versions
+- [ ] **Query syntax changes** - Review for deprecated SQL patterns
+- [ ] **Performance impact** - Run benchmarks if major version
+- [ ] **Data migration needed?** - Check for schema changes
+- [ ] **Backup verified** - Ensure recent backup exists
+
+**Security-Critical Updates (Auth, Crypto, JWT):**
+- [ ] **Security advisory reviewed** - Understand the vulnerability
+- [ ] **Fast-track approved** - Security patches skip normal queue
+- [ ] **Testing focused on security** - Verify vulnerability is fixed
+- [ ] **Production deployment ASAP** - Don't delay security patches
+
+### Local Testing Procedures
+
+**Frontend Dependency Testing:**
+```powershell
+# 1. Checkout PR branch
+gh pr checkout <pr-number>
+
+# 2. Install dependencies
+cd apps/frontend
+npm install
+
+# 3. Run type checking
+npm run type-check
+
+# 4. Run tests
+npm run test
+
+# 5. Build production bundle
+npm run build
+
+# 6. Check bundle size
+npm run analyze  # If available
+
+# 7. Start dev server and smoke test
+npm run dev
+# Test critical user flows manually
+```
+
+**Backend Dependency Testing:**
+```powershell
+# 1. Checkout PR branch
+gh pr checkout <pr-number>
+
+# 2. Activate virtual environment
+cd apps/backend
+.\venv\Scripts\Activate.ps1
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Run type checking
+mypy app/
+
+# 5. Run tests
+pytest
+
+# 6. Run with coverage
+pytest --cov
+
+# 7. Start dev server and smoke test
+uvicorn app.main:app --reload
+# Test critical API endpoints manually
+```
+
+### CI Failure Investigation
+
+**🔴 CRITICAL - Always Fix CI Infrastructure Issues First:**
+Before merging ANY Dependabot PR, ensure CI is healthy:
+- [ ] **Verify pass rate** ≥ 90% on main branch
+- [ ] **Check failing workflows** - Are multiple PRs failing identically?
+- [ ] **Compare with main** - Does same test pass on main branch?
+
+**If ANY Dependabot PR fails CI:**
+- [ ] **Get failure logs**: `gh run view <run-id> --log-failed`
+- [ ] **Check pattern** - Is failure unique to this PR or systemic?
+- [ ] **Compare with main** - Does same test pass on main branch?
+- [ ] **Service configuration** - Are PostgreSQL/Redis services available?
+- [ ] **Environment variables** - Are DATABASE_URL/REDIS_URL set correctly?
+- [ ] **Workflow services** - Check GitHub Actions service configuration
+- [ ] **Root cause fix** - Fix infrastructure issue, not just this PR
+
+**Common CI Issues:**
+- Missing PostgreSQL/Redis services in workflow
+- Incorrect environment variable configuration
+- Database migration not run in test environment
+- Dependency version conflict (peer dependencies)
+- Test timeout due to network issues
+
+### Batching Strategy
+
+**Auto-Merge Group (CI must pass 100%):**
+- Security patches (any version)
+- Patch updates with no breaking changes
+- Testing tools minor updates
+
+**Batch Review Group (merge together if compatible):**
+- Multiple minor updates to same ecosystem (e.g., React ecosystem)
+- Development dependencies
+- CI/CD action updates
+
+**Individual Review Group (one at a time):**
+- Major version updates
+- Production-critical dependencies (database, cache, auth)
+- Framework updates
+
+**Defer Group (create issue, close PR):**
+- Next.js/React major versions (needs sprint planning)
+- Python version upgrades (needs extensive testing)
+- Breaking changes requiring code refactoring
+
+### Merge Decision Matrix
+
+| Criteria | Auto-Merge | Batch Merge | Individual Review | Defer |
+|----------|------------|-------------|-------------------|-------|
+| **Version Change** | Patch | Minor | Major | Breaking |
+| **CI Status** | ✅ 100% Pass | ✅ 100% Pass | ✅ 100% Pass | Any |
+| **Breaking Changes** | None | None | Some | Many |
+| **Testing Required** | None | Local | Full Local + Staging | Spike/POC |
+| **Timeline** | Immediate | 24-48h | 2-5 days | 1-2 weeks |
+| **Rollback Risk** | Low | Low-Medium | Medium-High | High |
+
+### Post-Merge Verification
+- [ ] **CI on main branch** - Verify merge didn't break main
+- [ ] **Deployment successful** - Check production deployment logs
+- [ ] **Health checks pass** - All services responding normally
+- [ ] **Error monitoring** - Watch for new errors in Sentry/logs
+- [ ] **Performance metrics** - Verify no performance degradation
+- [ ] **Rollback ready** - Be prepared to revert if issues arise
+
+### Emergency Rollback
+```powershell
+# If merged dependency causes production issues:
+
+# 1. Revert the merge commit
+git revert -m 1 <merge-commit-sha>
+
+# 2. Push immediately
+git push origin main
+
+# 3. Create hotfix PR
+gh pr create --title "Revert: Dependabot PR #<pr-number>" --body "Emergency rollback due to <issue>"
+
+# 4. Fast-track merge
+gh pr merge --admin --squash
+```
 
 ---
 

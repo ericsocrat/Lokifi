@@ -33,7 +33,7 @@ Frontend calls:                               /api/v1/symbols/search ✅
 **Option 1** (RECOMMENDED): Remove `/api/v1` prefix from market_data.py router
 
 ```python
-# Change line 12 in backend/app/routers/market_data.py:
+# Change line 12 in apps/backend/app/routers/market_data.py:
 # FROM:
 router = APIRouter(prefix="/api/v1", tags=["market-data"])
 
@@ -81,7 +81,7 @@ Need to run BROWSER_TEST_PLAN.md to confirm:
 ### Hypothesis
 
 - Next.js 13 App Router should handle /login, /profile, /portfolio automatically
-- Files exist in `frontend/app/login/`, `frontend/app/profile/`, etc.
+- Files exist in `apps/frontend/app/login/`, `apps/frontend/app/profile/`, etc.
 - Possible issues:
   1. ⚠️ Missing page.tsx in directories
   2. ⚠️ Client/Server component mismatch
@@ -101,7 +101,7 @@ Need to check each page directory for:
 
 ### Step 1: Fix API Routes (HIGH CONFIDENCE FIX)
 
-**File**: `backend/app/routers/market_data.py`
+**File**: `apps/backend/app/routers/market_data.py`
 
 **Change**:
 
@@ -155,7 +155,7 @@ curl http://localhost:8000/api/v1/symbols/search?q=AAPL&limit=5
 
 ```bash
 # PowerShell
-Get-ChildItem frontend/app/*/page.tsx -Recurse
+Get-ChildItem apps/frontend/app/*/page.tsx -Recurse
 ```
 
 **Verify**:
@@ -203,7 +203,7 @@ Get-ChildItem frontend/app/*/page.tsx -Recurse
 
 ```bash
 # 1. Fix the API route
-# Edit: backend/app/routers/market_data.py line 12
+# Edit: apps/backend/app/routers/market_data.py line 12
 # Change: prefix="/api/v1" → prefix="/v1"
 
 # 2. Restart backend

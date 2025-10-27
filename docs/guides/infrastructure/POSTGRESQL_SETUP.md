@@ -72,9 +72,9 @@ GRANT ALL PRIVILEGES ON DATABASE lokifi TO lokifi;
 ### 2. Update Backend Configuration
 
 **📖 For complete environment configuration:**
-- See [Environment Configuration Guide](../security/ENVIRONMENT_CONFIGURATION.md#database-configuration) for `DATABASE_URL` setup and examples
+- See [Environment Configuration Guide](../../security/ENVIRONMENT_CONFIGURATION.md#database-configuration) for `DATABASE_URL` setup and examples
 
-The `DATABASE_URL` environment variable will be set in `backend/.env`.
+The `DATABASE_URL` environment variable will be set in `apps/backend/.env`.
 
 ### 3. Run Database Migrations
 ```powershell

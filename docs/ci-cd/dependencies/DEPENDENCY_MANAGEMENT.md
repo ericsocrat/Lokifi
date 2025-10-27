@@ -1,7 +1,11 @@
 # Dependency Management Analysis
 
-> **Analysis Date**: October 23, 2025
+> **Analysis Date**: October 23, 2025 (Updated: October 27, 2025)
 > **Purpose**: Review dependency installation and caching practices, identify optimization opportunities
+
+> **🔗 Related Documents**:
+> - **[Dependabot Action Plan](./DEPENDABOT_ACTION_PLAN.md)** - Active Dependabot PR management (October 27, 2025)
+> - **[Workflow Optimization](./WORKFLOW_OPTIMIZATION_COMPLETE.md)** - CI/CD optimization results (Session 10)
 
 ## 📊 Executive Summary
 
@@ -800,6 +804,246 @@ lint:
 **Related Documentation**:
 - PERFORMANCE_BASELINE.md - Overall pipeline performance analysis
 - CURRENT_WORKFLOW_STATE.md - Current caching strategy details
+
+---
+
+**Document Status**: 🟢 Active
+**Last Updated**: October 27, 2025
+**Next Review**: After Phase 1 implementation
+**Owner**: DevOps Team
+
+---
+
+## 🤖 Dependabot Workflow Management
+
+> **Related**: See [DEPENDABOT_ACTION_PLAN.md](./DEPENDABOT_ACTION_PLAN.md) for active PR management (October 27, 2025)
+
+### Overview
+
+Dependabot creates automated PRs for dependency updates. This section covers how to manage these PRs efficiently.
+
+### Current Dependabot Configuration
+
+**File**: `.github/dependabot.yml`
+
+**Configured Ecosystems**:
+1. **GitHub Actions** - Weekly (Mondays 2am)
+2. **npm** (Frontend) - Weekly (Mondays 9am) with grouping
+3. **pip** (Backend) - Weekly (Mondays 9am) with grouping
+4. **Docker** - Weekly (Mondays) for both frontend/backend
+
+**Grouping Strategy**:
+- `minor-and-patch` - All non-major updates batched together
+- `react` - React ecosystem (react, next, react-dom)
+- `testing` - Testing tools (Playwright, Vitest, Testing Library)
+- `fastapi` - FastAPI ecosystem (fastapi, pydantic, uvicorn, starlette)
+
+### PR Categorization Guide
+
+**🟢 Auto-Merge Candidates** (Patch updates with passing CI):
+- Security patches (Certifi, Cryptography updates)
+- Patch version bumps (x.y.Z)
+- Dev dependencies patches
+
+**🟡 Review Required** (Minor updates):
+- Minor version bumps (x.Y.z)
+- Grouped updates (multiple packages)
+- Production dependency updates
+
+**🔴 Manual Review Required** (Major updates):
+- Major version bumps (X.y.z)
+- Framework updates (Next.js, React, FastAPI)
+- Breaking changes indicated in changelog
+
+### Dependabot PR Workflow
+
+```mermaid
+graph TD
+    A[Dependabot Creates PR] --> B{Update Type?}
+    B -->|Patch| C[Auto-label: auto-merge-candidate]
+    B -->|Minor| D[Auto-label: needs-review]
+    B -->|Major| E[Auto-label: manual-review-required]
+
+    C --> F{CI Passing?}
+    F -->|Yes| G[Auto-merge]
+    F -->|No| H[Investigate CI failure]
+
+    D --> I[Review changelog]
+    I --> J[Test locally]
+    J --> K{Breaking changes?}
+    K -->|No| L[Approve & Merge]
+    K -->|Yes| M[Defer to sprint]
+
+    E --> N[Review breaking changes]
+    N --> O[Search codebase for impact]
+    O --> P{High risk?}
+    P -->|Yes| Q[Defer to dedicated sprint]
+    P -->|No| R[Thorough testing & merge]
+```
+
+### Common Dependabot Scenarios
+
+#### Scenario 1: Many PRs Created at Once
+
+**Is this normal?** ✅ **YES** - Especially on Monday mornings (configured schedule)
+
+**Why it happens**:
+- Dependabot runs weekly for all ecosystems
+- Multiple packages updated in same week
+- Grouped updates create fewer but larger PRs
+
+**How to handle**:
+1. **Don't panic** - This is expected behavior
+2. **Triage by priority**: Security > Patch > Minor > Major
+3. **Batch merge safe updates**: Group patches/minors together
+4. **Defer major updates**: Create issues for framework upgrades
+
+**Example** (October 27, 2025):
+- 7 PRs created: 4 backend, 3 frontend
+- Root cause: Weekly schedule + multiple dependency updates
+- Action: Fix CI, then merge in priority order
+
+#### Scenario 2: CI Failures on All PRs
+
+**Symptom**: All Dependabot PRs failing same CI checks
+
+**Root cause**: Usually **NOT** the dependencies - likely CI configuration issue
+
+**Investigation steps**:
+```bash
+# 1. Check if failures identical across PRs
+gh pr checks <pr-number> --repo ericsocrat/Lokifi
+
+# 2. Look for CI configuration changes
+git log --oneline --all -- .github/workflows/
+
+# 3. Check service configurations
+grep -A 20 "services:" .github/workflows/*.yml
+
+# 4. Verify environment variables
+grep "env:" .github/workflows/ci.yml
+```
+
+**Resolution**: Fix CI configuration, rerun all PR checks
+
+#### Scenario 3: Major Version Update (Framework)
+
+**Examples**: Next.js 15→16, React 18→19, FastAPI 0.x→1.0
+
+**Action**: **DEFER** - Do not merge immediately
+
+**Process**:
+1. Close Dependabot PR with explanation
+2. Create GitHub Issue for tracking
+3. Label: `enhancement`, `dependencies`, `high-risk`
+4. Plan dedicated sprint (3-5 days)
+5. Create feature branch for testing
+6. Thorough testing before merge to main
+
+**Rationale**: Framework upgrades need careful planning, not automated merges
+
+### Dependabot Best Practices
+
+**DO** ✅:
+- Review changelogs before merging
+- Test locally for major updates
+- Merge security patches quickly
+- Keep PRs under 10 open at a time
+- Use grouping to batch minor updates
+
+**DON'T** ❌:
+- Auto-merge major versions
+- Ignore CI failures (investigate!)
+- Batch majors with minors
+- Merge without reviewing breaking changes
+- Let PRs go stale (>30 days)
+
+### Security Update Fast Track
+
+**Priority**: 🔴 **P0** - Merge within 24 hours
+
+**Criteria**:
+- CVE identified (critical/high severity)
+- Security label applied
+- Patch version update
+- CI passing
+
+**Process**:
+```bash
+# 1. Verify security vulnerability
+gh api repos/ericsocrat/Lokifi/dependabot/alerts | jq '.[] | select(.state == "open")'
+
+# 2. Fast-track merge
+gh pr review <pr-number> --approve --body "🚨 Security patch - fast-tracked"
+gh pr merge <pr-number> --auto --squash
+
+# 3. Monitor post-merge
+gh run list --repo ericsocrat/Lokifi --limit 5
+```
+
+### Maintenance Schedule
+
+**Daily**:
+- Check for new security PRs (if daily security schedule enabled)
+
+**Weekly** (Monday morning):
+- Triage new Dependabot PRs
+- Merge auto-merge candidates
+- Review minor updates
+
+**Monthly**:
+- Audit open Dependabot PRs
+- Close stale PRs (>30 days)
+- Review dependency health metrics
+
+### Useful Commands
+
+```bash
+# List all open Dependabot PRs
+gh pr list --repo ericsocrat/Lokifi --author app/dependabot
+
+# Check PR details
+gh pr view <pr-number> --json title,body,labels,state
+
+# Check CI status
+gh pr checks <pr-number> --repo ericsocrat/Lokifi
+
+# Batch close stale PRs
+gh pr list --author app/dependabot --json number --jq '.[].number' | \
+  xargs -I {} gh pr close {} --comment "Closing stale Dependabot PR"
+
+# Get Dependabot alerts
+gh api repos/ericsocrat/Lokifi/dependabot/alerts
+
+# Reopen closed PR
+gh pr reopen <pr-number> --repo ericsocrat/Lokifi
+```
+
+### Troubleshooting
+
+**Problem**: Dependabot not creating PRs
+
+**Solutions**:
+1. Check `.github/dependabot.yml` syntax
+2. Verify repository settings → Security → Dependabot enabled
+3. Check rate limits (max PRs per ecosystem)
+4. Look for ignored dependencies in config
+
+**Problem**: Auto-merge not working
+
+**Solutions**:
+1. Verify auto-merge workflow running
+2. Check branch protection rules
+3. Ensure CI passing (100% required)
+4. Verify PR labels match auto-merge criteria
+
+**Problem**: Too many PRs at once
+
+**Solutions**:
+1. Adjust `open-pull-requests-limit` in config
+2. Improve grouping strategy
+3. Use version ignores for non-critical deps
+4. Batch merge minor updates together
 
 ---
 

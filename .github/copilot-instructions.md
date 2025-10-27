@@ -900,16 +900,19 @@ run: |
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
-- **Testing**: `/docs/TEST_QUICK_REFERENCE.md`
-- **Standards**: `/docs/CODING_STANDARDS.md`
-- **Architecture**: `/docs/REPOSITORY_STRUCTURE.md`
-- **Copilot Guide**: `/.vscode/COPILOT_GUIDE.md`
-- **CI/CD Optimization**: `/docs/ci-cd/WORKFLOW_OPTIMIZATION_COMPLETE.md` - Complete workflow optimization guide (Session 10)
-- **Sessions 8-9**: `/docs/SESSION_8_9_SECURITY_AND_CI_RESOLUTION.md` - Security + CI learnings
-- **Session 10 Extended**: `/docs/ci-cd/SESSION_10_EXTENDED_SUMMARY.md` - Workflow optimization journey
+- **Core Workflow**: `/docs/guides/DEVELOPER_WORKFLOW.md` - Complete setup & daily workflows ⭐
+- **Pull Requests**: `/docs/guides/PULL_REQUEST_COMPLETE_GUIDE.md` - Complete PR workflow ⭐
+- **Testing**: `/docs/guides/TESTING_GUIDE.md` - Comprehensive testing guide
+- **Standards**: `/docs/guides/CODING_STANDARDS.md` - Code style and conventions
+- **Code Quality**: `/docs/guides/CODE_QUALITY.md` - Quality tools and automation
+- **Architecture**: `/docs/guides/REPOSITORY_STRUCTURE.md` - Project structure
+- **CI/CD Optimization**: `/docs/ci-cd/WORKFLOW_OPTIMIZATION_COMPLETE.md` - Complete workflow optimization (Sessions 8-10)
+- **CI/CD Guide**: `/docs/ci-cd/CI_CD_GUIDE.md` - Pipeline documentation
+- **Dependabot**: `/docs/ci-cd/DEPENDABOT_ACTION_PLAN.md` - Dependency management
 - **Deployment**: `/docs/deployment/README.md` - Production deployment guides
 - **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
 - **DNS Configuration**: `/docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup
+- **Documentation Index**: `/docs/README.md` - Complete documentation index ⭐
 
 ## Common Commands
 

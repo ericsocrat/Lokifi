@@ -1501,7 +1501,7 @@ Sort results with the `sort` query parameter:
 
 - **OpenAPI Spec:** `http://localhost:8000/docs` (Swagger UI)
 - **ReDoc:** `http://localhost:8000/redoc` (Alternative documentation)
-- **Source Code:** See `backend/app/routers/` directory
+- **Source Code:** See `apps/backend/app/routers/` directory
 - **Postman Collection:** Available in `/docs/postman/`
 
 ---

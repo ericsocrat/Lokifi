@@ -131,11 +131,11 @@ docker start lokifi-redis
 - Volume management
 - Easy multi-service orchestration
 
-### 4. `backend/.env`
+### 4. `apps/backend/.env`
 **No changes needed** - Connection configuration managed centrally.
 
 **📖 For complete environment configuration:**
-- [`../security/README.md`](../security/README.md) - Environment variables and security setup
+- [`../../security/README.md`](../../security/README.md) - Environment variables and security setup
 
 ---
 

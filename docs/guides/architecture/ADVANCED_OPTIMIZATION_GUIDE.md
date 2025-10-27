@@ -45,7 +45,7 @@
 ### Phase 1: TypeScript Improvements (High Impact)
 
 #### 1. Dashboard Assets Page (~15 errors)
-**File:** `frontend/app/dashboard/assets/page.tsx`
+**File:** `apps/frontend/app/dashboard/assets/page.tsx`
 **Impact:** High - Main user interface
 **Effort:** Medium
 
@@ -97,7 +97,7 @@ if (hasKindProperty(drawing)) {
 
 1. **Login Attempt Tracking** (Security Enhancement)
    ```python
-   # File: backend/app/services/auth_service.py:143
+   # File: apps/backend/app/services/auth_service.py:143
    # TODO: Track failed login attempts for account lockout
 
    # Implementation:
@@ -108,7 +108,7 @@ if (hasKindProperty(drawing)) {
 
 2. **Market Data API Integration** (Feature Completion)
    ```python
-   # File: backend/app/routers/ohlc.py:45
+   # File: apps/backend/app/routers/ohlc.py:45
    # TODO: Fix real API providers later
 
    # Currently using mock data
@@ -120,7 +120,7 @@ if (hasKindProperty(drawing)) {
 
 3. **WebSocket Message Broadcasting** (Real-time Feature)
    ```python
-   # File: backend/app/routers/conversations.py:366
+   # File: apps/backend/app/routers/conversations.py:366
    # TODO: Broadcast message deletion via WebSocket
 
    # Implementation needed for real-time updates
@@ -209,10 +209,10 @@ npm outdated && npm update
   run: npm run lint
 
 - name: Python Type Check
-  run: mypy backend/app
+  run: mypy apps/backend/app
 
 - name: Python Linting
-  run: ruff check backend/app
+  run: ruff check apps/backend/app
 ```
 
 ### 3. Performance Monitoring

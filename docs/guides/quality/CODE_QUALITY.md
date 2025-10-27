@@ -108,7 +108,7 @@ Suggestions:
 
 ### Professional Logging Utility
 
-**Location:** `frontend/src/utils/logger.ts`
+**Location:** `apps/frontend/src/utils/logger.ts`
 
 **Features:**
 - Environment-aware (dev/prod different behaviors)

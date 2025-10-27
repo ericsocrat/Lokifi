@@ -50,9 +50,9 @@ docker compose -f infra/docker/docker-compose.yml down -v
 Integration tests use containerized environment variables.
 
 **📖 For complete environment configuration:**
-- [`../security/README.md`](../security/README.md) - Environment variables and security setup
-- [`REDIS_DOCKER_SETUP.md`](REDIS_DOCKER_SETUP.md) - Redis-specific configuration
-- [`POSTGRESQL_SETUP_GUIDE.md`](POSTGRESQL_SETUP_GUIDE.md) - Database configuration
+- [`../../security/README.md`](../../security/README.md) - Environment variables and security setup
+- [`../infrastructure/REDIS_SETUP.md`](../infrastructure/REDIS_SETUP.md) - Redis-specific configuration
+- [`../infrastructure/POSTGRESQL_SETUP.md`](../infrastructure/POSTGRESQL_SETUP.md) - Database configuration
 
 ---
 

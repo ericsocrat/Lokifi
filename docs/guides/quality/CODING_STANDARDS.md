@@ -308,7 +308,7 @@ return <div>{renderContent()}</div>;
 ### File Organization
 
 ```
-backend/
+apps/backend/
 ├── app/
 │   ├── api/          # API routes
 │   ├── core/         # Core functionality
