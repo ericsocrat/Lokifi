@@ -157,7 +157,61 @@ jobs:
             core.setOutput('issue-number', issue.number);
             core.setOutput('issue-url', issue.html_url);
 
-      - name: 💬 Add comment to existing issue
+      - name: � Auto-assign issue based on workflow type
+        if: steps.check-issue.outputs.issue-exists == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const workflowName = '${{ steps.workflow-details.outputs.workflow-name }}';
+            const issueNumber = ${{ steps.create-issue.outputs.issue-number }};
+
+            // Define team assignments based on workflow type
+            const assignmentMap = {
+              'Fast Feedback (CI)': {
+                labels: ['frontend', 'backend'],
+                comment: '🤖 This CI failure affects both frontend and backend. Please investigate ASAP.'
+              },
+              'Coverage Tracking': {
+                labels: ['testing', 'quality'],
+                comment: '🤖 Coverage tracking failure detected. Please review test coverage changes.'
+              },
+              'Integration Tests': {
+                labels: ['backend', 'integration'],
+                comment: '🤖 Integration test failure detected. Please check API contracts and service integration.'
+              },
+              'Security Scanning': {
+                labels: ['security', 'priority-critical'],
+                comment: '🚨 Security scanning detected issues. **Immediate attention required.**'
+              }
+            };
+
+            // Extract workflow name (remove emoji)
+            const cleanWorkflowName = workflowName.replace(/^[^\w\s]+\s*/, '');
+            const assignment = assignmentMap[cleanWorkflowName];
+
+            if (assignment) {
+              // Add workflow-specific labels
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: assignment.labels
+              });
+
+              // Add assignment comment with context
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: assignment.comment
+              });
+
+              core.info(`Auto-assigned labels: ${assignment.labels.join(', ')}`);
+            } else {
+              core.warning(`No assignment mapping found for workflow: ${cleanWorkflowName}`);
+            }
+
+      - name: �💬 Add comment to existing issue
         if: steps.check-issue.outputs.issue-exists == 'true'
         uses: actions/github-script@v7
         with:
