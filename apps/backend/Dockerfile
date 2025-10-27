@@ -1,12 +1,14 @@
 FROM python:3.14-slim
 WORKDIR /app
 
-# Install system dependencies for healthchecks and service waiting
+# Install system dependencies for healthchecks, service waiting, and building Python packages
 RUN apt-get update && \
     apt-get install -y \
     curl \
     postgresql-client \
     redis-tools \
+    build-essential \
+    libpq-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

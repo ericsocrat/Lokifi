@@ -14,6 +14,7 @@ RUN addgroup --system app && adduser --system --group app
 RUN apt-get update && apt-get install -y \
     curl \
     gcc \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Build stage
