@@ -68,7 +68,7 @@ This roadmap tracks the gradual improvement of code quality standards that were 
   - Fixed `datetime.UTC` ImportError (not available in Python 3.10)
   - Replaced `UTC` with `timezone.utc` for Python 3.10+ compatibility
   - Impact: 91.4% → 94.3% pass rate (33/35 workflows)
-  
+
 - ✅ **asyncpg Docker Build Fix** (2d970f98) - 3 Dockerfiles
   - Added build-essential + libpq-dev for C extension compilation
   - Fixed "gcc failed: No such file or directory" error
