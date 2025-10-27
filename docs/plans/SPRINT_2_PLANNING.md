@@ -23,7 +23,7 @@
    - Top 10 Zustand stores documented
    - Common anti-patterns catalogued
    - Estimated effort: 4-6 weeks for full implementation
-   
+
 2. **Security & Code Quality**: 30 CodeQL alerts reviewed
    - All "note" severity (code quality, not security vulnerabilities)
    - 20 polluting-import alerts (missing `__all__`)
@@ -47,10 +47,11 @@
 **Value Proposition**: High-impact foundation for systematic type safety
 
 #### Scope
-Focus on **2-3 high-value Zustand stores** from top-10 list:
-1. **monitoringStore.tsx** (147 `any` types)
-2. **socialStore.tsx** (124 `any` types)
-3. **performanceStore.tsx** (115 `any` types)
+Focus on **1-2 high-value Zustand stores** from top-10 list (revised after analysis):
+1. **monitoringStore.tsx** (147 `any` types, **1,689 lines**) - PRIMARY TARGET
+2. **socialStore.tsx** (124 `any` types, **1,298 lines**) - SECONDARY TARGET
+
+**Note**: After analysis, these files are much larger than expected (4,706 lines total for 3 stores). Adjusted scope to 1-2 stores for realistic 4-6 hour timeline.
 
 #### Implementation Plan
 

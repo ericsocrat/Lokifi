@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+__all__ = ['router']
+
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, func, select

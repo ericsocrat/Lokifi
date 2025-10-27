@@ -3,6 +3,8 @@ Security Dashboard API Routes
 Endpoints for monitoring security events and system health
 """
 
+__all__ = ['router']
+
 from datetime import timezone, datetime, timedelta
 from typing import Any
 
