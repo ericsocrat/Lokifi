@@ -913,12 +913,14 @@ run: |
 5. **Document decisions**: Add to existing decision logs, not new files
 
 **Examples**:
-- ❌ **Bad**: Create `SESSION_11_NOTES.md` when `TECHNICAL_ROADMAP.md` already tracks progress
-- ✅ **Good**: Update `TECHNICAL_ROADMAP.md` Decision Log with new session findings
-- ❌ **Bad**: Create `DEPENDENCY_FIX_PLAN.md` when `DEPENDABOT_ACTION_PLAN.md` exists
-- ✅ **Good**: Update `DEPENDABOT_ACTION_PLAN.md` with new root cause analysis
+- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `TECHNICAL_ROADMAP.md` already tracks sprints
+- ✅ **Good**: Update `TECHNICAL_ROADMAP.md` with new sprint planning and add to Decision Log
+- ❌ **Bad**: Create `DEPLOYMENT_CHECKLIST.md` when `CHECKLISTS.md` exists
+- ✅ **Good**: Update `CHECKLISTS.md` with new deployment section
+- ❌ **Bad**: Create `TESTING_BEST_PRACTICES.md` when `TESTING_GUIDE.md` exists  
+- ✅ **Good**: Update `TESTING_GUIDE.md` with new best practices section
 - ❌ **Bad**: Keep both old and new versions of same document
-- ✅ **Good**: Archive old version to `.archive/` folder, update references
+- ✅ **Good**: Archive old version to `.archive/` folder, update all cross-references
 
 **Archive Structure**:
 - Use `.archive/` subfolder within category (e.g., `docs/guides/.archive/`)
