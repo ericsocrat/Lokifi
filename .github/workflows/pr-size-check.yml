@@ -41,11 +41,44 @@ jobs:
               per_page: 100
             });
 
-            // Calculate metrics
-            const filesChanged = files.length;
-            const additions = files.reduce((sum, file) => sum + file.additions, 0);
-            const deletions = files.reduce((sum, file) => sum + file.deletions, 0);
+            // Define patterns for generated/excluded files
+            const excludePatterns = [
+              /package-lock\.json$/,
+              /^coverage\//,
+              /\.coverage$/,
+              /^htmlcov\//,
+              /^\.nyc_output\//,
+              /^dist\//,
+              /^build\//,
+              /\.min\.js$/,
+              /\.min\.css$/,
+              /^\.next\//,
+              /\.map$/,
+              /-lock\.yaml$/,
+              /^public\/build\//
+            ];
+
+            // Filter out generated files
+            const meaningfulFiles = files.filter(file => {
+              const filename = file.filename;
+              return !excludePatterns.some(pattern => pattern.test(filename));
+            });
+
+            // Calculate metrics (excluding generated files)
+            const filesChanged = meaningfulFiles.length;
+            const additions = meaningfulFiles.reduce((sum, file) => sum + file.additions, 0);
+            const deletions = meaningfulFiles.reduce((sum, file) => sum + file.deletions, 0);
             const totalChanges = additions + deletions;
+
+            // Track excluded files for transparency
+            const excludedCount = files.length - meaningfulFiles.length;
+            const excludedFiles = files.filter(file => {
+              const filename = file.filename;
+              return excludePatterns.some(pattern => pattern.test(filename));
+            }).map(f => f.filename);
+
+            core.setOutput('excluded-count', excludedCount);
+            core.setOutput('excluded-files', excludedFiles.join(', '));
 
             // Determine size category
             let sizeLabel = 'size-xs';
@@ -142,8 +175,10 @@ jobs:
             const additions = '${{ steps.analyze.outputs.additions }}';
             const deletions = '${{ steps.analyze.outputs.deletions }}';
             const recommendation = `${{ steps.analyze.outputs.recommendation }}`;
+            const excludedCount = '${{ steps.analyze.outputs.excluded-count }}';
+            const excludedFiles = '${{ steps.analyze.outputs.excluded-files }}';
 
-            const commentBody = `## ${sizeEmoji} PR Size Analysis
+            let commentBody = `## ${sizeEmoji} PR Size Analysis
 
             ${recommendation}
 
@@ -152,7 +187,14 @@ jobs:
             - **Files changed**: ${filesChanged}
             - **Lines added**: ${additions}
             - **Lines deleted**: ${deletions}
-            - **Total changes**: ${totalChanges}
+            - **Total changes**: ${totalChanges}`;
+
+            // Add excluded files section if any
+            if (excludedCount > 0) {
+              commentBody += `\n\n**Note**: ${excludedCount} generated/build file(s) excluded from size calculation:\n\`\`\`\n${excludedFiles}\n\`\`\``;
+            }
+
+            commentBody += `
 
             ### 💡 Why smaller PRs are better:
 
@@ -223,6 +265,13 @@ jobs:
           echo "- Lines added: +${{ steps.analyze.outputs.additions }}" >> $GITHUB_STEP_SUMMARY
           echo "- Lines deleted: -${{ steps.analyze.outputs.deletions }}" >> $GITHUB_STEP_SUMMARY
           echo "- Total changes: ${{ steps.analyze.outputs.total-changes }}" >> $GITHUB_STEP_SUMMARY
+          
+          # Show excluded files if any
+          if [ "${{ steps.analyze.outputs.excluded-count }}" != "0" ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Note**: ${{ steps.analyze.outputs.excluded-count }} generated/build file(s) excluded from size calculation" >> $GITHUB_STEP_SUMMARY
+          fi
+          
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Recommendation**: ${{ steps.analyze.outputs.recommendation }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
