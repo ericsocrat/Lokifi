@@ -56,9 +56,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log | Select-String -Pattern "sh
 # Or: Download from https://github.com/koalaman/shellcheck/releases
 
 # Find all shell scripts
-Get-ChildItem -Recurse -Filter "*.sh" | ForEach-Object { 
+Get-ChildItem -Recurse -Filter "*.sh" | ForEach-Object {
     Write-Host "Checking: $($_.FullName)"
-    shellcheck $_.FullName 
+    shellcheck $_.FullName
 }
 ```
 
@@ -308,7 +308,7 @@ export const useMonitoringStore = create<MonitoringStore>()(
       try {
         const response = await fetch('/api/monitoring/metrics');
         const data = await response.json();
-        
+
         set((draft: Draft<MonitoringStore>) => {
           draft.metrics = data.metrics;
           draft.isLoading = false;

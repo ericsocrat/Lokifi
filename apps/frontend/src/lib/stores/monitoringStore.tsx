@@ -1,7 +1,14 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
+import type {
+  BaseStoreState,
+  ImmerSet,
+  ImmerGet,
+  TimeRangeState
+} from '@/types/stores';
 
 // H6: Monitoring System - Advanced monitoring for seamless upgrades
 // Real-time health monitoring, automated issue detection, rollback triggers
@@ -555,7 +562,11 @@ export interface MonitoringSettings {
 }
 
 // Store State
-interface MonitoringState {
+// ============================================================================
+// Monitoring Store State Interface
+// ============================================================================
+
+interface MonitoringState extends BaseStoreState {
   // Dashboards
   dashboards: MonitoringDashboard[];
   activeDashboard: string | null;
@@ -589,10 +600,9 @@ interface MonitoringState {
   // Settings
   settings: MonitoringSettings;
   
-  // Status
+  // Connection Status (extends BaseStoreState)
   isConnected: boolean;
   lastSync: Date | null;
-  error: string | null;
 }
 
 export interface LogFilters {
@@ -602,6 +612,10 @@ export interface LogFilters {
   searchTerm: string;
   tags: string[];
 }
+
+// ============================================================================
+// Monitoring Store Actions Interface
+// ============================================================================
 
 // Store Actions
 interface MonitoringActions {
@@ -682,8 +696,24 @@ interface MonitoringActions {
   createDefaultDashboard: () => void;
 }
 
+// ============================================================================
+// Combined Monitoring Store Type
+// ============================================================================
+
+type MonitoringStore = MonitoringState & MonitoringActions;
+
+// ============================================================================
+// Initial State Factory
+// ============================================================================
+
 // Initial State
 const createInitialState = (): MonitoringState => ({
+  // BaseStoreState properties
+  isLoading: false,
+  error: null,
+  lastUpdated: null,
+  
+  // Monitoring-specific properties
   dashboards: [],
   activeDashboard: null,
   widgets: [],
@@ -729,19 +759,21 @@ const createInitialState = (): MonitoringState => ({
     queryTimeout: 60
   },
   isConnected: false,
-  lastSync: null,
-  error: null
+  lastSync: null
 });
 
+// ============================================================================
+// Store Creation
+// ============================================================================
+
 // Create Store
-export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
+export const useMonitoringStore = create<MonitoringStore>()(
   persist(
-    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
-    immer((set, get, _store) => ({
+    immer((set, get) => ({
       ...createInitialState(),
 
       // Dashboard Management
-      createDashboard: (dashboardData: any) => {
+      createDashboard: (dashboardData: Omit<MonitoringDashboard, 'id' | 'createdAt' | 'updatedAt'>) => {
         if (!FLAGS.monitoring) return '';
         
         const id = `dashboard_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -752,45 +784,45 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           updatedAt: new Date(),
         };
         
-        set((state: any) => {
-          state.dashboards.push(dashboard);
+        set((draft: Draft<MonitoringStore>) => {
+          draft.dashboards.push(dashboard);
         });
         
         return id;
       },
 
-      updateDashboard: (dashboardId: any, updates: any) => {
+      updateDashboard: (dashboardId: string, updates: Partial<MonitoringDashboard>) => {
         if (!FLAGS.monitoring) return;
         
-        set((state: any) => {
-          const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+        set((draft: Draft<MonitoringStore>) => {
+          const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
           if (dashboard) {
             Object.assign(dashboard, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteDashboard: (dashboardId: any) => {
+      deleteDashboard: (dashboardId: string) => {
         if (!FLAGS.monitoring) return;
         
-        set((state: any) => {
-          const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
-          state.dashboards = state.dashboards.filter((d: any) => d.id !== dashboardId);
-          if (state.activeDashboard === dashboardId) {
-            state.activeDashboard = null;
+        set((draft: Draft<MonitoringStore>) => {
+          const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
+          draft.dashboards = draft.dashboards.filter((d) => d.id !== dashboardId);
+          if (draft.activeDashboard === dashboardId) {
+            draft.activeDashboard = null;
           }
           // Remove widgets from this dashboard
           if (dashboard) {
-            const widgetIdsToRemove = dashboard.layout.widgets.map((w: any) => w.widgetId);
-            state.widgets = state.widgets.filter((w: any) => !widgetIdsToRemove.includes(w.id));
+            const widgetIdsToRemove = dashboard.layout.widgets.map((w) => w.widgetId);
+            draft.widgets = draft.widgets.filter((w) => !widgetIdsToRemove.includes(w.id));
           }
         });
       },
 
-      cloneDashboard: (dashboardId: any, name: any) => {
+      cloneDashboard: (dashboardId: string, name: string) => {
         if (!FLAGS.monitoring) return '';
         
-        const dashboard = get().dashboards.find((d: any) => d.id === dashboardId);
+        const dashboard = get().dashboards.find((d) => d.id === dashboardId);
         if (!dashboard) return '';
         
         const newId = get().createDashboard({
@@ -803,16 +835,16 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return newId;
       },
 
-      exportDashboard: async (dashboardId: any) => {
+      exportDashboard: async (dashboardId: string) => {
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
         
-        const dashboard = get().dashboards.find((d: any) => d.id === dashboardId);
+        const dashboard = get().dashboards.find((d) => d.id === dashboardId);
         if (!dashboard) throw new Error('Dashboard not found');
         
         const exportData = {
           dashboard,
-          widgets: get().widgets.filter((w: any) => 
-            dashboard.layout.widgets.find((dw: any) => dw.widgetId === w.id)
+          widgets: get().widgets.filter((w) => 
+            dashboard.layout.widgets.find((dw) => dw.widgetId === w.id)
           ),
           exportedAt: new Date().toISOString(),
           version: '1.0'
@@ -825,7 +857,7 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return blob;
       },
 
-      importDashboard: async (file: any) => {
+      importDashboard: async (file: File) => {
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
         
         const text = await file.text();
@@ -842,16 +874,16 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
         return dashboardId;
       },
 
-      setActiveDashboard: (dashboardId: any) => {
+      setActiveDashboard: (dashboardId: string | null) => {
         if (!FLAGS.monitoring) return;
         
-        set((state: any) => {
-          state.activeDashboard = dashboardId;
+        set((draft: Draft<MonitoringStore>) => {
+          draft.activeDashboard = dashboardId;
         });
       },
 
       // Widget Management
-      addWidget: (dashboardId: any, widgetData: any) => {
+      addWidget: (dashboardId: string, widgetData: Omit<MonitoringWidget, 'id'>) => {
         if (!FLAGS.monitoring) return '';
         
         const widgetId = `widget_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -862,11 +894,11 @@ export const useMonitoringStore = create<MonitoringState & MonitoringActions>()(
           lastUpdated: new Date()
         };
         
-        set((state: any) => {
-          state.widgets.push(widget);
+        set((draft: Draft<MonitoringStore>) => {
+          draft.widgets.push(widget);
           
           // Add to dashboard layout
-          const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+          const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
           if (dashboard) {
             const position: WidgetPosition = {
               widgetId,
