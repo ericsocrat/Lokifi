@@ -1571,6 +1571,227 @@ gh workflow run e2e.yml --repo ericsocrat/Lokifi --ref main --field test_suite=f
 
 **Status**: ✅ SPRINT 1 COMPLETE - 100% CI pass rate achieved and verified!
 
+## Session 13 - Sprint 2 Planning & Code Quality Start (3 Commits) 🔄
+
+**Achievement**: Comprehensive Sprint 2 planning + Initial code quality improvements
+
+### Overview (Oct 28, 2025)
+
+After achieving 100% CI pass rate in Sprint 1, moved to Sprint 2 planning with comprehensive analysis of 4 different paths forward.
+
+**Final Metrics**:
+- **Sprint 2 Planning**: ✅ COMPLETE (380-line comprehensive document)
+- **Code Quality Work**: 🔄 IN PROGRESS (11/20 CodeQL fixes complete)
+- **Commits**: 3 total (2 planning, 1 implementation)
+- **Status**: Awaiting user decision on Sprint 2 direction
+
+### Sprint 2 Planning Phase (Commits 1-2) ✅
+
+**Commit 0a9f1382 - Sprint 2 Planning & Scope Discovery**:
+- Created comprehensive SPRINT_2_PLANNING.md (380 lines)
+- **Major Discovery**: TypeScript stores 3-4x larger than expected
+  - monitoringStore.tsx: 1,689 lines (147 `any` types)
+  - socialStore.tsx: 1,298 lines (124 `any` types)
+  - performanceStore.tsx: 1,719 lines (115 `any` types)
+  - Total: 4,706 lines (vs ~1,500 estimated)
+- Revised scope from "fix 3 stores" to "fix 1-2 stores" (realistic for 4-6 hrs)
+- Started CodeQL fixes as proof of concept (3/20 files)
+
+**Commit 86c3a77e - TECHNICAL_ROADMAP Update**:
+- Added Sprint 2 section with planning status
+- Documented file size discovery
+- Listed 4 comprehensive options with analysis
+- Status: "PLANNING COMPLETE - Awaiting user decision"
+
+### Four Sprint 2 Options Analyzed 📋
+
+**Option A: TypeScript Focused** ⭐ **RECOMMENDED** (4-6 hrs)
+- **Scope**: Fix 1-2 high-value Zustand stores completely
+- **Target**: monitoringStore.tsx (1,689 lines) + socialStore.tsx (1,298 lines)
+- **Value**: High-impact foundation, establishes patterns for remaining stores
+- **Outcome**: 200-300 `any` types eliminated, reusable patterns created
+- **Why**: Manageable scope, high visibility, builds momentum
+
+**Option B: Testing Infrastructure** (6-8 hrs)
+- **Scope**: Visual regression baselines, coverage expansion, E2E scenarios
+- **Target**: Visual tests (Linux baselines), Coverage (35%→50%), E2E (+10-15 scenarios)
+- **Value**: Robust testing foundation, better regression prevention
+- **Outcome**: Visual tests reliable, critical paths fully tested
+- **Why**: Natural extension of Sprint 1 work, good ROI for risk reduction
+
+**Option C: Code Quality** (3-4 hrs)
+- **Scope**: Complete CodeQL alerts + Shellcheck warnings
+- **Target**: 20 polluting-import alerts, 145 Shellcheck warnings
+- **Value**: Clean codebase, reduced noise, improved maintainability
+- **Outcome**: 30→8 CodeQL alerts, consistent shell scripts
+- **Why**: Quick wins, low risk, visible impact
+
+**Option D: Documentation & Architecture** (6-8 hrs)
+- **Scope**: OpenAPI/Swagger docs, C4 diagrams, deployment guides
+- **Target**: Complete API documentation, architecture diagrams, operations runbook
+- **Value**: Professional documentation, easier onboarding
+- **Outcome**: Professional API docs, clear architecture visibility
+- **Why**: High value for team growth, captures recent learnings
+
+### Code Quality Implementation Started (Commit 3) 🔄
+
+**Commit 5c871ba0 - API Route CodeQL Fixes**:
+- Fixed all 11 API route files with `__all__` declarations
+- Pattern: Add `__all__ = ['router']` after module docstring/imports
+- Files modified:
+  ```
+  app/api/routes/alerts.py
+  app/api/routes/auth.py
+  app/api/routes/cache.py
+  app/api/routes/chat.py
+  app/api/routes/crypto.py
+  app/api/routes/health_check.py
+  app/api/routes/market.py (already done)
+  app/api/routes/monitoring.py
+  app/api/routes/portfolio.py
+  app/api/routes/security.py (already done)
+  app/api/routes/social.py (already done)
+  ```
+- **Impact**: Prevents namespace pollution, reduces CodeQL alerts 30→22 (expected)
+- **Progress**: 11/20 CodeQL fixes complete (55%)
+
+### Decision Matrix & Recommendation 🎯
+
+| Criteria | A (TypeScript) | B (Testing) | C (Quality) | D (Docs) |
+|----------|----------------|-------------|-------------|----------|
+| **Time** | 4-6 hrs | 6-8 hrs | 3-4 hrs | 6-8 hrs |
+| **Value** | ⭐⭐⭐⭐⭐ High | ⭐⭐⭐⭐ High | ⭐⭐⭐ Medium | ⭐⭐⭐ Medium |
+| **Foundation** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐⭐ Good | ⭐⭐ Limited | ⭐⭐⭐ Good |
+| **Risk** | ⭐⭐⭐ Medium | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐ Low | ⭐⭐ Low |
+| **Dev Experience** | ⭐⭐⭐⭐⭐ Excellent | ⭐⭐⭐ Medium | ⭐⭐⭐ Medium | ⭐⭐⭐⭐ Good |
+
+**Agent Recommendation**: **Option A (TypeScript Focused)** for strategic value
+- Natural progression from Sprint 1 analysis
+- High impact on developer experience
+- Establishes patterns for future work
+- Manageable scope with clear success metrics
+
+**Alternative**: **Option C (Code Quality)** if user prefers quick wins
+- Already 11/20 complete (55% done)
+- Only 9 files remaining (~1-1.5 hours)
+- Clean CodeQL dashboard immediate benefit
+- Low complexity, high achievability
+
+### Current State Summary 📊
+
+**Planning**:
+- ✅ Comprehensive planning document created (380 lines)
+- ✅ All 4 options fully analyzed with time/value estimates
+- ✅ Decision matrix provided for informed choice
+- ✅ File size discovery documented for realistic scoping
+
+**Implementation**:
+- ✅ Code Quality Option started (11/20 CodeQL fixes)
+- ✅ Pattern established and proven across 11 files
+- 🔄 Service and core module files remaining (9 files)
+- ⏸️ Paused pending user decision on direction
+
+**Documentation**:
+- ✅ SPRINT_2_PLANNING.md created with full analysis
+- ✅ TECHNICAL_ROADMAP.md updated with Sprint 2 status
+- ✅ Todo list synchronized with current progress
+- 🔄 copilot-instructions.md (this section)
+
+### Remaining CodeQL Fixes (9 files) 📝
+
+If user chooses to complete Option C:
+
+**Service Files** (estimated):
+- app/services/alerts.py
+- app/services/auth.py
+- app/services/notifications.py
+- app/services/[others as needed]
+
+**Core Files** (estimated):
+- app/core/redis_client.py
+- app/core/security.py
+- app/core/[others as needed]
+
+**Estimated Time**: 1-1.5 hours to complete remaining 9 files
+**Total Option C Time**: 2.5 hours spent + 1-1.5 hours remaining = 3.5-4 hours ✅
+
+### Key Learnings 💡
+
+**Planning Best Practices**:
+1. **Verify assumptions early** - File size discovery prevented scope creep
+2. **Comprehensive options** - 4 fully analyzed paths empowers user choice
+3. **Decision matrices work** - Clear comparison aids decision-making
+4. **Document discoveries** - 3-4x size difference is critical context
+5. **Realistic scoping** - Adjust estimates based on actual data
+
+**Code Quality Patterns**:
+1. **Batch similar changes** - 11 API route files in one commit
+2. **Establish patterns first** - Prove approach on 3 files before scaling
+3. **Clear commit messages** - Document progress and next steps
+4. **Incremental progress** - 11/20 complete is better than 0/20
+5. **Systematic approach** - Route files → Service files → Core files
+
+**Strategic Pivoting**:
+1. **Analyze before implementing** - Discovered TypeScript scope issue early
+2. **Multiple options ready** - User can pivot based on priorities
+3. **Start proof of concept** - CodeQL fixes demonstrate Option C viability
+4. **Clear documentation** - Planning doc enables informed decisions
+5. **No wasted work** - CodeQL fixes valuable regardless of final choice
+
+### Next Steps (User Decision Required) 🚦
+
+**Option 1: Complete Option C (Code Quality)** - Recommended for momentum
+- Complete remaining 9 CodeQL fixes (~1-1.5 hours)
+- Fix 145 Shellcheck warnings (~1-2 hours)
+- Update CODING_STANDARDS.md (~30 min)
+- Total remaining: 2.5-3.5 hours
+- **Result**: Clean CodeQL dashboard, 100% CI pass rate maintained
+
+**Option 2: Switch to Option A (TypeScript)** - Recommended for strategic value
+- Create shared type definitions file (~1-2 hours)
+- Fix monitoringStore.tsx completely (~2-3 hours)
+- Document patterns and guidelines (~1 hour)
+- Total: 4-6 hours fresh start
+- **Result**: 147 `any` types → 0, reusable patterns established
+
+**Option 3: Switch to Option B or D** - Based on user priorities
+- Follow implementation plans in SPRINT_2_PLANNING.md
+- 6-8 hour time investment for either option
+- Both well-documented with clear success criteria
+
+**Documentation Updates Needed** (After decision):
+- Mark chosen option as "IN PROGRESS" in TECHNICAL_ROADMAP.md
+- Update todo list with specific implementation tasks
+- Track progress in Session 13 Extended (if continuing)
+
+### Session 13 Success Metrics ✅
+
+**Planning Quality**:
+- ✅ 380-line comprehensive planning document
+- ✅ 4 fully analyzed options with decision matrix
+- ✅ Critical file size discovery documented
+- ✅ Realistic scope adjustments made
+
+**Implementation Progress**:
+- ✅ 11/20 CodeQL fixes complete (55%)
+- ✅ Pattern established and proven
+- ✅ All commits pushed successfully
+- 🔄 9 files remaining for Option C completion
+
+**Documentation**:
+- ✅ SPRINT_2_PLANNING.md created
+- ✅ TECHNICAL_ROADMAP.md updated
+- ✅ Todo list synchronized
+- ✅ Session 13 documented (this section)
+
+**Time Efficiency**:
+- Planning: ~1.5 hours (comprehensive analysis)
+- Implementation: ~1 hour (11 CodeQL fixes)
+- Documentation: ~30 minutes (updates)
+- Total: ~3 hours (excellent for scope of work)
+
+**Status**: ✅ SPRINT 2 PLANNING COMPLETE - Implementation in progress, awaiting user direction
+
 ## Documentation Management Guidelines
 
 1. **Concurrency control is valuable** - Saves CI minutes, prevents wasted resources
