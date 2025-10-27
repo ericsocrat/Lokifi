@@ -13,7 +13,7 @@
     "start": "next start -p 3000",
     "lint": "next lint",
     "lint:security": "eslint . --config eslint-security.config.mjs",
-    "lint:a11y": "eslint . --rule '{\"jsx-a11y/alt-text\": \"error\"}'",
+    "lint:a11y": "eslint . --config eslint-a11y.config.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:unit": "vitest run tests/unit",
