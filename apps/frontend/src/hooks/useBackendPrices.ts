@@ -182,7 +182,7 @@ export function useCryptoSearch(query: string, debounceMs: number = 300) {
   const [data, setData] = useState<CryptoSearchResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const search = useCallback(async (searchQuery: string) => {
     if (!searchQuery || searchQuery.length < 2) {
