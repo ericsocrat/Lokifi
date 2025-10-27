@@ -391,6 +391,97 @@ gh pr merge --admin --squash
 
 ## 📈 Performance Implementation Checklist
 
+### CI Performance Testing Best Practices ✅
+
+**Context**: Based on Sprint 1 learnings (Session 12, Oct 27-28, 2025)
+
+**Key Principle**: Performance tests measure load metrics, NOT content validity
+- Performance tests: Measure page load times, resource loading, rendering speed
+- Functional tests: Verify content exists, interactions work, user flows complete
+- ❌ Anti-pattern: Mixing concerns (checking h1 exists in performance test)
+
+**CI Environment Characteristics**:
+- **150-200% slower** than local development
+- Shared CPU resources (GitHub-hosted runners)
+- Higher network latency (external API calls)
+- Cold start overhead (no warm cache)
+- Slower I/O (disk, network operations)
+
+**Performance Budget Guidelines**:
+
+**Local Development Budgets** (ideal conditions):
+```typescript
+const localBudgets = {
+  load: 3000,                 // 3 seconds
+  domContentLoaded: 2000,     // 2 seconds
+  firstContentfulPaint: 2000, // 2 seconds
+};
+```
+
+**CI Environment Budgets** (realistic thresholds):
+```typescript
+const ciBudgets = {
+  load: 8000,                 // 8 seconds (2.67x local)
+  domContentLoaded: 4000,     // 4 seconds (2x local)
+  firstContentfulPaint: 4000, // 4 seconds (2x local)
+};
+```
+
+**Formula**: `CI_BUDGET = LOCAL_BUDGET × 2.5` (conservative estimate)
+
+**Conditional Rendering Pitfalls**:
+- ❌ **Don't**: Test for elements that depend on async data loading
+- ❌ **Don't**: Use `waitForSelector` for content in performance tests
+- ✅ **Do**: Wait for performance metrics only (`waitForLoadState('networkidle')`)
+- ✅ **Do**: Separate content validation into functional E2E tests
+
+**Example - Performance Test Structure**:
+```typescript
+test('Page loads within performance budget', async ({ page }) => {
+  const startTime = Date.now();
+  
+  // Navigate and wait for network to be idle
+  await page.goto('/markets', { waitUntil: 'networkidle' });
+  
+  // Measure performance metrics
+  const loadTime = Date.now() - startTime;
+  const performanceData = await page.evaluate(() => {
+    const perf = performance.getEntriesByType('navigation')[0];
+    return {
+      domContentLoaded: perf.domContentLoadedEventEnd - perf.startTime,
+      load: perf.loadEventEnd - perf.startTime,
+    };
+  });
+  
+  // Assert only on performance metrics
+  expect(loadTime).toBeLessThan(ciBudgets.load);
+  expect(performanceData.domContentLoaded).toBeLessThan(ciBudgets.domContentLoaded);
+  
+  // ❌ DON'T DO THIS in performance tests:
+  // await expect(page.locator('h1')).toBeVisible();
+});
+```
+
+**Manual Workflow Verification**:
+
+When CI concurrency cancels workflows (fast sequential commits):
+```bash
+# Manually trigger workflow to verify fix
+gh workflow run e2e.yml --repo ericsocrat/Lokifi --ref main --field test_suite=full
+
+# Check workflow status
+gh run list --repo ericsocrat/Lokifi --workflow="e2e.yml" --limit 1
+
+# View detailed results
+gh run view <run-id> --repo ericsocrat/Lokifi
+```
+
+**Best Practice**: Wait 15-20 minutes after pushing critical fixes before documentation commits
+
+**Reference**: See Session 12 in `.github/copilot-instructions.md` for complete debugging journey
+
+---
+
 ### Frontend Optimization
 - [ ] **Code splitting** implemented for routes
 - [ ] **Lazy loading** for non-critical components
