@@ -225,6 +225,43 @@ This roadmap tracks the gradual improvement of code quality standards that were 
 **Timeline**: Oct 27-28, 2025 (~3.5 hours)
 **Pass Rate**: 97.1% → 100% (34/35 → 35/35 workflows) 🎉
 
+---
+
+## Sprint 2: Code Quality & TypeScript (Week 3)
+
+**Status**: 📋 PLANNING COMPLETE - Awaiting user decision
+**Timeline**: Oct 28, 2025 (planning phase)
+**Document**: [SPRINT_2_PLANNING.md](./plans/SPRINT_2_PLANNING.md)
+
+### Planning Phase Complete (Oct 28, 2025) ✅
+
+**Major Discovery**: TypeScript stores significantly larger than expected
+- monitoringStore.tsx: **1,689 lines** (147 `any` types)
+- socialStore.tsx: **1,298 lines** (124 `any` types)
+- performanceStore.tsx: **1,719 lines** (115 `any` types)
+- **Total**: 4,706 lines (3-4x larger than initially estimated)
+
+**Revised Options** (all fully analyzed):
+- ⭐ **Option A: TypeScript Focused** (4-6 hrs) - Fix 1 store completely + patterns
+- **Option B: Testing Infrastructure** (6-8 hrs) - Visual tests, coverage, E2E
+- **Option C: Code Quality** (3-4 hrs) - CodeQL fixes (20 alerts), Shellcheck (145 warnings)
+- **Option D: Documentation** (6-8 hrs) - API docs, architecture diagrams
+
+**Initial Work Started**:
+- ✅ CodeQL fixes: 3/20 complete (security.py, social.py, market.py)
+- ✅ Pattern established for remaining 17 files
+- ⏸️ Paused pending user decision on sprint direction
+
+**Next Action**: User selects Sprint 2 option (A, B, C, or D)
+
+---
+
+## Sprint 1: TypeScript Type Safety (Weeks 1-2) - ARCHIVED
+
+**Status**: ✅ COMPLETE - PRIMARY goal achieved (100% CI pass rate)
+**Timeline**: Oct 27-28, 2025 (~3.5 hours)
+**Pass Rate**: 97.1% → 100% (34/35 → 35/35 workflows) 🎉
+
 ### Sprint 1 PRIMARY Goal: 100% CI Pass Rate ✅
 
 **Achievement**: Fixed remaining Performance Test failure through systematic 3-iteration debugging
