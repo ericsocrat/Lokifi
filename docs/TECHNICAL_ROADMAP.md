@@ -1,7 +1,7 @@
 # Technical Debt Roadmap - Post PR #27
 
 > **Created**: October 24, 2025
-> **Last Updated**: January 2025 - Session 31 Phase 2 COMPLETE (Backend Router Tests)
+> **Last Updated**: January 2025 - Session 31 Phase 3 COMPLETE (Backend Router Tests)
 > **Status**: Active - Sprint 0 ✅ COMPLETE, Sprint 1 ✅ COMPLETE, Sprint 2 ✅ COMPLETE, Sprint 3 🔄 IN PROGRESS
 > **Owner**: Solo Developer
 > **Estimated Timeline**: 3-4 months (100-140 hours)
@@ -22,7 +22,7 @@ This roadmap tracks the gradual improvement of code quality standards that were 
 - **Frontend TypeScript `any` occurrences**: ~160 remaining (down from 202 after Session 25)
 - **ESLint rules relaxed**: 1 (no-explicit-any set to 'warn')
 - **Backend Ruff ignores**: ~417 violations
-- **Test Coverage**: 26.85% → 30.75% (+3.9pp) ✅ Session 30 + Session 31 Phase 1-2: +46 router tests ✅
+- **Test Coverage**: 26.85% → 30.75% (+3.9pp) ✅ Session 30 + Session 31 Phase 1-3: +68 router tests ✅
 - **Failing Tests**: 0 ✅ (was 22)
 - **Main Branch**: ✅ EXCELLENT - **100% pass rate (35/35 workflows)** 🎉
 - **CI Pass Rate Journey**: 46% → 91.3% → 97.1% → **100%** ✅
@@ -1054,10 +1054,10 @@ assert exc_info.value.status_code in [404, 500]  # Router may wrap errors
 - 📋 Phase 4: Profile router tests (10-12 tests, ~45 min)
 
 **Session 31 Progress**:
-- Completed: 46 router tests (Phase 1-2)
-- Remaining: ~18-22 tests (Phase 3-4)
-- Time invested: ~1.5 hours
-- Remaining time: ~1.25 hours
+- Completed: 68 router tests (Phase 1-3) ✅
+- Remaining: Phase 4 (profile router, ~10-12 tests)
+- Time invested: ~2 hours (125 minutes)
+- Remaining time: ~45 minutes
 
 **Document**: docs/plans/SESSION_31_ROUTER_TESTS.md
 
@@ -1071,18 +1071,20 @@ assert exc_info.value.status_code in [404, 500]  # Router may wrap errors
      - 231 alerts: 4 critical (MD5), 60 high (stack traces)
      - Security vulnerabilities in production code
 
-  3. **Test Coverage Expansion** (🟢 HIGH, 8-10 hrs) - 🔄 IN PROGRESS (Session 31 Phase 1)
+  3. **Test Coverage Expansion** (🟢 HIGH, 8-10 hrs) - 🔄 IN PROGRESS (Session 31 Phase 1-3)
      - 35% → 80%+ coverage target
      - Quality assurance for Sprint 2 stores
      - Session 30: Services tests complete (56 passing)
-     - Session 31: Router tests Phase 1 complete (24 passing)
-     - Phases remaining: conversation, follow, profile routers
+     - Session 31 Phase 1: AI router tests (24 passing) ✅
+     - Session 31 Phase 2: Conversation router tests (22 passing) ✅
+     - Session 31 Phase 3: Follow router tests (22 passing) ✅
+     - Remaining: Phase 4 (profile router)
 
   4. **Backend Type Safety (Ruff)** (🟡 MEDIUM, 4-6 hrs)
      - ~417 Ruff violations
      - Backend maintainability improvements
 
-**Next Action**: Complete Session 31 Phase 2-4 (conversation, follow, profile router tests)
+**Next Action**: Complete Session 31 Phase 4 (profile router tests) or proceed with TypeScript cleanup
 
 ### **Sprint 4: Excellence** (Future)
 *Focus: Full compliance and documentation*
