@@ -1,12 +1,19 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // H9: Environment Management - Multi-environment coordination for seamless upgrades
 // Environment synchronization, configuration management, deployment orchestration
 
+// ============================================================================
+// Type Imports
+// ============================================================================
+
+// ============================================================================
 // Environment Management Types
+// ============================================================================
 export interface Environment {
   id: string;
   name: string;
@@ -758,7 +765,14 @@ interface EnvironmentManagementActions {
   createDefaultEnvironments: () => void;
 }
 
+// ============================================================================
+// Combined Store Type
+// ============================================================================
+type EnvironmentManagementStore = EnvironmentManagementState & EnvironmentManagementActions;
+
+// ============================================================================
 // Initial State
+// ============================================================================
 const createInitialState = (): EnvironmentManagementState => ({
   environments: [],
   selectedEnvironment: null,
@@ -798,14 +812,16 @@ const createInitialState = (): EnvironmentManagementState => ({
 });
 
 // Create Store
-export const useEnvironmentManagementStore = create<EnvironmentManagementState & EnvironmentManagementActions>()(
+export const useEnvironmentManagementStore = create<EnvironmentManagementStore>()(
   persist(
-    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     immer((set, get, _store) => ({
       ...createInitialState(),
 
+      // ============================================================================
       // Environment Management
-      createEnvironment: (environmentData: any) => {
+      // ============================================================================
+      createEnvironment: (environmentData: Omit<Environment, 'id' | 'createdAt' | 'updatedAt' | 'deploymentHistory'>) => {
         if (!FLAGS.environmentManagement) return '';
         
         const id = `env_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -817,39 +833,39 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
           deploymentHistory: []
         };
         
-        set((state: any) => {
-          state.environments.push(environment);
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          draft.environments.push(environment);
         });
         
         return id;
       },
 
-      updateEnvironment: (environmentId: any, updates: any) => {
+      updateEnvironment: (environmentId: string, updates: Partial<Environment>) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state: any) => {
-          const environment = state.environments.find((e: any) => e.id === environmentId);
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          const environment = draft.environments.find((e) => e.id === environmentId);
           if (environment) {
             Object.assign(environment, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteEnvironment: (environmentId: any) => {
+      deleteEnvironment: (environmentId: string) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state: any) => {
-          state.environments = state.environments.filter((e: any) => e.id !== environmentId);
-          if (state.selectedEnvironment === environmentId) {
-            state.selectedEnvironment = null;
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          draft.environments = draft.environments.filter((e) => e.id !== environmentId);
+          if (draft.selectedEnvironment === environmentId) {
+            draft.selectedEnvironment = null;
           }
         });
       },
 
-      cloneEnvironment: (environmentId, name, type) => {
+      cloneEnvironment: (environmentId: string, name: string, type: EnvironmentType) => {
         if (!FLAGS.environmentManagement) return '';
         
-        const environment = get().environments.find((e: any) => e.id === environmentId);
+        const environment = get().environments.find((e) => e.id === environmentId);
         if (!environment) return '';
         
         return get().createEnvironment({
@@ -860,20 +876,22 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         });
       },
 
-      setSelectedEnvironment: (environmentId: any) => {
+      setSelectedEnvironment: (environmentId: string | null) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state: any) => {
-          state.selectedEnvironment = environmentId;
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          draft.selectedEnvironment = environmentId;
         });
       },
 
+      // ============================================================================
       // Environment Operations
-      startEnvironment: async (environmentId: any) => {
+      // ============================================================================
+      startEnvironment: async (environmentId: string) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state: any) => {
-          const environment = state.environments.find((e: any) => e.id === environmentId);
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          const environment = draft.environments.find((e) => e.id === environmentId);
           if (environment && environment.status === 'inactive') {
             environment.status = 'deploying';
           }
@@ -882,8 +900,8 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         // Simulate environment startup
         await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 5000));
         
-        set((state: any) => {
-          const environment = state.environments.find((e: any) => e.id === environmentId);
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          const environment = draft.environments.find((e) => e.id === environmentId);
           if (environment) {
             environment.status = 'active';
             environment.health = {
@@ -900,11 +918,11 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         });
       },
 
-      stopEnvironment: async (environmentId: any) => {
+      stopEnvironment: async (environmentId: string) => {
         if (!FLAGS.environmentManagement) return;
         
-        set((state: any) => {
-          const environment = state.environments.find((e: any) => e.id === environmentId);
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          const environment = draft.environments.find((e) => e.id === environmentId);
           if (environment && environment.status === 'active') {
             environment.status = 'terminating';
           }
@@ -913,8 +931,8 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementState &
         // Simulate environment shutdown
         await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
         
-        set((state: any) => {
-          const environment = state.environments.find((e: any) => e.id === environmentId);
+        set((draft: Draft<EnvironmentManagementStore>) => {
+          const environment = draft.environments.find((e) => e.id === environmentId);
           if (environment) {
             environment.status = 'inactive';
           }

@@ -320,6 +320,49 @@ This roadmap tracks the gradual improvement of code quality standards that were 
 1. **analyticsStore.tsx** - Similar complexity (120+ `any`) - 2-3 hours
 2. **tradingStore.tsx** - Most complex (200+ `any`) - 3-4 hours
 3. **Batch 9 smaller stores** - Quick wins - 2-3 hours total
+
+---
+
+## Session 16 - TypeScript Type Safety (environmentManagementStore.tsx) 🔄
+
+**Status**: 🔄 IN PROGRESS (15% complete - Phase 1 started)
+**Started**: October 28, 2025
+**Estimated**: 2-3 hours total
+**Progress**: Phase 1 complete (~7/30 actions fixed)
+
+### Phase 1 (15% Complete)
+
+**Time**: ~30 minutes
+**Achievements**:
+- ✅ Added Draft import and type foundations
+- ✅ Created EnvironmentManagementStore combined type
+- ✅ Fixed Environment Management actions (5/5)
+  - createEnvironment, updateEnvironment, deleteEnvironment, cloneEnvironment, setSelectedEnvironment
+- ✅ Fixed Environment Operations (2/3 partial)
+  - startEnvironment, stopEnvironment
+
+**Documentation**:
+- Created SESSION_16_ENVIRONMENT_STORE_PLAN.md (comprehensive implementation guide)
+- Detailed action breakdown and patterns documented
+
+### Phase 2 (85% Remaining)
+
+**Target**: Fix remaining 23 actions across 13 categories
+**Categories**:
+1. Environment Operations (1), Health & Status (2)
+2. Services (4), Templates (4), Comparison (1)
+3. Sync Management (4), Configuration (2)
+4. Credentials (4), Monitoring (2), UI (2)
+5. Settings (1), Data Management (4), Initialization (2)
+
+**Estimated Time**: 1.5-2 hours
+**Pattern**: Same systematic approach as Session 15
+
+**Next Steps**:
+1. Complete all 23 remaining actions
+2. Run type-check verification
+3. Commit with comprehensive summary
+4. Update all documentation
 - ✅ Extended MonitoringState with BaseStoreState
 - ✅ Dashboard Management actions fixed (8/8 = 100%)
 - ⏳ Widget Management (0/6 pending)
