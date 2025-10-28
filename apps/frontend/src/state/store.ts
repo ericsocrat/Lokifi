@@ -360,17 +360,13 @@ export const useChartStore = create<ChartState>()(
 
       toggleLockSelected: () => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
-          sel.has(d.id) ? { ...d, locked: !d.locked } : d
-        );
+        const next = get().drawings.map((d) => (sel.has(d.id) ? { ...d, locked: !d.locked } : d));
         set({ drawings: next });
       },
 
       toggleVisibilitySelected: () => {
         const sel = get().selection;
-        const next = get().drawings.map((d) =>
-          sel.has(d.id) ? { ...d, hidden: !d.hidden } : d
-        );
+        const next = get().drawings.map((d) => (sel.has(d.id) ? { ...d, hidden: !d.hidden } : d));
         set({ drawings: next });
       },
 
