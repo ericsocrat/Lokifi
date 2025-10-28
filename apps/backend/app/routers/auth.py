@@ -109,9 +109,9 @@ async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)
     except Exception as e:
         # Log full error details internally for debugging (includes stack trace via exc_info)
         logger.error(
-            f"Login failed for identifier: {login_data.identifier}",
+            f"Login failed for email: {login_data.email}",
             exc_info=True,
-            extra={"identifier": login_data.identifier},
+            extra={"email": login_data.email},
         )
         # Return generic error to client (no information disclosure)
         raise HTTPException(
