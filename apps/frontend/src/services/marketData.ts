@@ -622,7 +622,7 @@ class MarketDataService {
    */
   public getMarketStats(): MarketStats {
     const allAssets = this.getAllAssets();
-    const cryptoAssets = allAssets.filter((a: any) => a.type === 'crypto');
+    const cryptoAssets = allAssets.filter((a) => a.type === 'crypto');
     
     // Calculate total market cap and volume
     const totalMarketCap = cryptoAssets.reduce((sum: any, a: any) => sum + a.marketCap, 0);

@@ -97,7 +97,7 @@ export interface ChartState {
   removeAlert: (id: string) => void;
   toggleAlert: (id: string) => void;
   updateAlert: (id: string, patch: Partial<Alert>) => void;
-  snoozeAlert: (id: string, until: number | null) => void;
+  snoozeAlert: (id: string, until: number | undefined) => void;
   clearAlertEvents: () => void;
 
   // actions
@@ -236,16 +236,16 @@ export const useChartStore = create<ChartState>()(
           ],
         });
       },
-      removeAlert: (id: string) => set({ alerts: get().alerts.filter((a: any) => a.id !== id) }),
+      removeAlert: (id: string) => set({ alerts: get().alerts.filter((a) => a.id !== id) }),
       updateAlert: (id: string, patch: Partial<Alert>) =>
-        set({ alerts: get().alerts.map((a: any) => (a.id === id ? { ...a, ...patch } : a)) }),
+        set({ alerts: get().alerts.map((a) => (a.id === id ? { ...a, ...patch } : a)) }),
       toggleAlert: (id: string) =>
         set({
-          alerts: get().alerts.map((a: any) => (a.id === id ? { ...a, enabled: !a.enabled } : a)),
+          alerts: get().alerts.map((a) => (a.id === id ? { ...a, enabled: !a.enabled } : a)),
         }),
-      snoozeAlert: (id: string, until: number | null) =>
+      snoozeAlert: (id: string, until: number | undefined) =>
         set({
-          alerts: get().alerts.map((a: any) => (a.id === id ? { ...a, snoozedUntil: until } : a)),
+          alerts: get().alerts.map((a) => (a.id === id ? { ...a, snoozedUntil: until } : a)),
         }),
       clearAlertEvents: () => set({ alertEvents: [] }),
 
@@ -261,7 +261,7 @@ export const useChartStore = create<ChartState>()(
 
       // Drawing methods
       setSelectedStyle: (style: Partial<DrawingStyle>) => {
-        const drawings = get().drawings.map((d: any) =>
+        const drawings = get().drawings.map((d) =>
           get().selection.has(d.id) ? { ...d, ...style } : d
         );
         set({ drawings });
@@ -270,24 +270,24 @@ export const useChartStore = create<ChartState>()(
       bringToFront: () => {
         const drawings = [...get().drawings];
         const selected = new Set(get().selection);
-        const toMove = drawings.filter((d: any) => selected.has(d.id));
-        const others = drawings.filter((d: any) => !selected.has(d.id));
+        const toMove = drawings.filter((d) => selected.has(d.id));
+        const others = drawings.filter((d) => !selected.has(d.id));
         set({ drawings: [...others, ...toMove] });
       },
 
       sendToBack: () => {
         const drawings = [...get().drawings];
         const selected = new Set(get().selection);
-        const toMove = drawings.filter((d: any) => selected.has(d.id));
-        const others = drawings.filter((d: any) => !selected.has(d.id));
+        const toMove = drawings.filter((d) => selected.has(d.id));
+        const others = drawings.filter((d) => !selected.has(d.id));
         set({ drawings: [...toMove, ...others] });
       },
 
       groupSelected: () => {
         const drawings = get().drawings;
         const selected = new Set(get().selection);
-        const toGroup = drawings.filter((d: any) => selected.has(d.id));
-        const others = drawings.filter((d: any) => !selected.has(d.id));
+        const toGroup = drawings.filter((d) => selected.has(d.id));
+        const others = drawings.filter((d) => !selected.has(d.id));
         const group = {
           id: crypto.randomUUID(),
           type: 'group' as const,
@@ -311,7 +311,7 @@ export const useChartStore = create<ChartState>()(
       },
 
       setFibLevelsForSelected: (levels: number[]) => {
-        const drawings = get().drawings.map((d: any) =>
+        const drawings = get().drawings.map((d) =>
           get().selection.has(d.id) && d.type === 'fib' ? { ...d, levels } : d
         );
         set({ drawings });
@@ -325,13 +325,13 @@ export const useChartStore = create<ChartState>()(
       addDrawing: (d: Drawing) => set({ drawings: [...get().drawings, d] }),
 
       updateDrawing: (id: string, updater: (d: Drawing) => Drawing) => {
-        const next = get().drawings.map((d: any) => (d.id === id ? updater(d) : d));
+        const next = get().drawings.map((d) => (d.id === id ? updater(d) : d));
         set({ drawings: next });
       },
 
       setStyleForSelection: (patch: Partial<DrawingStyle>) => {
         const sel = get().selection;
-        const next = get().drawings.map((d: any) =>
+        const next = get().drawings.map((d) =>
           sel.has(d.id) ? { ...d, style: { ...(d.style || {}), ...patch } } : d
         );
         set({ drawings: next });
@@ -354,13 +354,13 @@ export const useChartStore = create<ChartState>()(
 
       setTextForSelection: (text: string) => {
         const sel = get().selection;
-        const next = get().drawings.map((d: any) => (sel.has(d.id) ? { ...d, text } : d));
+        const next = get().drawings.map((d) => (sel.has(d.id) ? { ...d, text } : d));
         set({ drawings: next });
       },
 
       toggleLockSelected: () => {
         const sel = get().selection;
-        const next = get().drawings.map((d: any) =>
+        const next = get().drawings.map((d) =>
           sel.has(d.id) ? { ...d, locked: !d.locked } : d
         );
         set({ drawings: next });
@@ -368,7 +368,7 @@ export const useChartStore = create<ChartState>()(
 
       toggleVisibilitySelected: () => {
         const sel = get().selection;
-        const next = get().drawings.map((d: any) =>
+        const next = get().drawings.map((d) =>
           sel.has(d.id) ? { ...d, hidden: !d.hidden } : d
         );
         set({ drawings: next });
@@ -376,22 +376,22 @@ export const useChartStore = create<ChartState>()(
 
       renameSelected: (name: string) => {
         const sel = get().selection;
-        const next = get().drawings.map((d: any) => (sel.has(d.id) ? { ...d, name } : d));
+        const next = get().drawings.map((d) => (sel.has(d.id) ? { ...d, name } : d));
         set({ drawings: next });
       },
 
       deleteSelected: () => {
         const sel = get().selection;
         set({
-          drawings: get().drawings.filter((d: any) => !sel.has(d.id)),
+          drawings: get().drawings.filter((d) => !sel.has(d.id)),
           selection: new Set(),
         });
       },
 
       duplicateSelected: () => {
         const sel = get().selection;
-        const toDuplicate = get().drawings.filter((d: any) => sel.has(d.id));
-        const duplicates = toDuplicate.map((d: any) => ({
+        const toDuplicate = get().drawings.filter((d) => sel.has(d.id));
+        const duplicates = toDuplicate.map((d) => ({
           ...d,
           id: crypto.randomUUID(),
           name: `${d.name || 'Drawing'} (copy)`,
@@ -403,8 +403,8 @@ export const useChartStore = create<ChartState>()(
         const sel = get().selection;
         if (sel.size < 2) return;
 
-        const selectedDrawings = get().drawings.filter((d: any) => sel.has(d.id));
-        const bounds = selectedDrawings.map((d: any) => ({
+        const selectedDrawings = get().drawings.filter((d) => sel.has(d.id));
+        const bounds = selectedDrawings.map((d) => ({
           id: d.id,
           x: d.x,
           y: d.y,
@@ -432,7 +432,7 @@ export const useChartStore = create<ChartState>()(
             break;
         }
 
-        const next = get().drawings.map((d: any) => {
+        const next = get().drawings.map((d) => {
           const bound = bounds.find((b: any) => b.id === d.id);
           return bound ? { ...d, x: bound.x, y: bound.y } : d;
         });
@@ -444,7 +444,7 @@ export const useChartStore = create<ChartState>()(
         if (sel.size < 3) return;
 
         const selectedDrawings = get()
-          .drawings.filter((d: any) => sel.has(d.id))
+          .drawings.filter((d) => sel.has(d.id))
           .sort((a: any, b: any) =>
             direction === 'h' ? (a as any).x - (b as any).x : (a as any).y - (b as any).y
           );
@@ -457,7 +457,7 @@ export const useChartStore = create<ChartState>()(
             ? ((last as any).x - (first as any).x) / (total - 1)
             : ((last as any).y - (first as any).y) / (total - 1);
 
-        const next = get().drawings.map((d: any) => {
+        const next = get().drawings.map((d) => {
           const idx = selectedDrawings.findIndex((sd: any) => sd.id === d.id);
           if (idx === -1 || idx === 0 || idx === total - 1) return d;
 
@@ -570,7 +570,7 @@ export const useChartStore = create<ChartState>()(
       },
 
       loadSnapshot: (id: string) => {
-        const snapshot = get().snapshots.find((s: any) => s.id === id);
+        const snapshot = get().snapshots.find((s) => s.id === id);
         if (!snapshot) return;
         set({
           drawings: snapshot.drawings,
@@ -581,7 +581,7 @@ export const useChartStore = create<ChartState>()(
 
       deleteSnapshot: (id: string) => {
         set({
-          snapshots: get().snapshots.filter((s: any) => s.id !== id),
+          snapshots: get().snapshots.filter((s) => s.id !== id),
         });
       },
 
@@ -590,7 +590,7 @@ export const useChartStore = create<ChartState>()(
         if (!snapshots.length) return;
 
         const currentId = get().snapshots[0]?.id;
-        const currentIndex = snapshots.findIndex((s: any) => s.id === currentId);
+        const currentIndex = snapshots.findIndex((s) => s.id === currentId);
         const nextIndex = (currentIndex + delta + snapshots.length) % snapshots.length;
         const nextSnapshot = snapshots[nextIndex];
         if (nextSnapshot) {

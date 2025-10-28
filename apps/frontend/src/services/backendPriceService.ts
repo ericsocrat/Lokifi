@@ -317,7 +317,7 @@ export class WebSocketPriceService {
           }
         };
 
-        this.ws.onerror = (error: any) => {
+        this.ws.onerror = (error) => {
           console.error('WebSocket error:', error);
           this.isConnecting = false;
           reject(error);
@@ -380,11 +380,11 @@ export class WebSocketPriceService {
   subscribe(symbols: string[]): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       console.warn('WebSocket not connected. Storing subscriptions for later.');
-      symbols.forEach((s: any) => this.subscriptions.add(s));
+      symbols.forEach((s) => this.subscriptions.add(s));
       return;
     }
 
-    symbols.forEach((s: any) => this.subscriptions.add(s));
+    symbols.forEach((s) => this.subscriptions.add(s));
 
     this.ws.send(JSON.stringify({
       action: 'subscribe',
@@ -400,7 +400,7 @@ export class WebSocketPriceService {
       return;
     }
 
-    symbols.forEach((s: any) => this.subscriptions.delete(s));
+    symbols.forEach((s) => this.subscriptions.delete(s));
 
     this.ws.send(JSON.stringify({
       action: 'unsubscribe',
@@ -453,7 +453,7 @@ export class WebSocketPriceService {
     console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
 
     setTimeout(() => {
-      this.connect().catch((error: any) => {
+      this.connect().catch((error) => {
         console.error('Reconnection failed:', error);
       });
     }, delay);

@@ -18,12 +18,12 @@ const HOTKEYS: Array<{ action: string; label: string }> = [
 ];
 
 export default function DrawingSettingsPanel() {
-  const ds = useChartStore((s: any) => s.drawingSettings);
-  const setDS = useChartStore((s: any) => s.setDrawingSettings);
-  const resetDS = useChartStore((s: any) => s.resetDrawingSettings);
-  const hk = useChartStore((s: any) => s.hotkeys);
-  const setHK = useChartStore((s: any) => s.setHotkey);
-  const resetHK = useChartStore((s: any) => s.resetHotkeys);
+  const ds = useChartStore((s) => s.drawingSettings);
+  const setDS = useChartStore((s) => s.setDrawingSettings);
+  const resetDS = useChartStore((s) => s.resetDrawingSettings);
+  const hk = useChartStore((s) => s.hotkeys);
+  const setHK = useChartStore((s) => s.setHotkey);
+  const resetHK = useChartStore((s) => s.resetHotkeys);
 
   const ding = React.useRef<number>(0);
   const saved = (msg = 'Saved') => {
@@ -183,7 +183,7 @@ export default function DrawingSettingsPanel() {
                 const combo = keyFromEvent(e);
                 const s = useChartStore.getState();
                 const prev = Object.keys(s.hotkeys).find(
-                  (a: any) => s.hotkeys[a] === combo && a !== k.action
+                  (a) => s.hotkeys[a] === combo && a !== k.action
                 );
                 if (prev) s.setHotkey(prev, '');
                 setHK(k.action, combo);

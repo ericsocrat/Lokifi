@@ -1,7 +1,7 @@
+import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // H7: Rollback System - Automated rollback capabilities for seamless upgrades
@@ -13,21 +13,21 @@ export interface RollbackSnapshot {
   name: string;
   version: string;
   createdAt: Date;
-  
+
   // Snapshot Data
   applicationState: ApplicationStateSnapshot;
   databaseState: DatabaseStateSnapshot;
   configurationState: ConfigurationSnapshot;
-  
+
   // Metadata
   tags: string[];
   description?: string;
   createdBy: string;
-  
+
   // Status
   status: 'active' | 'archived' | 'corrupted';
   size: number; // bytes
-  
+
   // Validation
   checksum: string;
   isVerified: boolean;
@@ -39,14 +39,14 @@ export interface ApplicationStateSnapshot {
   userPreferences: Record<string, any>;
   sessionData: Record<string, any>;
   cachedData: Record<string, any>;
-  
+
   // Feature Flags
   featureFlags: Record<string, boolean>;
-  
+
   // UI State
   dashboardLayouts: Record<string, any>;
   chartConfigurations: Record<string, any>;
-  
+
   // Custom Settings
   customSettings: Record<string, any>;
 }
@@ -55,11 +55,11 @@ export interface DatabaseStateSnapshot {
   // Schema Information
   schemaVersion: string;
   tables: TableSnapshot[];
-  
+
   // Data Statistics
   recordCounts: Record<string, number>;
   dataSize: number;
-  
+
   // Backup Information
   backupPath?: string;
   backupFormat: 'sql' | 'json' | 'binary';
@@ -77,13 +77,13 @@ export interface TableSnapshot {
 export interface ConfigurationSnapshot {
   // Environment Variables
   environment: Record<string, string>;
-  
+
   // Application Config
   appConfig: Record<string, any>;
-  
+
   // External Services
   serviceConfigs: Record<string, any>;
-  
+
   // Security Settings
   securityConfig: Record<string, any>;
 }
@@ -94,18 +94,18 @@ export interface RollbackPlan {
   description: string;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Plan Configuration
   targetSnapshot: string;
   rollbackSteps: RollbackStep[];
-  
+
   // Conditions
   triggers: RollbackTrigger[];
   prerequisites: RollbackPrerequisite[];
-  
+
   // Settings
   settings: RollbackPlanSettings;
-  
+
   // Status
   isEnabled: boolean;
   lastExecuted?: Date;
@@ -116,28 +116,28 @@ export interface RollbackStep {
   id: string;
   name: string;
   type: RollbackStepType;
-  
+
   // Configuration
   config: RollbackStepConfig;
-  
+
   // Execution
   order: number;
   isRequired: boolean;
   timeout: number; // seconds
-  
+
   // Rollback
   canRollback: boolean;
   rollbackConfig?: RollbackStepConfig;
-  
+
   // Dependencies
   dependsOn: string[];
-  
+
   // Validation
   preValidation?: ValidationRule[];
   postValidation?: ValidationRule[];
 }
 
-export type RollbackStepType = 
+export type RollbackStepType =
   | 'database_restore'
   | 'file_restore'
   | 'config_restore'
@@ -158,7 +158,7 @@ export interface RollbackStepConfig {
     tables?: string[];
     skipData?: boolean;
   };
-  
+
   // File restore
   fileRestore?: {
     sourcePath: string;
@@ -167,7 +167,7 @@ export interface RollbackStepConfig {
     preservePermissions?: boolean;
     excludePatterns?: string[];
   };
-  
+
   // Config restore
   configRestore?: {
     configFile: string;
@@ -175,7 +175,7 @@ export interface RollbackStepConfig {
     mergeStrategy?: 'replace' | 'merge' | 'selective';
     restoreKeys?: string[];
   };
-  
+
   // Service restart
   serviceRestart?: {
     services: string[];
@@ -183,21 +183,21 @@ export interface RollbackStepConfig {
     waitTime?: number;
     healthCheck?: string;
   };
-  
+
   // Cache clear
   cacheClear?: {
     cacheTypes: string[];
     pattern?: string;
     preserveKeys?: string[];
   };
-  
+
   // Feature flag revert
   featureFlagRevert?: {
     flags: Record<string, boolean>;
     rollbackMode: 'immediate' | 'gradual';
     rolloutPercentage?: number;
   };
-  
+
   // Custom script
   customScript?: {
     script: string;
@@ -206,7 +206,7 @@ export interface RollbackStepConfig {
     environment?: Record<string, string>;
     workingDirectory?: string;
   };
-  
+
   // Notification
   notification?: {
     recipients: string[];
@@ -214,7 +214,7 @@ export interface RollbackStepConfig {
     channels: ('email' | 'slack' | 'webhook')[];
     template?: string;
   };
-  
+
   // Health check
   healthCheck?: {
     endpoint: string;
@@ -223,7 +223,7 @@ export interface RollbackStepConfig {
     expectedResponse?: string;
     timeout?: number;
   };
-  
+
   // Validation
   validation?: {
     rules: ValidationRule[];
@@ -239,7 +239,7 @@ export interface ValidationRule {
   severity: 'critical' | 'high' | 'medium' | 'low';
 }
 
-export type ValidationType = 
+export type ValidationType =
   | 'database_integrity'
   | 'file_existence'
   | 'service_health'
@@ -253,7 +253,7 @@ export interface ValidationConfig {
     expectedResult?: any;
     connectionString?: string;
   };
-  
+
   // File existence
   file?: {
     path: string;
@@ -261,14 +261,14 @@ export interface ValidationConfig {
     minSize?: number;
     maxAge?: number; // hours
   };
-  
+
   // Service health
   service?: {
     name: string;
     expectedStatus: 'running' | 'stopped';
     port?: number;
   };
-  
+
   // API response
   api?: {
     url: string;
@@ -278,7 +278,7 @@ export interface ValidationConfig {
     expectedBody?: string;
     timeout?: number;
   };
-  
+
   // Custom check
   custom?: {
     script: string;
@@ -292,21 +292,21 @@ export interface RollbackTrigger {
   id: string;
   name: string;
   type: RollbackTriggerType;
-  
+
   // Configuration
   config: RollbackTriggerConfig;
-  
+
   // Status
   isEnabled: boolean;
   lastTriggered?: Date;
   triggerCount: number;
-  
+
   // Settings
   cooldown: number; // seconds
   maxTriggers?: number;
 }
 
-export type RollbackTriggerType = 
+export type RollbackTriggerType =
   | 'error_rate_threshold'
   | 'response_time_threshold'
   | 'health_check_failure'
@@ -323,7 +323,7 @@ export interface RollbackTriggerConfig {
     errorTypes?: string[];
     endpoint?: string;
   };
-  
+
   // Response time threshold
   responseTime?: {
     threshold: number; // milliseconds
@@ -331,35 +331,35 @@ export interface RollbackTriggerConfig {
     percentile: 50 | 90 | 95 | 99;
     endpoint?: string;
   };
-  
+
   // Health check failure
   healthCheck?: {
     healthCheckId: string;
     consecutiveFailures: number;
     timeWindow?: number; // minutes
   };
-  
+
   // Manual trigger
   manual?: {
     requireConfirmation: boolean;
     requiredRole?: string;
     reason?: string;
   };
-  
+
   // Scheduled
   scheduled?: {
     cron: string;
     timezone?: string;
     conditions?: Record<string, any>;
   };
-  
+
   // Dependency failure
   dependency?: {
     service: string;
     failureType: 'unreachable' | 'error' | 'timeout' | 'unavailable';
     retryCount?: number;
   };
-  
+
   // Custom metric
   customMetric?: {
     metricName: string;
@@ -378,7 +378,7 @@ export interface RollbackPrerequisite {
   isRequired: boolean;
 }
 
-export type PrerequisiteType = 
+export type PrerequisiteType =
   | 'backup_available'
   | 'service_status'
   | 'resource_availability'
@@ -392,31 +392,31 @@ export interface PrerequisiteConfig {
     maxAge: number; // hours
     verificationRequired: boolean;
   };
-  
+
   // Service status
   service?: {
     name: string;
     requiredStatus: 'running' | 'stopped' | 'idle';
   };
-  
+
   // Resource availability
   resource?: {
     type: 'cpu' | 'memory' | 'disk' | 'network';
     threshold: number; // percentage available
     duration?: number; // minutes
   };
-  
+
   // Approval required
   approval?: {
     approvers: string[];
     requiredApprovals: number;
     timeout?: number; // hours
   };
-  
+
   // Maintenance window
   maintenanceWindow?: {
     start: string; // HH:MM
-    end: string;   // HH:MM
+    end: string; // HH:MM
     timezone?: string;
     weekdays?: number[]; // 0=Sunday
   };
@@ -427,18 +427,18 @@ export interface RollbackPlanSettings {
   autoExecute: boolean;
   executionTimeout: number; // seconds
   parallelSteps: boolean;
-  
+
   // Validation
   validateBeforeRollback: boolean;
   validateAfterRollback: boolean;
   stopOnValidationFailure: boolean;
-  
+
   // Notifications
   notifyOnStart: boolean;
   notifyOnSuccess: boolean;
   notifyOnFailure: boolean;
   notificationChannels: string[];
-  
+
   // Recovery
   createRecoverySnapshot: boolean;
   allowNestedRollbacks: boolean;
@@ -451,26 +451,26 @@ export interface RollbackExecution {
   startedAt: Date;
   completedAt?: Date;
   duration?: number; // seconds
-  
+
   // Status
   status: RollbackExecutionStatus;
-  
+
   // Results
   stepsExecuted: RollbackStepResult[];
   errorMessage?: string;
-  
+
   // Context
   triggeredBy: string;
   triggerType: 'manual' | 'automatic';
   triggerReason?: string;
-  
+
   // Metadata
   environment: string;
   version: string;
   executionContext: Record<string, any>;
 }
 
-export type RollbackExecutionStatus = 
+export type RollbackExecutionStatus =
   | 'pending'
   | 'running'
   | 'completed'
@@ -502,32 +502,32 @@ export interface RollbackSettings {
   enableAutoRollback: boolean;
   defaultTimeout: number; // seconds
   maxConcurrentRollbacks: number;
-  
+
   // Snapshots
   autoCreateSnapshots: boolean;
   snapshotRetentionDays: number;
   maxSnapshotsPerVersion: number;
   snapshotCompressionEnabled: boolean;
-  
+
   // Validation
   enablePreValidation: boolean;
   enablePostValidation: boolean;
   validationTimeout: number; // seconds
-  
+
   // Notifications
   enableNotifications: boolean;
   defaultNotificationChannels: string[];
   notificationCooldown: number; // seconds
-  
+
   // Security
   requireApprovalForCritical: boolean;
   allowedRoles: string[];
   auditAllActions: boolean;
-  
+
   // Performance
   enableProgressTracking: boolean;
   logLevel: 'debug' | 'info' | 'warn' | 'error';
-  
+
   // Recovery
   enableRecoveryMode: boolean;
   maxRecoveryAttempts: number;
@@ -539,22 +539,22 @@ interface RollbackState {
   // Snapshots
   snapshots: RollbackSnapshot[];
   selectedSnapshot: string | null;
-  
+
   // Plans
   plans: RollbackPlan[];
   activePlan: string | null;
-  
+
   // Executions
   executions: RollbackExecution[];
   currentExecution: string | null;
-  
+
   // UI State
   sidebarCollapsed: boolean;
   selectedTab: 'snapshots' | 'plans' | 'executions' | 'settings';
-  
+
   // Settings
   settings: RollbackSettings;
-  
+
   // Status
   isExecuting: boolean;
   error: string | null;
@@ -564,54 +564,61 @@ interface RollbackState {
 // Store Actions
 interface RollbackActions {
   // Snapshot Management
-  createSnapshot: (snapshot: Omit<RollbackSnapshot, 'id' | 'createdAt' | 'checksum' | 'isVerified'>) => Promise<string>;
+  createSnapshot: (
+    snapshot: Omit<RollbackSnapshot, 'id' | 'createdAt' | 'checksum' | 'isVerified'>
+  ) => Promise<string>;
   deleteSnapshot: (snapshotId: string) => void;
   verifySnapshot: (snapshotId: string) => Promise<boolean>;
   setSelectedSnapshot: (snapshotId: string | null) => void;
-  
+
   // Plan Management
-  createPlan: (plan: Omit<RollbackPlan, 'id' | 'createdAt' | 'updatedAt' | 'executionHistory'>) => string;
+  createPlan: (
+    plan: Omit<RollbackPlan, 'id' | 'createdAt' | 'updatedAt' | 'executionHistory'>
+  ) => string;
   updatePlan: (planId: string, updates: Partial<RollbackPlan>) => void;
   deletePlan: (planId: string) => void;
   clonePlan: (planId: string, name: string) => string;
   setActivePlan: (planId: string | null) => void;
-  
+
   // Plan Configuration
   addStep: (planId: string, step: Omit<RollbackStep, 'id'>) => string;
   updateStep: (planId: string, stepId: string, updates: Partial<RollbackStep>) => void;
   removeStep: (planId: string, stepId: string) => void;
   reorderSteps: (planId: string, stepIds: string[]) => void;
-  
+
   // Trigger Management
-  addTrigger: (planId: string, trigger: Omit<RollbackTrigger, 'id' | 'triggerCount' | 'lastTriggered'>) => string;
+  addTrigger: (
+    planId: string,
+    trigger: Omit<RollbackTrigger, 'id' | 'triggerCount' | 'lastTriggered'>
+  ) => string;
   updateTrigger: (planId: string, triggerId: string, updates: Partial<RollbackTrigger>) => void;
   removeTrigger: (planId: string, triggerId: string) => void;
-  
+
   // Execution
   executeRollback: (planId: string, reason?: string) => Promise<string>;
   cancelExecution: (executionId: string) => void;
   pauseExecution: (executionId: string) => void;
   resumeExecution: (executionId: string) => void;
-  
+
   // Validation
   validatePlan: (planId: string) => Promise<ValidationResult[]>;
   validateSnapshot: (snapshotId: string) => Promise<ValidationResult[]>;
-  
+
   // UI Actions
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSelectedTab: (tab: RollbackState['selectedTab']) => void;
-  
+
   // Settings
   updateSettings: (settings: Partial<RollbackSettings>) => void;
-  
+
   // Data Management
   exportPlan: (planId: string) => Promise<Blob>;
   importPlan: (file: File) => Promise<string>;
   exportSnapshot: (snapshotId: string) => Promise<Blob>;
-  
+
   // System
   sync: () => Promise<void>;
-  
+
   // Initialization
   initialize: () => Promise<void>;
   createSampleData: () => Promise<void>;
@@ -648,11 +655,11 @@ const createInitialState = (): RollbackState => ({
     logLevel: 'info',
     enableRecoveryMode: true,
     maxRecoveryAttempts: 3,
-    recoveryDelay: 30 // seconds
+    recoveryDelay: 30, // seconds
   },
   isExecuting: false,
   error: null,
-  lastSync: null
+  lastSync: null,
 });
 
 // Combined Store Type
@@ -666,17 +673,19 @@ export const useRollbackStore = create<RollbackStore>()(
       ...createInitialState(),
 
       // Snapshot Management
-      createSnapshot: async (snapshotData: Omit<RollbackSnapshot, 'id' | 'createdAt' | 'checksum' | 'isVerified'>) => {
+      createSnapshot: async (
+        snapshotData: Omit<RollbackSnapshot, 'id' | 'createdAt' | 'checksum' | 'isVerified'>
+      ) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
-        
+
         const id = `snapshot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
+
         // Simulate snapshot creation
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
+
         // Generate checksum
         const checksum = generateChecksum(snapshotData);
-        
+
         const snapshot: RollbackSnapshot = {
           ...snapshotData,
           id,
@@ -684,12 +693,12 @@ export const useRollbackStore = create<RollbackStore>()(
           status: 'active',
           checksum,
           isVerified: true,
-          size: Math.floor(Math.random() * 1000000000) // Random size
+          size: Math.floor(Math.random() * 1000000000), // Random size
         };
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.snapshots.push(snapshot);
-          
+
           // Auto-cleanup old snapshots
           if (draft.settings.maxSnapshotsPerVersion > 0) {
             const versionSnapshots = draft.snapshots.filter((s) => s.version === snapshot.version);
@@ -698,18 +707,18 @@ export const useRollbackStore = create<RollbackStore>()(
               const toRemove = versionSnapshots
                 .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
                 .slice(0, versionSnapshots.length - draft.settings.maxSnapshotsPerVersion);
-              
+
               draft.snapshots = draft.snapshots.filter((s) => !toRemove.includes(s));
             }
           }
         });
-        
+
         return id;
       },
 
       deleteSnapshot: (snapshotId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.snapshots = draft.snapshots.filter((s) => s.id !== snapshotId);
           if (draft.selectedSnapshot === snapshotId) {
@@ -720,16 +729,16 @@ export const useRollbackStore = create<RollbackStore>()(
 
       verifySnapshot: async (snapshotId: string) => {
         if (!FLAGS.rollback) return false;
-        
+
         const snapshot = get().snapshots.find((s) => s.id === snapshotId);
         if (!snapshot) return false;
-        
+
         try {
           // Simulate verification
-          await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-          
+          await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000));
+
           const isValid = Math.random() > 0.1; // 90% success rate
-          
+
           set((draft: Draft<RollbackStore>) => {
             const s = draft.snapshots.find((s) => s.id === snapshotId);
             if (s) {
@@ -740,7 +749,7 @@ export const useRollbackStore = create<RollbackStore>()(
               }
             }
           });
-          
+
           return isValid;
         } catch (error) {
           set((draft: Draft<RollbackStore>) => {
@@ -757,16 +766,18 @@ export const useRollbackStore = create<RollbackStore>()(
 
       setSelectedSnapshot: (snapshotId: string | null) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.selectedSnapshot = snapshotId;
         });
       },
 
       // Plan Management
-      createPlan: (planData: Omit<RollbackPlan, 'id' | 'createdAt' | 'updatedAt' | 'executionHistory'>) => {
+      createPlan: (
+        planData: Omit<RollbackPlan, 'id' | 'createdAt' | 'updatedAt' | 'executionHistory'>
+      ) => {
         if (!FLAGS.rollback) return '';
-        
+
         const id = `plan_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const plan: RollbackPlan = {
           ...planData,
@@ -775,19 +786,19 @@ export const useRollbackStore = create<RollbackStore>()(
           updatedAt: new Date(),
           executionHistory: [],
           rollbackSteps: [],
-          triggers: []
+          triggers: [],
         };
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.plans.push(plan);
         });
-        
+
         return id;
       },
 
       updatePlan: (planId: string, updates: Partial<RollbackPlan>) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -798,7 +809,7 @@ export const useRollbackStore = create<RollbackStore>()(
 
       deletePlan: (planId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.plans = draft.plans.filter((p) => p.id !== planId);
           if (draft.activePlan === planId) {
@@ -809,20 +820,20 @@ export const useRollbackStore = create<RollbackStore>()(
 
       clonePlan: (planId: string, name: string) => {
         if (!FLAGS.rollback) return '';
-        
+
         const plan = get().plans.find((p) => p.id === planId);
         if (!plan) return '';
-        
+
         return get().createPlan({
           ...plan,
           name,
-          isEnabled: false
+          isEnabled: false,
         });
       },
 
       setActivePlan: (planId: string | null) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.activePlan = planId;
         });
@@ -831,13 +842,13 @@ export const useRollbackStore = create<RollbackStore>()(
       // Plan Configuration
       addStep: (planId: string, stepData: Omit<RollbackStep, 'id'>) => {
         if (!FLAGS.rollback) return '';
-        
+
         const stepId = `step_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const step: RollbackStep = {
           ...stepData,
-          id: stepId
+          id: stepId,
         };
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -845,13 +856,13 @@ export const useRollbackStore = create<RollbackStore>()(
             plan.updatedAt = new Date();
           }
         });
-        
+
         return stepId;
       },
 
       updateStep: (planId, stepId, updates) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -866,7 +877,7 @@ export const useRollbackStore = create<RollbackStore>()(
 
       removeStep: (planId: string, stepId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -878,11 +889,13 @@ export const useRollbackStore = create<RollbackStore>()(
 
       reorderSteps: (planId: string, stepIds: string[]) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
-            const reorderedSteps = stepIds.map((id) => plan.rollbackSteps.find((s) => s.id === id)!).filter(Boolean);
+            const reorderedSteps = stepIds
+              .map((id) => plan.rollbackSteps.find((s) => s.id === id)!)
+              .filter(Boolean);
             plan.rollbackSteps = reorderedSteps;
             plan.updatedAt = new Date();
           }
@@ -890,16 +903,19 @@ export const useRollbackStore = create<RollbackStore>()(
       },
 
       // Trigger Management
-      addTrigger: (planId: string, triggerData: Omit<RollbackTrigger, 'id' | 'triggerCount' | 'lastTriggered'>) => {
+      addTrigger: (
+        planId: string,
+        triggerData: Omit<RollbackTrigger, 'id' | 'triggerCount' | 'lastTriggered'>
+      ) => {
         if (!FLAGS.rollback) return '';
-        
+
         const triggerId = `trigger_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const trigger: RollbackTrigger = {
           ...triggerData,
           id: triggerId,
-          triggerCount: 0
+          triggerCount: 0,
         };
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -907,13 +923,13 @@ export const useRollbackStore = create<RollbackStore>()(
             plan.updatedAt = new Date();
           }
         });
-        
+
         return triggerId;
       },
 
       updateTrigger: (planId, triggerId, updates) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -928,7 +944,7 @@ export const useRollbackStore = create<RollbackStore>()(
 
       removeTrigger: (planId: string, triggerId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const plan = draft.plans.find((p) => p.id === planId);
           if (plan) {
@@ -941,17 +957,17 @@ export const useRollbackStore = create<RollbackStore>()(
       // Execution
       executeRollback: async (planId, reason = 'Manual execution') => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
-        
+
         const plan = get().plans.find((p) => p.id === planId);
         if (!plan) throw new Error('Plan not found');
-        
+
         if (get().isExecuting) {
           throw new Error('Another rollback is already executing');
         }
-        
+
         const executionId = `execution_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const startTime = new Date();
-        
+
         const execution: RollbackExecution = {
           id: executionId,
           planId,
@@ -963,38 +979,38 @@ export const useRollbackStore = create<RollbackStore>()(
           triggerReason: reason,
           environment: 'production',
           version: '1.0.0',
-          executionContext: {}
+          executionContext: {},
         };
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.executions.push(execution);
           draft.currentExecution = executionId;
           draft.isExecuting = true;
           draft.error = null;
         });
-        
+
         try {
           // Execute steps in order
           for (const step of plan.rollbackSteps.sort((a, b) => a.order - b.order)) {
             const stepResult: RollbackStepResult = {
               stepId: step.id,
               startedAt: new Date(),
-              status: 'running'
+              status: 'running',
             };
-            
+
             set((draft: Draft<RollbackStore>) => {
               const exec = draft.executions.find((e) => e.id === executionId);
               if (exec) {
                 exec.stepsExecuted.push(stepResult);
               }
             });
-            
+
             // Simulate step execution
-            await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 2000));
-            
+            await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 2000));
+
             const success = Math.random() > 0.1; // 90% success rate
             const endTime = new Date();
-            
+
             set((draft: Draft<RollbackStore>) => {
               const exec = draft.executions.find((e) => e.id === executionId);
               if (exec) {
@@ -1009,12 +1025,12 @@ export const useRollbackStore = create<RollbackStore>()(
                 }
               }
             });
-            
+
             if (!success && step.isRequired) {
               throw new Error(`Required step '${step.name}' failed`);
             }
           }
-          
+
           // Success
           const endTime = new Date();
           set((draft: Draft<RollbackStore>) => {
@@ -1026,7 +1042,7 @@ export const useRollbackStore = create<RollbackStore>()(
             }
             draft.isExecuting = false;
             draft.currentExecution = null;
-            
+
             // Update plan execution history
             const p = draft.plans.find((p) => p.id === planId);
             if (p) {
@@ -1034,9 +1050,8 @@ export const useRollbackStore = create<RollbackStore>()(
               p.lastExecuted = endTime;
             }
           });
-          
+
           return executionId;
-          
         } catch (error) {
           // Failure
           const endTime = new Date();
@@ -1052,24 +1067,25 @@ export const useRollbackStore = create<RollbackStore>()(
             draft.currentExecution = null;
             draft.error = error instanceof Error ? error.message : 'Execution failed';
           });
-          
+
           throw error;
         }
       },
 
       cancelExecution: (executionId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           const execution = draft.executions.find((e) => e.id === executionId);
           if (execution && execution.status === 'running') {
             execution.status = 'cancelled';
             execution.completedAt = new Date();
             if (execution.startedAt && execution.completedAt) {
-              execution.duration = (execution.completedAt.getTime() - execution.startedAt.getTime()) / 1000;
+              execution.duration =
+                (execution.completedAt.getTime() - execution.startedAt.getTime()) / 1000;
             }
           }
-          
+
           if (draft.currentExecution === executionId) {
             draft.currentExecution = null;
             draft.isExecuting = false;
@@ -1079,14 +1095,14 @@ export const useRollbackStore = create<RollbackStore>()(
 
       pauseExecution: (executionId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         // In a real implementation, this would pause the actual execution
         console.log(`Pausing execution ${executionId}`);
       },
 
       resumeExecution: (executionId: string) => {
         if (!FLAGS.rollback) return;
-        
+
         // In a real implementation, this would resume the paused execution
         console.log(`Resuming execution ${executionId}`);
       },
@@ -1094,15 +1110,15 @@ export const useRollbackStore = create<RollbackStore>()(
       // Validation
       validatePlan: async (planId: string) => {
         if (!FLAGS.rollback) return [];
-        
+
         const plan = get().plans.find((p) => p.id === planId);
         if (!plan) return [];
-        
+
         const results: ValidationResult[] = [];
-        
+
         // Simulate validation
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 2000));
+
         // Validate each step
         for (const step of plan.rollbackSteps) {
           if (step.preValidation) {
@@ -1111,51 +1127,51 @@ export const useRollbackStore = create<RollbackStore>()(
                 ruleId: rule.id,
                 status: Math.random() > 0.2 ? 'passed' : 'failed',
                 message: `Validation rule '${rule.name}' executed`,
-                duration: Math.floor(Math.random() * 1000)
+                duration: Math.floor(Math.random() * 1000),
               };
               results.push(result);
             }
           }
         }
-        
+
         return results;
       },
 
       validateSnapshot: async (snapshotId: string) => {
         if (!FLAGS.rollback) return [];
-        
+
         const snapshot = get().snapshots.find((s) => s.id === snapshotId);
         if (!snapshot) return [];
-        
+
         const results: ValidationResult[] = [];
-        
+
         // Simulate validation
-        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
-        
+        await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 1200));
+
         const validations = [
           'Checksum verification',
           'Data integrity check',
           'Schema validation',
-          'Size verification'
+          'Size verification',
         ];
-        
+
         for (const validation of validations) {
           const result: ValidationResult = {
             ruleId: `val_${validation.replace(/\s+/g, '_').toLowerCase()}`,
             status: Math.random() > 0.15 ? 'passed' : 'failed',
             message: validation,
-            duration: Math.floor(Math.random() * 500)
+            duration: Math.floor(Math.random() * 500),
           };
           results.push(result);
         }
-        
+
         return results;
       },
 
       // UI Actions
       setSidebarCollapsed: (collapsed: boolean) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.sidebarCollapsed = collapsed;
         });
@@ -1163,7 +1179,7 @@ export const useRollbackStore = create<RollbackStore>()(
 
       setSelectedTab: (tab) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           draft.selectedTab = tab;
         });
@@ -1172,7 +1188,7 @@ export const useRollbackStore = create<RollbackStore>()(
       // Settings
       updateSettings: (settings) => {
         if (!FLAGS.rollback) return;
-        
+
         set((draft: Draft<RollbackStore>) => {
           Object.assign(draft.settings, settings);
         });
@@ -1181,59 +1197,59 @@ export const useRollbackStore = create<RollbackStore>()(
       // Data Management
       exportPlan: async (planId: string) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
-        
+
         const plan = get().plans.find((p) => p.id === planId);
         if (!plan) throw new Error('Plan not found');
-        
+
         const exportData = {
           plan,
           exportedAt: new Date().toISOString(),
-          version: '1.0'
+          version: '1.0',
         };
-        
+
         const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-          type: 'application/json'
+          type: 'application/json',
         });
-        
+
         return blob;
       },
 
       importPlan: async (file: File) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
-        
+
         const text = await file.text();
         const data = JSON.parse(text);
-        
+
         return get().createPlan(data.plan);
       },
 
       exportSnapshot: async (snapshotId: string) => {
         if (!FLAGS.rollback) throw new Error('Rollback not enabled');
-        
+
         const snapshot = get().snapshots.find((s) => s.id === snapshotId);
         if (!snapshot) throw new Error('Snapshot not found');
-        
+
         const exportData = {
           snapshot,
           exportedAt: new Date().toISOString(),
-          version: '1.0'
+          version: '1.0',
         };
-        
+
         const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-          type: 'application/json'
+          type: 'application/json',
         });
-        
+
         return blob;
       },
 
       // System
       sync: async () => {
         if (!FLAGS.rollback) return;
-        
+
         try {
           // Simulate sync
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
           set((draft: Draft<RollbackStore>) => {
             draft.lastSync = new Date();
             draft.error = null;
@@ -1248,15 +1264,14 @@ export const useRollbackStore = create<RollbackStore>()(
       // Initialization
       initialize: async () => {
         if (!FLAGS.rollback) return;
-        
+
         try {
           await get().sync();
-          
+
           // Create sample data for development
           if (get().snapshots.length === 0) {
             await get().createSampleData();
           }
-          
         } catch (error) {
           set((draft: Draft<RollbackStore>) => {
             draft.error = error instanceof Error ? error.message : 'Initialization failed';
@@ -1276,32 +1291,44 @@ export const useRollbackStore = create<RollbackStore>()(
             featureFlags: { multiChart: true, watchlist: false },
             dashboardLayouts: {},
             chartConfigurations: {},
-            customSettings: {}
+            customSettings: {},
           },
           databaseState: {
             schemaVersion: '1.2.3',
             tables: [
-              { name: 'users', schema: 'public', recordCount: 1234, lastModified: new Date(), checksum: 'abc123' },
-              { name: 'portfolios', schema: 'public', recordCount: 567, lastModified: new Date(), checksum: 'def456' }
+              {
+                name: 'users',
+                schema: 'public',
+                recordCount: 1234,
+                lastModified: new Date(),
+                checksum: 'abc123',
+              },
+              {
+                name: 'portfolios',
+                schema: 'public',
+                recordCount: 567,
+                lastModified: new Date(),
+                checksum: 'def456',
+              },
             ],
             recordCounts: { users: 1234, portfolios: 567 },
             dataSize: 50000000,
             backupFormat: 'sql',
-            isCompressed: true
+            isCompressed: true,
           },
           configurationState: {
             environment: { NODE_ENV: 'production' },
             appConfig: { apiUrl: 'https://api.lokifi.com' },
             serviceConfigs: {},
-            securityConfig: {}
+            securityConfig: {},
           },
           tags: ['production', 'stable'],
           description: 'Automatic snapshot before v1.2.4 deployment',
           createdBy: 'deployment-bot',
           status: 'active',
-          size: 50000000
+          size: 50000000,
         });
-        
+
         // Create sample rollback plan
         const planId = get().createPlan({
           name: 'Emergency Rollback Plan',
@@ -1316,14 +1343,14 @@ export const useRollbackStore = create<RollbackStore>()(
                 serviceRestart: {
                   services: ['api-server', 'web-server'],
                   restartMode: 'sequential',
-                  waitTime: 30
-                }
+                  waitTime: 30,
+                },
               },
               order: 1,
               isRequired: true,
               timeout: 300,
               canRollback: true,
-              dependsOn: []
+              dependsOn: [],
             },
             {
               id: 'step2',
@@ -1333,15 +1360,15 @@ export const useRollbackStore = create<RollbackStore>()(
                 database: {
                   connectionString: 'postgresql://localhost:5432/lokifi',
                   backupPath: '/backups/lokifi_backup.sql',
-                  schema: 'public'
-                }
+                  schema: 'public',
+                },
               },
               order: 2,
               isRequired: true,
               timeout: 1800,
               canRollback: false,
-              dependsOn: ['step1']
-            }
+              dependsOn: ['step1'],
+            },
           ],
           triggers: [
             {
@@ -1352,13 +1379,13 @@ export const useRollbackStore = create<RollbackStore>()(
                 errorRate: {
                   threshold: 5.0,
                   timeWindow: 10,
-                  errorTypes: ['5xx']
-                }
+                  errorTypes: ['5xx'],
+                },
               },
               isEnabled: true,
               triggerCount: 0,
-              cooldown: 300
-            }
+              cooldown: 300,
+            },
           ],
           prerequisites: [
             {
@@ -1369,11 +1396,11 @@ export const useRollbackStore = create<RollbackStore>()(
                 backup: {
                   snapshotId,
                   maxAge: 24,
-                  verificationRequired: true
-                }
+                  verificationRequired: true,
+                },
               },
-              isRequired: true
-            }
+              isRequired: true,
+            },
           ],
           settings: {
             autoExecute: false,
@@ -1388,13 +1415,13 @@ export const useRollbackStore = create<RollbackStore>()(
             notificationChannels: ['slack', 'email'],
             createRecoverySnapshot: true,
             allowNestedRollbacks: false,
-            maxRollbackDepth: 3
+            maxRollbackDepth: 3,
           },
-          isEnabled: true
+          isEnabled: true,
         });
-        
+
         get().setActivePlan(planId);
-      }
+      },
     })),
     {
       name: 'lokifi-rollback-storage',
@@ -1404,11 +1431,11 @@ export const useRollbackStore = create<RollbackStore>()(
           return {
             ...persistedState,
             executions: [],
-            currentExecution: null
+            currentExecution: null,
           };
         }
         return persistedState as RollbackState & RollbackActions;
-      }
+      },
     }
   )
 );
@@ -1420,7 +1447,7 @@ function generateChecksum(data: unknown): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return Math.abs(hash).toString(16);
@@ -1430,5 +1457,3 @@ function generateChecksum(data: unknown): string {
 if (typeof window !== 'undefined' && FLAGS.rollback) {
   useRollbackStore.getState().initialize();
 }
-
-

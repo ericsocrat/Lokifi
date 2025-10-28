@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
-import { set } from 'zod';
 
 // Observability Types
 export interface MetricDefinition {
@@ -1147,9 +1146,12 @@ export const useObservabilityStore = create<ObservabilityStore>()(
           }
         },
 
-        debug: (message: string, data?: unknown) => get().log('debug', message, data as Record<string, any> | undefined),
-        info: (message: string, data?: unknown) => get().log('info', message, data as Record<string, any> | undefined),
-        warn: (message: string, data?: unknown) => get().log('warn', message, data as Record<string, any> | undefined),
+        debug: (message: string, data?: unknown) =>
+          get().log('debug', message, data as Record<string, any> | undefined),
+        info: (message: string, data?: unknown) =>
+          get().log('info', message, data as Record<string, any> | undefined),
+        warn: (message: string, data?: unknown) =>
+          get().log('warn', message, data as Record<string, any> | undefined),
         error: (message, error, data = {}) => {
           const errorData = error
             ? {
@@ -1163,7 +1165,9 @@ export const useObservabilityStore = create<ObservabilityStore>()(
         },
 
         // Dashboard Management
-        createDashboard: (dashboardData: Omit<Dashboard, 'id' | 'createdAt' | 'updatedAt' | 'viewCount'>) => {
+        createDashboard: (
+          dashboardData: Omit<Dashboard, 'id' | 'createdAt' | 'updatedAt' | 'viewCount'>
+        ) => {
           if (!FLAGS.observability) return '';
 
           const dashboardId = `dashboard_${Date.now()}`;
