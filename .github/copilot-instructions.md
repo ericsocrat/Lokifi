@@ -375,6 +375,157 @@ def test_function_name(client, db_session):
 6. **Credential standard** - Always use lokifi:lokifi2025 for PostgreSQL
 7. **Test locally first** - Run actionlint/yaml-lint before pushing workflow changes
 
+## Code Quality & Verification Workflow
+
+### Quality-First Philosophy
+
+**Core Principle**: Take whatever time, commits, and iterations needed to achieve world-class code quality. Systematic, thorough work is valued over speed.
+
+**Verification Layers** (Multi-layered validation approach):
+
+1. **TypeScript Compilation** (Primary for type safety work)
+   ```bash
+   cd apps/frontend
+   npm run build  # Full build with tsc + vite
+   npm run typecheck  # Fast type-only check (tsc --noEmit)
+   ```
+   **What this catches**: Type errors, missing imports, invalid property access, function signature mismatches
+   
+   **For TypeScript refactoring**: If `npm run build` succeeds → types are valid → runtime behavior is predictable
+   **Key insight**: TypeScript IS the test for type safety work. Compilation success = correct types.
+
+2. **Linting & Formatting** (Automated via editor/pre-commit hooks)
+   - **ESLint**: Runs automatically via `.eslintrc.json` configuration
+   - **Prettier**: Auto-formats on save via editor settings
+   - **Pre-commit hooks**: Husky + lint-staged enforce quality before commit
+   
+   **What this catches**: Style violations, code smells, unused imports, formatting issues
+   
+   **Agent note**: Don't manually run linters - your editor's auto-save formatters handle this automatically. If you see "Some edits were made by a formatter" - that's working as intended!
+
+3. **Testing** (Behavior verification)
+   ```bash
+   # Frontend
+   cd apps/frontend
+   npm test                # Vitest unit tests
+   npm run test:coverage   # With coverage report
+   
+   # Backend
+   cd apps/backend
+   pytest                  # Python tests
+   pytest --cov           # With coverage
+   ```
+   **What this catches**: Broken business logic, integration issues, regression bugs
+   
+   **When to run**: After logic changes, before major commits, not needed for pure type annotation changes
+
+4. **Build Success** (Production readiness)
+   ```bash
+   npm run build  # Frontend
+   # Backend builds via Docker
+   ```
+   **What this catches**: Bundling errors, tree-shaking issues, production environment problems
+
+5. **Pattern Validation** (Code review checklist)
+   - [ ] State mutations use `Draft<StoreType>` (Zustand + Immer)
+   - [ ] Creation functions use `Omit<Type, 'id' | 'createdAt' | ...>`
+   - [ ] Update functions use `Partial<Type>`
+   - [ ] Delete/Get functions use explicit types (string, number)
+   - [ ] Async functions return `Promise<T>`
+   - [ ] No `any` types except documented acceptable cases
+
+### Verification Workflow Examples
+
+**For TypeScript Type Safety Work** (Sprint 2 pattern):
+```bash
+# 1. Make type changes (add Draft<T>, Omit<T>, etc.)
+# 2. Let auto-formatters run (Prettier/ESLint)
+# 3. Verify TypeScript compilation
+npm run build  # ✅ Success = types are valid
+
+# 4. Count remaining any types
+Select-String -Path "src/lib/stores/myStore.tsx" -Pattern ": any"
+# Goal: Only acceptable any types remain (document why)
+
+# 5. Commit with comprehensive message
+git commit -m "feat(types): myStore.tsx type-safe (100 any → 3 acceptable)"
+```
+
+**For Feature Development**:
+```bash
+# 1. Implement feature with proper types
+# 2. Write tests (behavior-driven)
+npm test -- myFeature.test.ts
+
+# 3. Verify build
+npm run build
+
+# 4. Pre-commit hooks run automatically
+git commit -m "feat: implement feature X"
+# Husky runs lint-staged → ESLint + Prettier
+```
+
+**For Bug Fixes**:
+```bash
+# 1. Write failing test first (TDD)
+npm test -- bugFix.test.ts  # ❌ Should fail
+
+# 2. Fix the bug
+# 3. Verify test passes
+npm test -- bugFix.test.ts  # ✅ Should pass
+
+# 4. Verify no regressions
+npm test  # All tests pass
+npm run build  # Successful build
+```
+
+### What NOT To Do (Limitations)
+
+When working through Copilot, be aware of verification limitations:
+
+❌ **Don't assume runtime correctness** - Type safety doesn't guarantee business logic correctness
+❌ **Don't skip testing for logic changes** - Only skip tests for pure type annotation work
+❌ **Don't manually run formatters** - Let editor auto-save handle it (Prettier, ESLint)
+❌ **Don't commit without build verification** - Always run `npm run build` or `pytest` first
+
+### Confidence Checklist (Before Committing)
+
+For **Type Safety Work**:
+- [ ] `npm run build` succeeds with no errors
+- [ ] Remaining `any` types are documented as acceptable
+- [ ] Pattern validation passed (Draft, Omit, Partial used correctly)
+- [ ] No runtime behavior changed (only type annotations)
+
+For **Feature Work**:
+- [ ] Tests written and passing
+- [ ] `npm run build` succeeds
+- [ ] Pre-commit hooks pass (automatic)
+- [ ] Documentation updated if needed
+
+For **Bug Fixes**:
+- [ ] Reproduction test written (fails before fix)
+- [ ] Test passes after fix
+- [ ] No regressions (full test suite passes)
+- [ ] Root cause documented in commit message
+
+### Quality Metrics from Sprint 2 (Sessions 15-19)
+
+**Proven Success Pattern**:
+- ✅ 5 stores completed, all builds successful
+- ✅ 637 `any` → 23 acceptable (96% improvement)
+- ✅ No runtime behavior changed (pure type safety)
+- ✅ Consistent 1-hour pace with bulk efficiency techniques
+- ✅ Zustand v5 typing issue known and documented
+
+**Key Success Factors**:
+1. TypeScript compilation verifies all types
+2. Build success confirms no breaking changes
+3. Auto-formatters handle style automatically
+4. Pattern consistency proven across diverse domains
+5. Only type annotations changed, not runtime logic
+
+**The key insight**: For type safety work, TypeScript compilation IS the validation. If it compiles without errors (except known Zustand v5 issue), the types are correct. 🎉
+
 ## Security Best Practices
 
 ### Frontend Security
