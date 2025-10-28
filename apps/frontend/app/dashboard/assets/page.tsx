@@ -54,7 +54,7 @@ interface Asset {
 interface AddAssetModalState {
   show: boolean;
   step: 'stocks' | 'metals' | 'quantity';
-  selectedItems: any[];
+  selectedItems: Asset[];
 }
 
 export default function AssetsPage() {
@@ -119,7 +119,7 @@ export default function AssetsPage() {
   };
 
   const handleDone = () => {
-    const items = modal.selectedItems.map((item: any) => ({
+    const items = modal.selectedItems.map((item: Asset) => ({
       id: Math.random().toString(36).substring(2, 9),
       name: item.name,
       symbol: item.symbol,
@@ -137,7 +137,7 @@ export default function AssetsPage() {
   const { formatCurrency } = useCurrencyFormatter();
 
   const getTotalValue = () =>
-    storageTotalValue() + connectingBanks.reduce((s: any, b: any) => s + b.value, 0);
+    storageTotalValue() + connectingBanks.reduce((s: number, b: ConnectingBank) => s + b.value, 0);
 
   const addNewSection = () => {
     const newSection: PortfolioSection = {
@@ -154,7 +154,7 @@ export default function AssetsPage() {
     toast.info('Asset deleted.');
   };
 
-  const hasAnyAssets = sections.some((s: any) => s.assets.length > 0);
+  const hasAnyAssets = sections.some((s: PortfolioSection) => s.assets.length > 0);
 
   const simulateBankConnections = () => {
     const banks = JSON.parse(localStorage.getItem('connectingBanks') || '[]');
@@ -399,7 +399,7 @@ export default function AssetsPage() {
                       </span>
                     </div>
                     {idx === 0 &&
-                      connectingBanks.map((bank: any) => (
+                      connectingBanks.map((bank: ConnectingBank) => (
                         <ConnectingBankItem key={bank.id} bank={bank} />
                       ))}
                     {section.assets.map((asset: PortfolioAsset) => (
@@ -460,7 +460,7 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setAnimatedValue((prev: any) => {
+      setAnimatedValue((prev: number) => {
         const change = Math.floor(Math.random() * 200) - 100;
         return Math.max(0, prev + change);
       });
