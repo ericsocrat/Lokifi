@@ -227,7 +227,7 @@ npm run lint
 > - **Total Alert Resolution**: 21 → 0 functional alerts (100% success!)
 > - **OWASP Compliance**: A09:2021 (Log Injection) eliminated
 > - **Documents**: SESSION_32_SECURITY_HARDENING.md
-> 
+>
 > **Previous Session 26**: CodeQL Security Hardening
 > - **CRITICAL alerts**: 4 → 0 (MD5 → SHA-256 replacements)
 > - **HIGH alerts**: 60+ → 0-5 (Stack trace exposure → Secure logging)
@@ -691,6 +691,51 @@ gh run view <run-id> --repo ericsocrat/Lokifi
 - [ ] **Error scenarios** tested (network failures, timeouts)
 - [ ] **Data validation** tested (malformed inputs)
 - [ ] **Cross-service communication** validated
+
+### Backend Integration Testing (Session 33 Patterns) ✅
+**Purpose**: Test database-dependent features that cannot be mocked
+
+**Infrastructure** (Session 33):
+- [x] **integration_db_session fixture** created (conftest.py)
+  - Real PostgreSQL database with transaction rollback
+  - Automatic table creation/deletion per test
+  - Configurable via TEST_DATABASE_URL environment variable
+  
+**Test Patterns**:
+- [ ] **Server-default timestamps** tested (`server_default=func.now()`)
+- [ ] **Database pagination** tested (LIMIT/OFFSET queries)
+- [ ] **Foreign key constraints** validated
+- [ ] **Unique constraints** validated
+- [ ] **Database triggers** tested (if applicable)
+- [ ] **Transaction rollback** ensures test isolation
+
+**Test Markers**:
+```python
+@pytest.mark.asyncio
+@pytest.mark.integration  # Mark tests for selective execution
+class TestServiceIntegration:
+    async def test_database_feature(integration_db_session):
+        # Real database operations
+```
+
+**Running Integration Tests**:
+```bash
+# Run only integration tests (requires PostgreSQL)
+pytest -m integration
+
+# Skip integration tests (for local dev without database)
+pytest -m "not integration"
+```
+
+**When to Use**:
+- ✅ Testing SQLAlchemy `server_default` values
+- ✅ Testing database-level pagination
+- ✅ Testing constraints and triggers
+- ✅ Testing complex transactions
+- ❌ Simple CRUD operations (use mocks)
+- ❌ Business logic without database features
+
+**Reference**: `/apps/backend/tests/integration/test_follow_service_integration.py` (6 tests, Session 33)
 
 ### E2E Testing
 - [ ] **Critical user paths** automated
