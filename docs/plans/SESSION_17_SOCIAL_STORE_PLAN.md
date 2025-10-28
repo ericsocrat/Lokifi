@@ -115,7 +115,7 @@ login: async (credentials: { username: string; password: string }) => {
 - `deletePost: async (postId: string)` → Verify string parameter
 
 #### Category 3: Content Interaction (5/5 actions)
-- `likePost: async (postId: string)` 
+- `likePost: async (postId: string)`
 - `unlikePost: async (postId: string)`
 - `bookmarkPost: async (postId: string)`
 - `unbookmarkPost: async (postId: string)`

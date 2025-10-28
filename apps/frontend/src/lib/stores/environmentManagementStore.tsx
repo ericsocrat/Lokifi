@@ -1033,7 +1033,11 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
         return serviceId;
       },
 
-      updateService: (environmentId: string, serviceId: string, updates: Partial<ServiceInstance>) => {
+      updateService: (
+        environmentId: string,
+        serviceId: string,
+        updates: Partial<ServiceInstance>
+      ) => {
         if (!FLAGS.environmentManagement) return;
 
         set((draft: Draft<EnvironmentManagementStore>) => {
@@ -1091,7 +1095,9 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
       },
 
       // Templates
-      createTemplate: (templateData: Omit<EnvironmentTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>) => {
+      createTemplate: (
+        templateData: Omit<EnvironmentTemplate, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>
+      ) => {
         if (!FLAGS.environmentManagement) return '';
 
         const id = `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1201,10 +1207,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
               category: 'config',
               path: 'infrastructure.compute.instanceType',
               environmentValues: Object.fromEntries(
-                environments.map((e) => [
-                  e!.name,
-                  e!.config.infrastructure.compute.instanceType,
-                ])
+                environments.map((e) => [e!.name, e!.config.infrastructure.compute.instanceType])
               ),
               severity: 'medium',
               description: 'Instance types differ between environments',
@@ -1384,7 +1387,10 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
       },
 
       // Credentials
-      addCredentials: (environmentId: string, credentialsData: Omit<EnvironmentCredentials, 'id'>) => {
+      addCredentials: (
+        environmentId: string,
+        credentialsData: Omit<EnvironmentCredentials, 'id'>
+      ) => {
         if (!FLAGS.environmentManagement) return '';
 
         const id = `cred_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1404,7 +1410,11 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
         return id;
       },
 
-      updateCredentials: (environmentId: string, credentialsId: string, updates: Partial<EnvironmentCredentials>) => {
+      updateCredentials: (
+        environmentId: string,
+        credentialsId: string,
+        updates: Partial<EnvironmentCredentials>
+      ) => {
         if (!FLAGS.environmentManagement) return;
 
         set((draft: Draft<EnvironmentManagementStore>) => {
@@ -1425,9 +1435,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
         set((draft: Draft<EnvironmentManagementStore>) => {
           const environment = draft.environments.find((e) => e.id === environmentId);
           if (environment) {
-            environment.credentials = environment.credentials.filter(
-              (c) => c.id !== credentialsId
-            );
+            environment.credentials = environment.credentials.filter((c) => c.id !== credentialsId);
             environment.updatedAt = new Date();
           }
         });
