@@ -5,11 +5,6 @@ Authentication router with login, register, and OAuth endpoints.
 import logging
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.auth_deps import get_current_user, get_current_user_optional
 from app.core.config import settings
 from app.db.database import get_db
@@ -22,6 +17,10 @@ from app.schemas.auth import (
     UserRegisterRequest,
 )
 from app.services.auth_service import AuthService
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -43,12 +42,12 @@ async def register(user_data: UserRegisterRequest, db: AsyncSession = Depends(ge
         logger.error(
             f"Registration failed for user: {user_data.username}",
             exc_info=True,
-            extra={"username": user_data.username, "email": user_data.email}
+            extra={"username": user_data.username, "email": user_data.email},
         )
         # Return generic error to client (no information disclosure)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during registration. Please try again later."
+            detail="Internal server error during registration. Please try again later.",
         )
 
     # Set HTTP-only cookie with access token
@@ -112,12 +111,12 @@ async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)
         logger.error(
             f"Login failed for identifier: {login_data.identifier}",
             exc_info=True,
-            extra={"identifier": login_data.identifier}
+            extra={"identifier": login_data.identifier},
         )
         # Return generic error to client (no information disclosure)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error during login. Please try again later."
+            detail="Internal server error during login. Please try again later.",
         )
 
     response.set_cookie(
@@ -251,7 +250,7 @@ async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depend
         logger.error(
             "Google OAuth authentication failed",
             exc_info=True,
-            extra={"error_type": type(e).__name__}
+            extra={"error_type": type(e).__name__},
         )
         # Return generic error to client (no information disclosure)
         raise HTTPException(
@@ -278,9 +277,8 @@ async def get_current_user_info(
 ):
     """Get current user information."""
     # Get user's profile
-    from sqlalchemy import select
-
     from app.models.profile import Profile
+    from sqlalchemy import select
 
     stmt = select(Profile).where(Profile.user_id == current_user.id)
     result = await db.execute(stmt)

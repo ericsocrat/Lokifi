@@ -46,7 +46,7 @@ class CacheMetrics:
         self.writes = 0
         self.errors = 0
         self.response_times = deque(maxlen=1000)
-        self.last_reset = datetime.now(timezone.timezone.utc)
+        self.last_reset = datetime.now(timezone.utc)
 
     @property
     def hit_rate(self) -> float:
