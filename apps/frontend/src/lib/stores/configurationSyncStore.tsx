@@ -788,7 +788,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.configurations = draft.configurations.filter((c) => c.id !== configId);
-          if (state.selectedConfiguration === configId) {
+          if (draft.selectedConfiguration === configId) {
             draft.selectedConfiguration = null;
           }
         });
@@ -1055,7 +1055,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           }
 
           draft.environments = draft.environments.filter((e) => e.id !== envId);
-          if (state.selectedEnvironment === envId) {
+          if (draft.selectedEnvironment === envId) {
             draft.selectedEnvironment = null;
           }
         });
@@ -1586,8 +1586,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
         }
 
         const importedIds: string[] = [];
+        const configArray = importData as Array<any>;
 
-        for (const config of importData) {
+        for (const config of configArray) {
           const existingConfig = get().configurations.find(
             (c) => c.key === config.key && c.environmentId === environmentId
           );
@@ -1624,7 +1625,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
         if (!FLAGS.configurationSync) return;
 
         set((draft: Draft<ConfigurationSyncStore>) => {
-          Object.assign(state.filters, filters);
+          Object.assign(draft.filters, filters);
         });
       },
 
@@ -1666,7 +1667,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
         if (!FLAGS.configurationSync) return;
 
         set((draft: Draft<ConfigurationSyncStore>) => {
-          Object.assign(state.settings, settings);
+          Object.assign(draft.settings, settings);
         });
       },
 
@@ -1684,7 +1685,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           draft.auditLog.unshift(entry);
 
           // Keep only last 1000 entries
-          if (state.auditLog.length > 1000) {
+          if (draft.auditLog.length > 1000) {
             draft.auditLog = draft.auditLog.slice(0, 1000);
           }
         });

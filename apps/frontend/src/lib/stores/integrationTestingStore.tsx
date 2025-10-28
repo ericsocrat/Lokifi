@@ -1,7 +1,7 @@
+import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // H11: Integration Testing - Automated testing pipelines for seamless upgrades
@@ -14,37 +14,37 @@ export interface TestSuite {
   description: string;
   type: TestSuiteType;
   category: string;
-  
+
   // Configuration
   config: TestSuiteConfig;
-  
+
   // Tests
   tests: TestCase[];
-  
+
   // Environment
   targetEnvironments: string[];
   prerequisites: string[];
-  
+
   // Schedule
   schedule?: string; // cron expression
   isEnabled: boolean;
-  
+
   // Execution
   lastExecutionId?: string;
   executionIds: string[]; // execution ids
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
   version: number;
-  
+
   // Status
   status: TestSuiteStatus;
   tags: string[];
 }
 
-export type TestSuiteType = 
+export type TestSuiteType =
   | 'unit'
   | 'integration'
   | 'end_to_end'
@@ -62,12 +62,7 @@ export type TestSuiteType =
   | 'chaos'
   | 'custom';
 
-export type TestSuiteStatus = 
-  | 'active'
-  | 'inactive'
-  | 'draft'
-  | 'archived'
-  | 'maintenance';
+export type TestSuiteStatus = 'active' | 'inactive' | 'draft' | 'archived' | 'maintenance';
 
 export interface TestSuiteConfig {
   // Execution
@@ -75,24 +70,24 @@ export interface TestSuiteConfig {
   retryCount: number;
   parallelExecution: boolean;
   maxConcurrency: number;
-  
+
   // Environment
   setupScripts: string[];
   teardownScripts: string[];
   environmentVariables: Record<string, string>;
-  
+
   // Dependencies
   requiredServices: string[];
   dataSeeds: DataSeed[];
-  
+
   // Reporting
   reportFormat: ReportFormat[];
   notificationChannels: string[];
-  
+
   // Thresholds
   successThreshold: number; // percentage
   performanceThresholds: PerformanceThreshold[];
-  
+
   // Custom settings
   customSettings: Record<string, any>;
 }
@@ -107,13 +102,7 @@ export interface DataSeed {
   cleanupAfter: boolean;
 }
 
-export type ReportFormat = 
-  | 'junit'
-  | 'html'
-  | 'json'
-  | 'pdf'
-  | 'markdown'
-  | 'custom';
+export type ReportFormat = 'junit' | 'html' | 'json' | 'pdf' | 'markdown' | 'custom';
 
 export interface PerformanceThreshold {
   metric: string;
@@ -128,23 +117,23 @@ export interface TestCase {
   name: string;
   description: string;
   type: TestCaseType;
-  
+
   // Test definition
   steps: TestStep[];
   assertions: TestAssertion[];
-  
+
   // Configuration
   timeout: number; // seconds
   retryCount: number;
   isEnabled: boolean;
-  
+
   // Dependencies
   dependsOn: string[]; // other test case ids
   tags: string[];
-  
+
   // Data
   testData: TestData[];
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
@@ -152,7 +141,7 @@ export interface TestCase {
   estimatedDuration: number; // seconds
 }
 
-export type TestCaseType = 
+export type TestCaseType =
   | 'functional'
   | 'api_test'
   | 'ui_test'
@@ -177,7 +166,7 @@ export interface TestStep {
   order: number;
 }
 
-export type TestStepType = 
+export type TestStepType =
   | 'http_request'
   | 'database_query'
   | 'ui_interaction'
@@ -201,7 +190,7 @@ export interface TestAssertion {
   severity: 'info' | 'warning' | 'error' | 'critical';
 }
 
-export type AssertionType = 
+export type AssertionType =
   | 'response_status'
   | 'response_body'
   | 'response_time'
@@ -210,7 +199,7 @@ export type AssertionType =
   | 'ui_element'
   | 'custom';
 
-export type AssertionOperator = 
+export type AssertionOperator =
   | 'equals'
   | 'not_equals'
   | 'contains'
@@ -236,38 +225,38 @@ export interface TestData {
 export interface TestExecution {
   id: string;
   suiteId: string;
-  
+
   // Execution details
   startedAt: Date;
   completedAt?: Date;
   duration?: number; // seconds
   status: TestExecutionStatus;
-  
+
   // Trigger
   triggeredBy: string;
   triggerType: 'manual' | 'scheduled' | 'ci_cd' | 'deployment' | 'api';
-  
+
   // Environment
   environment: string;
   version: string;
-  
+
   // Results
   results: TestResult[];
   summary: TestExecutionSummary;
-  
+
   // Artifacts
   artifacts: TestArtifact[];
   logs: TestLog[];
-  
+
   // Performance
   performanceMetrics: PerformanceMetric[];
-  
+
   // Error handling
   errors: TestError[];
   warnings: TestWarning[];
 }
 
-export type TestExecutionStatus = 
+export type TestExecutionStatus =
   | 'pending'
   | 'running'
   | 'completed'
@@ -280,37 +269,31 @@ export interface TestResult {
   id: string;
   testCaseId: string;
   testCaseName: string;
-  
+
   // Execution
   startedAt: Date;
   completedAt?: Date;
   duration?: number; // seconds
   status: TestResultStatus;
-  
+
   // Results
   stepResults: TestStepResult[];
   assertionResults: TestAssertionResult[];
-  
+
   // Data
   actualResults: Record<string, any>;
   screenshots?: string[]; // file paths or URLs
-  
+
   // Error details
   errorMessage?: string;
   errorStack?: string;
-  
+
   // Retry information
   retryCount: number;
   retryReasons: string[];
 }
 
-export type TestResultStatus = 
-  | 'passed'
-  | 'failed'
-  | 'skipped'
-  | 'error'
-  | 'timeout'
-  | 'cancelled';
+export type TestResultStatus = 'passed' | 'failed' | 'skipped' | 'error' | 'timeout' | 'cancelled';
 
 export interface TestStepResult {
   stepId: string;
@@ -339,15 +322,15 @@ export interface TestExecutionSummary {
   failedTests: number;
   skippedTests: number;
   errorTests: number;
-  
+
   // Percentages
   passRate: number;
   failRate: number;
-  
+
   // Performance
   totalDuration: number; // seconds
   averageDuration: number; // seconds
-  
+
   // Coverage (if applicable)
   coverage?: TestCoverage;
 }
@@ -377,7 +360,7 @@ export interface TestArtifact {
   description?: string;
 }
 
-export type ArtifactType = 
+export type ArtifactType =
   | 'screenshot'
   | 'video'
   | 'report'
@@ -398,13 +381,7 @@ export interface TestLog {
   metadata?: Record<string, any>;
 }
 
-export type LogLevel = 
-  | 'trace'
-  | 'debug'
-  | 'info'
-  | 'warn'
-  | 'error'
-  | 'fatal';
+export type LogLevel = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
 
 export interface PerformanceMetric {
   name: string;
@@ -426,7 +403,7 @@ export interface TestError {
   resolution?: string;
 }
 
-export type TestErrorType = 
+export type TestErrorType =
   | 'assertion_failed'
   | 'timeout'
   | 'network_error'
@@ -451,26 +428,26 @@ export interface TestPipeline {
   id: string;
   name: string;
   description: string;
-  
+
   // Pipeline configuration
   stages: TestPipelineStage[];
-  
+
   // Trigger configuration
   triggers: PipelineTrigger[];
-  
+
   // Environment
   environments: string[];
-  
+
   // Notifications
   notifications: PipelineNotification[];
-  
+
   // Status
   isEnabled: boolean;
   status: PipelineStatus;
-  
+
   // Executions
   executions: PipelineExecution[];
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
@@ -483,30 +460,25 @@ export interface TestPipelineStage {
   name: string;
   type: StageType;
   order: number;
-  
+
   // Configuration
   testSuites: string[];
   conditions: StageCondition[];
-  
+
   // Execution
   runInParallel: boolean;
   continueOnFailure: boolean;
   timeout: number; // seconds
-  
+
   // Gates
   approvalRequired: boolean;
   approvers: string[];
-  
+
   // Environment-specific
   environmentOverrides: Record<string, any>;
 }
 
-export type StageType = 
-  | 'test_execution'
-  | 'deployment'
-  | 'approval'
-  | 'notification'
-  | 'custom';
+export type StageType = 'test_execution' | 'deployment' | 'approval' | 'notification' | 'custom';
 
 export interface StageCondition {
   type: 'success_rate' | 'test_count' | 'duration' | 'custom';
@@ -521,7 +493,7 @@ export interface PipelineTrigger {
   isEnabled: boolean;
 }
 
-export type TriggerType = 
+export type TriggerType =
   | 'manual'
   | 'schedule'
   | 'git_push'
@@ -540,7 +512,7 @@ export interface PipelineNotification {
   isEnabled: boolean;
 }
 
-export type NotificationType = 
+export type NotificationType =
   | 'start'
   | 'success'
   | 'failure'
@@ -554,7 +526,7 @@ export interface NotificationCondition {
   threshold?: number;
 }
 
-export type PipelineStatus = 
+export type PipelineStatus =
   | 'idle'
   | 'running'
   | 'completed'
@@ -565,27 +537,27 @@ export type PipelineStatus =
 export interface PipelineExecution {
   id: string;
   pipelineId: string;
-  
+
   // Execution details
   startedAt: Date;
   completedAt?: Date;
   duration?: number; // seconds
   status: PipelineStatus;
-  
+
   // Trigger
   triggeredBy: string;
   triggerType: TriggerType;
-  
+
   // Stages
   stageExecutions: StageExecution[];
-  
+
   // Environment
   environment: string;
   version: string;
-  
+
   // Results
   summary: PipelineExecutionSummary;
-  
+
   // Approvals
   approvals: PipelineApproval[];
 }
@@ -607,11 +579,11 @@ export interface PipelineExecutionSummary {
   completedStages: number;
   failedStages: number;
   skippedStages: number;
-  
+
   totalTests: number;
   passedTests: number;
   failedTests: number;
-  
+
   overallPassRate: number;
   totalDuration: number;
 }
@@ -629,20 +601,20 @@ export interface TestEnvironmentHealth {
   environmentId: string;
   environmentName: string;
   status: 'healthy' | 'warning' | 'critical' | 'unknown';
-  
+
   // Service health
   services: ServiceHealthStatus[];
-  
+
   // Resource usage
   resources: ResourceHealthStatus;
-  
+
   // Test readiness
   testReadiness: TestReadinessStatus;
-  
+
   // Last check
   lastHealthCheck: Date;
   healthCheckDuration: number; // seconds
-  
+
   // Issues
   issues: HealthIssue[];
 }
@@ -686,44 +658,44 @@ export interface TestingSettings {
   enableIntegrationTesting: boolean;
   defaultTimeout: number; // seconds
   defaultRetryCount: number;
-  
+
   // Execution
   maxConcurrentTests: number;
   enableParallelExecution: boolean;
-  
+
   // Environment
   enableHealthChecks: boolean;
   healthCheckInterval: number; // seconds
-  
+
   // Reporting
   enableDetailedReporting: boolean;
   retainReports: number; // days
   enableScreenshots: boolean;
   enableVideos: boolean;
-  
+
   // Performance
   enablePerformanceTracking: boolean;
   performanceThresholds: Record<string, number>;
-  
+
   // Notifications
   enableNotifications: boolean;
   notificationChannels: string[];
   notifyOnFailure: boolean;
   notifyOnSuccess: boolean;
-  
+
   // Data Management
   enableTestDataManagement: boolean;
   cleanupTestData: boolean;
   testDataRetention: number; // days
-  
+
   // Security
   enableSecurityTesting: boolean;
   maskSensitiveData: boolean;
-  
+
   // Integration
   enableCIIntegration: boolean;
   ciWebhookUrl?: string;
-  
+
   // Coverage
   enableCoverageTracking: boolean;
   coverageThreshold: number; // percentage
@@ -734,30 +706,30 @@ interface IntegrationTestingState {
   // Test Suites
   testSuites: TestSuite[];
   selectedTestSuite: string | null;
-  
+
   // Test Executions
   executions: TestExecution[];
   activeExecutions: string[];
-  
+
   // Pipelines
   pipelines: TestPipeline[];
   selectedPipeline: string | null;
-  
+
   // Environment Health
   environmentHealth: TestEnvironmentHealth[];
-  
+
   // UI State
   sidebarCollapsed: boolean;
   selectedTab: 'suites' | 'executions' | 'pipelines' | 'health' | 'settings';
   searchQuery: string;
   filters: TestingFilters;
-  
+
   // Status
   isRunning: boolean;
   isHealthChecking: boolean;
   lastUpdate: Date | null;
   error: string | null;
-  
+
   // Settings
   settings: TestingSettings;
 }
@@ -773,59 +745,80 @@ export interface TestingFilters {
 // Store Actions
 interface IntegrationTestingActions {
   // Test Suite Management
-  createTestSuite: (suite: Omit<TestSuite, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executionIds'>) => string;
+  createTestSuite: (
+    suite: Omit<TestSuite, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executionIds'>
+  ) => string;
   updateTestSuite: (suiteId: string, updates: Partial<TestSuite>) => void;
   deleteTestSuite: (suiteId: string) => void;
   cloneTestSuite: (suiteId: string, name: string) => string;
   setSelectedTestSuite: (suiteId: string | null) => void;
-  
+
   // Test Case Management
-  addTestCase: (suiteId: string, testCase: Omit<TestCase, 'id' | 'createdAt' | 'updatedAt'>) => string;
+  addTestCase: (
+    suiteId: string,
+    testCase: Omit<TestCase, 'id' | 'createdAt' | 'updatedAt'>
+  ) => string;
   updateTestCase: (suiteId: string, testCaseId: string, updates: Partial<TestCase>) => void;
   removeTestCase: (suiteId: string, testCaseId: string) => void;
-  
+
   // Test Execution
-  runTestSuite: (suiteId: string, environment: string, options?: Partial<TestSuiteConfig>) => Promise<string>;
+  runTestSuite: (
+    suiteId: string,
+    environment: string,
+    options?: Partial<TestSuiteConfig>
+  ) => Promise<string>;
   runTestCase: (suiteId: string, testCaseId: string, environment: string) => Promise<TestResult>;
   cancelExecution: (executionId: string) => Promise<void>;
-  
+
   // Pipeline Management
-  createPipeline: (pipeline: Omit<TestPipeline, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executions'>) => string;
+  createPipeline: (
+    pipeline: Omit<TestPipeline, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executions'>
+  ) => string;
   updatePipeline: (pipelineId: string, updates: Partial<TestPipeline>) => void;
   deletePipeline: (pipelineId: string) => void;
   setSelectedPipeline: (pipelineId: string | null) => void;
-  
+
   // Pipeline Execution
   runPipeline: (pipelineId: string, environment?: string) => Promise<string>;
-  approvePipelineStage: (executionId: string, stageId: string, approverId: string, comment?: string) => void;
-  rejectPipelineStage: (executionId: string, stageId: string, approverId: string, comment: string) => void;
-  
+  approvePipelineStage: (
+    executionId: string,
+    stageId: string,
+    approverId: string,
+    comment?: string
+  ) => void;
+  rejectPipelineStage: (
+    executionId: string,
+    stageId: string,
+    approverId: string,
+    comment: string
+  ) => void;
+
   // Environment Health
   checkEnvironmentHealth: (environmentId?: string) => Promise<TestEnvironmentHealth[]>;
   startHealthMonitoring: () => void;
   stopHealthMonitoring: () => void;
-  
+
   // Test Data Management
   createTestData: (suiteId: string, testData: Omit<TestData, 'id'>) => string;
   updateTestData: (suiteId: string, dataId: string, updates: Partial<TestData>) => void;
   deleteTestData: (suiteId: string, dataId: string) => void;
-  
+
   // Reporting
   generateReport: (executionId: string, format: ReportFormat) => Promise<Blob>;
   exportResults: (executionIds: string[], format: 'json' | 'csv' | 'xml') => Promise<Blob>;
-  
+
   // Search & Filtering
   setSearchQuery: (query: string) => void;
   setFilters: (filters: Partial<TestingFilters>) => void;
   clearFilters: () => void;
-  
+
   // UI Actions
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSelectedTab: (tab: IntegrationTestingState['selectedTab']) => void;
-  
+
   // Settings
   updateSettings: (settings: Partial<TestingSettings>) => void;
-  
+
   // Initialization
   initialize: () => Promise<void>;
   createDefaultTestSuites: () => void;
@@ -858,7 +851,7 @@ const createInitialState = (): IntegrationTestingState => ({
     statuses: [],
     environments: [],
     tags: [],
-    priorities: []
+    priorities: [],
   },
   isRunning: false,
   isHealthChecking: false,
@@ -878,8 +871,8 @@ const createInitialState = (): IntegrationTestingState => ({
     enableVideos: false,
     enablePerformanceTracking: true,
     performanceThresholds: {
-      'response_time': 1000,
-      'throughput': 100
+      response_time: 1000,
+      throughput: 100,
     },
     enableNotifications: true,
     notificationChannels: [],
@@ -892,8 +885,8 @@ const createInitialState = (): IntegrationTestingState => ({
     maskSensitiveData: true,
     enableCIIntegration: false,
     enableCoverageTracking: false,
-    coverageThreshold: 80
-  }
+    coverageThreshold: 80,
+  },
 });
 
 // Create Store
@@ -904,9 +897,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       ...createInitialState(),
 
       // Test Suite Management
-      createTestSuite: (suiteData: Omit<TestSuite, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executionIds'>) => {
+      createTestSuite: (
+        suiteData: Omit<TestSuite, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executionIds'>
+      ) => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const id = `suite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const suite: TestSuite = {
           ...suiteData,
@@ -914,19 +909,19 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
           executionIds: [],
           createdAt: new Date(),
           updatedAt: new Date(),
-          version: 1
+          version: 1,
         };
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.testSuites.push(suite);
         });
-        
+
         return id;
       },
 
       updateTestSuite: (suiteId: string, updates: Partial<TestSuite>) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
@@ -937,7 +932,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       deleteTestSuite: (suiteId: string) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.testSuites = draft.testSuites.filter((s) => s.id !== suiteId);
           if (draft.selectedTestSuite === suiteId) {
@@ -948,37 +943,40 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       cloneTestSuite: (suiteId: string, name: string) => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const suite = get().testSuites.find((s) => s.id === suiteId);
         if (!suite) return '';
-        
+
         return get().createTestSuite({
           ...suite,
           name,
-          status: 'draft'
+          status: 'draft',
         });
       },
 
       setSelectedTestSuite: (suiteId: string | null) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.selectedTestSuite = suiteId;
         });
       },
 
       // Test Case Management
-      addTestCase: (suiteId: string, testCaseData: Omit<TestCase, 'id' | 'createdAt' | 'updatedAt'>) => {
+      addTestCase: (
+        suiteId: string,
+        testCaseData: Omit<TestCase, 'id' | 'createdAt' | 'updatedAt'>
+      ) => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const testCaseId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const testCase: TestCase = {
           ...testCaseData,
           id: testCaseId,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
@@ -986,13 +984,13 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             suite.updatedAt = new Date();
           }
         });
-        
+
         return testCaseId;
       },
 
       updateTestCase: (suiteId, testCaseId, updates) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
@@ -1007,7 +1005,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       removeTestCase: (suiteId: string, testCaseId: string) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
@@ -1020,13 +1018,13 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // Test Execution
       runTestSuite: async (suiteId, environment, options) => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const suite = get().testSuites.find((s) => s.id === suiteId);
         if (!suite) throw new Error('Test suite not found');
-        
+
         const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const startTime = new Date();
-        
+
         // Create execution record
         const execution: TestExecution = {
           id: executionId,
@@ -1047,47 +1045,47 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             passRate: 0,
             failRate: 0,
             totalDuration: 0,
-            averageDuration: 0
+            averageDuration: 0,
           },
           artifacts: [],
           logs: [],
           performanceMetrics: [],
           errors: [],
-          warnings: []
+          warnings: [],
         };
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.executions.push(execution);
           draft.activeExecutions.push(executionId);
           draft.isRunning = true;
-          
+
           const s = draft.testSuites.find((s) => s.id === suiteId);
           if (s) {
             s.lastExecutionId = executionId;
             s.executionIds.push(executionId);
           }
         });
-        
+
         try {
           // Simulate test execution
           const totalTests = suite.tests.length;
           let passedTests = 0;
           let failedTests = 0;
-          
+
           // Execute tests sequentially or in parallel based on config
           for (let i = 0; i < totalTests; i++) {
             const testCase = suite.tests[i];
             const testStartTime = new Date();
-            
+
             // Simulate test execution time
-            await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 2000));
-            
+            await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 2000));
+
             const testEndTime = new Date();
             const duration = (testEndTime.getTime() - testStartTime.getTime()) / 1000;
-            
+
             // Simulate test results (80% pass rate)
             const passed = Math.random() < 0.8;
-            
+
             const testResult: TestResult = {
               id: `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               testCaseId: testCase.id,
@@ -1099,29 +1097,29 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               stepResults: testCase.steps.map((step) => ({
                 stepId: step.id,
                 stepName: step.name,
-                status: passed ? 'passed' : (Math.random() < 0.5 ? 'failed' : 'passed'),
+                status: passed ? 'passed' : Math.random() < 0.5 ? 'failed' : 'passed',
                 startedAt: testStartTime,
                 completedAt: testEndTime,
-                duration: duration / testCase.steps.length
+                duration: duration / testCase.steps.length,
               })),
               assertionResults: testCase.assertions.map((assertion) => ({
                 assertionId: assertion.id,
                 assertionName: assertion.name,
                 status: passed ? 'passed' : 'failed',
                 expected: assertion.expected,
-                actual: passed ? assertion.expected : 'unexpected_value'
+                actual: passed ? assertion.expected : 'unexpected_value',
               })),
               actualResults: {},
               retryCount: 0,
-              retryReasons: []
+              retryReasons: [],
             };
-            
+
             if (passed) {
               passedTests++;
             } else {
               failedTests++;
             }
-            
+
             // Update execution with test result
             set((draft: Draft<IntegrationTestingStore>) => {
               const exec = draft.executions.find((e) => e.id === executionId);
@@ -1134,10 +1132,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               }
             });
           }
-          
+
           const endTime = new Date();
           const totalDuration = (endTime.getTime() - startTime.getTime()) / 1000;
-          
+
           // Complete execution
           set((draft: Draft<IntegrationTestingStore>) => {
             const exec = draft.executions.find((e) => e.id === executionId);
@@ -1148,15 +1146,14 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               exec.summary.totalDuration = totalDuration;
               exec.summary.averageDuration = totalDuration / totalTests;
             }
-            
+
             draft.activeExecutions = draft.activeExecutions.filter((id) => id !== executionId);
             if (draft.activeExecutions.length === 0) {
               draft.isRunning = false;
             }
           });
-          
+
           return executionId;
-          
         } catch (error) {
           set((draft: Draft<IntegrationTestingStore>) => {
             const exec = draft.executions.find((e) => e.id === executionId);
@@ -1168,10 +1165,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                 type: 'system_error',
                 severity: 'critical',
                 message: error instanceof Error ? error.message : 'Execution failed',
-                timestamp: new Date()
+                timestamp: new Date(),
               });
             }
-            
+
             draft.activeExecutions = draft.activeExecutions.filter((id) => id !== executionId);
             if (draft.activeExecutions.length === 0) {
               draft.isRunning = false;
@@ -1184,17 +1181,17 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       runTestCase: async (suiteId, testCaseId, environment) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
-        
+
         const suite = get().testSuites.find((s) => s.id === suiteId);
         const testCase = suite?.tests.find((t) => t.id === testCaseId);
-        
+
         if (!testCase) throw new Error('Test case not found');
-        
+
         // Simulate single test execution
-        await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 3000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 3000));
+
         const passed = Math.random() < 0.85; // 85% pass rate for single tests
-        
+
         const result: TestResult = {
           id: `result_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
           testCaseId: testCase.id,
@@ -1207,22 +1204,22 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
           assertionResults: [],
           actualResults: {},
           retryCount: 0,
-          retryReasons: []
+          retryReasons: [],
         };
-        
+
         return result;
       },
 
       cancelExecution: async (executionId: string) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const exec = draft.executions.find((e) => e.id === executionId);
           if (exec && exec.status === 'running') {
             exec.status = 'cancelled';
             exec.completedAt = new Date();
           }
-          
+
           draft.activeExecutions = draft.activeExecutions.filter((id) => id !== executionId);
           if (draft.activeExecutions.length === 0) {
             draft.isRunning = false;
@@ -1231,9 +1228,14 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       },
 
       // Pipeline Management
-      createPipeline: (pipelineData: Omit<TestPipeline, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executions'>) => {
+      createPipeline: (
+        pipelineData: Omit<
+          TestPipeline,
+          'id' | 'createdAt' | 'updatedAt' | 'version' | 'executions'
+        >
+      ) => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const id = `pipeline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const pipeline: TestPipeline = {
           ...pipelineData,
@@ -1241,30 +1243,34 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
           executions: [],
           createdAt: new Date(),
           updatedAt: new Date(),
-          version: 1
+          version: 1,
         };
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.pipelines.push(pipeline);
         });
-        
+
         return id;
       },
 
       updatePipeline: (pipelineId: string, updates: Partial<TestPipeline>) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const pipeline = draft.pipelines.find((p) => p.id === pipelineId);
           if (pipeline) {
-            Object.assign(pipeline, { ...updates, updatedAt: new Date(), version: pipeline.version + 1 });
+            Object.assign(pipeline, {
+              ...updates,
+              updatedAt: new Date(),
+              version: pipeline.version + 1,
+            });
           }
         });
       },
 
       deletePipeline: (pipelineId: string) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.pipelines = draft.pipelines.filter((p) => p.id !== pipelineId);
           if (draft.selectedPipeline === pipelineId) {
@@ -1275,7 +1281,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       setSelectedPipeline: (pipelineId: string | null) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.selectedPipeline = pipelineId;
         });
@@ -1284,12 +1290,12 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // Pipeline Execution
       runPipeline: async (pipelineId, environment = 'staging') => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const pipeline = get().pipelines.find((p) => p.id === pipelineId);
         if (!pipeline) throw new Error('Pipeline not found');
-        
+
         const executionId = `pipeline_exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
+
         const execution: PipelineExecution = {
           id: executionId,
           pipelineId,
@@ -1309,11 +1315,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             passedTests: 0,
             failedTests: 0,
             overallPassRate: 0,
-            totalDuration: 0
+            totalDuration: 0,
           },
-          approvals: []
+          approvals: [],
         };
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const p = draft.pipelines.find((p) => p.id === pipelineId);
           if (p) {
@@ -1321,11 +1327,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             p.status = 'running';
           }
         });
-        
+
         try {
           // Simulate pipeline execution
-          await new Promise(resolve => setTimeout(resolve, 5000 + Math.random() * 10000));
-          
+          await new Promise((resolve) => setTimeout(resolve, 5000 + Math.random() * 10000));
+
           set((draft: Draft<IntegrationTestingStore>) => {
             const p = draft.pipelines.find((p) => p.id === pipelineId);
             if (p) {
@@ -1339,9 +1345,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               p.status = 'completed';
             }
           });
-          
+
           return executionId;
-          
         } catch (error) {
           set((draft: Draft<IntegrationTestingStore>) => {
             const p = draft.pipelines.find((p) => p.id === pipelineId);
@@ -1360,9 +1365,9 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       approvePipelineStage: (executionId, stageId, approverId, comment) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
-          const pipeline = draft.pipelines.find((p) => 
+          const pipeline = draft.pipelines.find((p) =>
             p.executions.some((e) => e.id === executionId)
           );
           if (pipeline) {
@@ -1374,7 +1379,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                 approverId,
                 status: 'approved',
                 comment,
-                timestamp: new Date()
+                timestamp: new Date(),
               });
             }
           }
@@ -1383,9 +1388,9 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       rejectPipelineStage: (executionId, stageId, approverId, comment) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
-          const pipeline = draft.pipelines.find((p) => 
+          const pipeline = draft.pipelines.find((p) =>
             p.executions.some((e) => e.id === executionId)
           );
           if (pipeline) {
@@ -1397,7 +1402,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                 approverId,
                 status: 'rejected',
                 comment,
-                timestamp: new Date()
+                timestamp: new Date(),
               });
               execution.status = 'failed';
             }
@@ -1406,12 +1411,12 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       },
 
       // Environment Health
-      checkEnvironmentHealth: async (environmentId: string) => {
+      checkEnvironmentHealth: async (environmentId?: string) => {
         if (!FLAGS.integrationTesting) return [];
-        
+
         // Simulate health checks
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
+
         const healthData: TestEnvironmentHealth[] = [
           {
             environmentId: environmentId || 'staging',
@@ -1423,46 +1428,46 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                 status: 'up',
                 responseTime: 150 + Math.random() * 200,
                 errorRate: Math.random() * 2,
-                lastCheck: new Date()
+                lastCheck: new Date(),
               },
               {
                 serviceName: 'Database',
                 status: 'up',
                 responseTime: 50 + Math.random() * 100,
                 errorRate: Math.random() * 0.5,
-                lastCheck: new Date()
-              }
+                lastCheck: new Date(),
+              },
             ],
             resources: {
               cpu: 20 + Math.random() * 40,
               memory: 30 + Math.random() * 50,
               disk: 15 + Math.random() * 25,
-              network: 10 + Math.random() * 30
+              network: 10 + Math.random() * 30,
             },
             testReadiness: {
               databaseReady: true,
               apiEndpointsReady: true,
               servicesReady: true,
               testDataReady: true,
-              overallReady: true
+              overallReady: true,
             },
             lastHealthCheck: new Date(),
             healthCheckDuration: 2.5,
-            issues: []
-          }
+            issues: [],
+          },
         ];
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.environmentHealth = healthData;
           draft.lastUpdate = new Date();
         });
-        
+
         return healthData;
       },
 
       startHealthMonitoring: () => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.isHealthChecking = true;
         });
@@ -1470,7 +1475,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       stopHealthMonitoring: () => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.isHealthChecking = false;
         });
@@ -1479,31 +1484,31 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // Test Data Management
       createTestData: (suiteId: string, testData: Omit<TestData, 'id'>) => {
         if (!FLAGS.integrationTesting) return '';
-        
+
         const dataId = `data_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        const testData: TestData = {
-          ...testDataData,
-          id: dataId
+        const newTestData: TestData = {
+          ...testData,
+          id: dataId,
         };
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
             // Add to test cases that can use this data
             suite.tests.forEach((test) => {
               if (!test.testData) test.testData = [];
-              test.testData.push(testData);
+              test.testData.push(newTestData);
             });
             suite.updatedAt = new Date();
           }
         });
-        
+
         return dataId;
       },
 
       updateTestData: (suiteId, dataId, updates) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
@@ -1520,7 +1525,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       deleteTestData: (suiteId: string, dataId: string) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
@@ -1537,16 +1542,16 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // Reporting
       generateReport: async (executionId: string, format: string) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
-        
+
         const execution = get().executions.find((e) => e.id === executionId);
         if (!execution) throw new Error('Execution not found');
-        
+
         // Simulate report generation
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
+
         let content: string;
         let mimeType: string;
-        
+
         switch (format) {
           case 'html':
             content = `<html><body><h1>Test Report</h1><p>Execution: ${execution.id}</p></body></html>`;
@@ -1564,18 +1569,18 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             content = JSON.stringify(execution, null, 2);
             mimeType = 'application/json';
         }
-        
+
         return new Blob([content], { type: mimeType });
       },
 
       exportResults: async (executionIds: string[], format: string) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
-        
+
         const executions = get().executions.filter((e) => executionIds.includes(e.id));
-        
+
         let content: string = '';
         let mimeType: string = 'text/plain';
-        
+
         switch (format) {
           case 'json':
             content = JSON.stringify(executions, null, 2);
@@ -1583,27 +1588,30 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             break;
           case 'csv':
             const headers = 'ID,Suite,Environment,Status,Duration,Pass Rate';
-            const rows = executions.map((e) => 
-              `${e.id},${e.suiteId},${e.environment},${e.status},${e.duration},${e.summary.passRate}%`
-            ).join('\n');
+            const rows = executions
+              .map(
+                (e) =>
+                  `${e.id},${e.suiteId},${e.environment},${e.status},${e.duration},${e.summary.passRate}%`
+              )
+              .join('\n');
             content = `${headers}\n${rows}`;
             mimeType = 'text/csv';
             break;
           case 'xml':
-            content = `<?xml version="1.0"?><executions>${executions.map((e) => 
-              `<execution id="${e.id}" status="${e.status}"/>`
-            ).join('')}</executions>`;
+            content = `<?xml version="1.0"?><executions>${executions
+              .map((e) => `<execution id="${e.id}" status="${e.status}"/>`)
+              .join('')}</executions>`;
             mimeType = 'application/xml';
             break;
         }
-        
+
         return new Blob([content], { type: mimeType });
       },
 
       // Search & Filtering
       setSearchQuery: (query: string) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.searchQuery = query;
         });
@@ -1611,7 +1619,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       setFilters: (filters) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           Object.assign(draft.filters, filters);
         });
@@ -1619,14 +1627,14 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 
       clearFilters: () => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.filters = {
             suiteTypes: [],
             statuses: [],
             environments: [],
             tags: [],
-            priorities: []
+            priorities: [],
           };
           draft.searchQuery = '';
         });
@@ -1635,15 +1643,15 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // UI Actions
       setSidebarCollapsed: (collapsed: boolean) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.sidebarCollapsed = collapsed;
         });
       },
 
-      setSelectedTab: (tab: string) => {
+      setSelectedTab: (tab: IntegrationTestingState['selectedTab']) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           draft.selectedTab = tab;
         });
@@ -1652,7 +1660,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // Settings
       updateSettings: (settings: Partial<TestingSettings>) => {
         if (!FLAGS.integrationTesting) return;
-        
+
         set((draft: Draft<IntegrationTestingStore>) => {
           Object.assign(draft.settings, settings);
         });
@@ -1661,17 +1669,16 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       // Initialization
       initialize: async () => {
         if (!FLAGS.integrationTesting) return;
-        
+
         try {
           // Create defaults if none exist
           if (get().testSuites.length === 0) {
             get().createDefaultTestSuites();
           }
-          
+
           if (get().pipelines.length === 0) {
             get().createDefaultPipelines();
           }
-          
         } catch (error) {
           set((draft: Draft<IntegrationTestingStore>) => {
             draft.error = error instanceof Error ? error.message : 'Initialization failed';
@@ -1700,9 +1707,15 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             notificationChannels: [],
             successThreshold: 95,
             performanceThresholds: [
-              { metric: 'response_time', operator: 'lt', value: 1000, unit: 'ms', severity: 'warning' }
+              {
+                metric: 'response_time',
+                operator: 'lt',
+                value: 1000,
+                unit: 'ms',
+                severity: 'warning',
+              },
             ],
-            customSettings: {}
+            customSettings: {},
           },
           tests: [
             {
@@ -1718,8 +1731,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                   action: 'POST /api/auth/login',
                   parameters: { username: 'testuser', password: 'testpass' },
                   continueOnFailure: false,
-                  order: 1
-                }
+                  order: 1,
+                },
               ],
               assertions: [
                 {
@@ -1729,8 +1742,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                   target: 'status_code',
                   operator: 'equals',
                   expected: 200,
-                  severity: 'error'
-                }
+                  severity: 'error',
+                },
               ],
               timeout: 60,
               retryCount: 2,
@@ -1741,17 +1754,17 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               createdAt: new Date(),
               updatedAt: new Date(),
               priority: 'high',
-              estimatedDuration: 30
-            }
+              estimatedDuration: 30,
+            },
           ],
           targetEnvironments: ['staging', 'production'],
           prerequisites: [],
           isEnabled: true,
           status: 'active',
           createdBy: 'system',
-          tags: ['api', 'integration', 'core']
+          tags: ['api', 'integration', 'core'],
         });
-        
+
         // Database Integration Tests
         get().createTestSuite({
           name: 'Database Integration Tests',
@@ -1775,16 +1788,16 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
                 source: 'test_users.sql',
                 targetDatabase: 'lokifi_test',
                 targetTable: 'users',
-                cleanupAfter: true
-              }
+                cleanupAfter: true,
+              },
             ],
             reportFormat: ['json'],
             notificationChannels: [],
             successThreshold: 100,
             performanceThresholds: [
-              { metric: 'query_time', operator: 'lt', value: 100, unit: 'ms', severity: 'warning' }
+              { metric: 'query_time', operator: 'lt', value: 100, unit: 'ms', severity: 'warning' },
             ],
-            customSettings: {}
+            customSettings: {},
           },
           tests: [],
           targetEnvironments: ['staging'],
@@ -1792,7 +1805,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
           isEnabled: true,
           status: 'active',
           createdBy: 'system',
-          tags: ['database', 'integration']
+          tags: ['database', 'integration'],
         });
       },
 
@@ -1814,7 +1827,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               timeout: 600,
               approvalRequired: false,
               approvers: [],
-              environmentOverrides: {}
+              environmentOverrides: {},
             },
             {
               id: 'stage_2',
@@ -1822,15 +1835,13 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               type: 'test_execution',
               order: 2,
               testSuites: [],
-              conditions: [
-                { type: 'success_rate', operator: 'gte', value: 95 }
-              ],
+              conditions: [{ type: 'success_rate', operator: 'gte', value: 95 }],
               runInParallel: false,
               continueOnFailure: false,
               timeout: 1800,
               approvalRequired: false,
               approvers: [],
-              environmentOverrides: {}
+              environmentOverrides: {},
             },
             {
               id: 'stage_3',
@@ -1844,16 +1855,16 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               timeout: 86400, // 24 hours
               approvalRequired: true,
               approvers: ['ops-team'],
-              environmentOverrides: {}
-            }
+              environmentOverrides: {},
+            },
           ],
           triggers: [
             {
               id: 'trigger_1',
               type: 'deployment',
               conditions: { environment: 'staging' },
-              isEnabled: true
-            }
+              isEnabled: true,
+            },
           ],
           environments: ['staging', 'production'],
           notifications: [
@@ -1863,14 +1874,14 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
               channels: ['slack'],
               conditions: [],
               template: 'Pipeline failed: {{pipeline.name}}',
-              isEnabled: true
-            }
+              isEnabled: true,
+            },
           ],
           isEnabled: true,
           status: 'idle',
-          createdBy: 'system'
+          createdBy: 'system',
         });
-      }
+      },
     })),
     {
       name: 'lokifi-integration-testing-storage',
@@ -1880,11 +1891,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
           return {
             ...persistedState,
             pipelines: [],
-            environmentHealth: []
+            environmentHealth: [],
           };
         }
         return persistedState as IntegrationTestingState & IntegrationTestingActions;
-      }
+      },
     }
   )
 );
@@ -1893,10 +1904,3 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
 if (typeof window !== 'undefined' && FLAGS.integrationTesting) {
   useIntegrationTestingStore.getState().initialize();
 }
-
-
-
-
-
-
-

@@ -512,7 +512,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
             draft.profiles.push(profile);
 
             // Set as active if no active profile
-            if (!state.activeProfile) {
+            if (!draft.activeProfile) {
               draft.activeProfile = profile;
             }
           });
@@ -530,7 +530,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
               profile.lastModified = new Date();
 
               // Update active profile if it's the same
-              if (state.activeProfile?.id === profileId) {
+              if (draft.activeProfile?.id === profileId) {
                 draft.activeProfile = profile;
               }
             }
@@ -546,7 +546,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
               draft.profiles.splice(index, 1);
 
               // Clear active profile if deleted
-              if (state.activeProfile?.id === profileId) {
+              if (draft.activeProfile?.id === profileId) {
                 draft.activeProfile = draft.profiles[0] || null;
               }
             }
@@ -626,7 +626,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
             // Keep only recent metrics
             const maxMetrics = 1000;
-            if (state.metricsHistory.length > maxMetrics) {
+            if (draft.metricsHistory.length > maxMetrics) {
               draft.metricsHistory = draft.metricsHistory.slice(-maxMetrics);
             }
           });
@@ -672,7 +672,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           }
         },
 
-        clearMetrics: (olderThan: Date) => {
+        clearMetrics: (olderThan?: Date) => {
           if (!FLAGS.performance) return;
 
           set((draft: Draft<PerformanceStore>) => {
@@ -686,7 +686,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
         },
 
         // Benchmarking
-        runBenchmark: async (config: BenchmarkConfig) => {
+        runBenchmark: async (config: PerformanceBenchmark['testConfig']) => {
           if (!FLAGS.performance) {
             throw new Error('Performance features not enabled');
           }
@@ -733,7 +733,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
               draft.isBenchmarking = false;
 
               // Keep only last 50 benchmarks
-              if (state.benchmarks.length > 50) {
+              if (draft.benchmarks.length > 50) {
                 draft.benchmarks = draft.benchmarks.slice(-50);
               }
             });
@@ -793,8 +793,8 @@ export const usePerformanceStore = create<PerformanceStore>()(
             if (index !== -1) {
               draft.benchmarks.splice(index, 1);
 
-              if (state.lastBenchmark?.id === benchmarkId) {
-                draft.lastBenchmark = draft.benchmarks[state.benchmarks.length - 1] || null;
+              if (draft.lastBenchmark?.id === benchmarkId) {
+                draft.lastBenchmark = draft.benchmarks[draft.benchmarks.length - 1] || null;
               }
             }
           });
@@ -856,8 +856,8 @@ export const usePerformanceStore = create<PerformanceStore>()(
             // Add new issues
             issues.forEach((issue) => {
               if (
-                !state.activeIssues.some(
-                  (existing) =>
+                !draft.activeIssues.some(
+                  (existing: PerformanceIssue) =>
                     existing.type === issue.type && existing.affectedMetric === issue.affectedMetric
                 )
               ) {
@@ -886,7 +886,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           return issueId;
         },
 
-        resolveIssue: (issueId: string, resolution: string) => {
+        resolveIssue: (issueId: string, resolution?: string) => {
           if (!FLAGS.performance) return;
 
           set((draft: Draft<PerformanceStore>) => {
@@ -966,7 +966,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
           // Add battery info if available
           if (nav.getBattery) {
-            nav.getBattery().then((battery) => {
+            nav.getBattery().then((battery: any) => {
               usage.battery = {
                 level: battery.level * 100,
                 charging: battery.charging,
@@ -982,7 +982,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
             // Keep only recent usage data
             const maxUsage = 1000;
-            if (state.resourceUsage.length > maxUsage) {
+            if (draft.resourceUsage.length > maxUsage) {
               draft.resourceUsage = draft.resourceUsage.slice(-maxUsage);
             }
           });
@@ -1001,7 +1001,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           // Extract values based on resource path
           return filteredUsage.map((usage) => {
             const keys = resource.split('.');
-            let value: unknown = usage;
+            let value: any = usage; // any required for dynamic key access
 
             for (const key of keys) {
               value = value?.[key];
@@ -1085,7 +1085,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           if (!rule || !rule.enabled) return;
 
           set((draft: Draft<PerformanceStore>) => {
-            if (!state.activeOptimizations.includes(ruleId)) {
+            if (!draft.activeOptimizations.includes(ruleId)) {
               draft.activeOptimizations.push(ruleId);
             }
 
@@ -1131,7 +1131,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
             }
 
             // Keep only recent alerts
-            if (state.alerts.length > 100) {
+            if (draft.alerts.length > 100) {
               draft.alerts = draft.alerts.slice(0, 100);
             }
           });
@@ -1181,7 +1181,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           if (!FLAGS.performance) return;
 
           set((draft: Draft<PerformanceStore>) => {
-            Object.assign(state.budget, budget);
+            Object.assign(draft.budget, budget);
           });
         },
 
@@ -1301,7 +1301,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
           if (!FLAGS.performance) return;
 
           set((draft: Draft<PerformanceStore>) => {
-            Object.assign(state.settings, settings);
+            Object.assign(draft.settings, settings);
           });
         },
 
@@ -1332,10 +1332,10 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
             set((draft: Draft<PerformanceStore>) => {
               if (data.metrics) {
-                draft.metricsHistory = [...state.metricsHistory, ...data.metrics];
+                draft.metricsHistory = [...draft.metricsHistory, ...data.metrics];
               }
               if (data.benchmarks) {
-                draft.benchmarks = [...state.benchmarks, ...data.benchmarks];
+                draft.benchmarks = [...draft.benchmarks, ...data.benchmarks];
               }
               if (data.issues) {
                 // Separate active and resolved issues
@@ -1560,7 +1560,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
               for (const entry of list.getEntries()) {
                 if (entry.name === 'first-contentful-paint') {
                   set((draft: Draft<PerformanceStore>) => {
-                    if (state.currentMetrics) {
+                    if (draft.currentMetrics) {
                       draft.currentMetrics.fcp = entry.startTime;
                     }
                   });
