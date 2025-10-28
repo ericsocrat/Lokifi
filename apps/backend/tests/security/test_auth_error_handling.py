@@ -15,7 +15,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from app.routers.auth import router
-from app.schemas.auth import UserLoginRequest, UserRegisterRequest, GoogleOAuthRequest
+from app.schemas.auth import GoogleOAuthRequest, UserLoginRequest, UserRegisterRequest
 from fastapi import HTTPException, status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -35,23 +35,27 @@ class TestRegistrationErrorHandling:
             email="test@example.com",
             password="TestPass123!",
             full_name="Test User",
-            username="testuser"
+            username="testuser",
         )
-        
+
         # Mock AuthService to raise unexpected exception
-        with patch('app.routers.auth.AuthService') as mock_service:
+        with patch("app.routers.auth.AuthService") as mock_service:
             mock_service.return_value.register_user = AsyncMock(
                 side_effect=Exception("Database connection timeout")
             )
-            
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
+
                 await register(user_data, mock_db_session)
-            
+
             # Verify generic error message (no details exposed)
             assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-            assert exc_info.value.detail == "Internal server error during registration. Please try again later."
+            assert (
+                exc_info.value.detail
+                == "Internal server error during registration. Please try again later."
+            )
             assert "Database connection timeout" not in exc_info.value.detail
             assert "timeout" not in exc_info.value.detail.lower()
 
@@ -66,27 +70,30 @@ class TestRegistrationErrorHandling:
             email="test@example.com",
             password="TestPass123!",
             full_name="Test User",
-            username="testuser"
+            username="testuser",
         )
-        
+
         with caplog.at_level(logging.ERROR):
-            with patch('app.routers.auth.AuthService') as mock_service:
+            with patch("app.routers.auth.AuthService") as mock_service:
                 mock_service.return_value.register_user = AsyncMock(
                     side_effect=ValueError("Invalid email domain")
                 )
-                
+
                 # Act
                 try:
                     from app.routers.auth import register
+
                     await register(user_data, mock_db_session)
                 except HTTPException:
                     pass  # Expected
-                
-                # Assert: Log contains user context and error details
+
+                # Assert: Log contains generic message (no user info in message itself)
+                # User-provided values are in 'extra' parameter (structured logging)
                 assert len(caplog.records) > 0
                 log_record = caplog.records[0]
                 assert log_record.levelname == "ERROR"
-                assert "Registration failed for user: testuser" in log_record.message
+                assert "Registration failed for user" in log_record.message
+                # Verify user context is in extra (not in message - prevents log injection)
                 assert "username" in log_record.__dict__
                 assert "email" in log_record.__dict__
                 # exc_info=True means stack trace is logged (not in message, but in record)
@@ -103,22 +110,22 @@ class TestRegistrationErrorHandling:
             email="existing@example.com",
             password="TestPass123!",
             full_name="Test User",
-            username="existinguser"
+            username="existinguser",
         )
-        
+
         # Mock AuthService to raise HTTPException (e.g., user already exists)
-        with patch('app.routers.auth.AuthService') as mock_service:
+        with patch("app.routers.auth.AuthService") as mock_service:
             expected_exception = HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="User already exists"
+                status_code=status.HTTP_409_CONFLICT, detail="User already exists"
             )
             mock_service.return_value.register_user = AsyncMock(side_effect=expected_exception)
-            
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
+
                 await register(user_data, mock_db_session)
-            
+
             # Verify original HTTPException is preserved
             assert exc_info.value.status_code == status.HTTP_409_CONFLICT
             assert exc_info.value.detail == "User already exists"
@@ -134,26 +141,29 @@ class TestRegistrationErrorHandling:
             email="test@example.com",
             password="TestPass123!",
             full_name="Test User",
-            username="testuser"
+            username="testuser",
         )
-        
+
         # Create realistic exception with stack trace
-        with patch('app.routers.auth.AuthService') as mock_service:
+        with patch("app.routers.auth.AuthService") as mock_service:
             try:
                 # Simulate deep call stack
                 def nested_error():
                     def inner_error():
                         raise RuntimeError("app/services/auth_service.py:123 - Database error")
+
                     inner_error()
+
                 nested_error()
             except RuntimeError as e:
                 mock_service.return_value.register_user = AsyncMock(side_effect=e)
-            
+
             # Act
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
+
                 await register(user_data, mock_db_session)
-            
+
             # Assert: No file paths, line numbers, or stack trace in response
             response_detail = exc_info.value.detail
             assert "app/services/" not in response_detail
@@ -173,24 +183,25 @@ class TestLoginErrorHandling:
         OWASP A05:2021: No information disclosure to client.
         """
         # Arrange
-        login_data = UserLoginRequest(
-            email="test@example.com",
-            password="TestPass123!"
-        )
-        
-        with patch('app.routers.auth.AuthService') as mock_service:
+        login_data = UserLoginRequest(email="test@example.com", password="TestPass123!")
+
+        with patch("app.routers.auth.AuthService") as mock_service:
             mock_service.return_value.login_user = AsyncMock(
                 side_effect=Exception("Redis connection refused")
             )
-            
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import login
+
                 await login(login_data, mock_db_session)
-            
+
             # Verify generic error message
             assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-            assert exc_info.value.detail == "Internal server error during login. Please try again later."
+            assert (
+                exc_info.value.detail
+                == "Internal server error during login. Please try again later."
+            )
             assert "Redis" not in exc_info.value.detail
             assert "connection" not in exc_info.value.detail.lower()
 
@@ -201,29 +212,30 @@ class TestLoginErrorHandling:
         Session 26 pattern: Log context without exposing passwords.
         """
         # Arrange
-        login_data = UserLoginRequest(
-            email="hacker@evil.com",
-            password="GuessMe123!"
-        )
-        
+        login_data = UserLoginRequest(email="hacker@evil.com", password="GuessMe123!")
+
         with caplog.at_level(logging.ERROR):
-            with patch('app.routers.auth.AuthService') as mock_service:
+            with patch("app.routers.auth.AuthService") as mock_service:
                 mock_service.return_value.login_user = AsyncMock(
                     side_effect=RuntimeError("Token generation failed")
                 )
-                
+
                 # Act
                 try:
                     from app.routers.auth import login
+
                     await login(login_data, mock_db_session)
                 except HTTPException:
                     pass
-                
-                # Assert: Email logged, password NOT logged
+
+                # Assert: Generic message (no user info in message - prevents log injection)
+                # Email context is in 'extra' parameter (structured logging)
                 assert len(caplog.records) > 0
                 log_record = caplog.records[0]
-                assert "Login failed for email: hacker@evil.com" in log_record.message
-                # Password should NEVER be logged
+                assert "Login failed for email" in log_record.message
+                # Verify email is in extra (structured logging prevents log injection)
+                assert "email" in log_record.__dict__
+                # Password should NEVER be logged (not in message or extra)
                 assert "GuessMe123!" not in str(caplog.records)
                 assert "password" not in str(log_record.__dict__).lower()
 
@@ -234,23 +246,20 @@ class TestLoginErrorHandling:
         Session 26 pattern: Validation errors bubble up unchanged.
         """
         # Arrange
-        login_data = UserLoginRequest(
-            email="test@example.com",
-            password="WrongPass123!"
-        )
-        
-        with patch('app.routers.auth.AuthService') as mock_service:
+        login_data = UserLoginRequest(email="test@example.com", password="WrongPass123!")
+
+        with patch("app.routers.auth.AuthService") as mock_service:
             expected_exception = HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid credentials"
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
             )
             mock_service.return_value.login_user = AsyncMock(side_effect=expected_exception)
-            
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import login
+
                 await login(login_data, mock_db_session)
-            
+
             # Verify original exception preserved
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
             assert exc_info.value.detail == "Invalid credentials"
@@ -262,25 +271,23 @@ class TestLoginErrorHandling:
         Security best practice: Same error for "user not found" vs "wrong password".
         """
         # Arrange
-        login_data = UserLoginRequest(
-            email="nonexistent@example.com",
-            password="AnyPass123!"
-        )
-        
-        with patch('app.routers.auth.AuthService') as mock_service:
+        login_data = UserLoginRequest(email="nonexistent@example.com", password="AnyPass123!")
+
+        with patch("app.routers.auth.AuthService") as mock_service:
             # Simulate "user not found" scenario
             mock_service.return_value.login_user = AsyncMock(
                 side_effect=HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid credentials"  # Generic message
+                    detail="Invalid credentials",  # Generic message
                 )
             )
-            
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import login
+
                 await login(login_data, mock_db_session)
-            
+
             # Verify no "user not found" specific message
             assert "not found" not in exc_info.value.detail.lower()
             assert "does not exist" not in exc_info.value.detail.lower()
@@ -298,14 +305,14 @@ class TestGoogleOAuthErrorHandling:
         """
         # Arrange
         oauth_data = GoogleOAuthRequest(token="valid.jwt.token")
-        
-        with patch('app.routers.auth.AuthService') as mock_service:
+
+        with patch("app.routers.auth.AuthService") as mock_service:
             # Simulate unexpected exception (not httpx or HTTPException)
             mock_service.return_value.create_user_from_oauth = AsyncMock(
                 side_effect=RuntimeError("Internal database error")
             )
-            
-            with patch('httpx.AsyncClient') as mock_client:
+
+            with patch("httpx.AsyncClient") as mock_client:
                 # Mock successful Google token verification
                 mock_response = MagicMock()
                 mock_response.status_code = 200
@@ -315,21 +322,27 @@ class TestGoogleOAuthErrorHandling:
                     "name": "Test User",
                     "email_verified": True,
                     "aud": "mock-client-id",
-                    "exp": 9999999999
+                    "exp": 9999999999,
                 }
-                mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
-                
-                with patch('app.routers.auth.settings') as mock_settings:
+                mock_client.return_value.__aenter__.return_value.get = AsyncMock(
+                    return_value=mock_response
+                )
+
+                with patch("app.routers.auth.settings") as mock_settings:
                     mock_settings.GOOGLE_CLIENT_ID = "mock-client-id"
-                    
+
                     # Act & Assert
                     with pytest.raises(HTTPException) as exc_info:
                         from app.routers.auth import google_oauth
+
                         await google_oauth(oauth_data, mock_db_session)
-                    
+
                     # Verify generic error message for unexpected exceptions
                     assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-                    assert "An unexpected error occurred during Google authentication" in exc_info.value.detail
+                    assert (
+                        "An unexpected error occurred during Google authentication"
+                        in exc_info.value.detail
+                    )
                     assert "database error" not in exc_info.value.detail.lower()
 
     @pytest.mark.asyncio
@@ -340,21 +353,22 @@ class TestGoogleOAuthErrorHandling:
         """
         # Arrange
         oauth_data = GoogleOAuthRequest(token="invalid.jwt.token")
-        
-        with patch('httpx.AsyncClient') as mock_client:
+
+        with patch("httpx.AsyncClient") as mock_client:
             # Mock Google token verification failure
             mock_response = MagicMock()
             mock_response.status_code = 400
-            mock_response.json.return_value = {
-                "error_description": "Invalid Value"
-            }
-            mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
-            
+            mock_response.json.return_value = {"error_description": "Invalid Value"}
+            mock_client.return_value.__aenter__.return_value.get = AsyncMock(
+                return_value=mock_response
+            )
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import google_oauth
+
                 await google_oauth(oauth_data, mock_db_session)
-            
+
             # Verify 401 status code for validation error
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
             assert "Google token verification failed" in exc_info.value.detail
@@ -366,24 +380,30 @@ class TestGoogleOAuthErrorHandling:
         Security best practice: Don't log sensitive credentials.
         """
         # Arrange
-        oauth_data = GoogleOAuthRequest(token="eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQ1Njc4OTAifQ.payload.signature")
-        
+        oauth_data = GoogleOAuthRequest(
+            token="eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQ1Njc4OTAifQ.payload.signature"
+        )
+
         with caplog.at_level(logging.ERROR):
-            with patch('app.routers.auth.AuthService') as mock_service:
+            with patch("app.routers.auth.AuthService") as mock_service:
                 mock_service.return_value.google_oauth = AsyncMock(
                     side_effect=ValueError("Invalid token format")
                 )
-                
+
                 # Act
                 try:
                     from app.routers.auth import google_oauth
+
                     await google_oauth(oauth_data, mock_db_session)
                 except HTTPException:
                     pass
-                
+
                 # Assert: Full token should NOT be logged
                 log_text = str(caplog.records)
-                assert "eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQ1Njc4OTAifQ.payload.signature" not in log_text
+                assert (
+                    "eyJhbGciOiJSUzI1NiIsImtpZCI6IjEyMzQ1Njc4OTAifQ.payload.signature"
+                    not in log_text
+                )
                 # Token prefix or hash might be logged for debugging (acceptable)
                 # But full JWT should never appear
 
@@ -395,21 +415,22 @@ class TestGoogleOAuthErrorHandling:
         """
         # Arrange
         oauth_data = GoogleOAuthRequest(token="malformed_token")
-        
-        with patch('httpx.AsyncClient') as mock_client:
+
+        with patch("httpx.AsyncClient") as mock_client:
             # Mock Google token verification failure
             mock_response = MagicMock()
             mock_response.status_code = 400
-            mock_response.json.return_value = {
-                "error_description": "Invalid Value"
-            }
-            mock_client.return_value.__aenter__.return_value.get = AsyncMock(return_value=mock_response)
-            
+            mock_response.json.return_value = {"error_description": "Invalid Value"}
+            mock_client.return_value.__aenter__.return_value.get = AsyncMock(
+                return_value=mock_response
+            )
+
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import google_oauth
+
                 await google_oauth(oauth_data, mock_db_session)
-            
+
             # Verify 401 status code (actual implementation behavior)
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
             assert "Google token verification failed" in exc_info.value.detail
@@ -429,25 +450,26 @@ class TestOWASPCompliance:
             email="test@example.com",
             password="TestPass123!",
             full_name="Test User",
-            username="testuser"
+            username="testuser",
         )
-        
-        with patch('app.routers.auth.AuthService') as mock_service:
+
+        with patch("app.routers.auth.AuthService") as mock_service:
             # Create exception with detailed traceback
             try:
                 raise RuntimeError("Detailed internal error with file paths")
             except RuntimeError as e:
                 mock_service.return_value.register_user = AsyncMock(side_effect=e)
-            
+
             # Act
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
+
                 await register(user_data, mock_db_session)
-            
+
             # Assert: Response detail is generic, not traceback
             detail = exc_info.value.detail
             assert "Traceback" not in detail
-            assert "File \"" not in detail
+            assert 'File "' not in detail
             assert "line " not in detail
             assert detail == "Internal server error during registration. Please try again later."
 
@@ -459,15 +481,16 @@ class TestOWASPCompliance:
         """
         # Read auth.py source code
         import inspect
+
         from app.routers import auth
-        
+
         source = inspect.getsource(auth)
-        
+
         # Assert: No print statements with traceback
         assert "print(traceback" not in source
         assert "traceback.print_exc()" not in source
         assert "traceback.format_exc()" not in source
-        
+
         # Verify logger.error with exc_info=True is used instead
         assert "logger.error(" in source
         assert "exc_info=True" in source
@@ -485,24 +508,25 @@ class TestOWASPCompliance:
             ("JWT signing key missing", "Internal server error during Google authentication"),
             ("app/models/user.py:45", "Internal server error during registration"),
         ]
-        
+
         for internal_error, expected_generic in test_cases:
-            with patch('app.routers.auth.AuthService') as mock_service:
+            with patch("app.routers.auth.AuthService") as mock_service:
                 mock_service.return_value.register_user = AsyncMock(
                     side_effect=Exception(internal_error)
                 )
-                
+
                 user_data = UserRegisterRequest(
                     email="test@example.com",
                     password="TestPass123!",
                     full_name="Test User",
-                    username="testuser"
+                    username="testuser",
                 )
-                
+
                 with pytest.raises(HTTPException) as exc_info:
                     from app.routers.auth import register
+
                     await register(user_data, mock_db_session)
-                
+
                 # Assert: Generic message, no internal details
                 assert internal_error not in exc_info.value.detail
                 assert "Internal server error" in exc_info.value.detail

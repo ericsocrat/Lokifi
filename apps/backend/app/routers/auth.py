@@ -39,8 +39,9 @@ async def register(user_data: UserRegisterRequest, db: AsyncSession = Depends(ge
         raise
     except Exception as e:
         # Log full error details internally for debugging (includes stack trace via exc_info)
+        # Use structured logging to prevent log injection attacks
         logger.error(
-            f"Registration failed for user: {user_data.username}",
+            "Registration failed for user",
             exc_info=True,
             extra={"username": user_data.username, "email": user_data.email},
         )
@@ -108,8 +109,9 @@ async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)
         raise
     except Exception as e:
         # Log full error details internally for debugging (includes stack trace via exc_info)
+        # Use structured logging to prevent log injection attacks
         logger.error(
-            f"Login failed for email: {login_data.email}",
+            "Login failed for email",
             exc_info=True,
             extra={"email": login_data.email},
         )
@@ -236,8 +238,12 @@ async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depend
         return response
 
     except httpx.RequestError as e:
-        # Log the error for debugging
-        print(f"❌ Google OAuth Request Error: {e!s}")
+        # Log the error for debugging using structured logging
+        logger.warning(
+            "Google OAuth request error",
+            exc_info=True,
+            extra={"error_type": type(e).__name__},
+        )
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Unable to verify Google token. Please try again later.",
