@@ -9,6 +9,7 @@ import {
   subscribeAlerts,
   toggleAlert,
   type Alert,
+  type AlertEvent,
 } from '@/src/lib/utils/alerts';
 import { useEffect, useRef, useState } from 'react';
 
@@ -46,7 +47,7 @@ export default function AlertsPage() {
       }
       await refresh();
       // subscribe SSE
-      subRef.current = subscribeAlerts((ev: any) => {
+      subRef.current = subscribeAlerts((ev: AlertEvent) => {
         setLog((l) =>
           [
             `${new Date(ev.at).toLocaleTimeString()} ${ev.kind} ${ev.price ? `@ $${ev.price}` : ''}`,
@@ -102,7 +103,7 @@ export default function AlertsPage() {
           <select
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             value={form.kind}
-            onChange={(e: any) => setForm({ ...form, kind: e.target.value as Kind })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, kind: e.target.value as Kind })}
           >
             <option value="price_threshold">Price threshold</option>
             <option value="pct_change">% change</option>
@@ -111,12 +112,12 @@ export default function AlertsPage() {
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Symbol"
             value={form.symbol}
-            onChange={(e: any) => setForm({ ...form, symbol: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, symbol: e.target.value })}
           />
           <select
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             value={form.timeframe}
-            onChange={(e: any) => setForm({ ...form, timeframe: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, timeframe: e.target.value })}
           >
             <option>1m</option>
             <option>5m</option>
@@ -128,7 +129,7 @@ export default function AlertsPage() {
           <select
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             value={form.direction}
-            onChange={(e: any) => setForm({ ...form, direction: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, direction: e.target.value })}
           >
             <option value="above">Above/Up</option>
             <option value="below">Below/Down</option>
@@ -138,13 +139,13 @@ export default function AlertsPage() {
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Price or % threshold"
             value={form.number}
-            onChange={(e: any) => setForm({ ...form, number: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, number: e.target.value })}
           />
           <input
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Window (min, % only)"
             value={form.window}
-            onChange={(e: any) => setForm({ ...form, window: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, window: e.target.value })}
           />
         </div>
         <div className="flex gap-2">
@@ -161,7 +162,7 @@ export default function AlertsPage() {
       </div>
 
       <div className="grid gap-2">
-        {alerts.map((a: any) => (
+        {alerts.map((a: Alert) => (
           <div
             key={a.id}
             className="rounded-xl border border-neutral-800 p-3 bg-neutral-900 flex flex-col md:flex-row md:items-center md:justify-between gap-2"
@@ -199,7 +200,7 @@ export default function AlertsPage() {
       <div className="rounded-xl border border-neutral-800 p-3 bg-neutral-900">
         <div className="font-medium mb-2">Live triggers</div>
         <div className="space-y-1 text-sm text-neutral-300 max-h-64 overflow-auto">
-          {log.map((l: any, i: any) => (
+          {log.map((l: string, i: number) => (
             <div key={i} className="font-mono">
               {l}
             </div>
