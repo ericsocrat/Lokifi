@@ -765,10 +765,10 @@ export const usePaperTradingStore = create<PaperTradingStore>()(
           draft.accounts.forEach((account) => {
             const accountPositions = draft.positions.filter((p) => p.accountId === account.id);
             const positionsValue = accountPositions.reduce((sum, p) => sum + p.marketValue, 0);
-            const unrealizedPnL = accountPositions.reduce((sum, p) => sum + p.unrealizedPnL, 0);
 
             account.balance.totalValue = account.balance.cash + positionsValue;
             // Note: dayPnL would need to be calculated differently with proper time tracking
+            // TODO: Add unrealizedPnL calculation when implementing account-level P&L tracking
           });
         });
       },
