@@ -346,11 +346,56 @@ def test_function_name(client, db_session):
 ## Key Guidelines
 
 ### When Writing Code
-1. **Always add TypeScript types** - No `any` unless absolutely necessary
-2. **Error handling** - Use try/catch and proper error boundaries
-3. **Accessibility** - Include ARIA labels and semantic HTML
-4. **Performance** - Use React.memo, useMemo, useCallback appropriately
-5. **Security** - Sanitize inputs, validate on both frontend and backend
+
+**🏆 World-Class Quality Standards** - Be extremely thorough and strict:
+
+1. **TypeScript Type Safety** (ZERO TOLERANCE for `any`)
+   - ❌ **NEVER use `any`** unless absolutely unavoidable (browser APIs, Zustand persist)
+   - ✅ **Use proper types**: `Draft<T>`, `Omit<T, Keys>`, `Partial<T>`, `Record<K, V>`
+   - ✅ **Type all parameters**: Every function parameter must have explicit types
+   - ✅ **Type all return values**: Especially for async functions (`Promise<T>`)
+   - ✅ **Use type inference**: Let TypeScript infer when types are obvious
+   - ✅ **Document acceptable `any`**: If unavoidable, add comment explaining why
+   - 🎯 **Target**: 95%+ type coverage (only 5% acceptable `any` for valid reasons)
+
+2. **Error Handling** (COMPREHENSIVE coverage)
+   - ✅ **Try/catch all async operations**: Every API call, file operation, external service
+   - ✅ **Use Error boundaries**: Wrap React components in boundaries
+   - ✅ **Typed errors**: Create custom error classes with proper types
+   - ✅ **User-friendly messages**: Never expose stack traces to users
+   - ✅ **Log for debugging**: Use proper logging service (not console.log in production)
+   - ✅ **Handle edge cases**: null, undefined, empty arrays, network failures
+
+3. **Code Organization** (CLEAN and MAINTAINABLE)
+   - ✅ **Single Responsibility**: Each function does ONE thing well
+   - ✅ **DRY Principle**: Don't repeat code - extract to reusable functions
+   - ✅ **Meaningful names**: Variables/functions clearly describe their purpose
+   - ✅ **Small functions**: Aim for <50 lines per function (complexity limit)
+   - ✅ **Consistent patterns**: Follow established project patterns (Zustand stores, API routes)
+   - ✅ **Comments for WHY, not WHAT**: Code should be self-documenting
+
+4. **Performance** (OPTIMIZED by default)
+   - ✅ **React.memo**: Wrap expensive components to prevent re-renders
+   - ✅ **useMemo/useCallback**: Cache expensive computations and callbacks
+   - ✅ **Lazy loading**: Use dynamic imports for large components
+   - ✅ **Debounce/throttle**: Rate-limit expensive operations (search, API calls)
+   - ✅ **Virtualization**: Use for large lists (react-window, react-virtual)
+   - ✅ **Bundle size**: Avoid importing entire libraries (`import { specific } from 'lib'`)
+
+5. **Security** (DEFENSE IN DEPTH)
+   - ✅ **Input validation**: Validate ALL user inputs (frontend + backend)
+   - ✅ **Sanitize outputs**: Escape HTML, prevent XSS attacks
+   - ✅ **Environment variables**: NEVER hardcode secrets or API keys
+   - ✅ **SQL injection prevention**: Use parameterized queries (SQLAlchemy ORM)
+   - ✅ **CSRF protection**: Use built-in framework protections
+   - ✅ **Rate limiting**: Prevent abuse on public endpoints
+
+6. **Accessibility** (A11Y compliance)
+   - ✅ **Semantic HTML**: Use proper HTML5 elements (`<nav>`, `<main>`, `<article>`)
+   - ✅ **ARIA labels**: Add labels for screen readers where needed
+   - ✅ **Keyboard navigation**: All interactive elements accessible via keyboard
+   - ✅ **Color contrast**: Minimum WCAG AA compliance (4.5:1 ratio)
+   - ✅ **Focus indicators**: Visible focus states for all interactive elements
 
 ### When Writing Tests
 1. **Test behavior, not implementation** - Focus on user-facing outcomes
@@ -390,7 +435,7 @@ def test_function_name(client, db_session):
    npm run typecheck  # Fast type-only check (tsc --noEmit)
    ```
    **What this catches**: Type errors, missing imports, invalid property access, function signature mismatches
-   
+
    **For TypeScript refactoring**: If `npm run build` succeeds → types are valid → runtime behavior is predictable
    **Key insight**: TypeScript IS the test for type safety work. Compilation success = correct types.
 
@@ -398,9 +443,9 @@ def test_function_name(client, db_session):
    - **ESLint**: Runs automatically via `.eslintrc.json` configuration
    - **Prettier**: Auto-formats on save via editor settings
    - **Pre-commit hooks**: Husky + lint-staged enforce quality before commit
-   
+
    **What this catches**: Style violations, code smells, unused imports, formatting issues
-   
+
    **Agent note**: Don't manually run linters - your editor's auto-save formatters handle this automatically. If you see "Some edits were made by a formatter" - that's working as intended!
 
 3. **Testing** (Behavior verification)
@@ -409,14 +454,14 @@ def test_function_name(client, db_session):
    cd apps/frontend
    npm test                # Vitest unit tests
    npm run test:coverage   # With coverage report
-   
+
    # Backend
    cd apps/backend
    pytest                  # Python tests
    pytest --cov           # With coverage
    ```
    **What this catches**: Broken business logic, integration issues, regression bugs
-   
+
    **When to run**: After logic changes, before major commits, not needed for pure type annotation changes
 
 4. **Build Success** (Production readiness)
