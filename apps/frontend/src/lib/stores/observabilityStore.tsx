@@ -1,8 +1,9 @@
+import type { Draft } from 'immer';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { subscribeWithSelector } from 'zustand/middleware';
 import { FLAGS } from './featureFlags';
+import { set } from 'zod';
 
 // Observability Types
 export interface MetricDefinition {
@@ -11,17 +12,17 @@ export interface MetricDefinition {
   description: string;
   type: 'counter' | 'gauge' | 'histogram' | 'summary';
   unit?: string;
-  
+
   // Collection
   source: 'system' | 'user' | 'external';
   tags: string[];
-  
+
   // Alerts
   alertRules: AlertRule[];
-  
+
   // Retention
   retentionPeriod: number; // days
-  
+
   // Status
   isActive: boolean;
   createdAt: Date;
@@ -33,12 +34,12 @@ export interface MetricValue {
   metricId: string;
   timestamp: Date;
   value: number;
-  
+
   // Context
   labels: Record<string, string>;
   sessionId?: string;
   userId?: string;
-  
+
   // Metadata
   source: string;
   version: string;
@@ -49,19 +50,19 @@ export interface AlertRule {
   metricId: string;
   name: string;
   description: string;
-  
+
   // Condition
   condition: AlertCondition;
   threshold: number;
   duration: number; // seconds
-  
+
   // Actions
   actions: AlertAction[];
-  
+
   // State
   status: 'active' | 'firing' | 'resolved' | 'disabled';
   lastTriggered?: Date;
-  
+
   // Configuration
   severity: 'critical' | 'warning' | 'info';
   isEnabled: boolean;
@@ -82,7 +83,7 @@ export interface AlertAction {
 
 export interface SystemMetrics {
   timestamp: Date;
-  
+
   // Performance
   performance: {
     pageLoadTime: number;
@@ -91,7 +92,7 @@ export interface SystemMetrics {
     memoryUsage: number;
     cpuUsage: number;
   };
-  
+
   // Charts
   charts: {
     activeCharts: number;
@@ -100,7 +101,7 @@ export interface SystemMetrics {
     indicatorsActive: number;
     drawingToolsActive: number;
   };
-  
+
   // User Activity
   userActivity: {
     activeUsers: number;
@@ -108,7 +109,7 @@ export interface SystemMetrics {
     pagesViewed: number;
     actionsPerMinute: number;
   };
-  
+
   // API
   api: {
     requestsPerMinute: number;
@@ -116,7 +117,7 @@ export interface SystemMetrics {
     averageResponseTime: number;
     quotaUsage: number;
   };
-  
+
   // Trading
   trading: {
     ordersPlaced: number;
@@ -124,7 +125,7 @@ export interface SystemMetrics {
     alertsTriggered: number;
     backtestsRun: number;
   };
-  
+
   // System Health
   system: {
     uptime: number;
@@ -140,24 +141,24 @@ export interface UserBehaviorEvent {
   sessionId: string;
   userId?: string;
   timestamp: Date;
-  
+
   // Event Details
   type: 'click' | 'view' | 'interaction' | 'error' | 'performance';
   category: string;
   action: string;
   label?: string;
   value?: number;
-  
+
   // Context
   page: string;
   component?: string;
   feature?: string;
-  
+
   // Environment
   userAgent: string;
   viewport: { width: number; height: number };
   deviceType: 'desktop' | 'tablet' | 'mobile';
-  
+
   // Custom Properties
   properties: Record<string, any>;
 }
@@ -167,32 +168,32 @@ export interface ErrorEvent {
   timestamp: Date;
   sessionId: string;
   userId?: string;
-  
+
   // Error Details
   type: 'javascript' | 'api' | 'network' | 'validation';
   message: string;
   stack?: string;
   source?: string;
-  
+
   // Context
   page: string;
   component?: string;
   feature?: string;
   userAgent: string;
-  
+
   // API Errors
   endpoint?: string;
   method?: string;
   statusCode?: number;
-  
+
   // Severity
   severity: 'low' | 'medium' | 'high' | 'critical';
-  
+
   // Resolution
   status: 'new' | 'investigating' | 'resolved' | 'ignored';
   assignedTo?: string;
   resolvedAt?: Date;
-  
+
   // Metadata
   tags: string[];
   customData: Record<string, any>;
@@ -203,12 +204,12 @@ export interface PerformanceTrace {
   sessionId: string;
   userId?: string;
   timestamp: Date;
-  
+
   // Trace Details
   name: string;
   operation: string;
   duration: number; // milliseconds
-  
+
   // Timing Breakdown
   timings: {
     dns?: number;
@@ -218,20 +219,20 @@ export interface PerformanceTrace {
     response?: number;
     render?: number;
   };
-  
+
   // Context
   page: string;
   component?: string;
-  
+
   // Resource Details
   resourceType?: 'xhr' | 'fetch' | 'navigation' | 'resource';
   url?: string;
   size?: number;
-  
+
   // Status
   status: 'success' | 'error' | 'timeout';
   errorMessage?: string;
-  
+
   // Tags
   tags: Record<string, string>;
 }
@@ -240,22 +241,22 @@ export interface Dashboard {
   id: string;
   name: string;
   description: string;
-  
+
   // Layout
   widgets: DashboardWidget[];
   layout: DashboardLayout;
-  
+
   // Access
   isPublic: boolean;
   sharedWith: string[];
   owner: string;
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
   lastViewedAt?: Date;
   viewCount: number;
-  
+
   // Settings
   refreshInterval: number; // seconds
   timeRange: TimeRange;
@@ -266,17 +267,17 @@ export interface DashboardWidget {
   id: string;
   type: 'metric' | 'chart' | 'table' | 'alert' | 'log';
   title: string;
-  
+
   // Position & Size
-  x: number; 
+  x: number;
   y: number;
   width: number;
   height: number;
-  
+
   // Configuration
   config: WidgetConfig;
   query: string;
-  
+
   // Appearance
   theme: 'light' | 'dark' | 'auto';
   showLegend: boolean;
@@ -288,19 +289,19 @@ export interface WidgetConfig {
   metricId?: string;
   aggregation?: 'avg' | 'sum' | 'min' | 'max' | 'count';
   format?: 'number' | 'percent' | 'bytes' | 'duration';
-  
+
   // Chart Widget
   chartType?: 'line' | 'bar' | 'area' | 'pie' | 'gauge';
   series?: string[];
-  
+
   // Table Widget
   columns?: string[];
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
-  
+
   // Alert Widget
   severity?: 'critical' | 'warning' | 'info';
-  
+
   // General
   limit?: number;
   filters?: Record<string, any>;
@@ -324,27 +325,27 @@ export interface LogEntry {
   timestamp: Date;
   level: 'debug' | 'info' | 'warn' | 'error' | 'fatal';
   message: string;
-  
+
   // Context
   logger: string;
   component?: string;
   feature?: string;
-  
+
   // User Context
   sessionId?: string;
   userId?: string;
-  
+
   // Metadata
   tags: string[];
   data: Record<string, any>;
-  
+
   // Error Context
   error?: {
     name: string;
     message: string;
     stack?: string;
   };
-  
+
   // Tracing
   traceId?: string;
   spanId?: string;
@@ -355,23 +356,23 @@ interface ObservabilityState {
   // Metrics
   metrics: MetricDefinition[];
   metricValues: MetricValue[];
-  
+
   // Alerts
   alertRules: AlertRule[];
   activeAlerts: AlertRule[];
-  
+
   // System Monitoring
   systemMetrics: SystemMetrics[];
   currentMetrics: SystemMetrics | null;
-  
+
   // User Behavior
   userEvents: UserBehaviorEvent[];
   sessionEvents: Map<string, UserBehaviorEvent[]>;
-  
+
   // Error Tracking
   errors: ErrorEvent[];
   recentErrors: ErrorEvent[];
-  
+
   // Performance
   performanceTraces: PerformanceTrace[];
   performanceMetrics: {
@@ -381,20 +382,20 @@ interface ObservabilityState {
     avgResponseTime: number;
     errorRate: number;
   };
-  
+
   // Logging
   logs: LogEntry[];
   logBuffer: LogEntry[];
-  
+
   // Dashboards
   dashboards: Dashboard[];
   activeDashboard: Dashboard | null;
-  
+
   // Real-time
   isRealTimeEnabled: boolean;
   websocketConnected: boolean;
   lastDataUpdate: Date | null;
-  
+
   // Settings
   settings: {
     retentionDays: number;
@@ -404,7 +405,7 @@ interface ObservabilityState {
     enableUserTracking: boolean;
     debugMode: boolean;
   };
-  
+
   // UI State
   selectedTimeRange: TimeRange;
   filters: {
@@ -413,7 +414,7 @@ interface ObservabilityState {
     feature?: string[];
     userId?: string;
   };
-  
+
   // Loading States
   isLoading: boolean;
   errorMessage: string | null;
@@ -426,74 +427,79 @@ interface ObservabilityActions {
   updateMetric: (metricId: string, updates: Partial<MetricDefinition>) => void;
   deleteMetric: (metricId: string) => void;
   recordMetricValue: (metricId: string, value: number, labels?: Record<string, string>) => void;
-  
+
   // Alerts
   createAlertRule: (rule: Omit<AlertRule, 'id' | 'createdAt' | 'status'>) => string;
   updateAlertRule: (ruleId: string, updates: Partial<AlertRule>) => void;
   deleteAlertRule: (ruleId: string) => void;
   checkAlertRules: () => void;
   resolveAlert: (ruleId: string) => void;
-  
+
   // System Monitoring
   recordSystemMetrics: (metrics: Partial<SystemMetrics>) => void;
   startSystemMonitoring: () => void;
   stopSystemMonitoring: () => void;
-  
+
   // User Behavior Tracking
   trackEvent: (event: Omit<UserBehaviorEvent, 'id' | 'timestamp'>) => void;
   trackPageView: (page: string, properties?: Record<string, any>) => void;
   trackUserAction: (action: string, category: string, label?: string, value?: number) => void;
-  
+
   // Error Tracking
   reportError: (error: Omit<ErrorEvent, 'id' | 'timestamp'>) => void;
   updateErrorStatus: (errorId: string, status: ErrorEvent['status'], assignedTo?: string) => void;
-  
+
   // Performance Tracking
   startTrace: (name: string, operation: string) => string;
   endTrace: (traceId: string, status?: 'success' | 'error', errorMessage?: string) => void;
   recordPerformance: (trace: Omit<PerformanceTrace, 'id' | 'timestamp'>) => void;
-  
+
   // Logging
   log: (level: LogEntry['level'], message: string, data?: Record<string, any>) => void;
   debug: (message: string, data?: Record<string, any>) => void;
   info: (message: string, data?: Record<string, any>) => void;
   warn: (message: string, data?: Record<string, any>) => void;
   error: (message: string, error?: Error, data?: Record<string, any>) => void;
-  
+
   // Dashboards
-  createDashboard: (dashboard: Omit<Dashboard, 'id' | 'createdAt' | 'updatedAt' | 'viewCount'>) => string;
+  createDashboard: (
+    dashboard: Omit<Dashboard, 'id' | 'createdAt' | 'updatedAt' | 'viewCount'>
+  ) => string;
   updateDashboard: (dashboardId: string, updates: Partial<Dashboard>) => void;
   deleteDashboard: (dashboardId: string) => void;
   setActiveDashboard: (dashboardId: string | null) => void;
   addWidget: (dashboardId: string, widget: Omit<DashboardWidget, 'id'>) => string;
   updateWidget: (dashboardId: string, widgetId: string, updates: Partial<DashboardWidget>) => void;
   removeWidget: (dashboardId: string, widgetId: string) => void;
-  
+
   // Real-time
   enableRealTime: () => void;
   disableRealTime: () => void;
   connectWebSocket: () => void;
   disconnectWebSocket: () => void;
-  
+
   // Query & Analysis
   queryMetrics: (query: string, timeRange: TimeRange) => Promise<MetricValue[]>;
   analyzePerformance: (timeRange: TimeRange) => Promise<any>;
-  generateReport: (type: string, config: any) => Promise<Blob>;
-  
+  generateReport: (type: string, config: Record<string, unknown>) => Promise<Blob>;
+
   // Data Management
-  exportData: (type: 'metrics' | 'events' | 'errors' | 'logs', timeRange: TimeRange) => Promise<Blob>;
+  exportData: (
+    type: 'metrics' | 'events' | 'errors' | 'logs',
+    timeRange: TimeRange
+  ) => Promise<Blob>;
   clearOldData: (beforeDate: Date) => void;
   optimizeStorage: () => void;
-  
+
   // Settings
   updateSettings: (settings: Partial<ObservabilityState['settings']>) => void;
   setTimeRange: (timeRange: TimeRange) => void;
   setFilters: (filters: Partial<ObservabilityState['filters']>) => void;
-  
+
   // Initialization
   initialize: () => Promise<void>;
   loadHistoricalData: (timeRange: TimeRange) => Promise<void>;
-  
+
   // Helper Methods
   getCurrentSessionId: () => string;
   getCurrentUserId: () => string | undefined;
@@ -505,8 +511,15 @@ interface ObservabilityActions {
   executeErrorActions: (error: ErrorEvent) => Promise<void>;
 }
 
+// ============================================================================
+// Combined Store Type
+// ============================================================================
+type ObservabilityStore = ObservabilityState & ObservabilityActions;
+
+// ============================================================================
 // Create Store
-export const useObservabilityStore = create<ObservabilityState & ObservabilityActions>()(
+// ============================================================================
+export const useObservabilityStore = create<ObservabilityStore>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
     subscribeWithSelector(
@@ -528,7 +541,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           p95: 0,
           p99: 0,
           avgResponseTime: 0,
-          errorRate: 0
+          errorRate: 0,
         },
         logs: [],
         logBuffer: [],
@@ -543,68 +556,68 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
           enablePerformanceMonitoring: true,
           enableErrorReporting: true,
           enableUserTracking: true,
-          debugMode: false
+          debugMode: false,
         },
         selectedTimeRange: {
           type: 'relative',
           start: '1h',
-          end: 'now'
+          end: 'now',
         },
         filters: {},
         isLoading: false,
         errorMessage: null,
-        
+
         // Metrics
-        createMetric: (metricData: any) => {
+        createMetric: (metricData: Omit<MetricDefinition, 'id' | 'createdAt' | 'updatedAt'>) => {
           if (!FLAGS.observability) return '';
-          
+
           const metricId = `metric_${Date.now()}`;
           const now = new Date();
-          
+
           const metric: MetricDefinition = {
             ...metricData,
             id: metricId,
             createdAt: now,
-            updatedAt: now
+            updatedAt: now,
           };
-          
-          set((state: any) => {
-            state.metrics.push(metric);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.metrics.push(metric);
           });
-          
+
           return metricId;
         },
-        
-        updateMetric: (metricId: any, updates: any) => {
+
+        updateMetric: (metricId: string, updates: Partial<MetricDefinition>) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const metric = state.metrics.find((m: any) => m.id === metricId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const metric = draft.metrics.find((m) => m.id === metricId);
             if (metric) {
               Object.assign(metric, updates);
               metric.updatedAt = new Date();
             }
           });
         },
-        
-        deleteMetric: (metricId: any) => {
+
+        deleteMetric: (metricId: string) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const index = state.metrics.findIndex((m: any) => m.id === metricId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const index = draft.metrics.findIndex((m) => m.id === metricId);
             if (index !== -1) {
-              state.metrics.splice(index, 1);
+              draft.metrics.splice(index, 1);
             }
-            
+
             // Remove related data
-            state.metricValues = state.metricValues.filter((v: any) => v.metricId !== metricId);
-            state.alertRules = state.alertRules.filter((r: any) => r.metricId !== metricId);
+            draft.metricValues = draft.metricValues.filter((v) => v.metricId !== metricId);
+            draft.alertRules = draft.alertRules.filter((r) => r.metricId !== metricId);
           });
         },
-        
+
         recordMetricValue: (metricId, value, labels = {}) => {
           if (!FLAGS.observability) return;
-          
+
           const valueId = `value_${Date.now()}_${Math.random()}`;
           const metricValue: MetricValue = {
             id: valueId,
@@ -615,95 +628,97 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             sessionId: get().getCurrentSessionId(),
             userId: get().getCurrentUserId(),
             source: 'user',
-            version: '1.0'
+            version: '1.0',
           };
-          
-          set((state: any) => {
-            state.metricValues.push(metricValue);
-            
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.metricValues.push(metricValue);
+
             // Keep only recent values in memory
             const maxValues = 10000;
-            if (state.metricValues.length > maxValues) {
-              state.metricValues = state.metricValues.slice(-maxValues);
+            if (draft.metricValues.length > maxValues) {
+              draft.metricValues = draft.metricValues.slice(-maxValues);
             }
           });
-          
+
           // Check alert rules
           get().checkAlertRules();
         },
-        
+
         // Alerts
-        createAlertRule: (ruleData: any) => {
+        createAlertRule: (
+          ruleData: Omit<AlertRule, 'id' | 'status' | 'lastTriggered' | 'createdAt'>
+        ) => {
           if (!FLAGS.observability) return '';
-          
+
           const ruleId = `alert_${Date.now()}`;
           const rule: AlertRule = {
             ...ruleData,
             id: ruleId,
             status: 'active',
-            createdAt: new Date()
+            createdAt: new Date(),
           };
-          
-          set((state: any) => {
-            state.alertRules.push(rule);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.alertRules.push(rule);
           });
-          
+
           return ruleId;
         },
-        
-        updateAlertRule: (ruleId: any, updates: any) => {
+
+        updateAlertRule: (ruleId: string, updates: Partial<AlertRule>) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const rule = state.alertRules.find((r: any) => r.id === ruleId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const rule = draft.alertRules.find((r) => r.id === ruleId);
             if (rule) {
               Object.assign(rule, updates);
             }
           });
         },
-        
-        deleteAlertRule: (ruleId: any) => {
+
+        deleteAlertRule: (ruleId: string) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const index = state.alertRules.findIndex((r: any) => r.id === ruleId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const index = draft.alertRules.findIndex((r) => r.id === ruleId);
             if (index !== -1) {
-              state.alertRules.splice(index, 1);
+              draft.alertRules.splice(index, 1);
             }
-            
+
             // Remove from active alerts
-            state.activeAlerts = state.activeAlerts.filter((a: any) => a.id !== ruleId);
+            draft.activeAlerts = draft.activeAlerts.filter((a) => a.id !== ruleId);
           });
         },
-        
+
         checkAlertRules: () => {
           if (!FLAGS.observability) return;
-          
+
           const { alertRules, metricValues } = get();
           const now = new Date();
-          
-          alertRules.forEach((rule: any) => {
+
+          alertRules.forEach((rule) => {
             if (!rule.isEnabled) return;
-            
+
             // Get recent metric values
             const windowStart = new Date(now.getTime() - rule.condition.window * 1000);
-            const recentValues = metricValues.filter((v: any) => 
-              v.metricId === rule.metricId && 
-              v.timestamp >= windowStart
+            const recentValues = metricValues.filter(
+              (v) => v.metricId === rule.metricId && v.timestamp >= windowStart
             );
-            
+
             if (recentValues.length === 0) return;
-            
+
             // Calculate aggregated value
             let aggregatedValue: number;
-            const values = recentValues.map((v: any) => v.value);
-            
+            const values = recentValues.map((v) => v.value);
+
             switch (rule.condition.aggregation) {
               case 'avg':
-                aggregatedValue = values.reduce((sum: any, v: any) => sum + v, 0) / values.length;
+                aggregatedValue =
+                  values.reduce((sum: number, v: number) => sum + v, 0) / values.length;
                 break;
               case 'sum':
-                aggregatedValue = values.reduce((sum: any, v: any) => sum + v, 0);
+                aggregatedValue = values.reduce((sum: number, v: number) => sum + v, 0);
                 break;
               case 'min':
                 aggregatedValue = Math.min(...values);
@@ -717,7 +732,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               default:
                 return;
             }
-            
+
             // Check condition
             let shouldFire = false;
             switch (rule.condition.operator) {
@@ -740,30 +755,29 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                 shouldFire = aggregatedValue !== rule.threshold;
                 break;
             }
-            
-            set((state: any) => {
-              const existingAlert = state.activeAlerts.find((a: any) => a.id === rule.id);
-              
+
+            set((draft: Draft<ObservabilityStore>) => {
+              const existingAlert = draft.activeAlerts.find((a) => a.id === rule.id);
+
               if (shouldFire && !existingAlert) {
                 // Fire alert
                 const updatedRule = { ...rule, status: 'firing' as const, lastTriggered: now };
-                state.activeAlerts.push(updatedRule);
-                
+                draft.activeAlerts.push(updatedRule);
+
                 // Update original rule
-                const originalRule = state.alertRules.find((r: any) => r.id === rule.id);
+                const originalRule = draft.alertRules.find((r) => r.id === rule.id);
                 if (originalRule) {
                   originalRule.status = 'firing';
                   originalRule.lastTriggered = now;
                 }
-                
+
                 // Execute alert actions
                 get().executeAlertActions(updatedRule, aggregatedValue);
-                
               } else if (!shouldFire && existingAlert) {
                 // Resolve alert
-                state.activeAlerts = state.activeAlerts.filter((a: any) => a.id !== rule.id);
-                
-                const originalRule = state.alertRules.find((r: any) => r.id === rule.id);
+                draft.activeAlerts = draft.activeAlerts.filter((a) => a.id !== rule.id);
+
+                const originalRule = draft.alertRules.find((r) => r.id === rule.id);
                 if (originalRule) {
                   originalRule.status = 'resolved';
                 }
@@ -771,24 +785,24 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             });
           });
         },
-        
-        resolveAlert: (ruleId: any) => {
+
+        resolveAlert: (ruleId: string) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.activeAlerts = state.activeAlerts.filter((a: any) => a.id !== ruleId);
-            
-            const rule = state.alertRules.find((r: any) => r.id === ruleId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.activeAlerts = draft.activeAlerts.filter((a) => a.id !== ruleId);
+
+            const rule = draft.alertRules.find((r) => r.id === ruleId);
             if (rule) {
               rule.status = 'resolved';
             }
           });
         },
-        
+
         // System Monitoring
-        recordSystemMetrics: (metricsData: any) => {
+        recordSystemMetrics: (metricsData: Partial<SystemMetrics>) => {
           if (!FLAGS.observability) return;
-          
+
           const metrics: SystemMetrics = {
             timestamp: new Date(),
             performance: {
@@ -796,105 +810,105 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               renderTime: 0,
               apiResponseTime: 0,
               memoryUsage: 0,
-              cpuUsage: 0
+              cpuUsage: 0,
             },
             charts: {
               activeCharts: 0,
               renderingCharts: 0,
               dataPointsLoaded: 0,
               indicatorsActive: 0,
-              drawingToolsActive: 0
+              drawingToolsActive: 0,
             },
             userActivity: {
               activeUsers: 0,
               sessionsActive: 0,
               pagesViewed: 0,
-              actionsPerMinute: 0
+              actionsPerMinute: 0,
             },
             api: {
               requestsPerMinute: 0,
               errorRate: 0,
               averageResponseTime: 0,
-              quotaUsage: 0
+              quotaUsage: 0,
             },
             trading: {
               ordersPlaced: 0,
               tradesExecuted: 0,
               alertsTriggered: 0,
-              backtestsRun: 0
+              backtestsRun: 0,
             },
             system: {
               uptime: 0,
               errorCount: 0,
               warningCount: 0,
               diskUsage: 0,
-              networkLatency: 0
+              networkLatency: 0,
             },
-            ...metricsData
+            ...metricsData,
           };
-          
-          set((state: any) => {
-            state.systemMetrics.push(metrics);
-            state.currentMetrics = metrics;
-            state.lastDataUpdate = new Date();
-            
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.systemMetrics.push(metrics);
+            draft.currentMetrics = metrics;
+            draft.lastDataUpdate = new Date();
+
             // Keep only recent metrics
             const maxMetrics = 1000;
-            if (state.systemMetrics.length > maxMetrics) {
-              state.systemMetrics = state.systemMetrics.slice(-maxMetrics);
+            if (draft.systemMetrics.length > maxMetrics) {
+              draft.systemMetrics = draft.systemMetrics.slice(-maxMetrics);
             }
           });
         },
-        
+
         startSystemMonitoring: () => {
           if (!FLAGS.observability) return;
-          
+
           // In a real implementation, this would start collection intervals
           console.log('Starting system monitoring');
         },
-        
+
         stopSystemMonitoring: () => {
           if (!FLAGS.observability) return;
-          
+
           console.log('Stopping system monitoring');
         },
-        
+
         // User Behavior Tracking
-        trackEvent: (eventData: any) => {
+        trackEvent: (eventData: Omit<UserBehaviorEvent, 'id' | 'timestamp'>) => {
           if (!FLAGS.observability || !get().settings.enableUserTracking) return;
-          
+
           const eventId = `event_${Date.now()}_${Math.random()}`;
           const event: UserBehaviorEvent = {
             ...eventData,
             id: eventId,
-            timestamp: new Date()
+            timestamp: new Date(),
           };
-          
-          set((state: any) => {
-            state.userEvents.push(event);
-            
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.userEvents.push(event);
+
             // Group by session
-            const sessionEvents = state.sessionEvents.get(event.sessionId) || [];
+            const sessionEvents = draft.sessionEvents.get(event.sessionId) || [];
             sessionEvents.push(event);
-            
+
             // Limit events per session
-            if (sessionEvents.length > state.settings.maxEventsPerSession) {
+            if (sessionEvents.length > draft.settings.maxEventsPerSession) {
               sessionEvents.shift();
             }
-            
-            state.sessionEvents.set(event.sessionId, sessionEvents);
-            
+
+            draft.sessionEvents.set(event.sessionId, sessionEvents);
+
             // Keep only recent events in main array
             const maxEvents = 5000;
-            if (state.userEvents.length > maxEvents) {
-              state.userEvents = state.userEvents.slice(-maxEvents);
+            if (draft.userEvents.length > maxEvents) {
+              draft.userEvents = draft.userEvents.slice(-maxEvents);
             }
           });
         },
-        
+
         trackPageView: (page, properties = {}) => {
           if (!FLAGS.observability) return;
-          
+
           get().trackEvent({
             sessionId: get().getCurrentSessionId(),
             userId: get().getCurrentUserId(),
@@ -906,16 +920,16 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             userAgent: navigator.userAgent,
             viewport: {
               width: window.innerWidth,
-              height: window.innerHeight
+              height: window.innerHeight,
             },
             deviceType: get().getDeviceType(),
-            properties
+            properties,
           });
         },
-        
+
         trackUserAction: (action, category, label, value) => {
           if (!FLAGS.observability) return;
-          
+
           get().trackEvent({
             sessionId: get().getCurrentSessionId(),
             userId: get().getCurrentUserId(),
@@ -928,46 +942,46 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             userAgent: navigator.userAgent,
             viewport: {
               width: window.innerWidth,
-              height: window.innerHeight
+              height: window.innerHeight,
             },
             deviceType: get().getDeviceType(),
-            properties: {}
+            properties: {},
           });
         },
-        
+
         // Error Tracking
-        reportError: (errorData: any) => {
+        reportError: (errorData: Omit<ErrorEvent, 'id' | 'timestamp' | 'stackTrace'>) => {
           if (!FLAGS.observability || !get().settings.enableErrorReporting) return;
-          
+
           const errorId = `error_${Date.now()}`;
           const error: ErrorEvent = {
             ...errorData,
             id: errorId,
             timestamp: new Date(),
-            status: 'new'
+            status: 'new',
           };
-          
-          set((state: any) => {
-            state.errors.push(error);
-            
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.errors.push(error);
+
             // Add to recent errors
-            state.recentErrors.unshift(error);
-            if (state.recentErrors.length > 100) {
-              state.recentErrors = state.recentErrors.slice(0, 100);
+            draft.recentErrors.unshift(error);
+            if (draft.recentErrors.length > 100) {
+              draft.recentErrors = draft.recentErrors.slice(0, 100);
             }
           });
-          
+
           // Auto-report critical errors
           if (error.severity === 'critical') {
             get().executeErrorActions(error);
           }
         },
-        
+
         updateErrorStatus: (errorId, status, assignedTo) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const error = state.errors.find((e: any) => e.id === errorId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const error = draft.errors.find((e) => e.id === errorId);
             if (error) {
               error.status = status;
               if (assignedTo) error.assignedTo = assignedTo;
@@ -975,13 +989,13 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
           });
         },
-        
+
         // Performance Tracking
-        startTrace: (name: any, operation: any) => {
+        startTrace: (name: string, operation: string) => {
           if (!FLAGS.observability || !get().settings.enablePerformanceMonitoring) return '';
-          
+
           const traceId = `trace_${Date.now()}_${Math.random()}`;
-          
+
           // Store trace start time
           if (typeof window !== 'undefined') {
             (window as any).__traces = (window as any).__traces || {};
@@ -989,28 +1003,28 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               name,
               operation,
               startTime: performance.now(),
-              startMark: `trace_start_${traceId}`
+              startMark: `trace_start_${traceId}`,
             };
-            
+
             performance.mark(`trace_start_${traceId}`);
           }
-          
+
           return traceId;
         },
-        
+
         endTrace: (traceId, status = 'success', errorMessage) => {
           if (!FLAGS.observability || typeof window === 'undefined') return;
-          
+
           const traces = (window as any).__traces;
           if (!traces || !traces[traceId]) return;
-          
+
           const trace = traces[traceId];
           const endTime = performance.now();
           const duration = endTime - trace.startTime;
-          
+
           performance.mark(`trace_end_${traceId}`);
           performance.measure(`trace_${traceId}`, `trace_start_${traceId}`, `trace_end_${traceId}`);
-          
+
           get().recordPerformance({
             sessionId: get().getCurrentSessionId(),
             userId: get().getCurrentUserId(),
@@ -1021,59 +1035,71 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             status,
             errorMessage,
             timings: {},
-            tags: {}
+            tags: {},
           });
-          
+
           // Clean up
           delete traces[traceId];
           performance.clearMarks(`trace_start_${traceId}`);
           performance.clearMarks(`trace_end_${traceId}`);
           performance.clearMeasures(`trace_${traceId}`);
         },
-        
-        recordPerformance: (traceData: any) => {
+
+        recordPerformance: (traceData: Partial<PerformanceTrace>) => {
           if (!FLAGS.observability) return;
-          
+
           const traceId = `perf_${Date.now()}`;
           const trace: PerformanceTrace = {
-            ...traceData,
             id: traceId,
-            timestamp: new Date()
+            timestamp: new Date(),
+            sessionId: traceData.sessionId || 'unknown',
+            name: traceData.name || 'unnamed',
+            operation: traceData.operation || 'operation',
+            duration: traceData.duration || 0,
+            timings: traceData.timings || {},
+            page: traceData.page || window.location.pathname,
+            status: traceData.status || 'success',
+            tags: traceData.tags || {},
+            ...traceData,
           };
-          
-          set((state: any) => {
-            state.performanceTraces.push(trace);
-            
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.performanceTraces.push(trace);
+
             // Update performance metrics
-            const recentTraces = state.performanceTraces.slice(-1000);
-            const durations = recentTraces.map((t: any) => t.duration).sort((a: any, b: any) => a - b);
-            
+            const recentTraces = draft.performanceTraces.slice(-1000);
+            const durations = recentTraces
+              .map((t) => t.duration)
+              .sort((a: number, b: number) => a - b);
+
             if (durations.length > 0) {
               const p50Index = Math.floor(durations.length * 0.5);
               const p95Index = Math.floor(durations.length * 0.95);
               const p99Index = Math.floor(durations.length * 0.99);
-              
-              state.performanceMetrics = {
+
+              draft.performanceMetrics = {
                 p50: durations[p50Index] || 0,
                 p95: durations[p95Index] || 0,
                 p99: durations[p99Index] || 0,
-                avgResponseTime: durations.reduce((sum: any, d: any) => sum + d, 0) / durations.length,
-                errorRate: recentTraces.filter((t: any) => t.status === 'error').length / recentTraces.length
+                avgResponseTime:
+                  durations.reduce((sum: number, d: number) => sum + d, 0) / durations.length,
+                errorRate:
+                  recentTraces.filter((t) => t.status === 'error').length / recentTraces.length,
               };
             }
-            
+
             // Keep only recent traces
             const maxTraces = 5000;
-            if (state.performanceTraces.length > maxTraces) {
-              state.performanceTraces = state.performanceTraces.slice(-maxTraces);
+            if (draft.performanceTraces.length > maxTraces) {
+              draft.performanceTraces = draft.performanceTraces.slice(-maxTraces);
             }
           });
         },
-        
+
         // Logging
         log: (level, message, data = {}) => {
           if (!FLAGS.observability) return;
-          
+
           const logId = `log_${Date.now()}_${Math.random()}`;
           const entry: LogEntry = {
             id: logId,
@@ -1084,144 +1110,152 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             sessionId: get().getCurrentSessionId(),
             userId: get().getCurrentUserId(),
             tags: [],
-            data
+            data,
           };
-          
-          set((state: any) => {
+
+          set((draft: Draft<ObservabilityStore>) => {
             // Add to buffer first
-            state.logBuffer.push(entry);
-            
+            draft.logBuffer.push(entry);
+
             // Flush buffer periodically or when full
-            if (state.logBuffer.length >= 100) {
-              state.logs.push(...state.logBuffer);
-              state.logBuffer = [];
-              
+            if (draft.logBuffer.length >= 100) {
+              draft.logs.push(...draft.logBuffer);
+              draft.logBuffer = [];
+
               // Keep only recent logs
               const maxLogs = 10000;
-              if (state.logs.length > maxLogs) {
-                state.logs = state.logs.slice(-maxLogs);
+              if (draft.logs.length > maxLogs) {
+                draft.logs = draft.logs.slice(-maxLogs);
               }
             }
           });
-          
+
           // Console logging in debug mode
           if (get().settings.debugMode) {
-            const consoleMethod = level === 'debug' ? 'debug' :
-                                 level === 'info' ? 'info' :
-                                 level === 'warn' ? 'warn' :
-                                 level === 'error' || level === 'fatal' ? 'error' : 'log';
-            
+            const consoleMethod =
+              level === 'debug'
+                ? 'debug'
+                : level === 'info'
+                  ? 'info'
+                  : level === 'warn'
+                    ? 'warn'
+                    : level === 'error' || level === 'fatal'
+                      ? 'error'
+                      : 'log';
+
             console[consoleMethod](`[${level.toUpperCase()}] ${message}`, data);
           }
         },
-        
-        debug: (message: any, data: any) => get().log('debug', message, data),
-        info: (message: any, data: any) => get().log('info', message, data),
-        warn: (message: any, data: any) => get().log('warn', message, data),
+
+        debug: (message: string, data?: unknown) => get().log('debug', message, data as Record<string, any> | undefined),
+        info: (message: string, data?: unknown) => get().log('info', message, data as Record<string, any> | undefined),
+        warn: (message: string, data?: unknown) => get().log('warn', message, data as Record<string, any> | undefined),
         error: (message, error, data = {}) => {
-          const errorData = error ? {
-            name: error.name,
-            message: error.message,
-            stack: error.stack
-          } : undefined;
-          
+          const errorData = error
+            ? {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              }
+            : undefined;
+
           get().log('error', message, { ...data, error: errorData });
         },
-        
+
         // Dashboard Management
-        createDashboard: (dashboardData: any) => {
+        createDashboard: (dashboardData: Omit<Dashboard, 'id' | 'createdAt' | 'updatedAt' | 'viewCount'>) => {
           if (!FLAGS.observability) return '';
-          
+
           const dashboardId = `dashboard_${Date.now()}`;
           const now = new Date();
-          
+
           const dashboard: Dashboard = {
             ...dashboardData,
             id: dashboardId,
             createdAt: now,
             updatedAt: now,
-            viewCount: 0
+            viewCount: 0,
           };
-          
-          set((state: any) => {
-            state.dashboards.push(dashboard);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.dashboards.push(dashboard);
           });
-          
+
           return dashboardId;
         },
-        
-        updateDashboard: (dashboardId: any, updates: any) => {
+
+        updateDashboard: (dashboardId: string, updates: Partial<Dashboard>) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
             if (dashboard) {
               Object.assign(dashboard, updates);
               dashboard.updatedAt = new Date();
             }
           });
         },
-        
-        deleteDashboard: (dashboardId: any) => {
+
+        deleteDashboard: (dashboardId: string) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const index = state.dashboards.findIndex((d: any) => d.id === dashboardId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const index = draft.dashboards.findIndex((d) => d.id === dashboardId);
             if (index !== -1) {
-              state.dashboards.splice(index, 1);
+              draft.dashboards.splice(index, 1);
             }
-            
+
             // Clear active dashboard if it was deleted
-            if (state.activeDashboard?.id === dashboardId) {
-              state.activeDashboard = null;
+            if (draft.activeDashboard?.id === dashboardId) {
+              draft.activeDashboard = null;
             }
           });
         },
-        
-        setActiveDashboard: (dashboardId: any) => {
+
+        setActiveDashboard: (dashboardId: string | null) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
+
+          set((draft: Draft<ObservabilityStore>) => {
             if (dashboardId) {
-              const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+              const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
               if (dashboard) {
-                state.activeDashboard = dashboard;
+                draft.activeDashboard = dashboard;
                 dashboard.lastViewedAt = new Date();
                 dashboard.viewCount++;
               }
             } else {
-              state.activeDashboard = null;
+              draft.activeDashboard = null;
             }
           });
         },
-        
-        addWidget: (dashboardId: any, widgetData: any) => {
+
+        addWidget: (dashboardId: string, widgetData: Omit<DashboardWidget, 'id'>) => {
           if (!FLAGS.observability) return '';
-          
+
           const widgetId = `widget_${Date.now()}`;
           const widget: DashboardWidget = {
             ...widgetData,
-            id: widgetId
+            id: widgetId,
           };
-          
-          set((state: any) => {
-            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
             if (dashboard) {
               dashboard.widgets.push(widget);
               dashboard.updatedAt = new Date();
             }
           });
-          
+
           return widgetId;
         },
-        
+
         updateWidget: (dashboardId, widgetId, updates) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
             if (dashboard) {
-              const widget = dashboard.widgets.find((w: any) => w.id === widgetId);
+              const widget = dashboard.widgets.find((w) => w.id === widgetId);
               if (widget) {
                 Object.assign(widget, updates);
                 dashboard.updatedAt = new Date();
@@ -1229,14 +1263,14 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
           });
         },
-        
-        removeWidget: (dashboardId: any, widgetId: any) => {
+
+        removeWidget: (dashboardId: string, widgetId: string) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            const dashboard = state.dashboards.find((d: any) => d.id === dashboardId);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            const dashboard = draft.dashboards.find((d) => d.id === dashboardId);
             if (dashboard) {
-              const index = dashboard.widgets.findIndex((w: any) => w.id === widgetId);
+              const index = dashboard.widgets.findIndex((w) => w.id === widgetId);
               if (index !== -1) {
                 dashboard.widgets.splice(index, 1);
                 dashboard.updatedAt = new Date();
@@ -1244,270 +1278,269 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             }
           });
         },
-        
+
         // Real-time
         enableRealTime: () => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.isRealTimeEnabled = true;
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.isRealTimeEnabled = true;
           });
-          
+
           get().connectWebSocket();
         },
-        
+
         disableRealTime: () => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.isRealTimeEnabled = false;
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.isRealTimeEnabled = false;
           });
-          
+
           get().disconnectWebSocket();
         },
-        
+
         connectWebSocket: () => {
           if (!FLAGS.observability || typeof window === 'undefined') return;
-          
+
           // In a real implementation, this would establish WebSocket connection
-          set((state: any) => {
-            state.websocketConnected = true;
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.websocketConnected = true;
           });
-          
+
           console.log('Connected to observability WebSocket');
         },
-        
+
         disconnectWebSocket: () => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.websocketConnected = false;
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.websocketConnected = false;
           });
-          
+
           console.log('Disconnected from observability WebSocket');
         },
-        
+
         // Query & Analysis
-        queryMetrics: async (query: any, timeRange: any) => {
+        queryMetrics: async (query: string, timeRange: TimeRange) => {
           if (!FLAGS.observability) return [];
-          
+
           try {
             const response = await fetch('/api/observability/metrics/query', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
               },
-              body: JSON.stringify({ query, timeRange })
+              body: JSON.stringify({ query, timeRange }),
             });
-            
+
             if (!response.ok) throw new Error('Query failed');
-            
+
             return await response.json();
-            
           } catch (error) {
-            set((state: any) => {
-              state.errorMessage = error instanceof Error ? error.message : 'Query failed';
+            set((draft: Draft<ObservabilityStore>) => {
+              draft.errorMessage = error instanceof Error ? error.message : 'Query failed';
             });
-            
+
             return [];
           }
         },
-        
-        analyzePerformance: async (timeRange: any) => {
+
+        analyzePerformance: async (timeRange: TimeRange) => {
           if (!FLAGS.observability) return {};
-          
+
           try {
             const response = await fetch('/api/observability/performance/analyze', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
               },
-              body: JSON.stringify({ timeRange })
+              body: JSON.stringify({ timeRange }),
             });
-            
+
             if (!response.ok) throw new Error('Analysis failed');
-            
+
             return await response.json();
-            
           } catch (error) {
-            set((state: any) => {
-              state.errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+            set((draft: Draft<ObservabilityStore>) => {
+              draft.errorMessage = error instanceof Error ? error.message : 'Analysis failed';
             });
-            
+
             return {};
           }
         },
-        
-        generateReport: async (type: any, config: any) => {
+
+        generateReport: async (type: string, config: Record<string, unknown>) => {
           if (!FLAGS.observability) throw new Error('Observability not enabled');
-          
+
           const response = await fetch('/api/observability/reports/generate', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
             },
-            body: JSON.stringify({ type, config })
+            body: JSON.stringify({ type, config }),
           });
-          
+
           if (!response.ok) throw new Error('Report generation failed');
-          
+
           return await response.blob();
         },
-        
+
         // Data Management
-        exportData: async (type: any, timeRange: any) => {
+        exportData: async (type: string, timeRange: TimeRange) => {
           if (!FLAGS.observability) throw new Error('Observability not enabled');
-          
+
           const response = await fetch(`/api/observability/data/export/${type}`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
             },
-            body: JSON.stringify({ timeRange })
+            body: JSON.stringify({ timeRange }),
           });
-          
+
           if (!response.ok) throw new Error('Export failed');
-          
+
           return await response.blob();
         },
-        
-        clearOldData: (beforeDate: any) => {
+
+        clearOldData: (beforeDate: Date) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.metricValues = state.metricValues.filter((v: any) => v.timestamp >= beforeDate);
-            state.userEvents = state.userEvents.filter((e: any) => e.timestamp >= beforeDate);
-            state.errors = state.errors.filter((e: any) => e.timestamp >= beforeDate);
-            state.performanceTraces = state.performanceTraces.filter((t: any) => t.timestamp >= beforeDate);
-            state.logs = state.logs.filter((l: any) => l.timestamp >= beforeDate);
-            state.systemMetrics = state.systemMetrics.filter((m: any) => m.timestamp >= beforeDate);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.metricValues = draft.metricValues.filter((v) => v.timestamp >= beforeDate);
+            draft.userEvents = draft.userEvents.filter((e) => e.timestamp >= beforeDate);
+            draft.errors = draft.errors.filter((e) => e.timestamp >= beforeDate);
+            draft.performanceTraces = draft.performanceTraces.filter(
+              (t) => t.timestamp >= beforeDate
+            );
+            draft.logs = draft.logs.filter((l) => l.timestamp >= beforeDate);
+            draft.systemMetrics = draft.systemMetrics.filter((m) => m.timestamp >= beforeDate);
           });
         },
-        
+
         optimizeStorage: () => {
           if (!FLAGS.observability) return;
-          
+
           const retentionDate = new Date();
           retentionDate.setDate(retentionDate.getDate() - get().settings.retentionDays);
-          
+
           get().clearOldData(retentionDate);
         },
-        
+
         // Settings
-        updateSettings: (settings: any) => {
+        updateSettings: (settings: Partial<ObservabilityState['settings']>) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            Object.assign(state.settings, settings);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            Object.assign(draft.settings, settings);
           });
         },
-        
-        setTimeRange: (timeRange: any) => {
+
+        setTimeRange: (timeRange: TimeRange) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.selectedTimeRange = timeRange;
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.selectedTimeRange = timeRange;
           });
         },
-        
+
         setFilters: (filters) => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            Object.assign(state.filters, filters);
+
+          set((draft: Draft<ObservabilityStore>) => {
+            Object.assign(draft.filters, filters);
           });
         },
-        
+
         // Initialization
         initialize: async () => {
           if (!FLAGS.observability) return;
-          
-          set((state: any) => {
-            state.isLoading = true;
-            state.errorMessage = null;
+
+          set((draft: Draft<ObservabilityStore>) => {
+            draft.isLoading = true;
+            draft.errorMessage = null;
           });
-          
+
           try {
             // Initialize default metrics
             get().createDefaultMetrics();
-            
+
             // Start system monitoring
             get().startSystemMonitoring();
-            
+
             // Set up error listeners
             get().setupErrorListeners();
-            
+
             // Set up performance observers
             get().setupPerformanceObservers();
-            
-            set((state: any) => {
-              state.isLoading = false;
+
+            set((draft: Draft<ObservabilityStore>) => {
+              draft.isLoading = false;
             });
-            
           } catch (error) {
-            set((state: any) => {
-              state.errorMessage = error instanceof Error ? error.message : 'Initialization failed';
-              state.isLoading = false;
+            set((draft: Draft<ObservabilityStore>) => {
+              draft.errorMessage = error instanceof Error ? error.message : 'Initialization failed';
+              draft.isLoading = false;
             });
           }
         },
-        
-        loadHistoricalData: async (timeRange: any) => {
+
+        loadHistoricalData: async (timeRange: TimeRange) => {
           if (!FLAGS.observability) return;
-          
+
           try {
             const response = await fetch('/api/observability/data/historical', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
               },
-              body: JSON.stringify({ timeRange })
+              body: JSON.stringify({ timeRange }),
             });
-            
+
             if (!response.ok) throw new Error('Failed to load historical data');
-            
+
             const data = await response.json();
-            
-            set((state: any) => {
-              state.metricValues = [...state.metricValues, ...data.metrics];
-              state.userEvents = [...state.userEvents, ...data.events];
-              state.errors = [...state.errors, ...data.errors];
-              state.performanceTraces = [...state.performanceTraces, ...data.traces];
-              state.logs = [...state.logs, ...data.logs];
+
+            set((draft: Draft<ObservabilityStore>) => {
+              draft.metricValues = [...draft.metricValues, ...data.metrics];
+              draft.userEvents = [...draft.userEvents, ...data.events];
+              draft.errors = [...draft.errors, ...data.errors];
+              draft.performanceTraces = [...draft.performanceTraces, ...data.traces];
+              draft.logs = [...draft.logs, ...data.logs];
             });
-            
           } catch (error) {
-            set((state: any) => {
-              state.errorMessage = error instanceof Error ? error.message : 'Failed to load historical data';
+            set((draft: Draft<ObservabilityStore>) => {
+              draft.errorMessage =
+                error instanceof Error ? error.message : 'Failed to load historical data';
             });
           }
         },
-        
+
         // Helper Methods
         getCurrentSessionId: () => {
           if (typeof window === 'undefined') return 'server';
           return sessionStorage.getItem('session_id') || 'anonymous';
         },
-        
+
         getCurrentUserId: () => {
           if (typeof window === 'undefined') return undefined;
           return localStorage.getItem('user_id') || undefined;
         },
-        
+
         getDeviceType: (): 'desktop' | 'tablet' | 'mobile' => {
           if (typeof window === 'undefined') return 'desktop';
-          
+
           const width = window.innerWidth;
           if (width < 768) return 'mobile';
           if (width < 1024) return 'tablet';
           return 'desktop';
         },
-        
+
         createDefaultMetrics: () => {
           // Create default system metrics
           const defaultMetrics = [
@@ -1520,7 +1553,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               tags: ['performance', 'user-experience'],
               alertRules: [],
               retentionPeriod: 30,
-              isActive: true
+              isActive: true,
             },
             {
               name: 'API Response Time',
@@ -1531,7 +1564,7 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               tags: ['performance', 'api'],
               alertRules: [],
               retentionPeriod: 30,
-              isActive: true
+              isActive: true,
             },
             {
               name: 'Error Rate',
@@ -1541,18 +1574,18 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               tags: ['errors', 'reliability'],
               alertRules: [],
               retentionPeriod: 30,
-              isActive: true
-            }
+              isActive: true,
+            },
           ];
-          
-          defaultMetrics.forEach((metric: any) => {
+
+          defaultMetrics.forEach((metric) => {
             get().createMetric(metric);
           });
         },
-        
+
         setupErrorListeners: () => {
           if (typeof window === 'undefined') return;
-          
+
           // Global error handler
           window.addEventListener('error', (event: any) => {
             get().reportError({
@@ -1567,13 +1600,13 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               tags: ['javascript', 'runtime'],
               customData: {
                 lineno: event.lineno,
-                colno: event.colno
+                colno: event.colno,
               },
               sessionId: get().getCurrentSessionId(),
-              userId: get().getCurrentUserId()
+              userId: get().getCurrentUserId(),
             });
           });
-          
+
           // Unhandled promise rejections
           window.addEventListener('unhandledrejection', (event: any) => {
             get().reportError({
@@ -1587,21 +1620,21 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
               tags: ['javascript', 'promise', 'async'],
               customData: { reason: event.reason },
               sessionId: get().getCurrentSessionId(),
-              userId: get().getCurrentUserId()
+              userId: get().getCurrentUserId(),
             });
           });
         },
-        
+
         setupPerformanceObservers: () => {
           if (typeof window === 'undefined' || !window.PerformanceObserver) return;
-          
+
           try {
             // Navigation timing
             const navObserver = new PerformanceObserver((list: any) => {
               for (const entry of list.getEntries()) {
                 if (entry.entryType === 'navigation') {
                   const navEntry = entry as PerformanceNavigationTiming;
-                  
+
                   get().recordPerformance({
                     sessionId: get().getCurrentSessionId(),
                     userId: get().getCurrentUserId(),
@@ -1617,36 +1650,35 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                       ssl: navEntry.connectEnd - navEntry.secureConnectionStart,
                       request: navEntry.responseStart - navEntry.requestStart,
                       response: navEntry.responseEnd - navEntry.responseStart,
-                      render: navEntry.loadEventEnd - navEntry.responseEnd
+                      render: navEntry.loadEventEnd - navEntry.responseEnd,
                     },
-                    tags: {}
+                    tags: {},
                   });
                 }
               }
             });
-            
+
             navObserver.observe({ entryTypes: ['navigation'] });
-            
           } catch (error) {
             console.warn('Performance observer setup failed:', error);
           }
         },
-        
+
         executeAlertActions: async (rule: AlertRule, value: number) => {
           for (const action of rule.actions) {
             if (!action.isEnabled) continue;
-            
+
             try {
               switch (action.type) {
                 case 'notification':
                   if ('Notification' in window && Notification.permission === 'granted') {
                     new Notification(`Alert: ${rule.name}`, {
                       body: `${rule.description}\nCurrent value: ${value}`,
-                      icon: '/favicon.ico'
+                      icon: '/favicon.ico',
                     });
                   }
                   break;
-                  
+
                 case 'webhook':
                   await fetch(action.config.url, {
                     method: 'POST',
@@ -1656,28 +1688,27 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                       description: rule.description,
                       value,
                       severity: rule.severity,
-                      timestamp: new Date().toISOString()
-                    })
+                      timestamp: new Date().toISOString(),
+                    }),
                   });
                   break;
-                  
+
                 case 'email':
                   // Would integrate with email service
                   console.log(`Email alert: ${rule.name} - ${value}`);
                   break;
-                  
+
                 case 'slack':
                   // Would integrate with Slack API
                   console.log(`Slack alert: ${rule.name} - ${value}`);
                   break;
               }
-              
             } catch (error) {
               console.error(`Failed to execute alert action ${action.type}:`, error);
             }
           }
         },
-        
+
         executeErrorActions: async (error: ErrorEvent) => {
           // Auto-report critical errors to external service
           if (error.severity === 'critical') {
@@ -1686,15 +1717,15 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                  Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
                 },
-                body: JSON.stringify(error)
+                body: JSON.stringify(error),
               });
             } catch (reportError) {
               console.error('Failed to report critical error:', reportError);
             }
           }
-        }
+        },
       }))
     ),
     {
@@ -1707,36 +1738,39 @@ export const useObservabilityStore = create<ObservabilityState & ObservabilityAc
             performanceTraces: [],
             logs: [],
             logBuffer: [],
-            sessionEvents: new Map()
+            sessionEvents: new Map(),
           };
         }
         return persistedState as ObservabilityState & ObservabilityActions;
-      }
+      },
     }
   )
 );
 
 // Selectors
 export const useActiveMetrics = () =>
-  useObservabilityStore((state: any) => state.metrics.filter((m: any) => m.isActive));
+  useObservabilityStore((draft: Draft<ObservabilityStore>) =>
+    draft.metrics.filter((m) => m.isActive)
+  );
 
 export const useRecentErrors = (limit = 10) =>
-  useObservabilityStore((state: any) => state.recentErrors.slice(0, limit));
+  useObservabilityStore((draft: Draft<ObservabilityStore>) => draft.recentErrors.slice(0, limit));
 
 export const usePerformanceMetrics = () =>
-  useObservabilityStore((state: any) => state.performanceMetrics);
+  useObservabilityStore((draft: Draft<ObservabilityStore>) => draft.performanceMetrics);
 
 export const useSystemHealth = () =>
-  useObservabilityStore((state: any) => {
-    const current = state.currentMetrics;
+  useObservabilityStore((draft: Draft<ObservabilityStore>) => {
+    const current = draft.currentMetrics;
     if (!current) return null;
-    
+
     return {
-      status: current.system.errorCount === 0 && current.system.warningCount < 5 ? 'healthy' : 'warning',
+      status:
+        current.system.errorCount === 0 && current.system.warningCount < 5 ? 'healthy' : 'warning',
       uptime: current.system.uptime,
-      errorRate: state.performanceMetrics.errorRate,
-      responseTime: state.performanceMetrics.avgResponseTime,
-      lastUpdate: state.lastDataUpdate
+      errorRate: draft.performanceMetrics.errorRate,
+      responseTime: draft.performanceMetrics.avgResponseTime,
+      lastUpdate: draft.lastDataUpdate,
     };
   });
 
@@ -1744,10 +1778,9 @@ export const useSystemHealth = () =>
 if (typeof window !== 'undefined' && FLAGS.observability) {
   const store = useObservabilityStore.getState();
   store.initialize();
-  
+
   // Set up periodic optimization
   setInterval(() => {
     store.optimizeStorage();
   }, 60000); // Every minute
 }
-
