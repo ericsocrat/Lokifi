@@ -157,12 +157,12 @@ updateResourceUsage: (environmentId: string, resources: EnvironmentResources) =>
 addService: (environmentId: string, serviceData: Omit<ServiceInstance, 'id'>) => {
   const id = `service_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const service: ServiceInstance = { ...serviceData, id };
-  
+
   set((draft: Draft<EnvironmentManagementStore>) => {
     const environment = draft.environments.find((e) => e.id === environmentId);
     if (environment) environment.services.push(service);
   });
-  
+
   return id;
 }
 
@@ -202,11 +202,11 @@ createTemplate: (templateData: Omit<EnvironmentTemplate, 'id' | 'createdAt' | 'u
     updatedAt: new Date(),
     usageCount: 0
   };
-  
+
   set((draft: Draft<EnvironmentManagementStore>) => {
     draft.templates.push(template);
   });
-  
+
   return id;
 }
 
