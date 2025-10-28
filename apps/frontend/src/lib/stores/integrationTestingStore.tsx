@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // H11: Integration Testing - Automated testing pipelines for seamless upgrades
@@ -831,7 +832,16 @@ interface IntegrationTestingActions {
   createDefaultPipelines: () => void;
 }
 
+// ============================================================================
+// Combined Store Type
+// ============================================================================
+
+type IntegrationTestingStore = IntegrationTestingState & IntegrationTestingActions;
+
+// ============================================================================
 // Initial State
+// ============================================================================
+
 const createInitialState = (): IntegrationTestingState => ({
   testSuites: [],
   selectedTestSuite: null,
@@ -887,14 +897,14 @@ const createInitialState = (): IntegrationTestingState => ({
 });
 
 // Create Store
-export const useIntegrationTestingStore = create<IntegrationTestingState & IntegrationTestingActions>()(
+export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
   persist(
-    // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
+    // @ts-expect-error - Zustand v5 middleware type inference issue
     immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Test Suite Management
-      createTestSuite: (suiteData: any) => {
+      createTestSuite: (suiteData: Omit<TestSuite, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executionIds'>) => {
         if (!FLAGS.integrationTesting) return '';
         
         const id = `suite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -907,39 +917,39 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           version: 1
         };
         
-        set((state: any) => {
-          state.testSuites.push(suite);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.testSuites.push(suite);
         });
         
         return id;
       },
 
-      updateTestSuite: (suiteId: any, updates: any) => {
+      updateTestSuite: (suiteId: string, updates: Partial<TestSuite>) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
             Object.assign(suite, { ...updates, updatedAt: new Date(), version: suite.version + 1 });
           }
         });
       },
 
-      deleteTestSuite: (suiteId: any) => {
+      deleteTestSuite: (suiteId: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.testSuites = state.testSuites.filter((s: any) => s.id !== suiteId);
-          if (state.selectedTestSuite === suiteId) {
-            state.selectedTestSuite = null;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.testSuites = draft.testSuites.filter((s) => s.id !== suiteId);
+          if (draft.selectedTestSuite === suiteId) {
+            draft.selectedTestSuite = null;
           }
         });
       },
 
-      cloneTestSuite: (suiteId: any, name: any) => {
+      cloneTestSuite: (suiteId: string, name: string) => {
         if (!FLAGS.integrationTesting) return '';
         
-        const suite = get().testSuites.find((s: any) => s.id === suiteId);
+        const suite = get().testSuites.find((s) => s.id === suiteId);
         if (!suite) return '';
         
         return get().createTestSuite({
@@ -949,16 +959,16 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      setSelectedTestSuite: (suiteId: any) => {
+      setSelectedTestSuite: (suiteId: string | null) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.selectedTestSuite = suiteId;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.selectedTestSuite = suiteId;
         });
       },
 
       // Test Case Management
-      addTestCase: (suiteId: any, testCaseData: any) => {
+      addTestCase: (suiteId: string, testCaseData: Omit<TestCase, 'id' | 'createdAt' | 'updatedAt'>) => {
         if (!FLAGS.integrationTesting) return '';
         
         const testCaseId = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -969,8 +979,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           updatedAt: new Date()
         };
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
             suite.tests.push(testCase);
             suite.updatedAt = new Date();
@@ -983,10 +993,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       updateTestCase: (suiteId, testCaseId, updates) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
-            const testCase = suite.tests.find((t: any) => t.id === testCaseId);
+            const testCase = suite.tests.find((t) => t.id === testCaseId);
             if (testCase) {
               Object.assign(testCase, { ...updates, updatedAt: new Date() });
               suite.updatedAt = new Date();
@@ -995,13 +1005,13 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      removeTestCase: (suiteId: any, testCaseId: any) => {
+      removeTestCase: (suiteId: string, testCaseId: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
-            suite.tests = suite.tests.filter((t: any) => t.id !== testCaseId);
+            suite.tests = suite.tests.filter((t) => t.id !== testCaseId);
             suite.updatedAt = new Date();
           }
         });
@@ -1011,7 +1021,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       runTestSuite: async (suiteId, environment, options) => {
         if (!FLAGS.integrationTesting) return '';
         
-        const suite = get().testSuites.find((s: any) => s.id === suiteId);
+        const suite = get().testSuites.find((s) => s.id === suiteId);
         if (!suite) throw new Error('Test suite not found');
         
         const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1046,12 +1056,12 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           warnings: []
         };
         
-        set((state: any) => {
-          state.executions.push(execution);
-          state.activeExecutions.push(executionId);
-          state.isRunning = true;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.executions.push(execution);
+          draft.activeExecutions.push(executionId);
+          draft.isRunning = true;
           
-          const s = state.testSuites.find((s: any) => s.id === suiteId);
+          const s = draft.testSuites.find((s) => s.id === suiteId);
           if (s) {
             s.lastExecutionId = executionId;
             s.executionIds.push(executionId);
@@ -1086,7 +1096,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
               completedAt: testEndTime,
               duration,
               status: passed ? 'passed' : 'failed',
-              stepResults: testCase.steps.map((step: any) => ({
+              stepResults: testCase.steps.map((step) => ({
                 stepId: step.id,
                 stepName: step.name,
                 status: passed ? 'passed' : (Math.random() < 0.5 ? 'failed' : 'passed'),
@@ -1094,7 +1104,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
                 completedAt: testEndTime,
                 duration: duration / testCase.steps.length
               })),
-              assertionResults: testCase.assertions.map((assertion: any) => ({
+              assertionResults: testCase.assertions.map((assertion) => ({
                 assertionId: assertion.id,
                 assertionName: assertion.name,
                 status: passed ? 'passed' : 'failed',
@@ -1113,8 +1123,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
             }
             
             // Update execution with test result
-            set((state: any) => {
-              const exec = state.executions.find((e: any) => e.id === executionId);
+            set((draft: Draft<IntegrationTestingStore>) => {
+              const exec = draft.executions.find((e) => e.id === executionId);
               if (exec) {
                 exec.results.push(testResult);
                 exec.summary.passedTests = passedTests;
@@ -1129,8 +1139,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           const totalDuration = (endTime.getTime() - startTime.getTime()) / 1000;
           
           // Complete execution
-          set((state: any) => {
-            const exec = state.executions.find((e: any) => e.id === executionId);
+          set((draft: Draft<IntegrationTestingStore>) => {
+            const exec = draft.executions.find((e) => e.id === executionId);
             if (exec) {
               exec.completedAt = endTime;
               exec.duration = totalDuration;
@@ -1139,17 +1149,17 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
               exec.summary.averageDuration = totalDuration / totalTests;
             }
             
-            state.activeExecutions = state.activeExecutions.filter((id: any) => id !== executionId);
-            if (state.activeExecutions.length === 0) {
-              state.isRunning = false;
+            draft.activeExecutions = draft.activeExecutions.filter((id) => id !== executionId);
+            if (draft.activeExecutions.length === 0) {
+              draft.isRunning = false;
             }
           });
           
           return executionId;
           
         } catch (error) {
-          set((state: any) => {
-            const exec = state.executions.find((e: any) => e.id === executionId);
+          set((draft: Draft<IntegrationTestingStore>) => {
+            const exec = draft.executions.find((e) => e.id === executionId);
             if (exec) {
               exec.completedAt = new Date();
               exec.status = 'failed';
@@ -1162,11 +1172,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
               });
             }
             
-            state.activeExecutions = state.activeExecutions.filter((id: any) => id !== executionId);
-            if (state.activeExecutions.length === 0) {
-              state.isRunning = false;
+            draft.activeExecutions = draft.activeExecutions.filter((id) => id !== executionId);
+            if (draft.activeExecutions.length === 0) {
+              draft.isRunning = false;
             }
-            state.error = error instanceof Error ? error.message : 'Execution failed';
+            draft.error = error instanceof Error ? error.message : 'Execution failed';
           });
           throw error;
         }
@@ -1175,8 +1185,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       runTestCase: async (suiteId, testCaseId, environment) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
-        const suite = get().testSuites.find((s: any) => s.id === suiteId);
-        const testCase = suite?.tests.find((t: any) => t.id === testCaseId);
+        const suite = get().testSuites.find((s) => s.id === suiteId);
+        const testCase = suite?.tests.find((t) => t.id === testCaseId);
         
         if (!testCase) throw new Error('Test case not found');
         
@@ -1203,25 +1213,25 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         return result;
       },
 
-      cancelExecution: async (executionId: any) => {
+      cancelExecution: async (executionId: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const exec = state.executions.find((e: any) => e.id === executionId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const exec = draft.executions.find((e) => e.id === executionId);
           if (exec && exec.status === 'running') {
             exec.status = 'cancelled';
             exec.completedAt = new Date();
           }
           
-          state.activeExecutions = state.activeExecutions.filter((id: any) => id !== executionId);
-          if (state.activeExecutions.length === 0) {
-            state.isRunning = false;
+          draft.activeExecutions = draft.activeExecutions.filter((id) => id !== executionId);
+          if (draft.activeExecutions.length === 0) {
+            draft.isRunning = false;
           }
         });
       },
 
       // Pipeline Management
-      createPipeline: (pipelineData: any) => {
+      createPipeline: (pipelineData: Omit<TestPipeline, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'executions'>) => {
         if (!FLAGS.integrationTesting) return '';
         
         const id = `pipeline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1234,40 +1244,40 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           version: 1
         };
         
-        set((state: any) => {
-          state.pipelines.push(pipeline);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.pipelines.push(pipeline);
         });
         
         return id;
       },
 
-      updatePipeline: (pipelineId: any, updates: any) => {
+      updatePipeline: (pipelineId: string, updates: Partial<TestPipeline>) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const pipeline = state.pipelines.find((p: any) => p.id === pipelineId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const pipeline = draft.pipelines.find((p) => p.id === pipelineId);
           if (pipeline) {
             Object.assign(pipeline, { ...updates, updatedAt: new Date(), version: pipeline.version + 1 });
           }
         });
       },
 
-      deletePipeline: (pipelineId: any) => {
+      deletePipeline: (pipelineId: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.pipelines = state.pipelines.filter((p: any) => p.id !== pipelineId);
-          if (state.selectedPipeline === pipelineId) {
-            state.selectedPipeline = null;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.pipelines = draft.pipelines.filter((p) => p.id !== pipelineId);
+          if (draft.selectedPipeline === pipelineId) {
+            draft.selectedPipeline = null;
           }
         });
       },
 
-      setSelectedPipeline: (pipelineId: any) => {
+      setSelectedPipeline: (pipelineId: string | null) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.selectedPipeline = pipelineId;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.selectedPipeline = pipelineId;
         });
       },
 
@@ -1275,7 +1285,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       runPipeline: async (pipelineId, environment = 'staging') => {
         if (!FLAGS.integrationTesting) return '';
         
-        const pipeline = get().pipelines.find((p: any) => p.id === pipelineId);
+        const pipeline = get().pipelines.find((p) => p.id === pipelineId);
         if (!pipeline) throw new Error('Pipeline not found');
         
         const executionId = `pipeline_exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1304,8 +1314,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           approvals: []
         };
         
-        set((state: any) => {
-          const p = state.pipelines.find((p: any) => p.id === pipelineId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const p = draft.pipelines.find((p) => p.id === pipelineId);
           if (p) {
             p.executions.push(execution);
             p.status = 'running';
@@ -1316,10 +1326,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           // Simulate pipeline execution
           await new Promise(resolve => setTimeout(resolve, 5000 + Math.random() * 10000));
           
-          set((state: any) => {
-            const p = state.pipelines.find((p: any) => p.id === pipelineId);
+          set((draft: Draft<IntegrationTestingStore>) => {
+            const p = draft.pipelines.find((p) => p.id === pipelineId);
             if (p) {
-              const exec = p.executions.find((e: any) => e.id === executionId);
+              const exec = p.executions.find((e) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = 'completed';
@@ -1333,10 +1343,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           return executionId;
           
         } catch (error) {
-          set((state: any) => {
-            const p = state.pipelines.find((p: any) => p.id === pipelineId);
+          set((draft: Draft<IntegrationTestingStore>) => {
+            const p = draft.pipelines.find((p) => p.id === pipelineId);
             if (p) {
-              const exec = p.executions.find((e: any) => e.id === executionId);
+              const exec = p.executions.find((e) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = 'failed';
@@ -1351,12 +1361,12 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       approvePipelineStage: (executionId, stageId, approverId, comment) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const pipeline = state.pipelines.find((p: any) => 
-            p.executions.some((e: any) => e.id === executionId)
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const pipeline = draft.pipelines.find((p) => 
+            p.executions.some((e) => e.id === executionId)
           );
           if (pipeline) {
-            const execution = pipeline.executions.find((e: any) => e.id === executionId);
+            const execution = pipeline.executions.find((e) => e.id === executionId);
             if (execution) {
               execution.approvals.push({
                 id: `approval_${Date.now()}`,
@@ -1374,12 +1384,12 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       rejectPipelineStage: (executionId, stageId, approverId, comment) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const pipeline = state.pipelines.find((p: any) => 
-            p.executions.some((e: any) => e.id === executionId)
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const pipeline = draft.pipelines.find((p) => 
+            p.executions.some((e) => e.id === executionId)
           );
           if (pipeline) {
-            const execution = pipeline.executions.find((e: any) => e.id === executionId);
+            const execution = pipeline.executions.find((e) => e.id === executionId);
             if (execution) {
               execution.approvals.push({
                 id: `approval_${Date.now()}`,
@@ -1396,7 +1406,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Environment Health
-      checkEnvironmentHealth: async (environmentId: any) => {
+      checkEnvironmentHealth: async (environmentId: string) => {
         if (!FLAGS.integrationTesting) return [];
         
         // Simulate health checks
@@ -1442,9 +1452,9 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           }
         ];
         
-        set((state: any) => {
-          state.environmentHealth = healthData;
-          state.lastUpdate = new Date();
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.environmentHealth = healthData;
+          draft.lastUpdate = new Date();
         });
         
         return healthData;
@@ -1453,21 +1463,21 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       startHealthMonitoring: () => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.isHealthChecking = true;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.isHealthChecking = true;
         });
       },
 
       stopHealthMonitoring: () => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.isHealthChecking = false;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.isHealthChecking = false;
         });
       },
 
       // Test Data Management
-      createTestData: (suiteId: any, testDataData: any) => {
+      createTestData: (suiteId: string, testData: Omit<TestData, 'id'>) => {
         if (!FLAGS.integrationTesting) return '';
         
         const dataId = `data_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1476,11 +1486,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           id: dataId
         };
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
             // Add to test cases that can use this data
-            suite.tests.forEach((test: any) => {
+            suite.tests.forEach((test) => {
               if (!test.testData) test.testData = [];
               test.testData.push(testData);
             });
@@ -1494,11 +1504,11 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       updateTestData: (suiteId, dataId, updates) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
-            suite.tests.forEach((test: any) => {
-              const data = test.testData?.find((d: any) => d.id === dataId);
+            suite.tests.forEach((test) => {
+              const data = test.testData?.find((d) => d.id === dataId);
               if (data) {
                 Object.assign(data, updates);
               }
@@ -1508,15 +1518,15 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         });
       },
 
-      deleteTestData: (suiteId: any, dataId: any) => {
+      deleteTestData: (suiteId: string, dataId: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          const suite = state.testSuites.find((s: any) => s.id === suiteId);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          const suite = draft.testSuites.find((s) => s.id === suiteId);
           if (suite) {
-            suite.tests.forEach((test: any) => {
+            suite.tests.forEach((test) => {
               if (test.testData) {
-                test.testData = test.testData.filter((d: any) => d.id !== dataId);
+                test.testData = test.testData.filter((d) => d.id !== dataId);
               }
             });
             suite.updatedAt = new Date();
@@ -1525,10 +1535,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Reporting
-      generateReport: async (executionId: any, format: any) => {
+      generateReport: async (executionId: string, format: string) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
-        const execution = get().executions.find((e: any) => e.id === executionId);
+        const execution = get().executions.find((e) => e.id === executionId);
         if (!execution) throw new Error('Execution not found');
         
         // Simulate report generation
@@ -1558,10 +1568,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
         return new Blob([content], { type: mimeType });
       },
 
-      exportResults: async (executionIds: any, format: any) => {
+      exportResults: async (executionIds: string[], format: string) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
         
-        const executions = get().executions.filter((e: any) => executionIds.includes(e.id));
+        const executions = get().executions.filter((e) => executionIds.includes(e.id));
         
         let content: string = '';
         let mimeType: string = 'text/plain';
@@ -1573,14 +1583,14 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
             break;
           case 'csv':
             const headers = 'ID,Suite,Environment,Status,Duration,Pass Rate';
-            const rows = executions.map((e: any) => 
+            const rows = executions.map((e) => 
               `${e.id},${e.suiteId},${e.environment},${e.status},${e.duration},${e.summary.passRate}%`
             ).join('\n');
             content = `${headers}\n${rows}`;
             mimeType = 'text/csv';
             break;
           case 'xml':
-            content = `<?xml version="1.0"?><executions>${executions.map((e: any) => 
+            content = `<?xml version="1.0"?><executions>${executions.map((e) => 
               `<execution id="${e.id}" status="${e.status}"/>`
             ).join('')}</executions>`;
             mimeType = 'application/xml';
@@ -1591,60 +1601,60 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
       },
 
       // Search & Filtering
-      setSearchQuery: (query: any) => {
+      setSearchQuery: (query: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.searchQuery = query;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.searchQuery = query;
         });
       },
 
       setFilters: (filters) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          Object.assign(state.filters, filters);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          Object.assign(draft.filters, filters);
         });
       },
 
       clearFilters: () => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.filters = {
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.filters = {
             suiteTypes: [],
             statuses: [],
             environments: [],
             tags: [],
             priorities: []
           };
-          state.searchQuery = '';
+          draft.searchQuery = '';
         });
       },
 
       // UI Actions
-      setSidebarCollapsed: (collapsed: any) => {
+      setSidebarCollapsed: (collapsed: boolean) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.sidebarCollapsed = collapsed;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.sidebarCollapsed = collapsed;
         });
       },
 
-      setSelectedTab: (tab: any) => {
+      setSelectedTab: (tab: string) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          state.selectedTab = tab;
+        set((draft: Draft<IntegrationTestingStore>) => {
+          draft.selectedTab = tab;
         });
       },
 
       // Settings
-      updateSettings: (settings: any) => {
+      updateSettings: (settings: Partial<TestingSettings>) => {
         if (!FLAGS.integrationTesting) return;
         
-        set((state: any) => {
-          Object.assign(state.settings, settings);
+        set((draft: Draft<IntegrationTestingStore>) => {
+          Object.assign(draft.settings, settings);
         });
       },
 
@@ -1663,8 +1673,8 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
           }
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Initialization failed';
+          set((draft: Draft<IntegrationTestingStore>) => {
+            draft.error = error instanceof Error ? error.message : 'Initialization failed';
           });
         }
       },
@@ -1883,5 +1893,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingState & Integ
 if (typeof window !== 'undefined' && FLAGS.integrationTesting) {
   useIntegrationTestingStore.getState().initialize();
 }
+
+
+
+
+
 
 
