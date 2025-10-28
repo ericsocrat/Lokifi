@@ -1,7 +1,7 @@
+import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // H10: Configuration Sync - Centralized configuration management and synchronization
@@ -15,32 +15,32 @@ export interface ConfigurationItem {
   type: ConfigurationType;
   category: string;
   description: string;
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
   version: number;
-  
+
   // Validation
   schema?: ConfigurationSchema;
   isValid: boolean;
   validationErrors: string[];
-  
+
   // Environment specific
   environmentId?: string;
   inheritedFrom?: string; // parent config id
-  
+
   // Access control
   isReadOnly: boolean;
   isSecret: boolean;
   owner: string;
-  
+
   // Lifecycle
   status: ConfigurationStatus;
   tags: string[];
 }
 
-export type ConfigurationType = 
+export type ConfigurationType =
   | 'string'
   | 'number'
   | 'boolean'
@@ -57,7 +57,7 @@ export type ConfigurationType =
   | 'certificate'
   | 'custom';
 
-export type ConfigurationStatus = 
+export type ConfigurationStatus =
   | 'active'
   | 'draft'
   | 'deprecated'
@@ -88,13 +88,13 @@ export interface ConfigurationTemplate {
   category: string;
   items: Omit<ConfigurationItem, 'id' | 'createdAt' | 'updatedAt' | 'version'>[];
   variables: TemplateVariable[];
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
   version: number;
   author: string;
-  
+
   // Usage
   usageCount: number;
   environments: string[];
@@ -114,23 +114,23 @@ export interface ConfigurationEnvironment {
   name: string;
   description: string;
   type: 'development' | 'testing' | 'staging' | 'production' | 'custom';
-  
+
   // Hierarchy
   parentEnvironment?: string;
   childEnvironments: string[];
-  
+
   // Configuration
   configurations: string[]; // configuration item ids
   overrides: Record<string, any>;
-  
+
   // Access
   isReadOnly: boolean;
   allowedUsers: string[];
-  
+
   // Sync
   lastSyncAt?: Date;
   syncStatus: SyncJobStatus;
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
@@ -142,56 +142,51 @@ export interface ConfigurationVersion {
   version: number;
   value: any;
   changelog: string;
-  
+
   // Metadata
   createdAt: Date;
   createdBy: string;
-  
+
   // Deployment
   deployedEnvironments: string[];
   deploymentStatus: DeploymentStatus;
 }
 
-export type DeploymentStatus = 
-  | 'pending'
-  | 'deploying'
-  | 'deployed'
-  | 'failed'
-  | 'rolled_back';
+export type DeploymentStatus = 'pending' | 'deploying' | 'deployed' | 'failed' | 'rolled_back';
 
 export interface ConfigurationChangeRequest {
   id: string;
   title: string;
   description: string;
-  
+
   // Changes
   changes: ConfigurationChange[];
   affectedEnvironments: string[];
-  
+
   // Workflow
   status: ChangeRequestStatus;
   priority: 'low' | 'medium' | 'high' | 'critical';
-  
+
   // People
   createdBy: string;
   assignedTo?: string;
   reviewers: string[];
-  
+
   // Timeline
   createdAt: Date;
   updatedAt: Date;
   scheduledAt?: Date;
   completedAt?: Date;
-  
+
   // Approval
   approvals: Approval[];
   requiredApprovals: number;
-  
+
   // Impact analysis
   impactAnalysis?: ImpactAnalysis;
 }
 
-export type ChangeRequestStatus = 
+export type ChangeRequestStatus =
   | 'draft'
   | 'pending_review'
   | 'approved'
@@ -229,71 +224,66 @@ export interface ConfigurationSyncJob {
   id: string;
   name: string;
   description: string;
-  
+
   // Sync configuration
   sourceEnvironment: string;
   targetEnvironments: string[];
   configurations: string[]; // specific configs to sync, empty = all
-  
+
   // Schedule
   schedule?: string; // cron expression
   isEnabled: boolean;
-  
+
   // Filtering
   includePatterns: string[];
   excludePatterns: string[];
-  
+
   // Options
   dryRun: boolean;
   overwriteTarget: boolean;
   validateBeforeSync: boolean;
   createBackup: boolean;
-  
+
   // Status
   status: SyncJobStatus;
   lastRunAt?: Date;
   nextRunAt?: Date;
-  
+
   // History
   executions: SyncExecution[];
-  
+
   // Notifications
   notificationChannels: string[];
   notifyOnSuccess: boolean;
   notifyOnFailure: boolean;
-  
+
   // Metadata
   createdAt: Date;
   updatedAt: Date;
   createdBy: string;
 }
 
-export type SyncJobStatus = 
-  | 'idle'
-  | 'running'
-  | 'completed'
-  | 'failed'
-  | 'disabled';
+export type SyncJobStatus = 'idle' | 'running' | 'completed' | 'failed' | 'disabled';
 
 export interface SyncExecution {
   id: string;
   startedAt: Date;
   completedAt?: Date;
   status: SyncJobStatus;
-  
+
   // Results
   configurationsSynced: number;
   configurationsSkipped: number;
   configurationsErrored: number;
-  
+
   // Details
   syncedItems: SyncedItem[];
   errors: SyncError[];
   warnings: SyncWarning[];
-  
+
   // Performance
   duration?: number; // seconds
-  
+
   // Backup
   backupId?: string;
 }
@@ -326,17 +316,17 @@ export interface ConfigurationBackup {
   id: string;
   name: string;
   description: string;
-  
+
   // Content
   configurations: ConfigurationItem[];
   environments: ConfigurationEnvironment[];
   metadata: BackupMetadata;
-  
+
   // Lifecycle
   createdAt: Date;
   createdBy: string;
   expiresAt?: Date;
-  
+
   // Restoration
   canRestore: boolean;
   restoredAt?: Date;
@@ -355,68 +345,63 @@ export interface ConfigurationDrift {
   id: string;
   environmentId: string;
   configurationId: string;
-  
+
   // Drift details
   expectedValue: any;
   actualValue: any;
   driftType: DriftType;
-  
+
   // Detection
   detectedAt: Date;
   detectionMethod: 'scan' | 'monitoring' | 'manual';
-  
+
   // Resolution
   status: DriftStatus;
   resolvedAt?: Date;
   resolvedBy?: string;
   resolution?: string;
-  
+
   // Impact
   severity: 'low' | 'medium' | 'high' | 'critical';
   affectedServices: string[];
 }
 
-export type DriftType = 
+export type DriftType =
   | 'value_changed'
   | 'type_changed'
   | 'missing'
   | 'unexpected'
   | 'permission_changed';
 
-export type DriftStatus = 
-  | 'detected'
-  | 'acknowledged'
-  | 'resolved'
-  | 'ignored'
-  | 'false_positive';
+export type DriftStatus = 'detected' | 'acknowledged' | 'resolved' | 'ignored' | 'false_positive';
 
 export interface ConfigurationAudit {
   id: string;
   action: AuditAction;
   resourceType: 'configuration' | 'environment' | 'template' | 'change_request';
   resourceId: string;
-  
+
   // Details
   oldValue?: any;
   newValue?: any;
   changes: Record<string, { from: any; to: any }>;
-  
+
   // Context
   userId: string;
   userAgent?: string;
   ipAddress?: string;
   sessionId?: string;
-  
+
   // Metadata
   timestamp: Date;
   success: boolean;
   errorMessage?: string;
-  
+
   // Additional data
   metadata: Record<string, any>;
 }
 
-export type AuditAction = 
+export type AuditAction =
   | 'create'
   | 'read'
   | 'update'
@@ -435,42 +420,42 @@ export interface ConfigurationSettings {
   defaultEnvironment: string;
   enableVersioning: boolean;
   enableAuditLog: boolean;
-  
+
   // Validation
   enableValidation: boolean;
   strictMode: boolean;
   validateOnSync: boolean;
-  
+
   // Sync
   autoSyncEnabled: boolean;
   syncInterval: number; // minutes
   maxSyncRetries: number;
   syncTimeout: number; // seconds
-  
+
   // Backup
   autoBackupEnabled: boolean;
   backupRetention: number; // days
   backupBeforeSync: boolean;
-  
+
   // Drift Detection
   enableDriftDetection: boolean;
   driftScanInterval: number; // hours
   alertOnDrift: boolean;
-  
+
   // Security
   encryptSecrets: boolean;
   maskSecretsInLogs: boolean;
   requireApprovalForSecrets: boolean;
-  
+
   // Change Management
   enableChangeRequests: boolean;
   requireApprovalForProduction: boolean;
   defaultApprovers: string[];
-  
+
   // Notifications
   enableNotifications: boolean;
   notificationChannels: string[];
-  
+
   // Performance
   enableCaching: boolean;
   cacheTimeout: number; // seconds
@@ -482,41 +467,41 @@ interface ConfigurationSyncState {
   // Configuration Items
   configurations: ConfigurationItem[];
   selectedConfiguration: string | null;
-  
+
   // Templates
   templates: ConfigurationTemplate[];
-  
+
   // Environments
   environments: ConfigurationEnvironment[];
   selectedEnvironment: string | null;
-  
+
   // Change Management
   changeRequests: ConfigurationChangeRequest[];
-  
+
   // Sync Jobs
   syncJobs: ConfigurationSyncJob[];
-  
+
   // Backups
   backups: ConfigurationBackup[];
-  
+
   // Drift Detection
   drifts: ConfigurationDrift[];
-  
+
   // Audit Log
   auditLog: ConfigurationAudit[];
-  
+
   // UI State
   sidebarCollapsed: boolean;
   selectedTab: 'configurations' | 'environments' | 'sync' | 'changes' | 'audit' | 'settings';
   searchQuery: string;
   filters: ConfigurationFilters;
-  
+
   // Status
   isLoading: boolean;
   isSyncing: boolean;
   lastSyncAt: Date | null;
   error: string | null;
-  
+
   // Settings
   settings: ConfigurationSettings;
 }
@@ -533,77 +518,111 @@ export interface ConfigurationFilters {
 // Store Actions
 interface ConfigurationSyncActions {
   // Configuration Management
-  createConfiguration: (config: Omit<ConfigurationItem, 'id' | 'createdAt' | 'updatedAt' | 'version'>) => string;
+  createConfiguration: (
+    config: Omit<ConfigurationItem, 'id' | 'createdAt' | 'updatedAt' | 'version'>
+  ) => string;
   updateConfiguration: (configId: string, updates: Partial<ConfigurationItem>) => void;
   deleteConfiguration: (configId: string) => void;
   cloneConfiguration: (configId: string, targetEnvironment?: string) => string;
   setSelectedConfiguration: (configId: string | null) => void;
-  
+
   // Configuration Values
   getConfigurationValue: (key: string, environmentId?: string) => any;
   setConfigurationValue: (key: string, value: any, environmentId?: string) => void;
-  
+
   // Validation
   validateConfiguration: (configId: string) => Promise<string[]>;
   validateAllConfigurations: () => Promise<Record<string, string[]>>;
-  
+
   // Templates
-  createTemplate: (template: Omit<ConfigurationTemplate, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'usageCount'>) => string;
+  createTemplate: (
+    template: Omit<
+      ConfigurationTemplate,
+      'id' | 'createdAt' | 'updatedAt' | 'version' | 'usageCount'
+    >
+  ) => string;
   updateTemplate: (templateId: string, updates: Partial<ConfigurationTemplate>) => void;
   deleteTemplate: (templateId: string) => void;
-  applyTemplate: (templateId: string, environmentId: string, variables: Record<string, any>) => Promise<string[]>;
-  
+  applyTemplate: (
+    templateId: string,
+    environmentId: string,
+    variables: Record<string, any>
+  ) => Promise<string[]>;
+
   // Environment Management
-  createEnvironment: (env: Omit<ConfigurationEnvironment, 'id' | 'createdAt' | 'updatedAt' | 'configurations' | 'childEnvironments'>) => string;
+  createEnvironment: (
+    env: Omit<
+      ConfigurationEnvironment,
+      'id' | 'createdAt' | 'updatedAt' | 'configurations' | 'childEnvironments'
+    >
+  ) => string;
   updateEnvironment: (envId: string, updates: Partial<ConfigurationEnvironment>) => void;
   deleteEnvironment: (envId: string) => void;
   setSelectedEnvironment: (envId: string | null) => void;
-  
+
   // Change Management
-  createChangeRequest: (request: Omit<ConfigurationChangeRequest, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'approvals'>) => string;
+  createChangeRequest: (
+    request: Omit<
+      ConfigurationChangeRequest,
+      'id' | 'createdAt' | 'updatedAt' | 'status' | 'approvals'
+    >
+  ) => string;
   updateChangeRequest: (requestId: string, updates: Partial<ConfigurationChangeRequest>) => void;
   approveChangeRequest: (requestId: string, reviewerId: string, comment?: string) => void;
   rejectChangeRequest: (requestId: string, reviewerId: string, comment: string) => void;
   deployChangeRequest: (requestId: string) => Promise<void>;
-  
+
   // Sync Management
-  createSyncJob: (job: Omit<ConfigurationSyncJob, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'executions'>) => string;
+  createSyncJob: (
+    job: Omit<ConfigurationSyncJob, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'executions'>
+  ) => string;
   updateSyncJob: (jobId: string, updates: Partial<ConfigurationSyncJob>) => void;
   deleteSyncJob: (jobId: string) => void;
   runSyncJob: (jobId: string) => Promise<string>;
-  
+
   // Manual Sync
   syncConfiguration: (configId: string, sourceEnv: string, targetEnv: string) => Promise<void>;
-  syncEnvironment: (sourceEnv: string, targetEnv: string, configIds?: string[]) => Promise<SyncExecution>;
-  
+  syncEnvironment: (
+    sourceEnv: string,
+    targetEnv: string,
+    configIds?: string[]
+  ) => Promise<SyncExecution>;
+
   // Backup & Restore
   createBackup: (name: string, environmentIds: string[], configIds?: string[]) => Promise<string>;
   restoreBackup: (backupId: string, targetEnvironment: string) => Promise<void>;
   deleteBackup: (backupId: string) => void;
-  
+
   // Drift Detection
   scanForDrift: (environmentId?: string) => Promise<ConfigurationDrift[]>;
-  resolveDrift: (driftId: string, resolution: 'accept_actual' | 'revert_to_expected' | 'ignore') => Promise<void>;
-  
+  resolveDrift: (
+    driftId: string,
+    resolution: 'accept_actual' | 'revert_to_expected' | 'ignore'
+  ) => Promise<void>;
+
   // Import/Export
   exportConfigurations: (configIds: string[], format: 'json' | 'yaml' | 'env') => Promise<Blob>;
-  importConfigurations: (file: File, environmentId: string, mergeStrategy: 'replace' | 'merge' | 'skip') => Promise<string[]>;
-  
+  importConfigurations: (
+    file: File,
+    environmentId: string,
+    mergeStrategy: 'replace' | 'merge' | 'skip'
+  ) => Promise<string[]>;
+
   // Search & Filtering
   setSearchQuery: (query: string) => void;
   setFilters: (filters: Partial<ConfigurationFilters>) => void;
   clearFilters: () => void;
-  
+
   // UI Actions
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSelectedTab: (tab: ConfigurationSyncState['selectedTab']) => void;
-  
+
   // Settings
   updateSettings: (settings: Partial<ConfigurationSettings>) => void;
-  
+
   // Audit
   addAuditEntry: (entry: Omit<ConfigurationAudit, 'id' | 'timestamp'>) => void;
-  
+
   // Initialization
   initialize: () => Promise<void>;
   createDefaultEnvironments: () => void;
@@ -640,7 +659,7 @@ const createInitialState = (): ConfigurationSyncState => ({
     status: [],
     environment: [],
     owner: [],
-    tags: []
+    tags: [],
   },
   isLoading: false,
   isSyncing: false,
@@ -674,8 +693,8 @@ const createInitialState = (): ConfigurationSyncState => ({
     notificationChannels: [],
     enableCaching: true,
     cacheTimeout: 300,
-    maxCacheSize: 100
-  }
+    maxCacheSize: 100,
+  },
 });
 
 // ============================================================================
@@ -689,9 +708,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       ...createInitialState(),
 
       // Configuration Management
-      createConfiguration: (configData: Omit<ConfigurationItem, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'isValid' | 'validationErrors'>) => {
+      createConfiguration: (
+        configData: Omit<
+          ConfigurationItem,
+          'id' | 'createdAt' | 'updatedAt' | 'version' | 'isValid' | 'validationErrors'
+        >
+      ) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const id = `config_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const config: ConfigurationItem = {
           ...configData,
@@ -700,13 +724,13 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           updatedAt: new Date(),
           version: 1,
           isValid: true,
-          validationErrors: []
+          validationErrors: [],
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.configurations.push(config);
         });
-        
+
         // Add audit entry
         get().addAuditEntry({
           action: 'create',
@@ -716,21 +740,25 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           changes: {},
           userId: 'current_user',
           success: true,
-          metadata: { key: config.key }
+          metadata: { key: config.key },
         });
-        
+
         return id;
       },
 
       updateConfiguration: (configId: string, updates: Partial<ConfigurationItem>) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const config = draft.configurations.find((c) => c.id === configId);
           if (config) {
             const oldValue = { ...config };
-            Object.assign(config, { ...updates, updatedAt: new Date(), version: config.version + 1 });
-            
+            Object.assign(config, {
+              ...updates,
+              updatedAt: new Date(),
+              version: config.version + 1,
+            });
+
             // Add audit entry
             get().addAuditEntry({
               action: 'update',
@@ -741,9 +769,12 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
               userId: 'current_user',
               success: true,
               changes: Object.fromEntries(
-                Object.entries(updates).map(([key, value]) => [key, { from: oldValue[key as keyof typeof oldValue], to: value }])
+                Object.entries(updates).map(([key, value]) => [
+                  key,
+                  { from: oldValue[key as keyof typeof oldValue], to: value },
+                ])
               ),
-              metadata: { key: config.key }
+              metadata: { key: config.key },
             });
           }
         });
@@ -751,17 +782,17 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       deleteConfiguration: (configId: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         const config = get().configurations.find((c) => c.id === configId);
         if (!config) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.configurations = draft.configurations.filter((c) => c.id !== configId);
           if (state.selectedConfiguration === configId) {
             draft.selectedConfiguration = null;
           }
         });
-        
+
         // Add audit entry
         get().addAuditEntry({
           action: 'delete',
@@ -771,27 +802,27 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           changes: {},
           userId: 'current_user',
           success: true,
-          metadata: { key: config.key }
+          metadata: { key: config.key },
         });
       },
 
       cloneConfiguration: (configId: string, targetEnvironment?: string) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const config = get().configurations.find((c) => c.id === configId);
         if (!config) return '';
-        
+
         return get().createConfiguration({
           ...config,
           key: `${config.key}_clone`,
           environmentId: targetEnvironment,
-          inheritedFrom: configId
+          inheritedFrom: configId,
         });
       },
 
       setSelectedConfiguration: (configId: string | null) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.selectedConfiguration = configId;
         });
@@ -800,23 +831,21 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Configuration Values
       getConfigurationValue: (key: string, environmentId?: string) => {
         if (!FLAGS.configurationSync) return undefined;
-        
-        const config = get().configurations.find((c) => 
-          c.key === key && 
-          (environmentId ? c.environmentId === environmentId : true)
+
+        const config = get().configurations.find(
+          (c) => c.key === key && (environmentId ? c.environmentId === environmentId : true)
         );
-        
+
         return config?.value;
       },
 
       setConfigurationValue: (key, value, environmentId) => {
         if (!FLAGS.configurationSync) return;
-        
-        const config = get().configurations.find((c) => 
-          c.key === key && 
-          (environmentId ? c.environmentId === environmentId : true)
+
+        const config = get().configurations.find(
+          (c) => c.key === key && (environmentId ? c.environmentId === environmentId : true)
         );
-        
+
         if (config) {
           get().updateConfiguration(config.id, { value });
         }
@@ -825,28 +854,28 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Validation
       validateConfiguration: async (configId: string) => {
         if (!FLAGS.configurationSync) return [];
-        
+
         const config = get().configurations.find((c) => c.id === configId);
         if (!config || !config.schema) return [];
-        
+
         // Simulate validation
-        await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 1000));
+
         const errors: string[] = [];
-        
+
         // Sample validation logic
         if (config.schema.required && (config.value === null || config.value === undefined)) {
           errors.push('Value is required');
         }
-        
+
         if (config.schema.type === 'string' && typeof config.value !== 'string') {
           errors.push('Value must be a string');
         }
-        
+
         if (config.schema.minimum && config.value < config.schema.minimum) {
           errors.push(`Value must be at least ${config.schema.minimum}`);
         }
-        
+
         // Update configuration with validation results
         set((draft: Draft<ConfigurationSyncStore>) => {
           const c = draft.configurations.find((c) => c.id === configId);
@@ -855,26 +884,31 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             c.validationErrors = errors;
           }
         });
-        
+
         return errors;
       },
 
       validateAllConfigurations: async () => {
         if (!FLAGS.configurationSync) return {};
-        
+
         const results: Record<string, string[]> = {};
-        
+
         for (const config of get().configurations) {
           results[config.id] = await get().validateConfiguration(config.id);
         }
-        
+
         return results;
       },
 
       // Templates
-      createTemplate: (templateData: Omit<ConfigurationTemplate, 'id' | 'createdAt' | 'updatedAt' | 'version' | 'usageCount'>) => {
+      createTemplate: (
+        templateData: Omit<
+          ConfigurationTemplate,
+          'id' | 'createdAt' | 'updatedAt' | 'version' | 'usageCount'
+        >
+      ) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const id = `template_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const template: ConfigurationTemplate = {
           ...templateData,
@@ -882,19 +916,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           createdAt: new Date(),
           updatedAt: new Date(),
           version: 1,
-          usageCount: 0
+          usageCount: 0,
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.templates.push(template);
         });
-        
+
         return id;
       },
 
       updateTemplate: (templateId: string, updates: Partial<ConfigurationTemplate>) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const template = draft.templates.find((t) => t.id === templateId);
           if (template) {
@@ -905,7 +939,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       deleteTemplate: (templateId: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.templates = draft.templates.filter((t) => t.id !== templateId);
         });
@@ -913,12 +947,12 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       applyTemplate: async (templateId, environmentId, variables) => {
         if (!FLAGS.configurationSync) return [];
-        
+
         const template = get().templates.find((t) => t.id === templateId);
         if (!template) return [];
-        
+
         const configIds: string[] = [];
-        
+
         for (const item of template.items) {
           // Apply variable substitutions
           let value = item.value;
@@ -927,16 +961,16 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
               value = value.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val);
             }
           }
-          
+
           const configId = get().createConfiguration({
             ...item,
             value,
-            environmentId
+            environmentId,
           });
-          
+
           configIds.push(configId);
         }
-        
+
         // Update template usage count
         set((draft: Draft<ConfigurationSyncStore>) => {
           const t = draft.templates.find((t) => t.id === templateId);
@@ -947,14 +981,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             }
           }
         });
-        
+
         return configIds;
       },
 
       // Environment Management
-      createEnvironment: (envData: Omit<ConfigurationEnvironment, 'id' | 'createdAt' | 'updatedAt' | 'configurations' | 'childEnvironments'>) => {
+      createEnvironment: (
+        envData: Omit<
+          ConfigurationEnvironment,
+          'id' | 'createdAt' | 'updatedAt' | 'configurations' | 'childEnvironments'
+        >
+      ) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const id = `env_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const environment: ConfigurationEnvironment = {
           ...envData,
@@ -963,12 +1002,12 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           childEnvironments: [],
           createdAt: new Date(),
           updatedAt: new Date(),
-          syncStatus: 'idle'
+          syncStatus: 'idle',
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.environments.push(environment);
-          
+
           // Add to parent's children if specified
           if (environment.parentEnvironment) {
             const parent = draft.environments.find((e) => e.id === environment.parentEnvironment);
@@ -977,13 +1016,13 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             }
           }
         });
-        
+
         return id;
       },
 
       updateEnvironment: (envId: string, updates: Partial<ConfigurationEnvironment>) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const env = draft.environments.find((e) => e.id === envId);
           if (env) {
@@ -994,7 +1033,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       deleteEnvironment: (envId: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const env = draft.environments.find((e) => e.id === envId);
           if (env) {
@@ -1005,7 +1044,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                 parent.childEnvironments = parent.childEnvironments.filter((id) => id !== envId);
               }
             }
-            
+
             // Update children to remove parent reference
             env.childEnvironments.forEach((childId) => {
               const child = draft.environments.find((e) => e.id === childId);
@@ -1014,7 +1053,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
               }
             });
           }
-          
+
           draft.environments = draft.environments.filter((e) => e.id !== envId);
           if (state.selectedEnvironment === envId) {
             draft.selectedEnvironment = null;
@@ -1024,16 +1063,21 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       setSelectedEnvironment: (envId: string | null) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.selectedEnvironment = envId;
         });
       },
 
       // Change Management
-      createChangeRequest: (requestData: Omit<ConfigurationChangeRequest, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'approvals'>) => {
+      createChangeRequest: (
+        requestData: Omit<
+          ConfigurationChangeRequest,
+          'id' | 'createdAt' | 'updatedAt' | 'status' | 'approvals'
+        >
+      ) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const id = `cr_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const request: ConfigurationChangeRequest = {
           ...requestData,
@@ -1041,19 +1085,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           status: 'draft',
           approvals: [],
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.changeRequests.push(request);
         });
-        
+
         return id;
       },
 
       updateChangeRequest: (requestId: string, updates: Partial<ConfigurationChangeRequest>) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const request = draft.changeRequests.find((r) => r.id === requestId);
           if (request) {
@@ -1064,7 +1108,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       approveChangeRequest: (requestId, reviewerId, comment) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const request = draft.changeRequests.find((r) => r.id === requestId);
           if (request) {
@@ -1079,16 +1123,16 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                 reviewerId,
                 status: 'approved',
                 comment,
-                timestamp: new Date()
+                timestamp: new Date(),
               });
             }
-            
+
             // Check if all required approvals are met
             const approvedCount = request.approvals.filter((a) => a.status === 'approved').length;
             if (approvedCount >= request.requiredApprovals && request.status === 'pending_review') {
               request.status = 'approved';
             }
-            
+
             request.updatedAt = new Date();
           }
         });
@@ -1096,7 +1140,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       rejectChangeRequest: (requestId, reviewerId, comment) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const request = draft.changeRequests.find((r) => r.id === requestId);
           if (request) {
@@ -1111,10 +1155,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                 reviewerId,
                 status: 'rejected',
                 comment,
-                timestamp: new Date()
+                timestamp: new Date(),
               });
             }
-            
+
             request.status = 'rejected';
             request.updatedAt = new Date();
           }
@@ -1123,10 +1167,10 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       deployChangeRequest: async (requestId: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         const request = get().changeRequests.find((r) => r.id === requestId);
         if (!request || request.status !== 'approved') return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const r = draft.changeRequests.find((r) => r.id === requestId);
           if (r) {
@@ -1134,7 +1178,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             r.completedAt = new Date();
           }
         });
-        
+
         // Apply changes
         try {
           for (const change of request.changes) {
@@ -1150,10 +1194,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                 break;
             }
           }
-          
+
           // Simulate deployment
-          await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-          
+          await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
         } catch (error) {
           set((draft: Draft<ConfigurationSyncStore>) => {
             const r = draft.changeRequests.find((r) => r.id === requestId);
@@ -1166,9 +1209,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       },
 
       // Sync Management
-      createSyncJob: (jobData: Omit<ConfigurationSyncJob, 'id' | 'createdAt' | 'updatedAt' | 'status' | 'executions'>) => {
+      createSyncJob: (
+        jobData: Omit<
+          ConfigurationSyncJob,
+          'id' | 'createdAt' | 'updatedAt' | 'status' | 'executions'
+        >
+      ) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const id = `sync_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const job: ConfigurationSyncJob = {
           ...jobData,
@@ -1176,19 +1224,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           status: 'idle',
           executions: [],
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.syncJobs.push(job);
         });
-        
+
         return id;
       },
 
       updateSyncJob: (jobId: string, updates: Partial<ConfigurationSyncJob>) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const job = draft.syncJobs.find((j) => j.id === jobId);
           if (job) {
@@ -1199,7 +1247,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       deleteSyncJob: (jobId: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.syncJobs = draft.syncJobs.filter((j) => j.id !== jobId);
         });
@@ -1207,13 +1255,13 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       runSyncJob: async (jobId: string) => {
         if (!FLAGS.configurationSync) return '';
-        
+
         const job = get().syncJobs.find((j) => j.id === jobId);
         if (!job) return '';
-        
+
         const executionId = `exec_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const startTime = new Date();
-        
+
         // Create execution record
         const execution: SyncExecution = {
           id: executionId,
@@ -1224,9 +1272,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           configurationsErrored: 0,
           syncedItems: [],
           errors: [],
-          warnings: []
+          warnings: [],
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const j = draft.syncJobs.find((j) => j.id === jobId);
           if (j) {
@@ -1236,32 +1284,32 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           }
           draft.isSyncing = true;
         });
-        
+
         try {
           // Simulate sync execution
-          await new Promise(resolve => setTimeout(resolve, 3000 + Math.random() * 5000));
-          
+          await new Promise((resolve) => setTimeout(resolve, 3000 + Math.random() * 5000));
+
           const syncedCount = Math.floor(Math.random() * 20) + 1;
           const hasErrors = Math.random() < 0.2;
-          
+
           set((draft: Draft<ConfigurationSyncStore>) => {
             const j = draft.syncJobs.find((j) => j.id === jobId);
             if (j) {
               j.status = hasErrors ? 'failed' : 'completed';
-              
+
               const exec = j.executions.find((e) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
                 exec.status = hasErrors ? 'failed' : 'completed';
                 exec.configurationsSynced = syncedCount;
                 exec.duration = (exec.completedAt.getTime() - exec.startedAt.getTime()) / 1000;
-                
+
                 if (hasErrors) {
                   exec.errors.push({
                     configurationId: 'config_123',
                     key: 'database.connection_string',
                     message: 'Failed to sync due to validation error',
-                    severity: 'error'
+                    severity: 'error',
                   });
                 }
               }
@@ -1269,15 +1317,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             draft.isSyncing = false;
             draft.lastSyncAt = new Date();
           });
-          
+
           return executionId;
-          
         } catch (error) {
           set((draft: Draft<ConfigurationSyncStore>) => {
             const j = draft.syncJobs.find((j) => j.id === jobId);
             if (j) {
               j.status = 'failed';
-              
+
               const exec = j.executions.find((e) => e.id === executionId);
               if (exec) {
                 exec.completedAt = new Date();
@@ -1286,7 +1333,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                   configurationId: '',
                   key: '',
                   message: error instanceof Error ? error.message : 'Sync failed',
-                  severity: 'error'
+                  severity: 'error',
                 });
               }
             }
@@ -1300,26 +1347,30 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Manual Sync
       syncConfiguration: async (configId, sourceEnv, targetEnv) => {
         if (!FLAGS.configurationSync) return;
-        
-        const config = get().configurations.find((c) => c.id === configId && c.environmentId === sourceEnv);
+
+        const config = get().configurations.find(
+          (c) => c.id === configId && c.environmentId === sourceEnv
+        );
         if (!config) throw new Error('Configuration not found');
-        
+
         // Create or update in target environment
-        const targetConfig = get().configurations.find((c) => c.key === config.key && c.environmentId === targetEnv);
-        
+        const targetConfig = get().configurations.find(
+          (c) => c.key === config.key && c.environmentId === targetEnv
+        );
+
         if (targetConfig) {
           get().updateConfiguration(targetConfig.id, { value: config.value });
         } else {
           get().createConfiguration({
             ...config,
-            environmentId: targetEnv
+            environmentId: targetEnv,
           });
         }
       },
 
       syncEnvironment: async (sourceEnv, targetEnv, configIds) => {
         if (!FLAGS.configurationSync) throw new Error('Configuration sync not enabled');
-        
+
         const execution: SyncExecution = {
           id: `manual_sync_${Date.now()}`,
           startedAt: new Date(),
@@ -1329,15 +1380,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           configurationsErrored: 0,
           syncedItems: [],
           errors: [],
-          warnings: []
+          warnings: [],
         };
-        
+
         try {
-          const configsToSync = get().configurations.filter((c) => 
-            c.environmentId === sourceEnv && 
-            (!configIds || configIds.includes(c.id))
+          const configsToSync = get().configurations.filter(
+            (c) => c.environmentId === sourceEnv && (!configIds || configIds.includes(c.id))
           );
-          
+
           for (const config of configsToSync) {
             try {
               await get().syncConfiguration(config.id, sourceEnv, targetEnv);
@@ -1347,7 +1397,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                 key: config.key,
                 action: 'updated',
                 newValue: config.value,
-                targetEnvironment: targetEnv
+                targetEnvironment: targetEnv,
               });
             } catch (error) {
               execution.configurationsErrored++;
@@ -1355,17 +1405,17 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
                 configurationId: config.id,
                 key: config.key,
                 message: error instanceof Error ? error.message : 'Sync failed',
-                severity: 'error'
+                severity: 'error',
               });
             }
           }
-          
+
           execution.completedAt = new Date();
           execution.status = execution.configurationsErrored > 0 ? 'failed' : 'completed';
-          execution.duration = (execution.completedAt.getTime() - execution.startedAt.getTime()) / 1000;
-          
+          execution.duration =
+            (execution.completedAt.getTime() - execution.startedAt.getTime()) / 1000;
+
           return execution;
-          
         } catch (error) {
           execution.completedAt = new Date();
           execution.status = 'failed';
@@ -1376,16 +1426,17 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Backup & Restore
       createBackup: async (name, environmentIds, configIds) => {
         if (!FLAGS.configurationSync) return '';
-        
-        const configurations = get().configurations.filter((c) => 
-          (!environmentIds.length || environmentIds.includes(c.environmentId || '')) &&
-          (!configIds || configIds.includes(c.id))
+
+        const configurations = get().configurations.filter(
+          (c) =>
+            (!environmentIds.length || environmentIds.includes(c.environmentId || '')) &&
+            (!configIds || configIds.includes(c.id))
         );
-        
-        const environments = get().environments.filter((e) => 
-          !environmentIds.length || environmentIds.includes(e.id)
+
+        const environments = get().environments.filter(
+          (e) => !environmentIds.length || environmentIds.includes(e.id)
         );
-        
+
         const id = `backup_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const backup: ConfigurationBackup = {
           id,
@@ -1398,34 +1449,34 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             configurationCount: configurations.length,
             environmentCount: environments.length,
             totalSize: JSON.stringify({ configurations, environments }).length,
-            checksum: 'checksum_' + Math.random().toString(36)
+            checksum: 'checksum_' + Math.random().toString(36),
           },
           createdAt: new Date(),
           createdBy: 'current_user',
-          canRestore: true
+          canRestore: true,
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.backups.push(backup);
         });
-        
+
         return id;
       },
 
       restoreBackup: async (backupId: string, targetEnvironment: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         const backup = get().backups.find((b) => b.id === backupId);
         if (!backup) throw new Error('Backup not found');
-        
+
         // Restore configurations
         for (const config of backup.configurations) {
           get().createConfiguration({
             ...config,
-            environmentId: targetEnvironment
+            environmentId: targetEnvironment,
           });
         }
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const b = draft.backups.find((b) => b.id === backupId);
           if (b) {
@@ -1437,7 +1488,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       deleteBackup: (backupId: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.backups = draft.backups.filter((b) => b.id !== backupId);
         });
@@ -1446,12 +1497,12 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Drift Detection
       scanForDrift: async (environmentId?: string) => {
         if (!FLAGS.configurationSync) return [];
-        
+
         // Simulate drift detection
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-        
+        await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
+
         const drifts: ConfigurationDrift[] = [];
-        
+
         // Sample drift detection
         if (Math.random() < 0.3) {
           const drift: ConfigurationDrift = {
@@ -1465,22 +1516,22 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             detectionMethod: 'scan',
             status: 'detected',
             severity: 'medium',
-            affectedServices: ['api-service']
+            affectedServices: ['api-service'],
           };
-          
+
           drifts.push(drift);
         }
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.drifts.push(...drifts);
         });
-        
+
         return drifts;
       },
 
       resolveDrift: async (driftId, resolution) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           const drift = draft.drifts.find((d) => d.id === driftId);
           if (drift) {
@@ -1495,12 +1546,12 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Import/Export
       exportConfigurations: async (configIds: string[], format: 'json' | 'yaml' | 'env') => {
         if (!FLAGS.configurationSync) throw new Error('Configuration sync not enabled');
-        
+
         const configurations = get().configurations.filter((c) => configIds.includes(c.id));
-        
+
         let content: string = '';
         let mimeType: string = 'text/plain';
-        
+
         switch (format) {
           case 'json':
             content = JSON.stringify(configurations, null, 2);
@@ -1512,33 +1563,35 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             mimeType = 'text/yaml';
             break;
           case 'env':
-            content = configurations.map((c) => `${c.key.toUpperCase().replace(/\./g, '_')}=${c.value}`).join('\n');
+            content = configurations
+              .map((c) => `${c.key.toUpperCase().replace(/\./g, '_')}=${c.value}`)
+              .join('\n');
             mimeType = 'text/plain';
             break;
         }
-        
+
         return new Blob([content], { type: mimeType });
       },
 
       importConfigurations: async (file, environmentId, mergeStrategy) => {
         if (!FLAGS.configurationSync) return [];
-        
+
         const text = await file.text();
         let importData: unknown;
-        
+
         try {
           importData = JSON.parse(text);
         } catch {
           throw new Error('Invalid file format');
         }
-        
+
         const importedIds: string[] = [];
-        
+
         for (const config of importData) {
-          const existingConfig = get().configurations.find((c) => 
-            c.key === config.key && c.environmentId === environmentId
+          const existingConfig = get().configurations.find(
+            (c) => c.key === config.key && c.environmentId === environmentId
           );
-          
+
           if (existingConfig) {
             if (mergeStrategy === 'replace') {
               get().updateConfiguration(existingConfig.id, { value: config.value });
@@ -1549,19 +1602,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           } else {
             const configId = get().createConfiguration({
               ...config,
-              environmentId
+              environmentId,
             });
             importedIds.push(configId);
           }
         }
-        
+
         return importedIds;
       },
 
       // Search & Filtering
       setSearchQuery: (query: string) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.searchQuery = query;
         });
@@ -1569,7 +1622,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       setFilters: (filters) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           Object.assign(state.filters, filters);
         });
@@ -1577,7 +1630,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       clearFilters: () => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.filters = {
             category: [],
@@ -1585,7 +1638,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             status: [],
             environment: [],
             owner: [],
-            tags: []
+            tags: [],
           };
           draft.searchQuery = '';
         });
@@ -1594,7 +1647,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // UI Actions
       setSidebarCollapsed: (collapsed: boolean) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.sidebarCollapsed = collapsed;
         });
@@ -1602,7 +1655,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
       setSelectedTab: (tab) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.selectedTab = tab;
         });
@@ -1611,7 +1664,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Settings
       updateSettings: (settings) => {
         if (!FLAGS.configurationSync) return;
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           Object.assign(state.settings, settings);
         });
@@ -1620,16 +1673,16 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Audit
       addAuditEntry: (entryData) => {
         if (!FLAGS.configurationSync) return;
-        
+
         const entry: ConfigurationAudit = {
           ...entryData,
           id: `audit_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          timestamp: new Date()
+          timestamp: new Date(),
         };
-        
+
         set((draft: Draft<ConfigurationSyncStore>) => {
           draft.auditLog.unshift(entry);
-          
+
           // Keep only last 1000 entries
           if (state.auditLog.length > 1000) {
             draft.auditLog = draft.auditLog.slice(0, 1000);
@@ -1640,22 +1693,21 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
       // Initialization
       initialize: async () => {
         if (!FLAGS.configurationSync) return;
-        
+
         try {
           set((draft: Draft<ConfigurationSyncStore>) => {
             draft.isLoading = true;
             draft.error = null;
           });
-          
+
           // Create defaults if none exist
           if (get().environments.length === 0) {
             get().createDefaultEnvironments();
           }
-          
+
           if (get().configurations.length === 0) {
             get().createDefaultConfigurations();
           }
-          
         } catch (error) {
           set((draft: Draft<ConfigurationSyncStore>) => {
             draft.error = error instanceof Error ? error.message : 'Initialization failed';
@@ -1676,9 +1728,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           overrides: {},
           isReadOnly: false,
           allowedUsers: ['dev-team'],
-          syncStatus: 'idle'
+          syncStatus: 'idle',
         });
-        
+
         // Production Environment
         get().createEnvironment({
           name: 'Production',
@@ -1687,16 +1739,16 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           overrides: {},
           isReadOnly: true,
           allowedUsers: ['ops-team'],
-          syncStatus: 'idle'
+          syncStatus: 'idle',
         });
       },
 
       createDefaultConfigurations: () => {
         const devEnv = get().environments.find((e) => e.type === 'development');
         const prodEnv = get().environments.find((e) => e.type === 'production');
-        
+
         if (!devEnv || !prodEnv) return;
-        
+
         // Database Configuration
         get().createConfiguration({
           key: 'database.host',
@@ -1712,9 +1764,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           isSecret: false,
           owner: 'system',
           status: 'active',
-          tags: ['database', 'infrastructure']
+          tags: ['database', 'infrastructure'],
         });
-        
+
         get().createConfiguration({
           key: 'database.host',
           value: 'prod-db.example.com',
@@ -1729,9 +1781,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           isSecret: false,
           owner: 'system',
           status: 'active',
-          tags: ['database', 'infrastructure']
+          tags: ['database', 'infrastructure'],
         });
-        
+
         // API Configuration
         get().createConfiguration({
           key: 'api.rate_limit',
@@ -1747,9 +1799,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           isSecret: false,
           owner: 'system',
           status: 'active',
-          tags: ['api', 'performance']
+          tags: ['api', 'performance'],
         });
-        
+
         get().createConfiguration({
           key: 'api.rate_limit',
           value: 10000,
@@ -1764,9 +1816,9 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           isSecret: false,
           owner: 'system',
           status: 'active',
-          tags: ['api', 'performance']
+          tags: ['api', 'performance'],
         });
-      }
+      },
     })),
     {
       name: 'lokifi-configuration-sync-storage',
@@ -1779,11 +1831,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             syncJobs: [],
             backups: [],
             drifts: [],
-            auditLog: []
+            auditLog: [],
           };
         }
         return persistedState as ConfigurationSyncState & ConfigurationSyncActions;
-      }
+      },
     }
   )
 );
@@ -1792,4 +1844,3 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 if (typeof window !== 'undefined' && FLAGS.configurationSync) {
   useConfigurationSyncStore.getState().initialize();
 }
-
