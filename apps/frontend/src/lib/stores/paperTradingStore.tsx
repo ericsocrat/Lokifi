@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Paper Trading Types
@@ -365,8 +366,11 @@ interface PaperTradingActions {
   updatePositionFromOrder: (order: PaperOrder, fill: OrderFill) => void;
 }
 
+// Combined Store Type
+type PaperTradingStore = PaperTradingState & PaperTradingActions;
+
 // Create Store
-export const usePaperTradingStore = create<PaperTradingState & PaperTradingActions>()(
+export const usePaperTradingStore = create<PaperTradingStore>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
     immer((set, get, _store) => ({
@@ -394,7 +398,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       error: null,
       
       // Account Management
-      createAccount: (name: any, settings: any) => {
+      createAccount: (name: string, settings: AccountSettings) => {
         if (!FLAGS.paperTrading) return '';
         
         const accountId = `paper_account_${Date.now()}`;
@@ -450,64 +454,64 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           isDefault: get().accounts.length === 0
         };
         
-        set((state: any) => {
-          state.accounts.push(account);
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.accounts.push(account);
           
-          if (!state.activeAccountId) {
-            state.activeAccountId = accountId;
+          if (!draft.activeAccountId) {
+            draft.activeAccountId = accountId;
           }
         });
         
         return accountId;
       },
       
-      updateAccount: (accountId: any, updates: any) => {
+      updateAccount: (accountId: string, updates: Partial<PaperAccount>) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const account = state.accounts.find((a: any) => a.id === accountId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const account = draft.accounts.find((a) => a.id === accountId);
           if (account) {
             Object.assign(account, updates);
           }
         });
       },
       
-      deleteAccount: (accountId: any) => {
+      deleteAccount: (accountId: string) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const index = state.accounts.findIndex((a: any) => a.id === accountId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const index = draft.accounts.findIndex((a) => a.id === accountId);
           if (index !== -1) {
-            state.accounts.splice(index, 1);
+            draft.accounts.splice(index, 1);
           }
           
           // Remove related data
-          state.positions = state.positions.filter((p: any) => p.accountId !== accountId);
-          state.orders = state.orders.filter((o: any) => o.accountId !== accountId);
-          state.trades = state.trades.filter((t: any) => t.accountId !== accountId);
+          draft.positions = draft.positions.filter((p) => p.accountId !== accountId);
+          draft.orders = draft.orders.filter((o) => o.accountId !== accountId);
+          draft.trades = draft.trades.filter((t) => t.accountId !== accountId);
           
           // Set new active account
-          if (state.activeAccountId === accountId) {
-            state.activeAccountId = state.accounts[0]?.id || null;
+          if (draft.activeAccountId === accountId) {
+            draft.activeAccountId = draft.accounts[0]?.id || null;
           }
         });
       },
       
-      setActiveAccount: (accountId: any) => {
+      setActiveAccount: (accountId: string) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          if (state.accounts.find((a: any) => a.id === accountId)) {
-            state.activeAccountId = accountId;
+        set((draft: Draft<PaperTradingStore>) => {
+          if (draft.accounts.find((a) => a.id === accountId)) {
+            draft.activeAccountId = accountId;
           }
         });
       },
       
-      resetAccount: (accountId: any) => {
+      resetAccount: (accountId: string) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const account = state.accounts.find((a: any) => a.id === accountId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const account = draft.accounts.find((a) => a.id === accountId);
           if (account) {
             // Reset balance
             account.balance.cash = account.settings.initialBalance;
@@ -541,15 +545,15 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
             };
             
             // Clear positions, orders, trades
-            state.positions = state.positions.filter((p: any) => p.accountId !== accountId);
-            state.orders = state.orders.filter((o: any) => o.accountId !== accountId);
-            state.trades = state.trades.filter((t: any) => t.accountId !== accountId);
+            draft.positions = draft.positions.filter((p) => p.accountId !== accountId);
+            draft.orders = draft.orders.filter((o) => o.accountId !== accountId);
+            draft.trades = draft.trades.filter((t) => t.accountId !== accountId);
           }
         });
       },
       
       // Trading Operations
-      placeOrder: async (orderData: any) => {
+      placeOrder: async (orderData: Omit<PaperOrder, 'id' | 'placedAt' | 'status' | 'filledQuantity' | 'avgFillPrice' | 'fills'>) => {
         if (!FLAGS.paperTrading || !get().activeAccountId) {
           throw new Error('Paper trading not available');
         }
@@ -574,24 +578,24 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           throw new Error('Order violates risk limits');
         }
         
-        set((state: any) => {
-          state.orders.push(order);
-          state.isExecutingOrder = true;
-          state.error = null;
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.orders.push(order);
+          draft.isExecutingOrder = true;
+          draft.error = null;
         });
         
         try {
           // Simulate order execution
           await simulateOrderExecution(order);
           
-          set((state: any) => {
-            const orderToUpdate = state.orders.find((o: any) => o.id === orderId);
+          set((draft: Draft<PaperTradingStore>) => {
+            const orderToUpdate = draft.orders.find((o) => o.id === orderId);
             if (orderToUpdate) {
               orderToUpdate.status = 'filled';
               orderToUpdate.filledQuantity = orderToUpdate.quantity;
               
               // Get current market price
-              const currentPrice = state.marketPrices.get(orderToUpdate.symbol) || orderToUpdate.limitPrice || 100;
+              const currentPrice = draft.marketPrices.get(orderToUpdate.symbol) || orderToUpdate.limitPrice || 100;
               
               // Add slippage for market orders
               let executionPrice = currentPrice;
@@ -622,42 +626,42 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
               get().updatePositionFromOrder(orderToUpdate, fill);
             }
             
-            state.isExecutingOrder = false;
+            draft.isExecutingOrder = false;
           });
           
           return orderId;
           
         } catch (error) {
-          set((state: any) => {
-            const orderToUpdate = state.orders.find((o: any) => o.id === orderId);
+          set((draft: Draft<PaperTradingStore>) => {
+            const orderToUpdate = draft.orders.find((o) => o.id === orderId);
             if (orderToUpdate) {
               orderToUpdate.status = 'rejected';
             }
             
-            state.error = error instanceof Error ? error.message : 'Order execution failed';
-            state.isExecutingOrder = false;
+            draft.error = error instanceof Error ? error.message : 'Order execution failed';
+            draft.isExecutingOrder = false;
           });
           
           throw error;
         }
       },
       
-      cancelOrder: async (orderId: any) => {
+      cancelOrder: async (orderId: string) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const order = state.orders.find((o: any) => o.id === orderId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const order = draft.orders.find((o) => o.id === orderId);
           if (order && order.status === 'pending') {
             order.status = 'cancelled';
           }
         });
       },
       
-      modifyOrder: async (orderId: any, updates: any) => {
+      modifyOrder: async (orderId: string, updates: Partial<PaperOrder>) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const order = state.orders.find((o: any) => o.id === orderId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const order = draft.orders.find((o) => o.id === orderId);
           if (order && order.status === 'pending') {
             Object.assign(order, updates);
           }
@@ -665,10 +669,10 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Position Management
-      closePosition: async (positionId: any, reason: any) => {
+      closePosition: async (positionId: string, reason?: string) => {
         if (!FLAGS.paperTrading) return;
         
-        const position = get().positions.find((p: any) => p.id === positionId);
+        const position = get().positions.find((p) => p.id === positionId);
         if (!position) return;
         
         // Create closing order
@@ -685,22 +689,22 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         await get().placeOrder(closingOrder);
       },
       
-      updateStopLoss: (positionId: any, stopLoss: any) => {
+      updateStopLoss: (positionId: string, stopLoss: number) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const position = state.positions.find((p: any) => p.id === positionId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const position = draft.positions.find((p) => p.id === positionId);
           if (position) {
             position.stopLoss = stopLoss;
           }
         });
       },
       
-      updateTakeProfit: (positionId: any, takeProfit: any) => {
+      updateTakeProfit: (positionId: string, takeProfit: number) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          const position = state.positions.find((p: any) => p.id === positionId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const position = draft.positions.find((p) => p.id === positionId);
           if (position) {
             position.takeProfit = takeProfit;
           }
@@ -708,15 +712,15 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Market Data
-      updateMarketPrice: (symbol: any, price: any) => {
+      updateMarketPrice: (symbol: string, price: number) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          state.marketPrices.set(symbol, price);
-          state.lastPriceUpdate = new Date();
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.marketPrices.set(symbol, price);
+          draft.lastPriceUpdate = new Date();
           
           // Update position values
-          state.positions.forEach((position: any) => {
+          draft.positions.forEach((position) => {
             if (position.symbol === symbol) {
               position.currentPrice = price;
               position.marketValue = position.quantity * price;
@@ -742,10 +746,10 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           });
           
           // Update account values
-          state.accounts.forEach((account: any) => {
-            const accountPositions = state.positions.filter((p: any) => p.accountId === account.id);
-            const positionsValue = accountPositions.reduce((sum: any, p: any) => sum + p.marketValue, 0);
-            const unrealizedPnL = accountPositions.reduce((sum: any, p: any) => sum + p.unrealizedPnL, 0);
+          draft.accounts.forEach((account) => {
+            const accountPositions = draft.positions.filter((p) => p.accountId === account.id);
+            const positionsValue = accountPositions.reduce((sum, p) => sum + p.marketValue, 0);
+            const unrealizedPnL = accountPositions.reduce((sum, p) => sum + p.unrealizedPnL, 0);
             
             account.balance.totalValue = account.balance.cash + positionsValue;
             // Note: dayPnL would need to be calculated differently with proper time tracking
@@ -753,7 +757,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         });
       },
       
-      subscribeToSymbol: (symbol: any) => {
+      subscribeToSymbol: (symbol) => {
         if (!FLAGS.paperTrading) return;
         
         // In a real implementation, this would subscribe to real-time data
@@ -761,30 +765,30 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         console.log(`Subscribing to ${symbol} price updates`);
       },
       
-      unsubscribeFromSymbol: (symbol: any) => {
+      unsubscribeFromSymbol: (symbol) => {
         if (!FLAGS.paperTrading) return;
         
         console.log(`Unsubscribing from ${symbol} price updates`);
       },
       
       // Portfolio Analysis
-      calculatePerformance: (accountId: any) => {
+      calculatePerformance: (accountId: string) => {
         const { accounts, trades } = get();
-        const account = accounts.find((a: any) => a.id === accountId);
+        const account = accounts.find((a) => a.id === accountId);
         
         if (!account) {
           throw new Error('Account not found');
         }
         
-        const accountTrades = trades.filter((t: any) => t.accountId === accountId && t.pnl !== undefined);
+        const accountTrades = trades.filter((t) => t.accountId === accountId && t.pnl !== undefined);
         
-        const totalPnL = accountTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0);
+        const totalPnL = accountTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
         const totalReturn = account.settings.initialBalance > 0 
           ? (totalPnL / account.settings.initialBalance) * 100 
           : 0;
         
-        const winningTrades = accountTrades.filter((t: any) => (t.pnl || 0) > 0);
-        const losingTrades = accountTrades.filter((t: any) => (t.pnl || 0) < 0);
+        const winningTrades = accountTrades.filter((t) => (t.pnl || 0) > 0);
+        const losingTrades = accountTrades.filter((t) => (t.pnl || 0) < 0);
         
         const performance: AccountPerformance = {
           totalReturn,
@@ -799,10 +803,10 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           losingTrades: losingTrades.length,
           winRate: accountTrades.length > 0 ? winningTrades.length / accountTrades.length : 0,
           avgWin: winningTrades.length > 0 
-            ? winningTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0) / winningTrades.length 
+            ? winningTrades.reduce((sum, t) => sum + (t.pnl || 0), 0) / winningTrades.length 
             : 0,
           avgLoss: losingTrades.length > 0 
-            ? Math.abs(losingTrades.reduce((sum: any, t: any) => sum + (t.pnl || 0), 0)) / losingTrades.length 
+            ? Math.abs(losingTrades.reduce((sum, t) => sum + (t.pnl || 0), 0)) / losingTrades.length 
             : 0,
           profitFactor: 0, // Would need proper calculation
           avgHoldingTime: 0, // Would need trade duration analysis
@@ -813,8 +817,8 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         };
         
         // Update account performance
-        set((state: any) => {
-          const accountToUpdate = state.accounts.find((a: any) => a.id === accountId);
+        set((draft: Draft<PaperTradingStore>) => {
+          const accountToUpdate = draft.accounts.find((a) => a.id === accountId);
           if (accountToUpdate) {
             accountToUpdate.performance = performance;
           }
@@ -823,21 +827,21 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         return performance;
       },
       
-      getPositionsBySymbol: (symbol: any) => {
+      getPositionsBySymbol: (symbol) => {
         const { positions } = get();
-        return positions.filter((p: any) => p.symbol === symbol);
+        return positions.filter((p) => p.symbol === symbol);
       },
       
       getTradeHistory: (accountId, limit = 100) => {
         const { trades } = get();
         return trades
-          .filter((t: any) => t.accountId === accountId)
-          .sort((a: any, b: any) => b.executedAt.getTime() - a.executedAt.getTime())
+          .filter((t) => t.accountId === accountId)
+          .sort((a, b) => b.executedAt.getTime() - a.executedAt.getTime())
           .slice(0, limit);
       },
       
       // Challenges
-      joinChallenge: async (challengeId: any) => {
+      joinChallenge: async (challengeId: string) => {
         if (!FLAGS.paperTrading) return;
         
         try {
@@ -848,20 +852,20 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           
           if (!response.ok) throw new Error('Failed to join challenge');
           
-          set((state: any) => {
-            if (!state.participatingChallenges.includes(challengeId)) {
-              state.participatingChallenges.push(challengeId);
+          set((draft: Draft<PaperTradingStore>) => {
+            if (!draft.participatingChallenges.includes(challengeId)) {
+              draft.participatingChallenges.push(challengeId);
             }
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to join challenge';
+          set((draft: Draft<PaperTradingStore>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to join challenge';
           });
         }
       },
       
-      leaveChallenge: async (challengeId: any) => {
+      leaveChallenge: async (challengeId: string) => {
         if (!FLAGS.paperTrading) return;
         
         try {
@@ -872,13 +876,13 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           
           if (!response.ok) throw new Error('Failed to leave challenge');
           
-          set((state: any) => {
-            state.participatingChallenges = state.participatingChallenges.filter((id: any) => id !== challengeId);
+          set((draft: Draft<PaperTradingStore>) => {
+            draft.participatingChallenges = draft.participatingChallenges.filter((id) => id !== challengeId);
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to leave challenge';
+          set((draft: Draft<PaperTradingStore>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to leave challenge';
           });
         }
       },
@@ -892,26 +896,26 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           
           const challenges: TradingChallenge[] = await response.json();
           
-          set((state: any) => {
-            state.activeChallenges = challenges;
+          set((draft: Draft<PaperTradingStore>) => {
+            draft.activeChallenges = challenges;
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load challenges';
+          set((draft: Draft<PaperTradingStore>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load challenges';
           });
         }
       },
       
       // Copy Trading Integration
-      followTrader: async (traderId: any, copySettings: any) => {
+      followTrader: async (traderId: string, copySettings: any) => {
         if (!FLAGS.paperTrading) return;
         
         // This would integrate with the social trading system
         console.log(`Following trader ${traderId} with settings:`, copySettings);
       },
       
-      unfollowTrader: async (traderId: any) => {
+      unfollowTrader: async (traderId: string) => {
         if (!FLAGS.paperTrading) return;
         
         console.log(`Unfollowing trader ${traderId}`);
@@ -920,12 +924,12 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       // Risk Management
       checkRiskLimits: (accountId, order) => {
         const { accounts, positions } = get();
-        const account = accounts.find((a: any) => a.id === accountId);
+        const account = accounts.find((a) => a.id === accountId);
         
         if (!account) return false;
         
         // Check position count limit
-        const currentPositions = positions.filter((p: any) => p.accountId === accountId);
+        const currentPositions = positions.filter((p) => p.accountId === accountId);
         if (currentPositions.length >= account.settings.maxPositions) {
           return false;
         }
@@ -947,11 +951,11 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         return true;
       },
       
-      liquidateAccount: async (accountId: any, reason: any) => {
+      liquidateAccount: async (accountId: string, reason: string) => {
         if (!FLAGS.paperTrading) return;
         
         const { positions } = get();
-        const accountPositions = positions.filter((p: any) => p.accountId === accountId);
+        const accountPositions = positions.filter((p) => p.accountId === accountId);
         
         // Close all positions
         for (const position of accountPositions) {
@@ -960,7 +964,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
         
         // Cancel all pending orders
         const { orders } = get();
-        const pendingOrders = orders.filter((o: any) => o.accountId === accountId && o.status === 'pending');
+        const pendingOrders = orders.filter((o) => o.accountId === accountId && o.status === 'pending');
         
         for (const order of pendingOrders) {
           await get().cancelOrder(order.id);
@@ -968,12 +972,12 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // Data Management
-      loadAccountData: async (accountId: any) => {
+      loadAccountData: async (accountId: string) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          state.isLoading = true;
-          state.error = null;
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.isLoading = true;
+          draft.error = null;
         });
         
         try {
@@ -983,29 +987,29 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
           
           const accountData = await response.json();
           
-          set((state: any) => {
-            const accountIndex = state.accounts.findIndex((a: any) => a.id === accountId);
+          set((draft: Draft<PaperTradingStore>) => {
+            const accountIndex = draft.accounts.findIndex((a) => a.id === accountId);
             if (accountIndex !== -1) {
-              state.accounts[accountIndex] = accountData.account;
+              draft.accounts[accountIndex] = accountData.account;
             }
             
             // Update positions, orders, trades
-            state.positions = [...state.positions.filter((p: any) => p.accountId !== accountId), ...accountData.positions];
-            state.orders = [...state.orders.filter((o: any) => o.accountId !== accountId), ...accountData.orders];
-            state.trades = [...state.trades.filter((t: any) => t.accountId !== accountId), ...accountData.trades];
+            draft.positions = [...draft.positions.filter((p) => p.accountId !== accountId), ...accountData.positions];
+            draft.orders = [...draft.orders.filter((o) => o.accountId !== accountId), ...accountData.orders];
+            draft.trades = [...draft.trades.filter((t) => t.accountId !== accountId), ...accountData.trades];
             
-            state.isLoading = false;
+            draft.isLoading = false;
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load account data';
-            state.isLoading = false;
+          set((draft: Draft<PaperTradingStore>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load account data';
+            draft.isLoading = false;
           });
         }
       },
       
-      exportTrades: async (accountId: any, format: any) => {
+      exportTrades: async (accountId: string, format: 'csv' | 'json') => {
         if (!FLAGS.paperTrading) throw new Error('Paper trading not enabled');
         
         const response = await fetch(`/api/paper-trading/accounts/${accountId}/export?format=${format}`);
@@ -1015,43 +1019,43 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
       },
       
       // UI State
-      setSelectedSymbol: (symbol: any) => {
+      setSelectedSymbol: (symbol) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          state.selectedSymbol = symbol;
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.selectedSymbol = symbol;
         });
       },
       
       setSelectedPosition: (position) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          state.selectedPosition = position;
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.selectedPosition = position;
         });
       },
       
       setOrderFormVisible: (visible) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          state.orderFormVisible = visible;
+        set((draft: Draft<PaperTradingStore>) => {
+          draft.orderFormVisible = visible;
         });
       },
       
       // Settings
-      updateGlobalSettings: (settings: any) => {
+      updateGlobalSettings: (settings: Partial<PaperTradingState['globalSettings']>) => {
         if (!FLAGS.paperTrading) return;
         
-        set((state: any) => {
-          Object.assign(state.globalSettings, settings);
+        set((draft: Draft<PaperTradingStore>) => {
+          Object.assign(draft.globalSettings, settings);
         });
       },
       
       // Helper method to update positions from order fills
       updatePositionFromOrder: (order: PaperOrder, fill: OrderFill) => {
-        set((state: any) => {
-          const existingPosition = state.positions.find((p: any) => 
+        set((draft: Draft<PaperTradingStore>) => {
+          const existingPosition = draft.positions.find((p) => 
             p.accountId === order.accountId && 
             p.symbol === order.symbol
           );
@@ -1102,7 +1106,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
                   ? (closedTrade.pnl / (existingPosition.avgEntryPrice * existingPosition.quantity)) * 100
                   : 0;
                 
-                state.trades.push(closedTrade);
+                draft.trades.push(closedTrade);
                 
                 if (remainingQuantity > 0) {
                   // Reverse position
@@ -1112,9 +1116,9 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
                   existingPosition.entryTime = fill.timestamp;
                 } else {
                   // Remove position
-                  const positionIndex = state.positions.findIndex((p: any) => p.id === existingPosition.id);
+                  const positionIndex = draft.positions.findIndex((p) => p.id === existingPosition.id);
                   if (positionIndex !== -1) {
-                    state.positions.splice(positionIndex, 1);
+                    draft.positions.splice(positionIndex, 1);
                   }
                 }
               } else {
@@ -1149,7 +1153,7 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
                   ? (partialTrade.pnl / (existingPosition.avgEntryPrice * fill.quantity)) * 100
                   : 0;
                 
-                state.trades.push(partialTrade);
+                draft.trades.push(partialTrade);
               }
             }
           } else {
@@ -1178,11 +1182,11 @@ export const usePaperTradingStore = create<PaperTradingState & PaperTradingActio
               leverage: 1
             };
             
-            state.positions.push(newPosition);
+            draft.positions.push(newPosition);
           }
           
           // Update account cash balance
-          const account = state.accounts.find((a: any) => a.id === order.accountId);
+          const account = draft.accounts.find((a) => a.id === order.accountId);
           if (account) {
             const orderValue = fill.quantity * fill.price;
             const totalCost = orderValue + fill.commission;
@@ -1227,38 +1231,38 @@ async function simulateOrderExecution(order: PaperOrder): Promise<void> {
 
 // Selectors
 export const useActiveAccount = () =>
-  usePaperTradingStore((state: any) => 
-    state.accounts.find((a: any) => a.id === state.activeAccountId)
+  usePaperTradingStore((draft: Draft<PaperTradingStore>) => 
+    draft.accounts.find((a) => a.id === draft.activeAccountId)
   );
 
 export const useAccountPositions = (accountId?: string) =>
-  usePaperTradingStore((state: any) => {
-    const targetAccountId = accountId || state.activeAccountId;
+  usePaperTradingStore((draft: Draft<PaperTradingStore>) => {
+    const targetAccountId = accountId || draft.activeAccountId;
     return targetAccountId 
-      ? state.positions.filter((p: any) => p.accountId === targetAccountId)
+      ? draft.positions.filter((p) => p.accountId === targetAccountId)
       : [];
   });
 
 export const useAccountOrders = (accountId?: string) =>
-  usePaperTradingStore((state: any) => {
-    const targetAccountId = accountId || state.activeAccountId;
+  usePaperTradingStore((draft: Draft<PaperTradingStore>) => {
+    const targetAccountId = accountId || draft.activeAccountId;
     return targetAccountId 
-      ? state.orders.filter((o: any) => o.accountId === targetAccountId)
+      ? draft.orders.filter((o) => o.accountId === targetAccountId)
       : [];
   });
 
 export const usePendingOrders = (accountId?: string) =>
-  usePaperTradingStore((state: any) => {
-    const targetAccountId = accountId || state.activeAccountId;
+  usePaperTradingStore((draft: Draft<PaperTradingStore>) => {
+    const targetAccountId = accountId || draft.activeAccountId;
     return targetAccountId 
-      ? state.orders.filter((o: any) => o.accountId === targetAccountId && o.status === 'pending')
+      ? draft.orders.filter((o) => o.accountId === targetAccountId && o.status === 'pending')
       : [];
   });
 
 export const useAccountTotalValue = (accountId?: string) =>
-  usePaperTradingStore((state: any) => {
-    const targetAccountId = accountId || state.activeAccountId;
-    const account = state.accounts.find((a: any) => a.id === targetAccountId);
+  usePaperTradingStore((draft: Draft<PaperTradingStore>) => {
+    const targetAccountId = accountId || draft.activeAccountId;
+    const account = draft.accounts.find((a) => a.id === targetAccountId);
     return account?.balance.totalValue || 0;
   });
 
