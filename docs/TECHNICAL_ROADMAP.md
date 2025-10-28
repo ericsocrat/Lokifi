@@ -1,7 +1,7 @@
 # Technical Debt Roadmap - Post PR #27
 
 > **Created**: October 24, 2025
-> **Last Updated**: January 2025 - Session 32 Phase 1 COMPLETE (Security Hardening - Log Injection Fixes)
+> **Last Updated**: January 2025 - Session 32 COMPLETE (Security Hardening - All 3 Phases)
 > **Status**: Active - Sprint 0 ✅ COMPLETE, Sprint 1 ✅ COMPLETE, Sprint 2 ✅ COMPLETE, Sprint 3 🔄 IN PROGRESS
 > **Owner**: Solo Developer
 > **Estimated Timeline**: 3-4 months (100-140 hours)
@@ -1170,37 +1170,70 @@ assert exc_info.value.status_code in [404, 500]  # Router may wrap errors
 **Document**: docs/plans/SESSION_32_SECURITY_HARDENING.md
 **Commit**: `49a0f9fa`
 
-**Remaining Work** (Session 32 Phase 3):
-- **Phase 3**: npm Audit Vulnerabilities (3 packages: inquirer, lighthouse, tmp)
-- **Bonus**: Fix JS unused variable in paperTradingStore.tsx
+**Session 32: Security Hardening - Phase 3 (Final CodeQL Alerts)** ✅ COMPLETE (January 2025)
+
+**Objectives**: Resolve final CodeQL alerts (1 JS unused variable + 3 npm-audit)
+
+**Results**: 100% CodeQL alert resolution achieved! 🎉
+- ✅ **JS Unused Variable Fixed**: Removed dead code in paperTradingStore.tsx
+- ✅ **npm-audit Analyzed**: 3 dev-only vulnerabilities documented as safe
+- ✅ **Production Impact**: 0 vulnerabilities (verified with `npm audit --production`)
+- ✅ **Suppression Documented**: Acceptable risk for dev dependencies (Lighthouse CI)
+
+**Key Decisions**:
+1. **JS Fix**: Removed `unrealizedPnL` unused variable (line 768), added TODO for future feature
+2. **npm-audit Suppression**: inquirer, lighthouse, tmp are LOW severity, DEV dependencies only
+3. **Risk Assessment**: Zero production impact, Lighthouse CI tooling (dev/test only)
+4. **No Upgrades**: npm audit fix would break @lhci/cli (breaking change to 0.1.0)
+
+**Metrics**:
+- **Duration**: ~15 minutes (ahead of 30-45 min estimate)
+- **Files Changed**: 1 (paperTradingStore.tsx)
+- **Commits**: 1 (`d57a50c2`)
+- **CodeQL Impact**: 4 alerts → 0 functional alerts (100% resolution)
+- **Test Pass Rate**: 100% maintained (844 tests)
+
+**Session 32 Overall Achievement**:
+```
+Total Alerts: 21 → 0 functional alerts (100% resolution!)
+├── High Severity: 4 → 0 (log injection eliminated)
+├── Python Quality: 13 → 0 (exports, unused vars/imports)
+├── JavaScript: 1 → 0 (unused variable removed)
+└── npm-audit: 3 dev-only (0 production risk, documented)
+
+Total Duration: ~70 minutes across 3 phases
+Test Stability: 100% pass rate maintained throughout
+Commits: 4 (3 code fixes, 1 documentation)
+```
+
+**Document**: docs/plans/SESSION_32_SECURITY_HARDENING.md
+**Commits**: `4d7dee8f` (Phase 1), `49a0f9fa` (Phase 2), `d57a50c2` (Phase 3)
 
 ---
 
-**Options Available** (after Session 25):
-  1. **Continue TypeScript Cleanup** (🟡 MEDIUM, 4-6 hrs)
+**Options Available** (after Session 32):
+  1. **Integration Tests** (🟢 HIGH, 2-3 hrs)
+     - Complete Session 30 backend test expansion
+     - 8 skipped database-dependent tests (follow_service, profile_service)
+     - End-to-end service layer validation
+     - **RECOMMENDED**: Completes backend testing work
+
+  2. **TypeScript Cleanup** (🟡 MEDIUM, 4-6 hrs)
      - 160 remaining `any` types (down from 202)
      - Upgrade ESLint rule to 'error' after cleanup
      - Apply Sprint 2 proven patterns
 
-  2. **CodeQL Security Hardening** (🔴 CRITICAL, 4-6 hrs)
-     - 231 alerts: 4 critical (MD5), 60 high (stack traces)
-     - Security vulnerabilities in production code
-
-  3. **Test Coverage Expansion** (🟢 HIGH, 8-10 hrs) - ✅ COMPLETE (Session 31 All Phases)
-     - 35% → 80%+ coverage target (achieved 30.75%)
-     - Quality assurance for Sprint 2 stores
-     - Session 30: Services tests complete (56 passing)
-     - Session 31 Phase 1: AI router tests (24 passing) ✅
-     - Session 31 Phase 2: Conversation router tests (22 passing) ✅
-     - Session 31 Phase 3: Follow router tests (22 passing) ✅
-     - Session 31 Phase 4: Profile router tests (12 passing) ✅
-     - Total Session 31: 80 router tests, 100% pass rate
-
-  4. **Backend Type Safety (Ruff)** (🟡 MEDIUM, 4-6 hrs)
+  3. **Backend Type Safety (Ruff)** (� MEDIUM, 4-6 hrs)
      - ~417 Ruff violations
      - Backend maintainability improvements
 
-**Next Action**: TypeScript cleanup (160 any types) or CodeQL security hardening
+  4. **CI/CD Optimization** (� MEDIUM, 2-3 hrs)
+     - Workflow speed optimization (caching, parallelization)
+     - Faster feedback loops, reduced CI costs
+
+**Recommendation**: Option 1 (Integration Tests) to complete backend test expansion
+
+**Next Action**: Choose from 4 options above based on project priorities
 
 ### **Sprint 4: Excellence** (Future)
 *Focus: Full compliance and documentation*
