@@ -2,6 +2,8 @@
 Authentication router with login, register, and OAuth endpoints.
 """
 
+import logging
+
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -23,6 +25,9 @@ from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
+# Configure logging for secure error handling
+logger = logging.getLogger(__name__)
+
 
 @router.post("/register", response_model=AuthUserResponse)
 async def register(user_data: UserRegisterRequest, db: AsyncSession = Depends(get_db)):
@@ -30,12 +35,21 @@ async def register(user_data: UserRegisterRequest, db: AsyncSession = Depends(ge
     try:
         auth_service = AuthService(db)
         result = await auth_service.register_user(user_data)
-    except Exception as e:
-        import traceback
-
-        print(f"❌ Registration Error: {e!s}")
-        print(traceback.format_exc())
+    except HTTPException:
+        # Re-raise HTTP exceptions (validation errors, etc.)
         raise
+    except Exception as e:
+        # Log full error details internally for debugging (includes stack trace via exc_info)
+        logger.error(
+            f"Registration failed for user: {user_data.username}",
+            exc_info=True,
+            extra={"username": user_data.username, "email": user_data.email}
+        )
+        # Return generic error to client (no information disclosure)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error during registration. Please try again later."
+        )
 
     # Set HTTP-only cookie with access token
     response_content = jsonable_encoder(
@@ -90,12 +104,21 @@ async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)
             }
         )
         response = JSONResponse(content=response_content)
-    except Exception as e:
-        import traceback
-
-        print(f"❌ Login Error: {e!s}")
-        print(traceback.format_exc())
+    except HTTPException:
+        # Re-raise HTTP exceptions (invalid credentials, etc.)
         raise
+    except Exception as e:
+        # Log full error details internally for debugging (includes stack trace via exc_info)
+        logger.error(
+            f"Login failed for identifier: {login_data.identifier}",
+            exc_info=True,
+            extra={"identifier": login_data.identifier}
+        )
+        # Return generic error to client (no information disclosure)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Internal server error during login. Please try again later."
+        )
 
     response.set_cookie(
         key="access_token",
@@ -224,14 +247,16 @@ async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depend
         # Re-raise HTTP exceptions (validation errors, etc.)
         raise
     except Exception as e:
-        # Log unexpected errors
-        print(f"❌ Google OAuth Unexpected Error: {e!s}")
-        import traceback
-
-        print(traceback.format_exc())
+        # Log full error details internally for debugging (includes stack trace via exc_info)
+        logger.error(
+            "Google OAuth authentication failed",
+            exc_info=True,
+            extra={"error_type": type(e).__name__}
+        )
+        # Return generic error to client (no information disclosure)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="An unexpected error occurred during Google authentication.",
+            detail="An unexpected error occurred during Google authentication. Please try again later.",
         )
 
 
