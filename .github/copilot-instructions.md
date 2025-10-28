@@ -397,6 +397,89 @@ def test_function_name(client, db_session):
    - ✅ **Color contrast**: Minimum WCAG AA compliance (4.5:1 ratio)
    - ✅ **Focus indicators**: Visible focus states for all interactive elements
 
+### CRITICAL: Pre-Commit Validation (MANDATORY)
+
+**⚠️ NEVER claim "session complete" without running ALL validation steps below:**
+
+**For TypeScript/Frontend Work** (Sessions 15-24 pattern):
+
+```powershell
+# Step 1: TypeScript type checking (catches type errors build misses)
+cd apps/frontend
+npm run typecheck 2>&1 | Select-String -Pattern "<storeName>" -Context 2
+
+# Step 2: If errors found, fix them NOW (don't commit broken code)
+# Common error patterns to check:
+# - state. references inside set((draft:) blocks → should be draft.
+# - Optional parameters: Implementation vs interface mismatches
+# - Missing type annotations: (param) → (param: Type)
+# - Union types: string → 'literal1' | 'literal2'
+
+# Step 3: Full typecheck (after fixing store-specific errors)
+npm run typecheck
+
+# Step 4: Build verification (production readiness)
+npm run build
+
+# Step 5: Only AFTER all pass → commit and report success
+```
+
+**Why This Matters** (Lesson from Sprint 2 Validation):
+- ❌ `npm run build` **SKIPS** type validation (`Skipping validation of types`)
+- ✅ `npm run typecheck` is the **ONLY** way to catch real type errors
+- 🐛 Sprint 2 discovered 18 hidden errors in "completed" stores
+- ⏱️ Fixing after the fact takes 3x longer than validating upfront
+
+**Common Pitfalls to Avoid**:
+
+1. **Bulk Replacement Edge Cases**:
+   - Context-aware: Track when inside `set((draft:)` blocks
+   - Nested conditionals: `if (state.x)` inside set() blocks → missed
+   - Object operations: `Object.assign(state.y, ...)` → missed
+   - Test on 5-10 lines first, then bulk replace
+
+2. **Parameter Optionality**:
+   - Always check interface definition, not just implementation
+   - Use "Go to Type Definition" in VS Code
+   - If interface says `(param?: Type)`, implementation MUST match
+
+3. **Type References**:
+   - Use existing types: `SomeType['field']` not `FieldType`
+   - Check if type exists before using
+   - Prefer type paths over creating new types
+
+**Session Complete Criteria** (ALL must pass):
+
+- [ ] Store-specific typecheck shows 0 errors (or only expected Zustand v5 error)
+- [ ] Full `npm run typecheck` passes
+- [ ] `npm run build` succeeds
+- [ ] All acceptable `any` types documented inline with `// any required for: <reason>`
+- [ ] Commit message includes validation confirmation
+
+**Template for Session Completion**:
+
+```markdown
+## ✅ Session X Complete
+
+**Validation Results**:
+- ✅ Store-specific typecheck: 0 errors
+- ✅ Full typecheck: Passed (only expected Zustand v5 error)
+- ✅ Build: Successful
+- ✅ Acceptable any: X documented (list reasons)
+
+**Metrics**: X lines, Y any → Z acceptable (N% improvement)
+**Time**: ~N minutes
+**Commit**: <hash>
+```
+
+**If Validation Fails**:
+- ❌ DO NOT claim session complete
+- 🔧 Fix errors immediately while context is fresh
+- 📝 Document what went wrong and prevention strategy
+- ✅ Re-run validation until all steps pass
+
+**Reference**: See `/docs/guides/VALIDATION_SUMMARY_SESSIONS_18-21.md` for detailed examples of validation errors and fixes.
+
 ### When Writing Tests
 1. **Test behavior, not implementation** - Focus on user-facing outcomes
 2. **Mock external dependencies** - Use vi.mock() or pytest fixtures
