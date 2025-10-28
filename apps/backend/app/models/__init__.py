@@ -8,6 +8,7 @@ from .conversation import Conversation, ConversationParticipant, Message, Messag
 from .follow import Follow
 from .notification_models import Notification, NotificationPreference
 from .profile import Profile
+from .reaction import MessageReaction, ReactionType
 from .user import User
 
 __all__ = [
@@ -18,9 +19,11 @@ __all__ = [
     "ConversationParticipant",
     "Follow",
     "Message",
+    "MessageReaction",
     "MessageReceipt",
     "Notification",
     "NotificationPreference",
     "Profile",
+    "ReactionType",
     "User",
 ]
