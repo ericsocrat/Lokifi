@@ -1,7 +1,7 @@
 # Technical Debt Roadmap - Post PR #27
 
 > **Created**: October 24, 2025
-> **Last Updated**: January 2025 - Session 32 COMPLETE (Security Hardening - All 3 Phases)
+> **Last Updated**: January 2025 - Session 33 PAUSED (Integration Test Infrastructure Created)
 > **Status**: Active - Sprint 0 ✅ COMPLETE, Sprint 1 ✅ COMPLETE, Sprint 2 ✅ COMPLETE, Sprint 3 🔄 IN PROGRESS
 > **Owner**: Solo Developer
 > **Estimated Timeline**: 3-4 months (100-140 hours)
@@ -1209,9 +1209,54 @@ Commits: 4 (3 code fixes, 1 documentation)
 **Document**: docs/plans/SESSION_32_SECURITY_HARDENING.md
 **Commits**: `4d7dee8f` (Phase 1), `49a0f9fa` (Phase 2), `d57a50c2` (Phase 3)
 
+**Session 33: Integration Test Infrastructure** ⏸️ PAUSED (January 2025)
+
+**Objectives**: Create integration tests for 6 skipped database-dependent tests from Session 30
+
+**Results**: Infrastructure created, test execution deferred pending database setup
+- ✅ **Integration Fixture Created**: `integration_db_session` in conftest.py
+- ✅ **Test File Created**: `test_follow_service_integration.py` (6 comprehensive tests)
+- ✅ **Patterns Documented**: Integration test best practices established
+- ⏸️ **Execution Deferred**: Requires PostgreSQL database setup
+
+**Key Decisions**:
+1. **Pragmatic Pivot**: Recognized database setup complexity exceeds session scope
+2. **Infrastructure Complete**: All fixtures and tests ready for CI/CD deployment
+3. **pytest-asyncio Integration**: Used `@pytest_asyncio.fixture` for async fixtures
+4. **Database Availability**: Tests will run in CI/CD where PostgreSQL is configured
+
+**Metrics**:
+- **Duration**: ~45 minutes (infrastructure creation)
+- **Files Created**: 2 (conftest.py additions, test_follow_service_integration.py)
+- **Tests Ready**: 6 integration tests (pending database execution)
+- **Lines Added**: ~250 (fixture code + test implementations)
+
+**Deliverables**:
+```
+Integration Test Infrastructure (Ready for CI/CD):
+├── Fixture: integration_db_session (real database session)
+├── Test File: test_follow_service_integration.py
+│   ├── test_follow_user_success_with_server_default_timestamp
+│   ├── test_get_followers_with_database_pagination
+│   ├── test_follow_user_idempotent_with_database
+│   ├── test_unfollow_user_with_database
+│   ├── test_follow_yourself_fails_with_database
+│   └── test_follow_nonexistent_user_fails_with_database
+└── Documentation: SESSION_33_INTEGRATION_TESTS.md
+```
+
+**Next Steps** (When Database Available):
+1. Configure local PostgreSQL or use CI/CD environment
+2. Run integration tests: `pytest -m integration`
+3. Verify 6/6 tests passing
+4. Complete Session 33 Phase 2 (profile_service integration tests)
+
+**Document**: docs/plans/SESSION_33_INTEGRATION_TESTS.md
+**Status**: Infrastructure complete, execution deferred to CI/CD or future session
+
 ---
 
-**Options Available** (after Session 32):
+**Options Available** (after Session 33):
   1. **Integration Tests** (🟢 HIGH, 2-3 hrs)
      - Complete Session 30 backend test expansion
      - 8 skipped database-dependent tests (follow_service, profile_service)
