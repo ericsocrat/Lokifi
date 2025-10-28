@@ -8,16 +8,12 @@ __all__ = ["router"]
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from app.core.config import get_settings
 from app.core.security import get_current_user
 from app.utils.security_alerts import security_alert_manager
 from app.utils.security_logger import SecurityEventType, security_monitor
 from fastapi import APIRouter, Depends
-from fastapi.security import HTTPBearer
 
 router = APIRouter()
-security = HTTPBearer()
-settings = get_settings()
 
 
 @router.get("/security/status")

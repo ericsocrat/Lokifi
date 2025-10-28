@@ -3,13 +3,11 @@ from __future__ import annotations
 __all__ = [
     "Base",
     "User",
-    "PortfolioPosition",
-    "Alert",
-    "Message",
-    "Conversation",
     "Follow",
-    "Profile",
-    "Notification",
+    "Post",
+    "PortfolioPosition",
+    "AIThread",
+    "AIMessage",
 ]
 
 from datetime import datetime

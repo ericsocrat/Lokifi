@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = ["Alert", "AlertEvaluator", "AlertHub", "AlertStore", "evaluator", "hub", "store"]
+__all__ = ["AlertEvaluator", "AlertStore", "evaluator", "hub", "store"]
 
 import asyncio
 import builtins
@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Literal
 
-from app.services.prices import fetch_ohlc
+from app.services.prices import get_ohlc
 
 AlertType = Literal["price_threshold", "pct_change"]
 
@@ -179,7 +179,7 @@ class AlertEvaluator:
         # Fetch minimal data for evaluation
         tf = a.timeframe
         if a.type == "price_threshold":
-            bars = fetch_ohlc(symbol=a.symbol, timeframe=tf, limit=1)
+            bars = await get_ohlc(symbol=a.symbol, timeframe=tf, limit=1)
             last = bars[-1]
             price = float(last["close"])
             cfg = a.config
@@ -195,7 +195,7 @@ class AlertEvaluator:
             cfg = a.config
             window_min = int(cfg.get("window_minutes", 60))
             bars_needed = max(2, window_min * 60 // 60)  # heuristic: at least 2 bars
-            bars = fetch_ohlc(symbol=a.symbol, timeframe=tf, limit=max(2, bars_needed))
+            bars = await get_ohlc(symbol=a.symbol, timeframe=tf, limit=max(2, bars_needed))
             first = float(bars[0]["close"])
             last = float(bars[-1]["close"])
             pct = ((last - first) / first) * 100.0 if first != 0 else 0.0
