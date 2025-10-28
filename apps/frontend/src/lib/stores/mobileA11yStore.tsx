@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { subscribeWithSelector } from 'zustand/middleware';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Mobile & Accessibility Types
@@ -345,7 +346,7 @@ interface MobileAccessibilityActions {
   processVoiceCommand: (command: string) => void;
   
   // Touch & Gestures
-  handleGesture: (gestureType: string, event: any, context: string) => void;
+  handleGesture: (gestureType: string, event: TouchEvent | MouseEvent, context: string) => void;
   calibrateTouchSensitivity: () => void;
   
   // Performance Optimization
@@ -376,8 +377,17 @@ interface MobileAccessibilityActions {
   applyMobileSettings: () => void;
 }
 
-// Create Store
-export const useMobileAccessibilityStore = create<MobileAccessibilityState & MobileAccessibilityActions>()(
+// ============================================================================
+// Combined Store Type
+// ============================================================================
+
+type MobileA11yStore = MobileAccessibilityState & MobileAccessibilityActions;
+
+// ============================================================================
+// Store Creation
+// ============================================================================
+
+export const useMobileAccessibilityStore = create<MobileA11yStore>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
     subscribeWithSelector(
@@ -586,13 +596,13 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             reducedMotion
           };
           
-          set((state: any) => {
-            state.deviceInfo = deviceInfo;
-            state.isMobile = isMobile;
-            state.isTablet = isTablet;
-            state.isDesktop = isDesktop;
-            state.viewportSize = { width, height };
-            state.currentBreakpoint = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.deviceInfo = deviceInfo;
+            draft.isMobile = isMobile;
+            draft.isTablet = isTablet;
+            draft.isDesktop = isDesktop;
+            draft.viewportSize = { width, height };
+            draft.currentBreakpoint = isMobile ? 'mobile' : isTablet ? 'tablet' : 'desktop';
           });
           
           // Update accessibility settings based on device
@@ -614,12 +624,12 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           get().optimizeForDevice();
         },
         
-        updateDeviceInfo: (info: any) => {
+        updateDeviceInfo: (info: Partial<DeviceInfo>) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            if (state.deviceInfo) {
-              Object.assign(state.deviceInfo, info);
+          set((draft: Draft<MobileA11yStore>) => {
+            if (draft.deviceInfo) {
+              Object.assign(draft.deviceInfo, info);
             }
           });
         },
@@ -636,28 +646,28 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
           };
           
-          set((state: any) => {
-            state.supportedFeatures = features;
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.supportedFeatures = features;
           });
         },
         
         // Settings Management
-        updateAccessibilitySettings: (settings: any) => {
+        updateAccessibilitySettings: (settings: Partial<AccessibilitySettings>) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            Object.assign(state.accessibilitySettings, settings);
+          set((draft: Draft<MobileA11yStore>) => {
+            Object.assign(draft.accessibilitySettings, settings);
           });
           
           // Apply settings immediately
           get().applyAccessibilitySettings();
         },
         
-        updateMobileSettings: (settings: any) => {
+        updateMobileSettings: (settings: Partial<MobileSettings>) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            Object.assign(state.mobileSettings, settings);
+          set((draft: Draft<MobileA11yStore>) => {
+            Object.assign(draft.mobileSettings, settings);
           });
           
           // Apply settings immediately
@@ -667,23 +677,23 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         resetToDefaults: () => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
+          set((draft: Draft<MobileA11yStore>) => {
             // Reset to default settings based on device
-            if (state.isMobile) {
-              state.mobileSettings.compactMode = true;
-              state.mobileSettings.bottomNavigation = true;
-              state.mobileSettings.toolbarCollapse = true;
+            if (draft.isMobile) {
+              draft.mobileSettings.compactMode = true;
+              draft.mobileSettings.bottomNavigation = true;
+              draft.mobileSettings.toolbarCollapse = true;
             }
             
-            if (state.deviceInfo?.reducedMotion) {
-              state.accessibilitySettings.reduceMotion = true;
-              state.accessibilitySettings.reduceAnimations = true;
+            if (draft.deviceInfo?.reducedMotion) {
+              draft.accessibilitySettings.reduceMotion = true;
+              draft.accessibilitySettings.reduceAnimations = true;
             }
           });
         },
         
         // Gesture Management
-        addGesture: (gestureData: any) => {
+        addGesture: (gestureData: Omit<GestureConfig, 'id'>) => {
           if (!FLAGS.mobileA11y) return '';
           
           const gestureId = `gesture_${Date.now()}`;
@@ -692,40 +702,40 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             id: gestureId
           };
           
-          set((state: any) => {
-            state.gestures.push(gesture);
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.gestures.push(gesture);
           });
           
           return gestureId;
         },
         
-        updateGesture: (gestureId: any, updates: any) => {
+        updateGesture: (gestureId: string, updates: Partial<GestureConfig>) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const gesture = state.gestures.find((g: any) => g.id === gestureId);
+          set((draft: Draft<MobileA11yStore>) => {
+            const gesture = draft.gestures.find((g) => g.id === gestureId);
             if (gesture) {
               Object.assign(gesture, updates);
             }
           });
         },
         
-        removeGesture: (gestureId: any) => {
+        removeGesture: (gestureId: string) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const index = state.gestures.findIndex((g: any) => g.id === gestureId);
+          set((draft: Draft<MobileA11yStore>) => {
+            const index = draft.gestures.findIndex((g) => g.id === gestureId);
             if (index !== -1) {
-              state.gestures.splice(index, 1);
+              draft.gestures.splice(index, 1);
             }
           });
         },
         
-        enableGesture: (gestureId: any, enabled: any) => {
+        enableGesture: (gestureId: string, enabled: boolean) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const gesture = state.gestures.find((g: any) => g.id === gestureId);
+          set((draft: Draft<MobileA11yStore>) => {
+            const gesture = draft.gestures.find((g) => g.id === gestureId);
             if (gesture) {
               gesture.enabled = enabled;
             }
@@ -733,7 +743,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Keyboard Shortcuts
-        addKeyboardShortcut: (shortcutData: any) => {
+        addKeyboardShortcut: (shortcutData: Omit<KeyboardShortcut, 'id'>) => {
           if (!FLAGS.mobileA11y) return '';
           
           const shortcutId = `shortcut_${Date.now()}`;
@@ -742,40 +752,40 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             id: shortcutId
           };
           
-          set((state: any) => {
-            state.keyboardShortcuts.push(shortcut);
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.keyboardShortcuts.push(shortcut);
           });
           
           return shortcutId;
         },
         
-        updateKeyboardShortcut: (shortcutId: any, updates: any) => {
+        updateKeyboardShortcut: (shortcutId: string, updates: Partial<KeyboardShortcut>) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const shortcut = state.keyboardShortcuts.find((s: any) => s.id === shortcutId);
+          set((draft: Draft<MobileA11yStore>) => {
+            const shortcut = draft.keyboardShortcuts.find((s) => s.id === shortcutId);
             if (shortcut) {
               Object.assign(shortcut, updates);
             }
           });
         },
         
-        removeKeyboardShortcut: (shortcutId: any) => {
+        removeKeyboardShortcut: (shortcutId: string) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const index = state.keyboardShortcuts.findIndex((s: any) => s.id === shortcutId);
+          set((draft: Draft<MobileA11yStore>) => {
+            const index = draft.keyboardShortcuts.findIndex((s) => s.id === shortcutId);
             if (index !== -1) {
-              state.keyboardShortcuts.splice(index, 1);
+              draft.keyboardShortcuts.splice(index, 1);
             }
           });
         },
         
-        enableKeyboardShortcut: (shortcutId: any, enabled: any) => {
+        enableKeyboardShortcut: (shortcutId: string, enabled: boolean) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const shortcut = state.keyboardShortcuts.find((s: any) => s.id === shortcutId);
+          set((draft: Draft<MobileA11yStore>) => {
+            const shortcut = draft.keyboardShortcuts.find((s) => s.id === shortcutId);
             if (shortcut) {
               shortcut.enabled = enabled;
             }
@@ -783,46 +793,46 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Responsive Design
-        updateViewportSize: (width: any, height: any) => {
+        updateViewportSize: (width: number, height: number) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            state.viewportSize = { width, height };
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.viewportSize = { width, height };
             
             // Update breakpoint
-            const breakpoint = state.breakpoints.find((bp: any) => 
+            const breakpoint = draft.breakpoints.find((bp) => 
               width >= bp.minWidth && (!bp.maxWidth || width <= bp.maxWidth)
             );
             
             if (breakpoint) {
-              state.currentBreakpoint = breakpoint.name;
+              draft.currentBreakpoint = breakpoint.name;
             }
           });
         },
         
-        setBreakpoint: (breakpoint: any) => {
+        setBreakpoint: (breakpoint) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            state.currentBreakpoint = breakpoint;
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.currentBreakpoint = breakpoint;
           });
         },
         
-        addBreakpoint: (breakpoint: any) => {
+        addBreakpoint: (breakpoint) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            state.breakpoints.push(breakpoint);
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.breakpoints.push(breakpoint);
             // Sort by minWidth
-            state.breakpoints.sort((a: any, b: any) => a.minWidth - b.minWidth);
+            draft.breakpoints.sort((a, b) => a.minWidth - b.minWidth);
           });
         },
         
         updateBreakpoint: (name, updates) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            const breakpoint = state.breakpoints.find((bp: any) => bp.name === name);
+          set((draft: Draft<MobileA11yStore>) => {
+            const breakpoint = draft.breakpoints.find((bp) => bp.name === name);
             if (breakpoint) {
               Object.assign(breakpoint, updates);
             }
@@ -835,9 +845,9 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             throw new Error('Mobile accessibility features not enabled');
           }
           
-          set((state: any) => {
-            state.isAuditing = true;
-            state.error = null;
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.isAuditing = true;
+            draft.error = null;
           });
           
           try {
@@ -858,53 +868,53 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
               section508: auditResults.section508
             };
             
-            set((state: any) => {
-              state.lastAudit = audit;
-              state.auditHistory.unshift(audit);
-              state.activeIssues = audit.issues.filter((issue: any) => issue.type === 'error');
-              state.isAuditing = false;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.lastAudit = audit;
+              draft.auditHistory.unshift(audit);
+              draft.activeIssues = audit.issues.filter((issue) => issue.type === 'error');
+              draft.isAuditing = false;
               
               // Keep only last 10 audits
-              if (state.auditHistory.length > 10) {
-                state.auditHistory = state.auditHistory.slice(0, 10);
+              if (draft.auditHistory.length > 10) {
+                draft.auditHistory = draft.auditHistory.slice(0, 10);
               }
             });
             
             return audit;
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Audit failed';
-              state.isAuditing = false;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.error = error instanceof Error ? error.message : 'Audit failed';
+              draft.isAuditing = false;
             });
             
             throw error;
           }
         },
         
-        fixAccessibilityIssue: async (issueId: any) => {
+        fixAccessibilityIssue: async (issueId: string) => {
           if (!FLAGS.mobileA11y) return;
           
           try {
             // Auto-fix common accessibility issues
             await autoFixAccessibilityIssue(issueId);
             
-            set((state: any) => {
-              state.activeIssues = state.activeIssues.filter((issue: any) => issue.id !== issueId);
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.activeIssues = draft.activeIssues.filter((issue) => issue.id !== issueId);
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Failed to fix issue';
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.error = error instanceof Error ? error.message : 'Failed to fix issue';
             });
           }
         },
         
-        ignoreAccessibilityIssue: (issueId: any) => {
+        ignoreAccessibilityIssue: (issueId: string) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            state.activeIssues = state.activeIssues.filter((issue: any) => issue.id !== issueId);
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.activeIssues = draft.activeIssues.filter((issue) => issue.id !== issueId);
           });
         },
         
@@ -938,15 +948,15 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           liveRegion.textContent = message;
         },
         
-        setFocus: (elementId: any) => {
+        setFocus: (elementId: string) => {
           if (!FLAGS.mobileA11y) return;
           
           const element = document.getElementById(elementId);
           if (element) {
             element.focus();
             
-            set((state: any) => {
-              state.focusedElement = elementId;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.focusedElement = elementId;
             });
           }
         },
@@ -980,11 +990,13 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             recognition.interimResults = false;
             recognition.lang = 'en-US';
             
+            // any required for: SpeechRecognition API event types not available in TypeScript lib
             recognition.onresult = (event: any) => {
               const command = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
               get().processVoiceCommand(command);
             };
             
+            // any required for: SpeechRecognition API event types not available in TypeScript lib
             recognition.onerror = (event: any) => {
               console.error('Voice recognition error:', event.error);
             };
@@ -1009,7 +1021,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        processVoiceCommand: (command: any) => {
+        processVoiceCommand: (command: string) => {
           if (!FLAGS.mobileA11y) return;
           
           const commands = {
@@ -1021,7 +1033,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             'stop listening': () => get().stopVoiceRecognition()
           };
           
-          const matchedCommand = Object.keys(commands).find((cmd: any) => 
+          const matchedCommand = Object.keys(commands).find((cmd) => 
             command.includes(cmd.toLowerCase())
           );
           
@@ -1036,7 +1048,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         handleGesture: (gestureType, event, context) => {
           if (!FLAGS.mobileA11y || !get().mobileSettings.gestureNavigation) return;
           
-          const gesture = get().gestures.find((g: any) => 
+          const gesture = get().gestures.find((g) => 
             g.type === gestureType && 
             g.enabled && 
             g.contexts.includes(context)
@@ -1084,23 +1096,23 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        updatePerformanceMetrics: (metrics: any) => {
+        updatePerformanceMetrics: (metrics: Partial<MobileAccessibilityState['performanceMetrics']>) => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            Object.assign(state.performanceMetrics, metrics);
+          set((draft: Draft<MobileA11yStore>) => {
+            Object.assign(draft.performanceMetrics, metrics);
           });
         },
         
         // Orientation & Layout
-        lockOrientation: (orientation: any) => {
+        lockOrientation: (orientation: string) => {
           if (!FLAGS.mobileA11y || !('screen' in window) || !('orientation' in (window as any).screen)) return;
           
           try {
             (window as any).screen.orientation.lock(orientation);
             
-            set((state: any) => {
-              state.orientationLocked = true;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.orientationLocked = true;
             });
             
           } catch (error) {
@@ -1114,8 +1126,8 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           try {
             (window as any).screen.orientation.unlock();
             
-            set((state: any) => {
-              state.orientationLocked = false;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.orientationLocked = false;
             });
             
           } catch (error) {
@@ -1134,7 +1146,7 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         },
         
         // Notification & Feedback
-        showAccessibilityNotification: (message: any, type: any) => {
+        showAccessibilityNotification: (message: string, type: string) => {
           if (!FLAGS.mobileA11y) return;
           
           // Show visual notification
@@ -1149,13 +1161,13 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           }
         },
         
-        vibrate: (pattern: any) => {
+        vibrate: (pattern: number | number[]) => {
           if (!FLAGS.mobileA11y || !get().mobileSettings.vibration || !('vibrate' in navigator)) return;
           
           navigator.vibrate(pattern);
         },
         
-        playAccessibilitySound: (soundType: any) => {
+        playAccessibilitySound: (soundType: string) => {
           if (!FLAGS.mobileA11y || !get().accessibilitySettings.soundEffects) return;
           
           // This would play appropriate accessibility sounds
@@ -1202,34 +1214,34 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           return blob;
         },
         
-        importSettings: async (file: any) => {
+        importSettings: async (file: File) => {
           if (!FLAGS.mobileA11y) return;
           
           try {
             const text = await file.text();
             const settings = JSON.parse(text);
             
-            set((state: any) => {
+            set((draft: Draft<MobileA11yStore>) => {
               if (settings.accessibilitySettings) {
-                state.accessibilitySettings = settings.accessibilitySettings;
+                draft.accessibilitySettings = settings.accessibilitySettings;
               }
               if (settings.mobileSettings) {
-                state.mobileSettings = settings.mobileSettings;
+                draft.mobileSettings = settings.mobileSettings;
               }
               if (settings.gestures) {
-                state.gestures = settings.gestures;
+                draft.gestures = settings.gestures;
               }
               if (settings.keyboardShortcuts) {
-                state.keyboardShortcuts = settings.keyboardShortcuts;
+                draft.keyboardShortcuts = settings.keyboardShortcuts;
               }
               if (settings.breakpoints) {
-                state.breakpoints = settings.breakpoints;
+                draft.breakpoints = settings.breakpoints;
               }
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Failed to import settings';
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.error = error instanceof Error ? error.message : 'Failed to import settings';
             });
           }
         },
@@ -1238,9 +1250,9 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
         initialize: async () => {
           if (!FLAGS.mobileA11y) return;
           
-          set((state: any) => {
-            state.isInitializing = true;
-            state.error = null;
+          set((draft: Draft<MobileA11yStore>) => {
+            draft.isInitializing = true;
+            draft.error = null;
           });
           
           try {
@@ -1258,14 +1270,14 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
             get().applyAccessibilitySettings();
             get().applyMobileSettings();
             
-            set((state: any) => {
-              state.isInitializing = false;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.isInitializing = false;
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Initialization failed';
-              state.isInitializing = false;
+            set((draft: Draft<MobileA11yStore>) => {
+              draft.error = error instanceof Error ? error.message : 'Initialization failed';
+              draft.isInitializing = false;
             });
           }
         },
@@ -1287,11 +1299,11 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
           
           // Keyboard events
-          window.addEventListener('keydown', (event: any) => {
-            const shortcuts = get().keyboardShortcuts.filter((s: any) => s.enabled);
+          window.addEventListener('keydown', (event) => {
+            const shortcuts = get().keyboardShortcuts.filter((s) => s.enabled);
             
             for (const shortcut of shortcuts) {
-              const modifiersMatch = shortcut.modifiers.every((mod: any) => {
+              const modifiersMatch = shortcut.modifiers.every((mod) => {
                 switch (mod) {
                   case 'ctrl': return event.ctrlKey;
                   case 'alt': return event.altKey;
@@ -1315,11 +1327,11 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
           });
           
           // Focus tracking
-          document.addEventListener('focusin', (event: any) => {
+          document.addEventListener('focusin', (event) => {
             const element = event.target as HTMLElement;
             if (element.id) {
-              set((state: any) => {
-                state.focusedElement = element.id;
+              set((draft: Draft<MobileA11yStore>) => {
+                draft.focusedElement = element.id;
               });
             }
           });
@@ -1332,8 +1344,8 @@ export const useMobileAccessibilityStore = create<MobileAccessibilityState & Mob
               const currentHeight = window.innerHeight;
               const heightDifference = initialViewportHeight - currentHeight;
               
-              set((state: any) => {
-                state.keyboardVisible = heightDifference > 150; // Threshold for keyboard
+              set((draft: Draft<MobileA11yStore>) => {
+                draft.keyboardVisible = heightDifference > 150; // Threshold for keyboard
               });
             });
           }
@@ -1528,20 +1540,20 @@ async function autoFixAccessibilityIssue(issueId: string): Promise<void> {
 
 // Selectors
 export const useCurrentBreakpoint = () =>
-  useMobileAccessibilityStore((state: any) => state.currentBreakpoint);
+  useMobileAccessibilityStore((draft: Draft<MobileA11yStore>) => draft.currentBreakpoint);
 
 export const useDeviceType = () =>
-  useMobileAccessibilityStore((state: any) => ({
-    isMobile: state.isMobile,
-    isTablet: state.isTablet,
-    isDesktop: state.isDesktop
+  useMobileAccessibilityStore((draft: Draft<MobileA11yStore>) => ({
+    isMobile: draft.isMobile,
+    isTablet: draft.isTablet,
+    isDesktop: draft.isDesktop
   }));
 
 export const useAccessibilityScore = () =>
-  useMobileAccessibilityStore((state: any) => state.lastAudit?.score || 0);
+  useMobileAccessibilityStore((draft: Draft<MobileA11yStore>) => draft.lastAudit?.score || 0);
 
 export const useActiveIssuesCount = () =>
-  useMobileAccessibilityStore((state: any) => state.activeIssues.length);
+  useMobileAccessibilityStore((draft: Draft<MobileA11yStore>) => draft.activeIssues.length);
 
 // Initialize store on client
 if (typeof window !== 'undefined' && FLAGS.mobileA11y) {
