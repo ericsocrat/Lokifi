@@ -18,12 +18,14 @@
 - **Code Style & Standards** - TypeScript/Python conventions, testing patterns
 - **Task Tracking** - Todo list management (NEVER delete!), CHECKLISTS.md, TODO Tree
 - **Common Patterns** - Component/Store/Route/Test templates
+- **Pre-Flight Checks** - Path verification, dependency management, quality checks (NEW! ⭐)
 - **Security Best Practices** - Frontend/Backend security, anti-patterns
 - **CI/CD Standards** - Service configs, credentials, health checks (Sessions 8-9)
 - **Performance** - React/Zustand optimization patterns
 - **Documentation References** - Key docs to reference
 
 **When You Need**:
+- 🛫 **Pre-Flight Checks**: See "Pre-Flight Checks & Code Generation" section (ALWAYS USE!)
 - 🔍 **Service Configuration**: See "CI/CD & Workflow Standards" section
 - 📋 **Process Checklists**: Reference `/docs/CHECKLISTS.md`
 - 🔐 **Security Guidance**: See "Security Best Practices" section
@@ -502,6 +504,390 @@ npm run build
 5. **Version consistency** - Use postgres:16-alpine + redis:7-alpine everywhere
 6. **Credential standard** - Always use lokifi:lokifi2025 for PostgreSQL
 7. **Test locally first** - Run actionlint/yaml-lint before pushing workflow changes
+
+## Pre-Flight Checks & Code Generation
+
+**🎯 CRITICAL: Always verify context and environment BEFORE taking action**
+
+These checks prevent wasted effort, broken code, and misaligned implementations. Every code generation, file operation, or dependency installation MUST follow this checklist.
+
+### 1. Path & Directory Verification (MANDATORY)
+
+**Before ANY file operation (create, edit, install dependencies):**
+
+✅ **Verify correct directory context**:
+```powershell
+# Check current working directory
+Get-Location
+
+# Verify you're in the correct subdirectory
+# Frontend work: apps/frontend/
+# Backend work: apps/backend/
+# Infrastructure: infra/docker/
+# Documentation: docs/
+# Tools: tools/
+
+# Navigate to correct directory BEFORE operations
+cd apps/frontend  # For frontend work
+cd apps/backend   # For backend work
+```
+
+✅ **Use absolute paths when invoking tools**:
+```typescript
+// ❌ BAD - Relative path (ambiguous)
+create_file("components/Button.tsx", content)
+
+// ✅ GOOD - Absolute path (explicit)
+create_file("c:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\Button.tsx", content)
+```
+
+✅ **Verify write permissions and directory existence**:
+```powershell
+# Check if directory exists before creating files
+Test-Path "apps/frontend/src/components"
+
+# Create directory if needed (tools handle this, but verify first)
+```
+
+**Common Path Mistakes to Avoid**:
+- ❌ Installing frontend packages while in `apps/backend/`
+- ❌ Creating backend files in `apps/frontend/src/`
+- ❌ Running `npm` commands from project root instead of `apps/frontend/`
+- ❌ Running `pip` commands from project root instead of `apps/backend/`
+
+### 2. Project Context Matching (CRITICAL)
+
+**Before generating ANY code, verify you understand:**
+
+✅ **Tech stack and versions**:
+- Frontend: Next.js 15.1.3 (App Router), React 19, TypeScript, Vitest 3.2.4
+- Backend: FastAPI, Python 3.11+, Pytest
+- State: Zustand for global state (NOT Redux, NOT Context API)
+- Styling: TailwindCSS 3.4.17 + shadcn/ui (NOT CSS modules, NOT styled-components)
+
+✅ **Framework-specific patterns**:
+```typescript
+// ✅ GOOD - Lokifi uses Zustand stores
+import { usePortfolioStore } from '@/lib/stores/portfolioStore';
+
+// ❌ BAD - Don't suggest Redux when project uses Zustand
+import { useDispatch, useSelector } from 'react-redux';
+
+// ✅ GOOD - Next.js App Router (app/)
+export default function Page() { ... }
+
+// ❌ BAD - Don't suggest Pages Router (pages/)
+export default function HomePage() { ... }
+```
+
+✅ **Existing dependencies**:
+```powershell
+# Check package.json BEFORE suggesting new dependencies
+cd apps/frontend
+Get-Content package.json | Select-String -Pattern "recharts|zustand|vitest"
+
+# Check requirements.txt for backend
+cd apps/backend
+Get-Content requirements.txt | Select-String -Pattern "fastapi|pytest|sqlalchemy"
+```
+
+**Anti-Pattern Examples**:
+- ❌ Suggesting `axios` when project uses native `fetch`
+- ❌ Recommending `jest` when project uses `vitest`
+- ❌ Proposing `unittest` when project uses `pytest`
+- ❌ Using `styled-components` when project uses TailwindCSS
+
+### 3. Code Organization & Conventions (FOLLOW EXISTING PATTERNS)
+
+**Before creating new files, understand the project structure:**
+
+✅ **Frontend file organization**:
+```
+apps/frontend/src/
+├── app/              # Next.js App Router pages (route handlers)
+├── components/       # React components (PascalCase.tsx)
+│   ├── ui/          # shadcn/ui components
+│   └── dashboard/   # Domain-specific components
+├── lib/             # Utilities and helpers
+│   ├── stores/      # Zustand stores (camelCase + Store.tsx)
+│   ├── api/         # API client utilities
+│   └── utils/       # Helper functions
+├── hooks/           # Custom React hooks (use*.ts)
+└── tests/           # Vitest tests (*.test.ts(x))
+```
+
+✅ **Backend file organization**:
+```
+apps/backend/app/
+├── api/             # API routes (FastAPI routers)
+├── core/            # Core functionality (config, security)
+├── models/          # SQLAlchemy models + Pydantic schemas
+├── services/        # Business logic layer
+└── tests/           # Pytest tests (test_*.py)
+```
+
+✅ **Naming conventions**:
+- **Components**: `PascalCase.tsx` (e.g., `PriceChart.tsx`)
+- **Stores**: `camelCaseStore.tsx` (e.g., `portfolioStore.tsx`)
+- **Utilities**: `kebab-case.ts` (e.g., `format-currency.ts`)
+- **Hooks**: `useCamelCase.ts` (e.g., `usePortfolio.ts`)
+- **Tests**: `*.test.ts` (frontend), `test_*.py` (backend)
+
+✅ **Import paths**:
+```typescript
+// ✅ GOOD - Use @ alias for src imports
+import { usePortfolioStore } from '@/lib/stores/portfolioStore';
+import { Button } from '@/components/ui/button';
+
+// ❌ BAD - Don't use relative paths for src imports
+import { usePortfolioStore } from '../../lib/stores/portfolioStore';
+```
+
+**Pre-Creation Checklist**:
+- [ ] File location matches project structure
+- [ ] Naming convention follows project standards
+- [ ] Import paths use `@/` alias (frontend)
+- [ ] Component/Store/Test pattern matches existing files
+
+### 4. Documentation & Comment Standards (KEEP DOCS CURRENT)
+
+**Before claiming "work complete", ensure documentation is updated:**
+
+✅ **Documentation updates required**:
+- **README.md**: Update if adding new features, dependencies, or setup steps
+- **TECHNICAL_ROADMAP.md**: Add session summary with metrics and decisions
+- **CHECKLISTS.md**: Update process checklists if new workflows introduced
+- **Todo list**: Mark completed tasks, add new follow-up tasks
+
+✅ **Code comment standards**:
+```typescript
+// ✅ GOOD - Explain WHY, not WHAT
+// Feature flags OFF by default to prevent incomplete features in production
+if (!FLAGS.monitoring) return '';
+
+// ❌ BAD - Obvious comment (WHAT)
+// Return empty string if monitoring flag is false
+if (!FLAGS.monitoring) return '';
+
+// ✅ GOOD - Document acceptable 'any' types
+const handleError = (error: any) => {  // any required: browser Error types vary
+  logError(error);
+};
+
+// ✅ GOOD - TODO comments with context
+// TODO: Add input validation after API schema finalized (Sprint 4)
+```
+
+✅ **Inline task tracking**:
+```typescript
+// Use these tags for inline task tracking (TODO Tree extension scans these)
+// TODO: Task to be completed
+// FIXME: Known bug that needs fixing
+// BUG: Critical bug blocking functionality
+// HACK: Temporary workaround (technical debt)
+// OPTIMIZE: Performance improvement opportunity
+// REFACTOR: Code cleanup needed
+// SECURITY: Security concern to address
+// PERF: Performance bottleneck
+// NOTE: Important context for future developers
+// REVIEW: Needs code review or validation
+```
+
+**Documentation Anti-Patterns**:
+- ❌ Marking session complete without updating todo list
+- ❌ Creating new docs when existing docs should be updated (see "Documentation Management Guidelines")
+- ❌ Leaving TODO comments without context or session reference
+- ❌ Documenting WHAT code does instead of WHY
+
+### 5. Pre-Flight Quality Checks (RUN BEFORE CLAIMING COMPLETE)
+
+**Before committing or claiming "session complete", run these checks:**
+
+✅ **Frontend checks**:
+```powershell
+cd apps/frontend
+
+# 1. Type safety (CRITICAL - catches errors build misses)
+npm run typecheck
+
+# 2. Linting (catches code smells)
+npm run lint
+
+# 3. Formatting (auto-fix if using Prettier)
+# Should auto-run on save - verify no manual changes needed
+
+# 4. Tests (if you modified logic)
+npm test
+
+# 5. Build verification (production readiness)
+npm run build
+```
+
+✅ **Backend checks**:
+```powershell
+cd apps/backend
+
+# 1. Activate virtual environment first
+./venv/Scripts/Activate.ps1  # Windows
+source venv/bin/activate      # Linux/Mac
+
+# 2. Type checking (Python 3.11+ type hints)
+# (No explicit command - pytest validates types)
+
+# 3. Linting (Ruff for fast linting)
+ruff check .
+
+# 4. Formatting (Black for code formatting)
+black . --check  # Check only
+black .          # Auto-format
+
+# 5. Tests (if you modified logic)
+pytest
+
+# 6. Coverage (optional but recommended)
+pytest --cov
+```
+
+✅ **CI/CD workflow checks** (if modified `.github/workflows/`):
+```powershell
+# Validate workflow syntax
+actionlint .github/workflows/*.yml
+
+# Validate YAML syntax
+# (Use yamllint if available, or check in VS Code)
+```
+
+**Pre-Commit Validation Order** (MANDATORY):
+1. **Typecheck/Lint** → Fix errors immediately
+2. **Format** → Auto-fix with formatters
+3. **Test** → Only if logic changed (not for pure type work)
+4. **Build** → Verify production readiness
+5. **Commit** → Only after ALL checks pass
+
+**Session Complete Criteria** (from "CRITICAL: Pre-Commit Validation"):
+- [ ] All type checks pass (`npm run typecheck` or `ruff check`)
+- [ ] All linters pass (ESLint, Ruff, actionlint)
+- [ ] All tests pass (if logic changed)
+- [ ] Build succeeds (`npm run build` or Docker build)
+- [ ] Documentation updated (todo list, TECHNICAL_ROADMAP.md)
+- [ ] Commit message follows conventions
+
+### 6. Change Communication & Integration (COORDINATE WITH TEAM)
+
+**Before pushing changes, ensure proper communication:**
+
+✅ **Commit message standards**:
+```bash
+# Format: <type>(<scope>): <description>
+# Types: feat, fix, docs, style, refactor, test, chore
+
+# ✅ GOOD - Clear, specific, with context
+feat(types): portfolioStore.tsx type-safe (150 any → 5 acceptable)
+fix(backend): datetime.timezone import error in advanced_redis_client.py
+docs(session27): test coverage discovery + backend pytest fix
+
+# ❌ BAD - Vague, no context
+fix: fixed bugs
+update: changes
+WIP: stuff
+```
+
+✅ **Pull request requirements**:
+- **Title**: Clear summary of changes
+- **Description**: Context, problem solved, approach taken
+- **Testing**: Steps to verify changes
+- **Screenshots**: For UI changes
+- **Breaking changes**: Clearly documented
+- **References**: Link related issues/PRs
+
+✅ **CHANGELOG.md updates** (for significant features):
+```markdown
+## [Unreleased]
+
+### Added
+- Session 27: Test coverage discovery and backend datetime fix
+
+### Fixed
+- Backend pytest import error (datetime.timezone.utc)
+
+### Changed
+- Enhanced copilot-instructions.md with pre-flight checks
+```
+
+✅ **Dependency updates** (document in PRs):
+```markdown
+**Dependencies Added:**
+- None (used existing vitest)
+
+**Dependencies Updated:**
+- None
+
+**Breaking Changes:**
+- None - backward compatible
+```
+
+**Communication Anti-Patterns**:
+- ❌ Pushing to main without todo list updates
+- ❌ Commit messages like "fix", "update", "WIP"
+- ❌ Adding dependencies without documenting in package.json
+- ❌ Breaking changes without migration guide
+
+### 7. World-Class Pre-Flight Checklist Summary
+
+**Use this checklist BEFORE every significant code operation:**
+
+```markdown
+## 🛫 Pre-Flight Checklist
+
+### Context Verification
+- [ ] Confirmed current working directory (Get-Location)
+- [ ] Verified correct subdirectory (apps/frontend/ or apps/backend/)
+- [ ] Checked existing file structure (ls or Get-ChildItem)
+- [ ] Reviewed package.json/requirements.txt for dependencies
+
+### Pattern Matching
+- [ ] Tech stack matches project (Zustand not Redux, Vitest not Jest)
+- [ ] Framework version correct (Next.js 15.1.3 App Router)
+- [ ] File naming follows conventions (PascalCase, camelCase, kebab-case)
+- [ ] Import paths use @ alias (frontend)
+
+### Code Organization
+- [ ] File location matches project structure
+- [ ] Component/Store/Test pattern matches existing files
+- [ ] No duplicate functionality (checked for existing implementations)
+- [ ] Follows established patterns (Zustand stores, FastAPI routes)
+
+### Quality Checks
+- [ ] TypeScript typecheck passes (npm run typecheck)
+- [ ] Linting passes (npm run lint or ruff check)
+- [ ] Tests pass (npm test or pytest)
+- [ ] Build succeeds (npm run build)
+
+### Documentation
+- [ ] Todo list updated (manage_todo_list)
+- [ ] TECHNICAL_ROADMAP.md session added
+- [ ] Inline comments explain WHY not WHAT
+- [ ] Acceptable any types documented
+
+### Communication
+- [ ] Commit message follows convention
+- [ ] Changes documented in commit description
+- [ ] Breaking changes noted (if any)
+- [ ] Dependencies documented (if added/updated)
+```
+
+**When to Use This Checklist**:
+- ✅ Before creating new files or components
+- ✅ Before installing dependencies
+- ✅ Before significant refactoring
+- ✅ Before claiming "session complete"
+- ✅ Before pushing commits to remote
+
+**When to Skip** (simple operations):
+- Reading files or documentation
+- Small text edits (typo fixes)
+- Running diagnostic commands
+- Answering informational questions
 
 ## Code Quality & Verification Workflow
 
