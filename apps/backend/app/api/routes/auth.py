@@ -47,7 +47,7 @@ def _user_by_handle(db: Session, handle: str) -> User | None:
 
 
 def _issue_token(handle: str) -> TokenOut:
-    now = datetime.now(timezone.timezone.utc)
+    now = datetime.now(timezone.utc)
     exp = now + timedelta(minutes=JWT_TTL_MIN)
     payload = {"sub": handle, "iat": int(now.timestamp()), "exp": int(exp.timestamp())}
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)

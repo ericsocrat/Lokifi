@@ -479,7 +479,7 @@ async def get_user_ai_profile(current_user: User = Depends(get_current_user)):
             user_id=current_user.id
         )
 
-        return {"profile": context_data, "generated_at": datetime.now(timezone.timezone.utc).isoformat()}
+        return {"profile": context_data, "generated_at": datetime.now(timezone.utc).isoformat()}
 
     except Exception as e:
         logger.error(f"Failed to get user AI profile: {e}")
@@ -510,7 +510,7 @@ async def upload_file_to_thread(
                 thread_id=thread_id,
                 role="user",
                 content=f"[File uploaded: {file.filename}] {analysis_prompt}",
-                created_at=datetime.now(timezone.timezone.utc),
+                created_at=datetime.now(timezone.utc),
             )
 
             db.add(user_message)

@@ -240,7 +240,7 @@ class StockService:
                 "high_24h": previous_close * 1.05,  # Estimate
                 "low_24h": previous_close * 0.95,  # Estimate
                 "image": f"https://logo.clearbit.com/{symbol.lower()}.com",  # Company logo
-                "last_updated": datetime.now(timezone.timezone.utc).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "asset_type": "stock",
             }
 

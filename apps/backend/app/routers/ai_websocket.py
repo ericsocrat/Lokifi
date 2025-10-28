@@ -145,7 +145,7 @@ async def websocket_ai_chat(
                 await handle_chat_message(message_data, user, db)
             elif message_data["type"] == "ping":
                 await manager.send_personal_message(
-                    {"type": "pong", "timestamp": datetime.now(timezone.timezone.utc).isoformat()}, user.id
+                    {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}, user.id
                 )
             else:
                 await manager.send_personal_message(

@@ -189,7 +189,7 @@ async def get_unread_count(request: Request, current_user: User = Depends(get_cu
             content={
                 "unread_count": unread_count,
                 "user_id": current_user.id,
-                "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -361,8 +361,8 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
             "daily_digest_enabled": False,
             "weekly_digest_enabled": False,
             "digest_time": "09:00",
-            "created_at": datetime.now(timezone.timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
 
         return NotificationPreferencesResponse(**default_preferences)

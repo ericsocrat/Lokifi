@@ -516,7 +516,7 @@ async def get_trending_conversations(
 
         return {
             "trending_conversations": trending,
-            "generated_at": datetime.now(timezone.timezone.utc).isoformat(),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
         }
 
     except Exception as e:

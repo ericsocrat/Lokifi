@@ -171,7 +171,7 @@ class ConversationService:
         update_conv_stmt = (
             update(Conversation)
             .where(Conversation.id == conversation_id)
-            .values(last_message_at=datetime.now(timezone.timezone.utc), updated_at=datetime.now(timezone.timezone.utc))
+            .values(last_message_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc))
         )
         await self.db.execute(update_conv_stmt)
 

@@ -9,9 +9,17 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-# Import module under test
+# Import module under test - only import models that actually exist
 try:
-    from app.db.models import *
+    from app.db.models import (
+        Base,
+        User,
+        PortfolioPosition,
+        Follow,
+        Post,
+        AIThread,
+        AIMessage,
+    )
 except ImportError as e:
     pytest.skip(f"Module import failed: {e}", allow_module_level=True)
 

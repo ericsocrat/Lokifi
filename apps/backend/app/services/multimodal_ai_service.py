@@ -89,7 +89,7 @@ class MultiModalAIService:
             "file_hash": file_hash,
             "file_size": len(content),
             "mime_type": mime_type,
-            "processed_at": str(datetime.now(timezone.timezone.utc)),
+            "processed_at": str(datetime.now(timezone.utc)),
             "processing_type": processed_data["type"],
         }
 

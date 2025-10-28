@@ -80,9 +80,9 @@ class NotificationAnalytics:
     ) -> dict[str, Any]:
         """Get comprehensive notification metrics"""
         if not start_date:
-            start_date = datetime.now(timezone.timezone.utc) - timedelta(days=7)
+            start_date = datetime.now(timezone.utc) - timedelta(days=7)
         if not end_date:
-            end_date = datetime.now(timezone.timezone.utc)
+            end_date = datetime.now(timezone.utc)
 
         try:
             async for session in db_manager.get_session(read_only=True):
@@ -226,9 +226,9 @@ class NotificationAnalytics:
     ) -> UserEngagementMetrics:
         """Get user engagement metrics"""
         if not start_date:
-            start_date = datetime.now(timezone.timezone.utc) - timedelta(days=days)
+            start_date = datetime.now(timezone.utc) - timedelta(days=days)
         if not end_date:
-            end_date = datetime.now(timezone.timezone.utc)
+            end_date = datetime.now(timezone.utc)
 
         try:
             async for session in db_manager.get_session(read_only=True):
@@ -374,8 +374,8 @@ class NotificationAnalytics:
         """Get complete dashboard data"""
         try:
             # Run all metrics collection concurrently with date range
-            start_date = datetime.now(timezone.timezone.utc) - timedelta(days=days)
-            end_date = datetime.now(timezone.timezone.utc)
+            start_date = datetime.now(timezone.utc) - timedelta(days=days)
+            end_date = datetime.now(timezone.utc)
 
             notification_metrics, user_metrics, system_metrics = await asyncio.gather(
                 self.get_comprehensive_metrics(start_date, end_date),
@@ -384,7 +384,7 @@ class NotificationAnalytics:
             )
 
             return {
-                "timestamp": datetime.now(timezone.timezone.utc).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "notification_metrics": asdict(notification_metrics),
                 "user_engagement": asdict(user_metrics),
                 "system_performance": asdict(system_metrics),
@@ -395,7 +395,7 @@ class NotificationAnalytics:
 
         except Exception as e:
             logger.error(f"Failed to get dashboard data: {e}")
-            return {"error": str(e), "timestamp": datetime.now(timezone.timezone.utc).isoformat()}
+            return {"error": str(e), "timestamp": datetime.now(timezone.utc).isoformat()}
 
     def _calculate_health_score(
         self,

@@ -54,7 +54,7 @@ class PerformanceMetrics:
 
     # Additional quality metrics
     availability_percent: float = 100.0
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.timezone.utc))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class EnhancedPerformanceMonitor:

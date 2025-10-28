@@ -75,7 +75,7 @@ class ProfileService:
             update_data["is_public"] = profile_data.is_public
 
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.timezone.utc)
+            update_data["updated_at"] = datetime.now(timezone.utc)
 
             stmt = update(Profile).where(Profile.id == profile.id).values(**update_data)
             await self.db.execute(stmt)
@@ -131,7 +131,7 @@ class ProfileService:
             update_data["is_verified"] = False  # Require re-verification
 
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.timezone.utc)
+            update_data["updated_at"] = datetime.now(timezone.utc)
 
             stmt = update(User).where(User.id == user_id).values(**update_data)
             await self.db.execute(stmt)
@@ -163,7 +163,7 @@ class ProfileService:
                 update_data[field] = value
 
         if update_data:
-            update_data["updated_at"] = datetime.now(timezone.timezone.utc)
+            update_data["updated_at"] = datetime.now(timezone.utc)
 
             stmt = (
                 update(NotificationPreference)

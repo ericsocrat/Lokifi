@@ -12,17 +12,16 @@ import asyncio
 import logging
 import time
 from collections import defaultdict, deque
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import redis.asyncio as redis
+from app.core.config import settings
 from redis.asyncio import ConnectionPool, Sentinel
 from redis.backoff import ExponentialBackoff
 from redis.exceptions import ConnectionError as RedisConnectionError
 from redis.exceptions import RedisError
 from redis.retry import Retry
-
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -118,18 +117,18 @@ class AdvancedRedisClient:
                 self.sentinel = Sentinel(
                     sentinel_hosts,
                     socket_timeout=0.5,
-                    password=settings.redis_password
-                    if hasattr(settings, "redis_password")
-                    else None,
+                    password=(
+                        settings.redis_password if hasattr(settings, "redis_password") else None
+                    ),
                 )
 
                 # Get primary Redis connection
                 self.client = self.sentinel.master_for(
                     "lokifi-primary",
                     socket_timeout=0.5,
-                    password=settings.redis_password
-                    if hasattr(settings, "redis_password")
-                    else None,
+                    password=(
+                        settings.redis_password if hasattr(settings, "redis_password") else None
+                    ),
                     retry=Retry(backoff=ExponentialBackoff(), retries=3),
                     health_check_interval=30,
                 )
@@ -141,9 +140,9 @@ class AdvancedRedisClient:
                 self.connection_pool = ConnectionPool(
                     host=settings.redis_host,
                     port=settings.redis_port,
-                    password=settings.redis_password
-                    if hasattr(settings, "redis_password")
-                    else None,
+                    password=(
+                        settings.redis_password if hasattr(settings, "redis_password") else None
+                    ),
                     max_connections=20,
                     retry_on_timeout=True,
                     retry=Retry(backoff=ExponentialBackoff(), retries=3),
@@ -195,7 +194,7 @@ class AdvancedRedisClient:
         if self.circuit_breaker["state"] == "open":
             # Check if recovery timeout has passed
             if (
-                datetime.now(timezone.timezone.utc) - self.circuit_breaker["last_failure"]
+                datetime.now(timezone.utc) - self.circuit_breaker["last_failure"]
             ).seconds >= self.circuit_breaker["recovery_timeout"]:
                 self.circuit_breaker["state"] = "half_open"
                 logger.info("Circuit breaker moving to half-open state")
@@ -229,7 +228,7 @@ class AdvancedRedisClient:
     def _handle_circuit_breaker_failure(self):
         """Handle circuit breaker failure logic"""
         self.circuit_breaker["failure_count"] += 1
-        self.circuit_breaker["last_failure"] = datetime.now(timezone.timezone.utc)
+        self.circuit_breaker["last_failure"] = datetime.now(timezone.utc)
         self.metrics.record_error()
 
         if (
