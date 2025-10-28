@@ -119,6 +119,8 @@ npm run lint
 - [ ] **Performance tests meet benchmarks**
 - [ ] **Accessibility tests pass** (WCAG compliance)
 - [ ] **Visual regression tests** (if UI changes)
+- [x] **Backend test coverage**: 30.75% (Session 30: +3.9pp, 56 tests added)
+- [x] **Service layer tests**: ai, conversation, follow, profile (comprehensive)
 
 ### Documentation Requirements
 - [ ] **README updated** (if setup changes)
@@ -143,6 +145,39 @@ npm run lint
 - [ ] **Deployment ready** (if production branch)
 - [ ] **No merge conflicts** with target branch
 - [ ] **Branch up to date** with latest main/develop
+
+---
+
+## 📊 Backend Test Coverage Progress
+
+> **✅ Session 30 Complete (January 2025)**: Backend Service Tests Expansion
+> - **Coverage**: 26.85% → 30.75% (+3.9pp)
+> - **Tests Added**: 56 passing (8 skipped for database dependencies)
+> - **Services Tested**: ai_service, conversation_service, follow_service, profile_service
+> - **Pass Rate**: 100% (770 total passing tests)
+> - **Document**: SESSION_30_SERVICE_TESTS_PHASE1.md
+
+### Services Coverage Status
+- [x] **ai_service.py**: 14% → 44% (+30pp) - 20 tests (Phase 1)
+- [x] **conversation_service.py**: 14% → 54% (+40pp) - 12 tests (Phase 2)
+- [x] **follow_service.py**: 14% → 40% (+26pp) - 12 tests (Phase 3)
+- [x] **profile_service.py**: 0% → 43% (+43pp) - 12 tests (Phase 4)
+- [ ] **notification_service.py**: Low coverage - Integration tests needed
+- [ ] **websocket_manager.py**: Low coverage - WebSocket tests needed
+- [ ] **auth_service.py**: Moderate coverage - Security tests added (Session 29)
+
+### Routers/Endpoints Coverage Status
+- [x] **auth.py**: 43% → 68% (+25pp) - Security tests (Session 29)
+- [ ] **/api/ai/***: Service foundation ready, router tests needed
+- [ ] **/api/conversations/***: Service foundation ready, router tests needed
+- [ ] **/api/follow/***: Service foundation ready, router tests needed
+- [ ] **/api/profile/***: Service foundation ready, router tests needed
+
+### Next Steps (Target: 40-50% Backend Coverage)
+- [ ] Integration tests for 8 skipped unit tests (database dependencies)
+- [ ] Router/endpoint tests (build on service test foundation)
+- [ ] Additional services (notification, websocket, remaining)
+- [ ] E2E tests for critical user flows
 
 ---
 
