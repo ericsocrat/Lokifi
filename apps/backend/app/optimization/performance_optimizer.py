@@ -109,7 +109,8 @@ class DatabaseOptimizer:
 
         from app.core.database import db_manager
 
-        query_hash = hashlib.md5(query.encode()).hexdigest()
+        # Using SHA-256 instead of MD5 for security compliance (CodeQL requirement)
+        query_hash = hashlib.sha256(query.encode()).hexdigest()
         start_time = time.time()
 
         try:

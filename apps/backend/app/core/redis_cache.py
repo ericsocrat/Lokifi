@@ -51,8 +51,9 @@ class RedisCache:
         }
 
         # Hash the key data for consistent, compact keys
+        # Using SHA-256 instead of MD5 for security compliance (CodeQL requirement)
         key_str = json.dumps(key_data, sort_keys=True, default=str)
-        key_hash = hashlib.md5(key_str.encode()).hexdigest()[:12]
+        key_hash = hashlib.sha256(key_str.encode()).hexdigest()[:12]
 
         return f"cache:{prefix}:{key_hash}"
 
