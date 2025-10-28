@@ -25,8 +25,9 @@ export default function ChatPage() {
       setMessages([...next, { role: "assistant" as const, content: res.answer || "(no answer)" }]);
       // scroll to bottom
       setTimeout(() => boxRef.current?.scrollTo(0, boxRef.current.scrollHeight), 0);
-    } catch (e: any) {
-      setMessages([...next, { role: "assistant" as const, content: e?.message || "Failed" }]);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Failed";
+      setMessages([...next, { role: "assistant" as const, content: errorMessage }]);
     } finally {
       setBusy(false);
     }
@@ -41,7 +42,7 @@ export default function ChatPage() {
       <h1 className="text-2xl font-semibold">AI Chat</h1>
       <div className="rounded-2xl border border-neutral-800 bg-neutral-900">
         <div ref={boxRef} className="max-h-[60vh] overflow-auto p-4 space-y-3">
-          {messages.filter((m: any) => m.role !== "system").map((m: any, i: any) => (
+          {messages.filter((m: ChatMessage) => m.role !== "system").map((m: ChatMessage, i: number) => (
             <div key={i} className={m.role === "user" ? "text-right" : ""}>
               <div className={`inline-block px-3 py-2 rounded-xl ${m.role==="user" ? "bg-sky-600" : "bg-neutral-800"} max-w-[80%]`}>
                 <pre className="whitespace-pre-wrap text-sm">{m.content}</pre>
