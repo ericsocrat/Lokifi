@@ -1,8 +1,8 @@
 # Session 27: Test Coverage Expansion - Discovery & Learnings
 
-**Date**: October 28, 2025  
-**Status**: ⏳ IN PROGRESS - Discovery Phase Complete  
-**Duration**: ~45 minutes (discovery)  
+**Date**: October 28, 2025
+**Status**: ⏳ IN PROGRESS - Discovery Phase Complete
+**Duration**: ~45 minutes (discovery)
 **Sprint**: Sprint 3, Post-Session 26
 
 ---
@@ -47,8 +47,8 @@ Expand test coverage from 35% to 80%+ to protect Sprint 2 type safety investment
 
 ### monitoringStore Test Attempt
 
-**Created**: `apps/frontend/src/lib/stores/monitoringStore.test.tsx` (590 lines)  
-**Result**: 18/21 tests failed (85.7% failure rate)  
+**Created**: `apps/frontend/src/lib/stores/monitoringStore.test.tsx` (590 lines)
+**Result**: 18/21 tests failed (85.7% failure rate)
 **Cause**: Feature flag `FLAGS.monitoring` is OFF by default
 
 **Test Results**:
@@ -75,8 +75,8 @@ expect(state.dashboards).toHaveLength(1) → FAILED (length: 0)
 
 ### Challenge 1: Feature Flag Mocking
 
-**Problem**: Vitest module mocking doesn't work cleanly with Proxy-based FLAGS  
-**Attempted Solution**: Created `test-helpers.ts` with `enableFeatureFlags()` utility  
+**Problem**: Vitest module mocking doesn't work cleanly with Proxy-based FLAGS
+**Attempted Solution**: Created `test-helpers.ts` with `enableFeatureFlags()` utility
 **Issue**: Mock timing and Proxy behavior complex to override
 
 **FLAGS Implementation** (from featureFlags.ts):
@@ -222,7 +222,7 @@ export const FLAGS: FeatureFlags = new Proxy(DEFAULT_FLAGS, {
    # File: apps/backend/app/core/advanced_redis_client.py:49
    # BEFORE:
    self.last_reset = datetime.now(timezone.timezone.utc)
-   
+
    # AFTER:
    self.last_reset = datetime.now(timezone.utc)
    ```
@@ -321,10 +321,10 @@ export const FLAGS: FeatureFlags = new Proxy(DEFAULT_FLAGS, {
 
 ### Testing Philosophy
 
-> "Tests ARE the documentation" (copilot-instructions.md)  
+> "Tests ARE the documentation" (copilot-instructions.md)
 > BUT: Tests must PASS to document anything!
 >
-> Passing 3/21 tests documents edge case handling.  
+> Passing 3/21 tests documents edge case handling.
 > Failing 18/21 tests documents feature flags are OFF.
 >
 > **Lesson**: Document code behavior when it actually runs.

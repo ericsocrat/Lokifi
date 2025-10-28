@@ -1266,7 +1266,85 @@ Integration Test Infrastructure (Ready for CI/CD):
 
 ---
 
-**Options Available** (after Session 33):
+## Session 34: TypeScript Cleanup Phase 1 (January 2025) - ✅ COMPLETE
+
+**Objective**: Eliminate 'any' types in high-traffic pages using Sprint 2 proven patterns
+
+**Context**: After Session 33, Option 1 (Integration Tests) was blocked by PostgreSQL requirement. Pragmatic pivot to Option 2 (TypeScript Cleanup) provided immediate value without infrastructure dependencies.
+
+**Target**: 4 high-traffic pages (alerts, chat, dashboard/assets, dashboard)
+
+**Implementation**:
+1. **app/alerts/page.tsx** (10 any → 0)
+   - Added AlertEvent type import for SSE handling
+   - Fixed SSE event handler: `(ev: any) → (ev: AlertEvent)`
+   - Fixed 6 form onChange handlers with `React.ChangeEvent<Element>`
+   - Fixed alert map: `(a: any) → (a: Alert)`
+   - Fixed log map: `(l: any, i: any) → (l: string, i: number)`
+
+2. **app/chat/page.tsx** (4 any → 0)
+   - Fixed error handling: `(e: any) → (e: unknown)` with proper Error check
+   - Fixed message filter: `(m: any) → (m: ChatMessage)`
+   - Fixed message map: `(m: any, i: any) → (m: ChatMessage, i: number)`
+
+3. **app/dashboard/assets/page.tsx** (7 any → 0)
+   - Fixed AddAssetModalState: `selectedItems: any[] → Asset[]`
+   - Fixed modal map: `(item: any) → (item: Asset)`
+   - Fixed reduce accumulator: `(s: any, b: any) → (s: number, b: ConnectingBank)`
+   - Fixed section filter: `(s: any) → (s: PortfolioSection)`
+   - Fixed bank map: `(bank: any) → (bank: ConnectingBank)`
+   - Fixed setState callback: `(prev: any) → (prev: number)`
+
+4. **app/dashboard/page.tsx** (7 any → 0)
+   - Added PortfolioSection and PortfolioAsset imports
+   - Fixed portfolio flatMap: `(section: any) → (section: PortfolioSection)`
+   - Fixed asset map: `(asset: any) → (asset: PortfolioAsset)`
+   - Fixed period map: `(period: any) → (period: TimePeriod)`
+   - Fixed allocation map: `(item: any, index: any) → (item: AllocationItem, index: number)`
+   - Fixed holdings map: `(holding: any, index: any) → (holding: TopHolding, index: number)`
+
+**Key Patterns Applied**:
+- React event handlers: `React.ChangeEvent<HTMLSelectElement | HTMLInputElement>`
+- Type imports: Proper type definitions from utilities/models
+- Map callbacks: Explicit type parameters for all map operations
+- Error handling: `unknown` with instanceof checks instead of `any`
+- Incremental validation: typecheck + build after each file
+
+**Validation Workflow**:
+```bash
+# After each file fix:
+npm run typecheck  # Verify no type errors
+npm run build      # Verify production build succeeds
+
+# All builds successful: 4.8s - 11.4s compile times
+```
+
+**Metrics**:
+- **Duration**: ~90 minutes
+- **Files Modified**: 4 (alerts, chat, dashboard/assets, dashboard)
+- **Any Types Eliminated**: 28 (10 + 4 + 7 + 7)
+- **Builds**: All successful (4.8s - 11.4s)
+- **Commits**: 4 incremental commits + 1 documentation
+
+**Commits**:
+- `62305328` - feat(types): alerts page type-safe (10 any → 0)
+- `667ca133` - feat(types): chat page type-safe (4 any → 0)
+- `e3dbf9db` - feat(types): dashboard assets page type-safe (7 any → 0)
+- `49db4285` - feat(types): dashboard page type-safe (7 any → 0)
+
+**Benefits**:
+- ✅ Type-safe event handling with IntelliSense support
+- ✅ Compile-time error detection for form inputs
+- ✅ Proper type inference for map/filter/reduce operations
+- ✅ No runtime behavior changed (pure type annotations)
+- ✅ Improved developer experience for future work
+
+**Document**: docs/plans/SESSION_34_TYPESCRIPT_CLEANUP_PHASE1.md
+**Status**: Phase 1 complete, ~1369 any types remain for future phases
+
+---
+
+**Options Available** (after Session 34):
   1. **Integration Tests** (🟢 HIGH, 2-3 hrs)
      - Complete Session 30 backend test expansion
      - 8 skipped database-dependent tests (follow_service, profile_service)
