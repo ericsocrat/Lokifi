@@ -1,7 +1,7 @@
 # Technical Debt Roadmap - Post PR #27
 
 > **Created**: October 24, 2025
-> **Last Updated**: January 2025 - Session 31 Phase 1 COMPLETE (Backend Router Tests)
+> **Last Updated**: January 2025 - Session 31 Phase 2 COMPLETE (Backend Router Tests)
 > **Status**: Active - Sprint 0 ✅ COMPLETE, Sprint 1 ✅ COMPLETE, Sprint 2 ✅ COMPLETE, Sprint 3 🔄 IN PROGRESS
 > **Owner**: Solo Developer
 > **Estimated Timeline**: 3-4 months (100-140 hours)
@@ -22,7 +22,7 @@ This roadmap tracks the gradual improvement of code quality standards that were 
 - **Frontend TypeScript `any` occurrences**: ~160 remaining (down from 202 after Session 25)
 - **ESLint rules relaxed**: 1 (no-explicit-any set to 'warn')
 - **Backend Ruff ignores**: ~417 violations
-- **Test Coverage**: 26.85% → 30.75% (+3.9pp) ✅ Session 30 + Session 31 Phase 1: +24 router tests ✅
+- **Test Coverage**: 26.85% → 30.75% (+3.9pp) ✅ Session 30 + Session 31 Phase 1-2: +46 router tests ✅
 - **Failing Tests**: 0 ✅ (was 22)
 - **Main Branch**: ✅ EXCELLENT - **100% pass rate (35/35 workflows)** 🎉
 - **CI Pass Rate Journey**: 46% → 91.3% → 97.1% → **100%** ✅
@@ -1042,22 +1042,22 @@ def sample_message():
 assert exc_info.value.status_code in [404, 500]  # Router may wrap errors
 ```
 
-**Key Achievements**:
-- ✅ 100% pass rate (no regressions)
-- ✅ Comprehensive endpoint coverage (14+ endpoints)
+**Key Achievements (Phase 1-2)**:
+- ✅ 100% pass rate on both phases (no regressions)
+- ✅ Comprehensive endpoint coverage (36+ endpoints across 46 tests)
 - ✅ Schema-compliant mocks prevent validation errors
 - ✅ Reusable patterns for remaining routers
-- ✅ Excellent efficiency (1.9 min/test)
+- ✅ Excellent efficiency (1.9-2.0 min/test average)
 
 **Phases Remaining**:
-- 🔄 Phase 2: Conversation router tests (12-15 tests, ~45 min)
-- 📋 Phase 3: Follow router tests (8-10 tests, ~30 min)
+-  Phase 3: Follow router tests (8-10 tests, ~30 min)
 - 📋 Phase 4: Profile router tests (10-12 tests, ~45 min)
 
-**Session 31 Goals**:
-- Target: 50-60 router tests across 4 phases
-- Estimated total time: ~2.5-3 hours
-- Expected pass rate: 100% (apply proven patterns)
+**Session 31 Progress**:
+- Completed: 46 router tests (Phase 1-2)
+- Remaining: ~18-22 tests (Phase 3-4)
+- Time invested: ~1.5 hours
+- Remaining time: ~1.25 hours
 
 **Document**: docs/plans/SESSION_31_ROUTER_TESTS.md
 
