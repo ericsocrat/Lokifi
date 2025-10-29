@@ -1,3 +1,4 @@
+import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -14,41 +15,41 @@ export interface DeploymentStrategy {
   description: string;
   createdAt: Date;
   updatedAt: Date;
-  
+
   // Configuration
   config: DeploymentConfig;
-  
+
   // Targets
   environments: string[];
   services: string[];
-  
+
   // Rollout Settings
   rolloutPlan: RolloutPlan;
-  
+
   // Monitoring
   healthChecks: HealthCheckConfig[];
   successCriteria: SuccessCriteria[];
   rollbackTriggers: RollbackTrigger[];
-  
+
   // Status
   isActive: boolean;
   lastUsed?: Date;
   usageCount: number;
-  
+
   // Metadata
   tags: string[];
   owner: string;
 }
 
-export type DeploymentStrategyType = 
-  | 'blue_green'      // Complete environment switch
-  | 'canary'          // Gradual traffic increase
-  | 'rolling'         // Instance-by-instance replacement
-  | 'feature_flag'    // Feature flag based rollout
-  | 'a_b_testing'     // A/B testing deployment
-  | 'ring'            // Ring-based deployment
-  | 'shadow'          // Shadow traffic deployment
-  | 'custom';         // Custom deployment strategy
+export type DeploymentStrategyType =
+  | 'blue_green' // Complete environment switch
+  | 'canary' // Gradual traffic increase
+  | 'rolling' // Instance-by-instance replacement
+  | 'feature_flag' // Feature flag based rollout
+  | 'a_b_testing' // A/B testing deployment
+  | 'ring' // Ring-based deployment
+  | 'shadow' // Shadow traffic deployment
+  | 'custom'; // Custom deployment strategy
 
 export interface DeploymentConfig {
   // Blue-Green Configuration
@@ -59,7 +60,7 @@ export interface DeploymentConfig {
     keepOldEnvironment: boolean;
     oldEnvironmentTTL?: number; // hours
   };
-  
+
   // Canary Configuration
   canary?: {
     initialTrafficPercent: number;
@@ -68,7 +69,7 @@ export interface DeploymentConfig {
     maxTrafficPercent: number;
     observationTime: number; // seconds per step
   };
-  
+
   // Rolling Configuration
   rolling?: {
     batchSize: number;
@@ -77,7 +78,7 @@ export interface DeploymentConfig {
     maxSurge: number;
     readinessTimeout: number; // seconds
   };
-  
+
   // Feature Flag Configuration
   featureFlag?: {
     flagName: string;
@@ -87,7 +88,7 @@ export interface DeploymentConfig {
     targetPercent: number;
     userSegments: string[];
   };
-  
+
   // A/B Testing Configuration
   abTesting?: {
     controlPercent: number;
@@ -96,7 +97,7 @@ export interface DeploymentConfig {
     metrics: string[];
     significanceLevel: number;
   };
-  
+
   // Ring Configuration
   ring?: {
     rings: DeploymentRing[];
@@ -104,7 +105,7 @@ export interface DeploymentConfig {
     autoPromotion: boolean;
     rollbackOnFailure: boolean;
   };
-  
+
   // Shadow Configuration
   shadow?: {
     shadowPercent: number;
@@ -121,17 +122,17 @@ export interface DeploymentRing {
   userPercent: number;
   environments: string[];
   order: number;
-  
+
   // Criteria
   promotionCriteria: RingPromotionCriteria[];
-  
+
   // Status
   status: RingStatus;
   deployedAt?: Date;
   promotedAt?: Date;
 }
 
-export type RingStatus = 
+export type RingStatus =
   | 'pending'
   | 'deploying'
   | 'deployed'
@@ -144,10 +145,10 @@ export interface RingPromotionCriteria {
   id: string;
   name: string;
   type: 'metric' | 'health_check' | 'manual_approval' | 'time_based';
-  
+
   // Configuration
   config: PromotionCriteriaConfig;
-  
+
   // Status
   status: 'pending' | 'passed' | 'failed';
   evaluatedAt?: Date;
@@ -162,21 +163,21 @@ export interface PromotionCriteriaConfig {
     timeWindow: number; // minutes
     aggregation: 'avg' | 'sum' | 'min' | 'max';
   };
-  
+
   // Health check criteria
   healthCheck?: {
     checkId: string;
     successRate: number; // percentage
     timeWindow: number; // minutes
   };
-  
+
   // Manual approval criteria
   approval?: {
     approvers: string[];
     requiredApprovals: number;
     timeout: number; // hours
   };
-  
+
   // Time-based criteria
   time?: {
     minimumDuration: number; // hours
@@ -188,10 +189,10 @@ export interface RolloutPlan {
   id: string;
   name: string;
   description: string;
-  
+
   // Phases
   phases: RolloutPhase[];
-  
+
   // Settings
   settings: RolloutSettings;
 }
@@ -201,19 +202,19 @@ export interface RolloutPhase {
   name: string;
   description: string;
   order: number;
-  
+
   // Target
   targetPercent: number;
   duration: number; // seconds
-  
+
   // Conditions
   startConditions: PhaseCondition[];
   exitConditions: PhaseCondition[];
-  
+
   // Actions
   preActions: PhaseAction[];
   postActions: PhaseAction[];
-  
+
   // Status
   status: PhaseStatus;
   startedAt?: Date;
@@ -221,13 +222,7 @@ export interface RolloutPhase {
   error?: string;
 }
 
-export type PhaseStatus = 
-  | 'pending'
-  | 'running'
-  | 'completed'
-  | 'failed'
-  | 'skipped'
-  | 'paused';
+export type PhaseStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'paused';
 
 export interface PhaseCondition {
   id: string;
@@ -246,11 +241,11 @@ export interface RolloutSettings {
   autoPromote: boolean;
   autoRollback: boolean;
   pauseOnFailure: boolean;
-  
+
   // Timing
   phaseTimeout: number; // seconds
   stabilizationTime: number; // seconds
-  
+
   // Notifications
   notifyOnPhaseStart: boolean;
   notifyOnPhaseComplete: boolean;
@@ -263,12 +258,12 @@ export interface HealthCheckConfig {
   name: string;
   type: 'http' | 'tcp' | 'custom';
   config: Record<string, any>;
-  
+
   // Settings
   interval: number; // seconds
   timeout: number; // seconds
   retries: number;
-  
+
   // Thresholds
   successRate: number; // percentage
   responseTime: number; // milliseconds
@@ -278,15 +273,15 @@ export interface SuccessCriteria {
   id: string;
   name: string;
   type: 'error_rate' | 'response_time' | 'throughput' | 'availability' | 'custom';
-  
+
   // Thresholds
   threshold: number;
   operator: '>' | '<' | '>=' | '<=' | '=';
-  
+
   // Evaluation
   timeWindow: number; // minutes
   evaluationInterval: number; // seconds
-  
+
   // Weight
   weight: number; // 0-100
   severity: 'low' | 'medium' | 'high' | 'critical';
@@ -296,14 +291,14 @@ export interface RollbackTrigger {
   id: string;
   name: string;
   type: 'metric_threshold' | 'error_spike' | 'manual' | 'health_failure';
-  
+
   // Configuration
   config: Record<string, any>;
-  
+
   // Settings
   isEnabled: boolean;
   sensitivity: number; // 0-100
-  
+
   // Status
   lastTriggered?: Date;
   triggerCount: number;
@@ -314,41 +309,41 @@ export interface Deployment {
   name: string;
   version: string;
   strategyId: string;
-  
+
   // Status
   status: DeploymentStatus;
-  
+
   // Timing
   createdAt: Date;
   startedAt?: Date;
   completedAt?: Date;
   duration?: number; // seconds
-  
+
   // Progress
   currentPhase: number;
   overallProgress: number; // 0-100
   trafficPercent: number;
-  
+
   // Metrics
   metrics: DeploymentMetrics;
-  
+
   // Phases
   phaseHistory: PhaseExecution[];
-  
+
   // Context
   environment: string;
   services: string[];
-  
+
   // User
   initiatedBy: string;
   approvedBy?: string;
-  
+
   // Error handling
   error?: string;
   rollbackReason?: string;
 }
 
-export type DeploymentStatus = 
+export type DeploymentStatus =
   | 'pending'
   | 'running'
   | 'paused'
@@ -363,10 +358,10 @@ export interface DeploymentMetrics {
   responseTime: number; // milliseconds
   throughput: number; // requests per second
   availability: number; // percentage
-  
+
   // Custom metrics
   customMetrics: Record<string, number>;
-  
+
   // Comparison with baseline
   baseline: DeploymentMetrics;
   improvement: Record<string, number>; // percentage change
@@ -387,29 +382,29 @@ export interface ProgressiveDeploymentSettings {
   enableProgressiveDeployment: boolean;
   defaultStrategy: string;
   maxConcurrentDeployments: number;
-  
+
   // Monitoring
   metricsCollectionInterval: number; // seconds
   healthCheckInterval: number; // seconds
   alertingEnabled: boolean;
-  
+
   // Safety
   autoRollbackEnabled: boolean;
   rollbackThreshold: number; // error rate percentage
   maxRolloutDuration: number; // hours
-  
+
   // Notifications
   notificationsEnabled: boolean;
   notificationChannels: string[];
-  
+
   // Traffic Management
   trafficSplittingEnabled: boolean;
   minimumHealthyInstances: number;
-  
+
   // Feature Flags
   featureFlagIntegration: boolean;
   flagProvider: 'internal' | 'launchdarkly' | 'split' | 'custom';
-  
+
   // Advanced
   shadowTrafficEnabled: boolean;
   canaryAnalysisEnabled: boolean;
@@ -421,22 +416,22 @@ interface ProgressiveDeploymentState {
   // Strategies
   strategies: DeploymentStrategy[];
   selectedStrategy: string | null;
-  
+
   // Deployments
   deployments: Deployment[];
   activeDeployment: string | null;
-  
+
   // UI State
   sidebarCollapsed: boolean;
   selectedTab: 'strategies' | 'deployments' | 'monitoring' | 'settings';
-  
+
   // Monitoring
   isMonitoring: boolean;
   lastMetricsUpdate: Date | null;
-  
+
   // Settings
   settings: ProgressiveDeploymentSettings;
-  
+
   // Status
   error: string | null;
   isLoading: boolean;
@@ -445,51 +440,55 @@ interface ProgressiveDeploymentState {
 // Store Actions
 interface ProgressiveDeploymentActions {
   // Strategy Management
-  createStrategy: (strategy: Omit<DeploymentStrategy, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>) => string;
+  createStrategy: (
+    strategy: Omit<DeploymentStrategy, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>
+  ) => string;
   updateStrategy: (strategyId: string, updates: Partial<DeploymentStrategy>) => void;
   deleteStrategy: (strategyId: string) => void;
   cloneStrategy: (strategyId: string, name: string) => string;
   setSelectedStrategy: (strategyId: string | null) => void;
-  
+
   // Deployment Management
-  createDeployment: (deployment: Omit<Deployment, 'id' | 'createdAt' | 'status' | 'phaseHistory' | 'metrics'>) => string;
+  createDeployment: (
+    deployment: Omit<Deployment, 'id' | 'createdAt' | 'status' | 'phaseHistory' | 'metrics'>
+  ) => string;
   startDeployment: (deploymentId: string) => Promise<void>;
   pauseDeployment: (deploymentId: string) => void;
   resumeDeployment: (deploymentId: string) => void;
   cancelDeployment: (deploymentId: string) => void;
   rollbackDeployment: (deploymentId: string, reason?: string) => Promise<void>;
-  
+
   // Phase Management
   promotePhase: (deploymentId: string) => Promise<void>;
   skipPhase: (deploymentId: string, phaseId: string) => void;
-  
+
   // Traffic Management
   adjustTraffic: (deploymentId: string, percent: number) => void;
-  
+
   // Monitoring
   startMonitoring: () => void;
   stopMonitoring: () => void;
   updateMetrics: (deploymentId: string, metrics: DeploymentMetrics) => void;
-  
+
   // Health Checks
   runHealthCheck: (deploymentId: string, checkId: string) => Promise<boolean>;
-  
+
   // Analysis
   compareDeployments: (deploymentId1: string, deploymentId2: string) => any;
   generateReport: (deploymentId: string) => Promise<Blob>;
-  
+
   // UI Actions
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSelectedTab: (tab: ProgressiveDeploymentState['selectedTab']) => void;
   setActiveDeployment: (deploymentId: string | null) => void;
-  
+
   // Settings
   updateSettings: (settings: Partial<ProgressiveDeploymentSettings>) => void;
-  
+
   // Data Management
   exportStrategy: (strategyId: string) => Promise<Blob>;
   importStrategy: (file: File) => Promise<string>;
-  
+
   // Initialization
   initialize: () => Promise<void>;
   createDefaultStrategies: () => void;
@@ -524,86 +523,94 @@ const createInitialState = (): ProgressiveDeploymentState => ({
     flagProvider: 'internal',
     shadowTrafficEnabled: false,
     canaryAnalysisEnabled: true,
-    automaticPromotionEnabled: false
+    automaticPromotionEnabled: false,
   },
   error: null,
-  isLoading: false
+  isLoading: false,
 });
 
 // Create Store
-export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState & ProgressiveDeploymentActions>()(
+export const useProgressiveDeploymentStore = create<
+  ProgressiveDeploymentState & ProgressiveDeploymentActions
+>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issuepersist(
     immer((set, get, _store) => ({
       ...createInitialState(),
 
       // Strategy Management
-      createStrategy: (strategyData: any) => {
+      createStrategy: (
+        strategyData: Omit<DeploymentStrategy, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>
+      ) => {
         if (!FLAGS.progressiveDeployment) return '';
-        
+
         const id = `strategy_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const strategy: DeploymentStrategy = {
           ...strategyData,
           id,
           createdAt: new Date(),
           updatedAt: new Date(),
-          usageCount: 0
+          usageCount: 0,
         };
-        
-        set((state: any) => {
-          state.strategies.push(strategy);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.strategies.push(strategy);
         });
-        
+
         return id;
       },
 
-      updateStrategy: (strategyId: any, updates: any) => {
+      updateStrategy: (strategyId: string, updates: Partial<DeploymentStrategy>) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const strategy = state.strategies.find((s: any) => s.id === strategyId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const strategy = draft.strategies.find((s: DeploymentStrategy) => s.id === strategyId);
           if (strategy) {
             Object.assign(strategy, { ...updates, updatedAt: new Date() });
           }
         });
       },
 
-      deleteStrategy: (strategyId: any) => {
+      deleteStrategy: (strategyId: string) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.strategies = state.strategies.filter((s: any) => s.id !== strategyId);
-          if (state.selectedStrategy === strategyId) {
-            state.selectedStrategy = null;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.strategies = draft.strategies.filter(
+            (s: DeploymentStrategy) => s.id !== strategyId
+          );
+          if (draft.selectedStrategy === strategyId) {
+            draft.selectedStrategy = null;
           }
         });
       },
 
-      cloneStrategy: (strategyId: any, name: any) => {
+      cloneStrategy: (strategyId: string, name: string) => {
         if (!FLAGS.progressiveDeployment) return '';
-        
-        const strategy = get().strategies.find((s: any) => s.id === strategyId);
+
+        const strategy = get().strategies.find((s: DeploymentStrategy) => s.id === strategyId);
         if (!strategy) return '';
-        
+
         return get().createStrategy({
           ...strategy,
           name,
-          isActive: false
+          isActive: false,
         });
       },
 
-      setSelectedStrategy: (strategyId: any) => {
+      setSelectedStrategy: (strategyId: string | null) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.selectedStrategy = strategyId;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.selectedStrategy = strategyId;
         });
       },
 
       // Deployment Management
-      createDeployment: (deploymentData: any) => {
+      createDeployment: (
+        deploymentData: Omit<Deployment, 'id' | 'createdAt' | 'status' | 'phaseHistory' | 'metrics'>
+      ) => {
         if (!FLAGS.progressiveDeployment) return '';
-        
+
         const id = `deployment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         const deployment: Deployment = {
           ...deploymentData,
@@ -627,54 +634,57 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               availability: 100,
               customMetrics: {},
               baseline: {} as any,
-              improvement: {}
+              improvement: {},
             },
-            improvement: {}
-          }
+            improvement: {},
+          },
         };
-        
-        set((state: any) => {
-          state.deployments.push(deployment);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.deployments.push(deployment);
         });
-        
+
         return id;
       },
 
-      startDeployment: async (deploymentId: any) => {
+      startDeployment: async (deploymentId: string) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        const deployment = get().deployments.find((d: any) => d.id === deploymentId);
+
+        const deployment = get().deployments.find((d: Deployment) => d.id === deploymentId);
         if (!deployment) return;
-        
-        const strategy = get().strategies.find((s: any) => s.id === deployment.strategyId);
+
+        const strategy = get().strategies.find(
+          (s: DeploymentStrategy) => s.id === deployment.strategyId
+        );
         if (!strategy) return;
-        
-        set((state: any) => {
-          const d = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const d = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (d) {
             d.status = 'running';
             d.startedAt = new Date();
             d.currentPhase = 0;
           }
-          
+
           // Update strategy usage
-          const s = state.strategies.find((s: any) => s.id === deployment.strategyId);
+          const s = draft.strategies.find(
+            (s: DeploymentStrategy) => s.id === deployment.strategyId
+          );
           if (s) {
             s.usageCount += 1;
             s.lastUsed = new Date();
           }
         });
-        
+
         // Start monitoring
         get().startMonitoring();
-        
+
         try {
           // Simulate deployment phases based on strategy
           await get().executeDeploymentPhases(deploymentId);
-          
         } catch (error) {
-          set((state: any) => {
-            const d = state.deployments.find((d: any) => d.id === deploymentId);
+          set((draft: Draft<ProgressiveDeploymentState>) => {
+            const d = draft.deployments.find((d: Deployment) => d.id === deploymentId);
             if (d) {
               d.status = 'failed';
               d.error = error instanceof Error ? error.message : 'Deployment failed';
@@ -689,23 +699,30 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       },
 
       executeDeploymentPhases: async (deploymentId: string) => {
-        const deployment = get().deployments.find((d: any) => d.id === deploymentId);
+        const deployment = get().deployments.find((d: Deployment) => d.id === deploymentId);
         if (!deployment) return;
-        
-        const strategy = get().strategies.find((s: any) => s.id === deployment.strategyId);
+
+        const strategy = get().strategies.find(
+          (s: DeploymentStrategy) => s.id === deployment.strategyId
+        );
         if (!strategy) return;
-        
+
         const phases = strategy.rolloutPlan.phases.sort((a: any, b: any) => a.order - b.order);
-        
+
         for (let i = 0; i < phases.length; i++) {
           const phase = phases[i];
-          
+
           // Check if deployment was cancelled or rolled back
-          const currentDeployment = get().deployments.find((d: any) => d.id === deploymentId);
-          if (!currentDeployment || ['cancelled', 'rolling_back', 'rolled_back'].includes(currentDeployment.status)) {
+          const currentDeployment = get().deployments.find(
+            (d: Deployment) => d.id === deploymentId
+          );
+          if (
+            !currentDeployment ||
+            ['cancelled', 'rolling_back', 'rolled_back'].includes(currentDeployment.status)
+          ) {
             break;
           }
-          
+
           // Start phase
           const phaseExecution: PhaseExecution = {
             phaseId: phase.id,
@@ -719,12 +736,12 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               availability: 99 + Math.random(),
               customMetrics: {},
               baseline: {} as any,
-              improvement: {}
-            }
+              improvement: {},
+            },
           };
-          
-          set((state: any) => {
-            const d = state.deployments.find((d: any) => d.id === deploymentId);
+
+          set((draft: Draft<ProgressiveDeploymentState>) => {
+            const d = draft.deployments.find((d: Deployment) => d.id === deploymentId);
             if (d) {
               d.currentPhase = i;
               d.trafficPercent = phase.targetPercent;
@@ -732,18 +749,20 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               d.phaseHistory.push(phaseExecution);
             }
           });
-          
+
           // Simulate phase execution
-          await new Promise(resolve => setTimeout(resolve, Math.min(phase.duration * 1000, 5000)));
-          
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.min(phase.duration * 1000, 5000))
+          );
+
           // Complete phase
-          set((state: any) => {
-            const d = state.deployments.find((d: any) => d.id === deploymentId);
+          set((draft: Draft<ProgressiveDeploymentState>) => {
+            const d = draft.deployments.find((d: Deployment) => d.id === deploymentId);
             if (d) {
               const execution = d.phaseHistory[d.phaseHistory.length - 1];
               execution.completedAt = new Date();
               execution.status = Math.random() > 0.1 ? 'completed' : 'failed';
-              
+
               if (execution.status === 'failed' && strategy.rolloutPlan.settings.autoRollback) {
                 d.status = 'rolling_back';
                 return;
@@ -751,10 +770,10 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
             }
           });
         }
-        
+
         // Complete deployment
-        set((state: any) => {
-          const d = state.deployments.find((d: any) => d.id === deploymentId);
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const d = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (d && d.status === 'running') {
             d.status = 'completed';
             d.completedAt = new Date();
@@ -767,41 +786,42 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
         });
       },
 
-      pauseDeployment: (deploymentId: any) => {
+      pauseDeployment: (deploymentId: string) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment && deployment.status === 'running') {
             deployment.status = 'paused';
           }
         });
       },
 
-      resumeDeployment: (deploymentId: any) => {
+      resumeDeployment: (deploymentId: string) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment && deployment.status === 'paused') {
             deployment.status = 'running';
           }
         });
-        
+
         // Continue execution
         get().executeDeploymentPhases(deploymentId);
       },
 
       cancelDeployment: (deploymentId: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
             deployment.status = 'cancelled';
             deployment.completedAt = new Date();
             if (deployment.startedAt) {
-              deployment.duration = (deployment.completedAt.getTime() - deployment.startedAt.getTime()) / 1000;
+              deployment.duration =
+                (deployment.completedAt.getTime() - deployment.startedAt.getTime()) / 1000;
             }
           }
         });
@@ -809,26 +829,27 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
 
       rollbackDeployment: async (deploymentId, reason = 'Manual rollback') => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
             deployment.status = 'rolling_back';
             deployment.rollbackReason = reason;
           }
         });
-        
+
         // Simulate rollback
-        await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+        await new Promise((resolve) => setTimeout(resolve, 2000 + Math.random() * 3000));
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
             deployment.status = 'rolled_back';
             deployment.trafficPercent = 0;
             deployment.completedAt = new Date();
             if (deployment.startedAt) {
-              deployment.duration = (deployment.completedAt.getTime() - deployment.startedAt.getTime()) / 1000;
+              deployment.duration =
+                (deployment.completedAt.getTime() - deployment.startedAt.getTime()) / 1000;
             }
           }
         });
@@ -836,19 +857,19 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
 
       promotePhase: async (deploymentId: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        const deployment = get().deployments.find((d: any) => d.id === deploymentId);
+
+        const deployment = get().deployments.find((d: Deployment) => d.id === deploymentId);
         if (!deployment || deployment.status !== 'paused') return;
-        
+
         // Resume and advance to next phase
         get().resumeDeployment(deploymentId);
       },
 
       skipPhase: (deploymentId: any, phaseId: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
             const execution = deployment.phaseHistory.find((e: any) => e.phaseId === phaseId);
             if (execution) {
@@ -861,9 +882,9 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
 
       adjustTraffic: (deploymentId: any, percent: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
             deployment.trafficPercent = Math.max(0, Math.min(100, percent));
           }
@@ -873,173 +894,177 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
       // Monitoring
       startMonitoring: () => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.isMonitoring = true;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.isMonitoring = true;
         });
-        
+
         // In a real implementation, this would start actual monitoring
       },
 
       stopMonitoring: () => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.isMonitoring = false;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.isMonitoring = false;
         });
       },
 
       updateMetrics: (deploymentId, metrics) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          const deployment = state.deployments.find((d: any) => d.id === deploymentId);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
             deployment.metrics = metrics;
-            state.lastMetricsUpdate = new Date();
+            draft.lastMetricsUpdate = new Date();
           }
         });
       },
 
       runHealthCheck: async (deploymentId: any, checkId: any) => {
         if (!FLAGS.progressiveDeployment) return false;
-        
+
         // Simulate health check
-        await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1500));
-        
+        await new Promise((resolve) => setTimeout(resolve, 500 + Math.random() * 1500));
+
         const success = Math.random() > 0.2; // 80% success rate
-        
+
         return success;
       },
 
       compareDeployments: (deploymentId1: any, deploymentId2: any) => {
         if (!FLAGS.progressiveDeployment) return null;
-        
-        const dep1 = get().deployments.find((d: any) => d.id === deploymentId1);
-        const dep2 = get().deployments.find((d: any) => d.id === deploymentId2);
-        
+
+        const dep1 = get().deployments.find((d: Deployment) => d.id === deploymentId1);
+        const dep2 = get().deployments.find((d: Deployment) => d.id === deploymentId2);
+
         if (!dep1 || !dep2) return null;
-        
+
         return {
           errorRate: {
             deployment1: dep1.metrics.errorRate,
             deployment2: dep2.metrics.errorRate,
-            difference: dep2.metrics.errorRate - dep1.metrics.errorRate
+            difference: dep2.metrics.errorRate - dep1.metrics.errorRate,
           },
           responseTime: {
             deployment1: dep1.metrics.responseTime,
             deployment2: dep2.metrics.responseTime,
-            difference: dep2.metrics.responseTime - dep1.metrics.responseTime
+            difference: dep2.metrics.responseTime - dep1.metrics.responseTime,
           },
           throughput: {
             deployment1: dep1.metrics.throughput,
             deployment2: dep2.metrics.throughput,
-            difference: dep2.metrics.throughput - dep1.metrics.throughput
-          }
+            difference: dep2.metrics.throughput - dep1.metrics.throughput,
+          },
         };
       },
 
       generateReport: async (deploymentId: any) => {
         if (!FLAGS.progressiveDeployment) throw new Error('Progressive deployment not enabled');
-        
-        const deployment = get().deployments.find((d: any) => d.id === deploymentId);
+
+        const deployment = get().deployments.find((d: Deployment) => d.id === deploymentId);
         if (!deployment) throw new Error('Deployment not found');
-        
+
         const report = {
           deployment,
-          strategy: get().strategies.find((s: any) => s.id === deployment.strategyId),
+          strategy: get().strategies.find(
+            (s: DeploymentStrategy) => s.id === deployment.strategyId
+          ),
           generatedAt: new Date().toISOString(),
           summary: {
             duration: deployment.duration,
             phases: deployment.phaseHistory.length,
-            successRate: deployment.phaseHistory.filter((p: any) => p.status === 'completed').length / deployment.phaseHistory.length * 100,
-            finalTrafficPercent: deployment.trafficPercent
-          }
+            successRate:
+              (deployment.phaseHistory.filter((p: any) => p.status === 'completed').length /
+                deployment.phaseHistory.length) *
+              100,
+            finalTrafficPercent: deployment.trafficPercent,
+          },
         };
-        
+
         const blob = new Blob([JSON.stringify(report, null, 2)], {
-          type: 'application/json'
+          type: 'application/json',
         });
-        
+
         return blob;
       },
 
       // UI Actions
       setSidebarCollapsed: (collapsed: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.sidebarCollapsed = collapsed;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.sidebarCollapsed = collapsed;
         });
       },
 
       setSelectedTab: (tab: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.selectedTab = tab;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.selectedTab = tab;
         });
       },
 
       setActiveDeployment: (deploymentId: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          state.activeDeployment = deploymentId;
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          draft.activeDeployment = deploymentId;
         });
       },
 
       // Settings
       updateSettings: (settings: any) => {
         if (!FLAGS.progressiveDeployment) return;
-        
-        set((state: any) => {
-          Object.assign(state.settings, settings);
+
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          Object.assign(draft.settings, settings);
         });
       },
 
       // Data Management
       exportStrategy: async (strategyId: any) => {
         if (!FLAGS.progressiveDeployment) throw new Error('Progressive deployment not enabled');
-        
-        const strategy = get().strategies.find((s: any) => s.id === strategyId);
+
+        const strategy = get().strategies.find((s: DeploymentStrategy) => s.id === strategyId);
         if (!strategy) throw new Error('Strategy not found');
-        
+
         const exportData = {
           strategy,
           exportedAt: new Date().toISOString(),
-          version: '1.0'
+          version: '1.0',
         };
-        
+
         const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-          type: 'application/json'
+          type: 'application/json',
         });
-        
+
         return blob;
       },
 
       importStrategy: async (file: any) => {
         if (!FLAGS.progressiveDeployment) throw new Error('Progressive deployment not enabled');
-        
+
         const text = await file.text();
         const data = JSON.parse(text);
-        
+
         return get().createStrategy(data.strategy);
       },
 
       // Initialization
       initialize: async () => {
         if (!FLAGS.progressiveDeployment) return;
-        
+
         try {
           // Create default strategies if none exist
           if (get().strategies.length === 0) {
             get().createDefaultStrategies();
           }
-          
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Initialization failed';
+          set((draft: Draft<ProgressiveDeploymentState>) => {
+            draft.error = error instanceof Error ? error.message : 'Initialization failed';
           });
         }
       },
@@ -1056,8 +1081,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               warmupTime: 300,
               verificationTime: 600,
               keepOldEnvironment: true,
-              oldEnvironmentTTL: 24
-            }
+              oldEnvironmentTTL: 24,
+            },
           },
           environments: ['staging', 'production'],
           services: ['api', 'web', 'worker'],
@@ -1077,7 +1102,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
                 exitConditions: [],
                 preActions: [],
                 postActions: [],
-                status: 'pending'
+                status: 'pending',
               },
               {
                 id: 'bg-phase-2',
@@ -1090,8 +1115,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
                 exitConditions: [],
                 preActions: [],
                 postActions: [],
-                status: 'pending'
-              }
+                status: 'pending',
+              },
             ],
             settings: {
               autoPromote: false,
@@ -1102,8 +1127,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               notifyOnPhaseStart: true,
               notifyOnPhaseComplete: true,
               notifyOnFailure: true,
-              notificationChannels: ['slack', 'email']
-            }
+              notificationChannels: ['slack', 'email'],
+            },
           },
           healthChecks: [
             {
@@ -1115,8 +1140,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               timeout: 10,
               retries: 3,
               successRate: 95,
-              responseTime: 1000
-            }
+              responseTime: 1000,
+            },
           ],
           successCriteria: [
             {
@@ -1128,7 +1153,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               timeWindow: 10,
               evaluationInterval: 30,
               weight: 40,
-              severity: 'high'
+              severity: 'high',
             },
             {
               id: 'response-time',
@@ -1139,8 +1164,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               timeWindow: 10,
               evaluationInterval: 30,
               weight: 30,
-              severity: 'medium'
-            }
+              severity: 'medium',
+            },
           ],
           rollbackTriggers: [
             {
@@ -1150,14 +1175,14 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               config: { threshold: 5.0, timeWindow: 5 },
               isEnabled: true,
               sensitivity: 80,
-              triggerCount: 0
-            }
+              triggerCount: 0,
+            },
           ],
           isActive: true,
           tags: ['production', 'safe'],
-          owner: 'devops-team'
+          owner: 'devops-team',
         });
-        
+
         // Canary Strategy
         get().createStrategy({
           name: 'Canary Deployment',
@@ -1169,8 +1194,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               incrementStep: 25,
               incrementInterval: 300,
               maxTrafficPercent: 100,
-              observationTime: 180
-            }
+              observationTime: 180,
+            },
           },
           environments: ['production'],
           services: ['api', 'web'],
@@ -1190,7 +1215,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
                 exitConditions: [],
                 preActions: [],
                 postActions: [],
-                status: 'pending'
+                status: 'pending',
               },
               {
                 id: 'canary-phase-2',
@@ -1203,7 +1228,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
                 exitConditions: [],
                 preActions: [],
                 postActions: [],
-                status: 'pending'
+                status: 'pending',
               },
               {
                 id: 'canary-phase-3',
@@ -1216,7 +1241,7 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
                 exitConditions: [],
                 preActions: [],
                 postActions: [],
-                status: 'pending'
+                status: 'pending',
               },
               {
                 id: 'canary-phase-4',
@@ -1229,8 +1254,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
                 exitConditions: [],
                 preActions: [],
                 postActions: [],
-                status: 'pending'
-              }
+                status: 'pending',
+              },
             ],
             settings: {
               autoPromote: true,
@@ -1241,8 +1266,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               notifyOnPhaseStart: true,
               notifyOnPhaseComplete: false,
               notifyOnFailure: true,
-              notificationChannels: ['slack']
-            }
+              notificationChannels: ['slack'],
+            },
           },
           healthChecks: [
             {
@@ -1254,8 +1279,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               timeout: 5,
               retries: 2,
               successRate: 98,
-              responseTime: 300
-            }
+              responseTime: 300,
+            },
           ],
           successCriteria: [
             {
@@ -1267,8 +1292,8 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               timeWindow: 5,
               evaluationInterval: 15,
               weight: 50,
-              severity: 'critical'
-            }
+              severity: 'critical',
+            },
           ],
           rollbackTriggers: [
             {
@@ -1278,35 +1303,35 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
               config: { metric: 'error_rate', threshold: 2.0 },
               isEnabled: true,
               sensitivity: 90,
-              triggerCount: 0
-            }
+              triggerCount: 0,
+            },
           ],
           isActive: true,
           tags: ['production', 'gradual'],
-          owner: 'devops-team'
+          owner: 'devops-team',
         });
-        
+
         // Set default strategy
-        set((state: any) => {
-          if (!state.settings.defaultStrategy && state.strategies.length > 0) {
-            state.settings.defaultStrategy = blueGreenId;
+        set((draft: Draft<ProgressiveDeploymentState>) => {
+          if (!draft.settings.defaultStrategy && draft.strategies.length > 0) {
+            draft.settings.defaultStrategy = blueGreenId;
           }
         });
-      }
+      },
     })),
     {
       name: 'lokifi-progressive-deployment-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: Partial<ProgressiveDeploymentState>, version: number) => {
         if (version === 0) {
           return {
             ...persistedState,
             deployments: [],
-            activeDeployment: null
+            activeDeployment: null,
           };
         }
         return persistedState as ProgressiveDeploymentState & ProgressiveDeploymentActions;
-      }
+      },
     }
   )
 );
@@ -1315,4 +1340,3 @@ export const useProgressiveDeploymentStore = create<ProgressiveDeploymentState &
 if (typeof window !== 'undefined' && FLAGS.progressiveDeployment) {
   useProgressiveDeploymentStore.getState().initialize();
 }
-
