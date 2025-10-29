@@ -1,6 +1,6 @@
 import ContextMenu from "@/components/ContextMenu";
 import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/charts/chartMap';
-import { Drawing, createDrawing, drawParallelChannel, drawPitchfork, updateDrawingGeometry } from '@/lib/utils/drawings';
+import { Drawing, DrawingStyle, createDrawing, drawParallelChannel, drawPitchfork, updateDrawingGeometry } from '@/lib/utils/drawings';
 import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/utils/geom';
 import { useChartStore } from "@/state/store";
 import React from "react";
@@ -17,7 +17,7 @@ export default function DrawingLayer() {
   const s = useChartStore();
   const layerOf = (id: string) =>
     s.layers.find((l) => l.id === id) || { visible: true, locked: false, opacity: 1 };
-  const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings as any);
+  const [drawings, setDrawings] = React.useState<Drawing[]>(s.drawings);
   const [hoverId, setHoverId] = React.useState<string | null>(null);
   const [dragId, setDragId] = React.useState<string | null>(null);
 
@@ -34,7 +34,7 @@ export default function DrawingLayer() {
 
   React.useEffect(
     () =>
-      useChartStore.subscribe((state: any) => {
+      useChartStore.subscribe((state: { drawings: Drawing[] }) => {
         setDrawings(state.drawings);
         needsDraw.current = true;
       }),
@@ -76,12 +76,12 @@ export default function DrawingLayer() {
       ctx.scale(dpr, dpr);
       ctx.lineCap = s.drawingSettings.lineCap;
 
-      drawings.forEach((d: any) => {
-        const ly = layerOf((d as any).layerId || s.activeLayerId || "layer-1");
+      drawings.forEach((d: Drawing) => {
+        const ly = layerOf(d.layerId || s.activeLayerId || "layer-1");
         if (!ly.visible) return;
-        if ((d as any).hidden) return;
+        if (d.hidden) return;
         const selected = s.selection.has(d.id);
-        const sty = (d as any).style || {};
+        const sty: Partial<DrawingStyle> = d.style || {};
         const stroke = sty.stroke || "#9ca3af";
         const width = sty.strokeWidth || 1.75;
         ctx.globalAlpha = sty.opacity ?? 1;
@@ -91,7 +91,7 @@ export default function DrawingLayer() {
           sty.dash === "dash" ? [8, 6] : sty.dash === "dot" ? [2, 4] : sty.dash === "dashdot" ? [10, 6, 2, 6] : []
         );
 
-        switch ((d as any).kind) {
+        switch (d.kind) {
           case "trendline":
           case "arrow": {
             const [a, b] = (d as any).points;
@@ -372,15 +372,15 @@ export default function DrawingLayer() {
     const p = toLocal(e);
 
     if (s.activeTool === "select") {
-      const hit = drawings.find((d: any) => !(d as any).locked && !(d as any).hidden && hitTest(d, p, containerRef.current!) < HIT_PAD);
+      const hit = drawings.find((d: Drawing) => !d.locked && !d.hidden && hitTest(d, p, containerRef.current!) < HIT_PAD);
       if (!hit) {
         setMarquee({ start: p, end: p });
         s.clearSelection();
         invalidate();
         return;
       }
-      s.toggleSelect((hit as any).id, !e.shiftKey);
-      setDragId((hit as any).id);
+      s.toggleSelect(hit.id, !e.shiftKey);
+      setDragId(hit.id);
       invalidate();
       return;
     }
@@ -397,16 +397,16 @@ export default function DrawingLayer() {
   const onMouseMove = (e: React.MouseEvent) => {
     const p = toLocal(e);
     if (marquee) {
-      setMarquee((v: any) => (v ? { ...v, end: p } : null));
+      setMarquee((v: { start: Point; end: Point } | null) => (v ? { ...v, end: p } : null));
       invalidate();
       return;
     }
     if (dragId) {
-      s.updateDrawing(dragId, (dr: any) => updateDrawingGeometry(dr, p) as any);
+      s.updateDrawing(dragId, (dr: Drawing) => updateDrawingGeometry(dr, p));
       invalidate();
       return;
     }
-    const id = drawings.find((d: any) => !(d as any).hidden && hitTest(d, p, containerRef.current!) < HIT_PAD)?.id ?? null;
+    const id = drawings.find((d: Drawing) => !d.hidden && hitTest(d, p, containerRef.current!) < HIT_PAD)?.id ?? null;
     setHoverId(id); // cosmetic; no invalidate
   };
 
@@ -414,8 +414,8 @@ export default function DrawingLayer() {
     if (marquee) {
       const r = rectFromPoints(marquee.start, marquee.end);
       const ids = drawings
-        .filter((d: any) => !(d as any).hidden && !(d as any).locked && (d as any).points.some((pt: Point) => withinRect(pt, r)))
-        .map((d: any) => d.id);
+        .filter((d: Drawing) => !d.hidden && !d.locked && d.points.some((pt: Point) => withinRect(pt, r)))
+        .map((d: Drawing) => d.id);
       s.setSelection(new Set(ids));
       setMarquee(null);
       invalidate();
