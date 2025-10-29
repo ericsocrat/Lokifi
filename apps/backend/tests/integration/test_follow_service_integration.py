@@ -29,7 +29,9 @@ from sqlalchemy import select
 
 @pytest_asyncio.fixture
 async def test_users(integration_db_session):
-    """Create test users in database for follow relationship tests."""
+    """Create test users with profiles in database for follow relationship tests."""
+    from app.models.profile import Profile
+
     users = []
     for i in range(1, 6):  # Create 5 test users
         user = User(
@@ -48,6 +50,19 @@ async def test_users(integration_db_session):
     # Refresh to get IDs
     for user in users:
         await integration_db_session.refresh(user)
+
+    # Create profiles for each user (required for get_followers/get_following)
+    for i, user in enumerate(users, start=1):
+        profile = Profile(
+            user_id=user.id,
+            username=f"testuser{i}",
+            display_name=f"Test User {i}",
+            bio=f"Bio for test user {i}",
+            is_public=True,
+        )
+        integration_db_session.add(profile)
+
+    await integration_db_session.commit()
 
     return users
 
