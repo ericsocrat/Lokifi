@@ -26,7 +26,6 @@ from datetime import datetime, timezone
 
 import pytest
 import pytest_asyncio
-
 from app.models.profile import Profile
 from app.models.user import User
 from app.schemas.profile import ProfileUpdateRequest

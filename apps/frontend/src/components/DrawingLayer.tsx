@@ -1,9 +1,16 @@
-import ContextMenu from "@/components/ContextMenu";
+import ContextMenu from '@/components/ContextMenu';
 import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/charts/chartMap';
-import { Drawing, DrawingStyle, createDrawing, drawParallelChannel, drawPitchfork, updateDrawingGeometry } from '@/lib/utils/drawings';
+import {
+  Drawing,
+  DrawingStyle,
+  createDrawing,
+  drawParallelChannel,
+  drawPitchfork,
+  updateDrawingGeometry,
+} from '@/lib/utils/drawings';
 import { distanceToSegment, rectFromPoints, withinRect } from '@/lib/utils/geom';
-import { useChartStore } from "@/state/store";
-import React from "react";
+import { useChartStore } from '@/state/store';
+import React from 'react';
 
 type Point = { x: number; y: number };
 type Menu = { open: boolean; x: number; y: number };
@@ -51,8 +58,8 @@ export default function DrawingLayer() {
       const r = container.getBoundingClientRect();
       el.width = Math.floor(r.width * (window.devicePixelRatio || 1));
       el.height = Math.floor(r.height * (window.devicePixelRatio || 1));
-      el.style.width = r.width + "px";
-      el.style.height = r.height + "px";
+      el.style.width = r.width + 'px';
+      el.style.height = r.height + 'px';
       // try offscreen
       try {
         offscreen.current = (el as any).transferControlToOffscreen?.() || null;
@@ -67,7 +74,7 @@ export default function DrawingLayer() {
         rafId.current = requestAnimationFrame(drawFrame);
         return;
       }
-      const ctx = el.getContext("2d")!;
+      const ctx = el.getContext('2d')!;
       const width = el.width,
         height = el.height;
       ctx.clearRect(0, 0, width, height);
@@ -77,29 +84,35 @@ export default function DrawingLayer() {
       ctx.lineCap = s.drawingSettings.lineCap;
 
       drawings.forEach((d: Drawing) => {
-        const ly = layerOf(d.layerId || s.activeLayerId || "layer-1");
+        const ly = layerOf(d.layerId || s.activeLayerId || 'layer-1');
         if (!ly.visible) return;
         if (d.hidden) return;
         const selected = s.selection.has(d.id);
         const sty: Partial<DrawingStyle> = d.style || {};
-        const stroke = sty.stroke || "#9ca3af";
+        const stroke = sty.stroke || '#9ca3af';
         const width = sty.strokeWidth || 1.75;
         ctx.globalAlpha = sty.opacity ?? 1;
-        ctx.strokeStyle = selected ? "#60a5fa" : stroke;
+        ctx.strokeStyle = selected ? '#60a5fa' : stroke;
         ctx.lineWidth = width;
         ctx.setLineDash(
-          sty.dash === "dash" ? [8, 6] : sty.dash === "dot" ? [2, 4] : sty.dash === "dashdot" ? [10, 6, 2, 6] : []
+          sty.dash === 'dash'
+            ? [8, 6]
+            : sty.dash === 'dot'
+              ? [2, 4]
+              : sty.dash === 'dashdot'
+                ? [10, 6, 2, 6]
+                : []
         );
 
         switch (d.kind) {
-          case "trendline":
-          case "arrow": {
+          case 'trendline':
+          case 'arrow': {
             const [a, b] = (d as any).points;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
             ctx.stroke();
-            if ((d as any).kind === "arrow")
+            if ((d as any).kind === 'arrow')
               drawArrowHead(
                 ctx,
                 a,
@@ -116,7 +129,7 @@ export default function DrawingLayer() {
             }
             break;
           }
-          case "ray": {
+          case 'ray': {
             const [a, b] = (d as any).points;
             const ext = extendRayToBounds(a, b, el.width, el.height);
             ctx.beginPath();
@@ -131,7 +144,7 @@ export default function DrawingLayer() {
             }
             break;
           }
-          case "hline": {
+          case 'hline': {
             const y = (d as any).points[0].y;
             ctx.beginPath();
             ctx.moveTo(0, y);
@@ -140,7 +153,7 @@ export default function DrawingLayer() {
             if (selected && s.drawingSettings.showHandles) drawHandle(ctx, { x: 24, y });
             break;
           }
-          case "vline": {
+          case 'vline': {
             const x = (d as any).points[0].x;
             ctx.beginPath();
             ctx.moveTo(x, 0);
@@ -149,7 +162,7 @@ export default function DrawingLayer() {
             if (selected && s.drawingSettings.showHandles) drawHandle(ctx, { x, y: 24 });
             break;
           }
-          case "rect": {
+          case 'rect': {
             const r = rectFromPoints((d as any).points[0], (d as any).points[1]);
             if (sty.fill) {
               ctx.save();
@@ -162,7 +175,7 @@ export default function DrawingLayer() {
             if (selected && s.drawingSettings.showHandles) drawRectHandles(ctx, r.x, r.y, r.w, r.h);
             break;
           }
-          case "ellipse": {
+          case 'ellipse': {
             const r = rectFromPoints((d as any).points[0], (d as any).points[1]);
             const cx = r.x + r.w / 2,
               cy = r.y + r.h / 2;
@@ -181,14 +194,16 @@ export default function DrawingLayer() {
             if (selected && s.drawingSettings.showHandles) drawRectHandles(ctx, r.x, r.y, r.w, r.h);
             break;
           }
-          case "fib": {
+          case 'fib': {
             const [a, b] = (d as any).points;
-            const levels = ((d as any).fibLevels ?? s.drawingSettings.fibDefaultLevels).slice().sort((x: number, y: number) => x - y);
+            const levels = ((d as any).fibLevels ?? s.drawingSettings.fibDefaultLevels)
+              .slice()
+              .sort((x: number, y: number) => x - y);
             const y0 = a.y,
               y1 = b.y;
             const left = 0,
               right = el.width;
-            ctx.font = "12px ui-sans-serif, system-ui";
+            ctx.font = '12px ui-sans-serif, system-ui';
             levels.forEach((p: number) => {
               const y = y0 + (y1 - y0) * p;
               ctx.beginPath();
@@ -196,8 +211,8 @@ export default function DrawingLayer() {
               ctx.lineTo(right, y);
               ctx.stroke();
               const price = yToPrice(y);
-              const txt = `${Math.round(p * 100)}%${price != null ? ` @ ${price}` : ""}`;
-              ctx.fillStyle = "#e5e7eb";
+              const txt = `${Math.round(p * 100)}%${price != null ? ` @ ${price}` : ''}`;
+              ctx.fillStyle = '#e5e7eb';
               ctx.fillText(txt, right - 8 - ctx.measureText(txt).width, y - 4);
             });
             if (selected && s.drawingSettings.showHandles) {
@@ -206,7 +221,7 @@ export default function DrawingLayer() {
             }
             break;
           }
-          case "parallel-channel": {
+          case 'parallel-channel': {
             const [a, b, c] = (d as any).points;
             drawParallelChannel(ctx, a, b, c, el.width, el.height, sty.fill as any);
             if (selected && s.drawingSettings.showHandles) {
@@ -216,7 +231,7 @@ export default function DrawingLayer() {
             }
             break;
           }
-          case "pitchfork": {
+          case 'pitchfork': {
             const [a, b, c] = (d as any).points;
             drawPitchfork(ctx, a, b, c, el.width, el.height);
             if (selected && s.drawingSettings.showHandles) {
@@ -226,11 +241,11 @@ export default function DrawingLayer() {
             }
             break;
           }
-          case "text": {
+          case 'text': {
             const p = (d as any).points[0];
-            ctx.fillStyle = "#e5e7eb";
-            ctx.font = "12px ui-sans-serif, system-ui";
-            ctx.fillText((d as any).text || "Text", p.x, p.y);
+            ctx.fillStyle = '#e5e7eb';
+            ctx.font = '12px ui-sans-serif, system-ui';
+            ctx.fillText((d as any).text || 'Text', p.x, p.y);
             if (selected && s.drawingSettings.showHandles) drawHandle(ctx, p);
             break;
           }
@@ -241,7 +256,7 @@ export default function DrawingLayer() {
 
       if (marquee) {
         const r = rectFromPoints(marquee.start, marquee.end);
-        ctx.strokeStyle = "#818cf8";
+        ctx.strokeStyle = '#818cf8';
         ctx.setLineDash([4, 4]);
         ctx.strokeRect(r.x, r.y, r.w, r.h);
         ctx.setLineDash([]);
@@ -274,7 +289,11 @@ export default function DrawingLayer() {
   const toLocal = (e: React.MouseEvent): Point => {
     const r = containerRef.current!.getBoundingClientRect();
     let p = { x: e.clientX - r.left, y: e.clientY - r.top };
-    p = snapPxToGrid(p, s.drawingSettings.snapStep, s.drawingSettings.snapEnabled && perToolSnapOn());
+    p = snapPxToGrid(
+      p,
+      s.drawingSettings.snapStep,
+      s.drawingSettings.snapEnabled && perToolSnapOn()
+    );
     if (s.drawingSettings.snapPriceLevels && perToolSnapOn())
       p = { x: p.x, y: snapYToPriceLevels(p.y, 6) };
     if (s.drawingSettings.snapToOHLC && perToolSnapOn())
@@ -286,31 +305,32 @@ export default function DrawingLayer() {
   function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
     const kind = (d as any).kind;
     const pts = (d as any).points as Point[];
-    const W = container.clientWidth, H = container.clientHeight;
+    const W = container.clientWidth,
+      H = container.clientHeight;
 
     const edge = (a: Point, b: Point) => distanceToSegment(a, b, p);
 
     switch (kind) {
-      case "trendline":
-      case "arrow": {
+      case 'trendline':
+      case 'arrow': {
         const [a, b] = pts;
         return edge(a, b);
       }
-      case "ray": {
+      case 'ray': {
         // approximate by clamping second point to bounds
         const [a, b] = pts;
         const ext = extendRayToBounds(a, b, W, H);
         return edge(ext.start, ext.end);
       }
-      case "hline": {
+      case 'hline': {
         const y = pts[0].y;
         return Math.abs(p.y - y);
       }
-      case "vline": {
+      case 'vline': {
         const x = pts[0].x;
         return Math.abs(p.x - x);
       }
-      case "rect": {
+      case 'rect': {
         const r = rectFromPoints(pts[0], pts[1]);
         const dTop = edge({ x: r.x, y: r.y }, { x: r.x + r.w, y: r.y });
         const dBot = edge({ x: r.x, y: r.y + r.h }, { x: r.x + r.w, y: r.y + r.h });
@@ -319,19 +339,24 @@ export default function DrawingLayer() {
         const inside = withinRect(p, r);
         return inside ? 0 : Math.min(dTop, dBot, dL, dR);
       }
-      case "ellipse": {
+      case 'ellipse': {
         // simple bbox distance
         const r = rectFromPoints(pts[0], pts[1]);
-        const cx = r.x + r.w / 2, cy = r.y + r.h / 2;
-        const rx = Math.abs(r.w / 2), ry = Math.abs(r.h / 2);
-        const dx = (p.x - cx) / (rx || 1), dy = (p.y - cy) / (ry || 1);
+        const cx = r.x + r.w / 2,
+          cy = r.y + r.h / 2;
+        const rx = Math.abs(r.w / 2),
+          ry = Math.abs(r.h / 2);
+        const dx = (p.x - cx) / (rx || 1),
+          dy = (p.y - cy) / (ry || 1);
         const dist = Math.abs(Math.hypot(dx, dy) - 1) * Math.max(rx, ry);
         return dist;
       }
-      case "fib": {
+      case 'fib': {
         const [a, b] = pts;
-        const y0 = a.y, y1 = b.y;
-        const left = 0, right = W;
+        const y0 = a.y,
+          y1 = b.y;
+        const left = 0,
+          right = W;
         const levels = ((d as any).fibLevels ?? s.drawingSettings.fibDefaultLevels) as number[];
         let best = Infinity;
         for (const lv of levels) {
@@ -341,15 +366,15 @@ export default function DrawingLayer() {
         }
         return best;
       }
-      case "parallel-channel": {
+      case 'parallel-channel': {
         const [a, b, c] = pts;
         const base = edge(a, b);
-        const width = Math.abs(c.y - ((a.y + b.y) / 2));
+        const width = Math.abs(c.y - (a.y + b.y) / 2);
         const top = edge({ x: a.x, y: a.y - width }, { x: b.x, y: b.y - width });
         const bot = edge({ x: a.x, y: a.y + width }, { x: b.x, y: b.y + width });
         return Math.min(base, top, bot);
       }
-      case "pitchfork": {
+      case 'pitchfork': {
         const [a, b, c] = pts;
         const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
         const d1 = edge(a, c);
@@ -357,7 +382,7 @@ export default function DrawingLayer() {
         const d3 = edge(a, mid);
         return Math.min(d1, d2, d3);
       }
-      case "text": {
+      case 'text': {
         const t = pts[0];
         return Math.hypot(p.x - t.x, p.y - t.y);
       }
@@ -371,8 +396,10 @@ export default function DrawingLayer() {
     setMenu({ open: false, x: 0, y: 0 });
     const p = toLocal(e);
 
-    if (s.activeTool === "select") {
-      const hit = drawings.find((d: Drawing) => !d.locked && !d.hidden && hitTest(d, p, containerRef.current!) < HIT_PAD);
+    if (s.activeTool === 'select') {
+      const hit = drawings.find(
+        (d: Drawing) => !d.locked && !d.hidden && hitTest(d, p, containerRef.current!) < HIT_PAD
+      );
       if (!hit) {
         setMarquee({ start: p, end: p });
         s.clearSelection();
@@ -385,7 +412,7 @@ export default function DrawingLayer() {
       return;
     }
 
-    const d = createDrawing(s.activeTool || "line", p) as any; // ✅ was s?.tool
+    const d = createDrawing(s.activeTool || 'line', p) as any; // ✅ was s?.tool
     if (d) {
       d.layerId = d.layerId ?? s.activeLayerId;
       s.addDrawing(d);
@@ -406,7 +433,9 @@ export default function DrawingLayer() {
       invalidate();
       return;
     }
-    const id = drawings.find((d: Drawing) => !d.hidden && hitTest(d, p, containerRef.current!) < HIT_PAD)?.id ?? null;
+    const id =
+      drawings.find((d: Drawing) => !d.hidden && hitTest(d, p, containerRef.current!) < HIT_PAD)
+        ?.id ?? null;
     setHoverId(id); // cosmetic; no invalidate
   };
 
@@ -414,7 +443,9 @@ export default function DrawingLayer() {
     if (marquee) {
       const r = rectFromPoints(marquee.start, marquee.end);
       const ids = drawings
-        .filter((d: Drawing) => !d.hidden && !d.locked && d.points.some((pt: Point) => withinRect(pt, r)))
+        .filter(
+          (d: Drawing) => !d.hidden && !d.locked && d.points.some((pt: Point) => withinRect(pt, r))
+        )
         .map((d: Drawing) => d.id);
       s.setSelection(new Set(ids));
       setMarquee(null);
@@ -438,9 +469,14 @@ export default function DrawingLayer() {
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         tabIndex={0}
-        style={{ outline: "none", cursor: s.activeTool === "select" ? (hoverId ? "pointer" : "default") : "crosshair" }}
+        style={{
+          outline: 'none',
+          cursor: s.activeTool === 'select' ? (hoverId ? 'pointer' : 'default') : 'crosshair',
+        }}
       />
-      {menu.open && <ContextMenu x={menu.x} y={menu.y} onClose={() => setMenu({ open: false, x: 0, y: 0 })} />}
+      {menu.open && (
+        <ContextMenu x={menu.x} y={menu.y} onClose={() => setMenu({ open: false, x: 0, y: 0 })} />
+      )}
     </div>
   );
 }
@@ -448,8 +484,8 @@ export default function DrawingLayer() {
 /** ===== Helpers ===== */
 function drawHandle(ctx: CanvasRenderingContext2D, p: Point) {
   ctx.save();
-  ctx.fillStyle = "#0b1220";
-  ctx.strokeStyle = "#60a5fa";
+  ctx.fillStyle = '#0b1220';
+  ctx.strokeStyle = '#60a5fa';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.rect(p.x - 4, p.y - 4, 8, 8);
@@ -461,7 +497,13 @@ function drawLineHandles(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
   drawHandle(ctx, a);
   drawHandle(ctx, b);
 }
-function drawRectHandles(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+function drawRectHandles(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number
+) {
   drawHandle(ctx, { x, y });
   drawHandle(ctx, { x: x + w, y });
   drawHandle(ctx, { x, y: y + h });
@@ -473,17 +515,17 @@ function drawRectHandles(ctx: CanvasRenderingContext2D, x: number, y: number, w:
 }
 function getStrokeColor(ctx: CanvasRenderingContext2D): string {
   const s = ctx.strokeStyle as any;
-  return typeof s === "string" ? s : "#9ca3af";
+  return typeof s === 'string' ? s : '#9ca3af';
 }
 function drawArrowHead(
   ctx: CanvasRenderingContext2D,
   a: Point,
   b: Point,
-  kind: "none" | "open" | "filled",
+  kind: 'none' | 'open' | 'filled',
   size: number,
   color: string
 ) {
-  if (kind === "none") return;
+  if (kind === 'none') return;
   const vx = b.x - a.x,
     vy = b.y - a.y;
   const len = Math.hypot(vx, vy) || 1;
@@ -496,7 +538,7 @@ function drawArrowHead(
   const baseY = b.y - ny * size;
   ctx.save();
   ctx.beginPath();
-  if (kind === "filled") {
+  if (kind === 'filled') {
     ctx.moveTo(tip.x, tip.y);
     ctx.lineTo(baseX + px * size * 0.6, baseY + py * size * 0.6);
     ctx.lineTo(baseX - px * size * 0.6, baseY - py * size * 0.6);
@@ -517,10 +559,10 @@ function drawLineLabel(ctx: CanvasRenderingContext2D, a: Point, b: Point) {
     p2 = yToPrice(b.y);
   if (p1 == null || p2 == null || p1 === 0) return;
   const pct = ((p2 - p1) / Math.abs(p1)) * 100;
-  const txt = String(Math.round(pct)) + "%" + (p2 != null ? " @ " + p2 : "");
+  const txt = String(Math.round(pct)) + '%' + (p2 != null ? ' @ ' + p2 : '');
   ctx.save();
-  ctx.fillStyle = "#e5e7eb";
-  ctx.font = "12px ui-sans-serif, system-ui";
+  ctx.fillStyle = '#e5e7eb';
+  ctx.font = '12px ui-sans-serif, system-ui';
   ctx.fillText(txt, Math.min(a.x, b.x) + 8, Math.min(a.y, b.y) - 6);
   ctx.restore();
 }

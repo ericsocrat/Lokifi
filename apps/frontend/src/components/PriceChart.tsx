@@ -1,7 +1,13 @@
 import DataStatus from '@/components/DataStatus';
 import SymbolTfBar from '@/components/SymbolTfBar';
 import { setChart } from '@/lib/charts/chartBus';
-import { bollinger, type Candle as IndCandle, stdDevChannels, vwap, vwma } from '@/lib/charts/indicators';
+import {
+  bollinger,
+  stdDevChannels,
+  vwap,
+  vwma,
+  type Candle as IndCandle,
+} from '@/lib/charts/indicators';
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
