@@ -1,7 +1,17 @@
 import type { Drawing } from '@/lib/utils/drawings';
-import type { AlertSound, BaseAlert } from '@/src/types/alerts';
 import { useChartStore } from '@/state/store';
 import React from 'react';
+
+// Alert types (inline definitions - no external types file needed)
+type AlertSound = 'ping' | 'none';
+interface BaseAlert {
+  id: string;
+  note: string;
+  sound: AlertSound;
+  cooldownMs: number;
+  maxTriggers?: number;
+  enabled: boolean;
+}
 
 type Props = { open: boolean; onClose: () => void };
 export default function AlertModal({ open, onClose }: Props) {

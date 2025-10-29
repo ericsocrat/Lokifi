@@ -1,8 +1,9 @@
 import { setMappers, setVisibleBarCoords, setVisiblePriceLevels } from '@/lib/charts/chartMap'
-import type { IChartApi, ISeriesApi, Time } from '@/src/types/lightweight-charts'
+import { Candle } from '@/lib/data/adapter'
+import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function wireLightweightChartsMappings(chart: IChartApi | any, series: ISeriesApi<Time> | any) {
+export function wireLightweightChartsMappings(chart: IChartApi | any, series: ISeriesApi<'Candlestick'> | any) {
   if (!chart || !series) return
 
   setMappers({

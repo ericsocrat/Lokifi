@@ -1,10 +1,19 @@
 'use client';
 
-import type { GoogleAuthResponse, GoogleCredentialResponse } from '@/src/types/google-auth';
 import { GoogleLogin } from '@react-oauth/google';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from './AuthProvider';
+
+// Google Auth types (inline definitions)
+interface GoogleCredentialResponse {
+  credential?: string;
+}
+
+interface GoogleAuthResponse {
+  access_token?: string;
+  message?: string;
+}
 
 export function AuthModal({
   onClose,

@@ -73,3 +73,11 @@ export interface ChartSeries {
 export interface ChartInstance extends IChartApi {
   // Extends lightweight-charts IChartApi with any custom methods
 }
+
+// Extend Window interface with custom Lokifi globals
+declare global {
+  interface Window {
+    __lokifi_toast?: (message: string) => void;
+    __lokifi_lastSnapshotPng?: string;
+  }
+}

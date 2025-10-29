@@ -61,7 +61,24 @@ interface ConnectingBank {
   value: number;
 }
 
-import type { AddAssetModalState, SelectedAsset, Asset } from '@/src/types/assets';
+// Portfolio types (inline definitions)
+interface AddAssetModalState {
+  show: boolean;
+  step: string;
+  selectedItems: string[];
+}
+
+interface SelectedAsset {
+  symbol: string;
+  shares: number;
+}
+
+interface Asset {
+  symbol: string;
+  shares: number;
+  [key: string]: any; // Additional properties
+}
+
 import AddAssetModal from '@/src/components/portfolio/AddAssetModal';
 import { usePortfolioPrices, useAssets } from '@/src/hooks/useMarketData';
 

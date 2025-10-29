@@ -1,6 +1,7 @@
 import { setVisibleBarCoords } from '@/lib/charts/chartMap'
 import { startPriceFeed } from '@/api/price-feed'
-import type { IChartApi, ISeriesApi, Time, SeriesDataPoint } from '@/src/types/lightweight-charts'
+import { Candle } from '@/lib/data/adapter'
+import type { IChartApi, ISeriesApi, Time, SeriesDataPoint } from 'lightweight-charts'
 
 /**
  * Lightweight-charts extras:
@@ -10,7 +11,7 @@ import type { IChartApi, ISeriesApi, Time, SeriesDataPoint } from '@/src/types/l
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function wireLightweightChartsExtras(
   chart: IChartApi | any,
-  series: ISeriesApi<Time> | any,
+  series: ISeriesApi<'Candlestick'> | any,
   getSeriesData: () => Array<SeriesDataPoint>,
   getLastPrice: () => number | null
 ) {

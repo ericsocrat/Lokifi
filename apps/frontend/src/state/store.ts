@@ -1,12 +1,25 @@
 import type { Alert, AlertEvent } from '@/lib/utils/alerts';
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Drawing, DrawingSettings, Layer } from '../types/drawings';
+import type { Drawing } from '@/lib/utils/drawings';
 
 type SetState = Parameters<StateCreator<ChartState>>[0];
 type GetState = Parameters<StateCreator<ChartState>>[1];
 
-export type { DrawingSettings, Layer } from '../types/drawings';
+// Layer type (minimal definition based on usage)
+export interface Layer {
+  id: string;
+  name: string;
+  visible: boolean;
+  opacity?: number;
+  order?: number;
+  locked?: boolean;
+}
+
+// DrawingSettings type (flexible)
+export interface DrawingSettings {
+  [key: string]: any;
+}
 
 export interface IndicatorSettings {
   bbPeriod: number;
