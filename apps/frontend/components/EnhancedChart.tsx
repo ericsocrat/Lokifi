@@ -3,12 +3,14 @@ import {
   ColorType,
   createChart,
   IChartApi,
-  ISeriesApi
+  ISeriesApi,
+  MouseEventParams,
+  Time
 } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 import { useDrawingStore } from '@/lib/stores/drawingStore';
-import { useMarketDataStore } from '@/lib/stores/marketDataStore';
-import { usePaneStore } from '@/lib/stores/paneStore';
+import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore';
+import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
 
@@ -31,7 +33,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
   const selectedSymbol = symbolStore.get();
   const selectedTimeframe = timeframeStore.get();
 
-  const pane = panes.find((p: any) => p.id === paneId);
+  const pane = panes.find((p: Pane) => p.id === paneId);
 
   // Initialize chart
   useEffect(() => {
@@ -125,8 +127,8 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
 
         if (seriesRef.current && data.length > 0) {
           // Convert to chart format
-          const chartData = data.map((item: any) => ({
-            time: Math.floor(new Date(item.timestamp).getTime() / 1000) as any,
+          const chartData = data.map((item: OHLCData) => ({
+            time: Math.floor(new Date(item.timestamp).getTime() / 1000) as Time,
             open: item.open,
             high: item.high,
             low: item.low,
@@ -150,7 +152,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
   useEffect(() => {
     if (!chartRef.current || !activeTool || activeTool === 'cursor') return;
 
-    const handleClick = (param: any) => {
+    const handleClick = (param: MouseEventParams<Time>) => {
       if (!param.point || !param.time) return;
 
       console.log('Chart clicked in drawing mode:', {

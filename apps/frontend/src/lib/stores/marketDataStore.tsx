@@ -3,7 +3,7 @@ import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface OHLCData {
+export interface OHLCData {
   symbol: string;
   timestamp: string;
   open: number;

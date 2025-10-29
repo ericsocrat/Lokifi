@@ -1,6 +1,6 @@
 'use client';
 import { EXPERIMENTAL_PLUGINS } from '@/constants/flags';
-import { drawStore, type Tool } from '@/stores/drawStore';
+import { drawStore, type DrawState, type Tool } from '@/stores/drawStore';
 import {
   Boxes,
   Brackets,
@@ -42,7 +42,7 @@ export default function ChartSidebar() {
   const [, setTick] = useState(0);
 
   useEffect(() => {
-    const unsub = drawStore.subscribe((s: any) => {
+    const unsub = drawStore.subscribe((s: DrawState) => {
       setTool(s.tool);
       setSnap(s.snap);
       setSelCount(s.selectedIds.length);
@@ -53,7 +53,7 @@ export default function ChartSidebar() {
   }, []);
 
   useEffect(() => {
-    const t = setInterval(() => setTick((x: any) => x + 1), 300);
+    const t = setInterval(() => setTick((x: number) => x + 1), 300);
     return () => clearInterval(t);
   }, []);
 
@@ -82,7 +82,7 @@ export default function ChartSidebar() {
           <div>
             <h3 className="text-[11px] uppercase tracking-wide opacity-70 mb-3">Tools</h3>
             <div className="grid grid-cols-2 gap-2">
-              {TOOLS.map((t: any) => (
+              {TOOLS.map((t: typeof TOOLS[0]) => (
                 <button
                   key={t.key}
                   onClick={() => drawStore.setTool(t.key)}

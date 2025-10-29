@@ -6,9 +6,9 @@ import ChartSidebar from '@/components/ChartSidebar';
 import { API } from '@/lib/api';
 import type { OHLCResponse } from '@/lib/types';
 import { drawStore } from '@/stores/drawStore';
-import { indicatorStore } from '@/stores/indicatorStore';
+import { indicatorStore, type IndicatorSnapshot } from '@/stores/indicatorStore';
 import { symbolStore } from '@/stores/symbolStore';
-import { timeframeStore } from '@/stores/timeframeStore';
+import { timeframeStore, type TF } from '@/stores/timeframeStore';
 import { ColorType, createChart, IChartApi, Time } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
 import { pluginManager } from 'plugins/registry';
@@ -38,7 +38,7 @@ function hexToRGBA(hex: string, a: number) {
     m.length === 3
       ? m
           .split('')
-          .map((c: any) => c + c)
+          .map((c: string) => c + c)
           .join('')
       : m,
     16
@@ -85,13 +85,13 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
   // Subscribe to store changes
   useEffect(() => {
-    const unsubIndicators = indicatorStore.subscribe((st: any) => setInds(st));
-    const unsubSymbol = symbolStore.subscribe((s: any) => {
+    const unsubIndicators = indicatorStore.subscribe((st: IndicatorSnapshot) => setInds(st));
+    const unsubSymbol = symbolStore.subscribe((s: string) => {
       setSym(s);
       indicatorStore.loadForSymbol(s);
       drawStore.loadCurrent();
     });
-    const unsubTimeframe = timeframeStore.subscribe((t: any) => {
+    const unsubTimeframe = timeframeStore.subscribe((t: TF) => {
       setTf(t);
       drawStore.loadCurrent();
     });
@@ -118,7 +118,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     () => ({
       symbol: sym,
       timeframe: tf,
-      candles: Array.from({ length: 100 }, (_: any, i: any) => {
+      candles: Array.from({ length: 100 }, (_: unknown, i: number) => {
         const time = Math.floor(Date.now() / 1000) - (100 - i) * tfToSeconds(tf);
         const price = 50000 + Math.sin(i / 10) * 2000 + (Math.random() - 0.5) * 1000;
         return {

@@ -170,7 +170,7 @@ export default function AssetsPage() {
             target.message = 'Connected';
             localStorage.setItem('connectingBanks', JSON.stringify(current));
             setConnectingBanks(current);
-            (window as any).dispatchEvent(
+            window.dispatchEvent(
               new CustomEvent('lokifi.toast', {
                 detail: {
                   type: 'success',
@@ -405,7 +405,7 @@ export default function AssetsPage() {
                     {section.assets.map((asset: PortfolioAsset) => (
                       <AssetItem
                         key={asset.id}
-                        asset={asset as any}
+                        asset={asset as unknown as Asset}
                         onDelete={() => removeAsset(section.title, asset.id)}
                       />
                     ))}
