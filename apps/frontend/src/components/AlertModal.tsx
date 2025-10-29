@@ -2,6 +2,7 @@ import React from 'react'
 import { useChartStore } from '@/state/store'
 import type { Alert } from '@/lib/utils/alerts'
 import type { BaseAlert, AlertSound } from '@/src/types/alerts'
+import type { Drawing } from '@/lib/utils/drawings'
 
 type Props = { open: boolean; onClose: () => void }
 export default function AlertModal({ open, onClose }: Props) {
@@ -17,12 +18,12 @@ export default function AlertModal({ open, onClose }: Props) {
   if (!open) return null
 
   const selection = Array.from(s.selection || [])
-  const primary = selection.length ? s.drawings.find((d: any) => d.id===selection[0]) : undefined
+  const primary = selection.length ? s.drawings.find((d: Drawing) => d.id===selection[0]) : undefined
   
   // Type guard: GroupDrawing uses 'type' not 'kind'
-  const hasKind = (d: any): d is { kind: string } => d && 'kind' in d && typeof d.kind === 'string'
+  const hasKind = (d: Drawing | undefined): d is Drawing & { kind: string } => d !== undefined && 'kind' in d && typeof d.kind === 'string'
 
-  const canCross = primary && hasKind(primary) && (primary.kind==='horizontal' || primary.kind==='trendline' || primary.kind==='arrow')
+  const canCross = primary && hasKind(primary) && (primary.kind==='hline' || primary.kind==='trendline' || primary.kind==='arrow')
   const canFib = primary && hasKind(primary) && primary.kind==='fib'
   const canRegion = primary && hasKind(primary) && primary.kind==='rect'
 
@@ -49,7 +50,7 @@ export default function AlertModal({ open, onClose }: Props) {
         <div className="grid grid-cols-3 gap-2 text-sm">
           <label className="col-span-1 opacity-70">Type</label>
           <select className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                  value={kind} onChange={(e: any) =>setKind(e.target.value)}>
+                  value={kind} onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>setKind(e.target.value)}>
             <option value="cross" disabled={!canCross}>Line cross</option>
             <option value="fib-cross" disabled={!canFib}>Fib level cross</option>
             <option value="region-touch" disabled={!canRegion}>Region touch</option>
@@ -57,13 +58,13 @@ export default function AlertModal({ open, onClose }: Props) {
           </select>
 
           <label className="col-span-1 opacity-70">Note</label>
-          <input className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1" value={note} onChange={(e: any) =>setNote(e.target.value)} />
+          <input className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1" value={note} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>setNote(e.target.value)} />
 
           {kind === 'fib-cross' && (
             <>
               <label className="col-span-1 opacity-70">Fib level</label>
               <input type="number" step="0.001" min="0" max="1" className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                     value={fibLevel} onChange={(e: any) =>setFibLevel(parseFloat(e.target.value))}/>
+                     value={fibLevel} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>setFibLevel(parseFloat(e.target.value))}/>
             </>
           )}
 
@@ -71,24 +72,24 @@ export default function AlertModal({ open, onClose }: Props) {
             <>
               <label className="col-span-1 opacity-70">When</label>
               <input type="datetime-local" className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                     value={when} onChange={(e: any) =>setWhen(e.target.value)} />
+                     value={when} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>setWhen(e.target.value)} />
             </>
           )}
 
           <label className="col-span-1 opacity-70">Cooldown</label>
           <div className="col-span-2 flex gap-2">
             <input type="number" min="0" className="flex-1 bg-transparent border border-white/15 rounded px-2 py-1"
-                   value={cooldown} onChange={(e: any) =>setCooldown(parseInt(e.target.value||'0',10))}/>
+                   value={cooldown} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>setCooldown(parseInt(e.target.value||'0',10))}/>
             <span className="opacity-60 self-center text-xs">ms</span>
           </div>
 
           <label className="col-span-1 opacity-70">Max triggers</label>
           <input type="number" min="1" className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                 value={maxTriggers} onChange={(e: any) =>setMaxTriggers(e.target.value===''? '' : parseInt(e.target.value,10))}/>
+                 value={maxTriggers} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>setMaxTriggers(e.target.value===''? '' : parseInt(e.target.value,10))}/>
 
           <label className="col-span-1 opacity-70">Sound</label>
           <select className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
-                  value={sound} onChange={(e: any) =>setSound(e.target.value as AlertSound)}>
+                  value={sound} onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>setSound(e.target.value as AlertSound)}>
             <option value="ping">Ping</option>
             <option value="none">None</option>
           </select>
