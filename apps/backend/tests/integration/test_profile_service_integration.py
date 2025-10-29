@@ -120,16 +120,17 @@ class TestProfileServiceIntegration:
             user_id=user.id,
             email_enabled=True,
             push_enabled=True,
-            sms_enabled=False,
+            in_app_enabled=True,
             created_at=datetime.now(timezone.utc),
         )
         integration_db_session.add(prefs)
         await integration_db_session.commit()
         await integration_db_session.refresh(prefs)
 
-        # Update preferences
+        # Update preferences (using schema fields, not model fields)
         update_data = NotificationPreferencesUpdateRequest(
-            email_enabled=False, push_enabled=False, sms_enabled=True
+            email_enabled=False,  # Disable email notifications
+            push_enabled=False,  # Disable push notifications
         )
 
         result = await profile_service_integration.update_notification_preferences(
@@ -138,9 +139,9 @@ class TestProfileServiceIntegration:
 
         # Verify update succeeded with database defaults
         assert result is not None
-        assert result.email_enabled is False
-        assert result.push_enabled is False
-        assert result.sms_enabled is True
+        assert result.email_enabled is False  # Updated
+        assert result.push_enabled is False  # Updated
+        assert result.in_app_enabled is True  # Unchanged (not in update request)
         assert result.created_at is not None  # Database default preserved
         assert result.updated_at is not None  # Database auto-updates timestamp
 
@@ -188,10 +189,13 @@ class TestProfileServiceIntegration:
         """
         users, profiles = test_users_with_profiles
         user = users[0]
+        original_profile = profiles[0]
 
         # Update profile bio and display_name
         update_data = ProfileUpdateRequest(
-            bio="Updated bio with database", display_name="Updated Display Name"
+            username=original_profile.username,  # Keep same username (required field)
+            bio="Updated bio with database",
+            display_name="Updated Display Name",
         )
 
         result = await profile_service_integration.update_profile(user.id, update_data)
@@ -204,9 +208,10 @@ class TestProfileServiceIntegration:
         assert result.following_count == 0  # Default preserved
         assert result.updated_at is not None  # Database auto-updates
 
-        # Refresh to verify database state
-        await integration_db_session.refresh(result)
-        assert result.bio == "Updated bio with database"
+        # Refresh profile model (not Pydantic schema) to verify database state
+        await integration_db_session.refresh(original_profile)
+        assert original_profile.bio == "Updated bio with database"
+        assert original_profile.display_name == "Updated Display Name"
 
     @pytest.mark.asyncio
     async def test_search_profiles_with_database_pagination(
