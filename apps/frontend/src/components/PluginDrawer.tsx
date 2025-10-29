@@ -10,7 +10,7 @@ export default function PluginDrawer() {
   const [cfg, setCfg] = React.useState<ConfigMap>(() => loadJSON('lokifi-plugin-cfg', {}))
   const fileRef = React.useRef<HTMLInputElement>(null)
 
-  function update(id: string, key: string, value: any) {
+  function update(id: string, key: string, value: string) {
     const next = { ...cfg, [id]: { ...(cfg[id]||{}), [key]: value } }
     setCfg(next); saveJSON('lokifi-plugin-cfg', next)
   }
@@ -38,7 +38,7 @@ export default function PluginDrawer() {
     <div>
       <h2 className="text-lg font-semibold mb-2">Plugins</h2>
       <div className="space-y-3">
-        {plugins.map((p: any) => (
+        {plugins.map((p: Registered) => (
           <div key={p.meta.id} className="p-3 rounded-xl border border-neutral-700">
             <div className="font-medium">{p.meta.name}</div>
             <div className="text-xs text-neutral-400">{p.meta.description || 'No description'}</div>
@@ -48,7 +48,7 @@ export default function PluginDrawer() {
                   <span>{k}</span>
                   <input className="ml-2 bg-transparent border px-2 py-1 rounded"
                     value={String((cfg[p.meta.id]?.[k] ?? v))}
-                    onChange={(e: any) => update(p.meta.id, k, e.target.value)} />
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => update(p.meta.id, k, e.target.value)} />
                 </label>
               ))}
             </div>
@@ -59,7 +59,7 @@ export default function PluginDrawer() {
       <div className="mt-4 flex gap-2">
         <button className="px-3 py-2 rounded-2xl border border-neutral-700 hover:border-neutral-500" onClick={exportJSON}>Export</button>
         <input ref={fileRef} type="file" accept="application/json" className="hidden"
-          onChange={(e: any) => e.target.files && importJSON(e.target.files[0])} />
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => e.target.files && importJSON(e.target.files[0])} />
         <button className="px-3 py-2 rounded-2xl border border-neutral-700 hover:border-neutral-500" onClick={() => fileRef.current?.click()}>Import</button>
       </div>
     </div>

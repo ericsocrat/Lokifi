@@ -8,7 +8,7 @@ import { Download } from 'lucide-react';
 import { useState } from 'react';
 
 interface ExportButtonProps {
-  data: any[];
+  data: Record<string, unknown>[]; // any required: generic export component accepting various data shapes
   filename: string;
   disabled?: boolean;
 }
@@ -28,8 +28,8 @@ export function ExportButton({ data, filename, disabled }: ExportButtonProps) {
       // Create CSV content
       const csvContent = [
         headers.join(','),
-        ...data.map((item: any) => 
-          headers.map((header: any) => {
+        ...data.map((item: Record<string, unknown>) => 
+          headers.map((header: string) => {
             const value = item[header];
             // Handle values with commas by wrapping in quotes
             if (typeof value === 'string' && value.includes(',')) {

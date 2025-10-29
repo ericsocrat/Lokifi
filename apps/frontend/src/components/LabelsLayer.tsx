@@ -1,6 +1,7 @@
 import React from "react"
 import { useChartStore } from "@/state/store"
 import { describeDrawing } from '@/lib/utils/labels'
+import type { Drawing } from '@/lib/utils/drawings'
 
 export default function LabelsLayer() {
   const s = useChartStore()
@@ -12,11 +13,11 @@ export default function LabelsLayer() {
 
   return (
     <div className="pointer-events-none absolute inset-0 select-none">
-      {drawings.map((d: any) => {
+      {drawings.map((d: Drawing) => {
         // respect hidden layers
-        const layer = s.layers?.find((l: any) =>l.id === (d as any).layerId) || { visible:true, opacity:1 }
+        const layer = s.layers?.find((l: { id: string; visible: boolean; opacity?: number }) =>l.id === d.layerId) || { visible:true, opacity:1 }
         if (!layer.visible || (layer.opacity ?? 1) === 0) return null
-        const info = describeDrawing(d as any, cfg)
+        const info = describeDrawing(d, cfg)
         if (!info) return null
         const x = info.anchor.x + 8
         const y = info.anchor.y - 8

@@ -17,7 +17,7 @@ export default function PluginManager() {
 
       <div className="space-y-2">
         {plugins.length===0 && <div className="text-xs opacity-60">No plugins installed.</div>}
-        {plugins.map((p: any) => (
+        {plugins.map((p: { meta: { id: string; name: string; description?: string }; enabled: boolean }) => (
           <div key={p.meta.id} className="flex items-center justify-between text-sm rounded border border-white/10 px-2 py-1">
             <div>
               <div className="font-medium">{p.meta.name} <span className="opacity-60 text-xs">#{p.meta.id}</span></div>
@@ -25,7 +25,7 @@ export default function PluginManager() {
             </div>
             <div className="flex items-center gap-2">
               <label className="text-xs opacity-70">Enable</label>
-              <input type="checkbox" checked={p.enabled} onChange={(e: any) =>{ setPluginEnabled(p.meta.id, e.target.checked); force() }} />
+              <input type="checkbox" checked={p.enabled} onChange={(e: React.ChangeEvent<HTMLInputElement>) =>{ setPluginEnabled(p.meta.id, e.target.checked); force() }} />
             </div>
           </div>
         ))}

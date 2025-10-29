@@ -79,7 +79,7 @@ export default function ShareBar() {
         <input
           className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
           value={room}
-          onChange={(e: any) => setRoom(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setRoom(e.target.value)}
           placeholder="Room ID (e.g. lokifi-dev)"
         />
         <button

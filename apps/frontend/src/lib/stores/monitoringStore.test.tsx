@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { useMonitoringStore } from './monitoringStore';
 import { setDevFlag } from '../utils/featureFlags';
+import { useMonitoringStore } from './monitoringStore';
 
 // TODO: Fix test interface mismatches with current MonitoringStore implementation
 // This test file needs updating to match current types (23 compile errors)
@@ -9,7 +9,7 @@ describe.skip('monitoringStore', () => {
   beforeEach(() => {
     // Enable monitoring feature flag for tests
     setDevFlag('monitoring', true);
-    
+
     // Reset store state before each test
     useMonitoringStore.setState({
       dashboards: [],

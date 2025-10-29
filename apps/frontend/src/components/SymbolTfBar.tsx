@@ -44,17 +44,17 @@ export default function SymbolTfBar() {
       <div className='relative' ref={menuRef}>
         <input
           value={symInput}
-          onChange={(e: any) => { setSymInput(e.target.value.toUpperCase()); setShowSymMenu(true) }}
-          onKeyDown={(e: any) => { if (e.key==='Enter') applySymbol() }}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSymInput(e.target.value.toUpperCase()); setShowSymMenu(true) }}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key==='Enter') applySymbol() }}
           className='px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-36 outline-none'
           placeholder='Symbol'
         />
         {showSymMenu && (
           <div className='absolute mt-1 left-0 w-48 max-h-56 overflow-auto rounded-md border border-white/10 bg-black/80 shadow-lg'>
             {SYMBOL_SUGGESTIONS
-              .filter((s: any) => s.toUpperCase().includes(symInput.toUpperCase()))
+              .filter((s: string) => s.toUpperCase().includes(symInput.toUpperCase()))
               .slice(0,20)
-              .map((sug: any) => (
+              .map((sug: string) => (
                 <button
                   key={sug}
                   onClick={() => { setSymInput(sug); setSymbol(sug); setShowSymMenu(false) }}
@@ -79,7 +79,7 @@ export default function SymbolTfBar() {
 
       {/* Timeframe presets */}
       <div className='flex gap-1'>
-        {TF_PRESETS.map((tf: any) => (
+        {TF_PRESETS.map((tf: (typeof TF_PRESETS)[number]) => (
           <button
             key={tf}
             onClick={() => setTimeframe(tf)}
@@ -92,8 +92,8 @@ export default function SymbolTfBar() {
       {/* Freeform timeframe */}
       <input
         value={tfInput}
-        onChange={(e: any) => setTfInput(e.target.value)}
-        onKeyDown={(e: any) => { if (e.key==='Enter') applyTf() }}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTfInput(e.target.value)}
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key==='Enter') applyTf() }}
         className='px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-20 outline-none'
         placeholder='e.g. 90m'
       />

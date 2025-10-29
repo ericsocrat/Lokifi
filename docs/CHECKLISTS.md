@@ -18,7 +18,7 @@
 > **✅ Sprint 1**: COMPLETE (100% CI pass rate achieved)
 > **✅ Sprint 2**: COMPLETE (Sessions 13-24) - 16,877 lines, 96.3% type safety! 🎉
 > **🔄 Sprint 3**: IN PROGRESS - Sessions 25, 39-40 complete
-> **📊 Sprint 3 Progress**: 
+> **📊 Sprint 3 Progress**:
 > - Session 25: 42 any types eliminated, ESLint warnings enabled
 > - Session 39: 21 any types eliminated (markets pages)
 > - Session 40: 15 any types eliminated (dashboard & charts)
