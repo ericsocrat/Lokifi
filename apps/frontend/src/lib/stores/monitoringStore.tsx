@@ -762,6 +762,7 @@ const createInitialState = (): MonitoringState => ({
 // Create Store
 export const useMonitoringStore = create<MonitoringStore>()(
   persist(
+    // @ts-expect-error - Known Zustand v5 StateCreator typing issue with immer middleware (acceptable)
     immer((set, get) => ({
       ...createInitialState(),
 

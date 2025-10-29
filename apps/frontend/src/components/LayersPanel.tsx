@@ -50,7 +50,7 @@ function LayerRow({ layer }: { layer: Layer }) {
       )}
 
       <div className='flex items-center gap-2 w-28'>
-        <input type='range' min={0} max={100} value={Math.round(layer.opacity*100)}
+        <input type='range' min={0} max={100} value={Math.round((layer.opacity ?? 1)*100)}
                onChange={(e: any) =>s.setLayerOpacity(layer.id, parseInt(e.target.value,10)/100)} title='Opacity' />
         <button className='px-1 rounded border border-white/15 text-xs' onClick={()=>s.moveLayer(layer.id,'up')} title='Up'>↑</button>
         <button className='px-1 rounded border border-white/15 text-xs' onClick={()=>s.moveLayer(layer.id,'down')} title='Down'>↓</button>

@@ -1,7 +1,7 @@
 import type { Alert, AlertEvent } from '@/lib/utils/alerts';
+import type { Drawing, DrawingStyle } from '@/lib/utils/drawings';
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Drawing } from '@/lib/utils/drawings';
 
 type SetState = Parameters<StateCreator<ChartState>>[0];
 type GetState = Parameters<StateCreator<ChartState>>[1];
@@ -55,14 +55,6 @@ export interface IndicatorFlags {
   showStdChannels: boolean;
   bandFill: boolean;
 }
-
-export type DrawingStyle = {
-  stroke?: string;
-  strokeWidth?: number;
-  dash?: string;
-  opacity?: number;
-  fill?: string;
-};
 
 export interface ChartState {
   // core chart selections
@@ -325,7 +317,7 @@ export const useChartStore = create<ChartState>()(
 
       setFibLevelsForSelected: (levels: number[]) => {
         const drawings = get().drawings.map((d) =>
-          get().selection.has(d.id) && d.type === 'fib' ? { ...d, levels } : d
+          get().selection.has(d.id) && d.kind === 'fib' ? { ...d, levels } : d
         );
         set({ drawings });
       },
@@ -345,7 +337,7 @@ export const useChartStore = create<ChartState>()(
       setStyleForSelection: (patch: Partial<DrawingStyle>) => {
         const sel = get().selection;
         const next = get().drawings.map((d) =>
-          sel.has(d.id) ? { ...d, style: { ...(d.style || {}), ...patch } } : d
+          sel.has(d.id) ? { ...d, style: { ...(d.style || {}), ...patch } as DrawingStyle } : d
         );
         set({ drawings: next });
       },
@@ -413,7 +405,7 @@ export const useChartStore = create<ChartState>()(
         if (sel.size < 2) return;
 
         const selectedDrawings = get().drawings.filter((d) => sel.has(d.id));
-        const bounds = selectedDrawings.map((d) => ({
+        const bounds = selectedDrawings.map((d: any) => ({
           id: d.id,
           x: d.x,
           y: d.y,

@@ -62,7 +62,7 @@ export default function AlertsPanel() {
 
 function AlertRow({ a }: { a: Alert }) {
   const s = useChartStore()
-  const snooze = (mins: number) => s.snoozeAlert(a.id, mins ? (Date.now() + mins*60_000) : null)
+  const snooze = (mins: number) => s.snoozeAlert(a.id, mins ? (Date.now() + mins*60_000) : undefined)
   return (
     <div className='flex items-center justify-between text-sm rounded border border-white/10 px-2 py-1'>
       <div className='truncate'>

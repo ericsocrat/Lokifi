@@ -1,24 +1,14 @@
-import { useChartStore, type DrawingStyle } from '@/state/store';
+import { useChartStore } from '@/state/store';
+import type { Drawing } from '@/lib/utils/drawings';
 import React from 'react';
-
-// Minimal Drawing interface based on usage in this component
-interface Drawing {
-  id: string;
-  kind: string;
-  locked?: boolean;
-  hidden?: boolean;
-  name?: string;
-  style?: DrawingStyle;
-  fibLevels?: number[];
-}
 
 export default function ObjectInspector() {
   const s = useChartStore();
   const sel = Array.from(s.selection);
   const count = sel.length;
   const drawings = useChartStore((st) =>
-    st.drawings.filter((d: Drawing) => st.selection.has(d.id))
-  ) as Drawing[];
+    st.drawings.filter((d) => st.selection.has(d.id))
+  );
   const first = drawings[0];
 
   if (count === 0)
@@ -95,7 +85,7 @@ export default function ObjectInspector() {
             className="w-full bg-transparent border border-white/15 rounded px-2 py-1"
             value={first?.style?.dash || 'solid'}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              s.setSelectedStyle({ dash: e.target.value })
+              s.setSelectedStyle({ dash: e.target.value as any })
             }
           >
             <option value="solid">solid</option>
@@ -167,8 +157,8 @@ export default function ObjectInspector() {
 function FibEditor() {
   const s = useChartStore();
   const drawings = useChartStore((st) =>
-    st.drawings.filter((d: Drawing) => st.selection.has(d.id))
-  ) as Drawing[];
+    st.drawings.filter((d) => st.selection.has(d.id))
+  );
   const first = drawings[0];
   const levels = (first?.fibLevels ?? s.drawingSettings.fibDefaultLevels)
     .slice()

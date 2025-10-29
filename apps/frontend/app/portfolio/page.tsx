@@ -1,52 +1,46 @@
 'use client';
 
+import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { useToast } from '@/src/components/dashboard/ToastProvider';
+import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
+import { ProtectedRoute } from '@/src/components/ProtectedRoute';
 import {
   loadPortfolio,
   PortfolioSection,
   addAssets as storageAddAssets,
   addSection as storageAddSection,
-  deleteAsset as storageDeleteAsset,
-  totalValue as storageTotalValue,
   Asset as StorageAsset,
+  deleteAsset as storageDeleteAsset,
 } from '@/src/lib/data/portfolioStorage';
-import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
-import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
-  ChevronRight,
-  Loader2,
-  MoreHorizontal,
-  TrendingUp,
-  TrendingDown,
-  Plus,
-  Eye,
-  Download,
-  Filter,
-  ArrowUpRight,
-  ArrowDownRight,
   Activity,
-  Sparkles,
-  Wallet2,
-  Building2,
-  Home,
+  ArrowUpDown,
+  BarChart3,
   Briefcase,
   ChevronDown,
-  BarChart3,
-  PieChart,
-  ArrowUpDown,
-  Calendar,
-  Zap,
-  Target,
-  DollarSign,
-  Percent,
   Clock,
-  Star,
+  DollarSign,
+  Download,
   Edit2,
+  Eye,
+  Filter,
+  Home,
+  Loader2,
+  MoreHorizontal,
+  Percent,
+  PieChart,
+  Plus,
+  Sparkles,
+  Star,
+  Target,
   Trash2,
+  TrendingDown,
+  TrendingUp,
+  Wallet2,
+  Zap,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ProtectedRoute } from '@/src/components/ProtectedRoute';
 
 interface User {
   email: string;
@@ -74,14 +68,16 @@ interface SelectedAsset {
 }
 
 interface Asset {
+  id: string;
   symbol: string;
+  name: string;
   shares: number;
-  [key: string]: any; // Additional properties
+  value: number;
+  change: number;
 }
 
 import AddAssetModal from '@/src/components/portfolio/AddAssetModal';
-import { usePortfolioPrices, useAssets } from '@/src/hooks/useMarketData';
-
+import { usePortfolioPrices } from '@/src/hooks/useMarketData';
 
 function PortfolioPageContent() {
   const router = useRouter();
@@ -99,14 +95,16 @@ function PortfolioPageContent() {
   const { darkMode, setDarkMode } = usePreferences();
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [showAddAssetModal, setShowAddAssetModal] = useState(false);
-  
+
   // New state for advanced features
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [sortBy, setSortBy] = useState<'value' | 'change' | 'name' | 'symbol'>('value');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedTimeframe, setSelectedTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('1D');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>(
+    '1D'
+  );
 
   // Get live portfolio prices from master market data service
   const holdings = sections.flatMap((section: any) =>
@@ -115,9 +113,13 @@ function PortfolioPageContent() {
       shares: asset.shares,
     }))
   );
-  
-  const { prices, totalValue: livePortfolioValue, totalChange, totalChangePercent } = 
-    usePortfolioPrices(holdings);
+
+  const {
+    prices,
+    totalValue: livePortfolioValue,
+    totalChange,
+    totalChangePercent,
+  } = usePortfolioPrices(holdings);
 
   useEffect(() => {
     checkAuth();
@@ -173,7 +175,7 @@ function PortfolioPageContent() {
       value: asset.value || asset.price || 0,
       change: 0,
     }));
-    
+
     // Add to the first section by default (Investments), or create one
     const targetSection = sections[0]?.title || 'Investments';
     storageAddAssets(targetSection, items);
@@ -274,12 +276,15 @@ function PortfolioPageContent() {
             <div className="md:col-span-2 bg-gradient-to-br from-blue-600 via-blue-700 to-purple-600 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
-                <div className="absolute inset-0" style={{
-                  backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
-                  backgroundSize: '32px 32px'
-                }}></div>
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                    backgroundSize: '32px 32px',
+                  }}
+                ></div>
               </div>
-              
+
               <div className="relative z-10">
                 <div className="flex items-start justify-between mb-6">
                   <div className="flex-1">
@@ -295,15 +300,24 @@ function PortfolioPageContent() {
                       </div>
                     </div>
                     <div className="flex items-baseline gap-3 mb-3">
-                      <h2 className="text-4xl font-bold tracking-tight">{formatCurrency(getTotalValue())}</h2>
+                      <h2 className="text-4xl font-bold tracking-tight">
+                        {formatCurrency(getTotalValue())}
+                      </h2>
                       {totalChangePercent !== 0 && (
-                        <div className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-semibold ${
-                          totalChangePercent >= 0 
-                            ? 'bg-green-500/20 text-green-100 ring-2 ring-green-400/30' 
-                            : 'bg-red-500/20 text-red-100 ring-2 ring-red-400/30'
-                        }`}>
-                          {totalChangePercent >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                          {totalChangePercent >= 0 ? '+' : ''}{totalChangePercent.toFixed(2)}%
+                        <div
+                          className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-semibold ${
+                            totalChangePercent >= 0
+                              ? 'bg-green-500/20 text-green-100 ring-2 ring-green-400/30'
+                              : 'bg-red-500/20 text-red-100 ring-2 ring-red-400/30'
+                          }`}
+                        >
+                          {totalChangePercent >= 0 ? (
+                            <TrendingUp className="w-4 h-4" />
+                          ) : (
+                            <TrendingDown className="w-4 h-4" />
+                          )}
+                          {totalChangePercent >= 0 ? '+' : ''}
+                          {totalChangePercent.toFixed(2)}%
                         </div>
                       )}
                     </div>
@@ -311,11 +325,12 @@ function PortfolioPageContent() {
                       <div className="flex items-center gap-2 text-sm mb-4">
                         <span className="opacity-80">Today's Change:</span>
                         <span className="font-semibold text-base">
-                          {totalChange >= 0 ? '+' : ''}{formatCurrency(totalChange)}
+                          {totalChange >= 0 ? '+' : ''}
+                          {formatCurrency(totalChange)}
                         </span>
                       </div>
                     )}
-                    
+
                     {/* Timeframe Selector */}
                     <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1">
                       {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map((tf: any) => (
@@ -334,7 +349,7 @@ function PortfolioPageContent() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Mini Chart Visualization */}
                 <div className="h-20 flex items-end gap-1 mb-2">
                   {Array.from({ length: 30 }).map((_: any, i: any) => {
@@ -384,7 +399,7 @@ function PortfolioPageContent() {
                   Analytics
                 </button>
               </div>
-              
+
               {/* Quick Stats */}
               <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-gray-800">
                 <div className="flex items-center justify-between text-sm">
@@ -415,32 +430,32 @@ function PortfolioPageContent() {
                   <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Briefcase className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Assets</span>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    Assets
+                  </span>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 {sections.reduce((sum: any, s: any) => sum + s.assets.length, 0)}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Total holdings
-              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Total holdings</div>
             </div>
-            
+
             <div className="bg-white dark:bg-gray-900 rounded-xl p-5 border border-gray-200 dark:border-gray-800 hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all group cursor-pointer">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <PieChart className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Diversity</span>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    Diversity
+                  </span>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
                 {sections.length}
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Sections
-              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Sections</div>
             </div>
 
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-5 border border-green-200 dark:border-green-800 hover:shadow-lg transition-all group cursor-pointer">
@@ -449,15 +464,16 @@ function PortfolioPageContent() {
                   <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
                   </div>
-                  <span className="text-xs font-medium text-green-700 dark:text-green-400 uppercase tracking-wide">Performance</span>
+                  <span className="text-xs font-medium text-green-700 dark:text-green-400 uppercase tracking-wide">
+                    Performance
+                  </span>
                 </div>
               </div>
               <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
-                {totalChangePercent >= 0 ? '+' : ''}{totalChangePercent.toFixed(1)}%
+                {totalChangePercent >= 0 ? '+' : ''}
+                {totalChangePercent.toFixed(1)}%
               </div>
-              <div className="text-xs text-green-600/70 dark:text-green-400/70">
-                Total return
-              </div>
+              <div className="text-xs text-green-600/70 dark:text-green-400/70">Total return</div>
             </div>
 
             <div className="bg-white dark:bg-gray-900 rounded-xl p-5 border border-gray-200 dark:border-gray-800 hover:shadow-lg hover:border-orange-300 dark:hover:border-orange-700 transition-all group cursor-pointer">
@@ -466,15 +482,15 @@ function PortfolioPageContent() {
                   <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Star className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Rating</span>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    Rating
+                  </span>
                 </div>
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-1">
                 A+
               </div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                Portfolio health
-              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">Portfolio health</div>
             </div>
           </div>
         </div>
@@ -482,25 +498,36 @@ function PortfolioPageContent() {
         {/* Header with Advanced Controls */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">Portfolio Overview</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Track and manage all your investments</p>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+              Portfolio Overview
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Track and manage all your investments
+            </p>
           </div>
           <div className="flex items-center gap-3">
             {/* Sort Dropdown */}
             <div className="relative">
               <button className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <ArrowUpDown className="w-4 h-4" />
-                Sort: {sortBy === 'value' ? 'Value' : sortBy === 'change' ? 'Change' : sortBy === 'name' ? 'Name' : 'Symbol'}
+                Sort:{' '}
+                {sortBy === 'value'
+                  ? 'Value'
+                  : sortBy === 'change'
+                    ? 'Change'
+                    : sortBy === 'name'
+                      ? 'Name'
+                      : 'Symbol'}
                 <ChevronDown className="w-4 h-4" />
               </button>
             </div>
-            
+
             {/* Filter Button */}
-            <button 
+            <button
               onClick={() => setShowFilters(!showFilters)}
               className={`flex items-center gap-2 px-4 py-2 border rounded-xl text-sm font-medium transition-all ${
-                showFilters 
-                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400' 
+                showFilters
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400'
                   : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
             >
@@ -508,7 +535,7 @@ function PortfolioPageContent() {
               Filters
               {showFilters && <span className="w-2 h-2 bg-blue-600 rounded-full"></span>}
             </button>
-            
+
             {/* View Toggle */}
             <div className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-1">
               <button
@@ -520,7 +547,12 @@ function PortfolioPageContent() {
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
               <button
@@ -532,7 +564,12 @@ function PortfolioPageContent() {
                 }`}
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"
+                  />
                 </svg>
               </button>
             </div>
@@ -613,10 +650,10 @@ function PortfolioPageContent() {
         {sections.map((section: any, idx: any) => {
           // Calculate live section value using current market prices
           const liveSectionValue = section.assets.reduce((sum: any, asset: any) => {
-            const livePrice = prices.get(asset.symbol) || (asset.value / asset.shares);
-            return sum + (livePrice * asset.shares);
+            const livePrice = prices.get(asset.symbol) || asset.value / asset.shares;
+            return sum + livePrice * asset.shares;
           }, 0);
-          
+
           const isCollapsed = collapsedSections.has(section.title);
           return (
             <div className="mb-6" key={section.title}>
@@ -641,12 +678,13 @@ function PortfolioPageContent() {
                   {formatCurrency(liveSectionValue)}
                 </span>
               </div>
-              
+
               {!isCollapsed && (
                 <div className="space-y-3">
-                  {idx === 0 && connectingBanks.map((bank: any) => (
-                    <ConnectingBankItem key={bank.id} bank={bank} />
-                  ))}
+                  {idx === 0 &&
+                    connectingBanks.map((bank: any) => (
+                      <ConnectingBankItem key={bank.id} bank={bank} />
+                    ))}
                   {section.assets.map((asset: any) => (
                     <AssetItem
                       key={asset.id}
@@ -679,8 +717,12 @@ function PortfolioPageContent() {
                 <Wallet2 className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No assets yet</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">Start building your portfolio by adding your first asset</p>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              No assets yet
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              Start building your portfolio by adding your first asset
+            </p>
             <button
               onClick={openAddAssetModal}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors"
@@ -766,37 +808,37 @@ function ConnectingBankItem({ bank }: { bank: ConnectingBank }) {
 }
 
 // Asset Item Component with Live Prices
-function AssetItem({ 
-  asset, 
-  livePrice, 
-  onDelete 
-}: { 
-  asset: StorageAsset; 
+function AssetItem({
+  asset,
+  livePrice,
+  onDelete,
+}: {
+  asset: StorageAsset;
   livePrice?: number;
   onDelete?: () => void;
 }) {
   const { formatCurrency } = useCurrencyFormatter();
   const [showMenu, setShowMenu] = useState(false);
   const [isStarred, setIsStarred] = useState(false);
-  
+
   // Calculate live value based on current market price
-  const currentPrice = livePrice || (asset.value / asset.shares);
+  const currentPrice = livePrice || asset.value / asset.shares;
   const liveValue = currentPrice * asset.shares;
-  
+
   // Calculate change from original purchase value
   const originalPrice = asset.value / asset.shares;
   const priceChange = currentPrice - originalPrice;
   const priceChangePercent = (priceChange / originalPrice) * 100;
   const isPositive = priceChangePercent >= 0;
-  
+
   // Calculate profit/loss amount
   const profitLoss = (currentPrice - originalPrice) * asset.shares;
-  
+
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 flex items-center justify-between hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group relative overflow-hidden">
       {/* Gradient background on hover */}
       <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/5 dark:to-purple-900/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-      
+
       <div className="flex items-center gap-4 flex-1 relative z-10">
         {/* Asset Icon and Symbol */}
         <div className="flex flex-col items-center min-w-[80px]">
@@ -809,7 +851,7 @@ function AssetItem({
             {asset.symbol}
           </span>
         </div>
-        
+
         {/* Asset Details */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -820,7 +862,9 @@ function AssetItem({
               onClick={() => setIsStarred(!isStarred)}
               className="opacity-0 group-hover:opacity-100 transition-opacity"
             >
-              <Star className={`w-4 h-4 ${isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`} />
+              <Star
+                className={`w-4 h-4 ${isStarred ? 'fill-yellow-400 text-yellow-400' : 'text-gray-400'}`}
+              />
             </button>
           </div>
           <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
@@ -835,7 +879,7 @@ function AssetItem({
           </div>
         </div>
       </div>
-      
+
       {/* Value and Performance */}
       <div className="flex items-center gap-8 relative z-10">
         <div className="text-right">
@@ -844,21 +888,35 @@ function AssetItem({
           </p>
           {livePrice && priceChangePercent !== 0 && (
             <>
-              <div className={`flex items-center justify-end gap-1 text-sm font-bold mb-1 ${
-                isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-              }`}>
-                {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                {isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%
+              <div
+                className={`flex items-center justify-end gap-1 text-sm font-bold mb-1 ${
+                  isPositive
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-red-600 dark:text-red-400'
+                }`}
+              >
+                {isPositive ? (
+                  <TrendingUp className="w-4 h-4" />
+                ) : (
+                  <TrendingDown className="w-4 h-4" />
+                )}
+                {isPositive ? '+' : ''}
+                {priceChangePercent.toFixed(2)}%
               </div>
-              <div className={`text-xs font-medium ${
-                isPositive ? 'text-green-600/70 dark:text-green-400/70' : 'text-red-600/70 dark:text-red-400/70'
-              }`}>
-                {isPositive ? '+' : ''}{formatCurrency(profitLoss)} P/L
+              <div
+                className={`text-xs font-medium ${
+                  isPositive
+                    ? 'text-green-600/70 dark:text-green-400/70'
+                    : 'text-red-600/70 dark:text-red-400/70'
+                }`}
+              >
+                {isPositive ? '+' : ''}
+                {formatCurrency(profitLoss)} P/L
               </div>
             </>
           )}
         </div>
-        
+
         {/* Actions Menu */}
         <div className="relative">
           <button
