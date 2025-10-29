@@ -1433,7 +1433,73 @@ npm run build      # Verify production build succeeds
 
 ---
 
-**Options Available** (after Session 34 Phases 1-2):
+## Session 35: CI/CD Deployment - Session 33 Integration Tests (January 2025) - 📋 PLANNED
+
+**Objective**: Deploy and validate Session 33 integration test infrastructure in CI/CD environment
+
+**Context**: After Session 34 TypeScript cleanup (Phases 1-2 complete, 59 any types eliminated), Session 35 focuses on deploying Session 33's production-ready integration test infrastructure to CI/CD for validation.
+
+**Target**: Execute 6 follow_service integration tests in CI/CD with PostgreSQL
+
+**Implementation Plan**:
+
+**Phase 1: Pre-Deployment Validation** ✅ COMPLETE
+- [x] Session 33 infrastructure verified (integration_db_session fixture + 6 tests)
+- [x] CI/CD configuration validated (PostgreSQL + Redis services configured)
+- [x] All commits local validation complete
+- [x] Documentation prepared (SESSION_35_CI_CD_DEPLOYMENT.md)
+
+**Phase 2: Deployment Execution** (User Action Required):
+1. Push commits to GitHub (`git push origin main`)
+2. Monitor CI/CD workflow: `.github/workflows/integration.yml`
+3. Validate 6/6 integration tests passing
+4. Verify coverage improvement: follow_service 40% → 50%
+
+**Phase 3: Post-Deployment Documentation**:
+1. Update TECHNICAL_ROADMAP.md with CI/CD results
+2. Update SESSION_33_INTEGRATION_TESTS.md status to "DEPLOYED & VALIDATED"
+3. Mark todo item complete
+4. Update CHECKLISTS.md (if needed)
+
+**Expected Outcomes**:
+- ✅ 6/6 integration tests passing in CI/CD
+- ✅ follow_service coverage: 40% → 50% (+10pp)
+- ✅ Backend total coverage: 30.75% → 31%+ (incremental)
+- ✅ CI/CD integration workflow: 100% pass rate maintained
+
+**Integration Tests** (6 tests ready for execution):
+1. test_follow_user_success_with_server_default_timestamp
+2. test_unfollow_user_success_with_database
+3. test_get_followers_with_pagination_and_database
+4. test_get_following_with_pagination_and_database
+5. test_is_following_with_database_lookup
+6. test_follow_nonexistent_user_fails_with_database
+
+**CI/CD Configuration** (Already Complete):
+- PostgreSQL service: postgres:16-alpine with health checks
+- Redis service: redis:7-alpine with health checks
+- Integration test execution: `pytest tests/integration/ -v --tb=short`
+- Environment variables: DATABASE_URL, REDIS_URL configured
+
+**Monitoring Commands**:
+```powershell
+# Check workflow status
+gh run list --repo ericsocrat/Lokifi --workflow integration.yml --limit 5
+
+# Watch specific run
+gh run watch <run-id> --repo ericsocrat/Lokifi
+
+# Get logs
+gh run view <run-id> --repo ericsocrat/Lokifi --log
+```
+
+**Document**: docs/plans/SESSION_35_CI_CD_DEPLOYMENT.md
+**Status**: Ready for user deployment, comprehensive deployment guide prepared
+**Estimated Time**: 30 minutes (deployment + validation + documentation)
+
+---
+
+**Options Available** (after Session 35):
   1. **Integration Tests** (🟢 HIGH, 2-3 hrs)
      - Complete Session 30 backend test expansion
      - 8 skipped database-dependent tests (follow_service, profile_service)

@@ -700,14 +700,32 @@ gh run view <run-id> --repo ericsocrat/Lokifi
   - Real PostgreSQL database with transaction rollback
   - Automatic table creation/deletion per test
   - Configurable via TEST_DATABASE_URL environment variable
-  
+
+**Follow Service Integration Tests** (Session 33 - Ready for CI/CD):
+- [x] **6 comprehensive tests created** (test_follow_service_integration.py)
+  - test_follow_user_success_with_server_default_timestamp
+  - test_unfollow_user_success_with_database
+  - test_get_followers_with_pagination_and_database
+  - test_get_following_with_pagination_and_database
+  - test_is_following_with_database_lookup
+  - test_follow_nonexistent_user_fails_with_database
+- [ ] **Deployed to CI/CD** (Session 35 - pending user push)
+- [ ] **Validated in CI/CD** (expected: 6/6 passing, follow_service 40% → 50%)
+
+**CI/CD Integration** (Session 35):
+- [x] **integration.yml configured** with PostgreSQL + Redis services
+- [x] **Health checks** configured for database availability
+- [x] **Integration test execution** command configured (line 251)
+- [ ] **First deployment** pending (awaiting user push to GitHub)
+- [ ] **Coverage validation** after successful CI/CD run
+
 **Test Patterns**:
-- [ ] **Server-default timestamps** tested (`server_default=func.now()`)
-- [ ] **Database pagination** tested (LIMIT/OFFSET queries)
-- [ ] **Foreign key constraints** validated
-- [ ] **Unique constraints** validated
+- [x] **Server-default timestamps** tested (`server_default=func.now()`)
+- [x] **Database pagination** tested (LIMIT/OFFSET queries)
+- [x] **Foreign key constraints** validated
+- [ ] **Unique constraints** validated (future tests)
 - [ ] **Database triggers** tested (if applicable)
-- [ ] **Transaction rollback** ensures test isolation
+- [x] **Transaction rollback** ensures test isolation
 
 **Test Markers**:
 ```python
@@ -725,6 +743,10 @@ pytest -m integration
 
 # Skip integration tests (for local dev without database)
 pytest -m "not integration"
+
+# CI/CD execution (automatic on push)
+# Workflow: .github/workflows/integration.yml
+# Command: pytest tests/integration/ -v --tb=short
 ```
 
 **When to Use**:
@@ -735,7 +757,10 @@ pytest -m "not integration"
 - ❌ Simple CRUD operations (use mocks)
 - ❌ Business logic without database features
 
-**Reference**: `/apps/backend/tests/integration/test_follow_service_integration.py` (6 tests, Session 33)
+**Reference**: 
+- `/apps/backend/tests/integration/test_follow_service_integration.py` (6 tests, Session 33)
+- `/docs/plans/SESSION_33_INTEGRATION_TESTS.md` (infrastructure documentation)
+- `/docs/plans/SESSION_35_CI_CD_DEPLOYMENT.md` (deployment guide)
 
 ### E2E Testing
 - [ ] **Critical user paths** automated
