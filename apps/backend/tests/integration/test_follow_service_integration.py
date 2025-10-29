@@ -13,16 +13,14 @@ Usage:
 """
 
 import uuid
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 
 import pytest
 import pytest_asyncio
-from sqlalchemy import select
-
 from app.models.follow import Follow
 from app.models.user import User
 from app.services.follow_service import FollowService
-
+from sqlalchemy import select
 
 # ============================================================================
 # FIXTURES
@@ -37,21 +35,20 @@ async def test_users(integration_db_session):
         user = User(
             id=uuid.uuid4(),
             email=f"user{i}@test.com",
-            username=f"testuser{i}",
             full_name=f"Test User {i}",
-            hashed_password="hashed_password_placeholder",
+            password_hash="hashed_password_placeholder",
             is_active=True,
             created_at=datetime.now(timezone.utc),
         )
         integration_db_session.add(user)
         users.append(user)
-    
+
     await integration_db_session.commit()
-    
+
     # Refresh to get IDs
     for user in users:
         await integration_db_session.refresh(user)
-    
+
     return users
 
 
@@ -76,7 +73,7 @@ class TestFollowServiceIntegration:
     ):
         """
         Test successful follow operation with real database server_default timestamp.
-        
+
         This test REQUIRES real database because Follow.created_at uses:
         - server_default=func.now() (SQLAlchemy)
         - Cannot be mocked without actual database
@@ -95,8 +92,7 @@ class TestFollowServiceIntegration:
 
         # Verify Follow record created in database
         query = select(Follow).where(
-            Follow.follower_id == follower.id,
-            Follow.followee_id == followee.id
+            Follow.follower_id == follower.id, Follow.followee_id == followee.id
         )
         result_db = await integration_db_session.execute(query)
         follow_record = result_db.scalar_one_or_none()
@@ -110,7 +106,7 @@ class TestFollowServiceIntegration:
     ):
         """
         Test get_followers with real database pagination.
-        
+
         This test REQUIRES real database because:
         - Database-level LIMIT/OFFSET pagination
         - Cannot mock database pagination behavior accurately
@@ -123,11 +119,7 @@ class TestFollowServiceIntegration:
             await follow_service.follow_user(follower.id, followee.id)
 
         # Test pagination: page 1, page_size 2 (should return 2 of 3 followers)
-        result = await follow_service.get_followers(
-            user_id=followee.id,
-            page=1,
-            page_size=2
-        )
+        result = await follow_service.get_followers(user_id=followee.id, page=1, page_size=2)
 
         # Verify pagination worked correctly
         assert result is not None
@@ -138,21 +130,15 @@ class TestFollowServiceIntegration:
         assert result.total_pages == 2  # 3 followers / 2 per page = 2 pages
 
         # Test page 2 (should return remaining 1 follower)
-        result_page2 = await follow_service.get_followers(
-            user_id=followee.id,
-            page=2,
-            page_size=2
-        )
+        result_page2 = await follow_service.get_followers(user_id=followee.id, page=2, page_size=2)
 
         assert len(result_page2.followers) == 1  # Remaining follower
         assert result_page2.page == 2
 
-    async def test_follow_user_idempotent_with_database(
-        self, follow_service, test_users
-    ):
+    async def test_follow_user_idempotent_with_database(self, follow_service, test_users):
         """
         Test following same user twice returns existing relationship (with database).
-        
+
         Verifies idempotency with real database constraints.
         """
         follower = test_users[0]
@@ -180,8 +166,7 @@ class TestFollowServiceIntegration:
 
         # Verify relationship exists
         query = select(Follow).where(
-            Follow.follower_id == follower.id,
-            Follow.followee_id == followee.id
+            Follow.follower_id == follower.id, Follow.followee_id == followee.id
         )
         result = await integration_db_session.execute(query)
         assert result.scalar_one_or_none() is not None
@@ -194,29 +179,27 @@ class TestFollowServiceIntegration:
         result_after = await integration_db_session.execute(query)
         assert result_after.scalar_one_or_none() is None
 
-    async def test_follow_yourself_fails_with_database(
-        self, follow_service, test_users
-    ):
+    async def test_follow_yourself_fails_with_database(self, follow_service, test_users):
         """Test cannot follow yourself (database constraint)."""
         user = test_users[0]
 
         # Attempt to follow yourself
         from fastapi import HTTPException
+
         with pytest.raises(HTTPException) as exc_info:
             await follow_service.follow_user(user.id, user.id)
 
         assert exc_info.value.status_code == 400
         assert "Cannot follow yourself" in exc_info.value.detail
 
-    async def test_follow_nonexistent_user_fails_with_database(
-        self, follow_service, test_users
-    ):
+    async def test_follow_nonexistent_user_fails_with_database(self, follow_service, test_users):
         """Test following non-existent user fails (database foreign key)."""
         follower = test_users[0]
         nonexistent_id = uuid.uuid4()
 
         # Attempt to follow non-existent user
         from fastapi import HTTPException
+
         with pytest.raises(HTTPException) as exc_info:
             await follow_service.follow_user(follower.id, nonexistent_id)
 
