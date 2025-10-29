@@ -1889,7 +1889,138 @@ Sprint 3 Session 40 successfully applied proven type safety patterns to 4 dashbo
 
 ---
 
-**Options Available** (after Session 40):
+**Session 41: TypeScript Type Safety - Component Type Safety** ✅ COMPLETE (October 29, 2025)
+
+**Objective**: Eliminate any types in 12 component files using proven patterns from Sessions 39-40
+
+**Context**: After Session 40 eliminated 15 any types in dashboard/chart components (1,237 → 1,222), Session 41 continued TypeScript cleanup targeting component files with highest any counts.
+
+**Target**: 12 component files with 51 any types total (systematically prioritized by count)
+
+**Implementation** (90 minutes):
+
+1. **portfolio/AddAssetModal.tsx** (13 any → 0):
+   - Fixed array operations with proper interfaces: `SelectedAsset`, `MarketAsset`
+   - Fixed event handlers: `React.ChangeEvent<HTMLInputElement>`
+   - Fixed typeof pattern: `typeof ASSET_CATEGORIES[0]`
+   - All asset selection and filtering logic now type-safe
+
+2. **DrawingSettingsPanel.tsx** (10 any → 0):
+   - Fixed multiple input types: checkbox, number input, select, textarea
+   - Applied proper event types: `React.ChangeEvent<HTMLInputElement>`, `React.ChangeEvent<HTMLSelectElement>`
+   - Fixed keyboard handler: `React.KeyboardEvent<HTMLInputElement>`
+   - Fixed type assertions: `e.target.value as typeof ds.lineCap` (state property type)
+   - Fixed HOTKEYS array: `typeof HOTKEYS[0]`
+
+3. **SymbolTfBar.tsx** (7 any → 0):
+   - Fixed input/keyboard handlers with React event types
+   - Fixed array operations: `(s: string)`, `(sug: string)`
+   - Fixed TF_PRESETS: `(typeof TF_PRESETS)[number]` (const array union type)
+   - Symbol and timeframe selection now fully type-safe
+
+4. **ReportComposer.tsx** (4 any → 0):
+   - Fixed event map with proper type: `{ at: number; kind: string; price?: number }`
+   - Fixed textarea: `React.ChangeEvent<HTMLTextAreaElement>`
+   - Fixed checkbox: `React.ChangeEvent<HTMLInputElement>`
+   - Report creation inputs now type-safe
+
+5. **PluginDrawer.tsx** (4 any → 0):
+   - Changed `value: any` to `value: string` (all values are strings from input)
+   - Fixed map operation: `(p: Registered)` (imported Registered type)
+   - Fixed file input: `React.ChangeEvent<HTMLInputElement>`
+   - Plugin configuration management now type-safe
+
+6. **markets/ExportButton.tsx** (3 any → 1 acceptable):
+   - Changed `data: any[]` to `Record<string, unknown>[]` with inline comment
+   - Fixed map operations: `(item: Record<string, unknown>)`, `(header: string)`
+   - Generic export component maintains flexibility with documented type
+   - **Acceptable any**: Data array for generic export (documented inline)
+
+7. **LabelsLayer.tsx** (2 any → 0):
+   - Imported `Drawing` type from utils/drawings
+   - Fixed drawings map: `(d: Drawing)`
+   - Fixed layers find: `(l: { id: string; visible: boolean; opacity?: number })`
+   - Drawing labels rendering now type-safe
+
+8. **SnapshotsPanel.tsx** (2 any → 0):
+   - Fixed input handler: `React.ChangeEvent<HTMLInputElement>`
+   - Fixed snapshots map: `(sn: { id: string; name: string; createdAt: number })`
+   - Snapshot management UI now type-safe
+
+9. **ProjectBar.tsx** (2 any → 0):
+   - Fixed input handler: `React.ChangeEvent<HTMLInputElement>`
+   - Fixed slots array: `(slot: string)`
+   - Project save/load UI now type-safe
+
+10. **PluginManager.tsx** (2 any → 0):
+    - Fixed plugins map: `(p: { meta: { id: string; name: string; description?: string }; enabled: boolean })`
+    - Fixed checkbox: `React.ChangeEvent<HTMLInputElement>`
+    - Plugin enable/disable UI now type-safe
+
+11. **markets/KeyboardShortcuts.tsx** (2 any → 0):
+    - Fixed keys array map: `(key: string, i: number)`
+    - Keyboard shortcuts display now type-safe
+
+12. **ShareBar.tsx** (1 any → 0):
+    - Fixed input handler: `React.ChangeEvent<HTMLInputElement>`
+    - Collaboration room input now type-safe
+
+**Key Patterns Applied**:
+- **React event types**: `React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>`
+- **React keyboard events**: `React.KeyboardEvent<HTMLInputElement>`
+- **Typeof for const arrays**: `typeof ARRAY[0]` or `(typeof ARRAY)[number]`
+- **Interface types**: Import and use existing types (`Drawing`, `Registered`, `SelectedAsset`, `MarketAsset`)
+- **Inline object types**: Simple cases use `{ field: Type }` syntax
+- **Record types**: Generic structures use `Record<string, unknown>`
+- **Type assertions**: State property types like `as typeof ds.property`
+- **Documented acceptable any**: Inline comments for legitimate generic usage
+
+**Validation Workflow**:
+```bash
+# After all 12 files fixed:
+npm run typecheck  # 0 errors ✅
+npm run build      # Successful (6.4s) ✅
+npm run lint | Select-String "Unexpected any" | Measure-Object
+# Result: 1,222 → 1,166 (56 any eliminated, exceeded 51 target!)
+```
+
+**Metrics**:
+- **Duration**: ~90 minutes (systematic component cleanup)
+- **Files Modified**: 12 components
+- **Any Types Eliminated**: 56 total (51 target exceeded by 5)
+- **ESLint Progress**: 1,222 → 1,166 (4.6% reduction)
+- **Build Status**: ✅ Successful (6.4s compile time)
+- **Type Errors**: 0 (after fixes)
+- **Acceptable Any**: 1 (documented inline: generic export data array)
+
+**Commit**: `8bceea64` - feat(types): component type safety - 56 any eliminated (Session 41)
+
+**Benefits**:
+- ✅ 12 high-traffic components now 100% type-safe (or acceptably documented)
+- ✅ React event types ensure proper event handling across all input types
+- ✅ Typeof patterns demonstrate TypeScript's powerful inference
+- ✅ Interface imports promote type consistency across components
+- ✅ Better IntelliSense and autocomplete for component props
+- ✅ Compile-time error detection for user interactions
+- ✅ No runtime behavior changed (pure type annotations)
+- ✅ Exceeded target by 5 any types (found additional violations during work)
+
+**Session 41 Summary**:
+Sprint 3 Session 41 systematically fixed 12 component files prioritized by any count, eliminating 56 any types using proven React event patterns and proper type imports. All builds successful, zero type errors, exceeded target by 10%.
+
+**Sprint 3 Cumulative Progress** (Sessions 25, 39-41):
+- **Total Any Eliminated**: 233 types (Session 25: 42, Session 39: 21, Session 40: 15, Session 41: 56, plus earlier sessions: 99)
+- **ESLint Progress**: 2,557 (peak) → 1,166 (current) → **54% reduction**
+- **Test Suite**: 2,506 passing (98.2%), 60 skipped, 0 failed
+- **CI/CD**: 35/35 workflows passing (100%)
+- **TypeScript Errors**: 0 across all sessions
+
+**Document**: Documented in TECHNICAL_ROADMAP.md Session 41
+**Status**: Sessions 27-41 complete, ~1,166 any warnings remaining (~54% reduction from peak)
+
+---
+
+**Options Available** (after Session 41):
   1. **Integration Tests** (🟢 HIGH, 2-3 hrs)
      - Complete Session 30 backend test expansion
      - 8 skipped database-dependent tests (follow_service, profile_service)
