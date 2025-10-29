@@ -142,12 +142,14 @@ class TestFollowServiceIntegration:
         assert len(result.followers) == 2  # Page size limit
         assert result.page == 1
         assert result.page_size == 2
-        assert result.total_pages == 2  # 3 followers / 2 per page = 2 pages
+        assert result.has_next is True  # More pages available
 
         # Test page 2 (should return remaining 1 follower)
         result_page2 = await follow_service.get_followers(user_id=followee.id, page=2, page_size=2)
 
         assert len(result_page2.followers) == 1  # Remaining follower
+        assert result_page2.page == 2
+        assert result_page2.has_next is False  # No more pages
         assert result_page2.page == 2
 
     async def test_follow_user_idempotent_with_database(self, follow_service, test_users):
