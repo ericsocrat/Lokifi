@@ -153,7 +153,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed
 # tests/integration/test_follow_service_integration.py::test_get_following_with_pagination_and_database PASSED
 # tests/integration/test_follow_service_integration.py::test_is_following_with_database_lookup PASSED
 # tests/integration/test_follow_service_integration.py::test_follow_nonexistent_user_fails_with_database PASSED
-# 
+#
 # ========================= 6 passed in X.XXs =========================
 ```
 

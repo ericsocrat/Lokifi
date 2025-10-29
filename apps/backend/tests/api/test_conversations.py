@@ -20,8 +20,6 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, status
-
 from app.routers.conversations import (
     create_or_get_dm_conversation,
     delete_message,
@@ -44,7 +42,7 @@ from app.schemas.conversation import (
     MessageResponse,
     MessagesListResponse,
 )
-
+from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -87,7 +85,7 @@ def sample_conversation():
     conversation.created_at = datetime.now(timezone.utc)
     conversation.updated_at = datetime.now(timezone.utc)
     conversation.last_message_at = datetime.now(timezone.utc)
-    
+
     # Last message (MessageResponse type)
     last_msg = MagicMock()
     last_msg.id = uuid.uuid4()
@@ -100,7 +98,7 @@ def sample_conversation():
     last_msg.created_at = datetime.now(timezone.utc)
     last_msg.updated_at = datetime.now(timezone.utc)
     conversation.last_message = last_msg
-    
+
     # Participants (ConversationParticipantResponse fields)
     participant = MagicMock()
     participant.user_id = uuid.uuid4()
@@ -111,7 +109,7 @@ def sample_conversation():
     participant.is_active = True
     participant.last_read_message_id = uuid.uuid4()  # UUID, not MagicMock
     conversation.participants = [participant]
-    
+
     conversation.unread_count = 0
     return conversation
 
@@ -162,7 +160,9 @@ class TestDMConversationManagement:
         mock_service_class.return_value = mock_service
 
         other_user_id = uuid.uuid4()
-        result = await create_or_get_dm_conversation(other_user_id, mock_current_user, mock_db_session)
+        result = await create_or_get_dm_conversation(
+            other_user_id, mock_current_user, mock_db_session
+        )
 
         assert isinstance(result, MagicMock)
         mock_service.get_or_create_dm_conversation.assert_called_once_with(
@@ -294,7 +294,10 @@ class TestMessageHandling:
 
         # Mock moderation service
         mock_moderation = MagicMock()
-        from app.services.message_moderation_service import ModerationAction, ModerationResult
+        from app.services.message_moderation_service import (
+            ModerationAction,
+            ModerationResult,
+        )
 
         mock_moderation.moderate_message = AsyncMock(
             return_value=ModerationResult(
@@ -348,7 +351,9 @@ class TestMessageHandling:
 
         conversation_id = uuid.uuid4()
         with pytest.raises(HTTPException) as exc_info:
-            await send_message(conversation_id, sample_message_create, mock_current_user, mock_db_session)
+            await send_message(
+                conversation_id, sample_message_create, mock_current_user, mock_db_session
+            )
 
         assert exc_info.value.status_code == status.HTTP_429_TOO_MANY_REQUESTS
         assert "Rate limit exceeded" in exc_info.value.detail
@@ -372,7 +377,10 @@ class TestMessageHandling:
 
         # Mock moderation service
         mock_moderation = MagicMock()
-        from app.services.message_moderation_service import ModerationAction, ModerationResult
+        from app.services.message_moderation_service import (
+            ModerationAction,
+            ModerationResult,
+        )
 
         mock_moderation.moderate_message = AsyncMock(
             return_value=ModerationResult(
@@ -385,7 +393,9 @@ class TestMessageHandling:
 
         conversation_id = uuid.uuid4()
         with pytest.raises(HTTPException) as exc_info:
-            await send_message(conversation_id, sample_message_create, mock_current_user, mock_db_session)
+            await send_message(
+                conversation_id, sample_message_create, mock_current_user, mock_db_session
+            )
 
         assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
         assert "Message blocked by content filter" in exc_info.value.detail
@@ -410,7 +420,11 @@ class TestMessageHandling:
         mock_service_class.return_value = mock_service
 
         result = await get_conversation_messages(
-            conversation_id, page=1, page_size=50, current_user=mock_current_user, db=mock_db_session
+            conversation_id,
+            page=1,
+            page_size=50,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, MessagesListResponse)
@@ -746,7 +760,11 @@ class TestEdgeCases:
         mock_service_class.return_value = mock_service
 
         result = await get_conversation_messages(
-            conversation_id, page=1, page_size=50, current_user=mock_current_user, db=mock_db_session
+            conversation_id,
+            page=1,
+            page_size=50,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, MessagesListResponse)

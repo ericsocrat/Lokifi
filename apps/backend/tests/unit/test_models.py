@@ -12,13 +12,13 @@ import pytest
 # Import module under test - only import models that actually exist
 try:
     from app.db.models import (
-        Base,
-        User,
-        PortfolioPosition,
-        Follow,
-        Post,
-        AIThread,
         AIMessage,
+        AIThread,
+        Base,
+        Follow,
+        PortfolioPosition,
+        Post,
+        User,
     )
 except ImportError as e:
     pytest.skip(f"Module import failed: {e}", allow_module_level=True)

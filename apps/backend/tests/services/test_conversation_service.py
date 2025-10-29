@@ -236,9 +236,10 @@ class TestMessageRetrieval:
         self, conversation_service, sample_conversation_id, sample_user_ids, mock_db_session
     ):
         """Test message pagination works correctly"""
-        from uuid import UUID
-        from app.schemas.conversation import MessageResponse
         from datetime import datetime, timezone
+        from uuid import UUID
+
+        from app.schemas.conversation import MessageResponse
 
         # Mock participant query - user is participant
         mock_participant = MagicMock(is_active=True)

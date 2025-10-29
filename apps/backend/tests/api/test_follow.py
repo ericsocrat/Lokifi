@@ -20,8 +20,6 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
-
 from app.routers.follow import (
     bulk_follow_users,
     bulk_unfollow_users,
@@ -48,7 +46,7 @@ from app.schemas.follow import (
     SuggestedUsersResponse,
     UserFollowStatus,
 )
-
+from fastapi import HTTPException
 
 # ============================================================================
 # FIXTURES
@@ -163,7 +161,7 @@ class TestFollowUnfollowOperations:
         target_user.id = target_user_id
         target_user.handle = "targetuser"
         target_user.avatar_url = "https://example.com/target.jpg"
-        
+
         # Mock database query for target user
         mock_result = MagicMock()
         mock_result.scalar_one_or_none = MagicMock(return_value=target_user)
@@ -276,7 +274,9 @@ class TestFollowStatusAndLists:
         target_user_id = uuid.uuid4()
 
         # Both users follow each other
-        mock_service.is_following = AsyncMock(side_effect=[True, True])  # Current → Target, Target → Current
+        mock_service.is_following = AsyncMock(
+            side_effect=[True, True]
+        )  # Current → Target, Target → Current
 
         mock_service_class.return_value = mock_service
 

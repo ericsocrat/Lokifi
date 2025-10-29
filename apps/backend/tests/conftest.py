@@ -11,10 +11,9 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 import pytest_asyncio
+from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-
-from app.main import app
 
 
 @pytest.fixture
@@ -94,14 +93,14 @@ def sample_user_login_request():
 async def integration_db_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Real database session for integration tests with transaction rollback.
-    
+
     Purpose: Test database-dependent features that cannot be mocked:
     - SQLAlchemy server_default=func.now() timestamps
     - Database constraints (foreign keys, unique indexes)
     - Database-level pagination
-    
+
     Pattern: Creates fresh tables, runs test, rolls back, drops tables
-    
+
     Usage:
         @pytest.mark.asyncio
         @pytest.mark.integration
@@ -114,7 +113,10 @@ async def integration_db_session() -> AsyncGenerator[AsyncSession, None]:
     # Get test database URL (defaults to main DATABASE_URL)
     test_db_url = os.getenv(
         "TEST_DATABASE_URL",
-        os.getenv("DATABASE_URL", "postgresql+asyncpg://lokifi:lokifi_dev_password@localhost:5432/lokifi_test")
+        os.getenv(
+            "DATABASE_URL",
+            "postgresql+asyncpg://lokifi:lokifi_dev_password@localhost:5432/lokifi_test",
+        ),
     )
 
     # Create test engine

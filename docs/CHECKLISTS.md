@@ -757,7 +757,7 @@ pytest -m "not integration"
 - ❌ Simple CRUD operations (use mocks)
 - ❌ Business logic without database features
 
-**Reference**: 
+**Reference**:
 - `/apps/backend/tests/integration/test_follow_service_integration.py` (6 tests, Session 33)
 - `/docs/plans/SESSION_33_INTEGRATION_TESTS.md` (infrastructure documentation)
 - `/docs/plans/SESSION_35_CI_CD_DEPLOYMENT.md` (deployment guide)

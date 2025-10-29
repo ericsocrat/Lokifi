@@ -19,9 +19,6 @@ from io import BytesIO
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
-from fastapi import HTTPException, status
-from fastapi.testclient import TestClient
-
 from app.db.models import AIMessage, AIThread, User
 from app.main import app
 from app.routers.ai import router
@@ -34,6 +31,8 @@ from app.schemas.ai_schemas import (
     RateLimitResponse,
 )
 from app.services.ai_service import RateLimitError, SafetyFilterError
+from fastapi import HTTPException, status
+from fastapi.testclient import TestClient
 
 # Test client
 client = TestClient(app)
@@ -246,7 +245,10 @@ class TestThreadManagement:
             )
 
         # Router returns 404 which gets caught and re-raised as 500
-        assert exc_info.value.status_code in [status.HTTP_404_NOT_FOUND, status.HTTP_500_INTERNAL_SERVER_ERROR]
+        assert exc_info.value.status_code in [
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        ]
 
     @pytest.mark.asyncio
     @patch("app.routers.ai.ai_service")
@@ -289,7 +291,10 @@ class TestThreadManagement:
             )
 
         # Router raises 404, but may be caught and re-raised as 500
-        assert exc_info.value.status_code in [status.HTTP_404_NOT_FOUND, status.HTTP_500_INTERNAL_SERVER_ERROR]
+        assert exc_info.value.status_code in [
+            status.HTTP_404_NOT_FOUND,
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        ]
 
 
 # ============================================================================
@@ -374,25 +379,25 @@ class TestProviderAndRateLimit:
     @pytest.mark.asyncio
     @patch("app.routers.ai.ai_service")
     @patch("app.routers.ai.get_current_user")
-    async def test_get_provider_status_success(self, mock_get_user, mock_ai_service, mock_current_user):
+    async def test_get_provider_status_success(
+        self, mock_get_user, mock_ai_service, mock_current_user
+    ):
         """Test retrieving provider status"""
         mock_get_user.return_value = mock_current_user
-        
+
         # AIProviderStatusResponse expects a dict[str, AIProviderInfo]
         from app.schemas.ai_schemas import AIProviderInfo
-        
+
         provider_info = AIProviderInfo(
             available=True,
             models=["gpt-4", "gpt-3.5-turbo"],
             default_model="gpt-4",
             name="openai",
             type="llm",
-            error=None
+            error=None,
         )
-        
-        mock_ai_service.get_provider_status = AsyncMock(
-            return_value={"openai": provider_info}
-        )
+
+        mock_ai_service.get_provider_status = AsyncMock(return_value={"openai": provider_info})
 
         from app.routers.ai import get_provider_status
 
@@ -409,7 +414,7 @@ class TestProviderAndRateLimit:
     ):
         """Test retrieving rate limit status"""
         mock_get_user.return_value = mock_current_user
-        
+
         # RateLimitResponse requires requests_made and window_seconds
         mock_ai_service.get_rate_limit_status = MagicMock(
             return_value={
@@ -417,7 +422,7 @@ class TestProviderAndRateLimit:
                 "requests_remaining": 25,
                 "requests_limit": 30,
                 "reset_time": datetime.now(timezone.utc),
-                "window_seconds": 3600
+                "window_seconds": 3600,
             }
         )
 
@@ -433,10 +438,14 @@ class TestProviderAndRateLimit:
     @pytest.mark.asyncio
     @patch("app.routers.ai.ai_service")
     @patch("app.routers.ai.get_current_user")
-    async def test_get_provider_status_failure(self, mock_get_user, mock_ai_service, mock_current_user):
+    async def test_get_provider_status_failure(
+        self, mock_get_user, mock_ai_service, mock_current_user
+    ):
         """Test provider status retrieval failure"""
         mock_get_user.return_value = mock_current_user
-        mock_ai_service.get_provider_status = AsyncMock(side_effect=Exception("Service unavailable"))
+        mock_ai_service.get_provider_status = AsyncMock(
+            side_effect=Exception("Service unavailable")
+        )
 
         from app.routers.ai import get_provider_status
 
@@ -586,7 +595,10 @@ class TestExportImport:
             )
 
         # Router may wrap the 400 error in 500 during exception handling
-        assert exc_info.value.status_code in [status.HTTP_400_BAD_REQUEST, status.HTTP_500_INTERNAL_SERVER_ERROR]
+        assert exc_info.value.status_code in [
+            status.HTTP_400_BAD_REQUEST,
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+        ]
         assert "JSON" in exc_info.value.detail
 
 
@@ -728,4 +740,3 @@ class TestEdgeCases:
 
         assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert "Export failed" in exc_info.value.detail
-

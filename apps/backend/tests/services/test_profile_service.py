@@ -24,8 +24,6 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from fastapi import HTTPException
-
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
@@ -35,7 +33,7 @@ from app.schemas.profile import (
     UserSettingsUpdateRequest,
 )
 from app.services.profile_service import ProfileService
-
+from fastapi import HTTPException
 
 # ============================================================================
 # FIXTURES
@@ -222,13 +220,13 @@ class TestProfileUpdate:
         assert exc_info.value.status_code == 409
         assert "Username already taken" in exc_info.value.detail
 
-    @pytest.mark.skip(reason="Requires database for default field values (follower_count, created_at)")
+    @pytest.mark.skip(
+        reason="Requires database for default field values (follower_count, created_at)"
+    )
     @pytest.mark.asyncio
-    async def test_update_profile_bio_only(
-        self, profile_service, mock_db_session, sample_user_ids
-    ):
+    async def test_update_profile_bio_only(self, profile_service, mock_db_session, sample_user_ids):
         """Test updating profile bio without username change
-        
+
         NOTE: Profile model requires database defaults for:
         - follower_count, following_count (default 0)
         - created_at, updated_at (server_default timestamps)
@@ -286,13 +284,15 @@ class TestUserSettingsUpdate:
         assert exc_info.value.status_code == 404
         assert "User not found" in exc_info.value.detail
 
-    @pytest.mark.skip(reason="Requires database for User model defaults (is_verified, created_at, etc)")
+    @pytest.mark.skip(
+        reason="Requires database for User model defaults (is_verified, created_at, etc)"
+    )
     @pytest.mark.asyncio
     async def test_update_user_settings_timezone(
         self, profile_service, mock_db_session, sample_user_ids
     ):
         """Test updating user timezone setting
-        
+
         NOTE: User model requires database defaults for authentication fields.
         Integration tests cover settings update flow.
         """
@@ -354,7 +354,7 @@ class TestNotificationPreferences:
         self, profile_service, mock_db_session, sample_user_ids
     ):
         """Test successfully updating notification preferences
-        
+
         NOTE: NotificationPreference model requires database defaults.
         Integration tests cover notification preferences update flow.
         """
@@ -413,7 +413,7 @@ class TestPublicProfile:
         self, profile_service, mock_db_session, sample_user_ids
     ):
         """Test getting public profile without current user (no follow status)
-        
+
         NOTE: Profile model requires database defaults for follower counts and timestamps.
         Integration tests cover public profile access flow.
         """
@@ -476,7 +476,7 @@ class TestProfileSearch:
         self, profile_service, mock_db_session, sample_user_ids
     ):
         """Test searching profiles with pagination
-        
+
         NOTE: Profile model requires database defaults for follower counts and timestamps.
         Integration tests cover search pagination flow.
         """
@@ -543,7 +543,7 @@ class TestProfileServiceEdgeCases:
         self, profile_service, mock_db_session, sample_user_ids
     ):
         """Test updating profile with None values (should not update)
-        
+
         NOTE: Profile model requires database defaults for follower counts and timestamps.
         Integration tests cover no-op update flow.
         """

@@ -63,20 +63,24 @@ export function MarketStats({ data }: MarketStatsProps) {
     );
     const avgChange =
       assetsWithChange.length > 0
-        ? assetsWithChange.reduce((sum: number, a: MarketAsset) => sum + (a.price_change_percentage_24h || 0), 0) /
-          assetsWithChange.length
+        ? assetsWithChange.reduce(
+            (sum: number, a: MarketAsset) => sum + (a.price_change_percentage_24h || 0),
+            0
+          ) / assetsWithChange.length
         : 0;
 
     // Find top gainer
     const topGainer = assetsWithChange.reduce((max: MarketAsset, asset: MarketAsset) => {
-      return (asset.price_change_percentage_24h || 0) > (max?.price_change_percentage_24h || -Infinity)
+      return (asset.price_change_percentage_24h || 0) >
+        (max?.price_change_percentage_24h || -Infinity)
         ? asset
         : max;
     }, assetsWithChange[0]);
 
     // Find top loser
     const topLoser = assetsWithChange.reduce((min: MarketAsset, asset: MarketAsset) => {
-      return (asset.price_change_percentage_24h || 0) < (min?.price_change_percentage_24h || Infinity)
+      return (asset.price_change_percentage_24h || 0) <
+        (min?.price_change_percentage_24h || Infinity)
         ? asset
         : min;
     }, assetsWithChange[0]);
@@ -141,26 +145,32 @@ export function MarketStats({ data }: MarketStatsProps) {
         />
 
         {/* Top Gainer */}
-        {topGainer && topGainer.symbol && topGainer.price_change_percentage_24h !== null && topGainer.price_change_percentage_24h !== undefined && (
-          <StatCard
-            title="Top Gainer"
-            value={topGainer.symbol}
-            subtitle={`+${topGainer.price_change_percentage_24h.toFixed(2)}%`}
-            icon={<TrendingUp className="w-5 h-5" />}
-            color="green"
-          />
-        )}
+        {topGainer &&
+          topGainer.symbol &&
+          topGainer.price_change_percentage_24h !== null &&
+          topGainer.price_change_percentage_24h !== undefined && (
+            <StatCard
+              title="Top Gainer"
+              value={topGainer.symbol}
+              subtitle={`+${topGainer.price_change_percentage_24h.toFixed(2)}%`}
+              icon={<TrendingUp className="w-5 h-5" />}
+              color="green"
+            />
+          )}
 
         {/* Top Loser */}
-        {topLoser && topLoser.symbol && topLoser.price_change_percentage_24h !== null && topLoser.price_change_percentage_24h !== undefined && (
-          <StatCard
-            title="Top Loser"
-            value={topLoser.symbol}
-            subtitle={`${topLoser.price_change_percentage_24h.toFixed(2)}%`}
-            icon={<TrendingDown className="w-5 h-5" />}
-            color="red"
-          />
-        )}
+        {topLoser &&
+          topLoser.symbol &&
+          topLoser.price_change_percentage_24h !== null &&
+          topLoser.price_change_percentage_24h !== undefined && (
+            <StatCard
+              title="Top Loser"
+              value={topLoser.symbol}
+              subtitle={`${topLoser.price_change_percentage_24h.toFixed(2)}%`}
+              icon={<TrendingDown className="w-5 h-5" />}
+              color="red"
+            />
+          )}
       </div>
     </div>
   );

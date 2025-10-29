@@ -6,11 +6,11 @@ import type { FeatureFlags } from './featureFlags';
  * All Sprint 2 stores (Sessions 15-24) are gated behind feature flags
  * that are OFF by default. This utility mocks the FLAGS object to
  * enable specific features during tests.
- * 
+ *
  * Usage:
  * ```typescript
  * import { enableFeatureFlags } from '@/lib/utils/test-helpers';
- * 
+ *
  * beforeEach(() => {
  *   enableFeatureFlags({ monitoring: true, social: true });
  * });
@@ -53,7 +53,7 @@ export function enableFeatureFlags(flags: Partial<FeatureFlags>): void {
     FLAGS: new Proxy(DEFAULT_TEST_FLAGS, {
       get(_target, prop: keyof FeatureFlags) {
         return flags[prop] ?? false;
-      }
+      },
     }),
     setRemoteFlags: vi.fn(),
   }));
@@ -68,7 +68,7 @@ export function enableAllFeatureFlags(): void {
     (acc, key) => ({ ...acc, [key]: true }),
     {} as FeatureFlags
   );
-  
+
   enableFeatureFlags(allEnabled);
 }
 

@@ -1,5 +1,9 @@
 'use client';
 
+import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
+import { ProfileDropdown } from '@/src/components/dashboard/ProfileDropdown';
+import { useToast } from '@/src/components/dashboard/ToastProvider';
+import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
   loadPortfolio,
   Asset as PortfolioAsset,
@@ -9,10 +13,6 @@ import {
   deleteAsset as storageDeleteAsset,
   totalValue as storageTotalValue,
 } from '@/src/lib/data/portfolioStorage';
-import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
-import { ProfileDropdown } from '@/src/components/dashboard/ProfileDropdown';
-import { useToast } from '@/src/components/dashboard/ToastProvider';
-import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
   AlertCircle,
   Bell,

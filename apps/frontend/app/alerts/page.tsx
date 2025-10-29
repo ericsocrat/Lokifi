@@ -103,7 +103,9 @@ export default function AlertsPage() {
           <select
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             value={form.kind}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, kind: e.target.value as Kind })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setForm({ ...form, kind: e.target.value as Kind })
+            }
           >
             <option value="price_threshold">Price threshold</option>
             <option value="pct_change">% change</option>
@@ -112,12 +114,16 @@ export default function AlertsPage() {
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Symbol"
             value={form.symbol}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, symbol: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForm({ ...form, symbol: e.target.value })
+            }
           />
           <select
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             value={form.timeframe}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, timeframe: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setForm({ ...form, timeframe: e.target.value })
+            }
           >
             <option>1m</option>
             <option>5m</option>
@@ -129,7 +135,9 @@ export default function AlertsPage() {
           <select
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             value={form.direction}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setForm({ ...form, direction: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setForm({ ...form, direction: e.target.value })
+            }
           >
             <option value="above">Above/Up</option>
             <option value="below">Below/Down</option>
@@ -139,13 +147,17 @@ export default function AlertsPage() {
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Price or % threshold"
             value={form.number}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, number: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForm({ ...form, number: e.target.value })
+            }
           />
           <input
             className="px-3 py-2 rounded-lg bg-neutral-800 border border-neutral-700"
             placeholder="Window (min, % only)"
             value={form.window}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, window: e.target.value })}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              setForm({ ...form, window: e.target.value })
+            }
           />
         </div>
         <div className="flex gap-2">

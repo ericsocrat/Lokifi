@@ -87,11 +87,11 @@ Session 33 successfully created comprehensive integration test infrastructure fo
 async def integration_db_session():
     """Real database session for integration tests with transaction rollback."""
     from app.db.database import engine, Base
-    
+
     # Create all tables
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    
+
     # Create session
     async with AsyncSessionLocal() as session:
         try:
@@ -99,7 +99,7 @@ async def integration_db_session():
             await session.rollback()  # Rollback after test
         finally:
             await session.close()
-    
+
     # Drop all tables after test
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -114,14 +114,14 @@ async def test_follow_user_success(integration_db_session):
     """Test follow operation with real database (server_default timestamps)."""
     from app.services.follow_service import FollowService
     from app.models.follow import Follow
-    
+
     service = FollowService()
     follower_id = 1
     followee_id = 2
-    
+
     # Call service method with real database
     result = await service.follow_user(follower_id, followee_id, integration_db_session)
-    
+
     # Verify Follow created with server_default timestamp
     assert result is not None
     assert result.follower_id == follower_id

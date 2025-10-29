@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { useMonitoringStore } from './monitoringStore';
 
 describe('monitoringStore', () => {
@@ -30,7 +30,7 @@ describe('monitoringStore', () => {
   describe('Dashboard Management', () => {
     it('should create a new dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Test Dashboard',
         description: 'Test description',
@@ -62,7 +62,7 @@ describe('monitoringStore', () => {
 
     it('should update an existing dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Original Name',
         description: 'Original description',
@@ -90,7 +90,7 @@ describe('monitoringStore', () => {
 
     it('should delete a dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'To Delete',
         description: '',
@@ -114,7 +114,7 @@ describe('monitoringStore', () => {
 
     it('should set active dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Test',
         description: '',
@@ -142,7 +142,7 @@ describe('monitoringStore', () => {
   describe('Widget Management', () => {
     it('should add a widget to a dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Dashboard',
         description: '',
@@ -178,7 +178,7 @@ describe('monitoringStore', () => {
 
     it('should update a widget', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Dashboard',
         description: '',
@@ -213,7 +213,7 @@ describe('monitoringStore', () => {
 
     it('should remove a widget', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Dashboard',
         description: '',
@@ -251,7 +251,7 @@ describe('monitoringStore', () => {
 
     it('should set selected widget', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Dashboard',
         description: '',
@@ -287,7 +287,7 @@ describe('monitoringStore', () => {
   describe('Data Source Management', () => {
     it('should create a data source', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dataSourceId = store.createDataSource({
         name: 'Test Data Source',
         type: 'prometheus',
@@ -313,7 +313,7 @@ describe('monitoringStore', () => {
 
     it('should update a data source', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dataSourceId = store.createDataSource({
         name: 'Original Name',
         type: 'elasticsearch',
@@ -339,7 +339,7 @@ describe('monitoringStore', () => {
 
     it('should delete a data source', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dataSourceId = store.createDataSource({
         name: 'To Delete',
         type: 'graphite',
@@ -363,7 +363,7 @@ describe('monitoringStore', () => {
   describe('Alert Management', () => {
     it('should create an alert', () => {
       const store = useMonitoringStore.getState();
-      
+
       const alertId = store.createAlert({
         name: 'CPU Alert',
         description: 'CPU usage threshold',
@@ -390,7 +390,7 @@ describe('monitoringStore', () => {
 
     it('should update an alert', () => {
       const store = useMonitoringStore.getState();
-      
+
       const alertId = store.createAlert({
         name: 'Original Alert',
         description: 'Description',
@@ -419,7 +419,7 @@ describe('monitoringStore', () => {
 
     it('should delete an alert', () => {
       const store = useMonitoringStore.getState();
-      
+
       const alertId = store.createAlert({
         name: 'To Delete',
         description: '',
@@ -446,7 +446,7 @@ describe('monitoringStore', () => {
   describe('Health Check Management', () => {
     it('should create a health check', () => {
       const store = useMonitoringStore.getState();
-      
+
       const healthCheckId = store.createHealthCheck({
         name: 'API Health',
         description: 'Check API availability',
@@ -470,7 +470,7 @@ describe('monitoringStore', () => {
 
     it('should update a health check', () => {
       const store = useMonitoringStore.getState();
-      
+
       const healthCheckId = store.createHealthCheck({
         name: 'Original Check',
         description: 'Description',
@@ -497,7 +497,7 @@ describe('monitoringStore', () => {
 
     it('should delete a health check', () => {
       const store = useMonitoringStore.getState();
-      
+
       const healthCheckId = store.createHealthCheck({
         name: 'To Delete',
         description: '',
@@ -522,27 +522,27 @@ describe('monitoringStore', () => {
   describe('Edge Cases', () => {
     it('should handle updating non-existent dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       // Should not throw error
       store.updateDashboard('non-existent-id', { name: 'Updated' });
-      
+
       // State should remain unchanged
       expect(useMonitoringStore.getState().dashboards).toHaveLength(0);
     });
 
     it('should handle deleting non-existent widget', () => {
       const store = useMonitoringStore.getState();
-      
+
       // Should not throw error
       store.removeWidget('non-existent-id');
-      
+
       // State should remain unchanged
       expect(useMonitoringStore.getState().dashboards).toHaveLength(0);
     });
 
     it('should handle adding widget to non-existent dashboard', () => {
       const store = useMonitoringStore.getState();
-      
+
       const widgetId = store.addWidget('non-existent-dashboard', {
         type: 'metric_chart',
         title: 'Widget',
@@ -560,7 +560,7 @@ describe('monitoringStore', () => {
 
     it('should maintain state immutability', () => {
       const store = useMonitoringStore.getState();
-      
+
       const dashboardId = store.createDashboard({
         name: 'Test',
         description: '',
