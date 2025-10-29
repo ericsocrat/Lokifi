@@ -16,12 +16,20 @@ import { useCurrencyFormatter } from '@/components/dashboard/useCurrencyFormatte
 import { DollarSign, Sparkles, TrendingDown, TrendingUp } from 'lucide-react';
 import { useMemo } from 'react';
 
+interface MarketAsset {
+  symbol?: string;
+  name?: string;
+  current_price?: number;
+  price_change_percentage_24h?: number | null;
+  market_cap?: number;
+}
+
 interface MarketStatsProps {
   data: {
-    crypto?: any[];
-    stocks?: any[];
-    indices?: any[];
-    forex?: any[];
+    crypto?: MarketAsset[];
+    stocks?: MarketAsset[];
+    indices?: MarketAsset[];
+    forex?: MarketAsset[];
   };
 }
 
@@ -44,31 +52,31 @@ export function MarketStats({ data }: MarketStatsProps) {
 
     // Calculate total market cap (only for crypto and stocks that have market_cap)
     const totalMarketCap = [...(data.crypto || []), ...(data.stocks || [])].reduce(
-      (sum: any, asset: any) => sum + (asset.market_cap || 0),
+      (sum: number, asset: MarketAsset) => sum + (asset.market_cap || 0),
       0
     );
 
     // Calculate average 24h change
     const assetsWithChange = allAssets.filter(
-      (a: any) =>
+      (a: MarketAsset) =>
         a.price_change_percentage_24h !== undefined && a.price_change_percentage_24h !== null
     );
     const avgChange =
       assetsWithChange.length > 0
-        ? assetsWithChange.reduce((sum: any, a: any) => sum + a.price_change_percentage_24h, 0) /
+        ? assetsWithChange.reduce((sum: number, a: MarketAsset) => sum + (a.price_change_percentage_24h || 0), 0) /
           assetsWithChange.length
         : 0;
 
     // Find top gainer
-    const topGainer = assetsWithChange.reduce((max: any, asset: any) => {
-      return asset.price_change_percentage_24h > (max?.price_change_percentage_24h || -Infinity)
+    const topGainer = assetsWithChange.reduce((max: MarketAsset, asset: MarketAsset) => {
+      return (asset.price_change_percentage_24h || 0) > (max?.price_change_percentage_24h || -Infinity)
         ? asset
         : max;
     }, assetsWithChange[0]);
 
     // Find top loser
-    const topLoser = assetsWithChange.reduce((min: any, asset: any) => {
-      return asset.price_change_percentage_24h < (min?.price_change_percentage_24h || Infinity)
+    const topLoser = assetsWithChange.reduce((min: MarketAsset, asset: MarketAsset) => {
+      return (asset.price_change_percentage_24h || 0) < (min?.price_change_percentage_24h || Infinity)
         ? asset
         : min;
     }, assetsWithChange[0]);
@@ -133,7 +141,7 @@ export function MarketStats({ data }: MarketStatsProps) {
         />
 
         {/* Top Gainer */}
-        {topGainer && (
+        {topGainer && topGainer.symbol && topGainer.price_change_percentage_24h !== null && topGainer.price_change_percentage_24h !== undefined && (
           <StatCard
             title="Top Gainer"
             value={topGainer.symbol}
@@ -144,7 +152,7 @@ export function MarketStats({ data }: MarketStatsProps) {
         )}
 
         {/* Top Loser */}
-        {topLoser && (
+        {topLoser && topLoser.symbol && topLoser.price_change_percentage_24h !== null && topLoser.price_change_percentage_24h !== undefined && (
           <StatCard
             title="Top Loser"
             value={topLoser.symbol}
