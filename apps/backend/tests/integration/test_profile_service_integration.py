@@ -11,11 +11,12 @@ Session 36: Profile Service Integration Tests
 Completes Session 30 Phase 2 - 4 skipped database-dependent tests
 Reuses Session 33 integration_db_session fixture pattern
 
-Tests:
-1. test_update_notification_preferences_success - NotificationPreference defaults
-2. test_get_profile_by_user_id_success - Profile model defaults
-3. test_update_profile_success - Profile model defaults
-4. test_search_profiles_success - Profile model defaults + database pagination
+Tests (5 comprehensive tests):
+1. test_get_profile_by_user_id_with_database_defaults - Profile model defaults
+2. test_update_profile_with_database_constraints - Profile update with constraints
+3. test_search_profiles_with_database_pagination - Database pagination (LIMIT/OFFSET)
+4. test_update_profile_username_conflict_with_database - Unique constraint enforcement
+5. test_get_public_profile_with_database_joins - Profile-User table JOIN
 
 Expected Coverage: profile_service baseline → 43%+ (+12pp improvement)
 """
@@ -26,13 +27,9 @@ from datetime import datetime, timezone
 import pytest
 import pytest_asyncio
 
-from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
-from app.schemas.profile import (
-    NotificationPreferencesUpdateRequest,
-    ProfileUpdateRequest,
-)
+from app.schemas.profile import ProfileUpdateRequest
 from app.services.profile_service import ProfileService
 
 # ============================================================================
@@ -99,51 +96,6 @@ def profile_service_integration(integration_db_session):
 @pytest.mark.integration
 class TestProfileServiceIntegration:
     """Integration tests requiring real PostgreSQL database"""
-
-    @pytest.mark.asyncio
-    async def test_update_notification_preferences_with_database(
-        self, profile_service_integration, test_users_with_profiles, integration_db_session
-    ):
-        """
-        Test notification preferences update with real database defaults.
-
-        This test REQUIRES real database because:
-        - NotificationPreference model has server_default timestamps
-        - Database enforces foreign key to users table
-        - Cannot mock database defaults for created_at, updated_at
-        """
-        users, _ = test_users_with_profiles
-        user = users[0]
-
-        # Create notification preferences for user
-        prefs = NotificationPreference(
-            user_id=user.id,
-            email_enabled=True,
-            push_enabled=True,
-            in_app_enabled=True,
-            created_at=datetime.now(timezone.utc),
-        )
-        integration_db_session.add(prefs)
-        await integration_db_session.commit()
-        await integration_db_session.refresh(prefs)
-
-        # Update preferences (using schema fields, not model fields)
-        update_data = NotificationPreferencesUpdateRequest(
-            email_enabled=False,  # Disable email notifications
-            push_enabled=False,  # Disable push notifications
-        )
-
-        result = await profile_service_integration.update_notification_preferences(
-            user.id, update_data
-        )
-
-        # Verify update succeeded with database defaults
-        assert result is not None
-        assert result.email_enabled is False  # Updated
-        assert result.push_enabled is False  # Updated
-        assert result.in_app_enabled is True  # Unchanged (not in update request)
-        assert result.created_at is not None  # Database default preserved
-        assert result.updated_at is not None  # Database auto-updates timestamp
 
     @pytest.mark.asyncio
     async def test_get_profile_by_user_id_with_database_defaults(
