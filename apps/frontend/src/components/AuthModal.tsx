@@ -384,9 +384,9 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
                 type="email"
                 placeholder="Enter your email address..."
                 value={email}
-                onChange={(e: any) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                   setEmail(e.target.value);
-                  setValidationErrors((prev: any) => ({ ...prev, email: undefined }));
+                  setValidationErrors((prev) => ({ ...prev, email: undefined }));
                 }}
                 className={`w-full px-4 py-3 rounded-lg bg-neutral-800 border ${
                   validationErrors.email ? "border-red-500" : "border-neutral-700"
@@ -408,9 +408,9 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
                   type="text"
                   placeholder="Enter your full name..."
                   value={fullName}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setFullName(e.target.value);
-                    setValidationErrors((prev: any) => ({ ...prev, fullName: undefined }));
+                    setValidationErrors((prev) => ({ ...prev, fullName: undefined }));
                   }}
                   className={`w-full px-4 py-3 rounded-lg bg-neutral-800 border ${
                     validationErrors.fullName ? "border-red-500" : "border-neutral-700"
@@ -433,9 +433,9 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
                   type="text"
                   placeholder="Choose a username..."
                   value={username}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setUsername(e.target.value);
-                    setValidationErrors((prev: any) => ({ ...prev, username: undefined }));
+                    setValidationErrors((prev) => ({ ...prev, username: undefined }));
                   }}
                   className={`w-full px-4 py-3 rounded-lg bg-neutral-800 border ${
                     validationErrors.username ? "border-red-500" : "border-neutral-700"
@@ -455,9 +455,9 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password..."
                   value={password}
-                  onChange={(e: any) => {
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     setPassword(e.target.value);
-                    setValidationErrors((prev: any) => ({ ...prev, password: undefined }));
+                    setValidationErrors((prev) => ({ ...prev, password: undefined }));
                   }}
                   className={`w-full px-4 py-3 pr-12 rounded-lg bg-neutral-800 border ${
                     validationErrors.password ? "border-red-500" : "border-neutral-700"
@@ -514,7 +514,7 @@ export function AuthModal({ onClose, initialMode = "register" }: { onClose: () =
                   type="checkbox"
                   id="terms"
                   checked={agreeToTerms}
-                  onChange={(e: any) => setAgreeToTerms(e.target.checked)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAgreeToTerms(e.target.checked)}
                   className="mt-1 w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-blue-600 focus:ring-2 focus:ring-blue-500"
                 />
                 <label htmlFor="terms" className="text-sm text-neutral-400">
