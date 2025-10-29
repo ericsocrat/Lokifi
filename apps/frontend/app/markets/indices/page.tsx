@@ -8,6 +8,7 @@
  */
 
 import { useUnifiedIndices } from '@/src/hooks/useUnifiedAssets';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
   TrendingDown,
@@ -97,8 +98,8 @@ function IndicesPageContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allIndices.map((index: any) => {
-              const isPositive = index.price_change_percentage_24h >= 0;
+            {allIndices.map((index: UnifiedAsset) => {
+              const isPositive = (index.price_change_percentage_24h ?? 0) >= 0;
               const regionColor = getRegionColor(index.name);
 
               return (
@@ -133,10 +134,10 @@ function IndicesPageContent() {
                       )}
                       <span>
                         {isPositive ? '+' : ''}
-                        {index.price_change_percentage_24h.toFixed(2)}%
+                        {(index.price_change_percentage_24h ?? 0).toFixed(2)}%
                       </span>
                       <span className="text-neutral-500">
-                        ({isPositive ? '+' : ''}{formatCurrency(index.price_change_24h)})
+                        ({isPositive ? '+' : ''}{formatCurrency(index.price_change_24h ?? 0)})
                       </span>
                     </div>
                   </div>
@@ -144,15 +145,15 @@ function IndicesPageContent() {
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-4 pt-4 border-t border-neutral-800">
                     <div>
-                      <div className="text-xs text-neutral-500 mb-1">24h High</div>
+                      <div className="text-xs text-neutral-500 mb-1">24h Volume</div>
                       <div className="text-sm font-medium text-white">
-                        {formatCurrency(index.high_24h)}
+                        {formatCurrency(index.volume_24h ?? 0)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-neutral-500 mb-1">24h Low</div>
+                      <div className="text-xs text-neutral-500 mb-1">Market Cap</div>
                       <div className="text-sm font-medium text-white">
-                        {formatCurrency(index.low_24h)}
+                        {formatCurrency(index.market_cap ?? 0)}
                       </div>
                     </div>
                   </div>

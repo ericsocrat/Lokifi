@@ -2,6 +2,7 @@
 
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import { useTopCryptos, useCryptoSearch, useWebSocketPrices } from '@/src/hooks/useBackendPrices';
+import type { CryptoAsset } from '@/src/services/backendPriceService';
 import {
   ArrowUpDown,
   Search,
@@ -38,7 +39,7 @@ function MarketsPageContent() {
   // Subscribe to top 50 cryptos for real-time updates
   useEffect(() => {
     if (connected && allCryptos.length > 0) {
-      const symbols = allCryptos.slice(0, 50).map((c: any) => c.symbol.toUpperCase());
+      const symbols = allCryptos.slice(0, 50).map((c: CryptoAsset) => c.symbol.toUpperCase());
       subscribe(symbols);
     }
   }, [connected, allCryptos, subscribe]);
@@ -51,7 +52,7 @@ function MarketsPageContent() {
 
   const toggleWatchlist = (symbol: string) => {
     const newWatchlist = watchlist.includes(symbol)
-      ? watchlist.filter((s: any) => s !== symbol)
+      ? watchlist.filter((s: string) => s !== symbol)
       : [...watchlist, symbol];
     setWatchlist(newWatchlist);
     localStorage.setItem('watchlist', JSON.stringify(newWatchlist));
@@ -63,19 +64,19 @@ function MarketsPageContent() {
   // Calculate market stats from real data
   const marketStats = useMemo(() => {
     const topMovers = [...displayCryptos]
-      .sort((a: any, b: any) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0));
+      .sort((a: CryptoAsset, b: CryptoAsset) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0));
     
     return {
       activeAssets: displayCryptos.length,
-      totalMarketCap: displayCryptos.reduce((sum: any, c: any) => sum + (c.market_cap || 0), 0),
-      totalVolume: displayCryptos.reduce((sum: any, c: any) => sum + (c.total_volume || 0), 0),
+      totalMarketCap: displayCryptos.reduce((sum: number, c: CryptoAsset) => sum + (c.market_cap || 0), 0),
+      totalVolume: displayCryptos.reduce((sum: number, c: CryptoAsset) => sum + (c.total_volume || 0), 0),
       topGainer: topMovers[0] || null,
       topLoser: topMovers[topMovers.length - 1] || null,
     };
   }, [displayCryptos]);
 
   const getSortedAssets = () => {
-    return [...displayCryptos].sort((a: any, b: any) => {
+    return [...displayCryptos].sort((a: CryptoAsset, b: CryptoAsset) => {
       let aVal: number | string = 0;
       let bVal: number | string = 0;
       

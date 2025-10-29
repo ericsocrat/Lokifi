@@ -8,6 +8,7 @@
  */
 
 import { useUnifiedStocks } from '@/src/hooks/useUnifiedAssets';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
   ArrowUpDown,
@@ -44,7 +45,7 @@ function StocksPageContent() {
 
   const toggleWatchlist = (symbol: string) => {
     const newWatchlist = watchlist.includes(symbol)
-      ? watchlist.filter((s: any) => s !== symbol)
+      ? watchlist.filter((s: string) => s !== symbol)
       : [...watchlist, symbol];
     setWatchlist(newWatchlist);
     localStorage.setItem('watchlist', JSON.stringify(newWatchlist));
@@ -58,19 +59,24 @@ function StocksPageContent() {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (stock: any) =>
+        (stock: UnifiedAsset) =>
           stock.symbol.toLowerCase().includes(query) ||
           stock.name.toLowerCase().includes(query)
       );
     }
 
     // Sort
-    const sorted = [...filtered].sort((a: any, b: any) => {
+    const sorted = [...filtered].sort((a: UnifiedAsset, b: UnifiedAsset) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
       if (typeof aValue === 'string') aValue = aValue.toLowerCase();
       if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+      // Handle undefined values
+      if (aValue === undefined && bValue === undefined) return 0;
+      if (aValue === undefined) return sortDirection === 'asc' ? 1 : -1;
+      if (bValue === undefined) return sortDirection === 'asc' ? -1 : 1;
 
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;

@@ -1,6 +1,7 @@
 'use client';
 
 import { useUnifiedAssets } from '@/src/hooks/useUnifiedAssets';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import { MarketStats } from '@/src/components/markets/MarketStats';
 import { 
@@ -106,7 +107,7 @@ function MarketsOverviewContent() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {cryptos.map((asset: any) => (
+              {cryptos.map((asset: UnifiedAsset) => (
                 <Link
                   key={asset.id}
                   href={`/asset/${asset.symbol}`}
@@ -164,7 +165,7 @@ function MarketsOverviewContent() {
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-              {stocks.map((asset: any) => (
+              {stocks.map((asset: UnifiedAsset) => (
                 <Link
                   key={asset.id}
                   href={`/asset/${asset.symbol}`}

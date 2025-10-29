@@ -8,6 +8,7 @@
  */
 
 import { useUnifiedForex } from '@/src/hooks/useUnifiedAssets';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import {
   TrendingDown,
@@ -35,12 +36,17 @@ function ForexPageContent() {
 
   // Sort forex pairs
   const sortedPairs = useMemo(() => {
-    const sorted = [...allPairs].sort((a: any, b: any) => {
+    const sorted = [...allPairs].sort((a: UnifiedAsset, b: UnifiedAsset) => {
       let aValue = a[sortField];
       let bValue = b[sortField];
 
       if (typeof aValue === 'string') aValue = aValue.toLowerCase();
       if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+
+      // Handle undefined values
+      if (aValue === undefined && bValue === undefined) return 0;
+      if (aValue === undefined) return sortDirection === 'asc' ? 1 : -1;
+      if (bValue === undefined) return sortDirection === 'asc' ? -1 : 1;
 
       if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
@@ -127,8 +133,8 @@ function ForexPageContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {sortedPairs.map((pair: any) => {
-              const isPositive = pair.price_change_percentage_24h >= 0;
+            {sortedPairs.map((pair: UnifiedAsset) => {
+              const isPositive = (pair.price_change_percentage_24h ?? 0) >= 0;
 
               return (
                 <div
@@ -162,7 +168,7 @@ function ForexPageContent() {
                       )}
                       <span>
                         {isPositive ? '+' : ''}
-                        {pair.price_change_percentage_24h.toFixed(2)}%
+                        {(pair.price_change_percentage_24h ?? 0).toFixed(2)}%
                       </span>
                     </div>
                   </div>
@@ -170,15 +176,15 @@ function ForexPageContent() {
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-3 pt-3 border-t border-neutral-800">
                     <div>
-                      <div className="text-xs text-neutral-500 mb-1">24h High</div>
+                      <div className="text-xs text-neutral-500 mb-1">24h Volume</div>
                       <div className="text-sm font-medium text-white">
-                        {pair.high_24h.toFixed(4)}
+                        {formatCurrency(pair.volume_24h ?? 0)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-xs text-neutral-500 mb-1">24h Low</div>
+                      <div className="text-xs text-neutral-500 mb-1">Market Cap</div>
                       <div className="text-sm font-medium text-white">
-                        {pair.low_24h.toFixed(4)}
+                        {formatCurrency(pair.market_cap ?? 0)}
                       </div>
                     </div>
                   </div>
