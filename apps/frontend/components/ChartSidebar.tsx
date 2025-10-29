@@ -82,7 +82,7 @@ export default function ChartSidebar() {
           <div>
             <h3 className="text-[11px] uppercase tracking-wide opacity-70 mb-3">Tools</h3>
             <div className="grid grid-cols-2 gap-2">
-              {TOOLS.map((t: typeof TOOLS[0]) => (
+              {TOOLS.map((t: (typeof TOOLS)[0]) => (
                 <button
                   key={t.key}
                   onClick={() => drawStore.setTool(t.key)}

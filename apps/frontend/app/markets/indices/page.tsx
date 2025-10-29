@@ -2,31 +2,31 @@
 
 /**
  * Market Indices Page
- * 
+ *
  * Shows major market indices with real-time data.
  * Currently displays mock data - will be replaced with real API when available.
  */
 
-import { useUnifiedIndices } from '@/src/hooks/useUnifiedAssets';
-import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
-import {
-  TrendingDown,
-  TrendingUp,
-  RefreshCw,
-  BarChart3,
-  AlertCircle,
-  Globe2,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
+import { useUnifiedIndices } from '@/src/hooks/useUnifiedAssets';
+import { AlertCircle, BarChart3, Globe2, RefreshCw, TrendingDown, TrendingUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 function IndicesPageContent() {
   const router = useRouter();
   const { formatCurrency } = useCurrencyFormatter();
 
   // Fetch indices data using React Query
-  const { data: allIndices, response: indicesData, isLoading, error, refetch, isFetching } = useUnifiedIndices();
+  const {
+    data: allIndices,
+    response: indicesData,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useUnifiedIndices();
 
   if (error) {
     return (
@@ -34,7 +34,9 @@ function IndicesPageContent() {
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
             <h3 className="text-red-500 font-semibold mb-2">Error Loading Indices</h3>
-            <p className="text-neutral-400 text-sm">{error?.message || 'Failed to load indices data'}</p>
+            <p className="text-neutral-400 text-sm">
+              {error?.message || 'Failed to load indices data'}
+            </p>
             <button
               onClick={() => refetch()}
               className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition-colors"
@@ -81,7 +83,8 @@ function IndicesPageContent() {
             <div>
               <p className="text-yellow-500 font-medium text-sm">Mock Data Notice</p>
               <p className="text-neutral-400 text-xs mt-1">
-                This page currently displays mock market indices data. Real-time indices data will be integrated when a financial data API is connected.
+                This page currently displays mock market indices data. Real-time indices data will
+                be integrated when a financial data API is connected.
               </p>
             </div>
           </div>
@@ -111,7 +114,9 @@ function IndicesPageContent() {
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-lg ${regionColor.bg} flex items-center justify-center`}>
+                      <div
+                        className={`w-12 h-12 rounded-lg ${regionColor.bg} flex items-center justify-center`}
+                      >
                         <Globe2 className={`w-6 h-6 ${regionColor.text}`} />
                       </div>
                       <div>
@@ -126,7 +131,9 @@ function IndicesPageContent() {
                     <div className="text-2xl font-bold text-white mb-1">
                       {formatCurrency(index.current_price)}
                     </div>
-                    <div className={`flex items-center gap-2 text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    <div
+                      className={`flex items-center gap-2 text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}
+                    >
                       {isPositive ? (
                         <TrendingUp className="w-4 h-4" />
                       ) : (
@@ -137,7 +144,8 @@ function IndicesPageContent() {
                         {(index.price_change_percentage_24h ?? 0).toFixed(2)}%
                       </span>
                       <span className="text-neutral-500">
-                        ({isPositive ? '+' : ''}{formatCurrency(index.price_change_24h ?? 0)})
+                        ({isPositive ? '+' : ''}
+                        {formatCurrency(index.price_change_24h ?? 0)})
                       </span>
                     </div>
                   </div>
@@ -176,7 +184,9 @@ function IndicesPageContent() {
         {/* Cache Status */}
         {indicesData && (
           <div className="flex items-center justify-center gap-2 text-xs text-neutral-500 mt-8">
-            <div className={`w-2 h-2 rounded-full ${indicesData.cached ? 'bg-green-500' : 'bg-blue-500'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${indicesData.cached ? 'bg-green-500' : 'bg-blue-500'}`}
+            />
             {indicesData.cached ? 'Data from cache' : 'Fresh data from API'}
           </div>
         )}

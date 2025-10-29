@@ -1,23 +1,30 @@
 'use client';
 
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
-import { useTopCryptos, useCryptoSearch, useWebSocketPrices } from '@/src/hooks/useBackendPrices';
+import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import { useCryptoSearch, useTopCryptos, useWebSocketPrices } from '@/src/hooks/useBackendPrices';
 import type { CryptoAsset } from '@/src/services/backendPriceService';
 import {
+  Activity,
   ArrowUpDown,
+  RefreshCw,
   Search,
+  Sparkles,
+  Star,
   TrendingDown,
   TrendingUp,
-  Star,
-  Activity,
-  RefreshCw,
-  Sparkles,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
-import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import { useEffect, useMemo, useState } from 'react';
 
-type SortField = 'symbol' | 'name' | 'current_price' | 'price_change_percentage_24h' | 'total_volume' | 'market_cap' | 'market_cap_rank';
+type SortField =
+  | 'symbol'
+  | 'name'
+  | 'current_price'
+  | 'price_change_percentage_24h'
+  | 'total_volume'
+  | 'market_cap'
+  | 'market_cap_rank';
 type SortDirection = 'asc' | 'desc';
 
 function MarketsPageContent() {
@@ -30,12 +37,17 @@ function MarketsPageContent() {
   const { formatCurrency } = useCurrencyFormatter();
 
   // Real backend data (300+ cryptos)
-  const { cryptos: allCryptos, loading: cryptosLoading, error: cryptosError, refetch } = useTopCryptos(300);
+  const {
+    cryptos: allCryptos,
+    loading: cryptosLoading,
+    error: cryptosError,
+    refetch,
+  } = useTopCryptos(300);
   const { results: searchResults, loading: searchLoading } = useCryptoSearch(searchQuery, 300);
-  
+
   // Real-time price updates
   const { prices: livePrices, connected, subscribe } = useWebSocketPrices({ autoConnect: true });
-  
+
   // Subscribe to top 50 cryptos for real-time updates
   useEffect(() => {
     if (connected && allCryptos.length > 0) {
@@ -63,13 +75,21 @@ function MarketsPageContent() {
 
   // Calculate market stats from real data
   const marketStats = useMemo(() => {
-    const topMovers = [...displayCryptos]
-      .sort((a: CryptoAsset, b: CryptoAsset) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0));
-    
+    const topMovers = [...displayCryptos].sort(
+      (a: CryptoAsset, b: CryptoAsset) =>
+        (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0)
+    );
+
     return {
       activeAssets: displayCryptos.length,
-      totalMarketCap: displayCryptos.reduce((sum: number, c: CryptoAsset) => sum + (c.market_cap || 0), 0),
-      totalVolume: displayCryptos.reduce((sum: number, c: CryptoAsset) => sum + (c.total_volume || 0), 0),
+      totalMarketCap: displayCryptos.reduce(
+        (sum: number, c: CryptoAsset) => sum + (c.market_cap || 0),
+        0
+      ),
+      totalVolume: displayCryptos.reduce(
+        (sum: number, c: CryptoAsset) => sum + (c.total_volume || 0),
+        0
+      ),
       topGainer: topMovers[0] || null,
       topLoser: topMovers[topMovers.length - 1] || null,
     };
@@ -79,7 +99,7 @@ function MarketsPageContent() {
     return [...displayCryptos].sort((a: CryptoAsset, b: CryptoAsset) => {
       let aVal: number | string = 0;
       let bVal: number | string = 0;
-      
+
       switch (sortField) {
         case 'symbol':
         case 'name':
@@ -95,11 +115,13 @@ function MarketsPageContent() {
           bVal = b[sortField] || 0;
           break;
       }
-      
+
       if (typeof aVal === 'string' && typeof bVal === 'string') {
         return sortDirection === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
-      return sortDirection === 'asc' ? (aVal as number) - (bVal as number) : (bVal as number) - (aVal as number);
+      return sortDirection === 'asc'
+        ? (aVal as number) - (bVal as number)
+        : (bVal as number) - (aVal as number);
     });
   };
 
@@ -133,10 +155,14 @@ function MarketsPageContent() {
               </h1>
               <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
                 Track {marketStats.activeAssets}+ cryptocurrencies in real-time
-                {connected && <span className="ml-2 inline-flex items-center gap-1">
-                  <Activity className="w-4 h-4 text-green-500 animate-pulse" />
-                  <span className="text-green-600 dark:text-green-400 text-sm font-bold">LIVE</span>
-                </span>}
+                {connected && (
+                  <span className="ml-2 inline-flex items-center gap-1">
+                    <Activity className="w-4 h-4 text-green-500 animate-pulse" />
+                    <span className="text-green-600 dark:text-green-400 text-sm font-bold">
+                      LIVE
+                    </span>
+                  </span>
+                )}
               </p>
             </div>
             <button
@@ -154,24 +180,34 @@ function MarketsPageContent() {
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 border border-purple-200 dark:border-purple-800 shadow-xl">
               <div className="flex items-center gap-3 mb-3">
                 <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Assets</h3>
+                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Assets
+                </h3>
               </div>
-              <p className="text-4xl font-black text-gray-900 dark:text-gray-100 mb-1">{marketStats.activeAssets}</p>
+              <p className="text-4xl font-black text-gray-900 dark:text-gray-100 mb-1">
+                {marketStats.activeAssets}
+              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Tracked</p>
             </div>
 
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 border border-green-200 dark:border-green-800 shadow-xl">
               <div className="flex items-center gap-3 mb-3">
                 <TrendingUp className="w-6 h-6 text-green-600 dark:text-green-400" />
-                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Top Gainer</h3>
+                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Top Gainer
+                </h3>
               </div>
               {marketStats.topGainer && (
                 <>
-                  <p className="text-3xl font-black text-green-600 dark:text-green-400 mb-1">{marketStats.topGainer.symbol.toUpperCase()}</p>
+                  <p className="text-3xl font-black text-green-600 dark:text-green-400 mb-1">
+                    {marketStats.topGainer.symbol.toUpperCase()}
+                  </p>
                   <p className="text-sm font-bold text-green-600 dark:text-green-400 mb-1">
                     +{marketStats.topGainer.price_change_percentage_24h.toFixed(2)}%
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{marketStats.topGainer.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {marketStats.topGainer.name}
+                  </p>
                 </>
               )}
             </div>
@@ -179,15 +215,21 @@ function MarketsPageContent() {
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 border border-red-200 dark:border-red-800 shadow-xl">
               <div className="flex items-center gap-3 mb-3">
                 <TrendingDown className="w-6 h-6 text-red-600 dark:text-red-400" />
-                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Top Loser</h3>
+                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Top Loser
+                </h3>
               </div>
               {marketStats.topLoser && (
                 <>
-                  <p className="text-3xl font-black text-red-600 dark:text-red-400 mb-1">{marketStats.topLoser.symbol.toUpperCase()}</p>
+                  <p className="text-3xl font-black text-red-600 dark:text-red-400 mb-1">
+                    {marketStats.topLoser.symbol.toUpperCase()}
+                  </p>
                   <p className="text-sm font-bold text-red-600 dark:text-red-400 mb-1">
                     {marketStats.topLoser.price_change_percentage_24h.toFixed(2)}%
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{marketStats.topLoser.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {marketStats.topLoser.name}
+                  </p>
                 </>
               )}
             </div>
@@ -195,7 +237,9 @@ function MarketsPageContent() {
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 border border-blue-200 dark:border-blue-800 shadow-xl">
               <div className="flex items-center gap-3 mb-3">
                 <Activity className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Market Cap</h3>
+                <h3 className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                  Market Cap
+                </h3>
               </div>
               <p className="text-3xl font-black text-gray-900 dark:text-gray-100 mb-1">
                 ${(marketStats.totalMarketCap / 1e12).toFixed(2)}T
@@ -229,32 +273,54 @@ function MarketsPageContent() {
               <thead className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 border-b-2 border-purple-200 dark:border-purple-700">
                 <tr>
                   <th className="px-4 py-4 text-left text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    <button onClick={() => handleSort('market_cap_rank')} className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition">
+                    <button
+                      onClick={() => handleSort('market_cap_rank')}
+                      className="flex items-center gap-2 hover:text-purple-600 dark:hover:text-purple-400 transition"
+                    >
                       Rank {sortField === 'market_cap_rank' && <ArrowUpDown className="w-4 h-4" />}
                     </button>
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">Asset</th>
+                  <th className="px-4 py-4 text-left text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                    Asset
+                  </th>
                   <th className="px-4 py-4 text-right text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    <button onClick={() => handleSort('current_price')} className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition">
+                    <button
+                      onClick={() => handleSort('current_price')}
+                      className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition"
+                    >
                       Price {sortField === 'current_price' && <ArrowUpDown className="w-4 h-4" />}
                     </button>
                   </th>
                   <th className="px-4 py-4 text-right text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    <button onClick={() => handleSort('price_change_percentage_24h')} className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition">
-                      24h Change {sortField === 'price_change_percentage_24h' && <ArrowUpDown className="w-4 h-4" />}
+                    <button
+                      onClick={() => handleSort('price_change_percentage_24h')}
+                      className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition"
+                    >
+                      24h Change{' '}
+                      {sortField === 'price_change_percentage_24h' && (
+                        <ArrowUpDown className="w-4 h-4" />
+                      )}
                     </button>
                   </th>
                   <th className="px-4 py-4 text-right text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    <button onClick={() => handleSort('total_volume')} className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition">
+                    <button
+                      onClick={() => handleSort('total_volume')}
+                      className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition"
+                    >
                       Volume {sortField === 'total_volume' && <ArrowUpDown className="w-4 h-4" />}
                     </button>
                   </th>
                   <th className="px-4 py-4 text-right text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-                    <button onClick={() => handleSort('market_cap')} className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition">
+                    <button
+                      onClick={() => handleSort('market_cap')}
+                      className="flex items-center gap-2 ml-auto hover:text-purple-600 dark:hover:text-purple-400 transition"
+                    >
                       Market Cap {sortField === 'market_cap' && <ArrowUpDown className="w-4 h-4" />}
                     </button>
                   </th>
-                  <th className="px-4 py-4 text-center text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                  <th className="px-4 py-4 text-center text-xs font-black text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-purple-100 dark:divide-purple-800/50">
@@ -262,20 +328,24 @@ function MarketsPageContent() {
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
                       <RefreshCw className="w-8 h-8 text-purple-600 animate-spin mx-auto mb-3" />
-                      <p className="text-gray-600 dark:text-gray-400 font-medium">Loading market data...</p>
+                      <p className="text-gray-600 dark:text-gray-400 font-medium">
+                        Loading market data...
+                      </p>
                     </td>
                   </tr>
                 ) : sortedAssets.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-6 py-12 text-center">
-                      <p className="text-gray-600 dark:text-gray-400 font-medium">No assets found</p>
+                      <p className="text-gray-600 dark:text-gray-400 font-medium">
+                        No assets found
+                      </p>
                     </td>
                   </tr>
                 ) : (
                   sortedAssets.map((asset: any) => {
                     const currentPrice = getLivePrice(asset.symbol, asset.current_price);
                     const isPositive = (asset.price_change_percentage_24h || 0) >= 0;
-                    
+
                     return (
                       <tr
                         key={asset.id}
@@ -289,10 +359,18 @@ function MarketsPageContent() {
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-4">
-                            <img src={asset.image} alt={asset.name} className="w-10 h-10 rounded-full" />
+                            <img
+                              src={asset.image}
+                              alt={asset.name}
+                              className="w-10 h-10 rounded-full"
+                            />
                             <div>
-                              <div className="font-bold text-gray-900 dark:text-gray-100 text-lg">{asset.name}</div>
-                              <div className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase">{asset.symbol}</div>
+                              <div className="font-bold text-gray-900 dark:text-gray-100 text-lg">
+                                {asset.name}
+                              </div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400 font-medium uppercase">
+                                {asset.symbol}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -302,9 +380,16 @@ function MarketsPageContent() {
                           </div>
                         </td>
                         <td className="px-4 py-4 text-right">
-                          <div className={`flex items-center justify-end gap-2 font-bold text-lg ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                            {isPositive ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
-                            {isPositive ? '+' : ''}{(asset.price_change_percentage_24h || 0).toFixed(2)}%
+                          <div
+                            className={`flex items-center justify-end gap-2 font-bold text-lg ${isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                          >
+                            {isPositive ? (
+                              <TrendingUp className="w-5 h-5" />
+                            ) : (
+                              <TrendingDown className="w-5 h-5" />
+                            )}
+                            {isPositive ? '+' : ''}
+                            {(asset.price_change_percentage_24h || 0).toFixed(2)}%
                           </div>
                         </td>
                         <td className="px-4 py-4 text-right">

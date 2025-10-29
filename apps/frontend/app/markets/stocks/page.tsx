@@ -2,27 +2,27 @@
 
 /**
  * Stocks Markets Page
- * 
+ *
  * Shows all available stocks with search, sort, and filtering capabilities.
  * Real-time data from Alpha Vantage API.
  */
 
-import { useUnifiedStocks } from '@/src/hooks/useUnifiedAssets';
-import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
+import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
+import { useUnifiedStocks } from '@/src/hooks/useUnifiedAssets';
 import {
+  AlertCircle,
   ArrowUpDown,
+  DollarSign,
+  RefreshCw,
   Search,
+  Star,
   TrendingDown,
   TrendingUp,
-  Star,
-  RefreshCw,
-  DollarSign,
-  AlertCircle,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState, useMemo } from 'react';
-import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import { useEffect, useMemo, useState } from 'react';
 
 type SortField = 'symbol' | 'name' | 'current_price' | 'price_change_percentage_24h' | 'market_cap';
 type SortDirection = 'asc' | 'desc';
@@ -36,7 +36,14 @@ function StocksPageContent() {
   const { formatCurrency } = useCurrencyFormatter();
 
   // Fetch stocks data using React Query
-  const { data: allStocks, response: stocksData, isLoading, error, refetch, isFetching } = useUnifiedStocks(100);
+  const {
+    data: allStocks,
+    response: stocksData,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useUnifiedStocks(100);
 
   useEffect(() => {
     const savedWatchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
@@ -60,8 +67,7 @@ function StocksPageContent() {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (stock: UnifiedAsset) =>
-          stock.symbol.toLowerCase().includes(query) ||
-          stock.name.toLowerCase().includes(query)
+          stock.symbol.toLowerCase().includes(query) || stock.name.toLowerCase().includes(query)
       );
     }
 
@@ -110,7 +116,9 @@ function StocksPageContent() {
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
             <h3 className="text-red-500 font-semibold mb-2">Error Loading Stocks</h3>
-            <p className="text-neutral-400 text-sm">{error?.message || 'Failed to load stock data'}</p>
+            <p className="text-neutral-400 text-sm">
+              {error?.message || 'Failed to load stock data'}
+            </p>
             <button
               onClick={() => refetch()}
               className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition-colors"
@@ -169,7 +177,8 @@ function StocksPageContent() {
             <div>
               <p className="text-yellow-500 font-medium text-sm">Mock Data Notice</p>
               <p className="text-neutral-400 text-xs mt-1">
-                This page currently displays mock stock data. Real-time stock data will be integrated when a stock market API is connected.
+                This page currently displays mock stock data. Real-time stock data will be
+                integrated when a stock market API is connected.
               </p>
             </div>
           </div>
@@ -189,19 +198,30 @@ function StocksPageContent() {
             {/* Table Header */}
             <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-neutral-800/50 text-neutral-400 text-sm font-medium border-b border-neutral-800">
               <div className="col-span-1 text-center">#</div>
-              <div className="col-span-3 flex items-center gap-2 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('name')}>
+              <div
+                className="col-span-3 flex items-center gap-2 cursor-pointer hover:text-white transition-colors"
+                onClick={() => handleSort('name')}
+              >
                 Stock
                 {getSortIcon('name')}
               </div>
-              <div className="col-span-2 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end" onClick={() => handleSort('current_price')}>
+              <div
+                className="col-span-2 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end"
+                onClick={() => handleSort('current_price')}
+              >
                 Price
                 {getSortIcon('current_price')}
               </div>
-              <div className="col-span-2 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end" onClick={() => handleSort('price_change_percentage_24h')}>
-                24h %
-                {getSortIcon('price_change_percentage_24h')}
+              <div
+                className="col-span-2 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end"
+                onClick={() => handleSort('price_change_percentage_24h')}
+              >
+                24h %{getSortIcon('price_change_percentage_24h')}
               </div>
-              <div className="col-span-3 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end" onClick={() => handleSort('market_cap')}>
+              <div
+                className="col-span-3 flex items-center gap-2 cursor-pointer hover:text-white transition-colors justify-end"
+                onClick={() => handleSort('market_cap')}
+              >
                 Market Cap
                 {getSortIcon('market_cap')}
               </div>
@@ -234,7 +254,9 @@ function StocksPageContent() {
 
                   {/* Price */}
                   <div className="col-span-2 flex items-center justify-end">
-                    <span className="font-medium text-white">{formatCurrency(stock.current_price)}</span>
+                    <span className="font-medium text-white">
+                      {formatCurrency(stock.current_price)}
+                    </span>
                   </div>
 
                   {/* 24h Change */}
@@ -281,7 +303,9 @@ function StocksPageContent() {
         {/* Cache Status */}
         {stocksData && (
           <div className="flex items-center justify-center gap-2 text-xs text-neutral-500 mt-6">
-            <div className={`w-2 h-2 rounded-full ${stocksData.cached ? 'bg-green-500' : 'bg-blue-500'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${stocksData.cached ? 'bg-green-500' : 'bg-blue-500'}`}
+            />
             {stocksData.cached ? 'Data from cache' : 'Fresh data from API'}
           </div>
         )}

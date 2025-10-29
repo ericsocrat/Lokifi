@@ -1,14 +1,12 @@
-import { useChartStore } from '@/state/store';
 import type { Drawing } from '@/lib/utils/drawings';
+import { useChartStore } from '@/state/store';
 import React from 'react';
 
 export default function ObjectInspector() {
   const s = useChartStore();
   const sel = Array.from(s.selection);
   const count = sel.length;
-  const drawings = useChartStore((st) =>
-    st.drawings.filter((d) => st.selection.has(d.id))
-  );
+  const drawings = useChartStore((st) => st.drawings.filter((d) => st.selection.has(d.id)));
   const first = drawings[0];
 
   if (count === 0)
@@ -156,9 +154,7 @@ export default function ObjectInspector() {
 
 function FibEditor() {
   const s = useChartStore();
-  const drawings = useChartStore((st) =>
-    st.drawings.filter((d) => st.selection.has(d.id))
-  );
+  const drawings = useChartStore((st) => st.drawings.filter((d) => st.selection.has(d.id)));
   const first = drawings[0];
   const levels = (first?.fibLevels ?? s.drawingSettings.fibDefaultLevels)
     .slice()

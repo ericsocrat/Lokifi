@@ -2,25 +2,18 @@
 
 /**
  * Forex Markets Page
- * 
+ *
  * Shows major currency pairs with real-time exchange rates.
  * Real-time data from ExchangeRate-API.
  */
 
-import { useUnifiedForex } from '@/src/hooks/useUnifiedAssets';
-import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
-import {
-  TrendingDown,
-  TrendingUp,
-  RefreshCw,
-  Globe2,
-  AlertCircle,
-  ArrowUpDown,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useState, useMemo } from 'react';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import type { UnifiedAsset } from '@/src/hooks/useUnifiedAssets';
+import { useUnifiedForex } from '@/src/hooks/useUnifiedAssets';
+import { ArrowUpDown, Globe2, RefreshCw, TrendingDown, TrendingUp } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 type SortField = 'symbol' | 'name' | 'current_price' | 'price_change_percentage_24h';
 type SortDirection = 'asc' | 'desc';
@@ -32,7 +25,14 @@ function ForexPageContent() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
   // Fetch forex data using React Query
-  const { data: allPairs, response: forexData, isLoading, error, refetch, isFetching } = useUnifiedForex(50);
+  const {
+    data: allPairs,
+    response: forexData,
+    isLoading,
+    error,
+    refetch,
+    isFetching,
+  } = useUnifiedForex(50);
 
   // Sort forex pairs
   const sortedPairs = useMemo(() => {
@@ -80,7 +80,9 @@ function ForexPageContent() {
         <div className="max-w-7xl mx-auto">
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
             <h3 className="text-red-500 font-semibold mb-2">Error Loading Forex Data</h3>
-            <p className="text-neutral-400 text-sm">{error?.message || 'Failed to load forex data'}</p>
+            <p className="text-neutral-400 text-sm">
+              {error?.message || 'Failed to load forex data'}
+            </p>
             <button
               onClick={() => refetch()}
               className="mt-4 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 rounded-lg text-red-500 transition-colors"
@@ -160,7 +162,9 @@ function ForexPageContent() {
                     <div className="text-xl font-bold text-white mb-1">
                       {pair.current_price.toFixed(4)}
                     </div>
-                    <div className={`flex items-center gap-2 text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
+                    <div
+                      className={`flex items-center gap-2 text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'}`}
+                    >
                       {isPositive ? (
                         <TrendingUp className="w-4 h-4" />
                       ) : (
@@ -197,7 +201,9 @@ function ForexPageContent() {
         {/* Cache Status */}
         {forexData && (
           <div className="flex items-center justify-center gap-2 text-xs text-neutral-500 mt-8">
-            <div className={`w-2 h-2 rounded-full ${forexData.cached ? 'bg-green-500' : 'bg-blue-500'}`} />
+            <div
+              className={`w-2 h-2 rounded-full ${forexData.cached ? 'bg-green-500' : 'bg-blue-500'}`}
+            />
             {forexData.cached ? 'Data from cache' : 'Fresh data from API'}
           </div>
         )}

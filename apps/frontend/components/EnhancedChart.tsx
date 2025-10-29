@@ -1,18 +1,18 @@
-"use client";
+'use client';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore';
+import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
+import { symbolStore } from '@/lib/stores/symbolStore';
+import { timeframeStore } from '@/lib/stores/timeframeStore';
 import {
   ColorType,
   createChart,
   IChartApi,
   ISeriesApi,
   MouseEventParams,
-  Time
+  Time,
 } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
-import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore';
-import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
-import { symbolStore } from '@/lib/stores/symbolStore';
-import { timeframeStore } from '@/lib/stores/timeframeStore';
 
 interface EnhancedChartProps {
   paneId: string;
@@ -20,10 +20,14 @@ interface EnhancedChartProps {
   className?: string;
 }
 
-export default function EnhancedChart({ paneId, height = 400, className = '' }: EnhancedChartProps) {
+export default function EnhancedChart({
+  paneId,
+  height = 400,
+  className = '',
+}: EnhancedChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
+  const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Store hooks
@@ -158,7 +162,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
       console.log('Chart clicked in drawing mode:', {
         tool: activeTool,
         point: param.point,
-        time: param.time
+        time: param.time,
       });
 
       // Drawing logic would be implemented here
@@ -190,7 +194,10 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
 
   if (error) {
     return (
-      <div className={`flex items-center justify-center bg-red-900/20 border border-red-500 ${className}`} style={{ height }}>
+      <div
+        className={`flex items-center justify-center bg-red-900/20 border border-red-500 ${className}`}
+        style={{ height }}
+      >
         <div className="text-center">
           <div className="text-red-400 mb-2">⚠ Data Error</div>
           <div className="text-xs text-red-300">{error}</div>
@@ -215,14 +222,10 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
       <div className="absolute top-2 left-2 z-20">
         <div className="flex items-center gap-2 text-xs">
           {selectedSymbol && (
-            <span className="bg-blue-600 px-2 py-1 rounded text-white">
-              {selectedSymbol}
-            </span>
+            <span className="bg-blue-600 px-2 py-1 rounded text-white">{selectedSymbol}</span>
           )}
           {selectedTimeframe && (
-            <span className="bg-gray-600 px-2 py-1 rounded text-white">
-              {selectedTimeframe}
-            </span>
+            <span className="bg-gray-600 px-2 py-1 rounded text-white">{selectedTimeframe}</span>
           )}
         </div>
       </div>
@@ -237,11 +240,7 @@ export default function EnhancedChart({ paneId, height = 400, className = '' }: 
       )}
 
       {/* Chart container */}
-      <div
-        ref={chartContainerRef}
-        style={{ height }}
-        className="w-full cursor-crosshair"
-      />
+      <div ref={chartContainerRef} style={{ height }} className="w-full cursor-crosshair" />
     </div>
   );
 }
@@ -277,7 +276,7 @@ function createDrawingObject(
         ...baseObject,
         points: [
           { x: start.x, y: start.y, time: start.time, price: start.price },
-          { x: end.x, y: end.y, time: end.time, price: end.price }
+          { x: end.x, y: end.y, time: end.time, price: end.price },
         ],
       };
 
@@ -287,7 +286,7 @@ function createDrawingObject(
         ...baseObject,
         points: [
           { x: start.x, y: start.y, time: start.time, price: start.price },
-          { x: end.x, y: end.y, time: end.time, price: end.price }
+          { x: end.x, y: end.y, time: end.time, price: end.price },
         ],
       };
 
@@ -296,7 +295,7 @@ function createDrawingObject(
         ...baseObject,
         points: [
           { x: start.x, y: start.y, time: start.time, price: start.price },
-          { x: end.x, y: end.y, time: end.time, price: end.price }
+          { x: end.x, y: end.y, time: end.time, price: end.price },
         ],
         levels: [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1],
       };

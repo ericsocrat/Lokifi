@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -19,16 +19,16 @@ interface MarketDataState {
   // Data cache
   ohlcData: Record<string, OHLCData[]>; // key: `${symbol}_${timeframe}`
   lastUpdate: Record<string, number>; // timestamps
-  
+
   // Connection state
   isConnected: boolean;
   isLoading: boolean;
   error: string | null;
-  
+
   // Settings
   autoRefresh: boolean;
   refreshInterval: number; // seconds
-  
+
   // Actions
   fetchOHLCData: (symbol: string, timeframe: string, limit?: number) => Promise<OHLCData[]>;
   subscribeToSymbol: (symbol: string, timeframe: string) => void;
@@ -57,12 +57,12 @@ export const useMarketDataStore = create<MarketDataState>()(
       fetchOHLCData: async (symbol: string, timeframe: string = '1D', limit: number = 100) => {
         const cacheKey = `${symbol}_${timeframe}`;
         const now = Date.now();
-        
+
         // Check cache first (5 minute TTL)
         const lastUpdate = get().lastUpdate[cacheKey];
         const cachedData = get().ohlcData[cacheKey];
-        
-        if (cachedData && lastUpdate && (now - lastUpdate) < 300000) {
+
+        if (cachedData && lastUpdate && now - lastUpdate < 300000) {
           return cachedData;
         }
 
@@ -84,36 +84,35 @@ export const useMarketDataStore = create<MarketDataState>()(
           set((state: any) => ({
             ohlcData: {
               ...state.ohlcData,
-              [cacheKey]: data
+              [cacheKey]: data,
             },
             lastUpdate: {
               ...state.lastUpdate,
-              [cacheKey]: now
+              [cacheKey]: now,
             },
             isLoading: false,
-            isConnected: true
+            isConnected: true,
           }));
 
           return data;
-
         } catch (error) {
           console.error('Failed to fetch OHLC data:', error);
-          
+
           // Generate mock data as fallback
           const mockData = generateMockOHLC(symbol, timeframe, limit);
-          
+
           set((state: any) => ({
             ohlcData: {
               ...state.ohlcData,
-              [cacheKey]: mockData
+              [cacheKey]: mockData,
             },
             lastUpdate: {
               ...state.lastUpdate,
-              [cacheKey]: now
+              [cacheKey]: now,
             },
             isLoading: false,
             error: `API Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-            isConnected: false
+            isConnected: false,
           }));
 
           return mockData;
@@ -136,7 +135,7 @@ export const useMarketDataStore = create<MarketDataState>()(
         set({
           ohlcData: {},
           lastUpdate: {},
-          error: null
+          error: null,
         });
       },
 
@@ -154,7 +153,7 @@ export const useMarketDataStore = create<MarketDataState>()(
       name: 'lokifi-market-data',
       partialize: (state: any) => ({
         autoRefresh: state.autoRefresh,
-        refreshInterval: state.refreshInterval
+        refreshInterval: state.refreshInterval,
       }),
     }
   )
@@ -164,25 +163,25 @@ export const useMarketDataStore = create<MarketDataState>()(
 function generateMockOHLC(symbol: string, timeframe: string, limit: number): OHLCData[] {
   const data: OHLCData[] = [];
   let basePrice = 100;
-  
+
   // Adjust base price based on symbol
   if (symbol.includes('BTC')) basePrice = 45000;
   else if (symbol.includes('ETH')) basePrice = 3000;
   else if (symbol.includes('AAPL')) basePrice = 180;
   else if (symbol.includes('TSLA')) basePrice = 250;
-  
+
   const now = new Date();
   const intervalMs = getTimeframeMilliseconds(timeframe);
 
   for (let i = limit - 1; i >= 0; i--) {
-    const timestamp = new Date(now.getTime() - (i * intervalMs));
-    
+    const timestamp = new Date(now.getTime() - i * intervalMs);
+
     // Generate realistic price movement
     const change = (Math.random() - 0.5) * (basePrice * 0.02); // ±2% max change
     const open = basePrice;
     const close = basePrice + change;
-    const high = Math.max(open, close) + (Math.random() * basePrice * 0.01);
-    const low = Math.min(open, close) - (Math.random() * basePrice * 0.01);
+    const high = Math.max(open, close) + Math.random() * basePrice * 0.01;
+    const low = Math.min(open, close) - Math.random() * basePrice * 0.01;
     const volume = Math.floor(Math.random() * 1000000) + 100000;
 
     data.push({
@@ -194,7 +193,7 @@ function generateMockOHLC(symbol: string, timeframe: string, limit: number): OHL
       close: Number(close.toFixed(2)),
       volume,
       provider: 'mock',
-      timeframe
+      timeframe,
     });
 
     basePrice = close; // Next candle starts where this one ended
@@ -215,14 +214,14 @@ function getTimeframeMilliseconds(timeframe: string): number {
     '1W': 7 * 24 * 60 * 60 * 1000,
     '1M': 30 * 24 * 60 * 60 * 1000,
   };
-  
+
   return mapping[timeframe] || mapping['1D'];
 }
 
 // Hook for auto-refreshing data
 export function useAutoRefresh() {
   const { autoRefresh, refreshInterval, fetchOHLCData } = useMarketDataStore();
-  
+
   React.useEffect(() => {
     if (!autoRefresh) return;
 

@@ -2,19 +2,15 @@
 
 /**
  * Markets Layout
- * 
+ *
  * Provides navigation tabs for different market sections.
  */
 
+import { BarChart3, Bitcoin, DollarSign, Globe2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bitcoin, DollarSign, BarChart3, Sparkles, Globe2 } from 'lucide-react';
 
-export default function MarketsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MarketsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   const tabs = [
@@ -46,7 +42,7 @@ export default function MarketsLayout({
     },
   ];
 
-  const isActive = (tab: typeof tabs[0]) => {
+  const isActive = (tab: (typeof tabs)[0]) => {
     if (tab.exact) {
       return pathname === tab.href;
     }
@@ -59,7 +55,7 @@ export default function MarketsLayout({
       <div className="border-b border-neutral-800 bg-[#17171A]/60 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex gap-1">
-            {tabs.map((tab: typeof tabs[0]) => {
+            {tabs.map((tab: (typeof tabs)[0]) => {
               const Icon = tab.icon;
               const active = isActive(tab);
 
