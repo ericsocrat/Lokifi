@@ -427,7 +427,7 @@ describe('WatchlistStore', () => {
         });
 
         expect(result.current.watchlists[0].items).toHaveLength(2);
-        expect(result.current.watchlists[0].items.map((c: any) => c.symbol)).not.toContain('TSLA');
+        expect(result.current.watchlists[0].items.map((c: { symbol: string }) => c.symbol)).not.toContain('TSLA');
       });
 
       it('should not error when removing non-existent symbol', () => {
@@ -708,10 +708,10 @@ describe('WatchlistStore', () => {
         });
 
         expect(importedId).toBeTruthy();
-        const watchlist = result.current.watchlists.find((c: any) => c.id === importedId);
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
         expect(watchlist).toBeDefined();
         expect(watchlist!.items).toHaveLength(3);
-        expect(watchlist!.items.map((c: any) => c.symbol)).toEqual(['AAPL', 'TSLA', 'MSFT']);
+        expect(watchlist!.items.map((c: { symbol: string }) => c.symbol)).toEqual(['AAPL', 'TSLA', 'MSFT']);
       });
 
       it('should handle empty import', () => {
@@ -723,7 +723,7 @@ describe('WatchlistStore', () => {
         });
 
         expect(importedId).toBeTruthy();
-        const watchlist = result.current.watchlists.find((c: any) => c.id === importedId);
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
         expect(watchlist!.items).toHaveLength(0);
       });
     });
@@ -830,7 +830,7 @@ describe('WatchlistStore', () => {
 
       // Verify we have 2 items
       expect(result.current.watchlists[0]?.items).toHaveLength(2);
-      const symbols = result.current.watchlists[0]?.items.map((item: any) => item.symbol);
+      const symbols = result.current.watchlists[0]?.items.map((item: { symbol: string }) => item.symbol);
       expect(symbols).toContain('AAPL');
       expect(symbols).toContain('TSLA');
 

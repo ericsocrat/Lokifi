@@ -15,13 +15,15 @@ import {
 import React from 'react';
 import { DrawingTool, useDrawingStore } from '@/lib/stores/drawingStore';
 
-const DRAWING_TOOLS: Array<{
+type DrawingToolConfig = {
   id: DrawingTool;
   name: string;
   icon: React.ReactNode;
   shortcut: string;
   category: 'Basic' | 'Fibonacci' | 'Gann' | 'Advanced';
-}> = [
+};
+
+const DRAWING_TOOLS: Array<DrawingToolConfig> = [
   // Basic tools
   {
     id: 'cursor',
@@ -174,7 +176,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
         </button>
 
         {/* Show only active tool when collapsed */}
-        {DRAWING_TOOLS.slice(0, 3).map((tool: any) => (
+        {DRAWING_TOOLS.slice(0, 3).map((tool: DrawingToolConfig) => (
           <button
             key={tool.id}
             onClick={() => handleToolSelect(tool.id)}
@@ -194,7 +196,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
   }
 
   const groupedTools = DRAWING_TOOLS.reduce(
-    (acc: any, tool: any) => {
+    (acc: Record<string, DrawingToolConfig[]>, tool: DrawingToolConfig) => {
       if (!acc[tool.category]) {
         acc[tool.category] = [];
       }
@@ -231,7 +233,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {(tools as any[]).map((tool: any) => (
+              {(tools as Array<DrawingToolConfig>).map((tool: DrawingToolConfig) => (
                 <button
                   key={tool.id}
                   onClick={() => handleToolSelect(tool.id)}
@@ -313,7 +315,7 @@ export const DrawingToolbar: React.FC<DrawingToolbarProps> = ({
         <div className="px-4 py-2 bg-blue-600 text-white text-sm">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            Drawing {DRAWING_TOOLS.find((t: any) => t.id === activeTool)?.name}...
+            Drawing {DRAWING_TOOLS.find((t: DrawingToolConfig) => t.id === activeTool)?.name}...
           </div>
         </div>
       )}

@@ -1,4 +1,4 @@
-import type { Alert } from '@/lib/utils/alerts';
+import type { Alert, AlertEvent } from '@/lib/utils/alerts';
 import { ensureNotificationPermission } from '@/lib/utils/notify';
 import { useChartStore } from '@/state/store';
 import React from 'react';
@@ -9,7 +9,7 @@ export default function AlertsPanel() {
   const s = useChartStore();
   const [filter, setFilter] = React.useState<Filter>('all');
 
-  const list = s.alerts.filter((a: any) => {
+  const list = s.alerts.filter((a: Alert) => {
     if (filter === 'all') return true;
     if (filter === 'active') return a.enabled && (!a.snoozedUntil || a.snoozedUntil < Date.now());
     if (filter === 'snoozed') return !!a.snoozedUntil && a.snoozedUntil > Date.now();
@@ -36,7 +36,7 @@ export default function AlertsPanel() {
           <select
             className="bg-transparent border border-white/15 rounded px-2 py-1 text-xs"
             value={filter}
-            onChange={(e: any) => setFilter(e.target.value as Filter)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilter(e.target.value as Filter)}
           >
             <option value="all">All</option>
             <option value="active">Active</option>
@@ -55,7 +55,7 @@ export default function AlertsPanel() {
 
       <div className="space-y-2">
         {list.length === 0 && <div className="text-xs opacity-60">No alerts.</div>}
-        {list.map((al: any) => (
+        {list.map((al: Alert) => (
           <AlertRow key={al.id} a={al} />
         ))}
       </div>
@@ -66,7 +66,7 @@ export default function AlertsPanel() {
           {s.alertEvents
             .slice(-8)
             .reverse()
-            .map((ev: any) => (
+            .map((ev: AlertEvent) => (
               <div key={ev.at} className="opacity-90">
                 #{ev.id.slice(0, 5)} — {ev.kind} at {new Date(ev.at).toLocaleTimeString()}{' '}
                 {ev.price != null ? `@ ${ev.price.toFixed(2)}` : ''}
@@ -110,7 +110,7 @@ function AlertRow({ a }: { a: Alert }) {
         <select
           className="bg-transparent border border-white/15 rounded px-2 py-1 text-xs"
           value={a.sound || 'none'}
-          onChange={(e: any) => s.updateAlert(a.id, { sound: e.target.value as 'ping' | 'none' })}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => s.updateAlert(a.id, { sound: e.target.value as 'ping' | 'none' })}
         >
           <option value="ping">Ping</option>
           <option value="none">No sound</option>

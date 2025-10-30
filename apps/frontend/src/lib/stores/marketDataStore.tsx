@@ -41,9 +41,8 @@ interface MarketDataState {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const useMarketDataStore = create<MarketDataState>()(
-  // @ts-expect-error - Zustand v5 middleware type inference issue
   persist(
-    (set: any, get: any) => ({
+      (set, get) => ({
       // Initial state
       ohlcData: {} as Record<string, OHLCData[]>,
       lastUpdate: {} as Record<string, number>,
@@ -81,7 +80,7 @@ export const useMarketDataStore = create<MarketDataState>()(
           const data: OHLCData[] = result.data || [];
 
           // Update cache
-          set((state: any) => ({
+          set((state) => ({
             ohlcData: {
               ...state.ohlcData,
               [cacheKey]: data,
@@ -101,7 +100,7 @@ export const useMarketDataStore = create<MarketDataState>()(
           // Generate mock data as fallback
           const mockData = generateMockOHLC(symbol, timeframe, limit);
 
-          set((state: any) => ({
+          set((state) => ({
             ohlcData: {
               ...state.ohlcData,
               [cacheKey]: mockData,
@@ -151,7 +150,7 @@ export const useMarketDataStore = create<MarketDataState>()(
     }),
     {
       name: 'lokifi-market-data',
-      partialize: (state: any) => ({
+      partialize: (state: MarketDataState) => ({
         autoRefresh: state.autoRefresh,
         refreshInterval: state.refreshInterval,
       }),
