@@ -11,7 +11,7 @@ architecture/
 ├── TECHNICAL_DEBT.md               # Known technical debt and remediation plans
 ├── design/                         # Design system and UI architecture
 │   ├── ARCHITECTURE_DIAGRAM.md     # System architecture diagrams
-│   ├── COMPONENT_CATALOG.md        # Component library documentation
+│   ├── components.md        # Component library documentation
 │   ├── STRUCTURE_COMPARISON.md     # Structure comparison and evolution
 │   ├── THEME_DOCUMENTATION.md      # Theme system and styling
 │   └── WORLD_CLASS_STRUCTURE_VISION.md  # Future architecture vision
@@ -47,4 +47,4 @@ architecture/
 
 ---
 
-**See also:** [Development Setup](../development/setup/DEVELOPER_WORKFLOW.md) | [Guides](../guides/README.md)
+**See also:** [Development Setup](../development/setup/workflow.md) | [Guides](../guides/README.md)

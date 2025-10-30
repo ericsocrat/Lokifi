@@ -16,7 +16,7 @@
 **Core Sections**:
 - **Core Technologies** - Tech stack overview (Next.js, FastAPI, PostgreSQL, Redis)
 - **Code Style & Standards** - TypeScript/Python conventions, testing patterns
-- **Task Tracking** - Todo list management (NEVER delete!), CHECKLISTS.md, TODO Tree
+- **Task Tracking** - Todo list management (NEVER delete!), checklists.md, TODO Tree
 - **Common Patterns** - Component/Store/Route/Test templates
 - **Pre-Flight Checks** - Path verification, dependency management, quality checks (NEW! ⭐)
 - **Security Best Practices** - Frontend/Backend security, anti-patterns
@@ -27,7 +27,7 @@
 **When You Need**:
 - 🛫 **Pre-Flight Checks**: See "Pre-Flight Checks & Code Generation" section (ALWAYS USE!)
 - 🔍 **Service Configuration**: See "CI/CD & Workflow Standards" section
-- 📋 **Process Checklists**: Reference `/docs/CHECKLISTS.md`
+- 📋 **Process Checklists**: Reference `/docs/checklists.md`
 - 🔐 **Security Guidance**: See "Security Best Practices" section
 - 🎯 **Code Patterns**: See "Common Patterns" section
 - 🐛 **Anti-Patterns**: See "Common Anti-Patterns to Avoid" section
@@ -126,7 +126,7 @@ Lokifi has a **fully automatic coverage tracking system** integrated into CI/CD.
 
 **Coverage Documentation:**
 - Master Config: `/coverage.config.json`
-- Baseline: `/docs/guides/COVERAGE_BASELINE.md`
+- Baseline: `/docs/guides/coverage.md`
 - Automation: Fully integrated in CI/CD workflows
 
 **Test Quality Guidelines:**
@@ -166,7 +166,7 @@ todoList = [
 
 **Other Task Tracking Tools** (Strategic Usage):
 
-1. **CHECKLISTS.md** (`/docs/CHECKLISTS.md`) - Use for **repeatable processes**:
+1. **checklists.md** (`/docs/checklists.md`) - Use for **repeatable processes**:
    - ✅ Pre-commit quality gates (code formatting, tests, security)
    - ✅ Pre-merge checklists (testing, documentation, deployment)
    - ✅ Feature implementation workflows (API dev, frontend components, DB changes)
@@ -780,8 +780,8 @@ import { usePortfolioStore } from '../../lib/stores/portfolioStore';
 
 ✅ **Documentation updates required**:
 - **README.md**: Update if adding new features, dependencies, or setup steps
-- **plans/SPRINT_HISTORY.md**: Add session summary with metrics and decisions
-- **CHECKLISTS.md**: Update process checklists if new workflows introduced
+- **plans/history.md**: Add session summary with metrics and decisions
+- **checklists.md**: Update process checklists if new workflows introduced
 - **Todo list**: Mark completed tasks, add new follow-up tasks
 
 ✅ **Code comment standards**:
@@ -894,7 +894,7 @@ actionlint .github/workflows/*.yml
 - [ ] All linters pass (ESLint, Ruff, actionlint)
 - [ ] All tests pass (if logic changed)
 - [ ] Build succeeds (`npm run build` or Docker build)
-- [ ] Documentation updated (todo list, plans/SPRINT_HISTORY.md)
+- [ ] Documentation updated (todo list, plans/history.md)
 - [ ] Commit message follows conventions
 
 ### 6. Change Communication & Integration (COORDINATE WITH TEAM)
@@ -990,7 +990,7 @@ WIP: stuff
 
 ### Documentation
 - [ ] Todo list updated (manage_todo_list)
-- [ ] plans/SPRINT_HISTORY.md session added
+- [ ] plans/history.md session added
 - [ ] Inline comments explain WHY not WHAT
 - [ ] Acceptable any types documented
 
@@ -1447,16 +1447,16 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Best Practices**:
 1. **Search first**: Use `grep_search` or `file_search` to find existing related documents
-2. **Update existing**: Prefer updating CHECKLISTS.md, plans/SPRINT_HISTORY.md, or existing guides
-3. **Avoid duplication**: Don't create SESSION_NOTES.md when plans/SPRINT_HISTORY.md exists
+2. **Update existing**: Prefer updating checklists.md, plans/history.md, or existing guides
+3. **Avoid duplication**: Don't create SESSION_NOTES.md when plans/history.md exists
 4. **Archive outdated**: Move replaced documents to .archive/ folder with context
 5. **Document decisions**: Add to existing decision logs, not new files
 
 **Examples**:
-- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `plans/SPRINT_HISTORY.md` already tracks sprints
-- ✅ **Good**: Update `plans/SPRINT_HISTORY.md` with new sprint planning and add to Decision Log
-- ❌ **Bad**: Create `DEPLOYMENT_CHECKLIST.md` when `CHECKLISTS.md` exists
-- ✅ **Good**: Update `CHECKLISTS.md` with new deployment section
+- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `plans/history.md` already tracks sprints
+- ✅ **Good**: Update `plans/history.md` with new sprint planning and add to Decision Log
+- ❌ **Bad**: Create `DEPLOYMENT_CHECKLIST.md` when `checklists.md` exists
+- ✅ **Good**: Update `checklists.md` with new deployment section
 - ❌ **Bad**: Create `TESTING_BEST_PRACTICES.md` when `TESTING_GUIDE.md` exists
 - ✅ **Good**: Update `TESTING_GUIDE.md` with new best practices section
 - ❌ **Bad**: Keep both old and new versions of same document
@@ -1471,18 +1471,18 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
-- **Core Workflow**: `/docs/guides/DEVELOPER_WORKFLOW.md` - Complete setup & daily workflows ⭐
-- **Pull Requests**: `/docs/guides/PULL_REQUEST_COMPLETE_GUIDE.md` - Complete PR workflow ⭐
-- **Testing**: `/docs/guides/TESTING_GUIDE.md` - Comprehensive testing guide
-- **Standards**: `/docs/guides/CODING_STANDARDS.md` - Code style and conventions
-- **Code Quality**: `/docs/guides/CODE_QUALITY.md` - Quality tools and automation
-- **Architecture**: `/docs/guides/REPOSITORY_STRUCTURE.md` - Project structure
-- **CI/CD Optimization**: `/docs/ci-cd/WORKFLOW_OPTIMIZATION_COMPLETE.md` - Complete workflow optimization (Sessions 8-10)
-- **CI/CD Guide**: `/docs/ci-cd/CI_CD_GUIDE.md` - Pipeline documentation
-- **Dependabot**: `/docs/ci-cd/DEPENDABOT_ACTION_PLAN.md` - Dependency management
+- **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
+- **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
+- **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
+- **Standards**: `/docs/guides/standards.md` - Code style and conventions
+- **Code Quality**: `/docs/guides/overview.md` - Quality tools and automation
+- **Architecture**: `/docs/guides/structure.md` - Project structure
+- **CI/CD Optimization**: `/docs/ci-cd/optimization.md` - Complete workflow optimization (Sessions 8-10)
+- **CI/CD Guide**: `/docs/ci-cd/overview.md` - Pipeline documentation
+- **Dependabot**: `/docs/ci-cd/dependabot.md` - Dependency management
 - **Deployment**: `/docs/deployment/README.md` - Production deployment guides
 - **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
-- **DNS Configuration**: `/docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup
+- **DNS Configuration**: `/docs/deployment/dns.md` - Domain setup
 - **Documentation Index**: `/docs/README.md` - Complete documentation index ⭐
 
 ## Common Commands

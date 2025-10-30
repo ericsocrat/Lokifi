@@ -9,8 +9,8 @@ backend/
 ├── fastapi/            # FastAPI patterns and best practices
 │   └── .gitkeep
 ├── database/           # Database setup and management
-│   ├── POSTGRESQL_SETUP.md
-│   ├── REDIS_SETUP.md
+│   ├── postgresql.md
+│   ├── redis.md
 │   └── .gitkeep
 └── services/           # Service layer patterns
     └── .gitkeep
@@ -50,8 +50,8 @@ backend/
 ## 📚 Related Documentation
 
 - **Testing**: [../testing/INTEGRATION_TESTS_GUIDE.md](../testing/INTEGRATION_TESTS_GUIDE.md)
-- **Code Quality**: [../quality/CODING_STANDARDS.md](../quality/CODING_STANDARDS.md)
-- **Security**: [../../security/BACKEND_SECURITY_AUDIT_2025-01-30.md](../../security/BACKEND_SECURITY_AUDIT_2025-01-30.md)
+- **Code Quality**: [../quality/standards.md](../quality/standards.md)
+- **Security**: [../../security/backend-audit-2025-01.md](../../security/backend-audit-2025-01.md)
 
 ---
 

@@ -280,7 +280,7 @@ python -c "import redis; r = redis.from_url('redis://:23233@localhost:6379/0'); 
 ```
 
 **📖 For backend directory navigation and configuration:**
-- [`../QUICK_START.md`](../QUICK_START.md) - Complete backend navigation guide
+- [`../QUICK_START.md`](../quick-start.md) - Complete backend navigation guide
 - [`../security/README.md`](../security/README.md) - Complete environment configuration guide
 
 ---
@@ -391,7 +391,7 @@ After setup, verify everything works:
 - [ ] Redis container `lokifi-redis` is running
 - [ ] Backend connects to Redis (check logs for "Redis connected")
 - [ ] Frontend loads at http://localhost:3000
-- [ ] API responds (see [`../api/API_REFERENCE.md`](../api/API_REFERENCE.md) for endpoints)
+- [ ] API responds (see [`../api/reference.md`](../api/reference.md) for endpoints)
 - [ ] `.\manage-redis.ps1 status` shows "RUNNING" and "Connection successful"
 
 ---

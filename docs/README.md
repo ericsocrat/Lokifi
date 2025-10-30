@@ -4,26 +4,26 @@ Welcome to the comprehensive documentation for the Lokifi project. All documenta
 
 ## 📁 Documentation Structure (October 2025)
 
-### � [Quick Start](./QUICK_START.md)
+### � [Quick Start](./quick-start.md)
 **Start here!** Consolidated quick reference with all essential commands and workflows.
 
 ### 📖 [Essential Documentation](./archive/START_HERE.md)
 Project overview and getting started guide for new developers (archived).
 
-### ✅ [Development Checklists](./CHECKLISTS.md)
+### ✅ [Development Checklists](./checklists.md)
 Complete development checklists for code quality, testing, and deployment.
 
 ### 🏗️ [Architecture](./architecture/)
 System architecture, design patterns, and technical structure:
-- [`REPOSITORY_STRUCTURE.md`](./architecture/REPOSITORY_STRUCTURE.md) - Codebase organization
-- [`ADVANCED_OPTIMIZATION_GUIDE.md`](./architecture/ADVANCED_OPTIMIZATION_GUIDE.md) - Performance optimization
-- [`TECHNICAL_DEBT.md`](./architecture/TECHNICAL_DEBT.md) - Technical debt tracking
+- [`structure.md`](./architecture/structure.md) - Codebase organization
+- [`optimization.md`](./architecture/optimization.md) - Performance optimization
+- [`technical-debt.md`](./architecture/technical-debt.md) - Technical debt tracking
 - [`design/`](./architecture/design/) - Design system (5 guides)
 - [`patterns/`](./architecture/patterns/) - Design patterns (future)
 
 ### 🔧 [Development](./development/)
 Developer experience, workflows, and tooling:
-- [`setup/DEVELOPER_WORKFLOW.md`](./development/setup/DEVELOPER_WORKFLOW.md) ⭐ - Complete setup & daily workflows
+- [`setup/workflow.md`](./development/setup/workflow.md) ⭐ - Complete setup & daily workflows
 - [`tooling/`](./development/tooling/) - Tools and automation (future)
 - [`practices/`](./development/practices/) - Best practices (future)
 
@@ -37,26 +37,26 @@ Frontend/backend development guides (**NEW STRUCTURE**):
 
 ### 🧪 [Testing & Quality](./guides/)
 Testing strategies and quality assurance:
-- [`testing/TESTING_GUIDE.md`](./guides/testing/TESTING_GUIDE.md) - Complete testing strategies
-- [`testing/INTEGRATION_TESTS_GUIDE.md`](./guides/testing/INTEGRATION_TESTS_GUIDE.md) - Integration testing
-- [`quality/CODE_QUALITY.md`](./guides/quality/CODE_QUALITY.md) - Quality standards and automation
-- [`quality/CODING_STANDARDS.md`](./guides/quality/CODING_STANDARDS.md) - Coding conventions
-- [`testing/COVERAGE_BASELINE.md`](./guides/testing/COVERAGE_BASELINE.md) - Test coverage tracking
+- [`testing/overview.md`](./guides/testing/overview.md) - Complete testing strategies
+- [`testing/integration.md`](./guides/testing/integration.md) - Integration testing
+- [`quality/overview.md`](./guides/quality/overview.md) - Quality standards and automation
+- [`quality/standards.md`](./guides/quality/standards.md) - Coding conventions
+- [`testing/coverage.md`](./guides/testing/coverage.md) - Test coverage tracking
 
 ### 🔄 [Workflow & Operations](./guides/)
 Pull requests, optimization, and architecture:
-- [`PULL_REQUEST_COMPLETE_GUIDE.md`](./guides/PULL_REQUEST_COMPLETE_GUIDE.md) ⭐ - Complete PR workflow
-- [`architecture/ADVANCED_OPTIMIZATION_GUIDE.md`](./guides/architecture/ADVANCED_OPTIMIZATION_GUIDE.md) - Advanced optimization
-- [`architecture/TECHNICAL_DEBT.md`](./guides/architecture/TECHNICAL_DEBT.md) - Technical debt tracking
-- [`architecture/REPOSITORY_STRUCTURE.md`](./guides/architecture/REPOSITORY_STRUCTURE.md) - Project structure
+- [`PULL_REQUEST_COMPLETE_GUIDE.md`](./guides/workflow.md) ⭐ - Complete PR workflow
+- [`architecture/optimization.md`](./guides/architecture/optimization.md) - Advanced optimization
+- [`architecture/technical-debt.md`](./guides/architecture/technical-debt.md) - Technical debt tracking
+- [`architecture/structure.md`](./guides/architecture/structure.md) - Project structure
 
 ### 🚀 [CI/CD & Workflows](./ci-cd/)
 Continuous integration and deployment documentation **(RESTRUCTURED)**:
-- [`guides/CI_CD_GUIDE.md`](./ci-cd/guides/CI_CD_GUIDE.md) - Complete CI/CD guide
-- [`guides/PERFORMANCE_GUIDE.md`](./ci-cd/guides/PERFORMANCE_GUIDE.md) - Performance optimization
-- [`workflows/WORKFLOW_OPTIMIZATION_COMPLETE.md`](./ci-cd/workflows/WORKFLOW_OPTIMIZATION_COMPLETE.md) - Workflow optimization (Sessions 8-10)
-- [`dependencies/DEPENDABOT_ACTION_PLAN.md`](./ci-cd/dependencies/DEPENDABOT_ACTION_PLAN.md) - Dependency management
-- [`operational/ROLLBACK_PROCEDURES.md`](./ci-cd/operational/ROLLBACK_PROCEDURES.md) - Emergency procedures
+- [`guides/overview.md`](./ci-cd/guides/overview.md) - Complete CI/CD guide
+- [`guides/performance.md`](./ci-cd/guides/performance.md) - Performance optimization
+- [`workflows/optimization.md`](./ci-cd/workflows/optimization.md) - Workflow optimization (Sessions 8-10)
+- [`dependencies/dependabot.md`](./ci-cd/dependencies/dependabot.md) - Dependency management
+- [`operational/rollback.md`](./ci-cd/operational/rollback.md) - Emergency procedures
 - See [ci-cd/README.md](./ci-cd/README.md) for complete index
 
 ### 📡 [API Documentation](./api/)
@@ -80,12 +80,12 @@ Team processes and workflows (future):
 ### 🔒 [Security](./security/)
 Security configuration and best practices:
 - [`README.md`](./security/README.md) - Security overview
-- [`ENHANCED_SECURITY_SETUP.md`](./security/ENHANCED_SECURITY_SETUP.md) - Advanced security
-- [`ENVIRONMENT_CONFIGURATION.md`](./security/ENVIRONMENT_CONFIGURATION.md) - Environment variables
+- [`enhanced-setup.md`](./security/enhanced-setup.md) - Advanced security
+- [`environment.md`](./security/environment.md) - Environment variables
 
 ### 📋 [Planning & Sprint History](./plans/)
 Sprint history and historical project planning:
-- [`SPRINT_HISTORY.md`](./plans/SPRINT_HISTORY.md) - Historical record of completed sprints
+- [`SPRINT_HISTORY.md`](./plans/history.md) - Historical record of completed sprints
 - Completed session plans archived in `plans/.archive/`
 - See [`plans/README.md`](./plans/README.md) for complete details
 - **Active planning**: Now tracked in GitHub Issues and PRs
@@ -105,36 +105,36 @@ Problem solving and debugging (future):
 ## 🎯 Quick Navigation
 
 ### For New Developers
-1. Start with **[`QUICK_START.md`](./QUICK_START.md)** - Essential commands and quick reference
-2. Read **[`development/setup/DEVELOPER_WORKFLOW.md`](./development/setup/DEVELOPER_WORKFLOW.md)** - Complete setup & daily workflows ⭐
-3. Check [`guides/quality/CODING_STANDARDS.md`](./guides/quality/CODING_STANDARDS.md) - Code standards
-4. Learn [`guides/pull-requests/PULL_REQUEST_COMPLETE_GUIDE.md`](./guides/pull-requests/PULL_REQUEST_COMPLETE_GUIDE.md) - PR workflow ⭐
+1. Start with **[`quick-start.md`](./quick-start.md)** - Essential commands and quick reference
+2. Read **[`development/setup/workflow.md`](./development/setup/workflow.md)** - Complete setup & daily workflows ⭐
+3. Check [`guides/quality/standards.md`](./guides/quality/standards.md) - Code standards
+4. Learn [`guides/pull-requests/workflow.md`](./guides/pull-requests/workflow.md) - PR workflow ⭐
 
 ### For DevOps Engineers
-1. Review **[`QUICK_START.md`](./QUICK_START.md)** - All service management
-2. Check [`ci-cd/guides/CI_CD_GUIDE.md`](./ci-cd/guides/CI_CD_GUIDE.md) - CI/CD pipelines
+1. Review **[`quick-start.md`](./quick-start.md)** - All service management
+2. Check [`ci-cd/guides/overview.md`](./ci-cd/guides/overview.md) - CI/CD pipelines
 3. Read [`guides/backend/database/`](./guides/backend/database/) - PostgreSQL & Redis setup
 4. Review [`deployment/guides/`](./deployment/guides/) - Deployment procedures
 5. Check [`security/README.md`](./security/README.md) - Security setup
 
 ### For QA/Testers
-1. Review [`guides/testing/TESTING_GUIDE.md`](./guides/testing/TESTING_GUIDE.md) - Complete testing guide
-2. Check [`guides/testing/INTEGRATION_TESTS_GUIDE.md`](./guides/testing/INTEGRATION_TESTS_GUIDE.md) - Integration testing
-3. Review [`guides/quality/CODE_QUALITY.md`](./guides/quality/CODE_QUALITY.md) - Quality standards
+1. Review [`guides/testing/overview.md`](./guides/testing/overview.md) - Complete testing guide
+2. Check [`guides/testing/integration.md`](./guides/testing/integration.md) - Integration testing
+3. Review [`guides/quality/overview.md`](./guides/quality/overview.md) - Quality standards
 4. See [`ci-cd/testing/`](./ci-cd/testing/) - CI/CD testing strategies
 
 ### For Contributors
-1. Read **[`guides/pull-requests/PULL_REQUEST_COMPLETE_GUIDE.md`](./guides/pull-requests/PULL_REQUEST_COMPLETE_GUIDE.md)** - Complete PR workflow ⭐
-2. Check [`guides/quality/CODE_QUALITY.md`](./guides/quality/CODE_QUALITY.md) - Quality standards
-3. Review [`CHECKLISTS.md`](./CHECKLISTS.md) - Pre-commit/pre-merge checklists
+1. Read **[`guides/pull-requests/workflow.md`](./guides/pull-requests/workflow.md)** - Complete PR workflow ⭐
+2. Check [`guides/quality/overview.md`](./guides/quality/overview.md) - Quality standards
+3. Review [`checklists.md`](./checklists.md) - Pre-commit/pre-merge checklists
 
 ---
 
 ## 📊 Documentation Statistics (October 30, 2025)
 
-**Structure**: 12 top-level categories + 35+ subdirectories  
-**Pattern**: World-class organization following ci-cd/ model  
-**Scalability**: 16 future-proof folders with .gitkeep placeholders  
+**Structure**: 12 top-level categories + 35+ subdirectories
+**Pattern**: World-class organization following ci-cd/ model
+**Scalability**: 16 future-proof folders with .gitkeep placeholders
 **Recent Update**: Phase 7 restructure (Session 53) - moved 19 files, created 4 new categories
 
 ## 📦 Documentation Consolidation & Restructure

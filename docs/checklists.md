@@ -5,13 +5,13 @@
 **Status:** Production Ready
 
 > **🔗 Related Documents**:
-> - **[Dependabot Action Plan](./ci-cd/dependencies/DEPENDABOT_ACTION_PLAN.md)** - ✅ RESOLVED: PR #59 merged
-> - **[Sprint History](./plans/SPRINT_HISTORY.md)** - Historical record of completed sprints and technical debt resolution
+> - **[Dependabot Action Plan](./ci-cd/dependencies/dependabot.md)** - ✅ RESOLVED: PR #59 merged
+> - **[Sprint History](./plans/history.md)** - Historical record of completed sprints and technical debt resolution
 > - **[Sprint 2 Completion](./plans/SPRINT_2_COMPLETION_SUMMARY.md)** - Sprint 2 comprehensive summary
 > - **[Sprint 3 Planning](./plans/SPRINT_3_PLANNING.md)** - Sprint 3 options and planning
 > - **[Session 25 ESLint Rules](./plans/SESSION_25_ESLINT_RULES.md)** - ESLint rules re-enablement
-> - **[Dependency Management](./ci-cd/dependencies/DEPENDENCY_MANAGEMENT.md)** - Dependency best practices
-> - **[Workflow Optimization](./ci-cd/workflows/WORKFLOW_OPTIMIZATION_COMPLETE.md)** - CI/CD optimization results
+> - **[Dependency Management](./ci-cd/dependencies/management.md)** - Dependency best practices
+> - **[Workflow Optimization](./ci-cd/workflows/optimization.md)** - CI/CD optimization results
 >
 > **✅ Main Branch Status**: EXCELLENT - 100% pass rate (35/35 workflows) 🎉
 > **✅ Sprint 0**: COMPLETE (Dependency management, Python 3.10, asyncpg)

@@ -190,21 +190,21 @@ services:
 
 ### PostgreSQL Setup
 For detailed PostgreSQL configuration, see:
-- [PostgreSQL Setup Guide](../guides/infrastructure/POSTGRESQL_SETUP.md)
+- [PostgreSQL Setup Guide](../guides/infrastructure/postgresql.md)
 
 **Required variables:**
 - `DATABASE_URL` - PostgreSQL connection string
 
 ### Redis Setup
 For detailed Redis configuration, see:
-- [Redis Setup Guide](../guides/infrastructure/REDIS_SETUP.md)
+- [Redis Setup Guide](../guides/infrastructure/redis.md)
 
 **Required variables:**
 - `REDIS_URL` - Redis connection string with authentication
 
 ### Authentication Setup
 For detailed authentication configuration, see:
-- [Enhanced Security Setup](./ENHANCED_SECURITY_SETUP.md)
+- [Enhanced Security Setup](./enhanced-setup.md)
 
 **Required variables:**
 - `JWT_SECRET` - Secret key for JWT token signing
@@ -244,7 +244,7 @@ REDIS_URL=redis://:23233@localhost:6379/0
 ## 📚 Additional Resources
 
 - [Security README](./README.md) - Security overview and best practices
-- [Quick Start Guide](../QUICK_START.md) - Initial project setup
+- [Quick Start Guide](../quick-start.md) - Initial project setup
 - [Developer Workflow](../guides/DEVELOPER_WORKFLOW.md) - Development environment setup
 
 ## ⚠️ Important Notes

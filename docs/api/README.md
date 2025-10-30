@@ -7,8 +7,8 @@
 ```
 api/
 ├── guides/             # API usage guides
-│   ├── API_DOCUMENTATION.md
-│   └── API_REFERENCE.md
+│   ├── overview.md
+│   └── reference.md
 ├── endpoints/          # Endpoint-specific documentation
 │   └── .gitkeep
 └── schemas/            # Request/response schemas
@@ -17,8 +17,8 @@ api/
 
 ## 📚 Quick Links
 
-- **API Documentation**: [guides/API_DOCUMENTATION.md](guides/API_DOCUMENTATION.md)
-- **API Reference**: [guides/API_REFERENCE.md](guides/API_REFERENCE.md)
+- **API Documentation**: [guides/overview.md](guides/overview.md)
+- **API Reference**: [guides/reference.md](guides/reference.md)
 
 ## 🎯 What's Here
 

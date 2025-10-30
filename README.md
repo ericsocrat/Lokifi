@@ -73,7 +73,7 @@ lokifi/
 
 ### 📖 **Navigation Guide**
 - **👩‍💻 New Developers**: Start with [`START_HERE.md`](START_HERE.md) then [`docs/guides/`](docs/guides/)
-- **🔧 Setup**: Use [`docs/guides/QUICK_START_GUIDE.md`](docs/guides/QUICK_START_GUIDE.md)
+- **🔧 Setup**: Use [`docs/guides/quick-start.md`](docs/guides/quick-start.md)
 - **📚 Reference**: See [`docs/guides/QUICK_REFERENCE_GUIDE.md`](docs/guides/QUICK_REFERENCE_GUIDE.md)
 - **🔍 Code Quality**: Run [`tools/codebase-analyzer.ps1`](tools/codebase-analyzer.ps1) or [`tools/test-runner.ps1`](tools/test-runner.ps1)
 - **🚀 Deployment**: Follow [`docs/guides/DEPLOYMENT_GUIDE.md`](docs/guides/DEPLOYMENT_GUIDE.md)
@@ -286,7 +286,7 @@ For detailed testing information, see [docs/testing/README.md](docs/testing/READ
 - ✅ Artifact retention reduction (14 days instead of 30)
 
 **Documentation**:
-- [Complete Workflow Optimization Summary](docs/ci-cd/WORKFLOW_OPTIMIZATION_COMPLETE.md) - 380-line comprehensive guide
+- [Complete Workflow Optimization Summary](docs/ci-cd/optimization.md) - 380-line comprehensive guide
 - [Session 10 Extended Journey](docs/ci-cd/SESSION_10_EXTENDED_SUMMARY.md) - Complete optimization story
 - [Session 8-9 Security & CI Resolution](docs/SESSION_8_9_SECURITY_AND_CI_RESOLUTION.md) - Foundation work
 
@@ -330,7 +330,7 @@ npm run coverage:sync:dryrun
 ### 📚 Coverage Documentation
 
 - **Master Config:** [`coverage.config.json`](coverage.config.json) - Single source of truth
-- **Coverage Baseline:** [`docs/guides/COVERAGE_BASELINE.md`](docs/guides/COVERAGE_BASELINE.md)
+- **Coverage Baseline:** [`docs/guides/coverage.md`](docs/guides/coverage.md)
 - **Automation:** Coverage tracking fully integrated in CI/CD workflows
 
 ### 🎯 Coverage Goals

@@ -288,7 +288,7 @@ See [CI_CD_GUIDE.md](./CI_CD_GUIDE.md#how-our-workflows-work) for detailed workf
 - **[Main Documentation](../README.md)** - Project-wide documentation index
 - **[Deployment Guide](../deployment/README.md)** - Production deployment procedures
 - **[Test Quick Reference](../TEST_QUICK_REFERENCE.md)** - Testing best practices
-- **[Coding Standards](../guides/CODING_STANDARDS.md)** - Code quality standards
+- **[Coding Standards](../guides/quality/standards.md)** - Code quality standards
 - **[Coverage Baseline](../guides/COVERAGE_BASELINE.md)** - Coverage improvement guide
 
 ---

@@ -352,7 +352,7 @@ coverage: {
 - [Testing Guide](./TESTING_GUIDE.md) - Complete testing strategies
 - [Integration Tests Guide](./INTEGRATION_TESTS_GUIDE.md) - Integration testing
 - [Code Quality](./CODE_QUALITY.md) - Quality standards and automation
-- [Developer Workflow](./DEVELOPER_WORKFLOW.md) - Development best practices
+- [Developer Workflow](./workflow.md) - Development best practices
 
 ## 📝 Notes
 

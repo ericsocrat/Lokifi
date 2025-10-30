@@ -163,9 +163,9 @@ Are you developing locally?
 
 ### Production Deployment
 - **Deployment Overview**: `../../docs/deployment/README.md` - Complete deployment navigation
-- **Quick Deploy**: `../../docs/deployment/QUICK_DEPLOY.md` - 3-step deployment guide
-- **Deployment Checklist**: `../../docs/deployment/PRODUCTION_DEPLOYMENT_CHECKLIST.md` - Full guide
-- **DNS Configuration**: `../../docs/deployment/DNS_CONFIGURATION_GUIDE.md` - Domain setup for www.lokifi.com
+- **Quick Deploy**: `../../docs/deployment/quick-start.md` - 3-step deployment guide
+- **Deployment Checklist**: `../../docs/deployment/production.md` - Full guide
+- **DNS Configuration**: `../../docs/deployment/dns.md` - Domain setup for www.lokifi.com
 - **SSL Setup**: `../ssl/SSL_SETUP_INSTRUCTIONS.md`
 - **Monitoring**: `../monitoring/README.md`
 

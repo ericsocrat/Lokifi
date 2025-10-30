@@ -72,7 +72,7 @@ GRANT ALL PRIVILEGES ON DATABASE lokifi TO lokifi;
 ### 2. Update Backend Configuration
 
 **📖 For complete environment configuration:**
-- See [Environment Configuration Guide](../../security/ENVIRONMENT_CONFIGURATION.md#database-configuration) for `DATABASE_URL` setup and examples
+- See [Environment Configuration Guide](../../security/environment.md#database-configuration) for `DATABASE_URL` setup and examples
 
 The `DATABASE_URL` environment variable will be set in `apps/backend/.env`.
 
@@ -81,7 +81,7 @@ The `DATABASE_URL` environment variable will be set in `apps/backend/.env`.
 python -m alembic upgrade head
 ```
 
-**📖 For directory navigation:** See [`../QUICK_START.md`](../QUICK_START.md) for complete backend setup workflows
+**📖 For directory navigation:** See [`../QUICK_START.md`](../quick-start.md) for complete backend setup workflows
 
 ## Quick Start Commands
 

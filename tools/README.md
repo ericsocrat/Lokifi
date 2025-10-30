@@ -82,7 +82,7 @@ git commit -m "feat: your message"
 git push
 ```
 
-See `docs/DEVELOPER_WORKFLOW.md` for complete workflows and troubleshooting.
+See `docs/workflow.md` for complete workflows and troubleshooting.
 
 
 ### Pre-commit Hook Setup
@@ -180,14 +180,14 @@ When adding tools or scripts:
 
 ## 📞 Support
 
-**Primary Resource**: `docs/DEVELOPER_WORKFLOW.md`
+**Primary Resource**: `docs/workflow.md`
 
 For specific tools:
 - **Test runner**: Run `.\tools\test-runner.ps1 -Help` for options
 - **Codebase analysis**: Run `.\tools\codebase-analyzer.ps1` for project metrics
 - **Security scanning**: Run `.\tools\security-scanner.ps1` for vulnerability checks
 - **Git hooks**: Run `.\tools\setup-precommit-hooks.ps1` to configure
-- **General workflow**: Read `docs/DEVELOPER_WORKFLOW.md`
+- **General workflow**: Read `docs/workflow.md`
 
 ---
 

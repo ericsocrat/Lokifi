@@ -19,7 +19,7 @@ Integration tests verify that all services (backend, frontend, database, Redis) 
 # 1. Start services
 docker compose -f infra/docker/docker-compose.yml up -d
 
-# 2. Wait for services to be ready (see API_REFERENCE.md for endpoint docs)
+# 2. Wait for services to be ready (see reference.md for endpoint docs)
 curl http://localhost:8000/api/health  # Backend
 curl http://localhost:3000/            # Frontend
 
@@ -27,7 +27,7 @@ curl http://localhost:3000/            # Frontend
 npm ci --legacy-peer-deps
 
 **📖 For complete setup and testing commands:**
-- [`../QUICK_START.md`](../QUICK_START.md) - Initial setup and directory navigation
+- [`../QUICK_START.md`](../quick-start.md) - Initial setup and directory navigation
 - [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Comprehensive testing strategies and CI commands
 
 # 4. Stop services
@@ -51,8 +51,8 @@ Integration tests use containerized environment variables.
 
 **📖 For complete environment configuration:**
 - [`../../security/README.md`](../../security/README.md) - Environment variables and security setup
-- [`../infrastructure/REDIS_SETUP.md`](../infrastructure/REDIS_SETUP.md) - Redis-specific configuration
-- [`../infrastructure/POSTGRESQL_SETUP.md`](../infrastructure/POSTGRESQL_SETUP.md) - Database configuration
+- [`../infrastructure/redis.md`](../infrastructure/redis.md) - Redis-specific configuration
+- [`../infrastructure/postgresql.md`](../infrastructure/postgresql.md) - Database configuration
 
 ---
 
@@ -80,7 +80,7 @@ Integration tests use containerized environment variables.
 
 ## 📋 Health Endpoints
 
-**📖 For complete API endpoint documentation:** See [`../api/API_REFERENCE.md`](../api/API_REFERENCE.md)
+**📖 For complete API endpoint documentation:** See [`../api/reference.md`](../api/reference.md)
 
 ### Frontend
 - **URL:** `http://localhost:3000/`
@@ -106,7 +106,7 @@ docker compose -f infra/docker/docker-compose.yml restart
 ### Health Checks Failing
 
 ```bash
-# Test backend directly (see API_REFERENCE.md for endpoints)
+# Test backend directly (see reference.md for endpoints)
 docker exec -it lokifi-backend-dev curl http://localhost:8000/api/health
 
 # Check backend logs
@@ -152,7 +152,7 @@ apps/
     ├── Dockerfile              # Production build
     └── Dockerfile.dev          # Development build
 
-> **📖 Environment setup:** See [Environment Configuration Guide](../security/ENVIRONMENT_CONFIGURATION.md) for `.env` file configuration
+> **📖 Environment setup:** See [Environment Configuration Guide](../security/environment.md) for `.env` file configuration
 
 .github/workflows/
 └── integration-ci.yml          # Automation workflow

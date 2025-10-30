@@ -641,7 +641,7 @@ When reviewing code:
 ## 📚 API Documentation Reference
 
 **📖 For complete API patterns and endpoints:**
-- [`../api/API_DOCUMENTATION.md`](../api/API_DOCUMENTATION.md) - Comprehensive API reference and examples
+- [`../api/overview.md`](../api/overview.md) - Comprehensive API reference and examples
 
 ---
 

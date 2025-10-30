@@ -11,7 +11,7 @@
 
 ### ⭐ Essential Reading (Start Here!)
 
-- **[DEVELOPER_WORKFLOW.md](DEVELOPER_WORKFLOW.md)** ⭐ - Complete development setup and daily workflows
+- **[DEVELOPER_WORKFLOW.md](workflow.md)** ⭐ - Complete development setup and daily workflows
   - **Consolidates**: DEVELOPMENT_SETUP.md, VSCODE_SETUP.md, QUICK_REFERENCE.md, AUTOMATION_GUIDE.md (key parts)
   - Initial setup, VS Code configuration, infrastructure, frontend/backend commands, quick reference
   - **Your one-stop guide for daily development!**
@@ -33,13 +33,13 @@ Testing strategies and quality assurance:
 
 ### 💎 [`quality/`](quality/)
 Code quality standards and tools:
-- **[CODE_QUALITY.md](quality/CODE_QUALITY.md)** - Code quality standards and tools (ESLint, Prettier, Husky)
-- **[CODING_STANDARDS.md](quality/CODING_STANDARDS.md)** - Project coding conventions
+- **[CODE_QUALITY.md](quality/overview.md)** - Code quality standards and tools (ESLint, Prettier, Husky)
+- **[CODING_STANDARDS.md](quality/standards.md)** - Project coding conventions
 
 ### 🏗️ [`infrastructure/`](infrastructure/)
 Database and service setup:
-- **[POSTGRESQL_SETUP.md](infrastructure/POSTGRESQL_SETUP.md)** - PostgreSQL installation and configuration
-- **[REDIS_SETUP.md](infrastructure/REDIS_SETUP.md)** - Redis setup with Docker
+- **[postgresql.md](infrastructure/postgresql.md)** - PostgreSQL installation and configuration
+- **[redis.md](infrastructure/redis.md)** - Redis setup with Docker
 
 ### � [`architecture/`](architecture/)
 Project structure and optimization:
@@ -76,17 +76,17 @@ Project structure and optimization:
 ## 🔍 Quick Navigation
 
 **By Task:**
-- **First-time setup**: Start with [DEVELOPER_WORKFLOW.md](DEVELOPER_WORKFLOW.md) ⭐
-- **Daily development**: Use [DEVELOPER_WORKFLOW.md](DEVELOPER_WORKFLOW.md) Quick Reference section
+- **First-time setup**: Start with [DEVELOPER_WORKFLOW.md](workflow.md) ⭐
+- **Daily development**: Use [DEVELOPER_WORKFLOW.md](workflow.md) Quick Reference section
 - **Creating PRs**: Read [PULL_REQUEST_COMPLETE_GUIDE.md](PULL_REQUEST_COMPLETE_GUIDE.md) ⭐
 - **Writing tests**: See [testing/TESTING_GUIDE.md](testing/TESTING_GUIDE.md)
-- **Code quality**: Review [quality/CODE_QUALITY.md](quality/CODE_QUALITY.md) + [quality/CODING_STANDARDS.md](quality/CODING_STANDARDS.md)
-- **Setup database**: Check [infrastructure/POSTGRESQL_SETUP.md](infrastructure/POSTGRESQL_SETUP.md)
-- **Setup Redis**: Check [infrastructure/REDIS_SETUP.md](infrastructure/REDIS_SETUP.md)
+- **Code quality**: Review [quality/overview.md](quality/overview.md) + [quality/standards.md](quality/standards.md)
+- **Setup database**: Check [infrastructure/postgresql.md](infrastructure/postgresql.md)
+- **Setup Redis**: Check [infrastructure/redis.md](infrastructure/redis.md)
 
 **By Role:**
-- **New developers**: DEVELOPER_WORKFLOW.md → quality/CODING_STANDARDS.md → testing/TESTING_GUIDE.md
-- **Contributors**: PULL_REQUEST_COMPLETE_GUIDE.md → quality/CODE_QUALITY.md
+- **New developers**: DEVELOPER_WORKFLOW.md → quality/standards.md → testing/TESTING_GUIDE.md
+- **Contributors**: PULL_REQUEST_COMPLETE_GUIDE.md → quality/overview.md
 - **Maintainers**: architecture/REPOSITORY_STRUCTURE.md → architecture/TECHNICAL_DEBT.md
 - **DevOps**: infrastructure/ folder → [../ci-cd/](../ci-cd/)
 

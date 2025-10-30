@@ -59,13 +59,13 @@ npm run dev
 .\test-api.ps1
 
 # Manual API testing
-# See api/API_DOCUMENTATION.md for complete endpoint reference
+# See api/guides/overview.md for complete endpoint reference
 curl http://localhost:8000/api/v1/health  # Health check
 ```
 
 **📖 For complete API examples and documentation:**
-- [`api/API_DOCUMENTATION.md`](api/API_DOCUMENTATION.md) - Complete API guide with all endpoints
-- [`api/API_REFERENCE.md`](api/API_REFERENCE.md) - Comprehensive API reference
+- [`api/guides/overview.md`](api/guides/overview.md) - Complete API guide with all endpoints
+- [`api/guides/reference.md`](api/guides/reference.md) - Comprehensive API reference
 
 ## Code Quality Checks
 ```powershell
@@ -126,7 +126,7 @@ ruff check               # Linting
 4. **Commits** only if all checks pass
 
 **📖 For complete code quality setup:**
-- [`guides/CODE_QUALITY.md`](guides/CODE_QUALITY.md) - Complete ESLint, Prettier, and Husky configuration
+- [`guides/quality/overview.md`](guides/quality/overview.md) - Complete ESLint, Prettier, and Husky configuration
 
 ### Code Style Rules
 - **Semicolons**: Required
@@ -178,15 +178,15 @@ docker compose ps
 ### Core Documentation
 - **`README.md`** - Project overview and setup
 - **`START_HERE.md`** - Complete getting started guide (see `archive/`)
-- **`guides/DEVELOPER_WORKFLOW.md`** - Complete development setup & daily workflows ⭐
-- **`guides/REPOSITORY_STRUCTURE.md`** - File organization guide
+- **`development/setup/workflow.md`** - Complete development setup & daily workflows ⭐
+- **`architecture/structure.md`** - File organization guide
 
 ### Technical Guides
-- **`api/API_REFERENCE.md`** - Complete API documentation
-- **`guides/TESTING_GUIDE.md`** - Testing strategies and examples
-- **`guides/PULL_REQUEST_COMPLETE_GUIDE.md`** - Complete PR workflow ⭐
+- **`api/guides/reference.md`** - Complete API documentation
+- **`guides/testing/overview.md`** - Testing strategies and examples
+- **`guides/pull-requests/workflow.md`** - Complete PR workflow ⭐
 - **`security/README.md`** - Security configuration guide
-- **`ci-cd/CI_CD_GUIDE.md`** - CI/CD pipelines and automation
+- **`ci-cd/guides/overview.md`** - CI/CD pipelines and automation
 
 ### Configuration Files
 - **`apps/frontend/package.json`** - Frontend dependencies and scripts
@@ -240,8 +240,8 @@ pytest --cov          # Backend
 ```
 
 **📖 For complete testing documentation:**
-- [`guides/TESTING_GUIDE.md`](guides/TESTING_GUIDE.md) - Complete testing strategies and commands
-- [`guides/INTEGRATION_TESTS_GUIDE.md`](guides/INTEGRATION_TESTS_GUIDE.md) - Integration testing guide
+- [`guides/testing/overview.md`](guides/testing/overview.md) - Complete testing strategies and commands
+- [`guides/testing/integration.md`](guides/testing/integration.md) - Integration testing guide
 
 ---
 
@@ -302,8 +302,8 @@ npm run prepare
 ```
 
 **📖 For detailed troubleshooting:**
-- [`guides/CODE_QUALITY.md`](guides/CODE_QUALITY.md) - Complete pre-commit setup and troubleshooting
-- [`guides/DEVELOPER_WORKFLOW.md`](guides/DEVELOPER_WORKFLOW.md) - Complete development setup & workflows
+- [`guides/quality/overview.md`](guides/quality/overview.md) - Complete pre-commit setup and troubleshooting
+- [`development/setup/workflow.md`](development/setup/workflow.md) - Complete development setup & workflows
 
 ---
 

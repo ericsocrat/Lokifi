@@ -171,7 +171,7 @@ async with httpx.AsyncClient() as client:
 npm outdated && npm update
 
 **📖 For major updates and testing:**
-- [`../QUICK_START.md`](../QUICK_START.md) - Initial setup and installation guide
+- [`../quick-start.md`](../quick-start.md) - Initial setup and installation guide
 - [`TESTING_GUIDE.md`](TESTING_GUIDE.md) - Testing strategies for updates
 ```
 
@@ -257,7 +257,7 @@ npm run build
 **Impact:** Clears 8 auto-generated validator errors
 
 **📖 For complete build workflows:**
-- [`../QUICK_START.md`](../QUICK_START.md) - Development and build commands
+- [`../quick-start.md`](../quick-start.md) - Development and build commands
 
 ### 2. Add Explicit Types to Common Patterns
 ```typescript
@@ -330,7 +330,7 @@ git log --all --grep="TODO"
 - **PROJECT_STATUS_CONSOLIDATED.md** - Project overview
 - **DEVELOPMENT_ENVIRONMENT.md** - Development configuration
 
-**📖 For complete development setup:** See [`../QUICK_START.md`](../QUICK_START.md) for comprehensive installation guide
+**📖 For complete development setup:** See [`../quick-start.md`](../quick-start.md) for comprehensive installation guide
 
 ---
 

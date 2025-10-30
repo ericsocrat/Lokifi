@@ -50,7 +50,7 @@ frontend/
 
 - **Testing**: [../testing/TESTING_GUIDE.md](../testing/TESTING_GUIDE.md)
 - **Code Quality**: [../quality/CODE_QUALITY.md](../quality/CODE_QUALITY.md)
-- **Architecture**: [../../architecture/design/COMPONENT_CATALOG.md](../../architecture/design/COMPONENT_CATALOG.md)
+- **Architecture**: [../../architecture/design/components.md](../../architecture/design/components.md)
 
 ---
 

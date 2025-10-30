@@ -98,7 +98,7 @@ npm run dev
 # Visit http://localhost:3000
 ```
 
-**📖 For detailed setup instructions:** See [`../QUICK_START.md`](../QUICK_START.md) for comprehensive setup guide
+**📖 For detailed setup instructions:** See [`../QUICK_START.md`](../quick-start.md) for comprehensive setup guide
 
 ---
 
@@ -289,7 +289,7 @@ docker-compose exec redis redis-cli -a 23233 ping
 docker-compose exec postgres pg_isready -U lokifi
 # Expected: accepting connections
 
-# Backend API (see API_REFERENCE.md for complete endpoint docs)
+# Backend API (see reference.md for complete endpoint docs)
 curl http://localhost:8000/api/health
 # Expected: {"status":"healthy"}
 
@@ -367,7 +367,7 @@ cd apps/backend
 
 ### Environment Setup
 
-**📖 For complete environment setup and dependency installation:** See [`../QUICK_START.md`](../QUICK_START.md) - Backend Setup section
+**📖 For complete environment setup and dependency installation:** See [`../QUICK_START.md`](../quick-start.md) - Backend Setup section
 
 ### Development Server
 
@@ -668,7 +668,7 @@ pip-audit
 pip show fastapi
 ```
 
-**📖 For dependency updates:** See [`../QUICK_START.md`](../QUICK_START.md) for complete installation guide
+**📖 For dependency updates:** See [`../QUICK_START.md`](../quick-start.md) for complete installation guide
 
 ### Container Security
 
@@ -732,8 +732,8 @@ cd Lokifi && docker-compose up -d
 ```
 
 **📖 For complete setup instructions:**
-- [`QUICK_START.md`](../QUICK_START.md) - Complete installation and setup guide
-- [`QUICK_START.md`](../QUICK_START.md) - Step-by-step getting started guide
+- [`QUICK_START.md`](../quick-start.md) - Complete installation and setup guide
+- [`QUICK_START.md`](../quick-start.md) - Step-by-step getting started guide
 
 ### Daily Development
 
@@ -825,7 +825,7 @@ uvicorn app.main:app --reload --port 8001
 ### "Module not found"
 
 **📖 For dependency installation and troubleshooting:**
-- [`QUICK_START.md`](../QUICK_START.md) - Complete installation and troubleshooting guide
+- [`QUICK_START.md`](../quick-start.md) - Complete installation and troubleshooting guide
 
 ### "Docker container won't start"
 
@@ -856,7 +856,7 @@ Remove-Item -Recurse venv
 pytest
 ```
 
-**📖 For dependency installation:** See [`../QUICK_START.md`](../QUICK_START.md) for complete setup guide
+**📖 For dependency installation:** See [`../QUICK_START.md`](../quick-start.md) for complete setup guide
 
 ### "Git commit blocked"
 
@@ -881,7 +881,7 @@ git commit --no-verify -m "message"
 
 ### Project Documentation
 
-- `/docs/CODING_STANDARDS.md` - Code style guidelines
+- `/docs/standards.md` - Code style guidelines
 - `/docs/TEST_QUICK_REFERENCE.md` - Testing guide
 - `/docs/REPOSITORY_STRUCTURE.md` - Project structure
 - `/.github/workflows/` - CI/CD pipelines
@@ -1075,10 +1075,10 @@ docker compose up -d
 
 ## 📚 Additional Documentation
 
-- **Complete Setup**: [`../QUICK_START.md`](../QUICK_START.md)
+- **Complete Setup**: [`../QUICK_START.md`](../quick-start.md)
 - **Testing Guide**: [`TESTING_GUIDE.md`](TESTING_GUIDE.md)
 - **Code Quality**: [`CODE_QUALITY.md`](CODE_QUALITY.md)
-- **Coding Standards**: [`CODING_STANDARDS.md`](CODING_STANDARDS.md)
+- **Coding Standards**: [`CODING_STANDARDS.md`](standards.md)
 - **Pull Requests**: [`PULL_REQUEST_COMPLETE_GUIDE.md`](PULL_REQUEST_COMPLETE_GUIDE.md)
 - **Integration Tests**: [`INTEGRATION_TESTS_GUIDE.md`](INTEGRATION_TESTS_GUIDE.md)
 

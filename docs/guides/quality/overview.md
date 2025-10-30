@@ -141,7 +141,7 @@ logger.error('Data fetch failed', error, { context });
 logger.websocket('Connected to price feed', { url, protocols });
 logger.websocket('Received price update', { symbol, price });
 
-// API operations (see api/API_DOCUMENTATION.md for endpoint details)
+// API operations (see api/overview.md for endpoint details)
 logger.api('GET', '/api/v1/endpoint', { duration: 234 });
 logger.api('POST', '/api/v1/resource', { resourceId, status: 'created' });
 
@@ -314,7 +314,7 @@ export const PriceChart = ({ title, data, onUpdate }: Props) => {
 // ✅ Proper error handling
 async function fetchAssetPrice(symbol: string): Promise<AssetPrice> {
   try {
-    // For actual endpoints, see api/API_DOCUMENTATION.md
+    // For actual endpoints, see api/overview.md
     const response = await fetch(`/api/v1/assets/${symbol}/price`);
 
     if (!response.ok) {
@@ -425,7 +425,7 @@ class AssetRequest(BaseModel):
 
 ### Authentication & Authorization
 
-> **📖 Environment variables:** See [Environment Configuration Guide](../security/ENVIRONMENT_CONFIGURATION.md#security-best-practices) for complete setup
+> **📖 Environment variables:** See [Environment Configuration Guide](../security/environment.md#security-best-practices) for complete setup
 
 ```typescript
 // ✅ Secure token handling

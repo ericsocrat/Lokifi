@@ -60,7 +60,7 @@ lokifi/
 - **[Local Development](../../infra/docker/LOCAL_DEVELOPMENT.md)** - Running Lokifi locally
 - **[CI/CD Guides](../ci-cd/)** - GitHub Actions and automation
 - **[Security](../security/)** - Security best practices
-- **[Environment Configuration](../security/ENVIRONMENT_CONFIGURATION.md)** - Environment variables
+- **[Environment Configuration](../security/environment.md)** - Environment variables
 
 ---
 

@@ -159,12 +159,12 @@ curl -X POST http://localhost:8000/api/security/alerts/test \
 ```
 
 ### 3. Test Rate Limiting
-**📖 For API endpoints and testing:** See [`../api/API_REFERENCE.md`](../api/API_REFERENCE.md) for complete endpoint documentation
+**📖 For API endpoints and testing:** See [`../api/reference.md`](../api/reference.md) for complete endpoint documentation
 
 ```bash
 # Make rapid requests to trigger rate limiting (use health endpoint from API docs)
 for i in {1..50}; do
-  # See API_REFERENCE.md for complete health endpoint documentation
+  # See reference.md for complete health endpoint documentation
   curl http://localhost:8000/api/health
 done
 ```

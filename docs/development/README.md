@@ -17,8 +17,8 @@ development/
 ## 📚 Quick Links
 
 - **Get Started**: [DEVELOPER_WORKFLOW.md](setup/DEVELOPER_WORKFLOW.md)
-- **Checklists**: [CHECKLISTS.md](../CHECKLISTS.md)
-- **Quick Start**: [QUICK_START.md](../QUICK_START.md)
+- **Checklists**: [CHECKLISTS.md](../checklists.md)
+- **Quick Start**: [QUICK_START.md](../quick-start.md)
 
 ## 🎯 What's Here
 

@@ -40,13 +40,13 @@ Documentation is organized by **category** for better scalability and navigation
 ```
 docs/
 ├── README.md                    # Main documentation index
-├── QUICK_START.md               # Fast project setup
+├── quick-start.md               # Fast project setup
 ├── CHECKLISTS.md                # Process checklists
 ├── plans/                       # Sprint planning and history
-│   ├── SPRINT_HISTORY.md        # Historical record of sprints
+│   ├── history.md        # Historical record of sprints
 │   └── .archive/                # Completed session plans
 ├── guides/                      # Development guides (RESTRUCTURED)
-│   ├── DEVELOPER_WORKFLOW.md ⭐      # Core workflow guide
+│   ├── workflow.md ⭐      # Core workflow guide
 │   ├── PULL_REQUEST_COMPLETE_GUIDE.md ⭐  # PR guide
 │   ├── testing/                 # Testing guides (3 files)
 │   ├── quality/                 # Code quality guides (2 files)
@@ -72,7 +72,7 @@ docs/
 **Purpose:** Developer setup, workflows, and reference documentation
 
 **Core Guides (Root Level):**
-- `DEVELOPER_WORKFLOW.md` ⭐ - Complete development workflow
+- `workflow.md` ⭐ - Complete development workflow
 - `PULL_REQUEST_COMPLETE_GUIDE.md` ⭐ - Pull request guide
 
 **Organized by Category:**
@@ -87,8 +87,8 @@ docs/
 - `CODING_STANDARDS.md` - Code style conventions
 
 **`infrastructure/`** - Infrastructure setup (2 files)
-- `POSTGRESQL_SETUP.md` - Database setup guide
-- `REDIS_SETUP.md` - Redis configuration guide
+- `postgresql.md` - Database setup guide
+- `redis.md` - Redis configuration guide
 
 **`architecture/`** - Architecture and structure (3 files)
 - `REPOSITORY_STRUCTURE.md` - This document
@@ -621,11 +621,11 @@ Security configs → infra/security/
 
 | I need to... | Look in... |
 |--------------|-----------|
-| Get started quickly | `docs/QUICK_START.md` |
-| Understand development workflow | `docs/guides/DEVELOPER_WORKFLOW.md` ⭐ |
+| Get started quickly | `docs/quick-start.md` |
+| Understand development workflow | `docs/guides/workflow.md` ⭐ |
 | Learn PR process | `docs/guides/PULL_REQUEST_COMPLETE_GUIDE.md` ⭐ |
-| Set up PostgreSQL | `docs/guides/infrastructure/POSTGRESQL_SETUP.md` |
-| Set up Redis | `docs/guides/infrastructure/REDIS_SETUP.md` |
+| Set up PostgreSQL | `docs/guides/infrastructure/postgresql.md` |
+| Set up Redis | `docs/guides/infrastructure/redis.md` |
 | Run tests | `tools/test-runner.ps1` or `docs/guides/testing/TESTING_GUIDE.md` |
 | Check code quality | `tools/codebase-analyzer.ps1` |
 | View coding standards | `docs/guides/quality/CODING_STANDARDS.md` |
@@ -833,10 +833,10 @@ Test Coverage:            11.61% frontend, 27% backend (active improvement)
 
 ### Getting Help
 
-- **Development workflow:** `docs/guides/DEVELOPER_WORKFLOW.md`
+- **Development workflow:** `docs/guides/workflow.md`
 - **Pull requests:** `docs/guides/PULL_REQUEST_COMPLETE_GUIDE.md`
 - **Testing:** `docs/guides/testing/TESTING_GUIDE.md`
-- **Quick start:** `docs/QUICK_START.md`
+- **Quick start:** `docs/quick-start.md`
 - **Documentation index:** `docs/README.md`
 
 ---

@@ -2578,7 +2578,7 @@ Skipped the 21 monitoring tests using `describe.skip()` since:
   - [ ] Create `src/lib/types/stores.d.ts` for common store patterns
   - [ ] Create `src/lib/types/api-responses.d.ts` for API response types
   - [ ] Create `src/lib/types/zustand.d.ts` for Zustand-specific types
-  - [ ] Document type patterns in `docs/CODING_STANDARDS.md`
+  - [ ] Document type patterns in `docs/standards.md`
 
 - [ ] **Fix top 3 stores** (6-8 hours)
   - [ ] Type `monitoringStore.tsx` completely
@@ -2679,7 +2679,7 @@ Skipped the 21 monitoring tests using `describe.skip()` since:
   - [ ] Verify existing `tests/a11y/` tests pass
   - [ ] Add tests for newly fixed components
   - [ ] Add a11y checks to CI/CD pipeline
-  - [ ] Document a11y standards in `docs/CODING_STANDARDS.md`
+  - [ ] Document a11y standards in `docs/standards.md`
 
 ### Phase 3: Unused Code Cleanup (~600 violations)
 
@@ -3225,7 +3225,7 @@ Building on the success of Sprint 3 (TypeScript Campaign) and Sprint 4 (Backend 
 ## �🔗 Related Documents
 
 - [PR #27 - Workflow Optimizations Validation](../pull/27)
-- [Coding Standards](./guides/quality/CODING_STANDARDS.md)
+- [Coding Standards](./guides/quality/standards.md)
 - [Repository Structure](./guides/architecture/REPOSITORY_STRUCTURE.md)
 - [Developer Workflow - Complete Guide](./guides/DEVELOPER_WORKFLOW.md) ⭐
 - [Pull Request Complete Guide](./guides/PULL_REQUEST_COMPLETE_GUIDE.md) ⭐

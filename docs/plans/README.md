@@ -151,7 +151,7 @@ For new plans and features:
 - **Current Guides**: `/docs/guides/` - Active development guides
 - **CI/CD Documentation**: `/docs/ci-cd/` - Pipeline and workflow docs
 - **Documentation & Processes**: `/docs/CHECKLISTS.md` - Development workflow checklists
-- **Sprint History**: `/docs/plans/SPRINT_HISTORY.md` - Historical record of completed sprints
+- **Sprint History**: `/docs/plans/history.md` - Historical record of completed sprints
 
 ---
 
