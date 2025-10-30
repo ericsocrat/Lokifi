@@ -12,6 +12,8 @@ pnpm-debug.log*
 .coverage
 coverage.json
 htmlcov/
+.pytest_cache/
+.vitest/
 
 # Env & secrets
 .env
@@ -46,9 +48,20 @@ infra/backups/
 
 # Python (if any tools/scripts)
 __pycache__/
-*.pyc
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+.Python
 .venv/
 venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
 backend/venv/
 backend/__pycache__/
 backend/.pytest_cache/
@@ -61,6 +74,8 @@ backend/data/*
 apps/backend/venv/
 apps/backend/__pycache__/
 apps/backend/.pytest_cache/
+apps/backend/.mypy_cache/
+apps/backend/.ruff_cache/
 apps/backend/.venv/
 apps/backend/.env
 apps/backend/data/*
@@ -68,6 +83,8 @@ apps/backend/data/*
 apps/frontend/node_modules/
 apps/frontend/.next/
 apps/frontend/out/
+apps/frontend/.turbo/
+apps/frontend/.vitest/
 apps/frontend/.env.local
 
 # OS/IDE duplicates (cleanup)
