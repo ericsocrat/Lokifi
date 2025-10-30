@@ -314,15 +314,9 @@ git log --all --grep="TODO"
 - `tools/codebase-analyzer.ps1` - Comprehensive project metrics and technical debt analysis
 - `tools/test-runner.ps1` - Test execution with coverage and validation
 - `tools/security-scanner.ps1` - Security vulnerability scanning
-
-### Development Tools
-- `tools/cleanup-master.ps1` - Repository cleanup utilities
 - `tools/setup-precommit-hooks.ps1` - Git pre-commit hook setup
 
 **📖 For testing scripts:** See [`TESTING_GUIDE.md`](TESTING_GUIDE.md) for comprehensive testing workflows
-
-### Cleanup Tools
-- `cleanup-repo.ps1` - Documentation cleanup
 - `cleanup-scripts.ps1` - Script consolidation
 - `cleanup-final.ps1` - Final comprehensive cleanup
 

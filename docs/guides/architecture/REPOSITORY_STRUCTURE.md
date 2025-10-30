@@ -214,13 +214,8 @@ tools/
 ├── README.md                      # Tools documentation
 ├── test-runner.ps1                # Comprehensive test execution
 ├── codebase-analyzer.ps1          # Project metrics & analysis
-├── cleanup-master.ps1             # Repository cleanup utilities
 ├── security-scanner.ps1           # Security scanning
-├── setup-precommit-hooks.ps1      # Git pre-commit hook setup
-├── universal-fetcher.js           # Universal data fetching utility
-├── templates/                     # HTML/Dashboard templates
-└── scripts/                       # Specialized scripts
-    └── coverage/                  # Coverage automation scripts
+└── setup-precommit-hooks.ps1      # Git pre-commit hook setup
 ```
 
 ---
@@ -263,12 +258,6 @@ tools/
 # Region-specific cost estimates
 .\tools\codebase-analyzer.ps1 -Region eu -Detailed
 ```
-
-**`cleanup-master.ps1`** - Repository Cleanup
-- File organization utilities
-- Duplicate file detection
-- Archive management
-- Repository health checks
 
 **`security-scanner.ps1`** - Security Scanning
 - Dependency vulnerability scanning
@@ -588,14 +577,7 @@ Roadmaps → docs/plans/
 Test runners → tools/test-runner.ps1
 Analysis tools → tools/codebase-analyzer.ps1
 Security scanners → tools/security-scanner.ps1
-Cleanup utilities → tools/cleanup-master.ps1
-```
-
-**Specialized Automation** → `tools/scripts/`
-```
-Coverage automation → tools/scripts/coverage/
-Deployment automation → tools/scripts/deployment/
-Custom workflows → tools/scripts/[category]/
+Git hooks → tools/setup-precommit-hooks.ps1
 ```
 
 ---

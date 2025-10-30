@@ -195,12 +195,7 @@
     },
     "backend": {
       "test": "cd apps/backend && pytest",
-      "coverage": "cd apps/backend && pytest --cov=app --cov-report=json:coverage.json --cov-report=term",
-      "updateCoverage": "python tools/scripts/coverage/update-backend-coverage.py"
-    },
-    "sync": {
-      "all": "pwsh tools/scripts/coverage/sync-coverage-everywhere.ps1",
-      "verify": "pwsh tools/scripts/coverage/verify-coverage-sync.ps1"
+      "coverage": "cd apps/backend && pytest --cov=app --cov-report=json:coverage.json --cov-report=term"
     }
   },
 

@@ -10,7 +10,6 @@ Utility scripts and automation tools for the Lokifi platform.
 tools/
 ├── test-runner.ps1              # Comprehensive test runner with coverage & protection
 ├── codebase-analyzer.ps1        # Project metrics, cost estimates & technical debt analysis
-├── cleanup-master.ps1           # Automated cleanup utilities (logs, cache, temp files)
 ├── security-scanner.ps1         # Security vulnerability scanning & secret detection
 ├── setup-precommit-hooks.ps1    # Git pre-commit hook setup & bypass management
 └── README.md                    # This file
@@ -143,14 +142,6 @@ Comprehensive codebase statistics, metrics, and project estimates (1570 lines, 8
 - **Use for**: Project reports, stakeholder documentation, estimation
 - **Note**: For ad-hoc analysis, use Copilot with `@workspace` context
 
-### **cleanup-master.ps1**
-Master cleanup utility for maintaining codebase hygiene
-- Documentation cleanup (duplicates, orphans, broken links)
-- Git branch cleanup (merged, stale branches)
-- Script consolidation and organization
-- Cache and temporary file cleanup
-- Build artifact optimization
-
 ### **security-scanner.ps1**
 Comprehensive security scanning and vulnerability detection
 - Dependency vulnerability scanning (npm, pip)
@@ -200,4 +191,4 @@ For specific tools:
 
 ---
 
-**Status**: Active • **Last Updated**: October 30, 2025 • **Total Scripts**: 5 essential automation tools
+**Status**: Active • **Last Updated**: October 30, 2025 • **Total Scripts**: 4 essential automation tools

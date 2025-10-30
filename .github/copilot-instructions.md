@@ -225,7 +225,6 @@ lokifi/
 └── tools/                           # Automation & Utility Scripts (Flat Structure)
     ├── test-runner.ps1              # Comprehensive test execution
     ├── codebase-analyzer.ps1        # Project metrics & cost estimates
-    ├── cleanup-master.ps1           # Cleanup utilities
     ├── security-scanner.ps1         # Security scanning
     └── setup-precommit-hooks.ps1    # Git pre-commit hooks
 ```
