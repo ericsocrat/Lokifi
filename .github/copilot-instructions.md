@@ -784,7 +784,7 @@ import { usePortfolioStore } from '../../lib/stores/portfolioStore';
 
 ✅ **Documentation updates required**:
 - **README.md**: Update if adding new features, dependencies, or setup steps
-- **TECHNICAL_ROADMAP.md**: Add session summary with metrics and decisions
+- **SPRINT_HISTORY.md**: Add session summary with metrics and decisions
 - **CHECKLISTS.md**: Update process checklists if new workflows introduced
 - **Todo list**: Mark completed tasks, add new follow-up tasks
 
@@ -898,7 +898,7 @@ actionlint .github/workflows/*.yml
 - [ ] All linters pass (ESLint, Ruff, actionlint)
 - [ ] All tests pass (if logic changed)
 - [ ] Build succeeds (`npm run build` or Docker build)
-- [ ] Documentation updated (todo list, TECHNICAL_ROADMAP.md)
+- [ ] Documentation updated (todo list, SPRINT_HISTORY.md)
 - [ ] Commit message follows conventions
 
 ### 6. Change Communication & Integration (COORDINATE WITH TEAM)
@@ -994,7 +994,7 @@ WIP: stuff
 
 ### Documentation
 - [ ] Todo list updated (manage_todo_list)
-- [ ] TECHNICAL_ROADMAP.md session added
+- [ ] SPRINT_HISTORY.md session added
 - [ ] Inline comments explain WHY not WHAT
 - [ ] Acceptable any types documented
 
@@ -1451,14 +1451,14 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Best Practices**:
 1. **Search first**: Use `grep_search` or `file_search` to find existing related documents
-2. **Update existing**: Prefer updating CHECKLISTS.md, TECHNICAL_ROADMAP.md, or existing guides
-3. **Avoid duplication**: Don't create SESSION_NOTES.md when TECHNICAL_ROADMAP.md exists
+2. **Update existing**: Prefer updating CHECKLISTS.md, SPRINT_HISTORY.md, or existing guides
+3. **Avoid duplication**: Don't create SESSION_NOTES.md when SPRINT_HISTORY.md exists
 4. **Archive outdated**: Move replaced documents to .archive/ folder with context
 5. **Document decisions**: Add to existing decision logs, not new files
 
 **Examples**:
-- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `TECHNICAL_ROADMAP.md` already tracks sprints
-- ✅ **Good**: Update `TECHNICAL_ROADMAP.md` with new sprint planning and add to Decision Log
+- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `SPRINT_HISTORY.md` already tracks sprints
+- ✅ **Good**: Update `SPRINT_HISTORY.md` with new sprint planning and add to Decision Log
 - ❌ **Bad**: Create `DEPLOYMENT_CHECKLIST.md` when `CHECKLISTS.md` exists
 - ✅ **Good**: Update `CHECKLISTS.md` with new deployment section
 - ❌ **Bad**: Create `TESTING_BEST_PRACTICES.md` when `TESTING_GUIDE.md` exists

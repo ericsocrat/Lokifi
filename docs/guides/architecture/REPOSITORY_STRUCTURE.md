@@ -42,7 +42,7 @@ docs/
 ├── README.md                    # Main documentation index
 ├── QUICK_START.md               # Fast project setup
 ├── CHECKLISTS.md                # Process checklists
-├── TECHNICAL_ROADMAP.md         # Project roadmap
+├── SPRINT_HISTORY.md            # Historical record of sprints
 ├── guides/                      # Development guides (RESTRUCTURED)
 │   ├── DEVELOPER_WORKFLOW.md ⭐      # Core workflow guide
 │   ├── PULL_REQUEST_COMPLETE_GUIDE.md ⭐  # PR guide

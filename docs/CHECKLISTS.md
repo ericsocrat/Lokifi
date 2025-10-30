@@ -6,7 +6,7 @@
 
 > **🔗 Related Documents**:
 > - **[Dependabot Action Plan](./ci-cd/dependencies/DEPENDABOT_ACTION_PLAN.md)** - ✅ RESOLVED: PR #59 merged
-> - **[Technical Roadmap](./TECHNICAL_ROADMAP.md)** - Sprint planning and technical debt
+> - **[Sprint History](./SPRINT_HISTORY.md)** - Historical record of completed sprints and technical debt resolution
 > - **[Sprint 2 Completion](./plans/SPRINT_2_COMPLETION_SUMMARY.md)** - Sprint 2 comprehensive summary
 > - **[Sprint 3 Planning](./plans/SPRINT_3_PLANNING.md)** - Sprint 3 options and planning
 > - **[Session 25 ESLint Rules](./plans/SESSION_25_ESLINT_RULES.md)** - ESLint rules re-enablement

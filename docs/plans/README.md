@@ -150,7 +150,8 @@ For new plans and features:
 
 - **Current Guides**: `/docs/guides/` - Active development guides
 - **CI/CD Documentation**: `/docs/ci-cd/` - Pipeline and workflow docs
-- **Technical Roadmap**: `/docs/TECHNICAL_ROADMAP.md` - High-level project roadmap
+- **Documentation & Processes**: `/docs/CHECKLISTS.md` - Development workflow checklists
+- **Sprint History**: `/docs/SPRINT_HISTORY.md` - Historical record of completed sprints
 
 ---
 
