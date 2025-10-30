@@ -126,9 +126,8 @@ Lokifi has a **fully automatic coverage tracking system** integrated into CI/CD.
 
 **Coverage Documentation:**
 - Master Config: `/coverage.config.json`
-- Automation Guide: `/tools/scripts/coverage/README.md`
-- Implementation: `/tools/scripts/coverage/AUTOMATION_COMPLETE.md`
 - Baseline: `/docs/guides/COVERAGE_BASELINE.md`
+- Automation: Fully integrated in CI/CD workflows
 
 **Test Quality Guidelines:**
 - **Test user-facing behavior**, not internal implementation

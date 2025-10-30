@@ -242,9 +242,8 @@ Every time tests run in CI/CD (push to main/develop, PR merge), these files are 
 
 ### Learn More
 
-- **Implementation Details**: [tools/scripts/coverage/AUTOMATION_COMPLETE.md](../../tools/scripts/coverage/AUTOMATION_COMPLETE.md)
-- **Automation Guide**: [tools/scripts/coverage/README.md](../../tools/scripts/coverage/README.md)
-- **System Status**: [tools/scripts/coverage/STATUS.md](../../tools/scripts/coverage/STATUS.md)
+- **Master Config**: [coverage.config.json](../../../coverage.config.json) - Single source of truth
+- **Automation**: Coverage tracking fully integrated in CI/CD workflows
 
 > 💡 **Developer Note**: You don't need to update coverage metrics manually. The system handles everything automatically!
 

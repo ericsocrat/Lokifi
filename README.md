@@ -330,9 +330,8 @@ npm run coverage:sync:dryrun
 ### 📚 Coverage Documentation
 
 - **Master Config:** [`coverage.config.json`](coverage.config.json) - Single source of truth
-- **Automation Guide:** [`tools/scripts/coverage/README.md`](tools/scripts/coverage/README.md)
 - **Coverage Baseline:** [`docs/guides/COVERAGE_BASELINE.md`](docs/guides/COVERAGE_BASELINE.md)
-- **Implementation Details:** [`tools/scripts/coverage/AUTOMATION_COMPLETE.md`](tools/scripts/coverage/AUTOMATION_COMPLETE.md)
+- **Automation:** Coverage tracking fully integrated in CI/CD workflows
 
 ### 🎯 Coverage Goals
 
