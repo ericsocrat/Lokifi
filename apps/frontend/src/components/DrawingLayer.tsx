@@ -62,6 +62,7 @@ export default function DrawingLayer() {
       el.style.height = r.height + 'px';
       // try offscreen
       try {
+        // any required: transferControlToOffscreen is experimental browser API with incomplete types
         offscreen.current = (el as any).transferControlToOffscreen?.() || null;
       } catch {
         offscreen.current = null;
@@ -107,12 +108,12 @@ export default function DrawingLayer() {
         switch (d.kind) {
           case 'trendline':
           case 'arrow': {
-            const [a, b] = (d as any).points;
+            const [a, b] = d.points;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);
             ctx.stroke();
-            if ((d as any).kind === 'arrow')
+            if (d.kind === 'arrow')
               drawArrowHead(
                 ctx,
                 a,
@@ -130,7 +131,7 @@ export default function DrawingLayer() {
             break;
           }
           case 'ray': {
-            const [a, b] = (d as any).points;
+            const [a, b] = d.points;
             const ext = extendRayToBounds(a, b, el.width, el.height);
             ctx.beginPath();
             ctx.moveTo(ext.start.x, ext.start.y);
@@ -145,7 +146,7 @@ export default function DrawingLayer() {
             break;
           }
           case 'hline': {
-            const y = (d as any).points[0].y;
+            const y = d.points[0].y;
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(el.width, y);
@@ -154,7 +155,7 @@ export default function DrawingLayer() {
             break;
           }
           case 'vline': {
-            const x = (d as any).points[0].x;
+            const x = d.points[0].x;
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, el.height);
@@ -163,11 +164,11 @@ export default function DrawingLayer() {
             break;
           }
           case 'rect': {
-            const r = rectFromPoints((d as any).points[0], (d as any).points[1]);
+            const r = rectFromPoints(d.points[0], d.points[1]);
             if (sty.fill) {
               ctx.save();
               ctx.globalAlpha = 0.18;
-              ctx.fillStyle = sty.fill as any;
+              ctx.fillStyle = sty.fill;
               ctx.fillRect(r.x, r.y, r.w, r.h);
               ctx.restore();
             }
@@ -176,7 +177,7 @@ export default function DrawingLayer() {
             break;
           }
           case 'ellipse': {
-            const r = rectFromPoints((d as any).points[0], (d as any).points[1]);
+            const r = rectFromPoints(d.points[0], d.points[1]);
             const cx = r.x + r.w / 2,
               cy = r.y + r.h / 2;
             const rx = Math.abs(r.w / 2),
@@ -186,7 +187,7 @@ export default function DrawingLayer() {
             if (sty.fill) {
               ctx.save();
               ctx.globalAlpha = 0.18;
-              ctx.fillStyle = sty.fill as any;
+              ctx.fillStyle = sty.fill;
               ctx.fill();
               ctx.restore();
             }
@@ -195,8 +196,8 @@ export default function DrawingLayer() {
             break;
           }
           case 'fib': {
-            const [a, b] = (d as any).points;
-            const levels = ((d as any).fibLevels ?? s.drawingSettings.fibDefaultLevels)
+            const [a, b] = d.points;
+            const levels = (d.fibLevels ?? s.drawingSettings.fibDefaultLevels)
               .slice()
               .sort((x: number, y: number) => x - y);
             const y0 = a.y,
@@ -222,8 +223,8 @@ export default function DrawingLayer() {
             break;
           }
           case 'parallel-channel': {
-            const [a, b, c] = (d as any).points;
-            drawParallelChannel(ctx, a, b, c, el.width, el.height, sty.fill as any);
+            const [a, b, c] = d.points;
+            drawParallelChannel(ctx, a, b, c, el.width, el.height, sty.fill);
             if (selected && s.drawingSettings.showHandles) {
               drawHandle(ctx, a);
               drawHandle(ctx, b);
@@ -232,7 +233,7 @@ export default function DrawingLayer() {
             break;
           }
           case 'pitchfork': {
-            const [a, b, c] = (d as any).points;
+            const [a, b, c] = d.points;
             drawPitchfork(ctx, a, b, c, el.width, el.height);
             if (selected && s.drawingSettings.showHandles) {
               drawHandle(ctx, a);
@@ -242,11 +243,23 @@ export default function DrawingLayer() {
             break;
           }
           case 'text': {
-            const p = (d as any).points[0];
+            const p = d.points[0];
             ctx.fillStyle = '#e5e7eb';
             ctx.font = '12px ui-sans-serif, system-ui';
-            ctx.fillText((d as any).text || 'Text', p.x, p.y);
+            ctx.fillText(d.text || 'Text', p.x, p.y);
             if (selected && s.drawingSettings.showHandles) drawHandle(ctx, p);
+            break;
+          }
+          case 'ruler': {
+            // Ruler drawing logic (if needed)
+            const [a, b] = d.points;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
+            ctx.stroke();
+            if (selected && s.drawingSettings.showHandles) {
+              drawLineHandles(ctx, a, b);
+            }
             break;
           }
         }
@@ -303,35 +316,33 @@ export default function DrawingLayer() {
 
   // --- hit testing util (minimal but robust) ---
   function hitTest(d: Drawing, p: Point, container: HTMLDivElement): number {
-    const kind = (d as any).kind;
-    const pts = (d as any).points as Point[];
     const W = container.clientWidth,
       H = container.clientHeight;
 
     const edge = (a: Point, b: Point) => distanceToSegment(a, b, p);
 
-    switch (kind) {
+    switch (d.kind) {
       case 'trendline':
       case 'arrow': {
-        const [a, b] = pts;
+        const [a, b] = d.points;
         return edge(a, b);
       }
       case 'ray': {
         // approximate by clamping second point to bounds
-        const [a, b] = pts;
+        const [a, b] = d.points;
         const ext = extendRayToBounds(a, b, W, H);
         return edge(ext.start, ext.end);
       }
       case 'hline': {
-        const y = pts[0].y;
+        const y = d.points[0].y;
         return Math.abs(p.y - y);
       }
       case 'vline': {
-        const x = pts[0].x;
+        const x = d.points[0].x;
         return Math.abs(p.x - x);
       }
       case 'rect': {
-        const r = rectFromPoints(pts[0], pts[1]);
+        const r = rectFromPoints(d.points[0], d.points[1]);
         const dTop = edge({ x: r.x, y: r.y }, { x: r.x + r.w, y: r.y });
         const dBot = edge({ x: r.x, y: r.y + r.h }, { x: r.x + r.w, y: r.y + r.h });
         const dL = edge({ x: r.x, y: r.y }, { x: r.x, y: r.y + r.h });
@@ -341,7 +352,7 @@ export default function DrawingLayer() {
       }
       case 'ellipse': {
         // simple bbox distance
-        const r = rectFromPoints(pts[0], pts[1]);
+        const r = rectFromPoints(d.points[0], d.points[1]);
         const cx = r.x + r.w / 2,
           cy = r.y + r.h / 2;
         const rx = Math.abs(r.w / 2),
@@ -352,12 +363,12 @@ export default function DrawingLayer() {
         return dist;
       }
       case 'fib': {
-        const [a, b] = pts;
+        const [a, b] = d.points;
         const y0 = a.y,
           y1 = b.y;
         const left = 0,
           right = W;
-        const levels = ((d as any).fibLevels ?? s.drawingSettings.fibDefaultLevels) as number[];
+        const levels = (d.fibLevels ?? s.drawingSettings.fibDefaultLevels);
         let best = Infinity;
         for (const lv of levels) {
           const y = y0 + (y1 - y0) * lv;
@@ -367,7 +378,7 @@ export default function DrawingLayer() {
         return best;
       }
       case 'parallel-channel': {
-        const [a, b, c] = pts;
+        const [a, b, c] = d.points;
         const base = edge(a, b);
         const width = Math.abs(c.y - (a.y + b.y) / 2);
         const top = edge({ x: a.x, y: a.y - width }, { x: b.x, y: b.y - width });
@@ -375,7 +386,7 @@ export default function DrawingLayer() {
         return Math.min(base, top, bot);
       }
       case 'pitchfork': {
-        const [a, b, c] = pts;
+        const [a, b, c] = d.points;
         const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
         const d1 = edge(a, c);
         const d2 = edge(b, c);
@@ -383,8 +394,12 @@ export default function DrawingLayer() {
         return Math.min(d1, d2, d3);
       }
       case 'text': {
-        const t = pts[0];
+        const t = d.points[0];
         return Math.hypot(p.x - t.x, p.y - t.y);
+      }
+      case 'ruler': {
+        const [a, b] = d.points;
+        return edge(a, b);
       }
       default:
         return Infinity;
@@ -412,9 +427,10 @@ export default function DrawingLayer() {
       return;
     }
 
-    const d = createDrawing(s.activeTool || 'line', p) as any; // ✅ was s?.tool
+    // any required: createDrawing returns generic object, not typed Drawing union
+    const d = createDrawing(s.activeTool || 'line', p) as Drawing | null;
     if (d) {
-      d.layerId = d.layerId ?? s.activeLayerId;
+      d.layerId = d.layerId ?? s.activeLayerId ?? undefined;
       s.addDrawing(d);
       setDragId(d.id);
       invalidate();
@@ -514,7 +530,7 @@ function drawRectHandles(
   drawHandle(ctx, { x: x + w, y: y + h / 2 });
 }
 function getStrokeColor(ctx: CanvasRenderingContext2D): string {
-  const s = ctx.strokeStyle as any;
+  const s = ctx.strokeStyle;
   return typeof s === 'string' ? s : '#9ca3af';
 }
 function drawArrowHead(

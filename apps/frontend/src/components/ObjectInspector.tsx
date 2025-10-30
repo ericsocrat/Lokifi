@@ -156,7 +156,7 @@ function FibEditor() {
   const s = useChartStore();
   const drawings = useChartStore((st) => st.drawings.filter((d) => st.selection.has(d.id)));
   const first = drawings[0];
-  const levels = (first?.fibLevels ?? s.drawingSettings.fibDefaultLevels)
+  const levels = ((first?.kind === 'fib' ? first.fibLevels : undefined) ?? s.drawingSettings.fibDefaultLevels)
     .slice()
     .sort((a: number, b: number) => a - b);
   const [val, setVal] = React.useState(levels.join(', '));

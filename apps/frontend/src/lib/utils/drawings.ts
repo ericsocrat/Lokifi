@@ -14,19 +14,94 @@ export type DrawingStyle = {
   fill?: string | null
 }
 
-export type Drawing = {
+// Base drawing properties shared across all types
+type BaseDrawing = {
   layerId?: string
   id: string
-  kind: DrawingKind
-  points: Point[]
-  text?: string
   name?: string
   locked?: boolean
   hidden?: boolean
   groupId?: string | null
   style?: DrawingStyle
+}
+
+// Discriminated union types for each drawing kind
+type TrendlineDrawing = BaseDrawing & {
+  kind: 'trendline'
+  points: [Point, Point]
+}
+
+type ArrowDrawing = BaseDrawing & {
+  kind: 'arrow'
+  points: [Point, Point]
+}
+
+type RayDrawing = BaseDrawing & {
+  kind: 'ray'
+  points: [Point, Point]
+}
+
+type HLineDrawing = BaseDrawing & {
+  kind: 'hline'
+  points: [Point]
+}
+
+type VLineDrawing = BaseDrawing & {
+  kind: 'vline'
+  points: [Point]
+}
+
+type RectDrawing = BaseDrawing & {
+  kind: 'rect'
+  points: [Point, Point]
+}
+
+type EllipseDrawing = BaseDrawing & {
+  kind: 'ellipse'
+  points: [Point, Point]
+}
+
+type FibDrawing = BaseDrawing & {
+  kind: 'fib'
+  points: [Point, Point]
   fibLevels?: number[]
 }
+
+type ParallelChannelDrawing = BaseDrawing & {
+  kind: 'parallel-channel'
+  points: [Point, Point, Point]
+}
+
+type PitchforkDrawing = BaseDrawing & {
+  kind: 'pitchfork'
+  points: [Point, Point, Point]
+}
+
+type TextDrawing = BaseDrawing & {
+  kind: 'text'
+  points: [Point]
+  text?: string
+}
+
+type RulerDrawing = BaseDrawing & {
+  kind: 'ruler'
+  points: [Point, Point]
+}
+
+// Union of all drawing types
+export type Drawing =
+  | TrendlineDrawing
+  | ArrowDrawing
+  | RayDrawing
+  | HLineDrawing
+  | VLineDrawing
+  | RectDrawing
+  | EllipseDrawing
+  | FibDrawing
+  | ParallelChannelDrawing
+  | PitchforkDrawing
+  | TextDrawing
+  | RulerDrawing
 
 export const DEFAULT_STYLE: DrawingStyle = {
   stroke: '#9ca3af',
@@ -64,19 +139,26 @@ export function createDrawing(kind: string, start: Point) {
 export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
   switch (d.kind) {
     case 'trendline':
+      return { ...d, points: [d.points[0], p] }
     case 'arrow':
+      return { ...d, points: [d.points[0], p] }
     case 'ray':
+      return { ...d, points: [d.points[0], p] }
     case 'rect':
+      return { ...d, points: [d.points[0], p] }
     case 'ellipse':
+      return { ...d, points: [d.points[0], p] }
     case 'fib':
+      return { ...d, points: [d.points[0], p] }
     case 'ruler':
       return { ...d, points: [d.points[0], p] }
-    case 'pitchfork':
+    case 'pitchfork': {
+      const [first, , third] = d.points
+      return { ...d, points: [first, p, third] }
+    }
     case 'parallel-channel': {
-      const pts = d.points.slice()
-      if (pts.length < 3) pts.push(p)
-      pts[1] = p
-      return { ...d, points: pts }
+      const [first, , third] = d.points
+      return { ...d, points: [first, p, third] }
     }
     case 'hline':
       return { ...d, points: [{ x: d.points[0].x, y: p.y }] }
@@ -85,7 +167,9 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
     case 'text':
       return { ...d, points: [p] }
     default:
-      return d
+      // TypeScript exhaustiveness check
+      const _exhaustive: never = d
+      return _exhaustive
   }
 }
 

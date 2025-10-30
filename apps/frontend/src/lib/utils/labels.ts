@@ -28,6 +28,7 @@ export function describeDrawing(d: Drawing, cfg: LabelConfig) {
 function fmt(n:number, p=2){ return Number.isFinite(n) ? n.toFixed(p) : "" }
 
 function hlineLabel(d: Drawing, cfg: LabelConfig) {
+  if (d.kind !== 'hline') return null
   const y = d.points[0].y
   const price = yToPrice(y)
   if (price == null) return null
@@ -39,7 +40,9 @@ function hlineLabel(d: Drawing, cfg: LabelConfig) {
 function vlineLabel(_d: Drawing, _cfg: LabelConfig) { return null }
 
 function lineLabel(d: Drawing, cfg: LabelConfig) {
-  const [a,b] = d.points
+  if (d.kind !== 'trendline' && d.kind !== 'ray' && d.kind !== 'arrow') return null
+  const a = d.points[0]
+  const b = d.points[1]
   const dy = b.y - a.y
   const dx = b.x - a.x
   const p1 = yToPrice(a.y)
@@ -59,7 +62,9 @@ function lineLabel(d: Drawing, cfg: LabelConfig) {
 }
 
 function rectLabel(d: Drawing, cfg: LabelConfig) {
-  const r = rectFromPoints(d.points[0], d.points[1])
+  if (d.kind !== 'rect') return null
+  const [p0, p1] = d.points
+  const r = rectFromPoints(p0, p1)
   const yTop = r.y
   const yBot = r.y + r.h
   const pTop = yToPrice(yTop)
@@ -82,7 +87,9 @@ function rectLabel(d: Drawing, cfg: LabelConfig) {
 }
 
 function rulerLabel(d: Drawing, cfg: LabelConfig) {
-  const [a,b] = d.points
+  if (d.kind !== 'ruler') return null
+  const a = d.points[0]
+  const b = d.points[1]
   const p1 = yToPrice(a.y)
   const p2 = yToPrice(b.y)
   const parts:string[] = []
