@@ -36,7 +36,9 @@ export default function AlertsPanel() {
           <select
             className="bg-transparent border border-white/15 rounded px-2 py-1 text-xs"
             value={filter}
-            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilter(e.target.value as Filter)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+              setFilter(e.target.value as Filter)
+            }
           >
             <option value="all">All</option>
             <option value="active">Active</option>
@@ -110,7 +112,9 @@ function AlertRow({ a }: { a: Alert }) {
         <select
           className="bg-transparent border border-white/15 rounded px-2 py-1 text-xs"
           value={a.sound || 'none'}
-          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => s.updateAlert(a.id, { sound: e.target.value as 'ping' | 'none' })}
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+            s.updateAlert(a.id, { sound: e.target.value as 'ping' | 'none' })
+          }
         >
           <option value="ping">Ping</option>
           <option value="none">No sound</option>

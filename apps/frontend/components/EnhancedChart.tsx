@@ -182,11 +182,11 @@ export default function EnhancedChart({
   useEffect(() => {
     if (!chartRef.current) return;
 
-    const paneObjects = objects.filter((obj: any) => obj.paneId === paneId);
+    const paneObjects = objects.filter((obj) => obj.paneId === paneId);
 
     // This is a simplified example - real implementation would need
     // to create chart primitives or overlays for each drawing object
-    paneObjects.forEach((obj: any) => {
+    paneObjects.forEach((obj) => {
       console.log('Rendering drawing object:', obj);
       // Actual rendering logic would go here
     });

@@ -109,7 +109,9 @@ export default function ChartSidebar() {
               <input
                 type="checkbox"
                 checked={snap}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => drawStore.setSnap(e.target.checked)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  drawStore.setSnap(e.target.checked)
+                }
               />
               Snap to OHLC
             </label>
@@ -136,7 +138,7 @@ export default function ChartSidebar() {
             <div>
               <h3 className="text-[11px] uppercase tracking-wide opacity-70 mb-3">Plugins</h3>
               <div className="space-y-2">
-                {PLUGINS.map((p: any) => (
+                {PLUGINS.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => pluginManager.setActiveTool(p.id)}

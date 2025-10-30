@@ -1551,7 +1551,7 @@ export const useMonitoringStore = create<MonitoringStore>()(
         if (!FLAGS.monitoring) throw new Error('Monitoring not enabled');
 
         const { dashboards, alerts, healthChecks, logs } = get();
-        let data: any;
+        let data: unknown;
 
         switch (type) {
           case 'dashboards':
@@ -1818,10 +1818,10 @@ export const useMonitoringStore = create<MonitoringStore>()(
     {
       name: 'lokifi-monitoring-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             widgets: [],
             dataSources: [],
             logs: [],

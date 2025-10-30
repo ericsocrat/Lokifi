@@ -230,7 +230,7 @@ function StocksPageContent() {
 
             {/* Table Body */}
             <div className="divide-y divide-neutral-800">
-              {filteredAndSortedStocks.map((stock: any, index: number) => (
+              {filteredAndSortedStocks.map((stock, index: number) => (
                 <div
                   key={stock.id}
                   className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-neutral-800/30 transition-colors cursor-pointer"
@@ -263,17 +263,17 @@ function StocksPageContent() {
                   <div className="col-span-2 flex items-center justify-end">
                     <span
                       className={`font-medium ${
-                        stock.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'
+                        (stock.price_change_percentage_24h ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'
                       }`}
                     >
-                      {stock.price_change_percentage_24h >= 0 ? '+' : ''}
-                      {stock.price_change_percentage_24h.toFixed(2)}%
+                      {(stock.price_change_percentage_24h ?? 0) >= 0 ? '+' : ''}
+                      {(stock.price_change_percentage_24h ?? 0).toFixed(2)}%
                     </span>
                   </div>
 
                   {/* Market Cap */}
                   <div className="col-span-3 flex items-center justify-end">
-                    <span className="text-neutral-400">{formatCurrency(stock.market_cap)}</span>
+                    <span className="text-neutral-400">{formatCurrency(stock.market_cap ?? 0)}</span>
                   </div>
 
                   {/* Watchlist */}

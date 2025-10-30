@@ -547,9 +547,9 @@ export interface TemplateVariable {
   name: string;
   description: string;
   type: 'string' | 'number' | 'boolean' | 'select';
-  defaultValue?: any;
+  defaultValue?: unknown;
   required: boolean;
-  options?: any[]; // for select type
+  options?: unknown[]; // for select type
   validation?: {
     pattern?: string;
     min?: number;
@@ -1907,10 +1907,10 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
     {
       name: 'lokifi-environment-management-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             templates: [],
             syncJobs: [],
             comparisons: [],

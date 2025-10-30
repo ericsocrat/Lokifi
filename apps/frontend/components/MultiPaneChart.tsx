@@ -1,16 +1,16 @@
-"use client";
+'use client';
+import { Pane, usePaneStore } from '@/lib/stores/paneStore';
+import { symbolStore } from '@/lib/stores/symbolStore';
+import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { usePaneStore, Pane } from '@/lib/stores/paneStore';
-import { symbolStore } from '@/lib/stores/symbolStore';
-import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 
 // Chart component with proper hook usage
-const ChartContainer = ({ children, ...props }: any) => {
+const ChartContainer = ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={chartContainerRef} {...props}>
@@ -21,12 +21,13 @@ const ChartContainer = ({ children, ...props }: any) => {
 
 // Dynamic import with loading state
 const Chart = dynamic(
-  () => import('lightweight-charts').then((mod: any) => ({
-    default: ChartContainer
-  })),
+  () =>
+    import('lightweight-charts').then((mod) => ({
+      default: ChartContainer,
+    })),
   {
     ssr: false,
-    loading: () => <ChartLoadingState />
+    loading: () => <ChartLoadingState />,
   }
 );
 
@@ -45,7 +46,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
   isVisible,
   isLocked,
   indicators,
-  onHeightChange
+  onHeightChange,
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -63,7 +64,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
     { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
     { time: '2024-01-03', open: 108, high: 112, low: 102, close: 110 },
     { time: '2024-01-04', open: 110, high: 118, low: 108, close: 115 },
-    { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 }
+    { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 },
   ];
 
   const initializeChart = useCallback(async () => {
@@ -121,7 +122,6 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
 
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
-
     } catch (error) {
       console.error('Failed to initialize chart:', error);
       throw error;
@@ -139,28 +139,31 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
     };
   }, [initializeChart, isVisible]);
 
-  const handleResize = useCallback((e: React.MouseEvent) => {
-    if (isLocked) return;
+  const handleResize = useCallback(
+    (e: React.MouseEvent) => {
+      if (isLocked) return;
 
-    setIsDragging(true);
-    const startY = e.clientY;
-    const startHeight = height;
+      setIsDragging(true);
+      const startY = e.clientY;
+      const startHeight = height;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      const deltaY = e.clientY - startY;
-      const newHeight = Math.max(100, Math.min(600, startHeight + deltaY));
-      onHeightChange(paneId, newHeight);
-    };
+      const handleMouseMove = (e: MouseEvent) => {
+        const deltaY = e.clientY - startY;
+        const newHeight = Math.max(100, Math.min(600, startHeight + deltaY));
+        onHeightChange(paneId, newHeight);
+      };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  }, [isLocked, height, paneId, onHeightChange]);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [isLocked, height, paneId, onHeightChange]
+  );
 
   if (!isVisible) {
     return (
@@ -187,9 +190,7 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
             {paneId.includes('price') ? `${symbol} - ${timeframe}` : 'Indicators'}
           </div>
           {indicators.length > 0 && (
-            <div className="text-xs text-gray-400">
-              ({indicators.join(', ')})
-            </div>
+            <div className="text-xs text-gray-400">({indicators.join(', ')})</div>
           )}
         </div>
         <div className="flex items-center gap-1">
@@ -219,8 +220,9 @@ const PaneComponent: React.FC<PaneComponentProps> = ({
       {!isLocked && (
         <div
           onMouseDown={handleResize}
-          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${isDragging ? 'bg-blue-500/30' : ''
-            }`}
+          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${
+            isDragging ? 'bg-blue-500/30' : ''
+          }`}
         >
           <GripVertical className="w-4 h-4 text-gray-500" />
         </div>

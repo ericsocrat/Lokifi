@@ -1,27 +1,27 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
-import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
-import { useAuth } from '@/src/components/AuthProvider';
-import { AuthModal } from '@/src/components/AuthModal';
 import { NotificationBell } from '@/components/NotificationBell';
-import { useState, useCallback, useMemo } from 'react';
+import { AuthModal } from '@/src/components/AuthModal';
+import { useAuth } from '@/src/components/AuthProvider';
+import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import {
-  LayoutDashboard,
-  TrendingUp,
-  Wallet,
-  CreditCard,
-  Clock,
   BarChart3,
-  Search,
   Bell,
-  Settings,
+  Clock,
+  CreditCard,
+  LayoutDashboard,
   Menu,
-  X,
-  User,
-  Sun,
   Moon,
+  Search,
+  Settings,
+  Sun,
+  TrendingUp,
+  User,
+  Wallet,
+  X,
 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useMemo, useState } from 'react';
 
 interface GlobalLayoutProps {
   children: React.ReactNode;
@@ -43,13 +43,13 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
     if (!user) return '';
     return user.username ? `@${user.username}` : user.email?.split('@')[0] || 'User';
   }, [user]);
-  
+
   // Memoize callbacks to prevent re-creating functions
   const handleOpenLogin = useCallback(() => {
     setAuthModalTab('login');
     setIsAuthModalOpen(true);
   }, []);
-  
+
   const handleCloseAuthModal = useCallback(() => {
     setIsAuthModalOpen(false);
   }, []);
@@ -154,7 +154,7 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
             {navigationItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.href);
-              
+
               return (
                 <button
                   key={item.href}
@@ -165,10 +165,14 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 flex-shrink-0 ${active ? 'text-blue-600 dark:text-blue-400' : ''}`} />
+                  <Icon
+                    className={`w-5 h-5 flex-shrink-0 ${active ? 'text-blue-600 dark:text-blue-400' : ''}`}
+                  />
                   {sidebarOpen && (
                     <div className="flex-1 text-left">
-                      <div className={`font-medium ${active ? 'text-blue-600 dark:text-blue-400' : ''}`}>
+                      <div
+                        className={`font-medium ${active ? 'text-blue-600 dark:text-blue-400' : ''}`}
+                      >
                         {item.name}
                       </div>
                       <div className="text-xs text-gray-500 dark:text-gray-500">
@@ -205,7 +209,9 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
                   type="text"
                   placeholder="Search cryptocurrencies..."
                   value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setSearchQuery(e.target.value)
+                  }
                   className="w-full pl-10 pr-4 py-2 bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-blue-500 dark:focus:border-blue-500 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none transition-colors"
                 />
               </div>
@@ -296,16 +302,12 @@ export function GlobalLayout({ children }: GlobalLayoutProps) {
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-950">
-            {children}
-          </main>
+          <main className="flex-1 overflow-auto bg-gray-50 dark:bg-gray-950">{children}</main>
         </div>
       </div>
 
       {/* Auth Modal */}
-      {isAuthModalOpen && (
-        <AuthModal initialMode={authModalTab} onClose={handleCloseAuthModal} />
-      )}
+      {isAuthModalOpen && <AuthModal initialMode={authModalTab} onClose={handleCloseAuthModal} />}
     </div>
   );
 }

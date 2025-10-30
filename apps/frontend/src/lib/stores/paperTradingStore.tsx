@@ -348,7 +348,7 @@ interface PaperTradingActions {
   loadActiveChallenges: () => Promise<void>;
 
   // Copy Trading Integration
-  followTrader: (traderId: string, copySettings: any) => Promise<void>;
+  followTrader: (traderId: string, copySettings: { ratio: number; maxSize: number; riskLimit: number }) => Promise<void>;
   unfollowTrader: (traderId: string) => Promise<void>;
 
   // Risk Management
@@ -932,7 +932,7 @@ export const usePaperTradingStore = create<PaperTradingStore>()(
       },
 
       // Copy Trading Integration
-      followTrader: async (traderId: string, copySettings: any) => {
+      followTrader: async (traderId: string, copySettings: { ratio: number; maxSize: number; riskLimit: number }) => {
         if (!FLAGS.paperTrading) return;
 
         // This would integrate with the social trading system
@@ -1249,10 +1249,10 @@ export const usePaperTradingStore = create<PaperTradingStore>()(
     {
       name: 'lokifi-paper-trading-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             marketPrices: new Map(),
             activeChallenges: [],
             participatingChallenges: [],

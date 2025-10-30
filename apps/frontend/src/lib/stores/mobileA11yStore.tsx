@@ -4,6 +4,21 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
 
+// SpeechRecognition API types (not in standard TypeScript lib)
+interface SpeechRecognitionResultList {
+  length: number;
+  [index: number]: SpeechRecognitionResult;
+}
+interface SpeechRecognitionResult {
+  [index: number]: { transcript: string; confidence: number };
+}
+interface SpeechRecognitionEventLike {
+  results: SpeechRecognitionResultList;
+}
+interface SpeechRecognitionErrorEventLike {
+  error: string;
+}
+
 // Mobile & Accessibility Types
 export interface AccessibilitySettings {
   // Screen Reader Support
@@ -999,7 +1014,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
             recognition.lang = 'en-US';
 
             // any required for: SpeechRecognition API event types not available in TypeScript lib
-            recognition.onresult = (event: any) => {
+            recognition.onresult = (event: SpeechRecognitionEventLike) => {
               const command = event.results[event.results.length - 1][0].transcript
                 .toLowerCase()
                 .trim();
@@ -1007,7 +1022,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
             };
 
             // any required for: SpeechRecognition API event types not available in TypeScript lib
-            recognition.onerror = (event: any) => {
+            recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
               console.error('Voice recognition error:', event.error);
             };
 
@@ -1536,10 +1551,10 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
     {
       name: 'lokifi-mobile-accessibility-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             supportedFeatures: {
               touchGestures: false,
               voiceCommands: false,

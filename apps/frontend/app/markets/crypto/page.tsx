@@ -342,7 +342,7 @@ function MarketsPageContent() {
                     </td>
                   </tr>
                 ) : (
-                  sortedAssets.map((asset: any) => {
+                  sortedAssets.map((asset) => {
                     const currentPrice = getLivePrice(asset.symbol, asset.current_price);
                     const isPositive = (asset.price_change_percentage_24h || 0) >= 0;
 

@@ -178,7 +178,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
             {!isLoading &&
               !error &&
-              recentNotifications.map((notification: any) => (
+              recentNotifications.map((notification) => (
                 <div
                   key={notification.id}
                   className={`p-4 border-l-2 hover:bg-neutral-800 cursor-pointer transition-colors ${getNotificationColor(

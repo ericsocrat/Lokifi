@@ -5,8 +5,7 @@ import React from 'react';
 export default function LayersPanel() {
   const s = useChartStore();
   const [name, setName] = React.useState('Layer');
-
-  const layers = [...s.layers].sort((a: any, b: any) => a.order - b.order);
+  const layers = s.layers.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   return (
     <div className="rounded-2xl border border-white/15 p-3 space-y-3">
@@ -28,7 +27,7 @@ export default function LayersPanel() {
       </div>
 
       <div className="space-y-2">
-        {layers.map((l: any) => (
+        {layers.map((l) => (
           <LayerRow key={l.id} layer={l} />
         ))}
       </div>

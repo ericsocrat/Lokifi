@@ -8,14 +8,14 @@ const TF: TimeFrame[] = ['15m', '30m', '1h', '4h', '1d', '1w'];
 export default function TimeframePicker() {
   const [active, setActive] = useState<TimeFrame>(timeframeStore.get() as TimeFrame);
   useEffect(() => {
-    const unsub = timeframeStore.subscribe((t: any) => setActive(t as TimeFrame));
+    const unsub = timeframeStore.subscribe((t) => setActive(t as TimeFrame));
     return () => {
       unsub();
     };
   }, []);
   return (
     <div className="flex gap-2">
-      {TF.map((t: any) => (
+      {TF.map((t) => (
         <button
           key={t}
           onClick={() => timeframeStore.set(t as any)}

@@ -1288,10 +1288,10 @@ export const useSocialStore = create<SocialStore>()(
     {
       name: 'lokifi-social-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             threads: new Map(),
             activeUsers: new Set(),
             traderStats: new Map(),

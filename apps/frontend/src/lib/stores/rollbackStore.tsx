@@ -250,7 +250,7 @@ export interface ValidationConfig {
   // Database integrity
   database?: {
     query: string;
-    expectedResult?: any;
+    expectedResult?: unknown;
     connectionString?: string;
   };
 
@@ -1426,10 +1426,10 @@ export const useRollbackStore = create<RollbackStore>()(
     {
       name: 'lokifi-rollback-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             executions: [],
             currentExecution: null,
           };

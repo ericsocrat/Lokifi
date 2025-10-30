@@ -1007,10 +1007,10 @@ export const usePerformanceStore = create<PerformanceStore>()(
           // Extract values based on resource path
           return filteredUsage.map((usage) => {
             const keys = resource.split('.');
-            let value: any = usage; // any required for dynamic key access
+            let value: unknown = usage; // dynamic key access
 
             for (const key of keys) {
-              value = value?.[key];
+              value = (value as Record<string, unknown>)?.[key];
               if (value === undefined) return 0;
             }
 
