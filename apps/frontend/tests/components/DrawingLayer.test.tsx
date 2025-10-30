@@ -11,21 +11,21 @@ vi.mock('../../src/state/store', () => ({
 
 // Mock chart map functions
 vi.mock('../../src/lib/chartMap', () => ({
-  snapPxToGrid: vi.fn((p: any) => p),
-  snapYToPriceLevels: vi.fn((y: any) => y),
-  magnetYToOHLC: vi.fn((y: any) => y),
-  yToPrice: vi.fn((y: any) => 100 + y / 10)
+  snapPxToGrid: vi.fn((p: number) => p),
+  snapYToPriceLevels: vi.fn((y: number) => y),
+  magnetYToOHLC: vi.fn((y: number) => y),
+  yToPrice: vi.fn((y: number) => 100 + y / 10)
 }));
 
 // Mock drawing functions
 vi.mock('../../src/lib/drawings', () => ({
-  createDrawing: vi.fn((kind: any, start: any) => ({
+  createDrawing: vi.fn((kind: string, start: { x: number; y: number }) => ({
     id: 'test-drawing',
     kind,
     points: [start],
     style: {}
   })),
-  updateDrawingGeometry: vi.fn((d: any, p: any) => ({ ...d, points: [...d.points, p] })),
+  updateDrawingGeometry: vi.fn((d: { id: string; points: { x: number; y: number }[] }, p: { x: number; y: number }) => ({ ...d, points: [...d.points, p] })),
   drawParallelChannel: vi.fn(),
   drawPitchfork: vi.fn()
 }));
@@ -33,7 +33,7 @@ vi.mock('../../src/lib/drawings', () => ({
 // Mock geom functions
 vi.mock('../../src/lib/geom', () => ({
   distanceToSegment: vi.fn(() => 5),
-  rectFromPoints: vi.fn((a: any, b: any) => ({ x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y })),
+  rectFromPoints: vi.fn((a: { x: number; y: number }, b: { x: number; y: number }) => ({ x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y })),
   withinRect: vi.fn(() => true)
 }));
 
@@ -332,7 +332,7 @@ describe('DrawingLayer Component', () => {
 
   describe('Performance', () => {
     it('should handle many drawings efficiently', async () => {
-      const manyDrawings = Array.from({ length: 100 }, (_: any, i: any) => ({
+      const manyDrawings = Array.from({ length: 100 }, (_: unknown, i: number) => ({
         id: `drawing-${i}`,
         kind: 'trendline',
         points: [{ x: i * 10, y: i * 10 }, { x: i * 10 + 50, y: i * 10 + 50 }],

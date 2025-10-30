@@ -5,6 +5,8 @@ import {
   useWatchlistItems,
   useWatchlistStore,
   type SymbolMetrics,
+  type WatchlistItem,
+  type ScreenerFilter,
 } from '@/lib/stores/watchlistStore';
 
 // Watchlist Panel Component
@@ -56,11 +58,11 @@ export const WatchlistPanel: React.FC = () => {
             <input
               type="text"
               value={newSymbol}
-              onChange={(e: any) => setNewSymbol(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewSymbol(e.target.value)}
               placeholder="Enter symbol..."
               className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
                        rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              onKeyDown={(e: any) => e.key === 'Enter' && handleAddSymbol()}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleAddSymbol()}
               autoFocus
             />
             <button
@@ -97,7 +99,7 @@ export const WatchlistPanel: React.FC = () => {
           </div>
         ) : (
           <div className="divide-y divide-gray-200 dark:divide-gray-700">
-            {items.map((item: any) => (
+            {items.map((item: WatchlistItem) => (
               <WatchlistItem
                 key={item.symbol}
                 item={item}
@@ -143,7 +145,7 @@ const WatchlistItem: React.FC<WatchlistItemProps> = ({ item, onRemove, metrics }
             <span className="font-medium text-gray-900 dark:text-white">{item.symbol}</span>
             {showActions && (
               <button
-                onClick={(e: any) => {
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   onRemove();
                 }}
@@ -211,7 +213,7 @@ export const ScreenerPanel: React.FC = () => {
     if (newFilterValue.trim()) {
       const value =
         newFilterOperator === 'between'
-          ? newFilterValue.split(',').map((v: any) => parseFloat(v.trim()))
+          ? newFilterValue.split(',').map((v: string) => parseFloat(v.trim()))
           : parseFloat(newFilterValue);
 
       addScreenerFilter({
@@ -266,7 +268,7 @@ export const ScreenerPanel: React.FC = () => {
           <div className="grid grid-cols-4 gap-2">
             <select
               value={newFilterField}
-              onChange={(e: any) => setNewFilterField(e.target.value as keyof SymbolMetrics)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewFilterField(e.target.value as keyof SymbolMetrics)}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
@@ -279,7 +281,7 @@ export const ScreenerPanel: React.FC = () => {
 
             <select
               value={newFilterOperator}
-              onChange={(e: any) => setNewFilterOperator(e.target.value as any)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewFilterOperator(e.target.value as 'gt' | 'lt' | 'between')}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
@@ -294,7 +296,7 @@ export const ScreenerPanel: React.FC = () => {
             <input
               type="text"
               value={newFilterValue}
-              onChange={(e: any) => setNewFilterValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewFilterValue(e.target.value)}
               placeholder={newFilterOperator === 'between' ? '1,100' : '10'}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -313,7 +315,7 @@ export const ScreenerPanel: React.FC = () => {
             <div className="space-y-2">
               <h4 className="text-sm font-medium text-gray-900 dark:text-white">Active Filters:</h4>
               <div className="flex flex-wrap gap-2">
-                {screenerQuery.filters.map((filter: any) => (
+                {screenerQuery.filters.map((filter: ScreenerFilter) => (
                   <span
                     key={filter.id}
                     className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900
@@ -336,7 +338,7 @@ export const ScreenerPanel: React.FC = () => {
           <div className="grid grid-cols-2 gap-2">
             <select
               value={screenerQuery.sortBy}
-              onChange={(e: any) =>
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 updateScreenerQuery({ sortBy: e.target.value as keyof SymbolMetrics })
               }
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
@@ -351,7 +353,7 @@ export const ScreenerPanel: React.FC = () => {
 
             <select
               value={screenerQuery.sortOrder}
-              onChange={(e: any) => updateScreenerQuery({ sortOrder: e.target.value as 'asc' | 'desc' })}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updateScreenerQuery({ sortOrder: e.target.value as 'asc' | 'desc' })}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
@@ -374,7 +376,7 @@ export const ScreenerPanel: React.FC = () => {
           {screenerResults.length > 0 && (
             <div className="mt-4 max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-md">
               <div className="divide-y divide-gray-200 dark:divide-gray-700">
-                {screenerResults.map((result: any) => (
+                {screenerResults.map((result: SymbolMetrics) => (
                   <div
                     key={result.symbol}
                     className="p-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800"

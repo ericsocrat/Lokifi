@@ -227,7 +227,7 @@ export const useDrawingStore = create<DrawingState>()(
 
       updateObject: (id: string, updates: Partial<DrawingObject>) => {
         set(state => ({
-          objects: state.objects.map((obj: any) =>
+          objects: state.objects.map((obj: DrawingObject) =>
             obj.id === id
               ? {
                   ...obj,
@@ -245,18 +245,18 @@ export const useDrawingStore = create<DrawingState>()(
 
       deleteObject: (id: string) => {
         set(state => ({
-          objects: state.objects.filter((obj: any) => obj.id !== id),
+          objects: state.objects.filter((obj: DrawingObject) => obj.id !== id),
           selectedObjectId: state.selectedObjectId === id ? null : state.selectedObjectId
         }));
       },
 
       duplicateObject: (id: string) => {
         const { objects, addObject } = get();
-        const original = objects.find((obj: any) => obj.id === id);
+        const original = objects.find((obj: DrawingObject) => obj.id === id);
         if (!original) return '';
 
         // Offset the duplicate slightly
-        const offsetPoints = original.points.map((point: any) => ({
+        const offsetPoints = original.points.map((point: Point) => ({
           ...point,
           x: point.x + 10,
           y: point.y + 10
@@ -279,9 +279,9 @@ export const useDrawingStore = create<DrawingState>()(
       selectObjectsInRect: (rect: { x1: number; y1: number; x2: number; y2: number; paneId: string }) => {
         // For now, just select the first object found in the rectangle
         const { objects } = get();
-        const objectInRect = objects.find((obj: any) => 
+        const objectInRect = objects.find((obj: DrawingObject) => 
           obj.paneId === rect.paneId &&
-          obj.points.some((point: any) => 
+          obj.points.some((point: Point) => 
             point.x >= Math.min(rect.x1, rect.x2) &&
             point.x <= Math.max(rect.x1, rect.x2) &&
             point.y >= Math.min(rect.y1, rect.y2) &&
@@ -301,11 +301,11 @@ export const useDrawingStore = create<DrawingState>()(
       // Transform
       moveObject: (id: string, deltaX: number, deltaY: number) => {
         set(state => ({
-          objects: state.objects.map((obj: any) =>
+          objects: state.objects.map((obj: DrawingObject) =>
             obj.id === id
               ? {
                   ...obj,
-                  points: obj.points.map((point: any) => ({
+                  points: obj.points.map((point: Point) => ({
                     ...point,
                     x: point.x + deltaX,
                     y: point.y + deltaY
@@ -381,16 +381,16 @@ export const useDrawingStore = create<DrawingState>()(
 
       // Utilities
       getObjectsByPane: (paneId: string) => {
-        return get().objects.filter((obj: any) => obj.paneId === paneId);
+        return get().objects.filter((obj: DrawingObject) => obj.paneId === paneId);
       },
 
       getSelectedObjects: () => {
         const { objects, selectedObjectId } = get();
-        return selectedObjectId ? objects.filter((obj: any) => obj.id === selectedObjectId) : [];
+        return selectedObjectId ? objects.filter((obj: DrawingObject) => obj.id === selectedObjectId) : [];
       },
 
       getObjectById: (id: string) => {
-        return get().objects.find((obj: any) => obj.id === id);
+        return get().objects.find((obj: DrawingObject) => obj.id === id);
       },
 
       clearAllObjects: () => {
