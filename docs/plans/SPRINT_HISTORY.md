@@ -3,7 +3,7 @@
 > **Purpose**: Historical record of completed sprints, sessions, and technical debt resolution
 > **Created**: October 24, 2025
 > **Last Updated**: October 30, 2025 - Sprint 4 Complete
-> **Status**: Active - Sprint 0 ✅ COMPLETE, Sprint 1 ✅ COMPLETE, Sprint 2 ✅ COMPLETE, Sprint 3 ✅ COMPLETE, Sprint 4 ✅ COMPLETE
+> **Status**: Active - Sprint 0 ✅ COMPLETE, Sprint 1 ✅ COMPLETE, Sprint 2 ✅ COMPLETE, Sprint 3 ✅ COMPLETE, Sprint 4 ✅ COMPLETE, Sprint 5 🔄 IN PROGRESS
 > **Owner**: Solo Developer
 > **Original Timeline**: 3-4 months (100-140 hours)
 
@@ -21,6 +21,7 @@ This document tracks the gradual improvement of code quality standards that were
 
 **Quick Stats:**
 - **Frontend TypeScript `any` occurrences**: **64 remaining** (down from 1,166 peak - **94.5% reduction!** 🎉)
+- **ESLint warnings**: **338 total** (331 any types, 4 img optimization, 2 entities, 1 other) 🔄 Sprint 5 Active
 - **ESLint rules relaxed**: 1 (no-explicit-any set to 'warn')
 - **Backend Ruff violations**: **0** (down from 367 - **100% resolved!** 🎉)
 - **Test Coverage**: 26.85% → 30.75% (+3.9pp) ✅ Session 30 + Session 31: +80 router tests (all phases complete) ✅
@@ -30,6 +31,10 @@ This document tracks the gradual improvement of code quality standards that were
 - **TypeScript Campaign**: ✅ **COMPLETE** - Sessions 42-51: 1,102 any eliminated (all fixable types resolved)
 
 **Recent Achievements** ✅:
+- 🚀 **Sprint 5 IN PROGRESS** (Session 53+): Frontend ESLint Quality - **338 warnings → TBD** 🎯
+  - **Session 53**: ESLint baseline & Sprint 5 planning (in progress)
+  - **Baseline**: 331 any types, 4 img optimization, 2 unescaped entities
+  - **Target**: Systematic reduction across 12-15 hours (5-7 sessions)
 - ✅ **Sprint 4 COMPLETE** (Session 52): Backend Python Code Quality - **100% Ruff compliance (367 → 0 violations)** 🎉
 - ✅ **Sprint 3 COMPLETE** (Sessions 42-51): TypeScript Campaign - **94.5% reduction (1,166 → 64 any types)** 🎉
   - Session 42: Components Batch 1 (112 eliminated, 274→162)
@@ -3081,7 +3086,86 @@ This roadmap is complete when:
 
 ---
 
-## 🔗 Related Documents
+## � Sprint 5: Frontend ESLint Quality Campaign (Week 5 - Current Focus)
+
+**Priority**: 🟢 **IN PROGRESS** - Systematic ESLint warning elimination
+**Status**: 🔄 **Session 53 Active** - Baseline analysis and planning
+**Timeline**: 12-15 hours estimated (5-7 sessions)
+**Document**: This section + eslint-baseline.txt
+
+### Overview
+
+Building on the success of Sprint 3 (TypeScript Campaign) and Sprint 4 (Backend Ruff), Sprint 5 systematically eliminates remaining ESLint warnings to achieve production-grade frontend code quality.
+
+**Baseline (Oct 30, 2025)**:
+- **Total Warnings**: 338
+- **Categories**:
+  - `@typescript-eslint/no-explicit-any`: 331 warnings (98%)
+  - `@next/next/no-img-element`: 4 warnings (1%)
+  - `react/no-unescaped-entities`: 2 warnings (<1%)
+  - Other: 1 warning (<1%)
+
+**Strategy**:
+- Phase 1: Fix remaining 64 any types (established patterns from Sprint 3)
+- Phase 2: Optimize img → Image components (performance win)
+- Phase 3: Fix unescaped entities (quick wins)
+- Phase 4: Validate and document
+
+**Expected Impact**:
+- ✅ Zero ESLint warnings in production code
+- ✅ Improved type safety (64 → 0 remaining any types)
+- ✅ Better performance (Next.js Image optimization)
+- ✅ Production-ready code quality
+
+### Session 53: ESLint Baseline & Sprint 5 Planning (Oct 30, 2025)
+
+**Status**: ✅ **COMPLETE** (Planning phase)
+**Time**: ~30 minutes (baseline analysis + documentation)
+
+**Achievements**:
+- ✅ ESLint baseline captured (338 warnings)
+- ✅ Categorized by rule type (331 any, 4 img, 2 entities)
+- ✅ Sprint 5 documentation created
+- ✅ Todo list updated with next steps
+- ✅ Strategy defined for systematic elimination
+
+**Baseline Analysis**:
+
+**Category 1: TypeScript any Types** (331 warnings - 98%):
+- Files affected: 15+ files
+- High concentration files:
+  - `src/components/DrawingLayer.tsx`: 17 any types
+  - `components/ChartPanelV2.tsx`: 10 any types
+  - `lib/utils/logger.ts`: 6 any types
+  - `components/PluginSettingsDrawer.tsx`: 5 any types
+  - `src/components/AlertModal.tsx`: 4 any types
+- **Strategy**: Apply proven patterns from Sprint 3 (explicit types, type guards)
+
+**Category 2: Image Optimization** (4 warnings - 1%):
+- Files: `app/markets/crypto/page.tsx`, `app/profile/edit/page.tsx`, `app/profile/page.tsx`
+- **Strategy**: Replace `<img>` with Next.js `<Image>` component
+- **Impact**: Improved LCP, automatic optimization, better Core Web Vitals
+
+**Category 3: Unescaped Entities** (2 warnings - <1%):
+- Files: `app/asset/[symbol]/page.tsx`, `app/portfolio/page.tsx`
+- **Strategy**: Replace `'` with `&apos;` or use proper escaping
+- **Impact**: Proper HTML standards compliance
+
+**Next Steps**:
+1. **Session 54**: Fix high-concentration files (DrawingLayer, ChartPanelV2) - 2-3 hours
+2. **Session 55-56**: Fix remaining any types systematically - 4-6 hours
+3. **Session 57**: Image optimization (4 files) - 1 hour
+4. **Session 58**: Final cleanup + validation - 1 hour
+
+**Expected Sprint 5 Metrics**:
+- **Starting**: 338 warnings
+- **Target**: 0 warnings (100% reduction)
+- **Time**: 12-15 hours across 5-7 sessions
+- **Files Modified**: ~20 files
+
+---
+
+## �🔗 Related Documents
 
 - [PR #27 - Workflow Optimizations Validation](../pull/27)
 - [Coding Standards](./guides/quality/CODING_STANDARDS.md)
