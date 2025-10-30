@@ -25,7 +25,7 @@ export default function CopilotChat() {
     const tf = useChartCtx ? timeframeStore.get() : '';
     const url = `${API}/chat/stream?q=${encodeURIComponent(q)}$1${ctx ? `&ctx_symbols=${encodeURIComponent(ctx)}` : ''}${tf ? `&ctx_timeframe=${encodeURIComponent(tf)}` : ''}`;
     const es = new EventSource(url);
-    es.onmessage = (e: any) => setLog((prev) => prev + e.data);
+    es.onmessage = (e) => setLog((prev) => prev + e.data);
     es.onerror = () => es.close();
     esRef.current = es;
   };
@@ -41,7 +41,7 @@ export default function CopilotChat() {
             className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
             aria-label="Model preset"
           >
-            {PRESETS.map((p: any) => (
+            {PRESETS.map((p) => (
               <option key={p.value} value={p.value}>
                 {p.label}
               </option>

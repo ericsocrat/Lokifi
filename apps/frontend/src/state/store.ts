@@ -416,25 +416,25 @@ export const useChartStore = create<ChartState>()(
         let alignTo: number;
         switch (direction) {
           case 'left':
-            alignTo = Math.min(...bounds.map((b: any) => b.x));
-            bounds.forEach((b: any) => (b.x = alignTo));
+            alignTo = Math.min(...bounds.map((b) => b.x));
+            bounds.forEach((b) => (b.x = alignTo));
             break;
           case 'right':
-            alignTo = Math.max(...bounds.map((b: any) => b.x + b.width));
-            bounds.forEach((b: any) => (b.x = alignTo - b.width));
+            alignTo = Math.max(...bounds.map((b) => b.x + b.width));
+            bounds.forEach((b) => (b.x = alignTo - b.width));
             break;
           case 'top':
-            alignTo = Math.min(...bounds.map((b: any) => b.y));
-            bounds.forEach((b: any) => (b.y = alignTo));
+            alignTo = Math.min(...bounds.map((b) => b.y));
+            bounds.forEach((b) => (b.y = alignTo));
             break;
           case 'bottom':
-            alignTo = Math.max(...bounds.map((b: any) => b.y + b.height));
-            bounds.forEach((b: any) => (b.y = alignTo - b.height));
+            alignTo = Math.max(...bounds.map((b) => b.y + b.height));
+            bounds.forEach((b) => (b.y = alignTo - b.height));
             break;
         }
 
         const next = get().drawings.map((d) => {
-          const bound = bounds.find((b: any) => b.id === d.id);
+          const bound = bounds.find((b) => b.id === d.id);
           return bound ? { ...d, x: bound.x, y: bound.y } : d;
         });
         set({ drawings: next });
@@ -459,7 +459,7 @@ export const useChartStore = create<ChartState>()(
             : ((last as any).y - (first as any).y) / (total - 1);
 
         const next = get().drawings.map((d) => {
-          const idx = selectedDrawings.findIndex((sd: any) => sd.id === d.id);
+          const idx = selectedDrawings.findIndex((sd) => sd.id === d.id);
           if (idx === -1 || idx === 0 || idx === total - 1) return d;
 
           return {
@@ -474,7 +474,7 @@ export const useChartStore = create<ChartState>()(
       // Layer actions
       addLayer: (name: string) => {
         const layers = get().layers;
-        const maxOrder = Math.max(0, ...layers.map((l: any) => l.order));
+        const maxOrder = Math.max(0, ...layers.map((l) => l.order ?? 0));
         set({
           layers: [
             ...layers,
@@ -492,7 +492,7 @@ export const useChartStore = create<ChartState>()(
 
       toggleLayerVisibility: (layerId: string) => {
         set({
-          layers: get().layers.map((l: any) =>
+          layers: get().layers.map((l) =>
             l.id === layerId ? { ...l, visible: !l.visible } : l
           ),
         });
@@ -500,7 +500,7 @@ export const useChartStore = create<ChartState>()(
 
       toggleLayerLock: (layerId: string) => {
         set({
-          layers: get().layers.map((l: any) =>
+          layers: get().layers.map((l) =>
             l.id === layerId ? { ...l, locked: !l.locked } : l
           ),
         });
@@ -508,13 +508,13 @@ export const useChartStore = create<ChartState>()(
 
       setLayerOpacity: (layerId: string, opacity: number) => {
         set({
-          layers: get().layers.map((l: any) => (l.id === layerId ? { ...l, opacity } : l)),
+          layers: get().layers.map((l) => (l.id === layerId ? { ...l, opacity } : l)),
         });
       },
 
       moveLayer: (layerId: string, direction: 'up' | 'down') => {
         const layers = [...get().layers];
-        const idx = layers.findIndex((l: any) => l.id === layerId);
+        const idx = layers.findIndex((l) => l.id === layerId);
         if (idx === -1) return;
 
         if (direction === 'up' && idx > 0) {
@@ -536,7 +536,7 @@ export const useChartStore = create<ChartState>()(
 
       renameLayer: (layerId: string, name: string) => {
         set({
-          layers: get().layers.map((l: any) => (l.id === layerId ? { ...l, name } : l)),
+          layers: get().layers.map((l) => (l.id === layerId ? { ...l, name } : l)),
         });
       },
 

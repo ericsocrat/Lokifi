@@ -30,12 +30,12 @@ export class MarketDataAdapter {
 
   on(cb: Listener) {
     this.listeners.push(cb)
-    return () => { this.listeners = this.listeners.filter((l: any) => l !== cb) }
+    return () => { this.listeners = this.listeners.filter((l) => l !== cb) }
   }
 
   private emit(type: 'snapshot'|'update') {
     const c = this.candles
-    this.listeners.forEach((l: any) => l({ type, candles: c }))
+    this.listeners.forEach((l) => l({ type, candles: c }))
   }
 
   setSymbol(sym: string) {
@@ -120,7 +120,7 @@ export class MarketDataAdapter {
         this.candles = []; this.emit('snapshot')
       }
       this.ws = new WebSocket(applyQuery(stream, { symbol: this.symbol, tf: this.timeframe }))
-      this.ws.onmessage = (m: any) => {
+      this.ws.onmessage = (m) => {
         try {
           const obj = JSON.parse(m.data as any)
           const c = normalizeCandle(obj)
@@ -131,7 +131,7 @@ export class MarketDataAdapter {
       }
       this.ws.onopen = () => console.log('WS connected')
       this.ws.onclose = () => console.log('WS closed')
-      this.ws.onerror = (e: any) => console.log('WS error', e)
+      this.ws.onerror = (e) => console.log('WS error', e)
     }
   }
 
@@ -176,10 +176,11 @@ function applyQuery(url: string, params: Record<string, any>): string {
   return u.toString()
 }
 
-function normalizeCandles(arr: any[]): Candle[] {
+function normalizeCandles(arr: unknown[]): Candle[] {
   return Array.isArray(arr) ? arr.map(normalizeCandle).filter(Boolean) as Candle[] : []
 }
 
+// any required: External API data formats vary (object with keys OR array)
 function normalizeCandle(obj: any): Candle | null {
   if (!obj) return null
   const t = (obj.time ?? obj.t ?? obj[0])
@@ -188,11 +189,12 @@ function normalizeCandle(obj: any): Candle | null {
   const low   = toNum(obj.low  ?? obj.l ?? obj[3])
   const close = toNum(obj.close?? obj.c ?? obj[4])
   const vol   = toNum(obj.volume?? obj.v ?? obj[5] ?? 0)
-  if (t == null || [open,high,low,close].some((n: any) => typeof n !== 'number' || Number.isNaN(n))) return null
+  if (t == null || [open,high,low,close].some((n) => typeof n !== 'number' || Number.isNaN(n))) return null
   const time = typeof t === 'number' && t > 10_000_000_000 ? Math.floor(t/1000) : t
   return { time, open, high, low, close, volume: vol }
 }
 
+// any required: Input can be string or number from external APIs
 function toNum(x: any) { const n = typeof x === 'string' ? parseFloat(x) : x; return typeof n === 'number' ? n : NaN }
 
 function tfToMs(tf: string): number {
