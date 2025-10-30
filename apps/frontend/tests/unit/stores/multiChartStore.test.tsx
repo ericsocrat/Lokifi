@@ -85,9 +85,9 @@ describe('Multi-Chart Store', () => {
     
     // All charts except active should have new symbol
     const activeChart = result.current.activeChart;
-    const otherCharts = result.current.charts.filter((c: any) => c.id !== activeChart);
+    const otherCharts = result.current.charts.filter((c: { id: string }) => c.id !== activeChart);
     
-    otherCharts.forEach((chart: any) => {
+    otherCharts.forEach((chart: { id: string; symbol: string }) => {
       expect(chart.symbol).toBe('ETHUSDT');
     });
   });
@@ -107,9 +107,9 @@ describe('Multi-Chart Store', () => {
     });
     
     const activeChart = result.current.activeChart;
-    const otherCharts = result.current.charts.filter((c: any) => c.id !== activeChart);
+    const otherCharts = result.current.charts.filter((c: { id: string }) => c.id !== activeChart);
     
-    otherCharts.forEach((chart: any) => {
+    otherCharts.forEach((chart: { id: string; symbol: string }) => {
       expect(chart.timeframe).toBe('4h');
     });
   });

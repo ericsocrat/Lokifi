@@ -109,7 +109,7 @@ export default function ChartSidebar() {
               <input
                 type="checkbox"
                 checked={snap}
-                onChange={(e: any) => drawStore.setSnap(e.target.checked)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => drawStore.setSnap(e.target.checked)}
               />
               Snap to OHLC
             </label>

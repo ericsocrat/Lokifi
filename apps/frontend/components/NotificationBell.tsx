@@ -208,7 +208,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                         <div className="flex gap-1">
                           {!notification.is_read && (
                             <button
-                              onClick={(e: any) => {
+                              onClick={(e: React.MouseEvent) => {
                                 e.stopPropagation();
                                 markAsRead(notification.id);
                               }}
@@ -219,7 +219,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
                             </button>
                           )}
                           <button
-                            onClick={(e: any) => {
+                            onClick={(e: React.MouseEvent) => {
                               e.stopPropagation();
                               dismissNotification(notification.id);
                             }}

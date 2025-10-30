@@ -76,7 +76,7 @@ function LayerRow({ layer }: { layer: Layer }) {
             s.renameLayer(layer.id, tmp || layer.name);
             setEditing(false);
           }}
-          onKeyDown={(e: any) => {
+          onKeyDown={(e: React.KeyboardEvent) => {
             if (e.key === 'Enter') {
               (e.target as HTMLInputElement).blur();
             }

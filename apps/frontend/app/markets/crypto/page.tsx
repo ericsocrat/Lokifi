@@ -255,7 +255,7 @@ function MarketsPageContent() {
               type="text"
               placeholder="Search cryptocurrencies by name or symbol..."
               value={searchQuery}
-              onChange={(e: any) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setSearchQuery(e.target.value)}
               className="w-full pl-16 pr-6 py-5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-2 border-purple-200 dark:border-purple-800 rounded-2xl text-lg font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-purple-400 shadow-xl transition-all duration-200"
             />
             {searchLoading && (
@@ -404,7 +404,7 @@ function MarketsPageContent() {
                         </td>
                         <td className="px-4 py-4">
                           <button
-                            onClick={(e: any) => {
+                            onClick={(e: React.MouseEvent) => {
                               e.stopPropagation();
                               toggleWatchlist(asset.symbol.toUpperCase());
                             }}

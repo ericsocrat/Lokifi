@@ -3,7 +3,7 @@ import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { usePaneStore } from '@/lib/stores/paneStore';
+import { usePaneStore, Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
@@ -259,7 +259,7 @@ export const MultiPaneChart: React.FC = () => {
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
-        {panes.map((pane: any) => (
+        {panes.map((pane: Pane) => (
           <PaneComponent
             key={pane.id}
             paneId={pane.id}

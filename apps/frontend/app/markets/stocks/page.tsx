@@ -166,7 +166,7 @@ function StocksPageContent() {
               type="text"
               placeholder="Search stocks by name or symbol..."
               value={searchQuery}
-              onChange={(e: any) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 bg-neutral-900 border border-neutral-800 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500 transition-colors"
             />
           </div>
@@ -279,7 +279,7 @@ function StocksPageContent() {
                   {/* Watchlist */}
                   <div className="col-span-1 flex items-center justify-center">
                     <button
-                      onClick={(e: any) => {
+                      onClick={(e: React.MouseEvent) => {
                         e.stopPropagation();
                         toggleWatchlist(stock.symbol);
                       }}

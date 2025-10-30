@@ -1591,7 +1591,7 @@ export const useObservabilityStore = create<ObservabilityStore>()(
           if (typeof window === 'undefined') return;
 
           // Global error handler
-          window.addEventListener('error', (event: any) => {
+          window.addEventListener('error', (event) => {
             get().reportError({
               type: 'javascript',
               message: event.message,
@@ -1612,7 +1612,7 @@ export const useObservabilityStore = create<ObservabilityStore>()(
           });
 
           // Unhandled promise rejections
-          window.addEventListener('unhandledrejection', (event: any) => {
+          window.addEventListener('unhandledrejection', (event) => {
             get().reportError({
               type: 'javascript',
               message: `Unhandled promise rejection: ${event.reason}`,
@@ -1634,7 +1634,7 @@ export const useObservabilityStore = create<ObservabilityStore>()(
 
           try {
             // Navigation timing
-            const navObserver = new PerformanceObserver((list: any) => {
+            const navObserver = new PerformanceObserver((list) => {
               for (const entry of list.getEntries()) {
                 if (entry.entryType === 'navigation') {
                   const navEntry = entry as PerformanceNavigationTiming;
@@ -1735,10 +1735,10 @@ export const useObservabilityStore = create<ObservabilityStore>()(
     {
       name: 'lokifi-observability-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             performanceTraces: [],
             logs: [],
             logBuffer: [],

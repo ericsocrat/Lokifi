@@ -15,7 +15,7 @@ export default function SymbolPicker() {
   return (
     <input
       value={v}
-      onChange={(e: any) => onChange(e.target.value)}
+      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => onChange(e.target.value)}
       placeholder="Symbol (e.g., BTCUSD, AAPL)"
       className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
     />
