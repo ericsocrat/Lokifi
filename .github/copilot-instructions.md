@@ -227,9 +227,7 @@ lokifi/
     ├── codebase-analyzer.ps1        # Project metrics & cost estimates
     ├── cleanup-master.ps1           # Cleanup utilities
     ├── security-scanner.ps1         # Security scanning
-    ├── setup-precommit-hooks.ps1    # Git pre-commit hooks
-    ├── universal-fetcher.js         # Universal data fetching
-    └── templates/                   # HTML/Dashboard templates
+    └── setup-precommit-hooks.ps1    # Git pre-commit hooks
 ```
 
 ## Common Patterns

@@ -8,9 +8,6 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "coverage:sync": "pwsh -ExecutionPolicy Bypass -File tools/scripts/coverage/sync-coverage-everywhere.ps1",
-    "coverage:sync:dryrun": "pwsh -ExecutionPolicy Bypass -File tools/scripts/coverage/sync-coverage-everywhere.ps1 -DryRun",
-    "coverage:verify": "pwsh -ExecutionPolicy Bypass -File tools/scripts/coverage/sync-coverage-everywhere.ps1 -Verify",
     "test:frontend": "cd apps/frontend && npm test",
     "test:backend": "cd apps/backend && pytest",
     "test:all": "npm run test:frontend && npm run test:backend"
