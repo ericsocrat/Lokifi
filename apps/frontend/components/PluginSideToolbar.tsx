@@ -35,7 +35,7 @@ export default function PluginSideToolbar() {
           </button>
         </div>
         <div className="text-[11px] opacity-60">Ghost previews while placing points</div>
-        {ITEMS.map((it: any) => (
+        {ITEMS.map((it) => (
           <button
             key={it.id}
             onClick={() => pluginManager.setActiveTool(active === it.id ? null : it.id)}
