@@ -252,7 +252,7 @@ export const ComponentName: FC<Props> = ({ prop1, prop2 }) => {
 };
 ```
 
-### Zustand Store Pattern
+### Zustand Store Pattern (Basic)
 ```typescript
 import { create } from 'zustand';
 
@@ -297,6 +297,8 @@ export const useStore = create<Store>((set, get) => ({
   reset: () => set({ data: [], isLoading: false, error: null })
 }));
 ```
+
+**Note**: For complex state mutations, see the **Zustand + Immer pattern** in the "When Writing Code" section (lines 66-114) for `Draft<T>` usage.
 
 ### Backend Route Pattern
 ```python
@@ -359,6 +361,133 @@ def test_function_name(client, db_session):
    - ✅ **Use type inference**: Let TypeScript infer when types are obvious
    - ✅ **Document acceptable `any`**: If unavoidable, add comment explaining why
    - 🎯 **Target**: 95%+ type coverage (only 5% acceptable `any` for valid reasons)
+
+**TypeScript Type Inference Best Practices** (Sprint 3 learnings):
+```typescript
+// ❌ BAD: Redundant type annotations when TypeScript can infer
+const numbers = [1, 2, 3];
+numbers.map((n: number) => n * 2);  // number is inferred from array
+store.subscribe((state: StoreType) => ...);  // StoreType inferred from store
+
+// ✅ GOOD: Let TypeScript infer when obvious
+numbers.map((n) => n * 2);  // Inferred
+store.subscribe((state) => ...);  // Inferred
+
+// ✅ GOOD: Annotate when inference needs help
+const data = response.data as ApiResponse;  // Type assertion when needed
+const callback: (id: string) => void = handleDelete;  // Complex callback
+```
+
+**Acceptable `any` Categories** (Document inline with reason):
+```typescript
+// ✅ ACCEPTABLE: Dynamic configuration systems
+const config: Record<string, any> = { ... };  // any required: user-defined config values
+
+// ✅ ACCEPTABLE: Generic performance wrappers (variadic arguments)
+function debounce<T extends (...args: any[]) => any>(fn: T): T { ... }  // any required: variadic args
+
+// ✅ ACCEPTABLE: External API adapters (varying formats)
+function normalizeData(raw: any): NormalizedType { ... }  // any required: external API formats vary
+
+// ✅ ACCEPTABLE: Plugin systems (runtime loading)
+const plugin: any = (globalThis as any).dynamicPlugin;  // any required: runtime plugin loading
+
+// ✅ ACCEPTABLE: Browser APIs with incomplete types
+const observer = new PerformanceObserver((list: any) => { ... });  // any required: PerformanceObserverEntryList incomplete
+
+// ✅ ACCEPTABLE: Test mocking (test files only)
+const mockFn = vi.fn() as any;  // any required: flexible test mock
+
+// ❌ NEVER ACCEPTABLE: Lack of effort or laziness
+function process(data: any) { ... }  // NO - define proper interface!
+const items: any[] = [...];  // NO - use proper Item[] type!
+```
+
+**Zustand + Immer Store Pattern** (Proven in Sprint 2 & 3):
+```typescript
+import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
+
+interface StoreState {
+  items: Item[];
+  count: number;
+}
+
+interface StoreActions {
+  addItem: (item: Omit<Item, 'id' | 'createdAt'>) => void;
+  updateItem: (id: string, updates: Partial<Item>) => void;
+  deleteItem: (id: string) => void;
+}
+
+export const useStore = create<StoreState & StoreActions>()(
+  immer((set) => ({
+    // State
+    items: [],
+    count: 0,
+    
+    // Actions (use Draft<StoreState> for mutations)
+    addItem: (item) => 
+      set((draft: Draft<StoreState>) => {  // ✅ Use draft, not state
+        draft.items.push({ ...item, id: uuid(), createdAt: new Date() });
+        draft.count++;
+      }),
+    
+    updateItem: (id, updates) =>
+      set((draft: Draft<StoreState>) => {
+        const item = draft.items.find((i) => i.id === id);
+        if (item) Object.assign(item, updates);
+      }),
+    
+    deleteItem: (id) =>
+      set((draft: Draft<StoreState>) => {
+        draft.items = draft.items.filter((i) => i.id !== id);
+        draft.count--;
+      }),
+  }))
+);
+
+// Common pitfall: Don't use state. inside set() with Immer
+// ❌ BAD: set((state) => { state.items.push(...) })  // Won't work with Immer!
+// ✅ GOOD: set((draft: Draft<State>) => { draft.items.push(...) })
+```
+
+**React Event Handler Types** (Common patterns):
+```typescript
+import type React from 'react';
+
+// ✅ GOOD: Use React type imports for all event handlers
+const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => { ... };
+const handleTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => { ... };
+const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => { ... };
+const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => { ... };
+const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => { ... };
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => { ... };
+
+// ❌ BAD: Don't use any for event handlers
+const handleChange = (e: any) => { ... };  // NO!
+```
+
+**API Response Types** (External data):
+```typescript
+// ✅ GOOD: Define interfaces for API responses
+interface ApiResponse<T> {
+  data: T;
+  status: number;
+  message: string;
+}
+
+async function fetchData(): Promise<ApiResponse<User[]>> {
+  const response = await fetch('/api/users');
+  return response.json();  // Type-safe return
+}
+
+// ❌ BAD: Implicit any return
+async function fetchData() {  // Returns Promise<any>
+  const response = await fetch('/api/users');
+  return response.json();
+}
+```
 
 2. **Error Handling** (COMPREHENSIVE coverage)
    - ✅ **Try/catch all async operations**: Every API call, file operation, external service
