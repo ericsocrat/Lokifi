@@ -115,7 +115,6 @@ lokifi.db          # Local SQLite (should be in .gitignore)
 **You already have security tools:**
 ```powershell
 .\tools\security-scanner.ps1  # Comprehensive security scanning
-.\tools\cleanup-master.ps1    # Cleanup utilities (includes doc management)
 ```
 
 **Security patterns monitored:**
