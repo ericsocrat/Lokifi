@@ -70,46 +70,46 @@ export const drawStore = {
   },
   setTool(tool: Tool) {
     _state = { ..._state, tool };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   setSnap(snap: boolean) {
     _state = { ..._state, snap };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
 
   setSelection(ids: string[]) {
     _state = { ..._state, selectedIds: Array.from(new Set(ids)) };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   selectOne(id: string | null) {
     _state = { ..._state, selectedIds: id ? [id] : [] };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   toggle(id: string) {
     const s = new Set(_state.selectedIds);
     if (s.has(id)) s.delete(id);
     else s.add(id);
     _state = { ..._state, selectedIds: Array.from(s) };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   clearSelection() {
     _state = { ..._state, selectedIds: [] };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
 
   addShape(sh: Shape) {
-    undoStack.push(_state.shapes.map((s: any) => ({ ...(s as any) })));
+    undoStack.push(_state.shapes.map((s: Shape) => ({ ...(s as Shape) })));
     redoStack = [];
     const sym = symbolStore.get();
     const tf = timeframeStore.get();
     _state = { ..._state, shapes: [..._state.shapes, sh] };
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   updateShape(id: string, updater: (s: Shape) => Shape) {
-    const idx = _state.shapes.findIndex((s: any) => s.id === id);
+    const idx = _state.shapes.findIndex((s: Shape) => s.id === id);
     if (idx < 0) return;
-    undoStack.push(_state.shapes.map((s: any) => ({ ...(s as any) })));
+    undoStack.push(_state.shapes.map((s: Shape) => ({ ...(s as Shape) })));
     redoStack = [];
     const copy = _state.shapes.slice();
     copy[idx] = updater(copy[idx]);
@@ -117,14 +117,14 @@ export const drawStore = {
     const tf = timeframeStore.get();
     _state = { ..._state, shapes: copy };
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   moveSelectedBy(dt: number, dp: number) {
     const ids = new Set(_state.selectedIds);
     if (!ids.size) return;
-    undoStack.push(_state.shapes.map((s: any) => ({ ...(s as any) })));
+    undoStack.push(_state.shapes.map((s: Shape) => ({ ...(s as Shape) })));
     redoStack = [];
-    const moved = _state.shapes.map((s: any) => {
+    const moved = _state.shapes.map((s: Shape) => {
       if (!ids.has(s.id)) return s;
       if (s.type === 'hline') return { ...s, y: s.y + dp };
       if ('a' in s && 'b' in s)
@@ -139,16 +139,16 @@ export const drawStore = {
     const tf = timeframeStore.get();
     _state = { ..._state, shapes: moved };
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   replaceShapes(newShapes: Shape[]) {
     const sym = symbolStore.get();
     const tf = timeframeStore.get();
-    undoStack.push(_state.shapes.map((s: any) => ({ ...(s as any) })));
+    undoStack.push(_state.shapes.map((s: Shape) => ({ ...(s as Shape) })));
     redoStack = [];
     _state = { ..._state, shapes: newShapes };
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   clear() {
     const sym = symbolStore.get();
@@ -156,7 +156,7 @@ export const drawStore = {
     undoStack.push(_state.shapes);
     _state = { ..._state, shapes: [], selectedIds: [] };
     save(sym, tf, []);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   undo() {
     if (!undoStack.length) return;
@@ -166,7 +166,7 @@ export const drawStore = {
     const sym = symbolStore.get();
     const tf = timeframeStore.get();
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   redo() {
     if (!redoStack.length) return;
@@ -176,27 +176,27 @@ export const drawStore = {
     const sym = symbolStore.get();
     const tf = timeframeStore.get();
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   removeSelected() {
     const ids = new Set(_state.selectedIds);
     if (!ids.size) return;
     const sym = symbolStore.get();
     const tf = timeframeStore.get();
-    undoStack.push(_state.shapes.map((s: any) => ({ ...(s as any) })));
+    undoStack.push(_state.shapes.map((s: Shape) => ({ ...(s as Shape) })));
     redoStack = [];
     _state = {
       ..._state,
-      shapes: _state.shapes.filter((s: any) => !ids.has(s.id)),
+      shapes: _state.shapes.filter((s: Shape) => !ids.has(s.id)),
       selectedIds: [],
     };
     save(sym, tf, _state.shapes);
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
   loadCurrent() {
     const sym = symbolStore.get();
     const tf = timeframeStore.get();
     _state = { ..._state, shapes: load(sym, tf) };
-    listeners.forEach((l: any) => l(_state));
+    listeners.forEach((l: (state: DrawState) => void) => l(_state));
   },
 };

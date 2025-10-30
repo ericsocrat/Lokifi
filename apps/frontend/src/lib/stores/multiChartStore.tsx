@@ -9,6 +9,7 @@ import React, { createContext, useCallback, useContext } from 'react';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from '../utils/featureFlags';
 import { type VersionedState } from '../utils/migrations';
 
@@ -84,83 +85,85 @@ export const useMultiChartStore = create<MultiChartStore>()(
       immer((set, get, _store) => ({
         ...createInitialState(),
 
-        setLayout: (layout: any) => {
+        setLayout: (layout: LayoutType) => {
           if (!FLAGS.multiChart) return;
 
-          set((state: any) => {
+          set((draft: Draft<MultiChartStore>) => {
             const positions = getPositionsForLayout(layout);
 
             // Update layout
-            state.layout = layout;
+            draft.layout = layout;
 
             // Ensure we have the right number of charts
-            while (state.charts.length < positions.length) {
+            while (draft.charts.length < positions.length) {
               const newChart: ChartInstance = {
-                id: `chart-${Date.now()}-${state.charts.length}`,
+                id: `chart-${Date.now()}-${draft.charts.length}`,
                 symbol: 'BTCUSDT',
                 timeframe: '1h',
-                paneId: `pane-${state.charts.length + 1}`,
-                position: positions[state.charts.length],
+                paneId: `pane-${draft.charts.length + 1}`,
+                position: positions[draft.charts.length],
               };
-              state.charts.push(newChart);
+              draft.charts.push(newChart);
             }
 
             // Update positions for existing charts
-            state.charts.forEach((chart: any, index: any) => {
+            draft.charts.forEach((chart: ChartInstance, index: number) => {
               if (positions[index]) {
                 chart.position = positions[index];
               }
             });
 
             // Remove excess charts
-            if (state.charts.length > positions.length) {
-              state.charts.splice(positions.length);
+            if (draft.charts.length > positions.length) {
+              draft.charts.splice(positions.length);
             }
 
             // No return - Immer will handle the mutations
           });
         },
 
-        addChart: (chartData: any) => {
+        addChart: (chartData: Omit<ChartInstance, 'id'>) => {
           if (!FLAGS.multiChart) return;
 
           const newChart: ChartInstance = {
             id: `chart-${Date.now()}`,
             ...chartData,
           };
-          set((state: any) => ({ charts: [...state.charts, newChart] }));
+          set((draft: Draft<MultiChartStore>) => {
+            draft.charts.push(newChart);
+          });
         },
 
-        removeChart: (chartId: any) => {
+        removeChart: (chartId: string) => {
           if (!FLAGS.multiChart) return;
 
-          set((state: any) => ({
-            charts: state.charts.filter((chart: any) => chart.id !== chartId),
-            activeChart: state.activeChart === chartId ? null : state.activeChart,
+          set((draft: Draft<MultiChartStore>) => ({
+            charts: draft.charts.filter((chart: ChartInstance) => chart.id !== chartId),
+            activeChart: draft.activeChart === chartId ? null : draft.activeChart,
           }));
         },
 
-        updateChart: (chartId: any, updates: any) => {
-          set((state: any) => ({
-            charts: state.charts.map((chart: any) =>
+        updateChart: (chartId: string, updates: Partial<ChartInstance>) => {
+          set((draft: Draft<MultiChartStore>) => ({
+            charts: draft.charts.map((chart: ChartInstance) =>
               chart.id === chartId ? { ...chart, ...updates } : chart
             ),
           }));
         },
 
-        setActiveChart: (chartId: any) => {
+        setActiveChart: (chartId: string | null) => {
           set({ activeChart: chartId });
         },
 
-        updateLinking: (dimension: any, enabled: any) => {
+        updateLinking: (dimension: keyof LinkingDimensions, enabled: boolean) => {
           if (!FLAGS.multiChart) return;
 
-          set((state: any) => ({
-            linking: { ...state.linking, [dimension]: enabled },
+          set((draft: Draft<MultiChartStore>) => ({
+            linking: { ...draft.linking, [dimension]: enabled },
           }));
         },
 
-        changeSymbolLinked: (symbol: any) => {
+        changeSymbolLinked: (symbol: string) => {
           if (!FLAGS.multiChart) return;
 
           // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
@@ -168,13 +171,13 @@ export const useMultiChartStore = create<MultiChartStore>()(
           if (!linking.symbol || !activeChart) return;
 
           set({
-            charts: charts.map((chart: any) =>
+            charts: charts.map((chart: ChartInstance) =>
               chart.id !== activeChart ? { ...chart, symbol } : chart
             ),
           });
         },
 
-        changeTimeframeLinked: (timeframe: any) => {
+        changeTimeframeLinked: (timeframe: string) => {
           if (!FLAGS.multiChart) return;
 
           // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
@@ -182,13 +185,13 @@ export const useMultiChartStore = create<MultiChartStore>()(
           if (!linking.timeframe || !activeChart) return;
 
           set({
-            charts: charts.map((chart: any) =>
+            charts: charts.map((chart: ChartInstance) =>
               chart.id !== activeChart ? { ...chart, timeframe } : chart
             ),
           });
         },
 
-        updateCursorLinked: (position: any) => {
+        updateCursorLinked: (position: { time: number; price: number }) => {
           if (!FLAGS.multiChart) return;
 
           // @ts-expect-error - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
@@ -336,7 +339,7 @@ export const LayoutSelector: React.FC = () => {
     <div className="flex items-center space-x-2">
       <span className="text-sm text-gray-400">Layout:</span>
       <div className="flex space-x-1">
-        {(['1x1', '1x2', '2x2'] as LayoutType[]).map((layout: any) => (
+        {(['1x1', '1x2', '2x2'] as LayoutType[]).map((layout: LayoutType) => (
           <button
             key={layout}
             onClick={() => setLayout(layout)}
@@ -371,7 +374,7 @@ export const LinkingControls: React.FC = () => {
             <input
               type="checkbox"
               checked={enabled}
-              onChange={(e: any) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 updateLinking(dimension as keyof LinkingDimensions, e.target.checked)
               }
               className="w-3 h-3"

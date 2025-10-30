@@ -96,5 +96,3 @@ export default function ShareBar() {
     </div>
   );
 }
-
-

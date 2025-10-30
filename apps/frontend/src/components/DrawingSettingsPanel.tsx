@@ -172,7 +172,7 @@ export default function DrawingSettingsPanel() {
 
       <h3 className="font-semibold">Hotkeys</h3>
       <div className="space-y-2">
-        {HOTKEYS.map((k: typeof HOTKEYS[0]) => (
+        {HOTKEYS.map((k: (typeof HOTKEYS)[0]) => (
           <div key={k.action} className="flex items-center justify-between gap-2 text-sm">
             <div className="opacity-80">{k.label}</div>
             <input
@@ -214,4 +214,3 @@ export default function DrawingSettingsPanel() {
     </div>
   );
 }
-

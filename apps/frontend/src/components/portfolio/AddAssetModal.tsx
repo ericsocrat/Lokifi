@@ -1,14 +1,31 @@
 'use client';
 
-import { X, Search, ArrowLeft, TrendingUp, Coins, Home, Briefcase, Wallet as WalletIcon, CreditCard, Car, Gem } from 'lucide-react';
-import { useState, useEffect } from 'react';
 import { useAllAssets, useAssetSearch } from '@/src/hooks/useMarketData';
 import { MarketAsset } from '@/src/services/marketData';
 import { AssetIcon } from '@/src/utils/assetIcons';
+import {
+  ArrowLeft,
+  Briefcase,
+  Car,
+  Coins,
+  CreditCard,
+  Gem,
+  Home,
+  Search,
+  TrendingUp,
+  Wallet as WalletIcon,
+  X,
+} from 'lucide-react';
+import { useState } from 'react';
 
 // Asset Categories
 export const ASSET_CATEGORIES = [
-  { id: 'stocks', name: 'Stocks & ETFs', icon: TrendingUp, description: 'Publicly traded securities' },
+  {
+    id: 'stocks',
+    name: 'Stocks & ETFs',
+    icon: TrendingUp,
+    description: 'Publicly traded securities',
+  },
   { id: 'crypto', name: 'Cryptocurrency', icon: Coins, description: 'Digital currencies' },
   { id: 'real-estate', name: 'Real Estate', icon: Home, description: 'Properties and land' },
   { id: 'business', name: 'Business', icon: Briefcase, description: 'Business ownership' },
@@ -69,11 +86,14 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
     if (exists) {
       setSelectedAssets(selectedAssets.filter((a: SelectedAsset) => a.symbol !== asset.symbol));
     } else {
-      setSelectedAssets([...selectedAssets, {
-        symbol: asset.symbol,
-        name: asset.name,
-        price: asset.price,
-      }]);
+      setSelectedAssets([
+        ...selectedAssets,
+        {
+          symbol: asset.symbol,
+          name: asset.name,
+          price: asset.price,
+        },
+      ]);
     }
   };
 
@@ -110,12 +130,14 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
   };
 
   // Use search results if searching, otherwise show all assets for category
-  const filteredAssets = searchQuery.trim().length > 0 
-    ? searchResults.filter((asset: MarketAsset) => 
-        (selectedCategory === 'stocks' && asset.type === 'stock') ||
-        (selectedCategory === 'crypto' && asset.type === 'crypto')
-      )
-    : getAssetsForCategory();
+  const filteredAssets =
+    searchQuery.trim().length > 0
+      ? searchResults.filter(
+          (asset: MarketAsset) =>
+            (selectedCategory === 'stocks' && asset.type === 'stock') ||
+            (selectedCategory === 'crypto' && asset.type === 'crypto')
+        )
+      : getAssetsForCategory();
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -133,7 +155,8 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
             )}
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {step === 'category' && 'Select Asset Category'}
-              {step === 'selection' && `Select ${ASSET_CATEGORIES.find((c: typeof ASSET_CATEGORIES[0]) => c.id === selectedCategory)?.name}`}
+              {step === 'selection' &&
+                `Select ${ASSET_CATEGORIES.find((c: (typeof ASSET_CATEGORIES)[0]) => c.id === selectedCategory)?.name}`}
               {step === 'quantity' && 'Enter Details'}
             </h2>
           </div>
@@ -151,7 +174,7 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
           {step === 'category' && (
             <div className="p-6">
               <div className="grid grid-cols-2 gap-4">
-                {ASSET_CATEGORIES.map((category: typeof ASSET_CATEGORIES[0]) => {
+                {ASSET_CATEGORIES.map((category: (typeof ASSET_CATEGORIES)[0]) => {
                   const Icon = category.icon;
                   return (
                     <button
@@ -179,10 +202,11 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
               {/* Market Data Status */}
               <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                 <p className="text-xs text-green-900 dark:text-green-100">
-                  ✅ <strong>Live Market Data:</strong> 2,070 assets (1,800 stocks + 270 cryptos) updated every 30 minutes from multiple APIs.
+                  ✅ <strong>Live Market Data:</strong> 2,070 assets (1,800 stocks + 270 cryptos)
+                  updated every 30 minutes from multiple APIs.
                 </p>
               </div>
-              
+
               {/* Search */}
               <div className="mb-4">
                 <div className="relative">
@@ -191,7 +215,9 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                     type="text"
                     placeholder="Search assets..."
                     value={searchQuery}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSearchQuery(e.target.value)
+                    }
                     className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
                   />
                 </div>
@@ -200,7 +226,9 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
               {/* Asset List */}
               <div className="space-y-2 max-h-96 overflow-y-auto">
                 {filteredAssets.map((asset: MarketAsset) => {
-                  const isSelected = selectedAssets.some((a: SelectedAsset) => a.symbol === asset.symbol);
+                  const isSelected = selectedAssets.some(
+                    (a: SelectedAsset) => a.symbol === asset.symbol
+                  );
                   return (
                     <button
                       key={asset.symbol}
@@ -213,9 +241,9 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3 flex-1">
-                          <AssetIcon 
-                            symbol={asset.symbol} 
-                            type={asset.type} 
+                          <AssetIcon
+                            symbol={asset.symbol}
+                            type={asset.type}
                             size={40}
                             className="flex-shrink-0"
                           />
@@ -230,13 +258,22 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                         </div>
                         <div className="text-right ml-3 flex-shrink-0">
                           <div className="font-semibold text-gray-900 dark:text-gray-100">
-                            ${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: asset.price < 1 ? 6 : 2 })}
+                            $
+                            {asset.price.toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: asset.price < 1 ? 6 : 2,
+                            })}
                           </div>
-                          <div className={`text-xs ${asset.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {asset.changePercent >= 0 ? '+' : ''}{asset.changePercent.toFixed(2)}%
+                          <div
+                            className={`text-xs ${asset.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                          >
+                            {asset.changePercent >= 0 ? '+' : ''}
+                            {asset.changePercent.toFixed(2)}%
                           </div>
                           {isSelected && (
-                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">✓ Selected</div>
+                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                              ✓ Selected
+                            </div>
                           )}
                         </div>
                       </div>
@@ -261,13 +298,18 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
               <div className="space-y-4">
                 {selectedAssets.map((asset: SelectedAsset) => {
                   // Find the full asset data from the market data
-                  const fullAsset = filteredAssets.find((a: MarketAsset) => a.symbol === asset.symbol);
+                  const fullAsset = filteredAssets.find(
+                    (a: MarketAsset) => a.symbol === asset.symbol
+                  );
                   return (
-                    <div key={asset.symbol} className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div
+                      key={asset.symbol}
+                      className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg"
+                    >
                       <div className="mb-3 flex items-center space-x-3">
-                        <AssetIcon 
-                          symbol={asset.symbol} 
-                          type={fullAsset?.type || 'stock'} 
+                        <AssetIcon
+                          symbol={asset.symbol}
+                          type={fullAsset?.type || 'stock'}
                           size={36}
                           className="flex-shrink-0"
                         />
@@ -279,35 +321,39 @@ export default function AddAssetModal({ isOpen, onClose, onAddAssets }: AddAsset
                             {asset.name}
                           </div>
                         </div>
-                        </div>
+                      </div>
                       <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Quantity
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="0.00"
-                          value={quantities[asset.symbol] || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQuantities({ ...quantities, [asset.symbol]: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-                        />
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Quantity
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            value={quantities[asset.symbol] || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                              setQuantities({ ...quantities, [asset.symbol]: e.target.value })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Value ($)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            placeholder={asset.price?.toFixed(2) || '0.00'}
+                            value={values[asset.symbol] || ''}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                              setValues({ ...values, [asset.symbol]: e.target.value })
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                          Value ($)
-                        </label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder={asset.price?.toFixed(2) || '0.00'}
-                          value={values[asset.symbol] || ''}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setValues({ ...values, [asset.symbol]: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-100"
-                        />
-                      </div>
-                    </div>
                     </div>
                   );
                 })}

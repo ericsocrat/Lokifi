@@ -11,7 +11,7 @@ import { FLAGS } from './featureFlags';
 export interface ConfigurationItem {
   id: string;
   key: string;
-  value: any;
+  value: any; // any required: Configuration values can be string | number | boolean | object | array
   type: ConfigurationType;
   category: string;
   description: string;
@@ -68,8 +68,8 @@ export type ConfigurationStatus =
 export interface ConfigurationSchema {
   type: string;
   required?: boolean;
-  default?: any;
-  enum?: any[];
+  default?: any; // any required: Schema default can be of any type matching the schema
+  enum?: any[]; // any required: Enum values can be strings, numbers, or booleans
   pattern?: string;
   minimum?: number;
   maximum?: number;
@@ -104,7 +104,7 @@ export interface TemplateVariable {
   name: string;
   description: string;
   type: ConfigurationType;
-  defaultValue?: any;
+  defaultValue?: any; // any required: Template variable defaults match ConfigurationType union
   required: boolean;
   placeholder?: string;
 }
@@ -121,7 +121,7 @@ export interface ConfigurationEnvironment {
 
   // Configuration
   configurations: string[]; // configuration item ids
-  overrides: Record<string, any>;
+  overrides: Record<string, any>; // any required: Environment overrides can be any config type
 
   // Access
   isReadOnly: boolean;
@@ -140,7 +140,7 @@ export interface ConfigurationVersion {
   id: string;
   configurationId: string;
   version: number;
-  value: any;
+  value: any; // any required: Version value matches parent ConfigurationItem value type
   changelog: string;
 
   // Metadata
@@ -199,8 +199,8 @@ export interface ConfigurationChange {
   id: string;
   type: 'create' | 'update' | 'delete';
   configurationId: string;
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: any; // any required: Old value matches ConfigurationItem value type
+  newValue?: any; // any required: New value matches ConfigurationItem value type
   reason: string;
 }
 
@@ -292,8 +292,8 @@ export interface SyncedItem {
   configurationId: string;
   key: string;
   action: 'created' | 'updated' | 'deleted' | 'skipped';
-  oldValue?: any;
-  newValue?: any;
+  oldValue?: any; // any required: Synced old value matches ConfigurationItem value type
+  newValue?: any; // any required: Synced new value matches ConfigurationItem value type
   targetEnvironment: string;
 }
 
@@ -347,8 +347,8 @@ export interface ConfigurationDrift {
   configurationId: string;
 
   // Drift details
-  expectedValue: any;
-  actualValue: any;
+  expectedValue: any; // any required: Expected value matches ConfigurationItem value type
+  actualValue: any; // any required: Actual value matches ConfigurationItem value type
   driftType: DriftType;
 
   // Detection
@@ -382,9 +382,9 @@ export interface ConfigurationAudit {
   resourceId: string;
 
   // Details
-  oldValue?: any;
-  newValue?: any;
-  changes: Record<string, { from: any; to: any }>;
+  oldValue?: any; // any required: Audit old value matches any ConfigurationItem value type
+  newValue?: any; // any required: Audit new value matches any ConfigurationItem value type
+  changes: Record<string, { from: any; to: any }>; // any required: Change tracking for any value type
 
   // Context
   userId: string;
@@ -527,8 +527,8 @@ interface ConfigurationSyncActions {
   setSelectedConfiguration: (configId: string | null) => void;
 
   // Configuration Values
-  getConfigurationValue: (key: string, environmentId?: string) => any;
-  setConfigurationValue: (key: string, value: any, environmentId?: string) => void;
+  getConfigurationValue: (key: string, environmentId?: string) => any; // any required: Return type matches ConfigurationItem value
+  setConfigurationValue: (key: string, value: any, environmentId?: string) => void; // any required: Input matches ConfigurationItem value
 
   // Validation
   validateConfiguration: (configId: string) => Promise<string[]>;
@@ -1824,7 +1824,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
     {
       name: 'lokifi-configuration-sync-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: Partial<ConfigurationSyncState>, version: number) => {
         if (version === 0) {
           return {
             ...persistedState,

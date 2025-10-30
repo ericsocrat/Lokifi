@@ -1,69 +1,80 @@
-import React from 'react'
-import { useChartStore } from '@/state/store'
-import { TF_PRESETS, SYMBOL_SUGGESTIONS, normalizeTf } from '@/lib/utils/timeframes'
+import { SYMBOL_SUGGESTIONS, TF_PRESETS, normalizeTf } from '@/lib/utils/timeframes';
+import { useChartStore } from '@/state/store';
+import React from 'react';
 
 export default function SymbolTfBar() {
-  const symbol = useChartStore(s => s.symbol)
-  const timeframe = useChartStore(s => s.timeframe)
-  const setSymbol = useChartStore(s => s.setSymbol)
-  const setTimeframe = useChartStore(s => s.setTimeframe)
+  const symbol = useChartStore((s) => s.symbol);
+  const timeframe = useChartStore((s) => s.timeframe);
+  const setSymbol = useChartStore((s) => s.setSymbol);
+  const setTimeframe = useChartStore((s) => s.setTimeframe);
 
-  const [symInput, setSymInput] = React.useState(symbol)
-  const [tfInput, setTfInput] = React.useState(timeframe)
-  const [showSymMenu, setShowSymMenu] = React.useState(false)
+  const [symInput, setSymInput] = React.useState(symbol);
+  const [tfInput, setTfInput] = React.useState(timeframe);
+  const [showSymMenu, setShowSymMenu] = React.useState(false);
 
-  React.useEffect(() => setSymInput(symbol), [symbol])
-  React.useEffect(() => setTfInput(timeframe), [timeframe])
+  React.useEffect(() => setSymInput(symbol), [symbol]);
+  React.useEffect(() => setTfInput(timeframe), [timeframe]);
 
   const applySymbol = () => {
-    const v = symInput.trim().toUpperCase()
-    if (!v) return
-    setSymbol(v)
-    setShowSymMenu(false)
-  }
+    const v = symInput.trim().toUpperCase();
+    if (!v) return;
+    setSymbol(v);
+    setShowSymMenu(false);
+  };
   const applyTf = () => {
-    const v = normalizeTf(tfInput)
-    if (!v) return
-    setTimeframe(v)
-  }
+    const v = normalizeTf(tfInput);
+    if (!v) return;
+    setTimeframe(v);
+  };
 
   // simple outside click for suggestions
-  const menuRef = React.useRef<HTMLDivElement>(null)
+  const menuRef = React.useRef<HTMLDivElement>(null);
   React.useEffect(() => {
     const onDoc = (e: MouseEvent) => {
-      if (!menuRef.current) return
-      if (!menuRef.current.contains(e.target as any)) setShowSymMenu(false)
-    }
-    document.addEventListener('mousedown', onDoc)
-    return () => document.removeEventListener('mousedown', onDoc)
-  }, [])
+      if (!menuRef.current) return;
+      if (!menuRef.current.contains(e.target as any)) setShowSymMenu(false);
+    };
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
 
   return (
-    <div className='absolute top-2 left-2 z-10 flex items-center gap-2 px-2 py-1 rounded-xl bg-black/50 border border-white/10 backdrop-blur'>
+    <div className="absolute top-2 left-2 z-10 flex items-center gap-2 px-2 py-1 rounded-xl bg-black/50 border border-white/10 backdrop-blur">
       {/* Symbol input */}
-      <div className='relative' ref={menuRef}>
+      <div className="relative" ref={menuRef}>
         <input
           value={symInput}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setSymInput(e.target.value.toUpperCase()); setShowSymMenu(true) }}
-          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key==='Enter') applySymbol() }}
-          className='px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-36 outline-none'
-          placeholder='Symbol'
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            setSymInput(e.target.value.toUpperCase());
+            setShowSymMenu(true);
+          }}
+          onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') applySymbol();
+          }}
+          className="px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-36 outline-none"
+          placeholder="Symbol"
         />
         {showSymMenu && (
-          <div className='absolute mt-1 left-0 w-48 max-h-56 overflow-auto rounded-md border border-white/10 bg-black/80 shadow-lg'>
-            {SYMBOL_SUGGESTIONS
-              .filter((s: string) => s.toUpperCase().includes(symInput.toUpperCase()))
-              .slice(0,20)
+          <div className="absolute mt-1 left-0 w-48 max-h-56 overflow-auto rounded-md border border-white/10 bg-black/80 shadow-lg">
+            {SYMBOL_SUGGESTIONS.filter((s: string) =>
+              s.toUpperCase().includes(symInput.toUpperCase())
+            )
+              .slice(0, 20)
               .map((sug: string) => (
                 <button
                   key={sug}
-                  onClick={() => { setSymInput(sug); setSymbol(sug); setShowSymMenu(false) }}
-                  className='w-full text-left px-2 py-1 text-sm hover:bg-white/10'>
+                  onClick={() => {
+                    setSymInput(sug);
+                    setSymbol(sug);
+                    setShowSymMenu(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-sm hover:bg-white/10"
+                >
                   {sug}
                 </button>
-            ))}
+              ))}
             {SYMBOL_SUGGESTIONS.length === 0 && (
-              <div className='px-2 py-1 text-xs opacity-60'>No suggestions</div>
+              <div className="px-2 py-1 text-xs opacity-60">No suggestions</div>
             )}
           </div>
         )}
@@ -71,19 +82,26 @@ export default function SymbolTfBar() {
 
       <button
         onClick={applySymbol}
-        className='px-2 py-1 rounded border border-white/15 text-sm hover:bg-white/10'>
+        className="px-2 py-1 rounded border border-white/15 text-sm hover:bg-white/10"
+      >
         Set
       </button>
 
-      <div className='w-px h-6 bg-white/10 mx-1' />
+      <div className="w-px h-6 bg-white/10 mx-1" />
 
       {/* Timeframe presets */}
-      <div className='flex gap-1'>
+      <div className="flex gap-1">
         {TF_PRESETS.map((tf: (typeof TF_PRESETS)[number]) => (
           <button
             key={tf}
             onClick={() => setTimeframe(tf)}
-            className={'px-2 py-1 rounded text-sm border ' + (timeframe===tf ? 'border-white/60 bg-white/10' : 'border-white/15 hover:bg-white/10')}>
+            className={
+              'px-2 py-1 rounded text-sm border ' +
+              (timeframe === tf
+                ? 'border-white/60 bg-white/10'
+                : 'border-white/15 hover:bg-white/10')
+            }
+          >
             {tf}
           </button>
         ))}
@@ -93,15 +111,18 @@ export default function SymbolTfBar() {
       <input
         value={tfInput}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTfInput(e.target.value)}
-        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key==='Enter') applyTf() }}
-        className='px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-20 outline-none'
-        placeholder='e.g. 90m'
+        onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          if (e.key === 'Enter') applyTf();
+        }}
+        className="px-2 py-1 rounded bg-transparent border border-white/15 text-sm w-20 outline-none"
+        placeholder="e.g. 90m"
       />
       <button
         onClick={applyTf}
-        className='px-2 py-1 rounded border border-white/15 text-sm hover:bg-white/10'>
+        className="px-2 py-1 rounded border border-white/15 text-sm hover:bg-white/10"
+      >
         Set
       </button>
     </div>
-  )
+  );
 }

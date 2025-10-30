@@ -83,7 +83,9 @@ ${lines.join('\n')}`,
               <input
                 type="checkbox"
                 checked={includeRecent}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIncludeRecent(e.target.checked)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setIncludeRecent(e.target.checked)
+                }
               />
               <span>Last 12 alerts</span>
             </label>
@@ -109,4 +111,3 @@ ${lines.join('\n')}`,
     </div>
   );
 }
-

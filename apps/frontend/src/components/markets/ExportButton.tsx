@@ -1,6 +1,6 @@
 /**
  * ExportButton Component
- * 
+ *
  * Exports market data to CSV or JSON format
  */
 
@@ -15,31 +15,33 @@ interface ExportButtonProps {
 
 export function ExportButton({ data, filename, disabled }: ExportButtonProps) {
   const [isExporting, setIsExporting] = useState(false);
-  
+
   const exportToCSV = () => {
     if (data.length === 0) return;
-    
+
     setIsExporting(true);
-    
+
     try {
       // Get headers from first item
       const headers = Object.keys(data[0]);
-      
+
       // Create CSV content
       const csvContent = [
         headers.join(','),
-        ...data.map((item: Record<string, unknown>) => 
-          headers.map((header: string) => {
-            const value = item[header];
-            // Handle values with commas by wrapping in quotes
-            if (typeof value === 'string' && value.includes(',')) {
-              return `"${value}"`;
-            }
-            return value ?? '';
-          }).join(',')
-        )
+        ...data.map((item: Record<string, unknown>) =>
+          headers
+            .map((header: string) => {
+              const value = item[header];
+              // Handle values with commas by wrapping in quotes
+              if (typeof value === 'string' && value.includes(',')) {
+                return `"${value}"`;
+              }
+              return value ?? '';
+            })
+            .join(',')
+        ),
       ].join('\n');
-      
+
       // Create blob and download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
@@ -53,7 +55,7 @@ export function ExportButton({ data, filename, disabled }: ExportButtonProps) {
       setTimeout(() => setIsExporting(false), 1000);
     }
   };
-  
+
   return (
     <button
       onClick={exportToCSV}
