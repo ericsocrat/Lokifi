@@ -405,7 +405,8 @@ export const useChartStore = create<ChartState>()(
         if (sel.size < 2) return;
 
         const selectedDrawings = get().drawings.filter((d) => sel.has(d.id));
-        const bounds = selectedDrawings.map((d: any) => ({ // any required: Drawing union type doesn't guarantee x/y/width/height properties
+        const bounds = selectedDrawings.map((d: any) => ({
+          // any required: Drawing union type doesn't guarantee x/y/width/height properties
           id: d.id,
           x: d.x,
           y: d.y,

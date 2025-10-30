@@ -10,24 +10,28 @@ export type SvgStyle = {
   strokeWidth?: number;
   opacity?: number;
   fill?: string;
-  dash?: boolean | string;     // true -> "6,4" (default), string -> custom "a,b"
-  lineCap?: "butt" | "round" | "square";
-  lineJoin?: "miter" | "round" | "bevel";
+  dash?: boolean | string; // true -> "6,4" (default), string -> custom "a,b"
+  lineCap?: 'butt' | 'round' | 'square';
+  lineJoin?: 'miter' | 'round' | 'bevel';
   className?: string;
 };
 
 export type TextStyle = {
   fill?: string;
-  fontSize?: number;           // px
+  fontSize?: number; // px
   fontFamily?: string;
-  anchor?: "start" | "middle" | "end";
+  anchor?: 'start' | 'middle' | 'end';
   className?: string;
   opacity?: number;
 };
 
 function escAttr(v: string | number | boolean | null | undefined): string {
-  if (v === null || v === undefined) return "";
-  return String(v).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  if (v === null || v === undefined) return '';
+  return String(v)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 function joinAttrs(obj: Record<string, string | number | boolean | null | undefined>): string {
@@ -35,38 +39,42 @@ function joinAttrs(obj: Record<string, string | number | boolean | null | undefi
   for (const k of Object.keys(obj)) {
     const v = obj[k];
     if (v === undefined || v === null || v === false) continue;
-    if (v === true) { parts.push(`${k}="true"`); continue; }
+    if (v === true) {
+      parts.push(`${k}="true"`);
+      continue;
+    }
     const sv = escAttr(v);
-    if (sv === "") continue;
+    if (sv === '') continue;
     parts.push(`${k}="${sv}"`);
   }
-  return parts.length ? " " + parts.join(" ") : "";
+  return parts.length ? ' ' + parts.join(' ') : '';
 }
 
 function commonStroke(style: SvgStyle = {}): Record<string, string | number> {
-  const dashArray = style.dash === true ? "6,4" : (typeof style.dash === "string" ? style.dash : "");
+  const dashArray = style.dash === true ? '6,4' : typeof style.dash === 'string' ? style.dash : '';
   return {
-    stroke: style.stroke ?? "currentColor",
-    "stroke-width": style.strokeWidth ?? 1.5,
+    stroke: style.stroke ?? 'currentColor',
+    'stroke-width': style.strokeWidth ?? 1.5,
     opacity: style.opacity ?? 1,
-    ...(dashArray ? { "stroke-dasharray": dashArray } : {}),
-    ...(style.lineCap ? { "stroke-linecap": style.lineCap } : {}),
-    ...(style.lineJoin ? { "stroke-linejoin": style.lineJoin } : {}),
+    ...(dashArray ? { 'stroke-dasharray': dashArray } : {}),
+    ...(style.lineCap ? { 'stroke-linecap': style.lineCap } : {}),
+    ...(style.lineJoin ? { 'stroke-linejoin': style.lineJoin } : {}),
     ...(style.className ? { class: style.className } : {}),
   };
 }
 
 function commonFill(style: SvgStyle = {}): Record<string, string | number> {
   // If explicit fill provided, use it with light opacity; else "none"
-  return style.fill
-    ? { fill: style.fill, "fill-opacity": 0.18 }
-    : { fill: "none" };
+  return style.fill ? { fill: style.fill, 'fill-opacity': 0.18 } : { fill: 'none' };
 }
 
 /** <line .../> */
 export function lineEl(a: P, b: P, style: SvgStyle = {}): string {
   const attrs = {
-    x1: a.x, y1: a.y, x2: b.x, y2: b.y,
+    x1: a.x,
+    y1: a.y,
+    x2: b.x,
+    y2: b.y,
     ...commonStroke(style),
   };
   return `<line${joinAttrs(attrs)} />`;
@@ -74,7 +82,7 @@ export function lineEl(a: P, b: P, style: SvgStyle = {}): string {
 
 /** <polyline .../> */
 export function polylineEl(points: P[], style: SvgStyle = {}): string {
-  const pts = points.map((p) => `${p.x},${p.y}`).join(" ");
+  const pts = points.map((p) => `${p.x},${p.y}`).join(' ');
   const attrs = {
     points: pts,
     ...commonStroke(style),
@@ -90,7 +98,10 @@ export function rectEl(a: P, b: P, style: SvgStyle = {}): string {
   const w = Math.max(0.0001, Math.abs(b.x - a.x));
   const h = Math.max(0.0001, Math.abs(b.y - a.y));
   const attrs = {
-    x, y, width: w, height: h,
+    x,
+    y,
+    width: w,
+    height: h,
     ...commonStroke(style),
     ...commonFill(style),
   };
@@ -100,7 +111,9 @@ export function rectEl(a: P, b: P, style: SvgStyle = {}): string {
 /** <circle .../> */
 export function circleEl(c: P, r: number, style: SvgStyle = {}): string {
   const attrs = {
-    cx: c.x, cy: c.y, r: Math.max(0.0001, r),
+    cx: c.x,
+    cy: c.y,
+    r: Math.max(0.0001, r),
     ...commonStroke(style),
     ...commonFill(style),
   };
@@ -120,11 +133,12 @@ export function pathEl(d: string, style: SvgStyle = {}): string {
 /** <text ...>content</text> */
 export function textEl(p: P, text: string, style: TextStyle = {}): string {
   const attrs = {
-    x: p.x, y: p.y,
-    fill: style.fill ?? "currentColor",
-    "font-size": style.fontSize ?? 12,
-    "font-family": style.fontFamily ?? "ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto",
-    "text-anchor": style.anchor ?? "start",
+    x: p.x,
+    y: p.y,
+    fill: style.fill ?? 'currentColor',
+    'font-size': style.fontSize ?? 12,
+    'font-family': style.fontFamily ?? 'ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto',
+    'text-anchor': style.anchor ?? 'start',
     opacity: style.opacity ?? 1,
     class: style.className,
   };
@@ -134,16 +148,21 @@ export function textEl(p: P, text: string, style: TextStyle = {}): string {
 /** Helper to group multiple elements */
 export function groupEl(children: string[], className?: string, opacity?: number): string {
   const attrs: Record<string, string | number> = {};
-  if (className) attrs["class"] = className;
-  if (opacity !== undefined) attrs["opacity"] = opacity;
-  return `<g${joinAttrs(attrs)}>${children.join("")}</g>`;
+  if (className) attrs['class'] = className;
+  if (opacity !== undefined) attrs['opacity'] = opacity;
+  return `<g${joinAttrs(attrs)}>${children.join('')}</g>`;
 }
 
 /** Serialize a whole SVG document with given width/height (optional viewBox) */
-export function serializeSvg(children: string[], width = 800, height = 400, viewBox?: { x: number; y: number; w: number; h: number }): string {
-  const vb = viewBox ? ` viewBox="${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}"` : "";
+export function serializeSvg(
+  children: string[],
+  width = 800,
+  height = 400,
+  viewBox?: { x: number; y: number; w: number; h: number }
+): string {
+  const vb = viewBox ? ` viewBox="${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}"` : '';
   const head = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}"${vb}>`;
-  return head + children.join("") + "</svg>";
+  return head + children.join('') + '</svg>';
 }
 
 /** Convenience: convert 2 points to a path "d" for a simple line */
@@ -153,7 +172,7 @@ export function dLine(a: P, b: P): string {
 
 /** Convenience: polygon/polyline "points" from points array */
 export function pointsAttr(points: P[]): string {
-  return points.map((p) => `${p.x},${p.y}`).join(" ");
+  return points.map((p) => `${p.x},${p.y}`).join(' ');
 }
 
 /** Default export with common helpers for flexible imports */
@@ -171,9 +190,9 @@ const Svg = {
 };
 export default Svg;
 
-import type { Drawing } from './drawings'
+import type { Drawing } from './drawings';
 
 export function drawingsToSVG(drawings: Drawing[], width = 800, height = 400): string {
   const payload = JSON.stringify({ drawings });
-  return serializeSvg([textEl({x:12,y:20}, payload)], width, height);
+  return serializeSvg([textEl({ x: 12, y: 20 }, payload)], width, height);
 }

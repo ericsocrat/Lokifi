@@ -1,54 +1,58 @@
-import type { Drawing } from './drawings'
+import type { Drawing } from './drawings';
 
 export type PersistSnapshot = {
-  ts: number
-  drawings: Drawing[]
-  selection: string[]
-}
+  ts: number;
+  drawings: Drawing[];
+  selection: string[];
+};
 
-const SNAP_KEY = 'lokifi-drawings@current'
-const VERSIONS_KEY = 'lokifi-drawings@versions'
-const MAX_VERSIONS = 20
+const SNAP_KEY = 'lokifi-drawings@current';
+const VERSIONS_KEY = 'lokifi-drawings@versions';
+const MAX_VERSIONS = 20;
 
 export function saveCurrent(drawings: Drawing[], selection: Set<string>) {
   const snap: PersistSnapshot = {
     ts: Date.now(),
     drawings,
-    selection: Array.from(selection)
-  }
-  localStorage.setItem(SNAP_KEY, JSON.stringify(snap))
+    selection: Array.from(selection),
+  };
+  localStorage.setItem(SNAP_KEY, JSON.stringify(snap));
 }
 
 export function loadCurrent(): PersistSnapshot | null {
   try {
-    const raw = localStorage.getItem(SNAP_KEY)
-    return raw ? JSON.parse(raw) : null
-  } catch { return null }
+    const raw = localStorage.getItem(SNAP_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
 }
 
 export function saveVersion(drawings: Drawing[], selection: Set<string>) {
   const version: PersistSnapshot = {
     ts: Date.now(),
     drawings,
-    selection: Array.from(selection)
-  }
+    selection: Array.from(selection),
+  };
   try {
-    const raw = localStorage.getItem(VERSIONS_KEY)
-    const arr: PersistSnapshot[] = raw ? JSON.parse(raw) : []
-    arr.push(version)
-    while (arr.length > MAX_VERSIONS) arr.shift()
-    localStorage.setItem(VERSIONS_KEY, JSON.stringify(arr))
+    const raw = localStorage.getItem(VERSIONS_KEY);
+    const arr: PersistSnapshot[] = raw ? JSON.parse(raw) : [];
+    arr.push(version);
+    while (arr.length > MAX_VERSIONS) arr.shift();
+    localStorage.setItem(VERSIONS_KEY, JSON.stringify(arr));
     // also keep current in sync
-    saveCurrent(drawings, selection)
+    saveCurrent(drawings, selection);
   } catch {
     // fallback to at least saving current
-    saveCurrent(drawings, selection)
+    saveCurrent(drawings, selection);
   }
 }
 
 export function listVersions(): PersistSnapshot[] {
   try {
-    const raw = localStorage.getItem(VERSIONS_KEY)
-    return raw ? JSON.parse(raw) : []
-  } catch { return [] }
+    const raw = localStorage.getItem(VERSIONS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
 }
