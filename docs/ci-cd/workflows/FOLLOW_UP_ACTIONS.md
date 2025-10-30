@@ -55,7 +55,7 @@ These workflows are designed to skip on feature branches and only run on specifi
 
 **Context**: This document was created during Session 10 Extended (October 23-25, 2025) to track 4 non-blocking tasks that were deferred to maintain focus on workflow optimization. PR #27 successfully merged with 91.3% pass rate, and these tasks remain valid for future implementation.
 
-**Document Purpose**: Preserves detailed implementation steps, code examples, and security patterns for the 4 deferred tasks. This tactical documentation complements strategic planning in SPRINT_HISTORY.md and operational checklists in CHECKLISTS.md.
+**Document Purpose**: Preserves detailed implementation steps, code examples, and security patterns for the 4 deferred tasks. This tactical documentation complements strategic planning in plans/SPRINT_HISTORY.md and operational checklists in CHECKLISTS.md.
 
 ---
 

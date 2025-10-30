@@ -62,10 +62,11 @@ Security configuration and best practices:
 - [`ENHANCED_SECURITY_SETUP.md`](./security/ENHANCED_SECURITY_SETUP.md) - Advanced security
 - [`ENVIRONMENT_CONFIGURATION.md`](./security/ENVIRONMENT_CONFIGURATION.md) - Environment variables
 
-### 📋 [Planning](./plans/) - ARCHIVED
-Historical project planning documents (all plans complete or outdated):
-- All planning documents archived in `plans/.archive/`
-- See [`plans/README.md`](./plans/README.md) for archive details
+### 📋 [Planning & Sprint History](./plans/)
+Sprint history and historical project planning:
+- [`SPRINT_HISTORY.md`](./plans/SPRINT_HISTORY.md) - Historical record of completed sprints
+- Completed session plans archived in `plans/.archive/`
+- See [`plans/README.md`](./plans/README.md) for complete details
 - **Active planning**: Now tracked in GitHub Issues and PRs
 
 ### 🚢 [Deployment](./deployment/)
