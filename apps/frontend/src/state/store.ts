@@ -18,7 +18,7 @@ export interface Layer {
 
 // DrawingSettings type (flexible)
 export interface DrawingSettings {
-  [key: string]: any;
+  [key: string]: any; // any required: Drawing settings are dynamic and tool-specific
 }
 
 export interface IndicatorSettings {
@@ -405,7 +405,7 @@ export const useChartStore = create<ChartState>()(
         if (sel.size < 2) return;
 
         const selectedDrawings = get().drawings.filter((d) => sel.has(d.id));
-        const bounds = selectedDrawings.map((d: any) => ({
+        const bounds = selectedDrawings.map((d: any) => ({ // any required: Drawing union type doesn't guarantee x/y/width/height properties
           id: d.id,
           x: d.x,
           y: d.y,
@@ -446,7 +446,7 @@ export const useChartStore = create<ChartState>()(
 
         const selectedDrawings = get()
           .drawings.filter((d) => sel.has(d.id))
-          .sort((a: any, b: any) =>
+          .sort((a, b) =>
             direction === 'h' ? (a as any).x - (b as any).x : (a as any).y - (b as any).y
           );
 
@@ -492,17 +492,13 @@ export const useChartStore = create<ChartState>()(
 
       toggleLayerVisibility: (layerId: string) => {
         set({
-          layers: get().layers.map((l) =>
-            l.id === layerId ? { ...l, visible: !l.visible } : l
-          ),
+          layers: get().layers.map((l) => (l.id === layerId ? { ...l, visible: !l.visible } : l)),
         });
       },
 
       toggleLayerLock: (layerId: string) => {
         set({
-          layers: get().layers.map((l) =>
-            l.id === layerId ? { ...l, locked: !l.locked } : l
-          ),
+          layers: get().layers.map((l) => (l.id === layerId ? { ...l, locked: !l.locked } : l)),
         });
       },
 

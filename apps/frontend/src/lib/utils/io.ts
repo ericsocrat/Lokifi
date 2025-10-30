@@ -25,21 +25,21 @@ export async function exportPngFromRoot(root: HTMLElement, outName = 'lokifi.png
   if (canvases.length === 0) throw new Error('No canvases found to export.')
 
   // Determine pixel size (max width/height across canvases)
-  const w = Math.max(...canvases.map((c: any) => c.width)) || Math.floor(root.clientWidth * devicePixelRatio)
-  const h = Math.max(...canvases.map((c: any) => c.height)) || Math.floor(root.clientHeight * devicePixelRatio)
+  const w = Math.max(...canvases.map((c) => c.width)) || Math.floor(root.clientWidth * devicePixelRatio)
+  const h = Math.max(...canvases.map((c) => c.height)) || Math.floor(root.clientHeight * devicePixelRatio)
   const out = document.createElement('canvas')
   out.width = w
   out.height = h
   const ctx = out.getContext('2d')!
 
   // Draw canvases in DOM order so the overlay (DrawingLayer) ends up on top
-  canvases.forEach((c: any) => {
+  canvases.forEach((c) => {
     try {
       ctx.drawImage(c, 0, 0)
     } catch {}
   })
 
-  out.toBlob((blob: any) => {
+  out.toBlob((blob) => {
     if (blob) downloadBlob(outName, blob)
   }, 'image/png')
 }

@@ -180,7 +180,7 @@ export class HistoricalDataService {
     const results = new Map<string, HistoricalPriceResponse>();
     
     await Promise.all(
-      symbols.map(async (symbol: any) => {
+      symbols.map(async (symbol) => {
         try {
           const data = await this.getHistory(symbol, period as any);
           results.set(symbol, data);
@@ -290,7 +290,7 @@ export class WebSocketPriceService {
 
     this.isConnecting = true;
 
-    return new Promise((resolve: any, reject: any) => {
+    return new Promise((resolve, reject) => {
       try {
         const wsUrl = `${WS_BASE_URL}/ws/prices?client_id=${this.clientId}`;
         this.ws = new WebSocket(wsUrl);
@@ -308,7 +308,7 @@ export class WebSocketPriceService {
           resolve();
         };
 
-        this.ws.onmessage = (event: any) => {
+        this.ws.onmessage = (event) => {
           try {
             const message: WebSocketMessage = JSON.parse(event.data);
             this.handleMessage(message);
@@ -348,8 +348,8 @@ export class WebSocketPriceService {
       case 'price_update':
         if (message.data) {
           // Notify all subscribers
-          this.subscribers.forEach((callbacks: any) => {
-            callbacks.forEach((callback: any) => {
+          this.subscribers.forEach((callbacks) => {
+            callbacks.forEach((callback) => {
               callback(message.data!);
             });
           });

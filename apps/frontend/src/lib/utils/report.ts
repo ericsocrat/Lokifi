@@ -100,7 +100,7 @@ function mdToPlain(md:string): string {
     .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
 }
 
-function wrapText(text: string, size: number, font: any, maxWidth: number): string[] {
+function wrapText(text: string, size: number, font: { widthOfTextAtSize: (text: string, size: number) => number }, maxWidth: number): string[] {
   const words = text.split(/\s+/)
   const lines: string[] = []
   let line = ""

@@ -85,7 +85,7 @@ class IndicatorRegistry {
   }
 
   getByCategory(category: string): IndicatorDefinition[] {
-    return this.getAll().filter((ind: any) => ind.category === category);
+    return this.getAll().filter((ind) => ind.category === category);
   }
 }
 
@@ -108,7 +108,7 @@ class DrawingToolRegistry {
   }
 
   getByCategory(category: string): DrawingToolDefinition[] {
-    return this.getAll().filter((tool: any) => tool.category === category);
+    return this.getAll().filter((tool) => tool.category === category);
   }
 }
 
@@ -127,7 +127,7 @@ export function registerTool(definition: DrawingToolDefinition) {
 
 // Auto-generated settings UI component generator
 export function generateSettingsUI(parameters: PluginParameter[]) {
-  return parameters.map((param: any) => ({
+  return parameters.map((param) => ({
     ...param,
     component: getComponentForType(param.type),
     validation: getValidationForParam(param),
@@ -152,7 +152,7 @@ function getComponentForType(type: PluginParameter['type']) {
 }
 
 function getValidationForParam(param: PluginParameter) {
-  const validation: any = {
+  const validation: any = { // any required: Dynamic validation schema based on parameter type
     required: param.defaultValue === undefined,
   };
 
@@ -172,7 +172,7 @@ export const BUILTIN_INDICATORS = {
     
     for (let i = period - 1; i < data.length; i++) {
       const sum = data.slice(i - period + 1, i + 1)
-        .reduce((acc: any, bar: any) => acc + bar.close, 0);
+        .reduce((acc, bar) => acc + bar.close, 0);
       
       results.push({
         timestamp: data[i].timestamp,
@@ -191,7 +191,7 @@ export const BUILTIN_INDICATORS = {
     if (data.length === 0) return results;
     
     // Start with SMA for first value
-    let ema = data.slice(0, period).reduce((acc: any, bar: any) => acc + bar.close, 0) / period;
+    let ema = data.slice(0, period).reduce((acc, bar) => acc + bar.close, 0) / period;
     results.push({ timestamp: data[period - 1].timestamp, value: ema });
     
     for (let i = period; i < data.length; i++) {
@@ -209,16 +209,16 @@ export const BUILTIN_INDICATORS = {
     if (data.length < period + 1) return results;
     
     // Calculate price changes
-    const changes = data.slice(1).map((bar: any, i: any) => bar.close - data[i].close);
+    const changes = data.slice(1).map((bar, i) => bar.close - data[i].close);
     
     // Calculate initial averages
     let avgGain = changes.slice(0, period)
-      .filter((change: any) => change > 0)
-      .reduce((acc: any, gain: any) => acc + gain, 0) / period;
+      .filter((change) => change > 0)
+      .reduce((acc, gain) => acc + gain, 0) / period;
     
     let avgLoss = changes.slice(0, period)
-      .filter((change: any) => change < 0)
-      .reduce((acc: any, loss: any) => acc - loss, 0) / period;
+      .filter((change) => change < 0)
+      .reduce((acc, loss) => acc - loss, 0) / period;
     
     // Calculate RSI
     for (let i = period; i < changes.length; i++) {
@@ -247,7 +247,7 @@ export const BUILTIN_INDICATORS = {
 
 // Built-in drawing tool renderers
 export const BUILTIN_DRAWING_TOOLS = {
-  trendline: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => {
+  trendline: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => { // any required: Dynamic drawing parameters (color, lineWidth, etc.)
     if (points.length < 2) return;
     
     ctx.beginPath();
@@ -258,7 +258,7 @@ export const BUILTIN_DRAWING_TOOLS = {
     ctx.stroke();
   },
 
-  rectangle: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => {
+  rectangle: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => { // any required: Dynamic drawing parameters (color, lineWidth, fillColor, etc.)
     if (points.length < 2) return;
     
     const x1 = Math.min(points[0].x, points[1].x);
@@ -277,7 +277,7 @@ export const BUILTIN_DRAWING_TOOLS = {
     ctx.strokeRect(x1, y1, width, height);
   },
 
-  circle: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => {
+  circle: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => { // any required: Dynamic drawing parameters (color, lineWidth, fillColor, etc.)
     if (points.length < 2) return;
     
     const centerX = points[0].x;

@@ -1,6 +1,8 @@
+import type { Drawing } from './drawings'
+
 export type PersistSnapshot = {
   ts: number
-  drawings: any[]
+  drawings: Drawing[]
   selection: string[]
 }
 
@@ -8,7 +10,7 @@ const SNAP_KEY = 'lokifi-drawings@current'
 const VERSIONS_KEY = 'lokifi-drawings@versions'
 const MAX_VERSIONS = 20
 
-export function saveCurrent(drawings: any[], selection: Set<string>) {
+export function saveCurrent(drawings: Drawing[], selection: Set<string>) {
   const snap: PersistSnapshot = {
     ts: Date.now(),
     drawings,
@@ -24,7 +26,7 @@ export function loadCurrent(): PersistSnapshot | null {
   } catch { return null }
 }
 
-export function saveVersion(drawings: any[], selection: Set<string>) {
+export function saveVersion(drawings: Drawing[], selection: Set<string>) {
   const version: PersistSnapshot = {
     ts: Date.now(),
     drawings,

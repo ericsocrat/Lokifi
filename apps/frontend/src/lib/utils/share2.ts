@@ -1,9 +1,10 @@
 import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from "lz-string"
+import type { ChartState } from "@/state/store"
 
 export type ShareMode = "view" | "edit"
 export type ShareLink = { id: string; createdAt: number; mode: ShareMode; password?: string | null; url: string }
 
-export function makeSharePayload(state: any, mode: ShareMode, password?: string | null) {
+export function makeSharePayload(state: ChartState, mode: ShareMode, password?: string | null) {
   const payload = {
     mode,
     password: password || null,
@@ -28,7 +29,7 @@ export function makeShareUrl(hash:string): string {
   return base + "#s=" + hash
 }
 
-export function tryLoadSharedState(): any | null {
+export function tryLoadSharedState(): unknown | null {
   if (typeof window === "undefined") return null
   const m = window.location.hash.match(/#s=([^&]+)/)
   if (!m) return null

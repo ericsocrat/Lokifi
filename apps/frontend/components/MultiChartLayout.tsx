@@ -1,7 +1,7 @@
-"use client";
-import React from 'react';
+'use client';
+import { LayoutSelector, LinkingControls, useMultiChart } from '@/lib/stores/multiChartStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import { useMultiChart, LayoutSelector, LinkingControls } from '@/lib/stores/multiChartStore';
+import React from 'react';
 
 interface MultiChartLayoutProps {
   children: React.ReactNode;

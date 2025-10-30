@@ -4,16 +4,16 @@ export type PluginMeta = {
   description?: string
   version?: string
   permissions?: ("read"|"write"|"draw"|"alerts")[]
-  settings?: Record<string, any>
+  settings?: Record<string, any> // any required: Plugin settings can be of any type
 }
 
 export type PluginHooks = Partial<{
   onSelect(ids: string[]): void
-  onAlert(event: any): void
+  onAlert(event: any): void // any required: Alert event structure varies by plugin type
   onContextMenu?(payload: { selection: string[]; add(menu: { label:string; action:()=>void }[]): void }): void
 }>
 
-export type Registered = { meta: PluginMeta; hooks: PluginHooks; enabled: boolean; defaults?: Record<string, any> }
+export type Registered = { meta: PluginMeta; hooks: PluginHooks; enabled: boolean; defaults?: Record<string, any> } // any required: Plugin defaults can be of any type
 
 const registry = new Map<string, Registered>()
 
@@ -36,5 +36,5 @@ export function setPluginEnabled(id: string, enabled: boolean) {
 }
 
 export function getHooks(): PluginHooks[] {
-  return Array.from(registry.values()).filter((r: any) =>r.enabled).map((r: any) =>r.hooks)
+  return Array.from(registry.values()).filter((r) =>r.enabled).map((r) =>r.hooks)
 }
