@@ -4,7 +4,7 @@ import { ChartErrorBoundary } from '@/components/ChartErrorBoundary';
 import { ChartLoadingState } from '@/components/ChartLoadingState';
 import ChartSidebar from '@/components/ChartSidebar';
 import { API } from '@/lib/api';
-import type { OHLCResponse } from '@/lib/types';
+import type { Candle, OHLCResponse } from '@/lib/types';
 import { drawStore } from '@/stores/drawStore';
 import { indicatorStore, type IndicatorSnapshot } from '@/stores/indicatorStore';
 import { symbolStore } from '@/stores/symbolStore';
@@ -221,7 +221,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     });
 
     // Normalize and set candlestick data
-    const normalizedCandles = chartData.candles.map((c: any) => ({
+    const normalizedCandles = chartData.candles.map((c: Candle) => ({
       time: normalizeTimestamp(c.ts) as Time,
       open: c.o,
       high: c.h,
@@ -231,15 +231,15 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
     // Ensure timestamps are monotonic
     const sortedCandles = normalizedCandles.sort(
-      (a: any, b: any) => Number(a.time) - Number(b.time)
+      (a: { time: Time }, b: { time: Time }) => Number(a.time) - Number(b.time)
     );
     candleSeries.setData(sortedCandles);
 
     // Prepare indicator data
-    const closes = chartData.candles.map((c: any) => c.c);
-    const highs = chartData.candles.map((c: any) => c.h);
-    const lows = chartData.candles.map((c: any) => c.l);
-    const vols = chartData.candles.map((c: any) => c.v ?? 0);
+    const closes = chartData.candles.map((c: Candle) => c.c);
+    const highs = chartData.candles.map((c: Candle) => c.h);
+    const lows = chartData.candles.map((c: Candle) => c.l);
+    const vols = chartData.candles.map((c: Candle) => c.v ?? 0);
 
     // Helper to add line series
     const addLineSeries = (values: (number | null)[], color: string, width = 2) => {
@@ -248,7 +248,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         color,
         lineWidth: width,
       });
-      const lineData = values.map((value: any, i: any) => ({
+      const lineData = values.map((value: number | null, i: number) => ({
         time: sortedCandles[i].time,
         value: value ?? NaN,
       }));
@@ -274,7 +274,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           bottomColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
         });
         upperArea.setData(
-          bb.upper.map((value: any, i: any) => ({
+          bb.upper.map((value: number | null, i: number) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -284,15 +284,15 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
     // VWAP
     if (inds.vwap) {
-      const typical = closes.map((c: any, i: any) => (highs[i] + lows[i] + c) / 3);
-      const hasVolume = vols.some((v: any) => v && v > 0);
+      const typical = closes.map((c: number, i: number) => (highs[i] + lows[i] + c) / 3);
+      const hasVolume = vols.some((v: number) => v && v > 0);
       const vwapValues = hasVolume ? vwap(typical, vols) : ema(typical, 20);
       addLineSeries(vwapValues, '#ffaa00', 2);
     }
 
     // VWMA
     if (inds.vwma) {
-      const hasVolume = vols.some((v: any) => v && v > 0);
+      const hasVolume = vols.some((v: number) => v && v > 0);
       const vwmaValues = hasVolume
         ? vwma(closes, vols, params.vwmaPeriod ?? 20)
         : ema(closes, params.vwmaPeriod ?? 20);
@@ -340,7 +340,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           lineWidth: 2,
         });
         rsiSeries.setData(
-          rsiValues.map((value: any, i: any) => ({
+          rsiValues.map((value: number | null, i: number) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -367,7 +367,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           color: '#4ecdc4',
         });
         macdHistSeries.setData(
-          macdData.hist.map((value: any, i: any) => ({
+          macdData.hist.map((value: number | null, i: number) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -379,7 +379,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
           lineWidth: 2,
         });
         signalSeries.setData(
-          macdData.signalLine.map((value: any, i: any) => ({
+          macdData.signalLine.map((value: number | null, i: number) => ({
             time: sortedCandles[i].time,
             value: value ?? NaN,
           }))
@@ -387,10 +387,10 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
 
       // Sync time scales
-      chart.timeScale().subscribeVisibleTimeRangeChange((range: any) => {
+      chart.timeScale().subscribeVisibleTimeRangeChange((range: { from: Time; to: Time } | null) => {
         if (range) subChart.timeScale().setVisibleRange(range);
       });
-      subChart.timeScale().subscribeVisibleTimeRangeChange((range: any) => {
+      subChart.timeScale().subscribeVisibleTimeRangeChange((range: { from: Time; to: Time } | null) => {
         if (range) chart.timeScale().setVisibleRange(range);
       });
 
@@ -426,8 +426,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
   // Plugin symbol settings binding
   useEffect(() => {
-    const pss: any = (globalThis as any).pluginSettingsStore;
-    const pssym: any = (globalThis as any).pluginSymbolSettings;
+    const pss: any = (globalThis as any).pluginSettingsStore; // any required: Dynamic plugin system
+    const pssym: any = (globalThis as any).pluginSymbolSettings; // any required: Dynamic plugin system
 
     (window as any).__lokifiApplySymbolSettings = () => {
       try {
