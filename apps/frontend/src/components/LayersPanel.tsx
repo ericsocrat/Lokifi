@@ -16,7 +16,7 @@ export default function LayersPanel() {
           <input
             className="bg-transparent border border-white/15 rounded px-2 py-1 text-xs w-28"
             value={name}
-            onChange={(e: any) => setName(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           />
           <button
             className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10"
@@ -71,7 +71,7 @@ function LayerRow({ layer }: { layer: Layer }) {
           autoFocus
           className="flex-1 bg-transparent border border-white/15 rounded px-2 py-0.5"
           value={tmp}
-          onChange={(e: any) => setTmp(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTmp(e.target.value)}
           onBlur={() => {
             s.renameLayer(layer.id, tmp || layer.name);
             setEditing(false);
@@ -94,7 +94,7 @@ function LayerRow({ layer }: { layer: Layer }) {
           min={0}
           max={100}
           value={Math.round((layer.opacity ?? 1) * 100)}
-          onChange={(e: any) => s.setLayerOpacity(layer.id, parseInt(e.target.value, 10) / 100)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => s.setLayerOpacity(layer.id, parseInt(e.target.value, 10) / 100)}
           title="Opacity"
         />
         <button

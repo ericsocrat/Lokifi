@@ -141,7 +141,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
 
       {/* Object Tree */}
       <div className="flex-1 overflow-y-auto">
-        {panes.map((pane: any) => {
+        {panes.map((pane: { id: string; type: string }) => {
           const paneObjects = getObjectsByPane(pane.id);
           const isExpanded = expandedPanes.has(pane.id);
 
@@ -172,8 +172,8 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                     <div className="px-8 py-4 text-xs text-gray-500 italic">No drawing objects</div>
                   ) : (
                     paneObjects
-                      .sort((a: any, b: any) => b.properties.zIndex - a.properties.zIndex)
-                      .map((object: any) => (
+                      .sort((a: { properties: { zIndex: number } }, b: { properties: { zIndex: number } }) => b.properties.zIndex - a.properties.zIndex)
+                      .map((object: { id: string; type: string; properties: { name: string; locked: boolean; visible: boolean }; style: { color: string } }) => (
                         <div
                           key={object.id}
                           className={`mx-2 mb-1 rounded-md transition-colors ${
@@ -182,7 +182,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                               : 'hover:bg-gray-700/50 border border-transparent'
                           }`}
                           onClick={() => handleObjectSelect(object.id)}
-                          onContextMenu={(e: any) => handleContextMenu(e, object.id)}
+                          onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, object.id)}
                         >
                           <div className="px-3 py-2 flex items-center gap-2">
                             {/* Object Type Icon */}
@@ -201,7 +201,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                             {/* Object Controls */}
                             <div className="flex items-center gap-1">
                               <button
-                                onClick={(e: any) => {
+                                onClick={(e: React.MouseEvent) => {
                                   e.stopPropagation();
                                   handleToggleVisibility(object.id, object.properties.visible);
                                 }}
@@ -216,7 +216,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
                               </button>
 
                               <button
-                                onClick={(e: any) => {
+                                onClick={(e: React.MouseEvent) => {
                                   e.stopPropagation();
                                   handleToggleLock(object.id, object.properties.locked);
                                 }}
@@ -274,7 +274,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
           <div className="px-4 py-2 text-xs text-gray-500 uppercase tracking-wide">
             Move to Pane
           </div>
-          {panes.map((pane: any) => (
+          {panes.map((pane: { id: string; type: string }) => (
             <button
               key={pane.id}
               onClick={() => handleMoveToPane(contextMenu.objectId, pane.id)}

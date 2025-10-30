@@ -90,7 +90,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
   const categories = ['All', 'Trend', 'Momentum', 'Volatility', 'Volume'];
 
   const filteredIndicators = useMemo(() => {
-    return INDICATORS.filter((indicator: any) => {
+    return INDICATORS.filter((indicator: Indicator) => {
       const matchesSearch =
         indicator.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         indicator.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -100,13 +100,13 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
   }, [searchTerm, selectedCategory]);
 
   const isIndicatorActive = (indicatorId: string) => {
-    return panes.some((pane: any) => pane.indicators.includes(indicatorId));
+    return panes.some((pane: { indicators: string[] }) => pane.indicators.includes(indicatorId));
   };
 
   const handleAddIndicator = (indicator: Indicator) => {
     if (indicator.paneType === 'overlay') {
       // Find the price pane and add the indicator to it
-      const pricePane = panes.find((pane: any) => pane.type === 'price');
+      const pricePane = panes.find((pane: { type: string }) => pane.type === 'price');
       if (pricePane) {
         addIndicatorToPane(pricePane.id, indicator.id);
       }
@@ -128,7 +128,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
     >
       <div
         className="bg-gray-800 rounded-lg w-96 max-h-[80vh] flex flex-col"
-        onClick={(e: any) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
@@ -146,7 +146,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
               type="text"
               placeholder="Search indicators..."
               value={searchTerm}
-              onChange={(e: any) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
             />
           </div>
@@ -155,7 +155,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
         {/* Categories */}
         <div className="p-4 border-b border-gray-700">
           <div className="flex flex-wrap gap-2">
-            {categories.map((category: any) => (
+            {categories.map((category: string) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
@@ -173,7 +173,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
 
         {/* Indicators List */}
         <div className="flex-1 overflow-y-auto p-4">
-          {filteredIndicators.map((indicator: any) => {
+          {filteredIndicators.map((indicator: Indicator) => {
             const IconComponent = CATEGORY_ICONS[indicator.category as keyof typeof CATEGORY_ICONS];
             const isActive = isIndicatorActive(indicator.id);
 

@@ -387,12 +387,16 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
 
       // Sync time scales
-      chart.timeScale().subscribeVisibleTimeRangeChange((range: { from: Time; to: Time } | null) => {
-        if (range) subChart.timeScale().setVisibleRange(range);
-      });
-      subChart.timeScale().subscribeVisibleTimeRangeChange((range: { from: Time; to: Time } | null) => {
-        if (range) chart.timeScale().setVisibleRange(range);
-      });
+      chart
+        .timeScale()
+        .subscribeVisibleTimeRangeChange((range: { from: Time; to: Time } | null) => {
+          if (range) subChart.timeScale().setVisibleRange(range);
+        });
+      subChart
+        .timeScale()
+        .subscribeVisibleTimeRangeChange((range: { from: Time; to: Time } | null) => {
+          if (range) chart.timeScale().setVisibleRange(range);
+        });
 
       subChartRef.current = subChart;
     }

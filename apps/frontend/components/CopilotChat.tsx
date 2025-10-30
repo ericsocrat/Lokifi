@@ -37,7 +37,7 @@ export default function CopilotChat() {
         <div className="flex gap-2 items-center">
           <select
             value={preset}
-            onChange={(e: any) => setPreset(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setPreset(e.target.value)}
             className="px-3 py-2 bg-neutral-900 rounded-xl border border-neutral-800"
             aria-label="Model preset"
           >
@@ -50,7 +50,7 @@ export default function CopilotChat() {
           {preset === '__custom__' && (
             <input
               value={customModel}
-              onChange={(e: any) => setCustomModel(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCustomModel(e.target.value)}
               placeholder="ollama model id (e.g., llama3.1:8b)"
               className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             />
@@ -60,14 +60,14 @@ export default function CopilotChat() {
           <input
             type="checkbox"
             checked={useChartCtx}
-            onChange={(e: any) => setUseChartCtx(e.target.checked)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUseChartCtx(e.target.checked)}
           />
           Use chart as context (send active symbol)
         </label>
         <div className="flex gap-2">
           <input
             value={q}
-            onChange={(e: any) => setQ(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setQ(e.target.value)}
             className="flex-1 bg-neutral-900 rounded-xl border border-neutral-800 px-3 py-2"
             placeholder="Ask about BTC, AAPL, RSI, news..."
           />

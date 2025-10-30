@@ -184,8 +184,8 @@ export interface TestAssertion {
   type: AssertionType;
   target: string;
   operator: AssertionOperator;
-  expected: any;
-  actual?: any;
+  expected: unknown;
+  actual?: unknown;
   message?: string;
   severity: 'info' | 'warning' | 'error' | 'critical';
 }
@@ -218,7 +218,7 @@ export interface TestData {
   name: string;
   type: 'static' | 'dynamic' | 'generated';
   format: 'json' | 'xml' | 'csv' | 'plain';
-  value: any;
+  value: unknown;
   isEncrypted: boolean;
 }
 
@@ -302,7 +302,7 @@ export interface TestStepResult {
   startedAt: Date;
   completedAt?: Date;
   duration?: number; // seconds
-  output?: any;
+  output?: unknown;
   errorMessage?: string;
 }
 
@@ -310,8 +310,8 @@ export interface TestAssertionResult {
   assertionId: string;
   assertionName: string;
   status: TestResultStatus;
-  expected: any;
-  actual: any;
+  expected: unknown;
+  actual: unknown;
   message?: string;
   diff?: string;
 }
@@ -483,7 +483,7 @@ export type StageType = 'test_execution' | 'deployment' | 'approval' | 'notifica
 export interface StageCondition {
   type: 'success_rate' | 'test_count' | 'duration' | 'custom';
   operator: 'gt' | 'gte' | 'lt' | 'lte' | 'eq' | 'ne';
-  value: any;
+  value: unknown;
 }
 
 export interface PipelineTrigger {
@@ -570,7 +570,7 @@ export interface StageExecution {
   completedAt?: Date;
   duration?: number; // seconds
   testExecutions: string[]; // test execution ids
-  results: any;
+  results: unknown;
   logs: string[];
 }
 
@@ -1886,10 +1886,10 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
     {
       name: 'lokifi-integration-testing-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             pipelines: [],
             environmentHealth: [],
           };

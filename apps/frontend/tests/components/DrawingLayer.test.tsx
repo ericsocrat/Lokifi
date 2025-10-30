@@ -6,7 +6,7 @@ import { useChartStore } from '../../src/state/store';
 
 // Mock the chart store
 vi.mock('../../src/state/store', () => ({
-  useChartStore: vi.fn()
+  useChartStore: vi.fn(),
 }));
 
 // Mock chart map functions
@@ -14,7 +14,7 @@ vi.mock('../../src/lib/chartMap', () => ({
   snapPxToGrid: vi.fn((p: number) => p),
   snapYToPriceLevels: vi.fn((y: number) => y),
   magnetYToOHLC: vi.fn((y: number) => y),
-  yToPrice: vi.fn((y: number) => 100 + y / 10)
+  yToPrice: vi.fn((y: number) => 100 + y / 10),
 }));
 
 // Mock drawing functions
@@ -23,18 +23,28 @@ vi.mock('../../src/lib/drawings', () => ({
     id: 'test-drawing',
     kind,
     points: [start],
-    style: {}
+    style: {},
   })),
-  updateDrawingGeometry: vi.fn((d: { id: string; points: { x: number; y: number }[] }, p: { x: number; y: number }) => ({ ...d, points: [...d.points, p] })),
+  updateDrawingGeometry: vi.fn(
+    (d: { id: string; points: { x: number; y: number }[] }, p: { x: number; y: number }) => ({
+      ...d,
+      points: [...d.points, p],
+    })
+  ),
   drawParallelChannel: vi.fn(),
-  drawPitchfork: vi.fn()
+  drawPitchfork: vi.fn(),
 }));
 
 // Mock geom functions
 vi.mock('../../src/lib/geom', () => ({
   distanceToSegment: vi.fn(() => 5),
-  rectFromPoints: vi.fn((a: { x: number; y: number }, b: { x: number; y: number }) => ({ x: a.x, y: a.y, w: b.x - a.x, h: b.y - a.y })),
-  withinRect: vi.fn(() => true)
+  rectFromPoints: vi.fn((a: { x: number; y: number }, b: { x: number; y: number }) => ({
+    x: a.x,
+    y: a.y,
+    w: b.x - a.x,
+    h: b.y - a.y,
+  })),
+  withinRect: vi.fn(() => true),
 }));
 
 describe('DrawingLayer Component', () => {
@@ -42,15 +52,21 @@ describe('DrawingLayer Component', () => {
     {
       id: 'drawing-1',
       kind: 'trendline',
-      points: [{ x: 10, y: 10 }, { x: 100, y: 100 }],
-      style: { stroke: '#ffffff', strokeWidth: 2 }
+      points: [
+        { x: 10, y: 10 },
+        { x: 100, y: 100 },
+      ],
+      style: { stroke: '#ffffff', strokeWidth: 2 },
     },
     {
       id: 'drawing-2',
       kind: 'rect',
-      points: [{ x: 50, y: 50 }, { x: 150, y: 150 }],
-      style: { stroke: '#00ff00', strokeWidth: 1, fill: '#00ff0020' }
-    }
+      points: [
+        { x: 50, y: 50 },
+        { x: 150, y: 150 },
+      ],
+      style: { stroke: '#00ff00', strokeWidth: 1, fill: '#00ff0020' },
+    },
   ];
 
   const mockStoreState = {
@@ -66,13 +82,13 @@ describe('DrawingLayer Component', () => {
       snapPriceLevels: false,
       snapToOHLC: false,
       magnetTolerancePx: 10,
-      fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1]
+      fibDefaultLevels: [0, 0.236, 0.382, 0.5, 0.618, 1],
     },
     addDrawing: vi.fn(),
     updateDrawing: vi.fn(),
     deleteDrawing: vi.fn(),
     setSelection: vi.fn(),
-    clearSelection: vi.fn()
+    clearSelection: vi.fn(),
   };
 
   beforeEach(() => {
@@ -148,7 +164,7 @@ describe('DrawingLayer Component', () => {
       const setSelection = vi.fn();
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        setSelection
+        setSelection,
       });
 
       const { container } = render(<DrawingLayer />);
@@ -163,7 +179,7 @@ describe('DrawingLayer Component', () => {
       const clearSelection = vi.fn();
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        clearSelection
+        clearSelection,
       });
 
       const { container } = render(<DrawingLayer />);
@@ -183,8 +199,8 @@ describe('DrawingLayer Component', () => {
         drawingSettings: {
           ...mockStoreState.drawingSettings,
           snapEnabled: true,
-          snapStep: 20
-        }
+          snapStep: 20,
+        },
       });
 
       const { container } = render(<DrawingLayer />);
@@ -201,8 +217,8 @@ describe('DrawingLayer Component', () => {
         ...mockStoreState,
         drawingSettings: {
           ...mockStoreState.drawingSettings,
-          snapPriceLevels: true
-        }
+          snapPriceLevels: true,
+        },
       });
 
       const { container } = render(<DrawingLayer />);
@@ -218,7 +234,7 @@ describe('DrawingLayer Component', () => {
     it('should handle trendline tool', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        activeTool: 'trendline'
+        activeTool: 'trendline',
       });
 
       const { container } = render(<DrawingLayer />);
@@ -234,7 +250,7 @@ describe('DrawingLayer Component', () => {
     it('should handle rectangle tool', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        activeTool: 'rect'
+        activeTool: 'rect',
       });
 
       const { container } = render(<DrawingLayer />);
@@ -250,7 +266,7 @@ describe('DrawingLayer Component', () => {
     it('should handle text tool', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        activeTool: 'text'
+        activeTool: 'text',
       });
 
       const { container } = render(<DrawingLayer />);
@@ -268,7 +284,7 @@ describe('DrawingLayer Component', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         selection: new Set(['drawing-1']),
-        deleteDrawing
+        deleteDrawing,
       });
 
       const { container } = render(<DrawingLayer />);
@@ -283,7 +299,7 @@ describe('DrawingLayer Component', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         selection: new Set(['drawing-1']),
-        deleteDrawing
+        deleteDrawing,
       });
 
       const { container } = render(<DrawingLayer />);
@@ -298,12 +314,8 @@ describe('DrawingLayer Component', () => {
     it('should respect layer visibility settings', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        drawings: [
-          { ...mockDrawings[0], layerId: 'layer-hidden' }
-        ],
-        layers: [
-          { id: 'layer-hidden', visible: false, locked: false, opacity: 1 }
-        ]
+        drawings: [{ ...mockDrawings[0], layerId: 'layer-hidden' }],
+        layers: [{ id: 'layer-hidden', visible: false, locked: false, opacity: 1 }],
       });
 
       const { container } = render(<DrawingLayer />);
@@ -315,12 +327,8 @@ describe('DrawingLayer Component', () => {
     it('should respect layer opacity settings', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        drawings: [
-          { ...mockDrawings[0], layerId: 'layer-transparent' }
-        ],
-        layers: [
-          { id: 'layer-transparent', visible: true, locked: false, opacity: 0.5 }
-        ]
+        drawings: [{ ...mockDrawings[0], layerId: 'layer-transparent' }],
+        layers: [{ id: 'layer-transparent', visible: true, locked: false, opacity: 0.5 }],
       });
 
       const { container } = render(<DrawingLayer />);
@@ -335,13 +343,16 @@ describe('DrawingLayer Component', () => {
       const manyDrawings = Array.from({ length: 100 }, (_: unknown, i: number) => ({
         id: `drawing-${i}`,
         kind: 'trendline',
-        points: [{ x: i * 10, y: i * 10 }, { x: i * 10 + 50, y: i * 10 + 50 }],
-        style: { stroke: '#ffffff', strokeWidth: 1 }
+        points: [
+          { x: i * 10, y: i * 10 },
+          { x: i * 10 + 50, y: i * 10 + 50 },
+        ],
+        style: { stroke: '#ffffff', strokeWidth: 1 },
       }));
 
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        drawings: manyDrawings
+        drawings: manyDrawings,
       });
 
       const startTime = performance.now();
@@ -391,7 +402,7 @@ describe('DrawingLayer Component', () => {
     it('should handle Escape key to cancel drawing', () => {
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        activeTool: 'trendline'
+        activeTool: 'trendline',
       });
 
       const { container } = render(<DrawingLayer />);
@@ -407,7 +418,7 @@ describe('DrawingLayer Component', () => {
       const setSelection = vi.fn();
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
-        setSelection
+        setSelection,
       });
 
       render(<DrawingLayer />);
@@ -419,4 +430,3 @@ describe('DrawingLayer Component', () => {
     });
   });
 });
-

@@ -338,19 +338,21 @@ function PortfolioPageContent() {
 
                     {/* Timeframe Selector */}
                     <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-xl p-1">
-                      {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map((tf: '1D' | '1W' | '1M' | '1Y' | 'ALL') => (
-                        <button
-                          key={tf}
-                          onClick={() => setSelectedTimeframe(tf)}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                            selectedTimeframe === tf
-                              ? 'bg-white text-blue-600 shadow-lg'
-                              : 'text-white/70 hover:text-white hover:bg-white/10'
-                          }`}
-                        >
-                          {tf}
-                        </button>
-                      ))}
+                      {(['1D', '1W', '1M', '1Y', 'ALL'] as const).map(
+                        (tf: '1D' | '1W' | '1M' | '1Y' | 'ALL') => (
+                          <button
+                            key={tf}
+                            onClick={() => setSelectedTimeframe(tf)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                              selectedTimeframe === tf
+                                ? 'bg-white text-blue-600 shadow-lg'
+                                : 'text-white/70 hover:text-white hover:bg-white/10'
+                            }`}
+                          >
+                            {tf}
+                          </button>
+                        )
+                      )}
                     </div>
                   </div>
                 </div>

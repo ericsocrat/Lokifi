@@ -966,12 +966,13 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
           // Add battery info if available
           if (nav.getBattery) {
-            nav.getBattery().then((battery: any) => {
+            nav.getBattery().then((battery: unknown) => {
+              const bat = battery as { level: number; charging: boolean; chargingTime: number; dischargingTime: number };
               usage.battery = {
-                level: battery.level * 100,
-                charging: battery.charging,
-                chargingTime: battery.chargingTime,
-                dischargingTime: battery.dischargingTime,
+                level: bat.level * 100,
+                charging: bat.charging,
+                chargingTime: bat.chargingTime,
+                dischargingTime: bat.dischargingTime,
               };
             });
           }
@@ -1556,7 +1557,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
           try {
             // Observe paint timing
-            const paintObserver = new PerformanceObserver((list: any) => {
+            const paintObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
               for (const entry of list.getEntries()) {
                 if (entry.name === 'first-contentful-paint') {
                   set((draft: Draft<PerformanceStore>) => {
@@ -1571,7 +1572,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
             paintObserver.observe({ entryTypes: ['paint'] });
 
             // Observe long tasks
-            const longTaskObserver = new PerformanceObserver((list: any) => {
+            const longTaskObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
               for (const entry of list.getEntries()) {
                 if (entry.duration > 50) {
                   // Long task threshold
@@ -1605,10 +1606,10 @@ export const usePerformanceStore = create<PerformanceStore>()(
     {
       name: 'lokifi-performance-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: unknown, version: number) => {
         if (version === 0) {
           return {
-            ...persistedState,
+            ...(persistedState as object),
             optimizationRules: [],
             activeOptimizations: [],
             alerts: [],

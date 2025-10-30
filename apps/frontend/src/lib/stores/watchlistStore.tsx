@@ -219,7 +219,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         set((draft: Draft<WatchlistState>) => {
           const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
           if (watchlist) {
-            const index = watchlist.items.findIndex((item: any) => item.symbol === symbol);
+            const index = watchlist.items.findIndex((item: WatchlistItem) => item.symbol === symbol);
             if (index !== -1) {
               watchlist.items.splice(index, 1);
               watchlist.updatedAt = new Date();
@@ -275,7 +275,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           if (watchlist) {
             const item = watchlist.items.find((item: WatchlistItem) => item.symbol === symbol);
             if (item?.alerts) {
-              const index = item.alerts.findIndex((alert: any) => alert.id === alertId);
+              const index = item.alerts.findIndex((alert: AlertRule) => alert.id === alertId);
               if (index !== -1) {
                 item.alerts.splice(index, 1);
                 watchlist.updatedAt = new Date();
@@ -327,7 +327,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         if (!FLAGS.watchlist) return;
 
         set((draft: Draft<WatchlistState>) => {
-          const index = draft.screenerQuery.filters.findIndex((f: any) => f.id === filterId);
+          const index = draft.screenerQuery.filters.findIndex((f: ScreenerFilter) => f.id === filterId);
           if (index !== -1) {
             draft.screenerQuery.filters.splice(index, 1);
           }
@@ -385,9 +385,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           }
 
           // Sort results
-          results.sort((a: any, b: any) => {
-            const aVal = a[screenerQuery.sortBy];
-            const bVal = b[screenerQuery.sortBy];
+          results.sort((a: SymbolMetrics, b: SymbolMetrics) => {
+            const aVal = a[screenerQuery.sortBy as keyof SymbolMetrics];
+            const bVal = b[screenerQuery.sortBy as keyof SymbolMetrics];
 
             if (aVal === undefined || bVal === undefined) return 0;
 
@@ -475,7 +475,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
       exportWatchlist: (watchlistId: string) => {
         const { watchlists } = get();
         const watchlist = watchlists.find((w: Watchlist) => w.id === watchlistId);
-        return watchlist ? watchlist.items.map((item: any) => item.symbol) : [];
+        return watchlist ? watchlist.items.map((item: WatchlistItem) => item.symbol) : [];
       },
     })),
     {

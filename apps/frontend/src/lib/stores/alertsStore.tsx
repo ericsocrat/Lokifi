@@ -121,7 +121,7 @@ export interface ActionExecution {
   success: boolean;
   error?: string;
   duration?: number; // milliseconds
-  response?: any;
+  response?: unknown;
 }
 
 // Backtesting Types
@@ -731,7 +731,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         
         getBacktestResults: (backtestId: string) => {
           const { backtests } = get();
-          return backtests.find((b: any) => b.id === backtestId) || null;
+          return backtests.find((b: { id: string }) => b.id === backtestId) || null;
         },
         
         // Data Management
@@ -802,7 +802,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           
           set((draft: Draft<AlertsState>) => {
             draft.executionHistory.delete(alertId);
-            draft.recentExecutions = draft.recentExecutions.filter((e: any) => e.alertId !== alertId);
+            draft.recentExecutions = draft.recentExecutions.filter((e: { alertId: string }) => e.alertId !== alertId);
           });
         },
         
@@ -825,7 +825,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             });
           };
           
-          ws.onmessage = (event: any) => {
+          ws.onmessage = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
             // Handle real-time price updates
             if (data.type === 'price_update') {
@@ -847,19 +847,19 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         activateMultiple: (alertIds: string[]) => {
           if (!FLAGS.alertsV2) return;
           
-          alertIds.forEach((id: any) => get().activateAlert(id));
+          alertIds.forEach((id: string) => get().activateAlert(id));
         },
         
         deactivateMultiple: (alertIds: string[]) => {
           if (!FLAGS.alertsV2) return;
           
-          alertIds.forEach((id: any) => get().deactivateAlert(id));
+          alertIds.forEach((id: string) => get().deactivateAlert(id));
         },
         
         deleteMultiple: (alertIds: string[]) => {
           if (!FLAGS.alertsV2) return;
           
-          alertIds.forEach((id: any) => get().deleteAlert(id));
+          alertIds.forEach((id: string) => get().deleteAlert(id));
         },
         
         // Settings

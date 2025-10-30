@@ -707,7 +707,9 @@ export const useProgressiveDeploymentStore = create<
         );
         if (!strategy) return;
 
-        const phases = strategy.rolloutPlan.phases.sort((a: RolloutPhase, b: RolloutPhase) => a.order - b.order);
+        const phases = strategy.rolloutPlan.phases.sort(
+          (a: RolloutPhase, b: RolloutPhase) => a.order - b.order
+        );
 
         for (let i = 0; i < phases.length; i++) {
           const phase = phases[i];
@@ -871,7 +873,9 @@ export const useProgressiveDeploymentStore = create<
         set((draft: Draft<ProgressiveDeploymentState>) => {
           const deployment = draft.deployments.find((d: Deployment) => d.id === deploymentId);
           if (deployment) {
-            const execution = deployment.phaseHistory.find((e: PhaseExecution) => e.phaseId === phaseId);
+            const execution = deployment.phaseHistory.find(
+              (e: PhaseExecution) => e.phaseId === phaseId
+            );
             if (execution) {
               execution.status = 'skipped';
               execution.completedAt = new Date();
@@ -976,7 +980,8 @@ export const useProgressiveDeploymentStore = create<
             duration: deployment.duration,
             phases: deployment.phaseHistory.length,
             successRate:
-              (deployment.phaseHistory.filter((p: PhaseExecution) => p.status === 'completed').length /
+              (deployment.phaseHistory.filter((p: PhaseExecution) => p.status === 'completed')
+                .length /
                 deployment.phaseHistory.length) *
               100,
             finalTrafficPercent: deployment.trafficPercent,

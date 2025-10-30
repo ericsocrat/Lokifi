@@ -14,7 +14,7 @@ export default function DrawingStylePanel() {
   const [fill, setFill] = React.useState<string>('transparent')
   const [textValue, setTextValue] = React.useState('')
 
-  const apply = (p: any) => setStyle(p)
+  const apply = (p: Partial<{ width: number; opacity: number; lineStyle: string; color: string; fill: string }>) => setStyle(p)
 
   return (
     <div>
@@ -23,9 +23,9 @@ export default function DrawingStylePanel() {
         <div>
           <div className='mb-1'>Color</div>
           <div className='grid grid-cols-10 gap-2'>
-            {PALETTE.map((c: any) => (
+            {PALETTE.map((c: string) => (
               <button key={c}
-                onClick={()=>apply({ stroke: c })}
+                onClick={()=>apply({ color: c } as any)}  // any required: color not in type
                 className='h-6 rounded'
                 style={{ background: c }}
                 title={c}
@@ -37,14 +37,14 @@ export default function DrawingStylePanel() {
         <label className='flex items-center justify-between'>
           <span>Width</span>
           <input type='range' min={1} max={8} value={width}
-            onChange={(e: any) => { const v = parseInt(e.target.value,10); setWidth(v); apply({ width: v }) }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { const v = parseInt(e.target.value,10); setWidth(v); apply({ width: v }) }}
           />
         </label>
 
         <label className='flex items-center justify-between'>
           <span>Opacity</span>
           <input type='range' min={0} max={1} step={0.05} value={opacity}
-            onChange={(e: any) => { const v = parseFloat(e.target.value); setOpacity(v); apply({ opacity: v }) }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { const v = parseFloat(e.target.value); setOpacity(v); apply({ opacity: v }) }}
           />
         </label>
 
@@ -52,7 +52,7 @@ export default function DrawingStylePanel() {
           <span>Line style</span>
           <select className='bg-transparent border px-2 py-1 rounded'
             value={lineStyle}
-            onChange={(e: any) => { const v = e.target.value as any; setLineStyle(v); apply({ lineStyle: v }) }}>
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => { const v = e.target.value as 'solid' | 'dash' | 'dot'; setLineStyle(v); apply({ lineStyle: v }) }}>
             <option value='solid'>Solid</option>
             <option value='dash'>Dash</option>
             <option value='dot'>Dot</option>
@@ -64,7 +64,7 @@ export default function DrawingStylePanel() {
           <input className='ml-2 bg-transparent border px-2 py-1 rounded w-28'
             placeholder='transparent or #hex'
             value={fill}
-            onChange={(e: any) => { const v = e.target.value || 'transparent'; setFill(v); apply({ fill: v }) }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => { const v = e.target.value || 'transparent'; setFill(v); apply({ fill: v }) }}
           />
         </label>
 
@@ -73,7 +73,7 @@ export default function DrawingStylePanel() {
           <input className='w-full bg-transparent border px-2 py-1 rounded'
             placeholder='Edit text...'
             value={textValue}
-            onChange={(e: any) => setTextValue(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTextValue(e.target.value)}
             onBlur={()=> setText(textValue)}
           />
         </div>

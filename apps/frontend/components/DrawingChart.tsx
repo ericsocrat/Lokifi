@@ -11,7 +11,7 @@ import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 
 // Chart component with proper hook usage
-const ChartContainer = ({ children, ...props }: any) => {
+const ChartContainer = ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={chartContainerRef} {...props}>
@@ -23,7 +23,7 @@ const ChartContainer = ({ children, ...props }: any) => {
 // Dynamic import with loading state
 const Chart = dynamic(
   () =>
-    import('lightweight-charts').then((mod: any) => ({
+    import('lightweight-charts').then((mod: unknown) => ({
       default: ChartContainer,
     })),
   {
@@ -222,7 +222,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     // Draw existing objects for this pane
     const paneObjects = getObjectsByPane(paneId);
 
-    paneObjects.forEach((obj: any) => {
+    paneObjects.forEach((obj: { id: string; points: { x: number; y: number }[]; properties: { visible: boolean }; style: { color: string; lineWidth: number; lineStyle: string } }) => {
       if (!obj.properties.visible) return;
 
       ctx.strokeStyle = obj.style.color;
@@ -234,7 +234,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         ctx.beginPath();
         ctx.moveTo(obj.points[0].x, obj.points[0].y);
 
-        obj.points.slice(1).forEach((point: any) => {
+        obj.points.slice(1).forEach((point: { x: number; y: number }) => {
           ctx.lineTo(point.x, point.y);
         });
 
@@ -259,7 +259,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       ctx.beginPath();
       ctx.moveTo(currentDrawing.points[0].x, currentDrawing.points[0].y);
 
-      currentDrawing.points.slice(1).forEach((point: any) => {
+      currentDrawing.points.slice(1).forEach((point: { x: number; y: number }) => {
         ctx.lineTo(point.x, point.y);
       });
 
@@ -421,7 +421,7 @@ export const DrawingChart: React.FC = () => {
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
-        {panes.map((pane: any) => (
+        {panes.map((pane: { id: string; height: number; visible: boolean; locked: boolean; indicators: string[] }) => (
           <DrawingPaneComponent
             key={pane.id}
             paneId={pane.id}

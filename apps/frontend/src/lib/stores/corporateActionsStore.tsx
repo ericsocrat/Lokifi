@@ -266,7 +266,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         // Apply adjustments in reverse chronological order
         const sortedActions = [...actions]
           .filter((action: CorporateAction) => action.status === 'processed')
-          .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          .sort((a: CorporateAction, b: CorporateAction) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         let adjustedData = [...data];
 
@@ -307,7 +307,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
             // Remove duplicates by date
             const uniqueHolidays = allHolidays.filter((holiday, index, array) =>
-              array.findIndex((h: any) =>
+              array.findIndex((h: MarketHoliday) =>
                 h.date.getTime() === holiday.date.getTime() && h.market === holiday.market
               ) === index
             );
@@ -335,7 +335,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
         // Check if it's a holiday
         const dateString = date.toDateString();
-        return !holidays.some((holiday: any) =>
+        return !holidays.some((holiday: MarketHoliday) =>
           holiday.date.toDateString() === dateString &&
           holiday.type === 'full_close'
         );
@@ -365,7 +365,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         if (!FLAGS.corpActions) return;
 
         set((draft: Draft<CorporateActionsState>) => {
-          const session = draft.sessions.find((s: any) => s.name === sessionName);
+          const session = draft.sessions.find((s: TradingSession) => s.name === sessionName);
           if (session) {
             session.isActive = !session.isActive;
 
@@ -384,7 +384,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       getActiveSessionsAt: (time: Date) => {
         const { sessions } = get();
 
-        return sessions.filter((session: any) => {
+        return sessions.filter((session: TradingSession) => {
           if (!session.isActive) return false;
 
           // Convert session times to the given date
@@ -480,7 +480,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 function applyAdjustment(data: OHLCBar[], action: CorporateAction): OHLCBar[] {
   const actionDate = new Date(action.date).getTime();
 
-  return data.map((bar: any) => {
+  return data.map((bar: OHLCBar) => {
     // Only adjust bars before the action date
     if (bar.timestamp >= actionDate) return bar;
 
@@ -530,7 +530,7 @@ export const useMarketHolidays = (market?: string) =>
 
 export const useActiveSessions = () =>
   useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) =>
-    state.sessions.filter((s: any) => s.isActive)
+    state.sessions.filter((s: TradingSession) => s.isActive)
   );
 
 export const useUpcomingActions = (days = 7) =>
@@ -543,7 +543,7 @@ export const useDataQuality = (symbol: string) =>
 if (typeof window !== 'undefined' && FLAGS.corpActions) {
   const store = useCorporateActionsStore.getState();
   // Load current year holidays for preferred markets
-  store.preferredMarkets.forEach((market: any) => {
+  store.preferredMarkets.forEach((market: string) => {
     store.loadHolidays(market, new Date().getFullYear());
   });
 }

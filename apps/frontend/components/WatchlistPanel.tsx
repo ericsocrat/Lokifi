@@ -1,13 +1,13 @@
-import React, { useMemo, useState } from 'react';
-import { FLAGS } from '@/lib/utils/featureFlags';
 import {
   useActiveWatchlist,
   useWatchlistItems,
   useWatchlistStore,
+  type ScreenerFilter,
   type SymbolMetrics,
   type WatchlistItem,
-  type ScreenerFilter,
 } from '@/lib/stores/watchlistStore';
+import { FLAGS } from '@/lib/utils/featureFlags';
+import React, { useMemo, useState } from 'react';
 
 // Watchlist Panel Component
 export const WatchlistPanel: React.FC = () => {
@@ -62,7 +62,9 @@ export const WatchlistPanel: React.FC = () => {
               placeholder="Enter symbol..."
               className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600
                        rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && handleAddSymbol()}
+              onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) =>
+                e.key === 'Enter' && handleAddSymbol()
+              }
               autoFocus
             />
             <button
@@ -268,7 +270,9 @@ export const ScreenerPanel: React.FC = () => {
           <div className="grid grid-cols-4 gap-2">
             <select
               value={newFilterField}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewFilterField(e.target.value as keyof SymbolMetrics)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                setNewFilterField(e.target.value as keyof SymbolMetrics)
+              }
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
@@ -281,7 +285,9 @@ export const ScreenerPanel: React.FC = () => {
 
             <select
               value={newFilterOperator}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setNewFilterOperator(e.target.value as 'gt' | 'lt' | 'between')}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                setNewFilterOperator(e.target.value as 'gt' | 'lt' | 'between')
+              }
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
@@ -296,7 +302,9 @@ export const ScreenerPanel: React.FC = () => {
             <input
               type="text"
               value={newFilterValue}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewFilterValue(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setNewFilterValue(e.target.value)
+              }
               placeholder={newFilterOperator === 'between' ? '1,100' : '10'}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
@@ -353,7 +361,9 @@ export const ScreenerPanel: React.FC = () => {
 
             <select
               value={screenerQuery.sortOrder}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => updateScreenerQuery({ sortOrder: e.target.value as 'asc' | 'desc' })}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                updateScreenerQuery({ sortOrder: e.target.value as 'asc' | 'desc' })
+              }
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-md
                        bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
@@ -441,4 +451,3 @@ const ChevronDownIcon: React.FC<{ className?: string }> = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
   </svg>
 );
-

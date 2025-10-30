@@ -5,11 +5,11 @@
  * @ts-nocheck - Zustand v4 middleware typing issues (TODO: fix when upgrading or refactoring)
  */
 'use client';
+import type { Draft } from 'immer';
 import React, { createContext, useCallback, useContext } from 'react';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { Draft } from 'immer';
 import { FLAGS } from '../utils/featureFlags';
 import { type VersionedState } from '../utils/migrations';
 
