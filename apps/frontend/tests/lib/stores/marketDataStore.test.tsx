@@ -2,13 +2,14 @@
  * @vitest-environment jsdom
  */
 import { useMarketDataStore } from '@/lib/stores/marketDataStore';
+import type { Candle } from '@/lib/types';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../../mocks/server';
 
 // Mock fetch globally
 const mockFetch = vi.fn();
-global.fetch = mockFetch as any;
+global.fetch = mockFetch as any; // any required: Test mock type compatibility
 
 describe('MarketDataStore', () => {
   beforeEach(() => {
@@ -314,7 +315,7 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('API down'));
 
-      const mockData: any[] = [];
+      const mockData: Candle[] = [];
       await act(async () => {
         const data = await result.current.fetchOHLCData('BTCUSD', '1h', 50);
         mockData.push(...(data || []));
@@ -322,7 +323,7 @@ describe('MarketDataStore', () => {
 
       expect(mockData).toHaveLength(50);
       if (mockData.length > 0) {
-        mockData.forEach((candle: any) => {
+        mockData.forEach((candle: Candle) => {
           expect(candle).toHaveProperty('symbol', 'BTCUSD');
           expect(candle).toHaveProperty('open');
           expect(candle).toHaveProperty('high');
@@ -356,7 +357,7 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Offline'));
 
-      let data: any;
+      let data: Candle[] | null;
       await act(async () => {
         data = await result.current.fetchOHLCData('TEST', '1D', 100);
       });
@@ -369,12 +370,12 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Offline'));
 
-      let data: any;
+      let data: Candle[] | null;
       await act(async () => {
         data = await result.current.fetchOHLCData('BTCUSD', '1h', 10);
       });
 
-      const avgPrice = data!.reduce((sum: number, c: any) => sum + c.close, 0) / data!.length;
+      const avgPrice = data!.reduce((sum: number, c: Candle) => sum + c.close, 0) / data!.length;
       expect(avgPrice).toBeGreaterThan(40000); // Realistic BTC price range
       expect(avgPrice).toBeLessThan(50000);
     });
@@ -384,12 +385,12 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Offline'));
 
-      let data: any;
+      let data: Candle[] | null;
       await act(async () => {
         data = await result.current.fetchOHLCData('ETHUSDT', '1D', 10);
       });
 
-      const avgPrice = data!.reduce((sum: number, c: any) => sum + c.close, 0) / data!.length;
+      const avgPrice = data!.reduce((sum: number, c: Candle) => sum + c.close, 0) / data!.length;
       expect(avgPrice).toBeGreaterThan(2500);
       expect(avgPrice).toBeLessThan(3500);
     });
@@ -399,12 +400,12 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Offline'));
 
-      let data: any;
+      let data: Candle[] | null;
       await act(async () => {
         data = await result.current.fetchOHLCData('AAPL', '1D', 5);
       });
 
-      const avgPrice = data!.reduce((sum: number, c: any) => sum + c.close, 0) / data!.length;
+      const avgPrice = data!.reduce((sum: number, c: Candle) => sum + c.close, 0) / data!.length;
       expect(avgPrice).toBeGreaterThan(150);
       expect(avgPrice).toBeLessThan(220);
     });
@@ -414,13 +415,13 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Offline'));
 
-      let data: any;
+      let data: Candle[] | null;
       await act(async () => {
         data = await result.current.fetchOHLCData('SOLUSDT', '1h', 20);
       });
 
       if (data) {
-        data.forEach((candle: any) => {
+        data!.forEach((candle: Candle) => {
           expect(candle.high).toBeGreaterThanOrEqual(candle.open);
           expect(candle.high).toBeGreaterThanOrEqual(candle.close);
           expect(candle.low).toBeLessThanOrEqual(candle.open);
@@ -435,13 +436,13 @@ describe('MarketDataStore', () => {
 
       mockFetch.mockRejectedValueOnce(new Error('Offline'));
 
-      let data: any;
+      let data: Candle[] | null;
       await act(async () => {
         data = await result.current.fetchOHLCData('TEST', '1D', 5);
       });
 
       if (data) {
-        data.forEach((candle: any) => {
+        data!.forEach((candle: Candle) => {
           expect(candle.provider).toBe('mock');
         });
       }
