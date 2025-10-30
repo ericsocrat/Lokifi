@@ -13,6 +13,7 @@ import os
 from unittest.mock import patch
 
 import pytest
+
 from app.core.config import Settings, get_settings
 
 # Mark config validation tests to skip in CI (where JWT secrets are provided)

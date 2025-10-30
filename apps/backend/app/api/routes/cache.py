@@ -8,6 +8,8 @@ __all__ = ["router"]
 import logging
 from typing import Any
 
+from fastapi import APIRouter, HTTPException, Request
+
 from app.core.redis_cache import (
     cache,
     cache_public_data,
@@ -15,7 +17,6 @@ from app.core.redis_cache import (
     get_cache_stats,
     warm_cache,
 )
-from fastapi import APIRouter, HTTPException, Request
 
 router = APIRouter(prefix="/cache", tags=["cache"])
 logger = logging.getLogger(__name__)

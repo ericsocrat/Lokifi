@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+
 from app.models.conversation import (
     ContentType,
     Conversation,
@@ -26,7 +28,6 @@ from app.models.conversation import (
 from app.models.user import User
 from app.schemas.conversation import MessageCreate
 from app.services.conversation_service import ConversationService
-from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -140,7 +141,7 @@ class TestDMConversationCreation:
             conversation_service, "_build_conversation_response", new_callable=AsyncMock
         ) as mock_build:
             mock_build.return_value = MagicMock(id=sample_conversation_id)
-            result = await conversation_service.get_or_create_dm_conversation(user1_id, user2_id)
+            await conversation_service.get_or_create_dm_conversation(user1_id, user2_id)
 
         # Verify no new conversation was created
         assert not mock_db_session.add.called
@@ -193,11 +194,11 @@ class TestMessageSending:
             conversation_service, "_build_message_response", new_callable=AsyncMock
         ) as mock_build:
             mock_build.return_value = MagicMock(content="Test message")
-            result = await conversation_service.send_message(
+            await conversation_service.send_message(
                 sample_conversation_id, sample_user_ids["user1"], message_data
             )
 
-        # Verify message was added
+        # Verify message was created
         assert mock_db_session.add.call_count >= 2  # Message + Receipt
         # Verify conversation timestamp was updated
         assert mock_db_session.execute.call_count >= 2  # Participant check + update
@@ -236,7 +237,6 @@ class TestMessageRetrieval:
         self, conversation_service, sample_conversation_id, sample_user_ids, mock_db_session
     ):
         """Test message pagination works correctly"""
-        from datetime import datetime, timezone
         from uuid import UUID
 
         from app.schemas.conversation import MessageResponse

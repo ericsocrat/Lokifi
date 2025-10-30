@@ -14,11 +14,14 @@ Coverage targets:
 - Error handling and authorization
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from io import BytesIO
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
+from fastapi import HTTPException, status
+from fastapi.testclient import TestClient
+
 from app.db.models import AIMessage, AIThread, User
 from app.main import app
 from app.routers.ai import router
@@ -31,8 +34,6 @@ from app.schemas.ai_schemas import (
     RateLimitResponse,
 )
 from app.services.ai_service import RateLimitError, SafetyFilterError
-from fastapi import HTTPException, status
-from fastapi.testclient import TestClient
 
 # Test client
 client = TestClient(app)
@@ -70,7 +71,7 @@ def sample_thread():
     thread.id = 1
     thread.user_id = 1
     thread.title = "Test Thread"
-    thread.created_at = datetime.now(timezone.utc)
+    thread.created_at = datetime.now(UTC)
     return thread
 
 
@@ -86,8 +87,8 @@ def sample_message():
     message.provider = "openai"
     message.token_count = 50
     message.error = None
-    message.created_at = datetime.now(timezone.utc)
-    message.completed_at = datetime.now(timezone.utc)
+    message.created_at = datetime.now(UTC)
+    message.completed_at = datetime.now(UTC)
     return message
 
 
@@ -421,7 +422,7 @@ class TestProviderAndRateLimit:
                 "requests_made": 5,
                 "requests_remaining": 25,
                 "requests_limit": 30,
-                "reset_time": datetime.now(timezone.utc),
+                "reset_time": datetime.now(UTC),
                 "window_seconds": 3600,
             }
         )

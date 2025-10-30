@@ -14,11 +14,12 @@ import logging
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from app.routers.auth import router
-from app.schemas.auth import GoogleOAuthRequest, UserLoginRequest, UserRegisterRequest
 from fastapi import HTTPException, status
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.routers.auth import router
+from app.schemas.auth import GoogleOAuthRequest, UserLoginRequest, UserRegisterRequest
 
 
 class TestRegistrationErrorHandling:
@@ -509,7 +510,7 @@ class TestOWASPCompliance:
             ("app/models/user.py:45", "Internal server error during registration"),
         ]
 
-        for internal_error, expected_generic in test_cases:
+        for internal_error, _ in test_cases:
             with patch("app.routers.auth.AuthService") as mock_service:
                 mock_service.return_value.register_user = AsyncMock(
                     side_effect=Exception(internal_error)

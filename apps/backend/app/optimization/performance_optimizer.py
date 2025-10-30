@@ -16,7 +16,7 @@ import logging
 import statistics
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from enum import Enum
 from typing import Any
 
@@ -134,7 +134,7 @@ class DatabaseOptimizer:
                     rows_returned=len(rows),
                     index_used=self._estimate_index_usage(query),
                     full_table_scan=self._estimate_table_scan(query),
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                     optimization_suggestions=suggestions,
                 )
 
@@ -152,7 +152,7 @@ class DatabaseOptimizer:
                 rows_returned=0,
                 index_used=False,
                 full_table_scan=True,
-                timestamp=datetime.now(timezone.utc),
+                timestamp=datetime.now(UTC),
                 optimization_suggestions=[f"Analysis failed: {e!s}"],
             )
 
@@ -596,7 +596,7 @@ class PerformanceOptimizer:
         logger.info("Starting comprehensive performance analysis")
 
         analysis_results = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "optimization_level": self.optimization_level.value,
             "database_analysis": {},
             "cache_analysis": {},

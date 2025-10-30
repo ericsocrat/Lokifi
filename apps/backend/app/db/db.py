@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-__all__ = ["engine", "SessionLocal", "get_session", "init_db"]
+__all__ = ["SessionLocal", "engine", "get_session", "init_db"]
 
 import os
 from contextlib import contextmanager
 
-from app.db.models import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+
+from app.db.models import Base
 
 DB_PATH = os.getenv(
     "LOKIFI_DB_PATH", os.path.join(os.path.dirname(__file__), "..", "..", "data", "lokifi.sqlite")

@@ -22,10 +22,12 @@ Expected Coverage: profile_service baseline → 43%+ (+12pp improvement)
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 import pytest
 import pytest_asyncio
+from fastapi import HTTPException
+
 from app.models.profile import Profile
 from app.models.user import User
 from app.schemas.profile import ProfileUpdateRequest
@@ -49,7 +51,7 @@ async def test_users_with_profiles(integration_db_session):
             full_name=f"Profile User {i}",
             password_hash="hashed_password_placeholder",
             is_active=True,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         integration_db_session.add(user)
         users.append(user)
@@ -176,7 +178,7 @@ class TestProfileServiceIntegration:
         - ILIKE query for case-insensitive search
         - Cannot mock database query behavior accurately
         """
-        users, profiles = test_users_with_profiles
+        _unused_users, _unused_profiles = test_users_with_profiles
 
         # Search for profiles with "test" in username (should match all 3)
         result = await profile_service_integration.search_profiles(
@@ -224,7 +226,7 @@ class TestProfileServiceIntegration:
         update_data = ProfileUpdateRequest(username=profile2.username)
 
         # Should raise HTTPException due to username conflict
-        with pytest.raises(Exception):  # Service should handle duplicate username
+        with pytest.raises(HTTPException):  # Service should handle duplicate username
             await profile_service_integration.update_profile(user1.id, update_data)
 
     @pytest.mark.asyncio
@@ -237,7 +239,7 @@ class TestProfileServiceIntegration:
         This test validates that database joins between Profile and User
         tables work correctly for public profile access.
         """
-        users, profiles = test_users_with_profiles
+        _, profiles = test_users_with_profiles
         profile = profiles[0]
 
         # Get public profile (no follow status)

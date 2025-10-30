@@ -10,7 +10,7 @@ Coverage focus: Happy path flows, edge cases, error handling
 """
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
@@ -58,8 +58,8 @@ def mock_thread():
     thread.id = 1
     thread.user_id = 100
     thread.title = "Test Chat"
-    thread.created_at = datetime.now(timezone.utc)
-    thread.updated_at = datetime.now(timezone.utc)
+    thread.created_at = datetime.now(UTC)
+    thread.updated_at = datetime.now(UTC)
     return thread
 
 
@@ -71,7 +71,7 @@ def mock_message():
     message.thread_id = 1
     message.role = "user"
     message.content = "Hello, AI!"
-    message.created_at = datetime.now(timezone.utc)
+    message.created_at = datetime.now(UTC)
     return message
 
 

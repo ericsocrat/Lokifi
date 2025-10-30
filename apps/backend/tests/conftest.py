@@ -11,9 +11,10 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 import pytest_asyncio
-from app.main import app
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+
+from app.main import app
 
 
 @pytest.fixture

@@ -12,16 +12,17 @@ import asyncio
 import logging
 import time
 from collections import defaultdict, deque
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from typing import Any
 
 import redis.asyncio as redis
-from app.core.config import settings
 from redis.asyncio import ConnectionPool, Sentinel
 from redis.backoff import ExponentialBackoff
 from redis.exceptions import ConnectionError as RedisConnectionError
 from redis.exceptions import RedisError
 from redis.retry import Retry
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class CacheMetrics:
         self.writes = 0
         self.errors = 0
         self.response_times = deque(maxlen=1000)
-        self.last_reset = datetime.now(timezone.utc)
+        self.last_reset = datetime.now(UTC)
 
     @property
     def hit_rate(self) -> float:
@@ -194,7 +195,7 @@ class AdvancedRedisClient:
         if self.circuit_breaker["state"] == "open":
             # Check if recovery timeout has passed
             if (
-                datetime.now(timezone.utc) - self.circuit_breaker["last_failure"]
+                datetime.now(UTC) - self.circuit_breaker["last_failure"]
             ).seconds >= self.circuit_breaker["recovery_timeout"]:
                 self.circuit_breaker["state"] = "half_open"
                 logger.info("Circuit breaker moving to half-open state")
@@ -228,7 +229,7 @@ class AdvancedRedisClient:
     def _handle_circuit_breaker_failure(self):
         """Handle circuit breaker failure logic"""
         self.circuit_breaker["failure_count"] += 1
-        self.circuit_breaker["last_failure"] = datetime.now(timezone.utc)
+        self.circuit_breaker["last_failure"] = datetime.now(UTC)
         self.metrics.record_error()
 
         if (

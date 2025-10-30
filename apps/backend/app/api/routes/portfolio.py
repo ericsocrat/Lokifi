@@ -4,17 +4,18 @@ __all__ = ["router"]
 
 import csv
 import io
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from typing import Any
+
+from fastapi import APIRouter, Header, HTTPException, Query, Request
+from pydantic import BaseModel, Field
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from app.core.redis_cache import cache_portfolio_data
 from app.db.db import get_session, init_db
 from app.db.models import PortfolioPosition, User
 from app.services.auth import require_handle
-from fastapi import APIRouter, Header, HTTPException, Query, Request
-from pydantic import BaseModel, Field
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 # Optional alerts integration
 try:
@@ -198,7 +199,7 @@ async def add_or_update_position(
                 PortfolioPosition.symbol == payload.symbol,
             )
         ).scalar_one_or_none()
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if existing:
             existing.qty = payload.qty
             existing.cost_basis = payload.cost_basis

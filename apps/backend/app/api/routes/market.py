@@ -4,9 +4,10 @@ __all__ = ["router"]
 
 from typing import Any
 
+from fastapi import APIRouter, HTTPException, Query
+
 from app.services.errors import NotFoundError, ProviderError
 from app.services.prices import fetch_ohlc
-from fastapi import APIRouter, HTTPException, Query
 
 router = APIRouter()
 

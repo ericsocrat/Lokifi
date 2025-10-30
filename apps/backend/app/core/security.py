@@ -1,17 +1,17 @@
 __all__ = [
-    "get_current_user",
-    "ph",
-    "verify_password",
-    "hash_password",
-    "create_jwt_token",
-    "verify_jwt_token",
     "create_access_token",
+    "create_jwt_token",
     "create_refresh_token",
+    "get_current_user",
+    "hash_password",
+    "ph",
     "validate_email",
     "validate_password_strength",
+    "verify_jwt_token",
+    "verify_password",
 ]
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
 import jwt
@@ -67,7 +67,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def create_jwt_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
     """Create a JWT token."""
     to_encode = data.copy()
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     if expires_delta:
         expire = now + expires_delta
     else:

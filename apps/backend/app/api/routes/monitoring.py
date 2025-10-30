@@ -10,11 +10,12 @@ RESTful API endpoints for monitoring and observability:
 
 __all__ = ["router"]
 
+from fastapi import APIRouter, Depends, HTTPException, Query
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.security import get_current_user
 from app.services.advanced_monitoring import monitoring_system
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["monitoring"])
 

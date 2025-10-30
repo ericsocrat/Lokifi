@@ -5,7 +5,7 @@ Tests password hashing, JWT token creation/validation, and authentication utilit
 NO database required - pure unit tests for maximum coverage.
 """
 
-from datetime import timezone, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 
 import pytest
 from fastapi import HTTPException
@@ -314,7 +314,7 @@ class TestRefreshTokenCreation:
         assert refresh_exp > access_exp
 
         # Should be approximately 30 days
-        delta = refresh_exp - datetime.now(timezone.utc)
+        delta = refresh_exp - datetime.now(UTC)
         assert 28 <= delta.days <= 31
 
 

@@ -5,7 +5,7 @@ This script provides integration patches for existing routers to trigger notific
 """
 
 import logging
-from datetime import timezone, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from app.integrations.notification_hooks import notification_integration

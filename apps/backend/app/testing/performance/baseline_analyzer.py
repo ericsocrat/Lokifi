@@ -17,7 +17,7 @@ import statistics
 import time
 from contextlib import asynccontextmanager
 from dataclasses import asdict, dataclass
-from datetime import timezone, datetime
+from datetime import UTC, datetime, timezone
 from typing import Any
 
 import psutil
@@ -104,7 +104,7 @@ class PerformanceProfiler:
         """Start comprehensive performance profiling"""
         self.metrics = []
         self.resource_snapshots = []
-        self.start_time = datetime.now(timezone.utc)
+        self.start_time = datetime.now(UTC)
         self.monitoring_active = True
 
         logger.info(f"Starting performance profiling: {test_name}")
@@ -116,7 +116,7 @@ class PerformanceProfiler:
 
     async def stop_profiling(self, test_name: str = "system_baseline") -> PerformanceBaseline:
         """Stop profiling and generate baseline report"""
-        end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(UTC)
         self.monitoring_active = False
 
         if self._monitoring_task:
@@ -160,7 +160,7 @@ class PerformanceProfiler:
                     disk_usage_percent=disk.percent,
                     network_bytes_sent=network.bytes_sent,
                     network_bytes_recv=network.bytes_recv,
-                    timestamp=datetime.now(timezone.utc),
+                    timestamp=datetime.now(UTC),
                 )
 
                 self.resource_snapshots.append(snapshot)
@@ -185,7 +185,7 @@ class PerformanceProfiler:
             name=name,
             value=value,
             unit=unit,
-            timestamp=datetime.now(timezone.utc),
+            timestamp=datetime.now(UTC),
             category=category,
             metadata=metadata or {},
         )

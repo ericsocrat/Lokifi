@@ -4,7 +4,7 @@ Test fixtures for auth - FIXED VERSION
 Provides proper fixture names with aliases
 """
 
-from datetime import timezone, datetime
+from datetime import UTC, datetime, timezone
 
 import pytest
 
@@ -54,7 +54,7 @@ def sample_user_response():
         full_name="Test User",
         is_active=True,
         is_verified=False,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
 
 
@@ -73,8 +73,8 @@ def sample_profile_response():
         is_public=True,
         follower_count=0,
         following_count=0,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
 
 

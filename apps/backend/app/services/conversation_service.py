@@ -3,7 +3,7 @@ Conversation service for direct messaging (J4).
 """
 
 import uuid
-from datetime import timezone, datetime
+from datetime import UTC, datetime, timezone
 
 from fastapi import HTTPException, status
 from sqlalchemy import desc, func, select, update
@@ -171,7 +171,7 @@ class ConversationService:
         update_conv_stmt = (
             update(Conversation)
             .where(Conversation.id == conversation_id)
-            .values(last_message_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc))
+            .values(last_message_at=datetime.now(UTC), updated_at=datetime.now(UTC))
         )
         await self.db.execute(update_conv_stmt)
 

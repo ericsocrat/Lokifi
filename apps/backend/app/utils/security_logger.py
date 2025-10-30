@@ -8,7 +8,7 @@ import json
 import logging
 import time
 from dataclasses import dataclass
-from datetime import timezone, datetime
+from datetime import UTC, datetime, timezone
 from enum import Enum
 from pathlib import Path
 from typing import Any
@@ -111,7 +111,7 @@ class SecurityEvent:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
 
 
 class SecurityMonitor:
@@ -310,7 +310,7 @@ class SecurityMonitor:
             "recent_failed_attempts": recent_failed_attempts,
             "recent_rate_violations": recent_rate_violations,
             "monitored_ips": len(self.failed_attempts),
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

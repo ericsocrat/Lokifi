@@ -7,7 +7,7 @@ import logging
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import timezone, datetime
+from datetime import UTC, datetime, timezone
 
 import psutil
 
@@ -54,7 +54,7 @@ class PerformanceMetrics:
 
     # Additional quality metrics
     availability_percent: float = 100.0
-    last_updated: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    last_updated: datetime = field(default_factory=lambda: datetime.now(UTC))
 
 
 class EnhancedPerformanceMonitor:

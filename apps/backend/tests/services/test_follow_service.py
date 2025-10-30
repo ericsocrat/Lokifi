@@ -12,10 +12,13 @@ Coverage targets:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.follow import Follow
 from app.models.notification_models import Notification, NotificationType
 from app.models.profile import Profile
@@ -29,8 +32,6 @@ from app.schemas.follow import (
     UserFollowStatus,
 )
 from app.services.follow_service import FollowService
-from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # FIXTURES
@@ -79,8 +80,8 @@ class TestFollowOperations:
         """Test successful follow operation creates new relationship."""
         # NOTE: This test requires database interaction because Follow.created_at
         # uses server_default=func.now() which cannot be mocked without database
-        follower_id = sample_user_ids["user1"]
-        followee_id = sample_user_ids["user2"]
+        _ = sample_user_ids["user1"]  # follower_id
+        _ = sample_user_ids["user2"]  # followee_id
 
         # This test would require integration test with real database
         pass
@@ -100,7 +101,7 @@ class TestFollowOperations:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         mock_follow_result = MagicMock()
         mock_follow_result.scalar_one_or_none.return_value = existing_follow
@@ -157,7 +158,7 @@ class TestFollowOperations:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = existing_follow

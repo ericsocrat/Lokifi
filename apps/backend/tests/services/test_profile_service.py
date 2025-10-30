@@ -24,6 +24,8 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from fastapi import HTTPException
+
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
@@ -33,7 +35,6 @@ from app.schemas.profile import (
     UserSettingsUpdateRequest,
 )
 from app.services.profile_service import ProfileService
-from fastapi import HTTPException
 
 # ============================================================================
 # FIXTURES

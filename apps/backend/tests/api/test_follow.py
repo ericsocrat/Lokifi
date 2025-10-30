@@ -16,10 +16,12 @@ Coverage targets:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+
 from app.routers.follow import (
     bulk_follow_users,
     bulk_unfollow_users,
@@ -46,7 +48,6 @@ from app.schemas.follow import (
     SuggestedUsersResponse,
     UserFollowStatus,
 )
-from fastapi import HTTPException
 
 # ============================================================================
 # FIXTURES
@@ -95,7 +96,7 @@ def sample_followers_list():
         is_following=False,
         follows_you=True,
         mutual_follow=False,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
 
     return FollowersListResponse(
@@ -118,7 +119,7 @@ def sample_following_list():
         is_following=True,
         follows_you=False,
         mutual_follow=False,
-        created_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
     )
 
     return FollowingListResponse(
@@ -411,7 +412,7 @@ class TestMutualFollowsAndSuggestions:
             is_following=True,
             follows_you=True,
             mutual_follow=True,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         mutual_response = MutualFollowsResponse(
@@ -450,7 +451,7 @@ class TestMutualFollowsAndSuggestions:
             is_following=False,
             follows_you=False,
             mutual_follow=False,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
 
         suggestions_response = SuggestedUsersResponse(

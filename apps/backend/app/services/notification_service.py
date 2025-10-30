@@ -4,7 +4,7 @@ import logging
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import timezone, datetime
+from datetime import UTC, datetime, timezone
 from typing import Any
 from uuid import UUID
 
@@ -227,7 +227,7 @@ class NotificationService:
                 query = query.where(
                     or_(
                         Notification.expires_at.is_(None),
-                        Notification.expires_at > datetime.now(timezone.utc),
+                        Notification.expires_at > datetime.now(UTC),
                     )
                 )
 
@@ -265,7 +265,7 @@ class NotificationService:
                             Notification.is_dismissed.is_(False),
                             or_(
                                 Notification.expires_at.is_(None),
-                                Notification.expires_at > datetime.now(timezone.utc),
+                                Notification.expires_at > datetime.now(UTC),
                             ),
                         )
                     )
@@ -533,7 +533,7 @@ class NotificationService:
                     select(Notification).where(
                         and_(
                             Notification.expires_at.isnot(None),
-                            Notification.expires_at <= datetime.now(timezone.utc),
+                            Notification.expires_at <= datetime.now(UTC),
                         )
                     )
                 )

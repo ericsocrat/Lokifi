@@ -5,6 +5,11 @@ Authentication router with login, register, and OAuth endpoints.
 import logging
 
 import httpx
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.auth_deps import get_current_user, get_current_user_optional
 from app.core.config import settings
 from app.db.database import get_db
@@ -17,10 +22,6 @@ from app.schemas.auth import (
     UserRegisterRequest,
 )
 from app.services.auth_service import AuthService
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
@@ -37,7 +38,7 @@ async def register(user_data: UserRegisterRequest, db: AsyncSession = Depends(ge
     except HTTPException:
         # Re-raise HTTP exceptions (validation errors, etc.)
         raise
-    except Exception as e:
+    except Exception:
         # Log full error details internally for debugging (includes stack trace via exc_info)
         # Use structured logging to prevent log injection attacks
         logger.error(
@@ -107,7 +108,7 @@ async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)
     except HTTPException:
         # Re-raise HTTP exceptions (invalid credentials, etc.)
         raise
-    except Exception as e:
+    except Exception:
         # Log full error details internally for debugging (includes stack trace via exc_info)
         # Use structured logging to prevent log injection attacks
         logger.error(
@@ -283,8 +284,9 @@ async def get_current_user_info(
 ):
     """Get current user information."""
     # Get user's profile
-    from app.models.profile import Profile
     from sqlalchemy import select
+
+    from app.models.profile import Profile
 
     stmt = select(Profile).where(Profile.user_id == current_user.id)
     result = await db.execute(stmt)

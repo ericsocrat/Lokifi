@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-__all__ = ["auth_handle_from_header", "require_handle", "JWT_SECRET", "JWT_ALG"]
+__all__ = ["JWT_ALG", "JWT_SECRET", "auth_handle_from_header", "require_handle"]
 
-from app.core.config import get_settings
 from fastapi import HTTPException
 from jose import JWTError, jwt
+
+from app.core.config import get_settings
 
 # Get JWT configuration from settings
 settings = get_settings()
