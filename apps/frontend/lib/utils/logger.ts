@@ -42,7 +42,7 @@ interface LogMetadata {
   timestamp?: string;
   context?: string;
   level?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -94,7 +94,7 @@ class Logger {
   /**
    * Format log message with metadata
    */
-  private format(level: LogLevel, message: string, data?: any): string {
+  private format(level: LogLevel, message: string, data?: unknown): string {
     const metadata: LogMetadata = {};
 
     if (this.config.timestamps) {
@@ -108,11 +108,14 @@ class Logger {
     metadata.level = LogLevel[level];
 
     if (this.config.structured) {
-      return JSON.stringify({
+      const logEntry: Record<string, unknown> = {
         ...metadata,
         message,
-        ...(data && { data }),
-      });
+      };
+      if (data !== undefined) {
+        logEntry.data = data;
+      }
+      return JSON.stringify(logEntry);
     }
 
     // Human-readable format for development
@@ -141,7 +144,7 @@ class Logger {
    * @example
    * logger.debug('User input validation', { email, isValid: true });
    */
-  debug(message: string, data?: any): void {
+  debug(message: string, data?: unknown): void {
     if (!this.shouldLog(LogLevel.DEBUG)) return;
     console.debug(this.format(LogLevel.DEBUG, message, data));
   }
@@ -152,7 +155,7 @@ class Logger {
    * @example
    * logger.info('WebSocket connected', { url: wsUrl });
    */
-  info(message: string, data?: any): void {
+  info(message: string, data?: unknown): void {
     if (!this.shouldLog(LogLevel.INFO)) return;
     console.info(this.format(LogLevel.INFO, message, data));
   }
@@ -163,7 +166,7 @@ class Logger {
    * @example
    * logger.warn('API rate limit approaching', { remaining: 5 });
    */
-  warn(message: string, data?: any): void {
+  warn(message: string, data?: unknown): void {
     if (!this.shouldLog(LogLevel.WARN)) return;
     console.warn(this.format(LogLevel.WARN, message, data));
   }
@@ -175,7 +178,7 @@ class Logger {
    * @example
    * logger.error('Failed to fetch user data', { error: err.message });
    */
-  error(message: string, error?: Error | any): void {
+  error(message: string, error?: Error | unknown): void {
     if (!this.shouldLog(LogLevel.ERROR)) return;
 
     const errorData =
