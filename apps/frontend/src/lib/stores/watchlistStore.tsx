@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Watchlist Types
@@ -135,18 +136,18 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           const id = `wl_${Date.now()}`;
           const now = new Date();
           
-          set((state: any) => {
-            state.watchlists.push({
+          set((draft: Draft<WatchlistState>) => {
+            draft.watchlists.push({
               id,
               name,
               items: [],
               createdAt: now,
               updatedAt: now,
-              isDefault: state.watchlists.length === 0
+              isDefault: draft.watchlists.length === 0
             });
             
-            if (!state.activeWatchlistId) {
-              state.activeWatchlistId = id;
+            if (!draft.activeWatchlistId) {
+              draft.activeWatchlistId = id;
             }
           });
           
@@ -156,13 +157,13 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         deleteWatchlist: (id: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const index = state.watchlists.findIndex((w: any) => w.id === id);
+          set((draft: Draft<WatchlistState>) => {
+            const index = draft.watchlists.findIndex((w: Watchlist) => w.id === id);
             if (index !== -1) {
-              state.watchlists.splice(index, 1);
+              draft.watchlists.splice(index, 1);
               
-              if (state.activeWatchlistId === id) {
-                state.activeWatchlistId = state.watchlists[0]?.id || null;
+              if (draft.activeWatchlistId === id) {
+                draft.activeWatchlistId = draft.watchlists[0]?.id || null;
               }
             }
           });
@@ -171,8 +172,8 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         renameWatchlist: (id: string, name: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === id);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === id);
             if (watchlist) {
               watchlist.name = name;
               watchlist.updatedAt = new Date();
@@ -183,9 +184,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         setActiveWatchlist: (id: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            if (state.watchlists.find((w: any) => w.id === id)) {
-              state.activeWatchlistId = id;
+          set((draft: Draft<WatchlistState>) => {
+            if (draft.watchlists.find((w: Watchlist) => w.id === id)) {
+              draft.activeWatchlistId = id;
             }
           });
         },
@@ -194,9 +195,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         addToWatchlist: (watchlistId: string, symbol: string, notes?: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
-            if (watchlist && !watchlist.items.find((item: any) => item.symbol === symbol)) {
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
+            if (watchlist && !watchlist.items.find((item: WatchlistItem) => item.symbol === symbol)) {
               watchlist.items.push({
                 symbol: symbol.toUpperCase(),
                 addedAt: new Date(),
@@ -211,8 +212,8 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         removeFromWatchlist: (watchlistId: string, symbol: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
             if (watchlist) {
               const index = watchlist.items.findIndex((item: any) => item.symbol === symbol);
               if (index !== -1) {
@@ -226,10 +227,10 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         updateWatchlistItem: (watchlistId: string, symbol: string, updates: Partial<WatchlistItem>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find((item: any) => item.symbol === symbol);
+              const item = watchlist.items.find((item: WatchlistItem) => item.symbol === symbol);
               if (item) {
                 Object.assign(item, updates);
                 watchlist.updatedAt = new Date();
@@ -242,10 +243,10 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         addAlert: (watchlistId: string, symbol: string, rule: Omit<AlertRule, 'id'>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find((item: any) => item.symbol === symbol);
+              const item = watchlist.items.find((item: WatchlistItem) => item.symbol === symbol);
               if (item) {
                 if (!item.alerts) item.alerts = [];
                 item.alerts.push({
@@ -261,10 +262,10 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         removeAlert: (watchlistId: string, symbol: string, alertId: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find((item: any) => item.symbol === symbol);
+              const item = watchlist.items.find((item: WatchlistItem) => item.symbol === symbol);
               if (item?.alerts) {
                 const index = item.alerts.findIndex((alert: any) => alert.id === alertId);
                 if (index !== -1) {
@@ -279,12 +280,12 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         toggleAlert: (watchlistId: string, symbol: string, alertId: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === watchlistId);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
             if (watchlist) {
-              const item = watchlist.items.find((item: any) => item.symbol === symbol);
+              const item = watchlist.items.find((item: WatchlistItem) => item.symbol === symbol);
               if (item?.alerts) {
-                const alert = item.alerts.find((alert: any) => alert.id === alertId);
+                const alert = item.alerts.find((alert: AlertRule) => alert.id === alertId);
                 if (alert) {
                   alert.isActive = !alert.isActive;
                   watchlist.updatedAt = new Date();
@@ -298,16 +299,16 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         updateScreenerQuery: (query: Partial<ScreenerQuery>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            state.screenerQuery = { ...state.screenerQuery, ...query };
+          set((draft: Draft<WatchlistState>) => {
+            draft.screenerQuery = { ...draft.screenerQuery, ...query };
           });
         },
         
         addScreenerFilter: (filter: Omit<ScreenerFilter, 'id'>) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            state.screenerQuery.filters.push({
+          set((draft: Draft<WatchlistState>) => {
+            draft.screenerQuery.filters.push({
               ...filter,
               id: `filter_${Date.now()}`
             });
@@ -317,10 +318,10 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         removeScreenerFilter: (filterId: string) => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            const index = state.screenerQuery.filters.findIndex((f: any) => f.id === filterId);
+          set((draft: Draft<WatchlistState>) => {
+            const index = draft.screenerQuery.filters.findIndex((f: any) => f.id === filterId);
             if (index !== -1) {
-              state.screenerQuery.filters.splice(index, 1);
+              draft.screenerQuery.filters.splice(index, 1);
             }
           });
         },
@@ -328,20 +329,20 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         runScreener: async () => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            state.isLoading = true;
-            state.error = null;
+          set((draft: Draft<WatchlistState>) => {
+            draft.isLoading = true;
+            draft.error = null;
           });
           
           try {
             const { screenerQuery, symbolDirectory } = get();
             
             // Apply filters to symbol directory
-            let results = Array.from(symbolDirectory.values());
+            let results: SymbolMetrics[] = Array.from(symbolDirectory.values());
             
             for (const filter of screenerQuery.filters) {
-              results = results.filter((symbol: any) => {
-                const value = symbol[filter.field];
+              results = results.filter((symbol: SymbolMetrics) => {
+                const value = symbol[filter.field as keyof SymbolMetrics];
                 if (value === undefined || value === null) return false;
                 
                 // Ensure we're working with numbers for numeric comparisons
@@ -378,17 +379,17 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             });
             
             // Limit results
-            results = results.slice(0, screenerQuery.limit);
+            const limitedResults: SymbolMetrics[] = results.slice(0, screenerQuery.limit);
             
-            set((state: any) => {
-              state.screenerResults = results;
-              state.isLoading = false;
+            set((draft: Draft<WatchlistState>) => {
+              draft.screenerResults = limitedResults as any; // any required: Draft incompatibility with complex filter result
+              draft.isLoading = false;
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Screener failed';
-              state.isLoading = false;
+            set((draft: Draft<WatchlistState>) => {
+              draft.error = error instanceof Error ? error.message : 'Screener failed';
+              draft.isLoading = false;
             });
           }
         },
@@ -397,9 +398,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         refreshSymbolDirectory: async () => {
           if (!FLAGS.watchlist) return;
           
-          set((state: any) => {
-            state.isLoading = true;
-            state.error = null;
+          set((draft: Draft<WatchlistState>) => {
+            draft.isLoading = true;
+            draft.error = null;
           });
           
           try {
@@ -409,19 +410,19 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
             
             const metrics: SymbolMetrics[] = await response.json();
             
-            set((state: any) => {
-              state.symbolDirectory.clear();
+            set((draft: Draft<WatchlistState>) => {
+              draft.symbolDirectory.clear();
               for (const metric of metrics) {
-                state.symbolDirectory.set(metric.symbol, metric);
+                draft.symbolDirectory.set(metric.symbol, metric);
               }
-              state.lastUpdated = new Date();
-              state.isLoading = false;
+              draft.lastUpdated = new Date();
+              draft.isLoading = false;
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Failed to refresh data';
-              state.isLoading = false;
+            set((draft: Draft<WatchlistState>) => {
+              draft.error = error instanceof Error ? error.message : 'Failed to refresh data';
+              draft.isLoading = false;
             });
           }
         },
@@ -437,11 +438,11 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           
           const id = get().createWatchlist('Imported Watchlist');
           
-          set((state: any) => {
-            const watchlist = state.watchlists.find((w: any) => w.id === id);
+          set((draft: Draft<WatchlistState>) => {
+            const watchlist = draft.watchlists.find((w: Watchlist) => w.id === id);
             if (watchlist) {
               for (const symbol of items) {
-                if (!watchlist.items.find((item: any) => item.symbol === symbol)) {
+                if (!watchlist.items.find((item: WatchlistItem) => item.symbol === symbol)) {
                   watchlist.items.push({
                     symbol: symbol.toUpperCase(),
                     addedAt: new Date(),
@@ -458,14 +459,14 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         
         exportWatchlist: (watchlistId: string) => {
           const { watchlists } = get();
-          const watchlist = watchlists.find((w: any) => w.id === watchlistId);
+          const watchlist = watchlists.find((w: Watchlist) => w.id === watchlistId);
           return watchlist ? watchlist.items.map((item: any) => item.symbol) : [];
         }
       })),
       {
         name: 'lokifi-watchlist-storage',
         version: 1,
-        migrate: (persistedState: any, version: number) => {
+        migrate: (persistedState: Partial<WatchlistState>, version: number) => {
           if (version === 0) {
             // Migrate from legacy format
             return {
@@ -482,8 +483,8 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
 
 // Selectors for common use cases
 export const useActiveWatchlist = () => 
-  useWatchlistStore((state: any) => 
-    state.watchlists.find((w: any) => w.id === state.activeWatchlistId)
+  useWatchlistStore((state: WatchlistState & WatchlistActions) => 
+    state.watchlists.find((w: Watchlist) => w.id === state.activeWatchlistId)
   );
 
 export const useWatchlistItems = () => {
@@ -492,10 +493,10 @@ export const useWatchlistItems = () => {
 };
 
 export const useScreenerResults = () => 
-  useWatchlistStore((state: any) => state.screenerResults);
+  useWatchlistStore((state: WatchlistState & WatchlistActions) => state.screenerResults);
 
 export const useScreenerQuery = () => 
-  useWatchlistStore((state: any) => state.screenerQuery);
+  useWatchlistStore((state: WatchlistState & WatchlistActions) => state.screenerQuery);
 
 // Initialize default watchlist
 if (typeof window !== 'undefined' && FLAGS.watchlist) {

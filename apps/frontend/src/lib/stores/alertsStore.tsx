@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Alert Types
@@ -291,18 +292,18 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             triggerCount: 0
           };
           
-          set((state: any) => {
-            state.alerts.push(alert);
+          set((draft: Draft<AlertsState>) => {
+            draft.alerts.push(alert);
             
             // Update symbol index
-            if (!state.alertsBySymbol.has(alert.symbol)) {
-              state.alertsBySymbol.set(alert.symbol, []);
+            if (!draft.alertsBySymbol.has(alert.symbol)) {
+              draft.alertsBySymbol.set(alert.symbol, []);
             }
-            state.alertsBySymbol.get(alert.symbol)?.push(alert);
+            draft.alertsBySymbol.get(alert.symbol)?.push(alert);
             
             // Add to active set if enabled
             if (alert.isActive) {
-              state.activeAlerts.add(id);
+              draft.activeAlerts.add(id);
             }
           });
           
@@ -312,8 +313,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         updateAlert: (id: string, updates: Partial<Alert>) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            const alert = state.alerts.find((a: any) => a.id === id);
+          set((draft: Draft<AlertsState>) => {
+            const alert = draft.alerts.find((a: Alert) => a.id === id);
             if (alert) {
               const oldSymbol = alert.symbol;
               Object.assign(alert, updates);
@@ -322,28 +323,28 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
               // Update active set
               if (updates.isActive !== undefined) {
                 if (updates.isActive) {
-                  state.activeAlerts.add(id);
+                  draft.activeAlerts.add(id);
                 } else {
-                  state.activeAlerts.delete(id);
+                  draft.activeAlerts.delete(id);
                 }
               }
               
               // Update symbol index if symbol changed
               if (updates.symbol && updates.symbol !== oldSymbol) {
                 // Remove from old symbol
-                const oldAlerts = state.alertsBySymbol.get(oldSymbol);
+                const oldAlerts = draft.alertsBySymbol.get(oldSymbol);
                 if (oldAlerts) {
-                  const index = oldAlerts.findIndex((a: any) => a.id === id);
+                  const index = oldAlerts.findIndex((a: Alert) => a.id === id);
                   if (index !== -1) {
                     oldAlerts.splice(index, 1);
                   }
                 }
                 
                 // Add to new symbol
-                if (!state.alertsBySymbol.has(updates.symbol)) {
-                  state.alertsBySymbol.set(updates.symbol, []);
+                if (!draft.alertsBySymbol.has(updates.symbol)) {
+                  draft.alertsBySymbol.set(updates.symbol, []);
                 }
-                state.alertsBySymbol.get(updates.symbol)?.push(alert);
+                draft.alertsBySymbol.get(updates.symbol)?.push(alert);
               }
             }
           });
@@ -352,28 +353,28 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         deleteAlert: (id: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            const alertIndex = state.alerts.findIndex((a: any) => a.id === id);
+          set((draft: Draft<AlertsState>) => {
+            const alertIndex = draft.alerts.findIndex((a: Alert) => a.id === id);
             if (alertIndex !== -1) {
-              const alert = state.alerts[alertIndex];
+              const alert = draft.alerts[alertIndex];
               
               // Remove from alerts array
-              state.alerts.splice(alertIndex, 1);
+              draft.alerts.splice(alertIndex, 1);
               
               // Remove from symbol index
-              const symbolAlerts = state.alertsBySymbol.get(alert.symbol);
+              const symbolAlerts = draft.alertsBySymbol.get(alert.symbol);
               if (symbolAlerts) {
-                const symbolIndex = symbolAlerts.findIndex((a: any) => a.id === id);
+                const symbolIndex = symbolAlerts.findIndex((a: Alert) => a.id === id);
                 if (symbolIndex !== -1) {
                   symbolAlerts.splice(symbolIndex, 1);
                 }
               }
               
               // Remove from active set
-              state.activeAlerts.delete(id);
+              draft.activeAlerts.delete(id);
               
               // Clear execution history
-              state.executionHistory.delete(id);
+              draft.executionHistory.delete(id);
             }
           });
         },
@@ -382,7 +383,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           if (!FLAGS.alertsV2) return '';
           
           const { alerts, createAlert } = get();
-          const alert = alerts.find((a: any) => a.id === id);
+          const alert = alerts.find((a: Alert) => a.id === id);
           
           if (!alert) return '';
           
@@ -397,12 +398,12 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         activateAlert: (id: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            const alert = state.alerts.find((a: any) => a.id === id);
+          set((draft: Draft<AlertsState>) => {
+            const alert = draft.alerts.find((a: Alert) => a.id === id);
             if (alert) {
               alert.isActive = true;
               alert.updatedAt = new Date();
-              state.activeAlerts.add(id);
+              draft.activeAlerts.add(id);
             }
           });
         },
@@ -410,12 +411,12 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         deactivateAlert: (id: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            const alert = state.alerts.find((a: any) => a.id === id);
+          set((draft: Draft<AlertsState>) => {
+            const alert = draft.alerts.find((a: Alert) => a.id === id);
             if (alert) {
               alert.isActive = false;
               alert.updatedAt = new Date();
-              state.activeAlerts.delete(id);
+              draft.activeAlerts.delete(id);
             }
           });
         },
@@ -424,7 +425,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           if (!FLAGS.alertsV2) return;
           
           const { alerts } = get();
-          const alert = alerts.find((a: any) => a.id === id);
+          const alert = alerts.find((a: Alert) => a.id === id);
           
           if (alert) {
             if (alert.isActive) {
@@ -439,8 +440,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         startMonitoring: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            state.monitoringEnabled = true;
+          set((draft: Draft<AlertsState>) => {
+            draft.monitoringEnabled = true;
           });
           
           // Start periodic alert checking
@@ -456,8 +457,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         stopMonitoring: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            state.monitoringEnabled = false;
+          set((draft: Draft<AlertsState>) => {
+            draft.monitoringEnabled = false;
           });
         },
         
@@ -467,7 +468,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           const { activeAlerts, alerts } = get();
           
           for (const alertId of activeAlerts) {
-            const alert = alerts.find((a: any) => a.id === alertId);
+            const alert = alerts.find((a: Alert) => a.id === alertId);
             if (!alert) continue;
             
             try {
@@ -486,8 +487,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             }
           }
           
-          set((state: any) => {
-            state.lastUpdate = new Date();
+          set((draft: Draft<AlertsState>) => {
+            draft.lastUpdate = new Date();
           });
         },
         
@@ -496,7 +497,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           if (!FLAGS.alertsV2) throw new Error('Alerts v2 not enabled');
           
           const { alerts } = get();
-          const alert = alerts.find((a: any) => a.id === alertId);
+          const alert = alerts.find((a: Alert) => a.id === alertId);
           
           if (!alert) throw new Error('Alert not found');
           
@@ -528,8 +529,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             }
             
             // Update alert trigger count and last triggered
-            set((state: any) => {
-              const alertToUpdate = state.alerts.find((a: any) => a.id === alertId);
+            set((draft: Draft<AlertsState>) => {
+              const alertToUpdate = draft.alerts.find((a: Alert) => a.id === alertId);
               if (alertToUpdate) {
                 alertToUpdate.triggerCount++;
                 alertToUpdate.lastTriggered = new Date();
@@ -537,18 +538,18 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
               }
               
               // Add to execution history
-              state.recentExecutions.unshift(execution);
+              draft.recentExecutions.unshift(execution);
               
               // Limit recent executions
-              if (state.recentExecutions.length > 100) {
-                state.recentExecutions = state.recentExecutions.slice(0, 100);
+              if (draft.recentExecutions.length > 100) {
+                draft.recentExecutions = draft.recentExecutions.slice(0, 100);
               }
               
               // Add to alert-specific history
-              if (!state.executionHistory.has(alertId)) {
-                state.executionHistory.set(alertId, []);
+              if (!draft.executionHistory.has(alertId)) {
+                draft.executionHistory.set(alertId, []);
               }
-              state.executionHistory.get(alertId)?.unshift(execution);
+              draft.executionHistory.get(alertId)?.unshift(execution);
             });
             
             return execution;
@@ -557,8 +558,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             execution.success = false;
             execution.error = error instanceof Error ? error.message : 'Unknown error';
             
-            set((state: any) => {
-              state.recentExecutions.unshift(execution);
+            set((draft: Draft<AlertsState>) => {
+              draft.recentExecutions.unshift(execution);
             });
             
             throw error;
@@ -677,9 +678,9 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         startBacktest: async (alertId: string, startDate: Date, endDate: Date, config?: AlertBacktest['config']) => {
           if (!FLAGS.alertsV2) throw new Error('Alerts v2 not enabled');
           
-          set((state: any) => {
-            state.isBacktesting = true;
-            state.error = null;
+          set((draft: Draft<AlertsState>) => {
+            draft.isBacktesting = true;
+            draft.error = null;
           });
           
           try {
@@ -702,18 +703,18 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             
             const backtest: AlertBacktest = await response.json();
             
-            set((state: any) => {
-              state.backtests.push(backtest);
-              state.currentBacktest = backtest;
-              state.isBacktesting = false;
+            set((draft: Draft<AlertsState>) => {
+              draft.backtests.push(backtest);
+              draft.currentBacktest = backtest;
+              draft.isBacktesting = false;
             });
             
             return backtest.id;
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Backtest failed';
-              state.isBacktesting = false;
+            set((draft: Draft<AlertsState>) => {
+              draft.error = error instanceof Error ? error.message : 'Backtest failed';
+              draft.isBacktesting = false;
             });
             throw error;
           }
@@ -722,9 +723,9 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         stopBacktest: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            state.isBacktesting = false;
-            state.currentBacktest = null;
+          set((draft: Draft<AlertsState>) => {
+            draft.isBacktesting = false;
+            draft.currentBacktest = null;
           });
         },
         
@@ -737,9 +738,9 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         loadAlerts: async () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            state.isLoading = true;
-            state.error = null;
+          set((draft: Draft<AlertsState>) => {
+            draft.isLoading = true;
+            draft.error = null;
           });
           
           try {
@@ -748,30 +749,30 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             
             const alerts: Alert[] = await response.json();
             
-            set((state: any) => {
-              state.alerts = alerts;
-              state.alertsBySymbol.clear();
-              state.activeAlerts.clear();
+            set((draft: Draft<AlertsState>) => {
+              draft.alerts = alerts;
+              draft.alertsBySymbol.clear();
+              draft.activeAlerts.clear();
               
               // Rebuild indexes
               for (const alert of alerts) {
-                if (!state.alertsBySymbol.has(alert.symbol)) {
-                  state.alertsBySymbol.set(alert.symbol, []);
+                if (!draft.alertsBySymbol.has(alert.symbol)) {
+                  draft.alertsBySymbol.set(alert.symbol, []);
                 }
-                state.alertsBySymbol.get(alert.symbol)?.push(alert);
+                draft.alertsBySymbol.get(alert.symbol)?.push(alert);
                 
                 if (alert.isActive) {
-                  state.activeAlerts.add(alert.id);
+                  draft.activeAlerts.add(alert.id);
                 }
               }
               
-              state.isLoading = false;
+              draft.isLoading = false;
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Failed to load alerts';
-              state.isLoading = false;
+            set((draft: Draft<AlertsState>) => {
+              draft.error = error instanceof Error ? error.message : 'Failed to load alerts';
+              draft.isLoading = false;
             });
           }
         },
@@ -785,13 +786,13 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
             
             const executions: AlertExecution[] = await response.json();
             
-            set((state: any) => {
-              state.executionHistory.set(alertId, executions);
+            set((draft: Draft<AlertsState>) => {
+              draft.executionHistory.set(alertId, executions);
             });
             
           } catch (error) {
-            set((state: any) => {
-              state.error = error instanceof Error ? error.message : 'Failed to load execution history';
+            set((draft: Draft<AlertsState>) => {
+              draft.error = error instanceof Error ? error.message : 'Failed to load execution history';
             });
           }
         },
@@ -799,9 +800,9 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         clearExecutionHistory: (alertId: string) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            state.executionHistory.delete(alertId);
-            state.recentExecutions = state.recentExecutions.filter((e: any) => e.alertId !== alertId);
+          set((draft: Draft<AlertsState>) => {
+            draft.executionHistory.delete(alertId);
+            draft.recentExecutions = draft.recentExecutions.filter((e: any) => e.alertId !== alertId);
           });
         },
         
@@ -813,14 +814,14 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
           const ws = new WebSocket('/ws/alerts');
           
           ws.onopen = () => {
-            set((state: any) => {
-              state.realtimeConnected = true;
+            set((draft: Draft<AlertsState>) => {
+              draft.realtimeConnected = true;
             });
           };
           
           ws.onclose = () => {
-            set((state: any) => {
-              state.realtimeConnected = false;
+            set((draft: Draft<AlertsState>) => {
+              draft.realtimeConnected = false;
             });
           };
           
@@ -837,8 +838,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         disconnectRealtime: () => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            state.realtimeConnected = false;
+          set((draft: Draft<AlertsState>) => {
+            draft.realtimeConnected = false;
           });
         },
         
@@ -865,8 +866,8 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         updateGlobalSettings: (settings: Partial<AlertsState['globalSettings']>) => {
           if (!FLAGS.alertsV2) return;
           
-          set((state: any) => {
-            Object.assign(state.globalSettings, settings);
+          set((draft: Draft<AlertsState>) => {
+            Object.assign(draft.globalSettings, settings);
           });
         },
         
@@ -878,7 +879,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
         
         getActiveAlerts: () => {
           const { alerts, activeAlerts } = get();
-          return alerts.filter((alert: any) => activeAlerts.has(alert.id));
+          return alerts.filter((alert: Alert) => activeAlerts.has(alert.id));
         },
         
         getRecentExecutions: (count = 20) => {
@@ -889,7 +890,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
       {
         name: 'lokifi-alerts-v2-storage',
         version: 1,
-        migrate: (persistedState: any, version: number) => {
+        migrate: (persistedState: Partial<AlertsState>, version: number) => {
           if (version === 0) {
             return {
               ...persistedState,
@@ -943,13 +944,13 @@ async function evaluateAlertCondition(alert: Alert): Promise<boolean> {
 
 // Selectors
 export const useActiveAlertsCount = () =>
-  useAlertsStore((state: any) => state.activeAlerts.size);
+  useAlertsStore((state: AlertsState & AlertsActions) => state.activeAlerts.size);
 
 export const useAlertsBySymbol = (symbol: string) =>
-  useAlertsStore((state: any) => state.getAlertsBySymbol(symbol));
+  useAlertsStore((state: AlertsState & AlertsActions) => state.getAlertsBySymbol(symbol));
 
 export const useRecentExecutions = (count?: number) =>
-  useAlertsStore((state: any) => state.getRecentExecutions(count));
+  useAlertsStore((state: AlertsState & AlertsActions) => state.getRecentExecutions(count));
 
 // Initialize store
 if (typeof window !== 'undefined' && FLAGS.alertsV2) {

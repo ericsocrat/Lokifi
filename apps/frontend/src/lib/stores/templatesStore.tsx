@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Template Types
@@ -176,7 +177,7 @@ interface TemplatesActions {
   syncTemplate: (id: string) => Promise<void>;
   
   // Import/Export
-  importTemplate: (templateData: any) => Promise<string>;
+  importTemplate: (templateData: Partial<ChartTemplate>) => Promise<string>;
   exportTemplate: (id: string) => ChartTemplate;
   exportAsImage: (templateId: string, symbol: string, options?: Partial<ExportOptions>) => Promise<Blob>;
   exportAsPDF: (templateId: string, symbol: string, options?: Partial<ExportOptions>) => Promise<Blob>;
@@ -250,9 +251,9 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           config
         };
         
-        set((state: any) => {
-          state.templates.push(template);
-          state.activeTemplate = template;
+        set((draft: Draft<TemplatesState>) => {
+          draft.templates.push(template);
+          draft.activeTemplate = template;
         });
         
         try {
@@ -266,17 +267,17 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const savedTemplate = await response.json();
           
-          set((state: any) => {
-            const index = state.templates.findIndex((t: any) => t.id === id);
+          set((draft: Draft<TemplatesState>) => {
+            const index = draft.templates.findIndex((t: ChartTemplate) => t.id === id);
             if (index !== -1) {
-              state.templates[index] = savedTemplate;
-              state.activeTemplate = savedTemplate;
+              draft.templates[index] = savedTemplate;
+              draft.activeTemplate = savedTemplate;
             }
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to create template';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to create template';
           });
         }
         
@@ -286,14 +287,14 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       updateTemplate: async (id: string, updates: Partial<ChartTemplate>) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          const template = state.templates.find((t: any) => t.id === id);
+        set((draft: Draft<TemplatesState>) => {
+          const template = draft.templates.find((t: ChartTemplate) => t.id === id);
           if (template) {
             Object.assign(template, updates);
             template.updatedAt = new Date();
             
-            if (state.activeTemplate?.id === id) {
-              state.activeTemplate = template;
+            if (draft.activeTemplate?.id === id) {
+              draft.activeTemplate = template;
             }
           }
         });
@@ -308,8 +309,8 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Failed to update template');
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to update template';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to update template';
           });
         }
       },
@@ -317,14 +318,14 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       deleteTemplate: async (id: string) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          const index = state.templates.findIndex((t: any) => t.id === id);
+        set((draft: Draft<TemplatesState>) => {
+          const index = draft.templates.findIndex((t: ChartTemplate) => t.id === id);
           if (index !== -1) {
-            state.templates.splice(index, 1);
+            draft.templates.splice(index, 1);
           }
           
-          if (state.activeTemplate?.id === id) {
-            state.activeTemplate = null;
+          if (draft.activeTemplate?.id === id) {
+            draft.activeTemplate = null;
           }
         });
         
@@ -336,8 +337,8 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Failed to delete template');
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to delete template';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to delete template';
           });
         }
       },
@@ -346,7 +347,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return '';
         
         const { templates, createTemplate } = get();
-        const template = templates.find((t: any) => t.id === id);
+        const template = templates.find((t: ChartTemplate) => t.id === id);
         
         if (!template) return '';
         
@@ -358,12 +359,12 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
         if (!FLAGS.templates) return;
         
         const { templates } = get();
-        const template = templates.find((t: any) => t.id === templateId);
+        const template = templates.find((t: ChartTemplate) => t.id === templateId);
         
         if (!template) return;
         
-        set((state: any) => {
-          state.activeTemplate = template;
+        set((draft: Draft<TemplatesState>) => {
+          draft.activeTemplate = template;
           
           // Increment usage count
           template.usageCount++;
@@ -378,16 +379,16 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       setActiveTemplate: (template: ChartTemplate | null) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          state.activeTemplate = template;
+        set((draft: Draft<TemplatesState>) => {
+          draft.activeTemplate = template;
         });
       },
       
       markUnsavedChanges: (hasChanges: boolean) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          state.hasUnsavedChanges = hasChanges;
+        set((draft: Draft<TemplatesState>) => {
+          draft.hasUnsavedChanges = hasChanges;
         });
       },
       
@@ -395,9 +396,9 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       loadUserTemplates: async () => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          state.isLoading = true;
-          state.error = null;
+        set((draft: Draft<TemplatesState>) => {
+          draft.isLoading = true;
+          draft.error = null;
         });
         
         try {
@@ -406,15 +407,15 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const templates: ChartTemplate[] = await response.json();
           
-          set((state: any) => {
-            state.templates = templates;
-            state.isLoading = false;
+          set((draft: Draft<TemplatesState>) => {
+            draft.templates = templates;
+            draft.isLoading = false;
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load templates';
-            state.isLoading = false;
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load templates';
+            draft.isLoading = false;
           });
         }
       },
@@ -428,13 +429,13 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const templates: ChartTemplate[] = await response.json();
           
-          set((state: any) => {
-            state.publicTemplates = templates;
+          set((draft: Draft<TemplatesState>) => {
+            draft.publicTemplates = templates;
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load public templates';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load public templates';
           });
         }
       },
@@ -448,13 +449,13 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const templates: ChartTemplate[] = await response.json();
           
-          set((state: any) => {
-            state.featuredTemplates = templates;
+          set((draft: Draft<TemplatesState>) => {
+            draft.featuredTemplates = templates;
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load featured templates';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load featured templates';
           });
         }
       },
@@ -468,28 +469,28 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const template: ChartTemplate = await response.json();
           
-          set((state: any) => {
-            const index = state.templates.findIndex((t: any) => t.id === id);
+          set((draft: Draft<TemplatesState>) => {
+            const index = draft.templates.findIndex((t: ChartTemplate) => t.id === id);
             if (index !== -1) {
-              state.templates[index] = template;
+              draft.templates[index] = template;
             } else {
-              state.templates.push(template);
+              draft.templates.push(template);
             }
             
-            if (state.activeTemplate?.id === id) {
-              state.activeTemplate = template;
+            if (draft.activeTemplate?.id === id) {
+              draft.activeTemplate = template;
             }
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to sync template';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to sync template';
           });
         }
       },
       
       // Import/Export
-      importTemplate: async (templateData: any) => {
+      importTemplate: async (templateData: Partial<ChartTemplate>) => {
         if (!FLAGS.templates) return '';
         
         try {
@@ -505,8 +506,8 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           );
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to import template';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to import template';
           });
           return '';
         }
@@ -514,7 +515,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       
       exportTemplate: (id: string) => {
         const { templates } = get();
-        const template = templates.find((t: any) => t.id === id);
+        const template = templates.find((t: ChartTemplate) => t.id === id);
         
         if (!template) {
           throw new Error('Template not found');
@@ -534,9 +535,9 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       exportAsImage: async (templateId: string, symbol: string, options?: Partial<ExportOptions>) => {
         if (!FLAGS.imgExport) throw new Error('Image export not enabled');
         
-        set((state: any) => {
-          state.isExporting = true;
-          state.error = null;
+        set((draft: Draft<TemplatesState>) => {
+          draft.isExporting = true;
+          draft.error = null;
         });
         
         const exportOpts = { ...defaultExportOptions, ...options };
@@ -557,8 +558,8 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           const blob = await response.blob();
           
           // Record export history
-          set((state: any) => {
-            state.exportHistory.push({
+          set((draft: Draft<TemplatesState>) => {
+            draft.exportHistory.push({
               id: `export_${Date.now()}`,
               templateId,
               format: exportOpts.format,
@@ -566,15 +567,15 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
               filename: `${symbol}_chart.${exportOpts.format}`,
               fileSize: blob.size
             });
-            state.isExporting = false;
+            draft.isExporting = false;
           });
           
           return blob;
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Export failed';
-            state.isExporting = false;
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Export failed';
+            draft.isExporting = false;
           });
           throw error;
         }
@@ -606,15 +607,15 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           const link: ShareableLink = await response.json();
           
-          set((state: any) => {
-            state.shareableLinks.push(link);
+          set((draft: Draft<TemplatesState>) => {
+            draft.shareableLinks.push(link);
           });
           
           return link.shortCode;
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to create share link';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to create share link';
           });
           return '';
         }
@@ -630,16 +631,16 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           
           if (!response.ok) throw new Error('Failed to revoke link');
           
-          set((state: any) => {
-            const index = state.shareableLinks.findIndex((link: any) => link.id === linkId);
+          set((draft: Draft<TemplatesState>) => {
+            const index = draft.shareableLinks.findIndex((link: ShareableLink) => link.id === linkId);
             if (index !== -1) {
-              state.shareableLinks.splice(index, 1);
+              draft.shareableLinks.splice(index, 1);
             }
           });
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to revoke link';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to revoke link';
           });
         }
       },
@@ -657,20 +658,20 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       setSearchQuery: (query: string) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          state.searchQuery = query;
+        set((draft: Draft<TemplatesState>) => {
+          draft.searchQuery = query;
         });
       },
       
       toggleTag: (tag: string) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          const index = state.selectedTags.indexOf(tag);
+        set((draft: Draft<TemplatesState>) => {
+          const index = draft.selectedTags.indexOf(tag);
           if (index !== -1) {
-            state.selectedTags.splice(index, 1);
+            draft.selectedTags.splice(index, 1);
           } else {
-            state.selectedTags.push(tag);
+            draft.selectedTags.push(tag);
           }
         });
       },
@@ -678,9 +679,9 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       setSortOptions: (sortBy: TemplatesState['sortBy'], sortOrder: TemplatesState['sortOrder']) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          state.sortBy = sortBy;
-          state.sortOrder = sortOrder;
+        set((draft: Draft<TemplatesState>) => {
+          draft.sortBy = sortBy;
+          draft.sortOrder = sortOrder;
         });
       },
       
@@ -702,11 +703,11 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
       deleteMultipleTemplates: async (templateIds: string[]) => {
         if (!FLAGS.templates) return;
         
-        set((state: any) => {
-          state.templates = state.templates.filter((t: any) => !templateIds.includes(t.id));
+        set((draft: Draft<TemplatesState>) => {
+          draft.templates = draft.templates.filter((t: ChartTemplate) => !templateIds.includes(t.id));
           
-          if (state.activeTemplate && templateIds.includes(state.activeTemplate.id)) {
-            state.activeTemplate = null;
+          if (draft.activeTemplate && templateIds.includes(draft.activeTemplate.id)) {
+            draft.activeTemplate = null;
           }
         });
         
@@ -720,8 +721,8 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
           if (!response.ok) throw new Error('Bulk delete failed');
           
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to delete templates';
+          set((draft: Draft<TemplatesState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to delete templates';
           });
         }
       }
@@ -729,7 +730,7 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
     {
       name: 'lokifi-templates-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: Partial<TemplatesState>, version: number) => {
         if (version === 0) {
           return {
             ...persistedState,
@@ -745,28 +746,28 @@ export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
 
 // Selectors
 export const useFilteredTemplates = () => 
-  useTemplatesStore((state: any) => {
+  useTemplatesStore((state: TemplatesState & TemplatesActions) => {
     let filtered = [...state.templates];
     
     // Apply search filter
     if (state.searchQuery) {
       const query = state.searchQuery.toLowerCase();
-      filtered = filtered.filter((template: any) =>
+      filtered = filtered.filter((template: ChartTemplate) =>
         template.name.toLowerCase().includes(query) ||
         template.description?.toLowerCase().includes(query) ||
-        template.tags.some((tag: any) => tag.toLowerCase().includes(query))
+        template.tags.some((tag: string) => tag.toLowerCase().includes(query))
       );
     }
     
     // Apply tag filter
     if (state.selectedTags.length > 0) {
-      filtered = filtered.filter((template: any) =>
-        state.selectedTags.some((tag: any) => template.tags.includes(tag))
+      filtered = filtered.filter((template: ChartTemplate) =>
+        state.selectedTags.some((tag: string) => template.tags.includes(tag))
       );
     }
     
     // Apply sorting
-    filtered.sort((a: any, b: any) => {
+    filtered.sort((a: ChartTemplate, b: ChartTemplate) => {
       let comparison = 0;
       
       switch (state.sortBy) {
@@ -791,10 +792,10 @@ export const useFilteredTemplates = () =>
   });
 
 export const useTemplateById = (id: string) =>
-  useTemplatesStore((state: any) => state.templates.find((t: any) => t.id === id));
+  useTemplatesStore((state: TemplatesState & TemplatesActions) => state.templates.find((t: ChartTemplate) => t.id === id));
 
 export const useActiveTemplate = () =>
-  useTemplatesStore((state: any) => state.activeTemplate);
+  useTemplatesStore((state: TemplatesState & TemplatesActions) => state.activeTemplate);
 
 // Initialize store
 if (typeof window !== 'undefined' && FLAGS.templates) {

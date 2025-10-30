@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Corporate Action Types
@@ -200,9 +201,9 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       loadActions: async (symbol?: string) => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.isLoading = true;
-          state.error = null;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.isLoading = true;
+          draft.error = null;
         });
 
         try {
@@ -212,25 +213,25 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
           const actions: CorporateAction[] = await response.json();
 
-          set((state: any) => {
-            state.actions = actions;
+          set((draft: Draft<CorporateActionsState>) => {
+            draft.actions = actions;
 
             // Group by symbol for faster lookups
-            state.actionsBySymbol.clear();
+            draft.actionsBySymbol.clear();
             for (const action of actions) {
-              if (!state.actionsBySymbol.has(action.symbol)) {
-                state.actionsBySymbol.set(action.symbol, []);
+              if (!draft.actionsBySymbol.has(action.symbol)) {
+                draft.actionsBySymbol.set(action.symbol, []);
               }
-              state.actionsBySymbol.get(action.symbol)?.push(action);
+              draft.actionsBySymbol.get(action.symbol)?.push(action);
             }
 
-            state.isLoading = false;
+            draft.isLoading = false;
           });
 
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load actions';
-            state.isLoading = false;
+          set((draft: Draft<CorporateActionsState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load actions';
+            draft.isLoading = false;
           });
         }
       },
@@ -245,7 +246,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         const cutoff = new Date();
         cutoff.setDate(cutoff.getDate() + days);
 
-        return actions.filter((action: any) => {
+        return actions.filter((action: CorporateAction) => {
           const actionDate = new Date(action.date);
           return actionDate >= new Date() && actionDate <= cutoff;
         });
@@ -264,7 +265,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
         // Apply adjustments in reverse chronological order
         const sortedActions = [...actions]
-          .filter((action: any) => action.status === 'processed')
+          .filter((action: CorporateAction) => action.status === 'processed')
           .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
         let adjustedData = [...data];
@@ -279,8 +280,8 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       toggleAdjustedData: () => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.showAdjusted = !state.showAdjusted;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.showAdjusted = !draft.showAdjusted;
         });
       },
 
@@ -288,9 +289,9 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       loadHolidays: async (market: string, year: number) => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.isLoading = true;
-          state.error = null;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.isLoading = true;
+          draft.error = null;
         });
 
         try {
@@ -299,9 +300,9 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
           const holidays: MarketHoliday[] = await response.json();
 
-          set((state: any) => {
+          set((draft: Draft<CorporateActionsState>) => {
             // Merge new holidays
-            const existingHolidays = state.holidaysByMarket.get(market) || [];
+            const existingHolidays = draft.holidaysByMarket.get(market) || [];
             const allHolidays = [...existingHolidays, ...holidays];
 
             // Remove duplicates by date
@@ -311,15 +312,15 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
               ) === index
             );
 
-            state.holidaysByMarket.set(market, uniqueHolidays);
-            state.holidays = Array.from(state.holidaysByMarket.values()).flat();
-            state.isLoading = false;
+            draft.holidaysByMarket.set(market, uniqueHolidays);
+            draft.holidays = Array.from(draft.holidaysByMarket.values()).flat();
+            draft.isLoading = false;
           });
 
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load holidays';
-            state.isLoading = false;
+          set((draft: Draft<CorporateActionsState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load holidays';
+            draft.isLoading = false;
           });
         }
       },
@@ -355,25 +356,25 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       updateSessions: (sessions: TradingSession[]) => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.sessions = sessions;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.sessions = sessions;
         });
       },
 
       toggleSession: (sessionName: string) => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          const session = state.sessions.find((s: any) => s.name === sessionName);
+        set((draft: Draft<CorporateActionsState>) => {
+          const session = draft.sessions.find((s: any) => s.name === sessionName);
           if (session) {
             session.isActive = !session.isActive;
 
             if (session.isActive) {
-              state.activeSessions.push(sessionName);
+              draft.activeSessions.push(sessionName);
             } else {
-              const index = state.activeSessions.indexOf(sessionName);
+              const index = draft.activeSessions.indexOf(sessionName);
               if (index !== -1) {
-                state.activeSessions.splice(index, 1);
+                draft.activeSessions.splice(index, 1);
               }
             }
           }
@@ -409,9 +410,9 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       loadQualityReport: async (symbol: string) => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.isLoading = true;
-          state.error = null;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.isLoading = true;
+          draft.error = null;
         });
 
         try {
@@ -420,15 +421,15 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
           const quality: DataQuality = await response.json();
 
-          set((state: any) => {
-            state.qualityReports.set(symbol, quality);
-            state.isLoading = false;
+          set((draft: Draft<CorporateActionsState>) => {
+            draft.qualityReports.set(symbol, quality);
+            draft.isLoading = false;
           });
 
         } catch (error) {
-          set((state: any) => {
-            state.error = error instanceof Error ? error.message : 'Failed to load quality report';
-            state.isLoading = false;
+          set((draft: Draft<CorporateActionsState>) => {
+            draft.error = error instanceof Error ? error.message : 'Failed to load quality report';
+            draft.isLoading = false;
           });
         }
       },
@@ -436,8 +437,8 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       toggleQualityIndicators: () => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.showQualityIndicators = !state.showQualityIndicators;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.showQualityIndicators = !draft.showQualityIndicators;
         });
       },
 
@@ -445,23 +446,23 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
       updatePreferredMarkets: (markets: string[]) => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.preferredMarkets = markets;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.preferredMarkets = markets;
         });
       },
 
       toggleAutoAdjust: () => {
         if (!FLAGS.corpActions) return;
 
-        set((state: any) => {
-          state.autoAdjustForActions = !state.autoAdjustForActions;
+        set((draft: Draft<CorporateActionsState>) => {
+          draft.autoAdjustForActions = !draft.autoAdjustForActions;
         });
       }
     })),
     {
       name: 'lokifi-corporate-actions-storage',
       version: 1,
-      migrate: (persistedState: any, version: number) => {
+      migrate: (persistedState: Partial<CorporateActionsState>, version: number) => {
         if (version === 0) {
           return {
             ...persistedState,
@@ -521,22 +522,22 @@ function applyAdjustment(data: OHLCBar[], action: CorporateAction): OHLCBar[] {
 
 // Selectors
 export const useMarketHolidays = (market?: string) =>
-  useCorporateActionsStore((state: any) =>
+  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) =>
     market
       ? state.holidaysByMarket.get(market) || []
       : state.holidays
   );
 
 export const useActiveSessions = () =>
-  useCorporateActionsStore((state: any) =>
+  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) =>
     state.sessions.filter((s: any) => s.isActive)
   );
 
 export const useUpcomingActions = (days = 7) =>
-  useCorporateActionsStore((state: any) => state.getUpcomingActions(days));
+  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) => state.getUpcomingActions(days));
 
 export const useDataQuality = (symbol: string) =>
-  useCorporateActionsStore((state: any) => state.qualityReports.get(symbol));
+  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) => state.qualityReports.get(symbol));
 
 // Initialize store with default data
 if (typeof window !== 'undefined' && FLAGS.corpActions) {
