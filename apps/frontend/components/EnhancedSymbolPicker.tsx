@@ -249,7 +249,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
                 type="text"
                 placeholder="Search symbols..."
                 value={searchQuery}
-                onChange={(e: any) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
               />
             </div>

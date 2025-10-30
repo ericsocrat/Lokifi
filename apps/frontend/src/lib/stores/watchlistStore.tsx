@@ -219,7 +219,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         set((draft: Draft<WatchlistState>) => {
           const watchlist = draft.watchlists.find((w: Watchlist) => w.id === watchlistId);
           if (watchlist) {
-            const index = watchlist.items.findIndex((item: WatchlistItem) => item.symbol === symbol);
+            const index = watchlist.items.findIndex(
+              (item: WatchlistItem) => item.symbol === symbol
+            );
             if (index !== -1) {
               watchlist.items.splice(index, 1);
               watchlist.updatedAt = new Date();
@@ -327,7 +329,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
         if (!FLAGS.watchlist) return;
 
         set((draft: Draft<WatchlistState>) => {
-          const index = draft.screenerQuery.filters.findIndex((f: ScreenerFilter) => f.id === filterId);
+          const index = draft.screenerQuery.filters.findIndex(
+            (f: ScreenerFilter) => f.id === filterId
+          );
           if (index !== -1) {
             draft.screenerQuery.filters.splice(index, 1);
           }

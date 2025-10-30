@@ -967,7 +967,12 @@ export const usePerformanceStore = create<PerformanceStore>()(
           // Add battery info if available
           if (nav.getBattery) {
             nav.getBattery().then((battery: unknown) => {
-              const bat = battery as { level: number; charging: boolean; chargingTime: number; dischargingTime: number };
+              const bat = battery as {
+                level: number;
+                charging: boolean;
+                chargingTime: number;
+                dischargingTime: number;
+              };
               usage.battery = {
                 level: bat.level * 100,
                 charging: bat.charging,
@@ -1572,29 +1577,31 @@ export const usePerformanceStore = create<PerformanceStore>()(
             paintObserver.observe({ entryTypes: ['paint'] });
 
             // Observe long tasks
-            const longTaskObserver = new PerformanceObserver((list: PerformanceObserverEntryList) => {
-              for (const entry of list.getEntries()) {
-                if (entry.duration > 50) {
-                  // Long task threshold
-                  get().createAlert({
-                    type: 'threshold',
-                    severity: 'warning',
-                    title: 'Long Task Detected',
-                    message: `Task took ${entry.duration.toFixed(0)}ms to complete`,
-                    metric: 'taskDuration',
-                    value: entry.duration,
-                    threshold: 50,
-                    acknowledged: false,
-                    resolved: false,
-                    suggestedActions: [
-                      'Break up long-running tasks',
-                      'Use web workers for heavy computation',
-                      'Implement task scheduling',
-                    ],
-                  });
+            const longTaskObserver = new PerformanceObserver(
+              (list: PerformanceObserverEntryList) => {
+                for (const entry of list.getEntries()) {
+                  if (entry.duration > 50) {
+                    // Long task threshold
+                    get().createAlert({
+                      type: 'threshold',
+                      severity: 'warning',
+                      title: 'Long Task Detected',
+                      message: `Task took ${entry.duration.toFixed(0)}ms to complete`,
+                      metric: 'taskDuration',
+                      value: entry.duration,
+                      threshold: 50,
+                      acknowledged: false,
+                      resolved: false,
+                      suggestedActions: [
+                        'Break up long-running tasks',
+                        'Use web workers for heavy computation',
+                        'Implement task scheduling',
+                      ],
+                    });
+                  }
                 }
               }
-            });
+            );
 
             longTaskObserver.observe({ entryTypes: ['longtask'] });
           } catch (error) {

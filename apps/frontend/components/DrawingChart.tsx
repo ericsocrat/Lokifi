@@ -11,7 +11,13 @@ import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 
 // Chart component with proper hook usage
-const ChartContainer = ({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) => {
+const ChartContainer = ({
+  children,
+  ...props
+}: {
+  children: React.ReactNode;
+  [key: string]: unknown;
+}) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={chartContainerRef} {...props}>
@@ -222,33 +228,40 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     // Draw existing objects for this pane
     const paneObjects = getObjectsByPane(paneId);
 
-    paneObjects.forEach((obj: { id: string; points: { x: number; y: number }[]; properties: { visible: boolean }; style: { color: string; lineWidth: number; lineStyle: string } }) => {
-      if (!obj.properties.visible) return;
+    paneObjects.forEach(
+      (obj: {
+        id: string;
+        points: { x: number; y: number }[];
+        properties: { visible: boolean };
+        style: { color: string; lineWidth: number; lineStyle: string };
+      }) => {
+        if (!obj.properties.visible) return;
 
-      ctx.strokeStyle = obj.style.color;
-      ctx.lineWidth = obj.style.lineWidth;
-      ctx.setLineDash(obj.style.lineStyle === 'dashed' ? [5, 5] : []);
+        ctx.strokeStyle = obj.style.color;
+        ctx.lineWidth = obj.style.lineWidth;
+        ctx.setLineDash(obj.style.lineStyle === 'dashed' ? [5, 5] : []);
 
-      // Simple line drawing for now
-      if (obj.points.length >= 2) {
-        ctx.beginPath();
-        ctx.moveTo(obj.points[0].x, obj.points[0].y);
+        // Simple line drawing for now
+        if (obj.points.length >= 2) {
+          ctx.beginPath();
+          ctx.moveTo(obj.points[0].x, obj.points[0].y);
 
-        obj.points.slice(1).forEach((point: { x: number; y: number }) => {
-          ctx.lineTo(point.x, point.y);
-        });
+          obj.points.slice(1).forEach((point: { x: number; y: number }) => {
+            ctx.lineTo(point.x, point.y);
+          });
 
-        ctx.stroke();
-
-        // Highlight selected object
-        if (obj.id === selectedObjectId) {
-          ctx.strokeStyle = '#60a5fa';
-          ctx.lineWidth = obj.style.lineWidth + 2;
-          ctx.setLineDash([]);
           ctx.stroke();
+
+          // Highlight selected object
+          if (obj.id === selectedObjectId) {
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = obj.style.lineWidth + 2;
+            ctx.setLineDash([]);
+            ctx.stroke();
+          }
         }
       }
-    });
+    );
 
     // Draw current drawing in progress
     if (currentDrawing && currentDrawing.points && currentDrawing.points.length > 0) {
@@ -421,17 +434,25 @@ export const DrawingChart: React.FC = () => {
         className="w-full h-full bg-gray-900 overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
-        {panes.map((pane: { id: string; height: number; visible: boolean; locked: boolean; indicators: string[] }) => (
-          <DrawingPaneComponent
-            key={pane.id}
-            paneId={pane.id}
-            height={pane.height}
-            isVisible={pane.visible}
-            isLocked={pane.locked}
-            indicators={pane.indicators}
-            onHeightChange={updatePaneHeight}
-          />
-        ))}
+        {panes.map(
+          (pane: {
+            id: string;
+            height: number;
+            visible: boolean;
+            locked: boolean;
+            indicators: string[];
+          }) => (
+            <DrawingPaneComponent
+              key={pane.id}
+              paneId={pane.id}
+              height={pane.height}
+              isVisible={pane.visible}
+              isLocked={pane.locked}
+              indicators={pane.indicators}
+              onHeightChange={updatePaneHeight}
+            />
+          )
+        )}
       </div>
     </ChartErrorBoundary>
   );
