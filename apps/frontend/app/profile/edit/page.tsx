@@ -101,7 +101,7 @@ export default function EditProfilePage() {
 
             setAvatarFile(file);
             const reader = new FileReader();
-            reader.onload = (e: any) => {
+            reader.onload = (e) => {
                 setAvatarPreview(e.target?.result as string);
             };
             reader.readAsDataURL(file);
