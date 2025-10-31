@@ -2,6 +2,8 @@
 
 **Purpose**: Infrastructure security event logs, SSL/TLS management, firewall logs, intrusion detection, and security audit trails.
 
+> **Note**: This directory is for **log files** generated at runtime. For security **configuration and tools**, see [`infra/security/`](../../security/README.md).
+
 ## Common Files
 
 - `ssl-renewal-*.log` - Let's Encrypt SSL/TLS certificate renewal logs

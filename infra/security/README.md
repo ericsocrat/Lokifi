@@ -2,6 +2,8 @@
 
 **Purpose**: Centralized security management including configurations, audit tools, testing frameworks, and compliance documentation.
 
+> **Note**: This directory contains security **configuration and tools**. For security **log files** (SSL, firewall, audit trails), see [`infra/logs/security/`](../logs/security/README.md).
+
 ---
 
 ## 📂 **Directory Structure**
