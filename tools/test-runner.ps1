@@ -61,6 +61,9 @@
 .PARAMETER SelfTest
     Validate environment setup (Python, Node.js, npm, git)
 
+.PARAMETER CIMode
+    CI/CD mode - output machine-readable JSON with standardized exit codes
+
 .PARAMETER Timeout
     Maximum execution time in seconds (default: 300)
 
@@ -110,10 +113,19 @@ param(
     [switch]$Watch,
     [switch]$DryRun,
     [switch]$SelfTest,
+    [switch]$CIMode,
     [int]$Timeout = 300
 )
 
 $ErrorActionPreference = 'Continue'
+
+# Import common functions for CI/CD mode
+if ($CIMode) {
+    $modulePath = Join-Path $PSScriptRoot 'lib\Common-Functions.ps1'
+    if (Test-Path $modulePath) {
+        Import-Module $modulePath -Force
+    }
+}
 
 # ============================================================================
 # Configuration
@@ -138,6 +150,11 @@ function Write-TestLog {
         [ValidateSet('Info', 'Success', 'Warning', 'Error')]
         [string]$Level = 'Info'
     )
+
+    # Skip colored output in CI mode
+    if ($script:CIMode) {
+        return
+    }
 
     $colors = @{
         'Info'    = 'Cyan'
@@ -665,14 +682,22 @@ function Invoke-TestRunner {
 
     Initialize-TestEnvironment
 
-    Write-Host ''
-    Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
-    Write-Host '║           Lokifi Test Runner - Comprehensive Suite        ║' -ForegroundColor Cyan
-    Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
-    Write-Host ''
+    # Initialize tracking variables for CI mode
+    $testResults = @{}
+    $warnings = @()
+    $errorsList = @()
+
+    # Skip header in CI mode
+    if (-not $CIMode) {
+        Write-Host ''
+        Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+        Write-Host '║           Lokifi Test Runner - Comprehensive Suite        ║' -ForegroundColor Cyan
+        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+        Write-Host ''
+    }
 
     # Show dry-run warning
-    if ($DryRun) {
+    if ($DryRun -and -not $CIMode) {
         Write-TestLog 'DRY RUN MODE - No tests will be executed' -Level Warning
         Write-Host ''
     }
@@ -685,30 +710,50 @@ function Invoke-TestRunner {
         if ($Smart) {
             if ($DryRun) {
                 $changedFiles = Get-ChangedFiles
-                Write-TestLog "Would analyze $($changedFiles.Count) changed files" -Level Info
                 $affectedTests = Get-AffectedTests -ChangedFiles $changedFiles
-                Write-TestLog "Would run $($affectedTests.Count) affected tests" -Level Info
-                return 0
+                if (-not $CIMode) {
+                    Write-TestLog "Would analyze $($changedFiles.Count) changed files" -Level Info
+                    Write-TestLog "Would run $($affectedTests.Count) affected tests" -Level Info
+                }
+                $testResults = @{
+                    mode           = 'smart-dryrun'
+                    changed_files  = $changedFiles.Count
+                    affected_tests = $affectedTests.Count
+                }
+                $exitCode = 0
+            } else {
+                $exitCode = Invoke-SmartTests
             }
-            $exitCode = Invoke-SmartTests
         } elseif ($PreCommit) {
             if ($DryRun) {
-                Write-TestLog 'Would run pre-commit test suite' -Level Info
-                return 0
+                if (-not $CIMode) {
+                    Write-TestLog 'Would run pre-commit test suite' -Level Info
+                }
+                $testResults = @{ mode = 'precommit-dryrun' }
+                $exitCode = 0
+            } else {
+                $exitCode = Invoke-PreCommitTests
             }
-            $exitCode = Invoke-PreCommitTests
         } elseif ($Gate) {
             if ($DryRun) {
-                Write-TestLog 'Would run quality gate checks' -Level Info
-                return 0
+                if (-not $CIMode) {
+                    Write-TestLog 'Would run quality gate checks' -Level Info
+                }
+                $testResults = @{ mode = 'gate-dryrun' }
+                $exitCode = 0
+            } else {
+                $exitCode = Invoke-GateTests
             }
-            $exitCode = Invoke-GateTests
         } elseif ($Quick) {
             if ($DryRun) {
-                Write-TestLog 'Would run quick tests (< 10s per test)' -Level Info
-                return 0
+                if (-not $CIMode) {
+                    Write-TestLog 'Would run quick tests (< 10s per test)' -Level Info
+                }
+                $testResults = @{ mode = 'quick-dryrun' }
+                $exitCode = 0
+            } else {
+                $exitCode = Invoke-QuickTests
             }
-            $exitCode = Invoke-QuickTests
         }
         # Category-based execution
         elseif ($Category -eq 'all') {
@@ -732,6 +777,31 @@ function Invoke-TestRunner {
         $endTime = Get-Date
         $duration = $endTime - $startTime
 
+        # Store results for CI mode
+        $testResults = @{
+            category     = $Category
+            duration_s   = [math]::Round($duration.TotalSeconds, 2)
+            exit_code    = $exitCode
+            mode         = if ($Smart) { 'smart' } elseif ($PreCommit) { 'precommit' } elseif ($Coverage) { 'coverage' } elseif ($Quick) { 'quick' } else { 'standard' }
+            tests_passed = $exitCode -eq 0
+        }
+
+        # CI/CD mode: Output JSON
+        if ($CIMode) {
+            $success = $exitCode -eq 0
+            $output = New-CIModeOutput `
+                -ToolName 'test-runner' `
+                -Success $success `
+                -Results $testResults `
+                -Errors $errorsList `
+                -Warnings $warnings
+
+            $output.duration_ms = [math]::Round($duration.TotalMilliseconds, 2)
+            $output | ConvertTo-Json -Depth 10 | Write-Host
+            exit $output.exit_code
+        }
+
+        # Human-readable output
         Write-Host ''
         Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
         Write-Host '║                     Test Run Complete                      ║' -ForegroundColor Cyan
@@ -748,8 +818,20 @@ function Invoke-TestRunner {
         Write-Host ''
 
     } catch {
+        $errorsList += $_.Exception.Message
         Write-TestLog "Test runner encountered an error: $_" -Level Error
         $exitCode = 1
+
+        # Output error in CI mode
+        if ($CIMode) {
+            $output = New-CIModeOutput `
+                -ToolName 'test-runner' `
+                -Success $false `
+                -Results $testResults `
+                -Errors $errorsList
+
+            $output | ConvertTo-Json -Depth 10 | Write-Host
+        }
     }
 
     exit $exitCode

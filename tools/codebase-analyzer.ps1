@@ -98,8 +98,22 @@ function Invoke-CodebaseAnalysis {
         [string[]]$CustomIncludePatterns = @(),
 
         # NEW: Custom mode - specify exact patterns to exclude
-        [string[]]$CustomExcludePatterns = @()
+        [string[]]$CustomExcludePatterns = @(),
+
+        # CI/CD mode
+        [switch]$CIMode = $false,
+
+        # Dry run mode - preview analysis without generating reports
+        [switch]$DryRun = $false
     )
+
+    # Import common functions for CI mode
+    if ($CIMode) {
+        $modulePath = Join-Path $PSScriptRoot 'lib\Common-Functions.ps1'
+        if (Test-Path $modulePath) {
+            Import-Module $modulePath -Force -ErrorAction SilentlyContinue
+        }
+    }
 
     # Use global config if available
     if (-not $ProjectRoot) {
@@ -111,60 +125,75 @@ function Invoke-CodebaseAnalysis {
     }
 
     $startTime = Get-Date
-    $analysisId = Get-Date -Format "yyyyMMdd_HHmmss"
+    $analysisId = Get-Date -Format 'yyyyMMdd_HHmmss'
 
-    # Display enhanced header
-    Write-Host "`n╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║         🚀  CODEBASE ANALYSIS V2.0 - ENHANCED EDITION        ║" -ForegroundColor Cyan
-    Write-Host "╚═══════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "📂 Project: " -NoNewline; Write-Host $ProjectRoot -ForegroundColor Yellow
-    Write-Host "🌍 Region: " -NoNewline; Write-Host $Region.ToUpper() -ForegroundColor Yellow
-    Write-Host "📄 Format: " -NoNewline; Write-Host $OutputFormat -ForegroundColor Yellow
-    Write-Host "⚡ Mode: " -NoNewline; Write-Host "Parallel Processing" -ForegroundColor Green
-    Write-Host ""
+    # Initialize tracking for CI mode
+    $ciResults = @{}
+    $ciWarnings = @()
+    $ciErrors = @()
+
+    # Display enhanced header (skip in CI mode or dry run)
+    if (-not $CIMode) {
+        Write-Host "`n╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+        Write-Host '║         🚀  CODEBASE ANALYSIS V2.0 - ENHANCED EDITION        ║' -ForegroundColor Cyan
+        Write-Host '╚═══════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+        Write-Host ''
+
+        if ($DryRun) {
+            Write-Host '🔍 DRY RUN MODE - Preview analysis without generating reports' -ForegroundColor Yellow
+            Write-Host ''
+        }
+    }
+
+    if (-not $CIMode) {
+        Write-Host '📂 Project: ' -NoNewline; Write-Host $ProjectRoot -ForegroundColor Yellow
+        Write-Host '🌍 Region: ' -NoNewline; Write-Host $Region.ToUpper() -ForegroundColor Yellow
+        Write-Host '📄 Format: ' -NoNewline; Write-Host $OutputFormat -ForegroundColor Yellow
+        Write-Host '⚡ Mode: ' -NoNewline; Write-Host $(if ($DryRun) { 'Dry Run (Preview)' } else { 'Parallel Processing' }) -ForegroundColor $(if ($DryRun) { 'Yellow' } else { 'Green' })
+        Write-Host ''
+    }
 
     # Region-based cost multipliers
     $regionMultipliers = @{
-        'us' = @{ Name = 'United States'; Multiplier = 1.0 }
-        'eu' = @{ Name = 'Europe'; Multiplier = 0.8 }
-        'asia' = @{ Name = 'Asia'; Multiplier = 0.4 }
+        'us'     = @{ Name = 'United States'; Multiplier = 1.0 }
+        'eu'     = @{ Name = 'Europe'; Multiplier = 0.8 }
+        'asia'   = @{ Name = 'Asia'; Multiplier = 0.4 }
         'remote' = @{ Name = 'Remote/Global'; Multiplier = 0.6 }
     }
     $regionInfo = $regionMultipliers[$Region]
 
     # Initialize enhanced metrics
     $metrics = @{
-        Frontend = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
-        Backend = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
+        Frontend       = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
+        Backend        = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
         Infrastructure = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
-        Tests = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
-        Documentation = @{ Files = 0; Lines = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
-        Total = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0 }
-        Quality = @{ Maintainability = 0; TechnicalDebt = 0; SecurityScore = 0 }
-        Git = @{
-            Commits = 0
-            Contributors = 0
-            LastCommit = $null
-            Churn = 0
-            StartDate = $null
-            EndDate = $null
-            TotalDays = 0
-            WorkingDays = 0
-            ActiveDays = 0
+        Tests          = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
+        Documentation  = @{ Files = 0; Lines = 0; Extensions = @{}; LargestFile = @{ Name = ''; Lines = 0 } }
+        Total          = @{ Files = 0; Lines = 0; Comments = 0; Blank = 0; Effective = 0 }
+        Quality        = @{ Maintainability = 0; TechnicalDebt = 0; SecurityScore = 0 }
+        Git            = @{
+            Commits            = 0
+            Contributors       = 0
+            LastCommit         = $null
+            Churn              = 0
+            StartDate          = $null
+            EndDate            = $null
+            TotalDays          = 0
+            WorkingDays        = 0
+            ActiveDays         = 0
             EstimatedWorkHours = 0
-            EstimatedWorkDays = 0
-            AvgCommitsPerDay = 0
+            EstimatedWorkDays  = 0
+            AvgCommitsPerDay   = 0
         }
     }
 
     # Enhanced file patterns (ACTIVE CODE ONLY)
     $patterns = @{
-        Frontend = @('*.ts', '*.tsx', '*.js', '*.jsx', '*.css', '*.scss', '*.sass', '*.less', '*.vue', '*.svelte', '*.html')
-        Backend = @('*.py', '*.sql', '*.prisma', '*.rb', '*.php', '*.java', '*.cs', '*.go', '*.rs')
+        Frontend       = @('*.ts', '*.tsx', '*.js', '*.jsx', '*.css', '*.scss', '*.sass', '*.less', '*.vue', '*.svelte', '*.html')
+        Backend        = @('*.py', '*.sql', '*.prisma', '*.rb', '*.php', '*.java', '*.cs', '*.go', '*.rs')
         Infrastructure = @('*.ps1', '*.sh', '*.bat', '*.cmd', '*.dockerfile', 'Dockerfile*', '*.yml', '*.yaml', '*.json', '*.toml', '*.tf', '*.tfvars')
-        Tests = @('*.test.ts', '*.test.js', '*.spec.ts', '*.spec.js', '*.test.py', '*.spec.py', '*.test.tsx', '*.spec.tsx', '*_test.go')
-        Documentation = @('*.md', '*.txt', '*.rst', '*.adoc', '*.wiki')
+        Tests          = @('*.test.ts', '*.test.js', '*.spec.ts', '*.spec.js', '*.test.py', '*.spec.py', '*.test.tsx', '*.spec.tsx', '*_test.go')
+        Documentation  = @('*.md', '*.txt', '*.rst', '*.adoc', '*.wiki')
     }
 
     # COMPREHENSIVE EXCLUSIONS - Skip legacy/archived/generated content
@@ -251,7 +280,7 @@ function Invoke-CodebaseAnalysis {
     )
 
     # Step 1: Git Analysis (if available)
-    Write-Host "📊 Analyzing Git history..." -ForegroundColor Cyan
+    Write-Host '📊 Analyzing Git history...' -ForegroundColor Cyan
     try {
         $gitRoot = git rev-parse --show-toplevel 2>$null
         if ($gitRoot) {
@@ -260,7 +289,7 @@ function Invoke-CodebaseAnalysis {
             $metrics.Git.LastCommit = git log -1 --format="%cr" 2>$null
 
             # Calculate churn (files changed in last 30 days)
-            $thirtyDaysAgo = (Get-Date).AddDays(-30).ToString("yyyy-MM-dd")
+            $thirtyDaysAgo = (Get-Date).AddDays(-30).ToString('yyyy-MM-dd')
             $metrics.Git.Churn = [int](git log --since="$thirtyDaysAgo" --name-only --pretty=format: 2>$null | Sort-Object -Unique | Measure-Object).Count
 
             # Real-world timeline analysis
@@ -271,8 +300,8 @@ function Invoke-CodebaseAnalysis {
                 $startDate = [datetime]::Parse($firstCommitDate)
                 $endDate = [datetime]::Parse($lastCommitDate)
 
-                $metrics.Git.StartDate = $startDate.ToString("yyyy-MM-dd")
-                $metrics.Git.EndDate = $endDate.ToString("yyyy-MM-dd")
+                $metrics.Git.StartDate = $startDate.ToString('yyyy-MM-dd')
+                $metrics.Git.EndDate = $endDate.ToString('yyyy-MM-dd')
                 $metrics.Git.TotalDays = ($endDate - $startDate).Days
 
                 # Calculate working days (excluding weekends)
@@ -308,30 +337,30 @@ function Invoke-CodebaseAnalysis {
                 Write-Host "   ✓ Timeline: $($metrics.Git.TotalDays) days ($($metrics.Git.ActiveDays) active)" -ForegroundColor Gray
             }
         } else {
-            Write-Host "   ⚠ Not a Git repository - skipping Git analysis" -ForegroundColor Yellow
+            Write-Host '   ⚠ Not a Git repository - skipping Git analysis' -ForegroundColor Yellow
         }
     } catch {
-        Write-Host "   ⚠ Git analysis failed - continuing..." -ForegroundColor Yellow
+        Write-Host '   ⚠ Git analysis failed - continuing...' -ForegroundColor Yellow
     }
-    Write-Host ""
+    Write-Host ''
 
     # ============================================
     # SCANNING MODE CONFIGURATION (NEW!)
     # ============================================
-    Write-Host "⚙️  Configuring scan mode: " -NoNewline -ForegroundColor Cyan
+    Write-Host '⚙️  Configuring scan mode: ' -NoNewline -ForegroundColor Cyan
     Write-Host $ScanMode -ForegroundColor Yellow
 
     # Configure patterns and exclusions based on scan mode
     $activePatternsCategories = @()
     $activeExcludeDirs = $excludeDirs.Clone()
     $activeExcludeFiles = $excludeFilePatterns.Clone()
-    $scanDescription = ""
+    $scanDescription = ''
 
     switch ($ScanMode) {
         'Full' {
             # Full scan - everything including documentation
             $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests', 'Documentation')
-            $scanDescription = "Complete codebase including code, tests, docs, and configs"
+            $scanDescription = 'Complete codebase including code, tests, docs, and configs'
             # Use minimal exclusions (only build artifacts, dependencies)
             $activeExcludeDirs = @(
                 'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next',
@@ -346,15 +375,15 @@ function Invoke-CodebaseAnalysis {
         'CodeOnly' {
             # Code only - excludes all documentation
             $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests')
-            $scanDescription = "Active code only (no documentation or archives)"
+            $scanDescription = 'Active code only (no documentation or archives)'
             # Use full exclusions including all archives and docs folders
-            Write-Host "   📝 Excluding: All .md, .txt, docs folders, archives" -ForegroundColor Gray
+            Write-Host '   📝 Excluding: All .md, .txt, docs folders, archives' -ForegroundColor Gray
         }
 
         'DocsOnly' {
             # Documentation only - only markdown, text, and doc files
             $activePatternsCategories = @('Documentation')
-            $scanDescription = "Documentation only (markdown, text files, guides)"
+            $scanDescription = 'Documentation only (markdown, text files, guides)'
             # Exclude code directories, keep docs directories
             $activeExcludeDirs = @(
                 'node_modules', 'venv', '__pycache__', '.git', 'dist', 'build', '.next',
@@ -366,36 +395,36 @@ function Invoke-CodebaseAnalysis {
                 'apps\frontend\public'
             )
             $activeExcludeFiles = @('*.log.*', '*.swp', '*.tmp', '*~')
-            Write-Host "   � Including: docs/, *.md, *.txt, README files" -ForegroundColor Gray
+            Write-Host '   � Including: docs/, *.md, *.txt, README files' -ForegroundColor Gray
         }
 
         'Quick' {
             # Quick scan - only main source files, no tests or detailed analysis
             $activePatternsCategories = @('Frontend', 'Backend')
-            $scanDescription = "Quick scan (main source files only, no tests/docs)"
+            $scanDescription = 'Quick scan (main source files only, no tests/docs)'
             $Detailed = $false  # Force quick mode
-            Write-Host "   ⚡ Fast mode: Skipping tests, docs, detailed analysis" -ForegroundColor Gray
+            Write-Host '   ⚡ Fast mode: Skipping tests, docs, detailed analysis' -ForegroundColor Gray
         }
 
         'Search' {
             # Search mode - scan everything but filter results by keywords
             if ($SearchKeywords.Count -eq 0) {
-                Write-Host ""
-                Write-Host "❌ Search mode requires -SearchKeywords parameter" -ForegroundColor Red
+                Write-Host ''
+                Write-Host '❌ Search mode requires -SearchKeywords parameter' -ForegroundColor Red
                 Write-Host "   Example: -ScanMode Search -SearchKeywords 'TODO','FIXME','BUG'" -ForegroundColor Yellow
                 return
             }
             $activePatternsCategories = @('Frontend', 'Backend', 'Infrastructure', 'Tests', 'Documentation')
             $scanDescription = "Search mode: Looking for keywords: $($SearchKeywords -join ', ')"
-            Write-Host "   🔍 Searching for: " -NoNewline -ForegroundColor Gray
+            Write-Host '   🔍 Searching for: ' -NoNewline -ForegroundColor Gray
             Write-Host ($SearchKeywords -join ', ') -ForegroundColor Yellow
         }
 
         'Custom' {
             # Custom mode - user defines exact patterns
             if ($CustomIncludePatterns.Count -eq 0) {
-                Write-Host ""
-                Write-Host "❌ Custom mode requires -CustomIncludePatterns parameter" -ForegroundColor Red
+                Write-Host ''
+                Write-Host '❌ Custom mode requires -CustomIncludePatterns parameter' -ForegroundColor Red
                 Write-Host "   Example: -ScanMode Custom -CustomIncludePatterns '*.py','*.ts'" -ForegroundColor Yellow
                 return
             }
@@ -408,12 +437,12 @@ function Invoke-CodebaseAnalysis {
 
             # Initialize Custom category in metrics
             $metrics['Custom'] = @{
-                Files = 0
-                Lines = 0
-                Comments = 0
-                Blank = 0
-                Effective = 0
-                Extensions = @{}
+                Files       = 0
+                Lines       = 0
+                Comments    = 0
+                Blank       = 0
+                Effective   = 0
+                Extensions  = @{}
                 LargestFile = @{ Name = ''; Lines = 0 }
             }
 
@@ -425,10 +454,10 @@ function Invoke-CodebaseAnalysis {
     }
 
     Write-Host "   📊 Scope: $scanDescription" -ForegroundColor Gray
-    Write-Host ""
+    Write-Host ''
 
     # Step 2: Optimized File Discovery & Analysis
-    Write-Host "🔎 Discovering & analyzing files..." -ForegroundColor Cyan
+    Write-Host '🔎 Discovering & analyzing files...' -ForegroundColor Cyan
 
     $discoveryStart = Get-Date
     $allFiles = @()
@@ -443,32 +472,32 @@ function Invoke-CodebaseAnalysis {
 
         foreach ($pattern in $patterns[$category]) {
             $files = Get-ChildItem -Path $ProjectRoot -Filter $pattern -Recurse -File -ErrorAction SilentlyContinue |
-                Where-Object {
-                    $path = $_.FullName
-                    $fileName = $_.Name
-                    $excluded = $false
+            Where-Object {
+                $path = $_.FullName
+                $fileName = $_.Name
+                $excluded = $false
 
-                    # Check directory exclusions (FAST - path check) - use active exclusions
-                    foreach ($excludeDir in $activeExcludeDirs) {
-                        if ($path -like "*\$excludeDir\*" -or $path -like "*/$excludeDir/*") {
+                # Check directory exclusions (FAST - path check) - use active exclusions
+                foreach ($excludeDir in $activeExcludeDirs) {
+                    if ($path -like "*\$excludeDir\*" -or $path -like "*/$excludeDir/*") {
+                        $excluded = $true
+                        break
+                    }
+                }
+
+                # Check file-level exclusions (FAST - filename patterns) - use active exclusions
+                if (-not $excluded) {
+                    foreach ($filePattern in $activeExcludeFiles) {
+                        if ($fileName -like $filePattern) {
                             $excluded = $true
+                            $skippedCount++
                             break
                         }
                     }
-
-                    # Check file-level exclusions (FAST - filename patterns) - use active exclusions
-                    if (-not $excluded) {
-                        foreach ($filePattern in $activeExcludeFiles) {
-                            if ($fileName -like $filePattern) {
-                                $excluded = $true
-                                $skippedCount++
-                                break
-                            }
-                        }
-                    }
-
-                    -not $excluded
                 }
+
+                -not $excluded
+            }
 
             foreach ($file in $files) {
                 # Skip if already counted in Tests
@@ -478,7 +507,7 @@ function Invoke-CodebaseAnalysis {
 
                 $allFiles += [PSCustomObject]@{
                     Category = $category
-                    File = $file
+                    File     = $file
                 }
             }
         }
@@ -501,7 +530,7 @@ function Invoke-CodebaseAnalysis {
         $processedFiles++
         if ($processedFiles % 50 -eq 0 -or $processedFiles -eq $totalFiles) {
             $percent = [math]::Round(($processedFiles / $totalFiles) * 100)
-            Write-Progress -Activity "Analyzing files" -Status "$processedFiles of $totalFiles files ($percent%)" -PercentComplete $percent
+            Write-Progress -Activity 'Analyzing files' -Status "$processedFiles of $totalFiles files ($percent%)" -PercentComplete $percent
         }
 
         $content = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
@@ -525,8 +554,8 @@ function Invoke-CodebaseAnalysis {
                     foreach ($keyword in $matchedKeywords) {
                         if ($line -match [regex]::Escape($keyword)) {
                             $lineMatches += [PSCustomObject]@{
-                                LineNumber = $lineNumber
-                                Keyword = $keyword
+                                LineNumber  = $lineNumber
+                                Keyword     = $keyword
                                 LineContent = $line.Trim()
                             }
                         }
@@ -534,10 +563,10 @@ function Invoke-CodebaseAnalysis {
                 }
 
                 $searchMatches += [PSCustomObject]@{
-                    File = $file.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
-                    Category = $category
-                    Keywords = $matchedKeywords
-                    Matches = $lineMatches
+                    File         = $file.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+                    Category     = $category
+                    Keywords     = $matchedKeywords
+                    Matches      = $lineMatches
                     TotalMatches = $lineMatches.Count
                 }
             }
@@ -561,19 +590,16 @@ function Invoke-CodebaseAnalysis {
             elseif ($trimmed -match '^/\*' -or $trimmed -match '^"""' -or $trimmed -match "^'''") {
                 $inBlockComment = $true
                 $commentLines++
-            }
-            elseif ($inBlockComment -and ($trimmed -match '\*/' -or $trimmed -match '"""' -or $trimmed -match "'''")) {
+            } elseif ($inBlockComment -and ($trimmed -match '\*/' -or $trimmed -match '"""' -or $trimmed -match "'''")) {
                 $inBlockComment = $false
                 $commentLines++
-            }
-            elseif ($inBlockComment) {
+            } elseif ($inBlockComment) {
                 $commentLines++
             }
             # Single line comment
             elseif ($trimmed -match '^(//|#|<!--|-->|%|;|--|\*)' -or $trimmed -match '^\s*(//|#)') {
                 $commentLines++
-            }
-            else {
+            } else {
                 $codeLines++
             }
         }
@@ -597,9 +623,9 @@ function Invoke-CodebaseAnalysis {
         # Track largest file
         if ($totalLines -gt $metrics[$category].LargestFile.Lines) {
             $metrics[$category].LargestFile = @{
-                Name = $file.Name
+                Name  = $file.Name
                 Lines = $totalLines
-                Path = $file.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
+                Path  = $file.FullName.Replace($ProjectRoot, '').TrimStart('\', '/')
             }
         }
 
@@ -611,27 +637,27 @@ function Invoke-CodebaseAnalysis {
         $metrics.Total.Effective += $effectiveLines
     }
 
-    Write-Progress -Activity "Analyzing files" -Completed
+    Write-Progress -Activity 'Analyzing files' -Completed
 
     $discoveryTime = (Get-Date).Subtract($discoveryStart).TotalSeconds
 
-    Write-Host ""
-    Write-Host "✅ Discovery complete in " -NoNewline -ForegroundColor Green
+    Write-Host ''
+    Write-Host '✅ Discovery complete in ' -NoNewline -ForegroundColor Green
     Write-Host "$([math]::Round($discoveryTime, 1))s" -ForegroundColor White
     Write-Host "   Total files: $($metrics.Total.Files)" -ForegroundColor Gray
     Write-Host "   Total lines: $($metrics.Total.Lines.ToString('N0'))" -ForegroundColor Gray
     Write-Host "   Effective code: $($metrics.Total.Effective.ToString('N0'))" -ForegroundColor Gray
-    Write-Host ""
+    Write-Host ''
 
     # Step 3: Enhanced Complexity & Quality Analysis
-    Write-Host "🔬 Analyzing complexity & quality..." -ForegroundColor Cyan
+    Write-Host '🔬 Analyzing complexity & quality...' -ForegroundColor Cyan
 
     # Complexity scoring (enhanced)
     $complexity = @{
-        Frontend = [math]::Min(10, [math]::Ceiling(($metrics.Frontend.Lines / 1000) + ($metrics.Frontend.Files / 50)))
-        Backend = [math]::Min(10, [math]::Ceiling(($metrics.Backend.Lines / 800) + ($metrics.Backend.Files / 40)))
+        Frontend       = [math]::Min(10, [math]::Ceiling(($metrics.Frontend.Lines / 1000) + ($metrics.Frontend.Files / 50)))
+        Backend        = [math]::Min(10, [math]::Ceiling(($metrics.Backend.Lines / 800) + ($metrics.Backend.Files / 40)))
         Infrastructure = [math]::Min(10, [math]::Ceiling(($metrics.Infrastructure.Lines / 600) + ($metrics.Infrastructure.Files / 30)))
-        Overall = 0
+        Overall        = 0
     }
     $complexity.Overall = [math]::Round(($complexity.Frontend + $complexity.Backend + $complexity.Infrastructure) / 3, 1)
 
@@ -678,22 +704,22 @@ function Invoke-CodebaseAnalysis {
 
     $metrics.Quality.SecurityScore = [math]::Max(0, $securityScore)
 
-    Write-Host "✅ Quality analysis complete!" -ForegroundColor Green
+    Write-Host '✅ Quality analysis complete!' -ForegroundColor Green
     Write-Host "   Maintainability: $($metrics.Quality.Maintainability)/100" -ForegroundColor Gray
     Write-Host "   Technical Debt: $($metrics.Quality.TechnicalDebt) days" -ForegroundColor Gray
     Write-Host "   Security Score: $($metrics.Quality.SecurityScore)/100" -ForegroundColor Gray
-    Write-Host ""
+    Write-Host ''
 
     # Step 4: Enhanced Time & Cost Estimation
     Write-Host "💰 Calculating estimates (region: $($regionInfo.Name))..." -ForegroundColor Cyan
 
     $baseRates = @{
-        Junior = @{ LinesPerDay = 100; HourlyRate = 25 }
-        Mid = @{ LinesPerDay = 200; HourlyRate = 50 }
-        Senior = @{ LinesPerDay = 300; HourlyRate = 100 }
-        SmallTeam = @{ LinesPerDay = 400; DailyRate = 1200 }
+        Junior     = @{ LinesPerDay = 100; HourlyRate = 25 }
+        Mid        = @{ LinesPerDay = 200; HourlyRate = 50 }
+        Senior     = @{ LinesPerDay = 300; HourlyRate = 100 }
+        SmallTeam  = @{ LinesPerDay = 400; DailyRate = 1200 }
         MediumTeam = @{ LinesPerDay = 700; DailyRate = 2500 }
-        LargeTeam = @{ LinesPerDay = 1000; DailyRate = 5000 }
+        LargeTeam  = @{ LinesPerDay = 1000; DailyRate = 5000 }
     }
 
     $estimates = @{}
@@ -714,34 +740,34 @@ function Invoke-CodebaseAnalysis {
         $worstCase = [math]::Ceiling($days * 1.5)   # 50% buffer
 
         $est = @{
-            Name = if ($key -match 'Team') { "$key" } else { "$key Developer" }
+            Name        = if ($key -match 'Team') { "$key" } else { "$key Developer" }
             LinesPerDay = $rate.LinesPerDay
-            Days = @{
-                Best = $bestCase
+            Days        = @{
+                Best   = $bestCase
                 Likely = $likelyCase
-                Worst = $worstCase
+                Worst  = $worstCase
             }
-            Hours = @{
-                Best = $bestCase * 8
+            Hours       = @{
+                Best   = $bestCase * 8
                 Likely = $likelyCase * 8
-                Worst = $worstCase * 8
+                Worst  = $worstCase * 8
             }
-            Weeks = @{
-                Best = [math]::Round($bestCase / 5, 1)
+            Weeks       = @{
+                Best   = [math]::Round($bestCase / 5, 1)
                 Likely = [math]::Round($likelyCase / 5, 1)
-                Worst = [math]::Round($worstCase / 5, 1)
+                Worst  = [math]::Round($worstCase / 5, 1)
             }
-            Months = @{
-                Best = [math]::Round($bestCase / 22, 1)
+            Months      = @{
+                Best   = [math]::Round($bestCase / 22, 1)
                 Likely = [math]::Round($likelyCase / 22, 1)
-                Worst = [math]::Round($worstCase / 22, 1)
+                Worst  = [math]::Round($worstCase / 22, 1)
             }
-            Cost = @{
-                Best = 0
+            Cost        = @{
+                Best   = 0
                 Likely = 0
-                Worst = 0
+                Worst  = 0
             }
-            Rate = $adjustedRate
+            Rate        = $adjustedRate
         }
 
         # Calculate costs
@@ -765,24 +791,24 @@ function Invoke-CodebaseAnalysis {
         Year5 = [math]::Round($estimates.Mid.Cost.Likely * 0.75)  # 75% cumulative
     }
 
-    Write-Host "✅ Estimates calculated!" -ForegroundColor Green
-    Write-Host ""
+    Write-Host '✅ Estimates calculated!' -ForegroundColor Green
+    Write-Host ''
 
     # SEARCH MODE: Display Results
     if ($ScanMode -eq 'Search' -and $searchMatches.Count -gt 0) {
-        Write-Host "🔍 SEARCH RESULTS" -ForegroundColor Cyan
-        Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Blue
-        Write-Host ""
-        Write-Host "Found " -NoNewline
+        Write-Host '🔍 SEARCH RESULTS' -ForegroundColor Cyan
+        Write-Host '═══════════════════════════════════════════════════════════════' -ForegroundColor Blue
+        Write-Host ''
+        Write-Host 'Found ' -NoNewline
         Write-Host "$($searchMatches.Count)" -NoNewline -ForegroundColor Yellow
-        Write-Host " files with matches for keywords: " -NoNewline
+        Write-Host ' files with matches for keywords: ' -NoNewline
         Write-Host ($SearchKeywords -join ', ') -ForegroundColor Yellow
-        Write-Host ""
+        Write-Host ''
 
         $totalMatches = ($searchMatches | Measure-Object -Property TotalMatches -Sum).Sum
-        Write-Host "Total matches: " -NoNewline
+        Write-Host 'Total matches: ' -NoNewline
         Write-Host $totalMatches -ForegroundColor Yellow
-        Write-Host ""
+        Write-Host ''
 
         # Group by keyword
         $keywordStats = @{}
@@ -795,22 +821,22 @@ function Invoke-CodebaseAnalysis {
             }
         }
 
-        Write-Host "Keyword breakdown:" -ForegroundColor Cyan
+        Write-Host 'Keyword breakdown:' -ForegroundColor Cyan
         foreach ($keyword in ($keywordStats.Keys | Sort-Object)) {
             Write-Host "  • $keyword" -NoNewline -ForegroundColor White
             Write-Host ": $($keywordStats[$keyword]) matches" -ForegroundColor Gray
         }
-        Write-Host ""
+        Write-Host ''
 
         # Display detailed results
-        Write-Host "Detailed results:" -ForegroundColor Cyan
+        Write-Host 'Detailed results:' -ForegroundColor Cyan
         foreach ($match in ($searchMatches | Sort-Object -Property TotalMatches -Descending | Select-Object -First 20)) {
-            Write-Host ""
-            Write-Host "  📄 " -NoNewline -ForegroundColor Yellow
+            Write-Host ''
+            Write-Host '  📄 ' -NoNewline -ForegroundColor Yellow
             Write-Host $match.File -ForegroundColor White
-            Write-Host "     Category: " -NoNewline -ForegroundColor Gray
+            Write-Host '     Category: ' -NoNewline -ForegroundColor Gray
             Write-Host $match.Category -NoNewline -ForegroundColor Cyan
-            Write-Host " | Matches: " -NoNewline -ForegroundColor Gray
+            Write-Host ' | Matches: ' -NoNewline -ForegroundColor Gray
             Write-Host $match.TotalMatches -ForegroundColor Yellow
 
             # Show first 5 matches per file
@@ -829,20 +855,20 @@ function Invoke-CodebaseAnalysis {
         }
 
         if ($searchMatches.Count -gt 20) {
-            Write-Host ""
+            Write-Host ''
             Write-Host "  ... and $($searchMatches.Count - 20) more files" -ForegroundColor Gray
         }
 
-        Write-Host ""
-        Write-Host "═══════════════════════════════════════════════════════════════" -ForegroundColor Blue
-        Write-Host ""
+        Write-Host ''
+        Write-Host '═══════════════════════════════════════════════════════════════' -ForegroundColor Blue
+        Write-Host ''
     }
 
     # Step 5: Generate Enhanced Reports
-    Write-Host "📝 Generating reports..." -ForegroundColor Cyan
+    Write-Host '📝 Generating reports...' -ForegroundColor Cyan
 
-    $timestamp = Get-Date -Format "yyyy-MM-dd_HHmmss"
-    $reportDir = Join-Path $ProjectRoot "docs\analysis"
+    $timestamp = Get-Date -Format 'yyyy-MM-dd_HHmmss'
+    $reportDir = Join-Path $ProjectRoot 'docs\analysis'
     if (-not (Test-Path $reportDir)) {
         New-Item -ItemType Directory -Path $reportDir -Force | Out-Null
     }
@@ -865,14 +891,14 @@ function Invoke-CodebaseAnalysis {
     if ($OutputFormat -eq 'json' -or $OutputFormat -eq 'all') {
         $jsonPath = Join-Path $reportDir "$reportBaseName.json"
         $jsonData = @{
-            analysis_id = $analysisId
-            timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-            version = "2.0.0"
-            region = $Region
-            metrics = $metrics
-            estimates = $estimates
-            complexity = $complexity
-            test_coverage = $testCoverage
+            analysis_id       = $analysisId
+            timestamp         = Get-Date -Format 'yyyy-MM-ddTHH:mm:ss'
+            version           = '2.0.0'
+            region            = $Region
+            metrics           = $metrics
+            estimates         = $estimates
+            complexity        = $complexity
+            test_coverage     = $testCoverage
             maintenance_costs = $maintenanceCosts
         }
         $jsonData | ConvertTo-Json -Depth 10 | Out-File -FilePath $jsonPath -Encoding UTF8
@@ -889,100 +915,100 @@ function Invoke-CodebaseAnalysis {
         Write-Host "   ✓ CSV: $csvPath" -ForegroundColor Gray
     }
 
-    Write-Host "✅ Reports generated!" -ForegroundColor Green
-    Write-Host ""
+    Write-Host '✅ Reports generated!' -ForegroundColor Green
+    Write-Host ''
 
     # Step 6: Display Enhanced Summary
     $endTime = Get-Date
     $duration = $endTime.Subtract($startTime).TotalSeconds
 
     Write-Host "`n╔═══════════════════════════════════════════════════════════════╗" -ForegroundColor Green
-    Write-Host "║         ✅  CODEBASE ANALYSIS V2.0 COMPLETE                   ║" -ForegroundColor Green
+    Write-Host '║         ✅  CODEBASE ANALYSIS V2.0 COMPLETE                   ║' -ForegroundColor Green
     Write-Host "╚═══════════════════════════════════════════════════════════════╝`n" -ForegroundColor Green
 
-    Write-Host "📊 Summary:" -ForegroundColor Cyan
-    Write-Host "   • Total Files: " -NoNewline; Write-Host $metrics.Total.Files.ToString('N0') -ForegroundColor White
-    Write-Host "   • Lines of Code: " -NoNewline; Write-Host $metrics.Total.Lines.ToString('N0') -ForegroundColor White
-    Write-Host "   • Effective Code: " -NoNewline; Write-Host $metrics.Total.Effective.ToString('N0') -ForegroundColor White
-    Write-Host "   • Test Coverage: " -NoNewline; Write-Host "~$testCoverage%" -ForegroundColor White
-    Write-Host "   • Maintainability: " -NoNewline; Write-Host "$($metrics.Quality.Maintainability)/100" -ForegroundColor $(if ($metrics.Quality.Maintainability -ge 70) { 'Green' } elseif ($metrics.Quality.Maintainability -ge 50) { 'Yellow' } else { 'Red' })
-    Write-Host "   • Technical Debt: " -NoNewline; Write-Host "$($metrics.Quality.TechnicalDebt) days" -ForegroundColor Yellow
-    Write-Host ""
+    Write-Host '📊 Summary:' -ForegroundColor Cyan
+    Write-Host '   • Total Files: ' -NoNewline; Write-Host $metrics.Total.Files.ToString('N0') -ForegroundColor White
+    Write-Host '   • Lines of Code: ' -NoNewline; Write-Host $metrics.Total.Lines.ToString('N0') -ForegroundColor White
+    Write-Host '   • Effective Code: ' -NoNewline; Write-Host $metrics.Total.Effective.ToString('N0') -ForegroundColor White
+    Write-Host '   • Test Coverage: ' -NoNewline; Write-Host "~$testCoverage%" -ForegroundColor White
+    Write-Host '   • Maintainability: ' -NoNewline; Write-Host "$($metrics.Quality.Maintainability)/100" -ForegroundColor $(if ($metrics.Quality.Maintainability -ge 70) { 'Green' } elseif ($metrics.Quality.Maintainability -ge 50) { 'Yellow' } else { 'Red' })
+    Write-Host '   • Technical Debt: ' -NoNewline; Write-Host "$($metrics.Quality.TechnicalDebt) days" -ForegroundColor Yellow
+    Write-Host ''
 
-    Write-Host "📈 Git Insights:" -ForegroundColor Cyan
+    Write-Host '📈 Git Insights:' -ForegroundColor Cyan
     if ($metrics.Git.Commits -gt 0) {
-        Write-Host "   • Commits: " -NoNewline; Write-Host $metrics.Git.Commits -ForegroundColor White
-        Write-Host "   • Contributors: " -NoNewline; Write-Host $metrics.Git.Contributors -ForegroundColor White
-        Write-Host "   • Last Commit: " -NoNewline; Write-Host $metrics.Git.LastCommit -ForegroundColor White
-        Write-Host "   • 30-Day Churn: " -NoNewline; Write-Host "$($metrics.Git.Churn) files" -ForegroundColor White
+        Write-Host '   • Commits: ' -NoNewline; Write-Host $metrics.Git.Commits -ForegroundColor White
+        Write-Host '   • Contributors: ' -NoNewline; Write-Host $metrics.Git.Contributors -ForegroundColor White
+        Write-Host '   • Last Commit: ' -NoNewline; Write-Host $metrics.Git.LastCommit -ForegroundColor White
+        Write-Host '   • 30-Day Churn: ' -NoNewline; Write-Host "$($metrics.Git.Churn) files" -ForegroundColor White
     } else {
-        Write-Host "   • Not a Git repository" -ForegroundColor Gray
+        Write-Host '   • Not a Git repository' -ForegroundColor Gray
     }
-    Write-Host ""
+    Write-Host ''
 
     Write-Host "⏱️  Time Estimates ($($regionInfo.Name)):" -ForegroundColor Cyan
-    Write-Host "   • Mid-Level Developer:" -ForegroundColor Yellow
+    Write-Host '   • Mid-Level Developer:' -ForegroundColor Yellow
     Write-Host "     └─ Best: $($estimates.Mid.Months.Best)mo • Likely: $($estimates.Mid.Months.Likely)mo • Worst: $($estimates.Mid.Months.Worst)mo" -ForegroundColor Gray
-    Write-Host "   • Small Team (2-3):" -ForegroundColor Green
+    Write-Host '   • Small Team (2-3):' -ForegroundColor Green
     Write-Host "     └─ Best: $($estimates.SmallTeam.Months.Best)mo • Likely: $($estimates.SmallTeam.Months.Likely)mo • Worst: $($estimates.SmallTeam.Months.Worst)mo" -ForegroundColor Gray
-    Write-Host ""
+    Write-Host ''
 
-    Write-Host "💰 Cost Estimates:" -ForegroundColor Cyan
+    Write-Host '💰 Cost Estimates:' -ForegroundColor Cyan
     Write-Host "   • Mid-Level: `$$($estimates.Mid.Cost.Likely.ToString('N0')) (likely)" -ForegroundColor White
     Write-Host "   • Small Team: `$$($estimates.SmallTeam.Cost.Likely.ToString('N0')) (likely) " -NoNewline -ForegroundColor Green
-    Write-Host "✅ RECOMMENDED" -ForegroundColor Green
-    Write-Host ""
+    Write-Host '✅ RECOMMENDED' -ForegroundColor Green
+    Write-Host ''
 
-    Write-Host "🔧 Maintenance Costs:" -ForegroundColor Cyan
+    Write-Host '🔧 Maintenance Costs:' -ForegroundColor Cyan
     Write-Host "   • Year 1: `$$($maintenanceCosts.Year1.ToString('N0'))" -ForegroundColor Gray
     Write-Host "   • Year 3: `$$($maintenanceCosts.Year3.ToString('N0')) (cumulative)" -ForegroundColor Gray
     Write-Host "   • Year 5: `$$($maintenanceCosts.Year5.ToString('N0')) (cumulative)" -ForegroundColor Gray
-    Write-Host ""
+    Write-Host ''
 
-    Write-Host "📄 Reports Generated:" -ForegroundColor Cyan
+    Write-Host '📄 Reports Generated:' -ForegroundColor Cyan
     foreach ($format in $reportPaths.Keys) {
         Write-Host "   • $($format.ToUpper()): " -NoNewline -ForegroundColor Gray
         Write-Host $reportPaths[$format] -ForegroundColor Yellow
     }
-    Write-Host ""
+    Write-Host ''
 
     # Enhanced Performance Summary
-    Write-Host "⚡ PERFORMANCE SUMMARY:" -ForegroundColor Cyan
-    Write-Host "   • Total Time: " -NoNewline; Write-Host "$([math]::Round($duration, 2))s" -ForegroundColor $(if ($duration -lt 60) { 'Green' } elseif ($duration -lt 120) { 'Yellow' } else { 'Red' })
-    Write-Host "   • Files Analyzed: " -NoNewline; Write-Host "$($metrics.Total.Files)" -ForegroundColor White
-    Write-Host "   • Files Skipped: " -NoNewline; Write-Host "$skippedCount (archives/legacy)" -ForegroundColor Gray
-    Write-Host "   • Analysis Speed: " -NoNewline; Write-Host "$([math]::Round($metrics.Total.Files / $duration, 1)) files/sec" -ForegroundColor Cyan
-    Write-Host "   • Phase Breakdown:" -ForegroundColor Gray
+    Write-Host '⚡ PERFORMANCE SUMMARY:' -ForegroundColor Cyan
+    Write-Host '   • Total Time: ' -NoNewline; Write-Host "$([math]::Round($duration, 2))s" -ForegroundColor $(if ($duration -lt 60) { 'Green' } elseif ($duration -lt 120) { 'Yellow' } else { 'Red' })
+    Write-Host '   • Files Analyzed: ' -NoNewline; Write-Host "$($metrics.Total.Files)" -ForegroundColor White
+    Write-Host '   • Files Skipped: ' -NoNewline; Write-Host "$skippedCount (archives/legacy)" -ForegroundColor Gray
+    Write-Host '   • Analysis Speed: ' -NoNewline; Write-Host "$([math]::Round($metrics.Total.Files / $duration, 1)) files/sec" -ForegroundColor Cyan
+    Write-Host '   • Phase Breakdown:' -ForegroundColor Gray
     Write-Host "     └─ File Discovery: $(([math]::Round($discoveryTime / $duration * 100)))%" -ForegroundColor Gray
     Write-Host "     └─ Code Analysis: $(100 - [math]::Round($discoveryTime / $duration * 100))%" -ForegroundColor Gray
 
     if ($UseCache) {
-        Write-Host "   • Cache: " -NoNewline; Write-Host "Enabled" -ForegroundColor Green
+        Write-Host '   • Cache: ' -NoNewline; Write-Host 'Enabled' -ForegroundColor Green
     }
 
     # Performance rating
-    $perfRating = if ($duration -lt 30) { "⚡ Blazing Fast" }
-                  elseif ($duration -lt 60) { "✅ Fast" }
-                  elseif ($duration -lt 120) { "⚠️  Normal" }
-                  else { "❌ Slow (consider optimizing exclusions)" }
-    Write-Host "   • Rating: " -NoNewline; Write-Host $perfRating -ForegroundColor $(if ($duration -lt 60) { 'Green' } else { 'Yellow' })
-    Write-Host ""
+    $perfRating = if ($duration -lt 30) { '⚡ Blazing Fast' }
+    elseif ($duration -lt 60) { '✅ Fast' }
+    elseif ($duration -lt 120) { '⚠️  Normal' }
+    else { '❌ Slow (consider optimizing exclusions)' }
+    Write-Host '   • Rating: ' -NoNewline; Write-Host $perfRating -ForegroundColor $(if ($duration -lt 60) { 'Green' } else { 'Yellow' })
+    Write-Host ''
 
-    Write-Host "✅ Analysis complete!" -ForegroundColor Green
-    Write-Host ""
+    Write-Host '✅ Analysis complete!' -ForegroundColor Green
+    Write-Host ''
 
     # Return summary object for programmatic use
     return @{
-        AnalysisId = $analysisId
-        Duration = $duration
-        FilesAnalyzed = $metrics.Total.Files
-        FilesSkipped = $skippedCount
+        AnalysisId        = $analysisId
+        Duration          = $duration
+        FilesAnalyzed     = $metrics.Total.Files
+        FilesSkipped      = $skippedCount
         PerformanceRating = $perfRating
-        Metrics = $metrics
-        Estimates = $estimates
-        Complexity = $complexity
-        TestCoverage = $testCoverage
-        ReportPaths = $reportPaths
+        Metrics           = $metrics
+        Estimates         = $estimates
+        Complexity        = $complexity
+        TestCoverage      = $testCoverage
+        ReportPaths       = $reportPaths
     }
 }
 
@@ -995,7 +1021,7 @@ function Generate-MarkdownReport {
     return @"
 # 📊 Codebase Analysis & Estimation Report V2.0
 
-**Generated**: $(Get-Date -Format "MMMM dd, yyyy HH:mm:ss")
+**Generated**: $(Get-Date -Format 'MMMM dd, yyyy HH:mm:ss')
 **Analysis ID**: $AnalysisId
 **Project**: Lokifi
 **Region**: $($RegionInfo.Name) ($(if ($RegionInfo.Multiplier -eq 1) { '100%' } else { "$($RegionInfo.Multiplier * 100)%" }) of US rates)
@@ -1032,7 +1058,7 @@ $(if ($Metrics.Git.Commits -gt 0) {@"
 | **Avg Commits/Contributor** | $([math]::Round($Metrics.Git.Commits / $Metrics.Git.Contributors)) |
 
 **Health Indicator**: $(if ($Metrics.Git.Commits -gt 500 -and $Metrics.Git.Contributors -gt 2) { '✅ Mature project with active development' } elseif ($Metrics.Git.Commits -gt 100) { '⚠️ Growing project' } else { '🆕 Early stage project' })
-"@} else { "Not a Git repository or Git analysis unavailable." })
+"@} else { 'Not a Git repository or Git analysis unavailable.' })
 
 ---
 
@@ -1095,9 +1121,9 @@ $(if ($Metrics.Git.TotalDays -gt 0) {@"
    - Senior: ~`$$([math]::Round(100 * $RegionInfo.Multiplier * $Metrics.Git.EstimatedWorkHours).ToString('N0'))
 5. **Productivity**: $(if ($Metrics.Git.AvgCommitsPerDay -gt 20) { 'Very high commit frequency suggests rapid iteration' } elseif ($Metrics.Git.AvgCommitsPerDay -gt 10) { 'Healthy commit frequency with good progress' } else { 'Lower commit frequency, possibly larger changes per commit' })
 
-"@} else { @"
+"@} else { @'
 **Timeline analysis unavailable** - Not a Git repository or insufficient commit history.
-"@ })
+'@ })
 
 ---
 
@@ -1452,15 +1478,15 @@ $largeTeamCostSaved = $largeTeamCost - $largeTeamCostCodeOnly
 ## 🎯 Quality Metrics Explained
 
 ### Maintainability Index: $($Metrics.Quality.Maintainability)/100
-$(if ($Metrics.Quality.Maintainability -ge 70) {@"
+$(if ($Metrics.Quality.Maintainability -ge 70) {@'
 ✅ **Excellent** - Code is well-structured, documented, and easy to maintain
-"@} elseif ($Metrics.Quality.Maintainability -ge 50) {@"
+'@} elseif ($Metrics.Quality.Maintainability -ge 50) {@'
 ⚠️ **Fair** - Some areas need improvement (documentation, testing, or complexity)
 **Recommendations**:
 - Increase code comments (target: 15%+)
 - Improve test coverage (target: 70%+)
 - Refactor large files (target: <200 lines/file average)
-"@} else {@"
+'@} else {@"
 ❌ **Poor** - Significant maintainability issues detected
 **Critical Actions Required**:
 1. Add comprehensive comments and documentation
@@ -1470,9 +1496,9 @@ $(if ($Metrics.Quality.Maintainability -ge 70) {@"
 "@})
 
 ### Technical Debt: $($Metrics.Quality.TechnicalDebt) days
-$(if ($Metrics.Quality.TechnicalDebt -lt 30) {@"
+$(if ($Metrics.Quality.TechnicalDebt -lt 30) {@'
 ✅ **Low** - Minimal technical debt, project is healthy
-"@} elseif ($Metrics.Quality.TechnicalDebt -lt 60) {@"
+'@} elseif ($Metrics.Quality.TechnicalDebt -lt 60) {@"
 ⚠️ **Moderate** - Some technical debt accumulation
 **Estimated effort to resolve**: $($Metrics.Quality.TechnicalDebt) developer-days (~$([math]::Round($Metrics.Quality.TechnicalDebt / 22, 1)) months)
 "@} else {@"
@@ -1482,18 +1508,18 @@ $(if ($Metrics.Quality.TechnicalDebt -lt 30) {@"
 "@})
 
 ### Security Score: $($Metrics.Quality.SecurityScore)/100
-$(if ($Metrics.Quality.SecurityScore -ge 80) {@"
+$(if ($Metrics.Quality.SecurityScore -ge 80) {@'
 ✅ **Strong** - Good security practices detected
-"@} elseif ($Metrics.Quality.SecurityScore -ge 60) {@"
+'@} elseif ($Metrics.Quality.SecurityScore -ge 60) {@'
 ⚠️ **Adequate** - Basic security measures in place, room for improvement
-"@} else {@"
+'@} else {@'
 ❌ **Weak** - Security improvements strongly recommended
 **Actions**:
 - Add security scanning tools
 - Implement comprehensive testing
 - Document security procedures
 - Review infrastructure configurations
-"@})
+'@})
 
 ---
 
@@ -1504,10 +1530,10 @@ $(if ($Metrics.Quality.SecurityScore -ge 80) {@"
 2. **Timeline**: Plan for $($Estimates.SmallTeam.Months.Likely) months (likely case)
 3. **Budget**: Allocate `$$($Estimates.SmallTeam.Cost.Likely.ToString('N0')) + 20% contingency
 4. **Focus Areas**:
-   - $(if ($TestCoverage -lt 50) { "⚠️ Increase test coverage to 70%+" } else { "✅ Maintain current test coverage" })
-   - $(if (($Metrics.Total.Comments / $Metrics.Total.Lines) -lt 0.15) { "⚠️ Improve code documentation" } else { "✅ Documentation is adequate" })
-   - $(if ($Metrics.Quality.TechnicalDebt -gt 30) { "⚠️ Address technical debt ($($Metrics.Quality.TechnicalDebt) days)" } else { "✅ Technical debt is manageable" })
-   - $(if ($Metrics.Quality.SecurityScore -lt 80) { "⚠️ Enhance security measures" } else { "✅ Security practices are strong" })
+   - $(if ($TestCoverage -lt 50) { '⚠️ Increase test coverage to 70%+' } else { '✅ Maintain current test coverage' })
+   - $(if (($Metrics.Total.Comments / $Metrics.Total.Lines) -lt 0.15) { '⚠️ Improve code documentation' } else { '✅ Documentation is adequate' })
+   - $(if ($Metrics.Quality.TechnicalDebt -gt 30) { "⚠️ Address technical debt ($($Metrics.Quality.TechnicalDebt) days)" } else { '✅ Technical debt is manageable' })
+   - $(if ($Metrics.Quality.SecurityScore -lt 80) { '⚠️ Enhance security measures' } else { '✅ Security practices are strong' })
 
 ---
 
@@ -1530,7 +1556,7 @@ $(if ($Metrics.Quality.SecurityScore -ge 80) {@"
 
 ---
 
-**Report Generated**: $(Get-Date -Format "yyyy-MM-ddTHH:mm:ss")
+**Report Generated**: $(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss')
 **Analysis Tool**: Lokifi Codebase Analyzer v2.0
 **Total Analysis Time**: $([math]::Round($duration, 2)) seconds
 **Performance**: $(if ($duration -lt 60) { '⚡ Fast' } elseif ($duration -lt 120) { '✅ Normal' } else { '⚠️ Slow' })
@@ -1549,15 +1575,15 @@ function Generate-CSVReport {
     foreach ($key in $Estimates.Keys) {
         $est = $Estimates[$key]
         $csvData += [PSCustomObject]@{
-            'Team Type' = $est.Name
-            'Region' = $RegionInfo.Name
-            'Best Case (months)' = $est.Months.Best
+            'Team Type'            = $est.Name
+            'Region'               = $RegionInfo.Name
+            'Best Case (months)'   = $est.Months.Best
             'Likely Case (months)' = $est.Months.Likely
-            'Worst Case (months)' = $est.Months.Worst
-            'Best Case Cost' = $est.Cost.Best
-            'Likely Case Cost' = $est.Cost.Likely
-            'Worst Case Cost' = $est.Cost.Worst
-            'Recommendation' = if ($key -eq 'SmallTeam') { 'RECOMMENDED' } else { '' }
+            'Worst Case (months)'  = $est.Months.Worst
+            'Best Case Cost'       = $est.Cost.Best
+            'Likely Case Cost'     = $est.Cost.Likely
+            'Worst Case Cost'      = $est.Cost.Worst
+            'Recommendation'       = if ($key -eq 'SmallTeam') { 'RECOMMENDED' } else { '' }
         }
     }
     return $csvData

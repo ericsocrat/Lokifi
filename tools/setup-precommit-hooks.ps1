@@ -24,15 +24,35 @@
 param(
     [switch]$Strict,        # Strict mode - block on any quality gate failure
     [switch]$UninstallHooks, # Remove existing hooks
-    [int]$CoverageThreshold = 15  # Minimum coverage to allow commits
+    [int]$CoverageThreshold = 15,  # Minimum coverage to allow commits
+    [switch]$CIMode,        # CI/CD mode - output machine-readable JSON
+    [switch]$DryRun         # Dry run - preview hook installation without creating files
 )
 
 $ErrorActionPreference = 'Continue'
 
-Write-Host ''
-Write-Host '🪝 PRE-COMMIT HOOKS SETUP' -ForegroundColor Cyan
-Write-Host '=' * 50 -ForegroundColor Gray
-Write-Host ''
+# Import common functions for CI mode
+if ($CIMode) {
+    $modulePath = Join-Path $PSScriptRoot 'lib\Common-Functions.ps1'
+    if (Test-Path $modulePath) {
+        Import-Module $modulePath -Force -ErrorAction SilentlyContinue
+    }
+}
+
+$startTime = Get-Date
+
+# Skip header in CI mode
+if (-not $CIMode) {
+    Write-Host ''
+    Write-Host '🪝 PRE-COMMIT HOOKS SETUP' -ForegroundColor Cyan
+    Write-Host '=' * 50 -ForegroundColor Gray
+    Write-Host ''
+
+    if ($DryRun) {
+        Write-Host '🔍 DRY RUN MODE - Preview hook installation without creating files' -ForegroundColor Yellow
+        Write-Host ''
+    }
+}
 
 # Resolve repository root (actual Git root, not the tools folder)
 function Get-GitRoot {
@@ -153,18 +173,24 @@ fi
 "@
 
 $preCommitPath = Join-Path $gitHooksDir 'pre-commit'
-$preCommitHook | Out-File -FilePath $preCommitPath -Encoding UTF8 -NoNewline
 
-# Make hook executable (Windows - no chmod needed, but set for cross-platform)
-try {
-    if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
-        & chmod +x $preCommitPath
+if ($DryRun) {
+    Write-Host "   🔍 Would create: $preCommitPath" -ForegroundColor Yellow
+    Write-Host "      Content: $($preCommitHook.Length) characters" -ForegroundColor Gray
+} else {
+    $preCommitHook | Out-File -FilePath $preCommitPath -Encoding UTF8 -NoNewline
+
+    # Make hook executable (Windows - no chmod needed, but set for cross-platform)
+    try {
+        if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
+            & chmod +x $preCommitPath
+        }
+    } catch {
+        # Ignore chmod errors on Windows
     }
-} catch {
-    # Ignore chmod errors on Windows
-}
 
-Write-Host '   ✅ Created pre-commit hook' -ForegroundColor Green
+    Write-Host '   ✅ Created pre-commit hook' -ForegroundColor Green
+}
 
 # ============================================
 # CREATE PRE-PUSH HOOK
@@ -238,7 +264,12 @@ fi
 "@
 
 $prePushPath = Join-Path $gitHooksDir 'pre-push'
-$prePushHook | Out-File -FilePath $prePushPath -Encoding UTF8 -NoNewline
+
+if ($DryRun) {
+    Write-Host "   🔍 Would create: $prePushPath" -ForegroundColor Yellow
+} else {
+    $prePushHook | Out-File -FilePath $prePushPath -Encoding UTF8 -NoNewline
+}
 
 try {
     if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
@@ -312,7 +343,12 @@ fi
 "@
 
 $commitMsgPath = Join-Path $gitHooksDir 'commit-msg'
-$commitMsgHook | Out-File -FilePath $commitMsgPath -Encoding UTF8 -NoNewline
+
+if ($DryRun) {
+    Write-Host "   🔍 Would create: $commitMsgPath" -ForegroundColor Yellow
+} else {
+    $commitMsgHook | Out-File -FilePath $commitMsgPath -Encoding UTF8 -NoNewline
+}
 
 try {
     if (Get-Command 'chmod' -ErrorAction SilentlyContinue) {
@@ -485,6 +521,40 @@ if ($testPassed -eq $totalTests) {
     Write-Host '   git push --no-verify                                         # Skip pre-push' -ForegroundColor Gray
 } else {
     Write-Host '⚠️  Some hooks failed to install. Check file permissions.' -ForegroundColor Yellow
+}
+
+# CI/CD mode output
+if ($CIMode) {
+    $endTime = Get-Date
+    $duration = ($endTime - $startTime).TotalMilliseconds
+
+    $success = ($testPassed -eq $totalTests)
+    $warnings = @()
+    $errors = @()
+
+    if (-not $success) {
+        $errors += "$($totalTests - $testPassed) hook(s) failed to install"
+    }
+
+    $results = @{
+        hooks_installed    = $testPassed
+        hooks_total        = $totalTests
+        strict_mode        = $Strict.IsPresent
+        coverage_threshold = $CoverageThreshold
+        uninstalled        = $UninstallHooks.IsPresent
+    }
+
+    $output = New-CIModeOutput `
+        -ToolName 'setup-precommit-hooks' `
+        -Success $success `
+        -Results $results `
+        -Errors $errors `
+        -Warnings $warnings
+
+    $output.duration_ms = [math]::Round($duration, 2)
+    $output | ConvertTo-Json -Depth 10 | Write-Host
+
+    exit $output.exit_code
 }
 
 Write-Host ''
