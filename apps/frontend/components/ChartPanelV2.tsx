@@ -413,7 +413,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       pluginManager.setEnv({ chart, candle: candleSeries, canvas, snap: nearestSnap });
     }
 
-    // Global chart references for external access
+    // Global chart references for external access (debugging and plugin API)
+    // any required: Window global extensions for plugin system
     (window as any).__lokifiChart = chart;
     (window as any).__lokifiCandle = candleSeries;
 
@@ -433,6 +434,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     const pss: any = (globalThis as any).pluginSettingsStore; // any required: Dynamic plugin system
     const pssym: any = (globalThis as any).pluginSymbolSettings; // any required: Dynamic plugin system
 
+    // any required: Window global extension for plugin settings API
     (window as any).__lokifiApplySymbolSettings = () => {
       try {
         const s = pss?.get?.();
@@ -448,6 +450,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
     };
 
+    // any required: Window global extension for plugin settings API
     (window as any).__lokifiClearSymbolSettings = () => {
       try {
         pssym?.clear?.(sym, tf);
@@ -457,6 +460,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     };
 
     return () => {
+      // any required: Cleanup window global extensions
       delete (window as any).__lokifiApplySymbolSettings;
       delete (window as any).__lokifiClearSymbolSettings;
     };
