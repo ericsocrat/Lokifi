@@ -27,11 +27,9 @@ htmlcov/
 test-results/
 **/test-results/
 
-# Tool baselines (local metrics history)
-.tool-baselines/
-
-# Tool cache (local result caching)
-.tool-cache/
+# Tool data (stored in tools/ directory)
+tools/.baselines/
+tools/.cache/
 
 # Env & secrets
 .env

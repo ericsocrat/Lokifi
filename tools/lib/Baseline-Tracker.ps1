@@ -20,7 +20,8 @@ function Get-BaselineDirectory {
     .SYNOPSIS
     Get or create the baseline storage directory
     #>
-    $baselineDir = Join-Path $PSScriptRoot '..\..\..\.tool-baselines'
+    # Store in tools/.baselines/ directory
+    $baselineDir = Join-Path $PSScriptRoot '..\.baselines'
     if (-not (Test-Path $baselineDir)) {
         New-Item -ItemType Directory -Path $baselineDir -Force | Out-Null
     }

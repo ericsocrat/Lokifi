@@ -166,7 +166,7 @@ Write-Host "  📊 Results: $testsPassed passed, $testsFailed failed`n" -Foregro
 
 # Cleanup test files
 Write-Host '  🧹 Cleaning up test files...' -ForegroundColor Gray
-$testDir = Join-Path $PSScriptRoot '..\..\..\..\.tool-baselines\test-runner'
+$testDir = Join-Path $PSScriptRoot '..\.baselines\test-runner'
 if (Test-Path $testDir) {
     Get-ChildItem -Path $testDir -Filter 'test-category*' | Remove-Item -Force
 }
