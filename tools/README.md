@@ -12,6 +12,15 @@ tools/
 ├── codebase-analyzer.ps1        # Project metrics, cost estimates & technical debt analysis
 ├── security-scanner.ps1         # Security vulnerability scanning & secret detection
 ├── setup-precommit-hooks.ps1    # Git pre-commit hook setup & bypass management
+├── lib/                         # Shared library modules
+│   ├── Common-Functions.ps1     # Shared utilities (logging, CI/CD output, config)
+│   ├── Baseline-Tracker.ps1     # Metrics history tracking & comparison
+│   └── Cache-Manager.ps1        # Result caching for faster repeated runs
+├── tests/                       # Tool test suites
+│   ├── Test-Baseline-Tracker.ps1
+│   └── Test-Cache-Manager.ps1
+├── .baselines/                  # Tool metrics history (gitignored)
+├── .cache/                      # Tool result cache (gitignored)
 └── README.md                    # This file
 ```
 
@@ -155,6 +164,36 @@ Git pre-commit hook setup with bypass functionality
 - Automated code quality checks
 - Bypass mode for emergency commits
 - Integrated with Husky (frontend)
+
+---
+
+## 🔧 Tool Enhancements (Phase 2 Complete)
+
+### **Baseline Tracking** (`lib/Baseline-Tracker.ps1`)
+Tracks tool metrics over time for performance monitoring:
+- Save/retrieve baseline metrics (test counts, execution time, coverage)
+- Compare current vs. historical baselines
+- Detect improvements and regressions
+- Storage: `tools/.baselines/<tool-name>/`
+
+### **Result Caching** (`lib/Cache-Manager.ps1`)
+Speeds up repeated tool runs with intelligent caching:
+- MD5-based dependency tracking
+- Configurable cache expiration (MaxAge)
+- Automatic cache invalidation on file changes
+- Storage: `tools/.cache/<tool-name>/`
+
+### **CI/CD Integration** (All Tools)
+All tools support CI/CD mode with JSON output:
+- `--CIMode` or `-CIMode` parameter
+- Structured JSON output with exit codes (0=success, 1=failure, 2=warning)
+- Parseable results for GitHub Actions integration
+
+### **Dry Run Mode** (All Tools)
+Preview what actions would be taken without execution:
+- `--DryRun` or `-DryRun` parameter
+- Shows planned operations without making changes
+- Useful for validation and debugging
 
 ---
 
