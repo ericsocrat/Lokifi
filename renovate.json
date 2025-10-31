@@ -1,0 +1,91 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":disableDependencyDashboard"
+  ],
+  "baseBranches": ["main"],
+  "timezone": "Africa/Johannesburg",
+  "schedule": ["before 9am on Monday"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "labels": ["dependencies", "renovate"],
+
+  "packageRules": [
+    {
+      "description": "Frontend dependencies",
+      "matchPaths": ["apps/frontend/**"],
+      "matchManagers": ["npm"],
+      "groupName": "frontend-{{updateType}}",
+      "commitMessagePrefix": "chore(frontend-deps):"
+    },
+    {
+      "description": "Backend dependencies",
+      "matchPaths": ["apps/backend/**"],
+      "matchManagers": ["pip_requirements"],
+      "groupName": "backend-{{updateType}}",
+      "commitMessagePrefix": "chore(backend-deps):"
+    },
+    {
+      "description": "React ecosystem (auto-merge minor/patch)",
+      "groupName": "React ecosystem",
+      "matchPackagePrefixes": ["react", "@types/react", "next"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Testing tools (group together)",
+      "groupName": "Testing tools",
+      "matchPackageNames": [
+        "vitest",
+        "@vitest/ui",
+        "playwright",
+        "@playwright/test",
+        "pytest",
+        "pytest-cov"
+      ]
+    },
+    {
+      "description": "Security patches (auto-merge immediately)",
+      "groupName": "Security patches",
+      "matchUpdateTypes": ["patch"],
+      "matchCurrentVersion": "!/^0/",
+      "automerge": true,
+      "minimumReleaseAge": "0 days",
+      "prPriority": 10
+    },
+    {
+      "description": "Major updates (require manual review)",
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major-update", "requires-review"]
+    },
+    {
+      "description": "Docker images (weekly)",
+      "matchManagers": ["dockerfile", "docker-compose"],
+      "groupName": "Docker images",
+      "schedule": ["before 9am on Monday"]
+    },
+    {
+      "description": "GitHub Actions (monthly)",
+      "matchManagers": ["github-actions"],
+      "groupName": "GitHub Actions",
+      "schedule": ["before 9am on the first day of the month"]
+    }
+  ],
+
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 9am on the first day of the month"],
+    "commitMessageAction": "Update lock files"
+  },
+
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "vulnerability"],
+    "assignees": ["@ericsocrat"],
+    "automerge": true,
+    "minimumReleaseAge": "0 days"
+  }
+}
