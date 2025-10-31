@@ -397,7 +397,7 @@ git commit -m "docs: update README [skip ci]"
 # https://github.com/rhysd/actionlint
 
 # Check all workflows
-actionlint .github/workflows/*.yml
+./tools/actionlint .github/workflows/*.yml
 
 # Fix reported errors
 ```

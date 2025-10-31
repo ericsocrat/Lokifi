@@ -120,9 +120,9 @@ frontend/backend/
 docs/reports/protection_report_*.md
 tools/docs/reports/protection_report_*.md
 
-# CI/CD Tools (downloaded binaries)
-actionlint
-actionlint.exe
+# CI/CD Tools (downloaded binaries in tools/)
+tools/actionlint
+tools/actionlint.exe
 
 # Config directory (keep tracked files, ignore generated)
 # config/ files are tracked - no ignore patterns needed

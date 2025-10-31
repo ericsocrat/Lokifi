@@ -511,9 +511,11 @@ infra/
 - `tools/` - Development tools and utilities
   - `tools.config.json` - Tool configuration (test-runner, codebase-analyzer, security-scanner)
   - `tools.config.schema.json` - JSON schema for tool configuration
-  
-### CI/CD Tools
-- `actionlint` - GitHub Actions linter binary (gitignored)
+
+### Development Tools (tools/)
+- `tools/actionlint` - GitHub Actions linter binary (gitignored, used for local workflow validation)
+- `tools/bypass-hooks.ps1` - Emergency Git hook bypass utility (use carefully!)
+- Other automation tools: test-runner, codebase-analyzer, security-scanner
 
 **Note**: Coverage reports (`coverage.json`, `.coverage`, `htmlcov/`) now generate in app-specific directories:
 - Backend: `apps/backend/coverage.json`, `apps/backend/htmlcov/`

@@ -876,7 +876,7 @@ pytest --cov
 ✅ **CI/CD workflow checks** (if modified `.github/workflows/`):
 ```powershell
 # Validate workflow syntax
-actionlint .github/workflows/*.yml
+./tools/actionlint .github/workflows/*.yml
 
 # Validate YAML syntax
 # (Use yamllint if available, or check in VS Code)

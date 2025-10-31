@@ -1199,9 +1199,9 @@ Remaining 11 violations required manual intervention:
 ```powershell
 # Capture ESLint baseline
 cd apps/frontend
-npm run lint > docs/eslint-baseline.txt 2>&1
+npm run lint > ../../docs/guides/quality/eslint-baseline.txt 2>&1
 # Result: 338 warnings documented for Sprint 5 tracking
-# Note: Stored in apps/frontend/docs/ for app-specific documentation
+# Note: Stored in docs/guides/quality/ for code quality tracking
 ```
 
 **Documentation Cleanup**:
@@ -3336,7 +3336,7 @@ This roadmap is complete when:
 **Priority**: 🟢 **IN PROGRESS** - Systematic ESLint warning elimination
 **Status**: 🔄 **Session 53 Active** - Baseline analysis and planning
 **Timeline**: 12-15 hours estimated (5-7 sessions)
-**Document**: This section + apps/frontend/docs/eslint-baseline.txt
+**Document**: This section + docs/guides/quality/eslint-baseline.txt
 
 ### Overview
 

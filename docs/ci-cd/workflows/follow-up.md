@@ -203,7 +203,7 @@ echo "Line 3" >> $GITHUB_STEP_SUMMARY
 
 #### Action Steps
 1. Create new branch: `chore/fix-shellcheck-warnings`
-2. Run actionlint locally: `actionlint -color -verbose`
+2. Run actionlint locally: `./tools/actionlint -color -verbose`
 3. Fix SC2086 warnings (bulk find/replace)
    - Find: `echo $([A-Z_]+)`
    - Replace: `echo "$1"`
