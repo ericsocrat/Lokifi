@@ -1028,7 +1028,164 @@ This PR requires detailed investigation before merging due to **real compatibili
 - ⏹️ Adjust notification format if needed (severity levels, emoji, etc.)
 - ⏹️ Consider adding `CODECOV_TOKEN` if coverage tracking desired
 - ⏹️ Optional: Document Slack setup in checklists.md for future reference
-- **Outcome**: Auto-merge behavior fully understood and documented
+
+---
+
+## Session 33: PR Workflow Investigation & Test Failure Root Cause (Oct 31, 2025) 🔄
+
+**Status**: 🔄 **IN PROGRESS** - Root cause identified: 7 actual Python 3.11 test failures, NOT workflow issue
+**Duration**: ~30 minutes (investigation + analysis)
+**Type**: CI/CD Investigation + Backend Test Debugging
+**Impact**: Unblock PR #62 (backend security patches) by fixing real test failures
+
+### Context: PR Workflow Failure Investigation
+
+User request: "fix all of our PR workflows especially the ones that have been skipped"
+
+**Initial Hypothesis** (Sessions 31-32 context):
+- Summary jobs failing while individual tests pass
+- Suspected: Workflow aggregation logic treating `skipped` as `failure`
+- Plan: Update summary job conditional logic to accept `success OR skipped`
+
+### Investigation Process
+
+**Step 1: PR Status Check** (5 minutes):
+```powershell
+gh pr list --repo ericsocrat/Lokifi  # PR #62: 22/36 passing, 4 failing
+gh pr checks 62 --repo ericsocrat/Lokifi
+```
+
+**Result**: 4 failing jobs identified:
+1. ❌ "Coverage Checks Complete" (2s)
+2. ❌ "Integration Tests Complete" (4s)
+3. ❌ "Backend Coverage (Python 3.11)" (1m27s)
+4. ❌ "Backend Integration (Python 3.11)" (1m11s)
+
+**Pattern**: Summary jobs failing + Python 3.11 specific failures
+
+**Step 2: Workflow Analysis** (10 minutes):
+- Read `coverage.yml` summary job logic (lines 231-264)
+- Read `integration.yml` summary job logic (lines 354-400)
+
+**Initial Finding**: Summary jobs check for `failure` but don't handle `skipped`
+```yaml
+# Current logic (suspected issue)
+if [ "${{ needs.frontend-coverage.result }}" = "failure" ] || \
+   [ "${{ needs.backend-coverage.result }}" = "failure" ]; then
+  exit 1
+fi
+```
+
+**Step 3: Log Retrieval** (CRITICAL DISCOVERY) (15 minutes):
+```powershell
+gh run view 18981302960 --repo ericsocrat/Lokifi --log-failed
+```
+
+**🎯 ROOT CAUSE DISCOVERED**:
+The summary jobs are **WORKING CORRECTLY**! The failures are from **7 ACTUAL FAILING TESTS** in Python 3.11:
+
+```
+=== 7 failed, 826 passed, 115 skipped ===
+
+FAILED tests/services/test_ai_service.py::TestAIService::test_create_thread_with_title
+- TypeError: AIService.create_thread() got an unexpected keyword argument 'db'
+
+FAILED tests/services/test_ai_service.py::TestAIService::test_create_thread_auto_title
+- TypeError: AIService.create_thread() got an unexpected keyword argument 'db'
+
+FAILED tests/unit/test_follow_actions.py::test_follow_action_response_and_noop
+- assert False
+
+FAILED tests/unit/test_follow_extended.py::test_mutual_follows_and_counters
+- assert False
+
+FAILED tests/unit/test_follow_extended.py::test_suggestions_basic
+- assert False
+
+FAILED tests/unit/test_follow_notifications_unit.py::test_follow_creates_notification
+- assert False
+
+FAILED tests/unit/test_follow_unit.py::test_follow_flow_basic
+- assert 500 in [200, 201, 409]
+```
+
+**Coverage Result**: 40.28% (exceeds 25% threshold ✅)
+**Summary Job Behavior**: ✅ **CORRECTLY FAILS** because backend tests actually failed
+
+### Root Cause Analysis: Test Failures
+
+**1. AIService Tests (2 failures - Method Signature Mismatch)**:
+
+**Test Code** (tests/services/test_ai_service.py:295):
+```python
+result = await ai_service.create_thread(db=mock_db, user_id=1, title="Test Thread")
+```
+
+**Actual Method** (app/services/ai_service.py:190):
+```python
+async def create_thread(self, user_id: int, title: str | None = None) -> AIThread:
+    """Create a new AI chat thread."""
+    with get_session() as db:  # DB session now internal
+        # ...
+```
+
+**Problem**: Test passes `db=mock_db` argument, but method no longer accepts `db` parameter (uses internal `get_session()`)
+
+**Fix Required**: Remove `db` parameter from test calls, mock `get_session()` instead
+
+**2. Follow Tests (5 failures - Assertion/Logic Issues)**:
+
+**Patterns**:
+- `assert False` - Generic failure (undefined behavior or broken test logic)
+- `assert 500 in [200, 201, 409]` - Backend returning 500 errors instead of success codes
+
+**Possible Causes**:
+- Test logic incomplete or broken
+- Database mocking issues causing 500 errors
+- Follow service logic changes not reflected in tests
+
+**Investigation Needed**: Review follow test files and follow service implementation
+
+### Key Insights
+
+**1. Workflow Logic is CORRECT** ✅:
+- Summary jobs properly detect `failure` status from dependent jobs
+- No need to modify workflow conditional logic
+- GitHub Actions status values working as expected
+
+**2. Python 3.11 Specific Failures** 🐛:
+- Python 3.10/3.12: All tests pass ✅
+- Python 3.11: 7 failures (version-specific behavior?)
+- Possible async/await differences or library compatibility issues
+
+**3. Pattern Recognition Lesson** 📚:
+- Always check logs BEFORE modifying workflows
+- Summary job failures can mean EITHER:
+  - ❌ Real test failures (this case)
+  - ❌ Workflow aggregation bugs (Sessions 8-9)
+- Don't assume root cause without evidence
+
+### Next Steps (Prioritized)
+
+**HIGH PRIORITY** (blocks PR #62 security patches):
+1. ⏹️ Fix AIService tests (remove `db` parameter, mock `get_session()`)
+2. ⏹️ Investigate follow test failures (5 tests)
+3. ⏹️ Verify fixes pass in Python 3.11
+4. ⏹️ Rerun PR #62 CI checks
+
+**MEDIUM PRIORITY** (workflow investigation):
+1. ⏹️ Verify no other summary job aggregation issues
+2. ⏹️ Document correct summary job pattern in checklists.md
+
+**Session 33 Metrics**:
+- **Time**: 30 minutes (investigation + log analysis)
+- **Commands**: 5 GitHub CLI operations, 2 file reads
+- **Root Cause**: Test failures (not workflow logic)
+- **Tests Analyzed**: 7 failing (out of 833 total)
+- **Coverage**: 40.28% (meets threshold)
+- **Pattern Recognition**: Differentiate summary vs real failures
+
+**Key Lesson**: **Trust but verify** - Check logs before assuming workflow bugs. Summary job failures often indicate real test failures, not CI configuration issues.
 
 ---
 
