@@ -23,6 +23,10 @@ htmlcov/
 .pytest_cache/
 .vitest/
 
+# Test results (JUnit XML, etc.)
+test-results/
+**/test-results/
+
 # Tool baselines (local metrics history)
 .tool-baselines/
 
