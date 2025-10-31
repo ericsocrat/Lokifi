@@ -690,8 +690,13 @@ async def main():
     try:
         results = await tester.run_comprehensive_stress_tests()
 
-        # Save detailed report
-        with open("comprehensive_stress_test_results.json", "w", encoding="utf-8") as f:
+        # Save detailed report to apps/backend/test-results/
+        from pathlib import Path
+        test_results_dir = Path(__file__).parent.parent.parent / "test-results"
+        test_results_dir.mkdir(exist_ok=True)
+        report_file = test_results_dir / "comprehensive_stress_test_results.json"
+        
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2, default=str)
 
         print("\n📊 COMPREHENSIVE STRESS TEST COMPLETE")

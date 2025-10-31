@@ -390,12 +390,17 @@ async def main():
     async with SmokeTestSuite() as suite:
         summary = await suite.run_comprehensive_tests()
 
-        # Generate and save report
+        # Generate and save report to apps/backend/test-results/
+        from pathlib import Path
+        test_results_dir = Path(__file__).parent.parent.parent / "test-results"
+        test_results_dir.mkdir(exist_ok=True)
+        report_file = test_results_dir / "smoke_test_report.md"
+        
         report = suite.generate_report(summary)
-        with open("smoke_test_report.md", "w") as f:
+        with open(report_file, "w") as f:
             f.write(report)
 
-        print("\n📊 Report saved to: smoke_test_report.md")
+        print(f"\n📊 Report saved to: {report_file}")
 
         # Exit with appropriate code
         success_rate = summary.get("success_rate", 0)

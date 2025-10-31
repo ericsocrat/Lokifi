@@ -25,7 +25,7 @@ from typing import Any
 import httpx
 
 # Add the backend directory to the Python path
-backend_dir = Path(__file__).parent
+backend_dir = Path(__file__).parent.parent.parent  # apps/backend/
 sys.path.insert(0, str(backend_dir))
 
 try:
@@ -1053,9 +1053,11 @@ class AdvancedTestFramework:
         # Generate and save report
         report = self.generate_test_report()
 
-        # Save test report
+        # Save test report to apps/backend/test-results/
+        test_results_dir = backend_dir / "test-results"
+        test_results_dir.mkdir(exist_ok=True)
         report_file = (
-            backend_dir
+            test_results_dir
             / f"advanced_test_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         )
         try:
