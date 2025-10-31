@@ -786,6 +786,112 @@ gh run view <run-id> --log-failed | Select-String -Pattern "ERROR|FAILED" -Conte
 - Dependency version conflict (peer dependencies)
 - Test timeout due to network issues
 
+### Session 31: Understanding Auto-Merge Behavior (Oct 31, 2025) ✅
+
+**Why Aren't PRs Auto-Merging?** - Investigation Results
+
+**TL;DR**: Auto-merge configuration is correct, but CI summary job failures prevent GitHub from enabling it.
+
+**Auto-Merge Requirements** (ALL must be met):
+1. ✅ **Configuration**: `automerge: true` in renovate.json
+2. ✅ **Stability Window**: `minimumReleaseAge` satisfied
+3. ❌ **CI Status**: ALL required checks must pass
+
+**Current Configuration** (renovate.json):
+```json
+// Security patches (aggressive auto-merge)
+{
+  "groupName": "Security patches",
+  "matchUpdateTypes": ["patch"],
+  "automerge": true,
+  "minimumReleaseAge": "0 days"  // ✅ Immediate
+}
+
+// React ecosystem (balanced auto-merge)
+{
+  "groupName": "React ecosystem",
+  "matchUpdateTypes": ["minor", "patch"],
+  "automerge": true,
+  "minimumReleaseAge": "3 days"  // ✅ 3-day stability window
+}
+
+// Major updates (conservative manual review)
+{
+  "matchUpdateTypes": ["major"],
+  "automerge": false  // ✅ Requires manual approval
+}
+```
+
+**Why PR #62 (backend-patch) Isn't Auto-Merging**:
+- ✅ Config: `automerge: true` (security patches)
+- ✅ Age: 0-day wait (immediate eligibility)
+- ❌ **CI: 22/36 passing (61%)** - 2 summary job failures:
+  - "Coverage Checks Complete" (Python 3.11 aggregation)
+  - "Integration Tests Complete" (workflow aggregation)
+- **Blocker**: GitHub requires ALL required checks passing
+
+**Why PR #64 (backend-minor) Isn't Auto-Merging**:
+- ❌ Config: `automerge: false` (major update → manual review)
+- ❌ CI: 13/36 passing (50%) - Real test failures
+- **Blocker**: Manual review required + CI failures
+
+**Auto-Merge Decision Matrix**:
+
+| Condition | Status | Impact |
+|-----------|--------|--------|
+| `automerge: true` | ✅ Configured | Ready when other conditions met |
+| `minimumReleaseAge` satisfied | ✅ Met | No delay blocking |
+| **CI passing (all required)** | ❌ **FAILING** | **PRIMARY BLOCKER** |
+
+**Root Cause**: CI summary job failures (Sessions 8-9, 30)
+- "Coverage Checks Complete" consistently fails
+- "Integration Tests Complete" consistently fails
+- Individual matrix jobs pass, but summary aggregation fails
+- Workflow configuration issue (not dependency issue)
+
+**Recommendations**:
+
+**✅ Keep Configuration As-Is** (correctly balanced):
+- Security patches: 0-day (aggressive, appropriate)
+- React ecosystem: 3-day (balanced, reasonable)
+- Major updates: Manual (conservative, safe)
+
+**🔧 Fix CI Summary Jobs** (Task #10):
+- Priority: MEDIUM (blocks auto-merge, not critical)
+- Impact: Enable auto-merge for valid PRs
+- Time: 1-2 hours
+- Review workflow aggregation logic in:
+  - `.github/workflows/coverage-tracking.yml`
+  - `.github/workflows/integration-tests.yml`
+
+**⚙️ Current Workaround** (until CI fixed):
+- Manual PR review using Session 30 patterns
+- Approve + merge when safe (≥75% pass rate, summary failures only)
+- Hold when real failures (<75% pass rate, actual test failures)
+
+**Validated Behaviors**:
+- ✅ Renovate creates PRs correctly (labels, grouping, titles)
+- ✅ minimumReleaseAge enforced (no premature auto-merge)
+- ✅ CI failures block auto-merge (GitHub safety working)
+- ✅ Manual workflow solid (PR #63 merged safely)
+
+**Check Auto-Merge Status**:
+```powershell
+# See if auto-merge is enabled on a PR
+gh pr view <pr-number> --json autoMergeRequest,mergeable,reviewDecision
+
+# Expected when auto-merge NOT enabled:
+# "autoMergeRequest": null
+
+# Expected when auto-merge ENABLED and waiting:
+# "autoMergeRequest": { "enabledAt": "2025-10-31T...", "mergeMethod": "SQUASH" }
+```
+
+**Future Optimization** (after CI fix):
+- Consider reducing React ecosystem `minimumReleaseAge` from 3 days → 1 day
+- Monitor Renovate dashboard for PRs stuck waiting for conditions
+- Assess stability impact after 1-2 months
+
 ### Batching Strategy
 
 **Auto-Merge Group (CI must pass 100%):**
