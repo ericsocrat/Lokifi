@@ -267,7 +267,11 @@ class SecurityMonitor:
             # Only send alerts for high and critical severity events
             if event.severity in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]:
                 # Import here to avoid circular imports
-                from app.utils.security_alerts import Alert, AlertPriority, security_alert_manager
+                from app.utils.security_alerts import (
+                    Alert,
+                    AlertPriority,
+                    security_alert_manager,
+                )
 
                 # Map severity to alert priority
                 priority_map = {
