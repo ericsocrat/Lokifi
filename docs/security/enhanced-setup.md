@@ -177,7 +177,7 @@ done
 - Monitor suspicious IPs: `/api/security/status`
 
 ### Weekly Tasks
-- Review security event logs in `logs/security_events.log`
+- Review security event logs in `apps/backend/logs/security_events.log`
 - Update security alert thresholds if needed
 - Test alert delivery channels
 
@@ -236,7 +236,7 @@ done
 - `app/core/security_config.py` - Security configuration
 
 ### Log Files
-- `logs/security_events.log` - Structured security event log
+- `apps/backend/logs/security_events.log` - Structured security event log
 - Standard application logs with security events
 
 ## 🆘 Troubleshooting

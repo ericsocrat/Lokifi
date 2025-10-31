@@ -17,8 +17,8 @@ from typing import Any
 security_logger = logging.getLogger("lokifi.security")
 security_logger.setLevel(logging.INFO)
 
-# Create security log file handler
-log_dir = Path("logs")
+# Create security log file handler (in backend's logs directory)
+log_dir = Path(__file__).parent.parent.parent / "logs"
 log_dir.mkdir(exist_ok=True)
 security_log_file = log_dir / "security_events.log"
 
