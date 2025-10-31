@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowLeft, Globe, Lock, Save, Upload, User, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -212,10 +213,12 @@ export default function EditProfilePage() {
             <div className="flex items-center space-x-6">
               <div className="relative">
                 {avatarPreview ? (
-                  <img
+                  <Image
                     src={avatarPreview}
                     alt="Avatar preview"
-                    className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+                    width={96}
+                    height={96}
+                    className="rounded-full object-cover border-4 border-blue-500"
                   />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-600">

@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 /**
  * Asset Icon/Logo Utility
  *
@@ -257,11 +259,12 @@ export function AssetIcon({ symbol, type, size = 32, className = '' }: AssetIcon
   const iconUrl = getAssetIcon(symbol, assetType);
 
   return (
-    <img
+    <Image
       src={iconUrl}
       alt={`${symbol} logo`}
+      width={size}
+      height={size}
       className={`rounded-full object-cover ${className}`}
-      style={{ width: size, height: size }}
       onError={(e) => {
         // Fallback to initials avatar on error
         const target = e.target as HTMLImageElement;

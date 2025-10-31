@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import {
     Activity,
     BarChart3,
@@ -137,10 +138,12 @@ export default function ProfilePage() {
                 <div className="flex items-start space-x-6">
                     <div className="relative">
                         {profile?.avatar_url ? (
-                            <img
+                            <Image
                                 src={profile.avatar_url}
                                 alt="Profile"
-                                className="w-24 h-24 rounded-full object-cover border-4 border-blue-500"
+                                width={96}
+                                height={96}
+                                className="rounded-full object-cover border-4 border-blue-500"
                             />
                         ) : (
                             <div className="w-24 h-24 rounded-full bg-gray-700 flex items-center justify-center border-4 border-gray-600">
