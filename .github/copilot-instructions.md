@@ -1576,16 +1576,16 @@ For project metrics, estimates, and stakeholder documentation, use the comprehen
 
 ```bash
 # Full analysis with project estimates
-.\tools\scripts\analysis\codebase-analyzer.ps1
+.\tools\codebase-analyzer.ps1
 
 # Export to JSON for CI/CD integration
-.\tools\scripts\analysis\codebase-analyzer.ps1 -OutputFormat json
+.\tools\codebase-analyzer.ps1 -OutputFormat json
 
 # Region-specific cost estimates (US, EU, Asia, Remote)
-.\tools\scripts\analysis\codebase-analyzer.ps1 -Region eu -Detailed
+.\tools\codebase-analyzer.ps1 -Region eu -Detailed
 
 # Compare with previous analysis
-.\tools\scripts\analysis\codebase-analyzer.ps1 -CompareWith "path/to/previous-report.md"
+.\tools\codebase-analyzer.ps1 -CompareWith "path/to/previous-report.md"
 ```
 
 **Provides**:
