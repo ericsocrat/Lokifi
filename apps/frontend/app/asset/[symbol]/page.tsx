@@ -1,27 +1,24 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { useTopCryptos, useHistoricalPrices, useWebSocketPrices } from '@/src/hooks/useBackendPrices';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  useHistoricalPrices,
+  useTopCryptos,
+  useWebSocketPrices,
+} from '@/src/hooks/useBackendPrices';
+import {
   Activity,
-  DollarSign,
-  Star,
-  Bell,
-  Download,
-  Plus,
-  Maximize2,
-  ChevronLeft,
-  Target,
-  PieChart,
-  LineChart,
+  ArrowDownRight,
   ArrowUpRight,
-  ArrowDownRight
+  ChevronLeft,
+  LineChart,
+  PieChart,
+  Star,
+  TrendingDown,
+  TrendingUp,
 } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
 type TimeFrame = '1d' | '7d' | '30d' | '1y' | 'all';
 
@@ -51,44 +48,48 @@ function AssetDetailContent() {
   const params = useParams();
   const router = useRouter();
   const symbol = typeof params.symbol === 'string' ? params.symbol.toUpperCase() : '';
-  
+
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<TimeFrame>('30d');
   const [showAddModal, setShowAddModal] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
 
   // Fetch real crypto data from backend
   const { cryptos, loading: cryptosLoading, error: cryptosError } = useTopCryptos(250);
-  
+
   // Map timeframe to API period
   const periodMap: Record<TimeFrame, '1d' | '1w' | '1m' | '3m' | '6m' | '1y' | '5y' | 'all'> = {
     '1d': '1d',
     '7d': '1w',
     '30d': '1m',
     '1y': '1y',
-    'all': 'all',
+    all: 'all',
   };
-  
+
   // Fetch historical data from backend
   const { data: historicalResponse, loading: historyLoading } = useHistoricalPrices(
     symbol,
     periodMap[selectedTimeFrame]
   );
-  
+
   // WebSocket for real-time price updates
-  const { prices: livePrices, connected, subscribe } = useWebSocketPrices({ 
+  const {
+    prices: livePrices,
+    connected,
+    subscribe,
+  } = useWebSocketPrices({
     symbols: [symbol],
-    autoConnect: true 
+    autoConnect: true,
   });
 
   // Find the crypto in the list
   const cryptoData = useMemo(() => {
-    return cryptos.find(c => c.symbol.toUpperCase() === symbol);
+    return cryptos.find((c) => c.symbol.toUpperCase() === symbol);
   }, [cryptos, symbol]);
 
   // Convert historical data to expected format
   const historicalData = useMemo(() => {
     if (!historicalResponse?.data) return [];
-    return historicalResponse.data.map(p => ({
+    return historicalResponse.data.map((p) => ({
       date: new Date(p.timestamp).toISOString(),
       price: p.price,
       timestamp: p.timestamp,
@@ -98,11 +99,11 @@ function AssetDetailContent() {
   // Build asset object from crypto data with live price overlay
   const asset: AssetData | null = useMemo(() => {
     if (!cryptoData) return null;
-    
+
     const livePrice = livePrices[symbol]?.price || cryptoData.current_price;
     const livePriceChange = livePrices[symbol]?.change;
     const livePriceChangePercent = livePrices[symbol]?.change_percent;
-    
+
     return {
       symbol: cryptoData.symbol.toUpperCase(),
       name: cryptoData.name,
@@ -148,19 +149,20 @@ function AssetDetailContent() {
   const toggleWatchlist = () => {
     const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
     let newWatchlist;
-    
+
     if (isInWatchlist) {
       newWatchlist = watchlist.filter((s: string) => s !== symbol);
     } else {
       newWatchlist = [...watchlist, symbol];
     }
-    
+
     localStorage.setItem('watchlist', JSON.stringify(newWatchlist));
     setIsInWatchlist(!isInWatchlist);
   };
 
   const formatPrice = (price: number) => {
-    if (price >= 1000) return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (price >= 1000)
+      return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     if (price >= 1) return `$${price.toFixed(2)}`;
     if (price >= 0.01) return `$${price.toFixed(4)}`;
     if (price >= 0.0001) return `$${price.toFixed(6)}`;
@@ -186,15 +188,23 @@ function AssetDetailContent() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-gray-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400 font-medium">Loading asset data from backend...</p>
-          {connected && <p className="text-green-600 dark:text-green-400 text-sm mt-2">✅ Live updates connected</p>}
+          <p className="text-gray-600 dark:text-gray-400 font-medium">
+            Loading asset data from backend...
+          </p>
+          {connected && (
+            <p className="text-green-600 dark:text-green-400 text-sm mt-2">
+              ✅ Live updates connected
+            </p>
+          )}
         </div>
       </div>
     );
   }
 
   const isPositive = asset.changePercent >= 0;
-  const changeColor = isPositive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+  const changeColor = isPositive
+    ? 'text-green-600 dark:text-green-400'
+    : 'text-red-600 dark:text-red-400';
 
   const timeFrameButtons: { value: TimeFrame; label: string }[] = [
     { value: '1d', label: '1D' },
@@ -228,9 +238,7 @@ function AssetDetailContent() {
               {/* Premium Asset Icon */}
               <div className="relative">
                 <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-xl flex items-center justify-center">
-                  <span className="text-4xl font-black text-white">
-                    {symbol.charAt(0)}
-                  </span>
+                  <span className="text-4xl font-black text-white">{symbol.charAt(0)}</span>
                 </div>
                 {/* Live indicator */}
                 {connected && (
@@ -245,7 +253,9 @@ function AssetDetailContent() {
 
               <div>
                 <div className="flex items-center gap-3 mb-2 flex-wrap">
-                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white">{asset.name}</h1>
+                  <h1 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white">
+                    {asset.name}
+                  </h1>
                   <span className="px-3 py-1.5 text-sm font-bold rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
                     {symbol}
                   </span>
@@ -253,7 +263,7 @@ function AssetDetailContent() {
                     CRYPTO
                   </span>
                 </div>
-                
+
                 <p className="text-gray-600 dark:text-gray-400 text-lg font-medium mb-4">
                   {asset.category}
                 </p>
@@ -263,28 +273,33 @@ function AssetDetailContent() {
                   <span className="text-6xl md:text-7xl font-black text-gray-900 dark:text-white">
                     {formatPrice(asset.price)}
                   </span>
-                  
+
                   <div className="flex items-center gap-3">
-                    <div className={`flex items-center gap-2 px-4 py-2.5 rounded-xl ${
-                      isPositive 
-                        ? 'bg-green-100 dark:bg-green-900/30' 
-                        : 'bg-red-100 dark:bg-red-900/30'
-                    }`}>
+                    <div
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-xl ${
+                        isPositive
+                          ? 'bg-green-100 dark:bg-green-900/30'
+                          : 'bg-red-100 dark:bg-red-900/30'
+                      }`}
+                    >
                       {isPositive ? (
                         <ArrowUpRight className={`w-6 h-6 ${changeColor}`} />
                       ) : (
                         <ArrowDownRight className={`w-6 h-6 ${changeColor}`} />
                       )}
                       <span className={`text-2xl font-black ${changeColor}`}>
-                        {isPositive ? '+' : ''}{formatPrice(asset.change)}
+                        {isPositive ? '+' : ''}
+                        {formatPrice(asset.change)}
                       </span>
                     </div>
-                    
-                    <div className={`px-4 py-2.5 rounded-xl text-2xl font-black ${
-                      isPositive 
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400' 
-                        : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
-                    }`}>
+
+                    <div
+                      className={`px-4 py-2.5 rounded-xl text-2xl font-black ${
+                        isPositive
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                          : 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400'
+                      }`}
+                    >
                       {isPositive ? '↑' : '↓'} {Math.abs(asset.changePercent).toFixed(2)}%
                     </div>
                   </div>
@@ -327,7 +342,7 @@ function AssetDetailContent() {
                   <LineChart className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                   <h2 className="text-3xl font-black text-gray-900 dark:text-white">Price Chart</h2>
                 </div>
-                
+
                 {/* Time Frame Selector */}
                 <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 p-1.5 rounded-xl">
                   {timeFrameButtons.map((tf) => (
@@ -360,34 +375,45 @@ function AssetDetailContent() {
                 </div>
               ) : (
                 <div className="relative">
-                  <svg className="w-full h-[400px]" viewBox="0 0 800 400" preserveAspectRatio="none">
+                  <svg
+                    className="w-full h-[400px]"
+                    viewBox="0 0 800 400"
+                    preserveAspectRatio="none"
+                  >
                     <defs>
                       <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0.3" />
-                        <stop offset="100%" stopColor={isPositive ? '#22c55e' : '#ef4444'} stopOpacity="0.05" />
+                        <stop
+                          offset="0%"
+                          stopColor={isPositive ? '#22c55e' : '#ef4444'}
+                          stopOpacity="0.3"
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={isPositive ? '#22c55e' : '#ef4444'}
+                          stopOpacity="0.05"
+                        />
                       </linearGradient>
                     </defs>
-                    
+
                     {(() => {
-                      const prices = historicalData.map(d => d.price);
+                      const prices = historicalData.map((d) => d.price);
                       const maxPrice = Math.max(...prices);
                       const minPrice = Math.min(...prices);
                       const priceRange = maxPrice - minPrice;
-                      
-                      const points = historicalData.map((d, i) => {
-                        const x = (i / (historicalData.length - 1)) * 800;
-                        const y = 400 - ((d.price - minPrice) / priceRange) * 380;
-                        return `${x},${y}`;
-                      }).join(' ');
+
+                      const points = historicalData
+                        .map((d, i) => {
+                          const x = (i / (historicalData.length - 1)) * 800;
+                          const y = 400 - ((d.price - minPrice) / priceRange) * 380;
+                          return `${x},${y}`;
+                        })
+                        .join(' ');
 
                       const areaPoints = `0,400 ${points} 800,400`;
 
                       return (
                         <>
-                          <polyline
-                            points={areaPoints}
-                            fill="url(#priceGradient)"
-                          />
+                          <polyline points={areaPoints} fill="url(#priceGradient)" />
                           <polyline
                             points={points}
                             fill="none"
@@ -400,29 +426,38 @@ function AssetDetailContent() {
                       );
                     })()}
                   </svg>
-                  
+
                   {/* Chart Stats */}
                   <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">High</p>
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                        High
+                      </p>
                       <span className="text-lg font-black text-green-600 dark:text-green-400">
-                        {formatPrice(Math.max(...historicalData.map(d => d.price)))}
+                        {formatPrice(Math.max(...historicalData.map((d) => d.price)))}
                       </span>
                     </div>
                     <div className="text-center">
                       <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Low</p>
                       <span className="text-lg font-black text-red-600 dark:text-red-400">
-                        {formatPrice(Math.min(...historicalData.map(d => d.price)))}
+                        {formatPrice(Math.min(...historicalData.map((d) => d.price)))}
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Change</p>
-                      <span className={`text-lg font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {periodChangePercent >= 0 ? '+' : ''}{periodChangePercent.toFixed(2)}%
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                        Change
+                      </p>
+                      <span
+                        className={`text-lg font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                      >
+                        {periodChangePercent >= 0 ? '+' : ''}
+                        {periodChangePercent.toFixed(2)}%
                       </span>
                     </div>
                     <div className="text-center">
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">Data Points</p>
+                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 mb-1">
+                        Data Points
+                      </p>
                       <span className="text-lg font-black text-gray-900 dark:text-white">
                         {historicalData.length}
                       </span>
@@ -441,7 +476,9 @@ function AssetDetailContent() {
                   </div>
                   <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">52W High</h3>
                 </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.high52w)}</p>
+                <p className="text-2xl font-black text-gray-900 dark:text-white">
+                  {formatPrice(asset.high52w)}
+                </p>
               </div>
 
               <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl border-2 border-orange-200 dark:border-orange-800 p-6 shadow-lg group hover:scale-105 transition-all cursor-pointer">
@@ -451,7 +488,9 @@ function AssetDetailContent() {
                   </div>
                   <h3 className="text-sm font-bold text-gray-600 dark:text-gray-400">52W Low</h3>
                 </div>
-                <p className="text-2xl font-black text-gray-900 dark:text-white">{formatPrice(asset.low52w)}</p>
+                <p className="text-2xl font-black text-gray-900 dark:text-white">
+                  {formatPrice(asset.low52w)}
+                </p>
               </div>
             </div>
           </div>
@@ -466,7 +505,9 @@ function AssetDetailContent() {
                     <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
                     <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping"></div>
                   </div>
-                  <span className="font-black text-gray-900 dark:text-white text-xl">LIVE MARKET DATA</span>
+                  <span className="font-black text-gray-900 dark:text-white text-xl">
+                    LIVE MARKET DATA
+                  </span>
                 </div>
                 <p className="text-base text-gray-700 dark:text-gray-300 mb-3 font-medium">
                   Real-time updates via WebSocket
@@ -486,24 +527,44 @@ function AssetDetailContent() {
               </h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Market Cap</span>
-                  <span className="font-black text-gray-900 dark:text-white text-base">{formatMarketCap(asset.marketCap)}</span>
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                    Market Cap
+                  </span>
+                  <span className="font-black text-gray-900 dark:text-white text-base">
+                    {formatMarketCap(asset.marketCap)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Volume (24h)</span>
-                  <span className="font-black text-gray-900 dark:text-white text-base">{formatVolume(asset.volume)}</span>
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                    Volume (24h)
+                  </span>
+                  <span className="font-black text-gray-900 dark:text-white text-base">
+                    {formatVolume(asset.volume)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">24h High</span>
-                  <span className="font-black text-green-600 dark:text-green-400 text-base">{formatPrice(asset.high24h)}</span>
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                    24h High
+                  </span>
+                  <span className="font-black text-green-600 dark:text-green-400 text-base">
+                    {formatPrice(asset.high24h)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-3 border-b-2 border-gray-200 dark:border-gray-700">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">24h Low</span>
-                  <span className="font-black text-red-600 dark:text-red-400 text-base">{formatPrice(asset.low24h)}</span>
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                    24h Low
+                  </span>
+                  <span className="font-black text-red-600 dark:text-red-400 text-base">
+                    {formatPrice(asset.low24h)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-3">
-                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Prev. Close</span>
-                  <span className="font-black text-gray-900 dark:text-white text-base">{formatPrice(asset.previousClose)}</span>
+                  <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
+                    Prev. Close
+                  </span>
+                  <span className="font-black text-gray-900 dark:text-white text-base">
+                    {formatPrice(asset.previousClose)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -517,9 +578,12 @@ function AssetDetailContent() {
               <div className="space-y-5">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-gray-600 dark:text-gray-400">Today&apos;s Change</span>
+                    <span className="font-bold text-gray-600 dark:text-gray-400">
+                      Today&apos;s Change
+                    </span>
                     <span className={`font-black ${changeColor}`}>
-                      {asset.changePercent >= 0 ? '+' : ''}{asset.changePercent.toFixed(2)}%
+                      {asset.changePercent >= 0 ? '+' : ''}
+                      {asset.changePercent.toFixed(2)}%
                     </span>
                   </div>
                   <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -531,9 +595,14 @@ function AssetDetailContent() {
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-gray-600 dark:text-gray-400">Period Change</span>
-                    <span className={`font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      {periodChangePercent >= 0 ? '+' : ''}{periodChangePercent.toFixed(2)}%
+                    <span className="font-bold text-gray-600 dark:text-gray-400">
+                      Period Change
+                    </span>
+                    <span
+                      className={`font-black ${periodChangePercent >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}
+                    >
+                      {periodChangePercent >= 0 ? '+' : ''}
+                      {periodChangePercent.toFixed(2)}%
                     </span>
                   </div>
                   <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">

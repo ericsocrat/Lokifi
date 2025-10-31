@@ -1,21 +1,21 @@
-"use client";
+'use client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export type DrawingTool = 
-  | 'cursor' 
-  | 'trendline' 
-  | 'hline' 
-  | 'vline' 
-  | 'rectangle' 
-  | 'circle' 
-  | 'fibonacciRetracement' 
-  | 'fibonacciExtension' 
-  | 'parallelChannel' 
-  | 'pitchfork' 
-  | 'gannFan' 
-  | 'elliottWave' 
-  | 'arrow' 
+export type DrawingTool =
+  | 'cursor'
+  | 'trendline'
+  | 'hline'
+  | 'vline'
+  | 'rectangle'
+  | 'circle'
+  | 'fibonacciRetracement'
+  | 'fibonacciExtension'
+  | 'parallelChannel'
+  | 'pitchfork'
+  | 'gannFan'
+  | 'elliottWave'
+  | 'arrow'
   | 'textNote';
 
 export interface Point {
@@ -58,49 +58,55 @@ interface DrawingState {
   objects: DrawingObject[];
   selectedObjectId: string | null;
   draggedObjectId: string | null;
-  
+
   // Drawing session
   currentDrawing: Partial<DrawingObject> | null;
   snapToGrid: boolean;
   snapToPrice: boolean;
   magnetMode: boolean;
-  
+
   // Actions
   setActiveTool: (tool: DrawingTool) => void;
   startDrawing: (paneId: string, point: Point) => void;
   addPoint: (point: Point) => void;
   finishDrawing: () => void;
   cancelDrawing: () => void;
-  
+
   // Object management
   addObject: (object: Omit<DrawingObject, 'id' | 'properties'>) => string;
   updateObject: (id: string, updates: Partial<DrawingObject>) => void;
   deleteObject: (id: string) => void;
   duplicateObject: (id: string) => string;
-  
+
   // Selection
   selectObject: (id: string | null) => void;
-  selectObjectsInRect: (rect: { x1: number; y1: number; x2: number; y2: number; paneId: string }) => void;
+  selectObjectsInRect: (rect: {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    paneId: string;
+  }) => void;
   clearSelection: () => void;
-  
+
   // Transform
   moveObject: (id: string, deltaX: number, deltaY: number) => void;
   moveObjectToPane: (id: string, targetPaneId: string) => void;
   setObjectStyle: (id: string, style: Partial<DrawingObject['style']>) => void;
   setObjectProperties: (id: string, properties: Partial<DrawingObject['properties']>) => void;
-  
+
   // Bulk operations
   deleteSelectedObjects: () => void;
   duplicateSelectedObjects: () => string[];
   lockSelectedObjects: (locked: boolean) => void;
   setSelectedObjectsVisible: (visible: boolean) => void;
-  
+
   // Utilities
   getObjectsByPane: (paneId: string) => DrawingObject[];
   getSelectedObjects: () => DrawingObject[];
   getObjectById: (id: string) => DrawingObject | undefined;
   clearAllObjects: () => void;
-  
+
   // Settings
   toggleSnapToGrid: () => void;
   toggleSnapToPrice: () => void;
@@ -120,7 +126,12 @@ const DEFAULT_STYLE = {
 
 export const useDrawingStore = create<DrawingState>()(
   persist(
-    (set: (partial: Partial<DrawingState> | ((state: DrawingState) => Partial<DrawingState>)) => void, get: () => DrawingState) => ({
+    (
+      set: (
+        partial: Partial<DrawingState> | ((state: DrawingState) => Partial<DrawingState>)
+      ) => void,
+      get: () => DrawingState
+    ) => ({
       // Initial state
       activeTool: 'cursor',
       isDrawing: false,
@@ -152,10 +163,10 @@ export const useDrawingStore = create<DrawingState>()(
           style: { ...DEFAULT_STYLE },
         };
 
-        set({ 
-          isDrawing: true, 
+        set({
+          isDrawing: true,
           currentDrawing: newDrawing,
-          selectedObjectId: null
+          selectedObjectId: null,
         });
       },
 
@@ -166,8 +177,8 @@ export const useDrawingStore = create<DrawingState>()(
         set({
           currentDrawing: {
             ...currentDrawing,
-            points: [...(currentDrawing.points || []), point]
-          }
+            points: [...(currentDrawing.points || []), point],
+          },
         });
       },
 
@@ -175,19 +186,24 @@ export const useDrawingStore = create<DrawingState>()(
         const { currentDrawing, isDrawing, addObject } = get();
         if (!isDrawing || !currentDrawing) return;
 
-        if (currentDrawing.type && currentDrawing.paneId && currentDrawing.points && currentDrawing.points.length > 0) {
+        if (
+          currentDrawing.type &&
+          currentDrawing.paneId &&
+          currentDrawing.points &&
+          currentDrawing.points.length > 0
+        ) {
           const objectId = addObject({
             type: currentDrawing.type,
             paneId: currentDrawing.paneId,
             points: currentDrawing.points,
             style: currentDrawing.style || DEFAULT_STYLE,
-            metadata: currentDrawing.metadata
+            metadata: currentDrawing.metadata,
           });
 
-          set({ 
-            isDrawing: false, 
+          set({
+            isDrawing: false,
             currentDrawing: null,
-            selectedObjectId: objectId
+            selectedObjectId: objectId,
           });
         } else {
           get().cancelDrawing();
@@ -195,9 +211,9 @@ export const useDrawingStore = create<DrawingState>()(
       },
 
       cancelDrawing: () => {
-        set({ 
-          isDrawing: false, 
-          currentDrawing: null 
+        set({
+          isDrawing: false,
+          currentDrawing: null,
         });
       },
 
@@ -205,7 +221,7 @@ export const useDrawingStore = create<DrawingState>()(
       addObject: (objectData: Omit<DrawingObject, 'id' | 'properties'>) => {
         const id = generateId();
         const now = Date.now();
-        
+
         const newObject: DrawingObject = {
           id,
           ...objectData,
@@ -216,18 +232,18 @@ export const useDrawingStore = create<DrawingState>()(
             zIndex: now,
             createdAt: now,
             updatedAt: now,
-          }
+          },
         };
 
-        set(state => ({
-          objects: [...state.objects, newObject]
+        set((state) => ({
+          objects: [...state.objects, newObject],
         }));
 
         return id;
       },
 
       updateObject: (id: string, updates: Partial<DrawingObject>) => {
-        set(state => ({
+        set((state) => ({
           objects: state.objects.map((obj: DrawingObject) =>
             obj.id === id
               ? {
@@ -236,18 +252,18 @@ export const useDrawingStore = create<DrawingState>()(
                   properties: {
                     ...obj.properties,
                     ...updates.properties,
-                    updatedAt: Date.now()
-                  }
+                    updatedAt: Date.now(),
+                  },
                 }
               : obj
-          )
+          ),
         }));
       },
 
       deleteObject: (id: string) => {
-        set(state => ({
+        set((state) => ({
           objects: state.objects.filter((obj: DrawingObject) => obj.id !== id),
-          selectedObjectId: state.selectedObjectId === id ? null : state.selectedObjectId
+          selectedObjectId: state.selectedObjectId === id ? null : state.selectedObjectId,
         }));
       },
 
@@ -260,7 +276,7 @@ export const useDrawingStore = create<DrawingState>()(
         const offsetPoints = original.points.map((point: Point) => ({
           ...point,
           x: point.x + 10,
-          y: point.y + 10
+          y: point.y + 10,
         }));
 
         return addObject({
@@ -268,7 +284,7 @@ export const useDrawingStore = create<DrawingState>()(
           paneId: original.paneId,
           points: offsetPoints,
           style: original.style,
-          metadata: original.metadata
+          metadata: original.metadata,
         });
       },
 
@@ -277,19 +293,27 @@ export const useDrawingStore = create<DrawingState>()(
         set({ selectedObjectId: id });
       },
 
-      selectObjectsInRect: (rect: { x1: number; y1: number; x2: number; y2: number; paneId: string }) => {
+      selectObjectsInRect: (rect: {
+        x1: number;
+        y1: number;
+        x2: number;
+        y2: number;
+        paneId: string;
+      }) => {
         // For now, just select the first object found in the rectangle
         const { objects } = get();
-        const objectInRect = objects.find((obj: DrawingObject) => 
-          obj.paneId === rect.paneId &&
-          obj.points.some((point: Point) => 
-            point.x >= Math.min(rect.x1, rect.x2) &&
-            point.x <= Math.max(rect.x1, rect.x2) &&
-            point.y >= Math.min(rect.y1, rect.y2) &&
-            point.y <= Math.max(rect.y1, rect.y2)
-          )
+        const objectInRect = objects.find(
+          (obj: DrawingObject) =>
+            obj.paneId === rect.paneId &&
+            obj.points.some(
+              (point: Point) =>
+                point.x >= Math.min(rect.x1, rect.x2) &&
+                point.x <= Math.max(rect.x1, rect.x2) &&
+                point.y >= Math.min(rect.y1, rect.y2) &&
+                point.y <= Math.max(rect.y1, rect.y2)
+            )
         );
-        
+
         if (objectInRect) {
           set({ selectedObjectId: objectInRect.id });
         }
@@ -301,7 +325,7 @@ export const useDrawingStore = create<DrawingState>()(
 
       // Transform
       moveObject: (id: string, deltaX: number, deltaY: number) => {
-        set(state => ({
+        set((state) => ({
           objects: state.objects.map((obj: DrawingObject) =>
             obj.id === id
               ? {
@@ -309,15 +333,15 @@ export const useDrawingStore = create<DrawingState>()(
                   points: obj.points.map((point: Point) => ({
                     ...point,
                     x: point.x + deltaX,
-                    y: point.y + deltaY
+                    y: point.y + deltaY,
                   })),
                   properties: {
                     ...obj.properties,
-                    updatedAt: Date.now()
-                  }
+                    updatedAt: Date.now(),
+                  },
                 }
               : obj
-          )
+          ),
         }));
       },
 
@@ -328,11 +352,11 @@ export const useDrawingStore = create<DrawingState>()(
       setObjectStyle: (id: string, style: Partial<DrawingObject['style']>) => {
         const currentObject = get().getObjectById(id);
         if (currentObject) {
-          get().updateObject(id, { 
-            style: { 
-              ...currentObject.style, 
-              ...style 
-            } 
+          get().updateObject(id, {
+            style: {
+              ...currentObject.style,
+              ...style,
+            },
           });
         }
       },
@@ -340,11 +364,11 @@ export const useDrawingStore = create<DrawingState>()(
       setObjectProperties: (id: string, properties: Partial<DrawingObject['properties']>) => {
         const currentObject = get().getObjectById(id);
         if (currentObject) {
-          get().updateObject(id, { 
+          get().updateObject(id, {
             properties: {
               ...currentObject.properties,
-              ...properties
-            }
+              ...properties,
+            },
           });
         }
       },
@@ -387,7 +411,9 @@ export const useDrawingStore = create<DrawingState>()(
 
       getSelectedObjects: () => {
         const { objects, selectedObjectId } = get();
-        return selectedObjectId ? objects.filter((obj: DrawingObject) => obj.id === selectedObjectId) : [];
+        return selectedObjectId
+          ? objects.filter((obj: DrawingObject) => obj.id === selectedObjectId)
+          : [];
       },
 
       getObjectById: (id: string) => {
@@ -400,24 +426,24 @@ export const useDrawingStore = create<DrawingState>()(
 
       // Settings
       toggleSnapToGrid: () => {
-        set(state => ({ snapToGrid: !state.snapToGrid }));
+        set((state) => ({ snapToGrid: !state.snapToGrid }));
       },
 
       toggleSnapToPrice: () => {
-        set(state => ({ snapToPrice: !state.snapToPrice }));
+        set((state) => ({ snapToPrice: !state.snapToPrice }));
       },
 
       toggleMagnetMode: () => {
-        set(state => ({ magnetMode: !state.magnetMode }));
+        set((state) => ({ magnetMode: !state.magnetMode }));
       },
     }),
     {
       name: 'lokifi-drawings',
-      partialize: (state: DrawingState) => ({ 
+      partialize: (state: DrawingState) => ({
         objects: state.objects,
         snapToGrid: state.snapToGrid,
         snapToPrice: state.snapToPrice,
-        magnetMode: state.magnetMode
+        magnetMode: state.magnetMode,
       }),
     }
   )

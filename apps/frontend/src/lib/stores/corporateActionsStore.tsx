@@ -1,7 +1,7 @@
+import type { Draft } from 'immer';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import type { Draft } from 'immer';
 import { FLAGS } from './featureFlags';
 
 // Corporate Action Types
@@ -137,7 +137,7 @@ const defaultSessions: TradingSession[] = [
     endTime: '09:30',
     timezone: 'America/New_York',
     color: '#FEF3C7',
-    isActive: false
+    isActive: false,
   },
   {
     name: 'US Regular',
@@ -146,7 +146,7 @@ const defaultSessions: TradingSession[] = [
     endTime: '16:00',
     timezone: 'America/New_York',
     color: '#D1FAE5',
-    isActive: true
+    isActive: true,
   },
   {
     name: 'US After Hours',
@@ -155,7 +155,7 @@ const defaultSessions: TradingSession[] = [
     endTime: '20:00',
     timezone: 'America/New_York',
     color: '#DBEAFE',
-    isActive: false
+    isActive: false,
   },
   {
     name: 'London Session',
@@ -164,7 +164,7 @@ const defaultSessions: TradingSession[] = [
     endTime: '16:30',
     timezone: 'Europe/London',
     color: '#F3E8FF',
-    isActive: false
+    isActive: false,
   },
   {
     name: 'Tokyo Session',
@@ -173,8 +173,8 @@ const defaultSessions: TradingSession[] = [
     endTime: '15:00',
     timezone: 'Asia/Tokyo',
     color: '#FEE2E2',
-    isActive: false
-  }
+    isActive: false,
+  },
 ];
 
 // Create Store
@@ -227,7 +227,6 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
             draft.isLoading = false;
           });
-
         } catch (error) {
           set((draft: Draft<CorporateActionsState>) => {
             draft.error = error instanceof Error ? error.message : 'Failed to load actions';
@@ -266,7 +265,10 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         // Apply adjustments in reverse chronological order
         const sortedActions = [...actions]
           .filter((action: CorporateAction) => action.status === 'processed')
-          .sort((a: CorporateAction, b: CorporateAction) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          .sort(
+            (a: CorporateAction, b: CorporateAction) =>
+              new Date(b.date).getTime() - new Date(a.date).getTime()
+          );
 
         let adjustedData = [...data];
 
@@ -306,17 +308,18 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
             const allHolidays = [...existingHolidays, ...holidays];
 
             // Remove duplicates by date
-            const uniqueHolidays = allHolidays.filter((holiday, index, array) =>
-              array.findIndex((h: MarketHoliday) =>
-                h.date.getTime() === holiday.date.getTime() && h.market === holiday.market
-              ) === index
+            const uniqueHolidays = allHolidays.filter(
+              (holiday, index, array) =>
+                array.findIndex(
+                  (h: MarketHoliday) =>
+                    h.date.getTime() === holiday.date.getTime() && h.market === holiday.market
+                ) === index
             );
 
             draft.holidaysByMarket.set(market, uniqueHolidays);
             draft.holidays = Array.from(draft.holidaysByMarket.values()).flat();
             draft.isLoading = false;
           });
-
         } catch (error) {
           set((draft: Draft<CorporateActionsState>) => {
             draft.error = error instanceof Error ? error.message : 'Failed to load holidays';
@@ -335,9 +338,9 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
 
         // Check if it's a holiday
         const dateString = date.toDateString();
-        return !holidays.some((holiday: MarketHoliday) =>
-          holiday.date.toDateString() === dateString &&
-          holiday.type === 'full_close'
+        return !holidays.some(
+          (holiday: MarketHoliday) =>
+            holiday.date.toDateString() === dateString && holiday.type === 'full_close'
         );
       },
 
@@ -425,7 +428,6 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
             draft.qualityReports.set(symbol, quality);
             draft.isLoading = false;
           });
-
         } catch (error) {
           set((draft: Draft<CorporateActionsState>) => {
             draft.error = error instanceof Error ? error.message : 'Failed to load quality report';
@@ -457,7 +459,7 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
         set((draft: Draft<CorporateActionsState>) => {
           draft.autoAdjustForActions = !draft.autoAdjustForActions;
         });
-      }
+      },
     })),
     {
       name: 'lokifi-corporate-actions-storage',
@@ -467,11 +469,11 @@ export const useCorporateActionsStore = create<CorporateActionsState & Corporate
           return {
             ...persistedState,
             qualityReports: new Map(),
-            showQualityIndicators: false
+            showQualityIndicators: false,
           };
         }
         return persistedState as CorporateActionsState & CorporateActionsActions;
-      }
+      },
     }
   )
 );
@@ -510,12 +512,12 @@ function applyAdjustment(data: OHLCBar[], action: CorporateAction): OHLCBar[] {
       open: bar.open * adjustmentFactor,
       high: bar.high * adjustmentFactor,
       low: bar.low * adjustmentFactor,
-      close: bar.close * adjustmentFactor
+      close: bar.close * adjustmentFactor,
     };
 
     return {
       ...bar,
-      adjusted
+      adjusted,
     };
   });
 }
@@ -523,9 +525,7 @@ function applyAdjustment(data: OHLCBar[], action: CorporateAction): OHLCBar[] {
 // Selectors
 export const useMarketHolidays = (market?: string) =>
   useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) =>
-    market
-      ? state.holidaysByMarket.get(market) || []
-      : state.holidays
+    market ? state.holidaysByMarket.get(market) || [] : state.holidays
   );
 
 export const useActiveSessions = () =>
@@ -534,10 +534,14 @@ export const useActiveSessions = () =>
   );
 
 export const useUpcomingActions = (days = 7) =>
-  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) => state.getUpcomingActions(days));
+  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) =>
+    state.getUpcomingActions(days)
+  );
 
 export const useDataQuality = (symbol: string) =>
-  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) => state.qualityReports.get(symbol));
+  useCorporateActionsStore((state: CorporateActionsState & CorporateActionsActions) =>
+    state.qualityReports.get(symbol)
+  );
 
 // Initialize store with default data
 if (typeof window !== 'undefined' && FLAGS.corpActions) {
@@ -547,5 +551,3 @@ if (typeof window !== 'undefined' && FLAGS.corpActions) {
     store.loadHolidays(market, new Date().getFullYear());
   });
 }
-
-
