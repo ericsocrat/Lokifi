@@ -368,7 +368,7 @@ export default function DrawingLayer() {
           y1 = b.y;
         const left = 0,
           right = W;
-        const levels = (d.fibLevels ?? s.drawingSettings.fibDefaultLevels);
+        const levels = d.fibLevels ?? s.drawingSettings.fibDefaultLevels;
         let best = Infinity;
         for (const lv of levels) {
           const y = y0 + (y1 - y0) * lv;

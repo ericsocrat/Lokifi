@@ -3,16 +3,65 @@
  * Replace later with real HTTP calls to your backend.
  */
 
-export type Alert = {
+// Base properties shared by all alert types
+interface BaseAlert {
   id: string;
-  kind: string;        // e.g. "price", "cross", etc.
   enabled: boolean;
   sound?: 'ping' | 'none';
   snoozedUntil?: number;  // timestamp in ms
   maxTriggers?: number;
   triggers?: number;
   note?: string;
+  cooldownMs?: number;
+}
+
+// Specific alert types with discriminated 'kind' property
+export type TimeAlert = BaseAlert & {
+  kind: 'time';
+  when: number;  // timestamp in ms
 };
+
+export type CrossAlert = BaseAlert & {
+  kind: 'cross';
+  drawingId: string;
+};
+
+export type FibCrossAlert = BaseAlert & {
+  kind: 'fib-cross';
+  drawingId: string;
+  fibLevel: number;
+};
+
+export type RegionTouchAlert = BaseAlert & {
+  kind: 'region-touch';
+  drawingId: string;
+};
+
+export type PriceThresholdAlert = BaseAlert & {
+  kind: 'price_threshold';
+};
+
+export type PctChangeAlert = BaseAlert & {
+  kind: 'pct_change';
+};
+
+// Discriminated union of all alert types
+export type Alert = 
+  | TimeAlert 
+  | CrossAlert 
+  | FibCrossAlert 
+  | RegionTouchAlert
+  | PriceThresholdAlert
+  | PctChangeAlert;
+
+// Helper type for creating new alerts (omit auto-generated fields)
+export type CreateAlertInput =
+  | Omit<TimeAlert, 'id' | 'enabled' | 'triggers'>
+  | Omit<CrossAlert, 'id' | 'enabled' | 'triggers'>
+  | Omit<FibCrossAlert, 'id' | 'enabled' | 'triggers'>
+  | Omit<RegionTouchAlert, 'id' | 'enabled' | 'triggers'>
+  | Omit<PriceThresholdAlert, 'id' | 'enabled' | 'triggers'>
+  | Omit<PctChangeAlert, 'id' | 'enabled' | 'triggers'>;
 
 export type AlertEvent = {
   id: string;
@@ -34,7 +83,7 @@ export async function createAlert(payload: Omit<Alert, 'id'|'enabled'|'triggers'
     enabled: true,
     triggers: 0,
     ...payload
-  };
+  } as Alert;  // any required: Generic object construction for discriminated union
 }
 
 export async function toggleAlert(id: string, enabled: boolean): Promise<boolean> {

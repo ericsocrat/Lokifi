@@ -1,4 +1,4 @@
-import type { Alert, AlertEvent } from '@/lib/utils/alerts';
+import type { Alert, AlertEvent, CreateAlertInput } from '@/lib/utils/alerts';
 import type { Drawing, DrawingStyle } from '@/lib/utils/drawings';
 import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -98,7 +98,7 @@ export interface ChartState {
   // alerts
   alerts: Alert[];
   alertEvents: AlertEvent[];
-  addAlert: (alert: Omit<Alert, 'id' | 'enabled' | 'triggers'>) => void;
+  addAlert: (alert: CreateAlertInput) => void;
   removeAlert: (id: string) => void;
   toggleAlert: (id: string) => void;
   updateAlert: (id: string, patch: Partial<Alert>) => void;
@@ -228,7 +228,7 @@ export const useChartStore = create<ChartState>()(
 
       alerts: [],
       alertEvents: [],
-      addAlert: (a: Omit<Alert, 'id' | 'enabled' | 'triggers'>) => {
+      addAlert: (a: CreateAlertInput) => {
         set({
           alerts: [
             ...get().alerts,
@@ -237,20 +237,20 @@ export const useChartStore = create<ChartState>()(
               enabled: true,
               triggers: 0,
               ...a,
-            },
+            } as Alert,  // any required: Spread operator with discriminated union
           ],
         });
       },
       removeAlert: (id: string) => set({ alerts: get().alerts.filter((a) => a.id !== id) }),
       updateAlert: (id: string, patch: Partial<Alert>) =>
-        set({ alerts: get().alerts.map((a) => (a.id === id ? { ...a, ...patch } : a)) }),
+        set({ alerts: get().alerts.map((a) => (a.id === id ? { ...a, ...patch } as Alert : a)) }),
       toggleAlert: (id: string) =>
         set({
-          alerts: get().alerts.map((a) => (a.id === id ? { ...a, enabled: !a.enabled } : a)),
+          alerts: get().alerts.map((a) => (a.id === id ? { ...a, enabled: !a.enabled } as Alert : a)),
         }),
       snoozeAlert: (id: string, until: number | undefined) =>
         set({
-          alerts: get().alerts.map((a) => (a.id === id ? { ...a, snoozedUntil: until } : a)),
+          alerts: get().alerts.map((a) => (a.id === id ? { ...a, snoozedUntil: until } as Alert : a)),
         }),
       clearAlertEvents: () => set({ alertEvents: [] }),
 

@@ -1,17 +1,7 @@
 import type { Drawing } from '@/lib/utils/drawings';
+import type { Alert } from '@/lib/utils/alerts';
 import { useChartStore } from '@/state/store';
 import React from 'react';
-
-// Alert types (inline definitions - no external types file needed)
-type AlertSound = 'ping' | 'none';
-interface BaseAlert {
-  id: string;
-  note: string;
-  sound: AlertSound;
-  cooldownMs: number;
-  maxTriggers?: number;
-  enabled: boolean;
-}
 
 type Props = { open: boolean; onClose: () => void };
 export default function AlertModal({ open, onClose }: Props) {
@@ -43,22 +33,42 @@ export default function AlertModal({ open, onClose }: Props) {
   const canRegion = primary && hasKind(primary) && primary.kind === 'rect';
 
   const submit = () => {
-    const base: Omit<BaseAlert, 'id'> = {
+    const baseProps = {
       note,
-      sound,
+      sound: sound as 'ping' | 'none',
       cooldownMs: cooldown || 0,
       maxTriggers: maxTriggers === '' ? undefined : Number(maxTriggers),
-      enabled: true,
     };
+    
     if (kind === 'time') {
       if (!when) return;
-      s.addAlert({ ...base, kind: 'time', when: new Date(when).getTime() } as any);
+      s.addAlert({ 
+        ...baseProps, 
+        kind: 'time' as const, 
+        when: new Date(when).getTime() 
+      });
     } else {
       if (!primary) return;
-      if (kind === 'fib-cross')
-        s.addAlert({ ...base, kind, drawingId: primary.id, fibLevel } as any);
-      else if (kind === 'region-touch') s.addAlert({ ...base, kind, drawingId: primary.id } as any);
-      else s.addAlert({ ...base, kind, drawingId: primary.id } as any);
+      if (kind === 'fib-cross') {
+        s.addAlert({ 
+          ...baseProps, 
+          kind: 'fib-cross' as const, 
+          drawingId: primary.id, 
+          fibLevel 
+        });
+      } else if (kind === 'region-touch') {
+        s.addAlert({ 
+          ...baseProps, 
+          kind: 'region-touch' as const, 
+          drawingId: primary.id 
+        });
+      } else {
+        s.addAlert({ 
+          ...baseProps, 
+          kind: 'cross' as const, 
+          drawingId: primary.id 
+        });
+      }
     }
     onClose();
   };
@@ -154,7 +164,7 @@ export default function AlertModal({ open, onClose }: Props) {
             className="col-span-2 bg-transparent border border-white/15 rounded px-2 py-1"
             value={sound}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              setSound(e.target.value as AlertSound)
+              setSound(e.target.value as 'ping' | 'none')
             }
           >
             <option value="ping">Ping</option>
