@@ -361,7 +361,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Quick Actions**:" >> $GITHUB_STEP_SUMMARY
           echo "- 📊 [View Code Scanning Alerts](https://github.com/${{ github.repository }}/security/code-scanning)" >> $GITHUB_STEP_SUMMARY
-          echo "- 🔒 [View Dependabot Alerts](https://github.com/${{ github.repository }}/security/dependabot)" >> $GITHUB_STEP_SUMMARY
+          echo "- 🤖 [View Renovate Dashboard](https://developer.mend.io/github/${{ github.repository }})" >> $GITHUB_STEP_SUMMARY
           echo "- 📈 [View Security Advisories](https://github.com/${{ github.repository }}/security/advisories)" >> $GITHUB_STEP_SUMMARY
           echo "- 🛡️ [Security Overview](https://github.com/${{ github.repository }}/security)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
