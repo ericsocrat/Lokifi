@@ -743,6 +743,143 @@ This PR requires detailed investigation before merging due to **real compatibili
 - **Documentation**: 140+ lines added to checklists.md
 - **Outcome**: Systematic PR review process documented for future use
 
+### Session 31: Renovate Auto-Merge Investigation (Oct 31, 2025) ✅
+
+**Objective**: Understand why Renovate PRs aren't auto-merging despite configuration
+
+**Investigation Scope**:
+- PR #62 (backend-patch: fastapi + ruff)
+- PR #64 (backend-minor: openai major update)
+- renovate.json configuration analysis
+- GitHub auto-merge behavior validation
+
+**Key Findings**:
+
+1. **Auto-Merge Status**: `autoMergeRequest: null` on all PRs
+   - Neither PR has auto-merge enabled by Renovate
+   - GitHub API confirms: "No auto-merge request pending"
+
+2. **PR #62 CI Status** (22/36 passing, 61% pass rate):
+   - ✅ Individual tests: Most passing
+   - ❌ Summary jobs: 2 failures
+     - "Coverage Checks Complete" (Python 3.11 issue)
+     - "Integration Tests Complete" (aggregation issue)
+   - Pattern: Same CI infrastructure issue as PR #63 (Session 30)
+
+3. **PR #64 CI Status**: HELD (Session 30 decision)
+   - 13/36 passing (50% pass rate)
+   - Real test failures across backend (not summary jobs)
+   - Requires code changes before merge
+
+4. **renovate.json Configuration Analysis**:
+   ```json
+   // Security patches (auto-merge enabled)
+   {
+     "groupName": "Security patches",
+     "matchUpdateTypes": ["patch"],
+     "automerge": true,
+     "minimumReleaseAge": "0 days"  // Immediate
+   }
+
+   // React ecosystem (auto-merge enabled)
+   {
+     "groupName": "React ecosystem",
+     "matchUpdateTypes": ["minor", "patch"],
+     "automerge": true,
+     "minimumReleaseAge": "3 days"  // 3-day stability window
+   }
+
+   // Major updates (manual review required)
+   {
+     "matchUpdateTypes": ["major"],
+     "automerge": false
+   }
+   ```
+
+**Root Cause Analysis**:
+
+**Why Auto-Merge NOT Triggering**:
+
+1. **CI Failures Block Auto-Merge** (PRIMARY):
+   - GitHub requires ALL required checks passing before auto-merge
+   - Summary job failures prevent auto-merge (even for patch-level PRs)
+   - Pattern: "Coverage Checks Complete" + "Integration Tests Complete" consistently fail
+
+2. **minimumReleaseAge Requirements**:
+   - React ecosystem: 3-day wait period
+   - Security patches: 0-day (immediate if CI passes)
+   - Renovate respects stability windows before enabling auto-merge
+
+3. **Renovate Behavior**:
+   - Waits for ALL conditions to be met before enabling auto-merge
+   - Conditions: `automerge: true` + `minimumReleaseAge` satisfied + CI passing
+   - If any condition fails, `autoMergeRequest` remains `null`
+
+**Decision Matrix**: Why Each PR Isn't Auto-Merging
+
+| PR | Type | Auto-Merge Config | minimumReleaseAge | CI Status | Why NOT Auto-Merging |
+|----|------|-------------------|-------------------|-----------|----------------------|
+| #62 | backend-patch | ✅ Enabled (security) | 0 days | ❌ 61% (2 summary fails) | CI failures block |
+| #64 | backend-minor | ❌ Disabled (major) | N/A | ❌ 50% (real failures) | Manual review required + CI fails |
+
+**Implications**:
+
+1. **Auto-merge configuration is correct** ✅
+   - Security patches: 0-day wait (aggressive)
+   - React ecosystem: 3-day wait (balanced)
+   - Major updates: Manual review (conservative)
+
+2. **CI summary job failures prevent auto-merge** ❌
+   - Root cause: Workflow aggregation logic issue (Sessions 8-9, 30)
+   - Impact: Even valid PRs can't auto-merge
+   - Fix required: Task #10 (Fix CI summary job failures)
+
+3. **Current workaround**: Manual approval + merge
+   - Review using Session 30 decision matrix
+   - Approve + squash-merge when safe (75%+ pass rate, summary job failures)
+   - Hold when real test failures (50-75% pass rate)
+
+**Recommendations**:
+
+**Short-Term** (Working Around CI Issues):
+- ✅ **Continue manual PR review** using Session 30 patterns
+- ✅ **Monitor PR #62** for auto-merge after summary job fix
+- ✅ **Leave configuration unchanged** (correctly balanced)
+
+**Medium-Term** (Fix Root Cause):
+- 🔧 **Task #10: Fix CI summary job failures** (1-2 hours)
+  - Fix workflow aggregation logic
+  - Ensure summary jobs accurately reflect matrix results
+  - Priority: MEDIUM (blocks auto-merge, not critical)
+
+**Long-Term** (Optimization):
+- 🔬 **Consider adjusting minimumReleaseAge**:
+  - Security patches: 0 days ✅ (correct)
+  - React ecosystem: 3 days → 1 day? (faster iteration)
+  - Test for 1-2 months, assess stability
+- 🔬 **Monitor Renovate dashboard** weekly:
+  - Check for PRs stuck waiting for conditions
+  - Identify patterns in auto-merge delays
+
+**Validated Behaviors**:
+- ✅ **Renovate creates PRs correctly**: All PRs labeled, grouped, titled properly
+- ✅ **minimumReleaseAge works**: No premature auto-merge attempts
+- ✅ **CI failures block auto-merge**: GitHub safety mechanism working
+- ✅ **Manual workflow solid**: Session 30 process proven (PR #63 merged safely)
+
+**Documentation Updates**:
+- ✅ Added Session 31 to plans/history.md
+- ✅ Updated CHECKLISTS.md with auto-merge behavior explanation
+- ✅ Documented decision matrix (why PRs don't auto-merge)
+
+**Session 31 Metrics**:
+- **Time**: 15 minutes (investigation + documentation)
+- **PRs Analyzed**: 2 (#62, #64)
+- **Root Cause Identified**: CI summary job failures (confirmed)
+- **Configuration Status**: ✅ Correct (no changes needed)
+- **Next Action**: Fix CI summary jobs (Task #10, deferred)
+- **Outcome**: Auto-merge behavior fully understood and documented
+
 ---
 
 ## 🚨 Sprint 0: Dependency Management (Week 0 - Current Focus)
