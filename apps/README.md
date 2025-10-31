@@ -299,5 +299,5 @@ When working on applications:
 
 ---
 
-**Status**: 2 apps live, 4 planned  
+**Status**: 2 apps live, 4 planned
 **Last Updated**: October 8, 2025
