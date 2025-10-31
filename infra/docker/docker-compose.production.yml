@@ -144,24 +144,24 @@ services:
       # API & Dashboard
       - "--api.dashboard=true"
       - "--api.debug=true"
-      
+
       # Docker provider
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      
+
       # Entrypoints
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      
+
       # HTTP to HTTPS redirect
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      
+
       # Let's Encrypt SSL/TLS
       - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
       - "--certificatesresolvers.letsencrypt.acme.email=admin@www.lokifi.com"
       - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
-      
+
       # Logging
       - "--accesslog=true"
       - "--accesslog.filepath=/logs/access.log"

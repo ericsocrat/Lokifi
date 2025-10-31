@@ -449,14 +449,14 @@ infra/
 │   ├── grafana/            # Grafana dashboards
 │   └── alerting/           # Alert rules
 ├── security/               # Security configurations
-│   ├── fail2ban/           # Intrusion prevention
-│   └── policies/           # Security policies
-├── redis/                  # Redis configuration
-│   ├── redis.conf          # Redis config
-│   └── data/               # Redis persistence (gitignored)
-├── ssl/                    # SSL/TLS certificates
-│   └── letsencrypt/        # Let's Encrypt configs
+│   ├── dependency_protection/  # Version guard system
+│   └── README.md           # Security documentation
 ├── logs/                   # Infrastructure logs (gitignored)
+│   ├── docker/             # Docker container logs
+│   ├── traefik/            # Reverse proxy logs
+│   ├── monitoring/         # Prometheus/Grafana logs
+│   ├── security/           # Security audit logs
+│   └── deployment/         # Deployment logs
 └── Makefile                # Infrastructure automation commands
 ```
 
@@ -608,9 +608,10 @@ Tests → apps/backend/tests/
 **Docker & Deployment** → `infra/`
 ```
 Docker configs → infra/docker/
-Nginx configs → infra/nginx/
+Traefik (reverse proxy) → infra/docker/docker-compose.production.yml
 Monitoring → infra/monitoring/
-Security configs → infra/security/
+Security tools → infra/security/
+Infrastructure logs → infra/logs/
 ```
 
 ---

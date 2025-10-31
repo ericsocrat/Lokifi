@@ -11,8 +11,7 @@ infra/
 ├── 🐳 docker/            # Docker configurations and compose files
 ├── 📊 monitoring/        # Monitoring and observability configs (Prometheus, Grafana, Loki)
 ├── 🔒 security/          # Security tooling & dependency protection
-├── � redis/             # Redis configuration files
-├── � logs/              # Infrastructure logs (docker, traefik, monitoring, security)
+├── 📂 logs/              # Infrastructure logs (docker, traefik, monitoring, security)
 └── 📄 Makefile           # Build and deployment automation
 ```
 
@@ -87,29 +86,40 @@ labels:
 
 ---
 
-## 📝 **Redis Configuration** (`redis/`)
+## 📝 **Redis Configuration**
 
-**Purpose**: Redis configuration files for caching, session storage, and pub/sub.
+**Purpose**: Redis caching, session storage, and pub/sub for the application.
 
-### Files:
+### Configuration Location:
 
-- **redis.conf**: Main Redis configuration
-- **redis-primary.conf**: Primary node config (for HA setup)
-- **redis-replica.conf**: Replica node config
-- **sentinel.conf**: Redis Sentinel for high availability
+Redis is configured via **Docker Compose inline commands** (no separate config files):
 
-### Features:
+**Local Development** (`docker-compose.yml`):
+```yaml
+redis:
+  image: redis:7.4-alpine
+  command: redis-server --requirepass 23233
+```
 
-- **Persistence**: AOF + RDB snapshots
-- **Memory Management**: LRU eviction policies
-- **Security**: Password authentication, command renaming
-- **High Availability**: Sentinel configuration ready
+**Production** (`docker-compose.production.yml`):
+```yaml
+redis:
+  image: redis:7.4-alpine
+  command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+```
 
-### Connection:
+### Connection Details:
 
+**Local Development**:
 ```
 URL: redis://:23233@localhost:6379/0
 Password: 23233
+```
+
+**Production**:
+```
+URL: redis://redis:6379/0
+No password (internal network)
 ```
 
 ---
