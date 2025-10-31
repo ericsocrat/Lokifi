@@ -11,7 +11,7 @@
 
 A comprehensive financial platform combining advanced market analysis with social features and AI-powered insights.
 
-> 🔐 **Security Status**: CodeQL scanning enabled | Dependabot active | Branch protection configured
+> 🔐 **Security Status**: CodeQL scanning enabled | Renovate bot active | Branch protection configured
 >
 > ✅ **Test Coverage**: Frontend 11.61% | Backend 27% | Overall 19.31%
 >
@@ -280,10 +280,11 @@ For detailed testing information, see [docs/testing/README.md](docs/testing/READ
   - SQL injection, XSS, command injection detection
   - Hardcoded credentials and sensitive data exposure checks
   - Results in GitHub Security tab
-- ✅ **Dependabot**: Automated dependency updates
-  - Weekly updates for npm, pip, Docker, GitHub Actions
-  - Grouped PRs to minimize noise
-  - Security vulnerability patches
+- ✅ **Renovate Bot**: Intelligent dependency management
+  - Smart grouping by ecosystem (React, Testing, Security)
+  - Auto-merge with 3-day stability checks
+  - Native lock file sync (solves Dependabot issues)
+  - Monorepo-aware (frontend/backend separation)
 - ✅ **Branch Protection**: Main branch requires PR approval + passing CI
 - ✅ **Standardized Services**: PostgreSQL 16-alpine + Redis 7-alpine across all workflows
 

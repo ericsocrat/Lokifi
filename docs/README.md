@@ -56,7 +56,7 @@ Continuous integration and deployment documentation **(RESTRUCTURED)**:
 - [`guides/overview.md`](./ci-cd/guides/overview.md) - Complete CI/CD guide
 - [`guides/performance.md`](./ci-cd/guides/performance.md) - Performance optimization
 - [`workflows/optimization.md`](./ci-cd/workflows/optimization.md) - Workflow optimization (Sessions 8-10)
-- [`dependencies/dependabot.md`](./ci-cd/dependencies/dependabot.md) - Dependency management
+- [`dependencies/renovate-evaluation.md`](./ci-cd/dependencies/renovate-evaluation.md) - Renovate bot migration (Session 29)
 - [`operational/rollback.md`](./ci-cd/operational/rollback.md) - Emergency procedures
 - See [ci-cd/README.md](./ci-cd/README.md) for complete index
 

@@ -1479,7 +1479,7 @@ When suggesting code or answering questions, prefer these docs:
 - **Architecture**: `/docs/guides/structure.md` - Project structure
 - **CI/CD Optimization**: `/docs/ci-cd/optimization.md` - Complete workflow optimization (Sessions 8-10)
 - **CI/CD Guide**: `/docs/ci-cd/overview.md` - Pipeline documentation
-- **Dependabot**: `/docs/ci-cd/dependabot.md` - Dependency management
+- **Renovate Bot**: `/docs/ci-cd/dependencies/renovate-evaluation.md` - Dependency management (Session 29)
 - **Deployment**: `/docs/deployment/README.md` - Production deployment guides
 - **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
 - **DNS Configuration**: `/docs/deployment/dns.md` - Domain setup
@@ -1500,9 +1500,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi       # View specific run details
 gh run view <run-id> --repo ericsocrat/Lokifi --log-failed  # Get failure logs
 gh run rerun <run-id> --repo ericsocrat/Lokifi      # Rerun failed workflow
 
-# Security & Dependabot
-gh api /repos/ericsocrat/Lokifi/dependabot/alerts   # List Dependabot alerts
+# Security & Dependency Management
 gh api /repos/ericsocrat/Lokifi/code-scanning/alerts # CodeQL alerts
+# Renovate dashboard: https://developer.mend.io/
 
 # Workflow Health Check Examples
 gh pr checks 27 --repo ericsocrat/Lokifi | Select-String "failing|successful"
