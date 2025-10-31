@@ -109,14 +109,14 @@ Lokifi has a **fully automatic coverage tracking system** integrated into CI/CD.
 **How It Works:**
 1. **Tests Run** → CI/CD executes frontend and backend tests
 2. **Coverage Extracted** → Metrics auto-pulled from coverage reports
-3. **Config Updated** → `coverage.config.json` (single source of truth) updated
+3. **Config Updated** → `config/coverage.config.json` (single source of truth) updated
 4. **Docs Synced** → All 6+ documentation files automatically synchronized
 5. **Auto-Committed** → Changes committed with `[skip ci]` tag
 
 **Key Points for Developers:**
 - ✅ **No manual updates needed** - System handles everything automatically
 - ✅ **Always current** - Coverage metrics update after every test run in CI/CD
-- ✅ **Single source of truth** - `coverage.config.json` is the master config
+- ✅ **Single source of truth** - `config/coverage.config.json` is the master config
 - ✅ **Verification only** - Use `npm run coverage:verify` for local checks
 
 **Current Coverage** (auto-updated):
@@ -125,7 +125,7 @@ Lokifi has a **fully automatic coverage tracking system** integrated into CI/CD.
 - Overall: 19.31% (passing 20% threshold ✅)
 
 **Coverage Documentation:**
-- Master Config: `/coverage.config.json`
+- Master Config: `/config/coverage.config.json`
 - Baseline: `/docs/guides/coverage.md`
 - Automation: Fully integrated in CI/CD workflows
 

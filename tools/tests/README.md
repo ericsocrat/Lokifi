@@ -18,7 +18,9 @@ This directory contains test suites and example implementations for Lokifi's dev
   - Shows how to use common functions library
   - Demonstrates CI/CD mode (`-CIMode`) with JSON output
   - Demonstrates dry run mode (`-DryRun`) for preview
-  - Configuration loading from `tools.config.json`
+  - Retry logic for flaky operations
+  - Configuration loading from `tools/tools.config.json`
+  - Error handling patterns
   - Standardized progress reporting and messaging
   - Proper exit codes (0=success, 1=error, 2=warnings)
 
@@ -80,7 +82,7 @@ These files serve as:
 
 - **Production Tools**: `../test-runner.ps1`, `../codebase-analyzer.ps1`, etc.
 - **Shared Library**: `../lib/Common-Functions.ps1`
-- **Configuration**: `../../tools.config.json`
+- **Configuration**: `../tools.config.json`
 - **Main README**: `../README.md`
 
 ---

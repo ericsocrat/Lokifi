@@ -242,7 +242,7 @@ Every time tests run in CI/CD (push to main/develop, PR merge), these files are 
 
 ### Learn More
 
-- **Master Config**: [coverage.config.json](../../../coverage.config.json) - Single source of truth
+- **Master Config**: [config/coverage.config.json](../../../config/coverage.config.json) - Single source of truth
 - **Automation**: Coverage tracking fully integrated in CI/CD workflows
 
 > 💡 **Developer Note**: You don't need to update coverage metrics manually. The system handles everything automatically!

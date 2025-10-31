@@ -168,10 +168,10 @@ function New-CIModeOutput {
 
 <#
 .SYNOPSIS
-    Loads tool configuration from tools.config.json.
+    Loads tool configuration from tools/tools.config.json.
 
 .DESCRIPTION
-    Reads configuration from tools.config.json in project root.
+    Reads configuration from tools/tools.config.json.
     Falls back to default values if file doesn't exist.
 
 .PARAMETER ToolName
@@ -193,7 +193,7 @@ function Get-ToolConfig {
         [hashtable]$DefaultConfig = @{}
     )
 
-    $configPath = Join-Path $PSScriptRoot '../../tools.config.json'
+    $configPath = Join-Path $PSScriptRoot '../tools.config.json'
 
     if (Test-Path $configPath) {
         try {

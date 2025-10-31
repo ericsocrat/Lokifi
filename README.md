@@ -299,7 +299,7 @@ Lokifi uses a **fully automatic coverage tracking system** integrated into CI/CD
 
 1. **Tests Run** → CI/CD executes frontend and backend tests
 2. **Coverage Extracted** → Metrics automatically pulled from test reports
-3. **Config Updated** → `coverage.config.json` updated with latest numbers
+3. **Config Updated** → `config/coverage.config.json` updated with latest numbers
 4. **Docs Synced** → All documentation files updated automatically
 5. **Auto-Committed** → Changes committed to repository with `[skip ci]` tag
 
@@ -328,7 +328,7 @@ npm run coverage:sync:dryrun
 
 ### 📚 Coverage Documentation
 
-- **Master Config:** [`coverage.config.json`](coverage.config.json) - Single source of truth
+- **Master Config:** [`config/coverage.config.json`](config/coverage.config.json) - Single source of truth
 - **Coverage Baseline:** [`docs/guides/coverage.md`](docs/guides/coverage.md)
 - **Automation:** Coverage tracking fully integrated in CI/CD workflows
 

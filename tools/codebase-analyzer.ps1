@@ -1002,7 +1002,7 @@ function Invoke-CodebaseAnalysis {
         $exitCode = 0
         $warnings = @()
         $errors = @()
-        
+
         # Check for quality issues
         if ($testCoverage -lt 50) {
             $warnings += "Low test coverage: $testCoverage% (target: 50%+)"
@@ -1013,39 +1013,39 @@ function Invoke-CodebaseAnalysis {
         if ($metrics.Quality.SecurityScore -lt 60) {
             $warnings += "Low security score: $($metrics.Quality.SecurityScore)/100"
         }
-        
+
         # Determine exit code
         if ($errors.Count -gt 0) {
             $exitCode = 1
         } elseif ($warnings.Count -gt 0) {
             $exitCode = 2
         }
-        
+
         # Output structured JSON
         $ciOutput = @{
-            tool = 'codebase-analyzer'
-            success = ($exitCode -eq 0)
-            exit_code = $exitCode
+            tool        = 'codebase-analyzer'
+            success     = ($exitCode -eq 0)
+            exit_code   = $exitCode
             duration_ms = [int]($duration * 1000)
-            timestamp = (Get-Date -Format 'o')
-            results = @{
-                analysis_id = $analysisId
-                files_analyzed = $metrics.Total.Files
-                files_skipped = $skippedCount
-                total_lines = $metrics.Total.Lines
-                test_coverage = $testCoverage
-                technical_debt_days = $metrics.Quality.TechnicalDebt
-                security_score = $metrics.Quality.SecurityScore
+            timestamp   = (Get-Date -Format 'o')
+            results     = @{
+                analysis_id           = $analysisId
+                files_analyzed        = $metrics.Total.Files
+                files_skipped         = $skippedCount
+                total_lines           = $metrics.Total.Lines
+                test_coverage         = $testCoverage
+                technical_debt_days   = $metrics.Quality.TechnicalDebt
+                security_score        = $metrics.Quality.SecurityScore
                 maintainability_score = $metrics.Quality.MaintainabilityScore
-                performance_rating = $perfRating
-                estimated_cost_usd = $estimates.SmallTeam.Cost.Likely
-                estimated_months = $estimates.SmallTeam.Months.Likely
-                reports_generated = $reportPaths.Count
+                performance_rating    = $perfRating
+                estimated_cost_usd    = $estimates.SmallTeam.Cost.Likely
+                estimated_months      = $estimates.SmallTeam.Months.Likely
+                reports_generated     = $reportPaths.Count
             }
-            errors = $errors
-            warnings = $warnings
+            errors      = $errors
+            warnings    = $warnings
         }
-        
+
         Write-Output ($ciOutput | ConvertTo-Json -Depth 10 -Compress)
         exit $exitCode
     }

@@ -501,12 +501,19 @@ infra/
 - `.editorconfig` - Editor configuration
 - `.nvmrc` - Node version specification (for nvm)
 - `.env.example` - Root environment template
-- `.lighthouserc.json` - Lighthouse CI config
 - `.copilotignore` - GitHub Copilot ignore patterns
 
-### Coverage & Testing
-- `coverage.config.json` - Coverage thresholds and config (single source of truth)
-- `actionlint` - GitHub Actions linter config
+### Configuration Directory
+- `config/` - Centralized configuration files
+  - `coverage.config.json` - Coverage thresholds and config (single source of truth)
+
+### Tool Configuration
+- `tools/` - Development tools and utilities
+  - `tools.config.json` - Tool configuration (test-runner, codebase-analyzer, security-scanner)
+  - `tools.config.schema.json` - JSON schema for tool configuration
+  
+### CI/CD Tools
+- `actionlint` - GitHub Actions linter binary (gitignored)
 
 **Note**: Coverage reports (`coverage.json`, `.coverage`, `htmlcov/`) now generate in app-specific directories:
 - Backend: `apps/backend/coverage.json`, `apps/backend/htmlcov/`
@@ -805,7 +812,7 @@ Test Coverage:            11.61% frontend, 27% backend (active improvement)
 **Fully automatic coverage tracking** (zero manual work):
 
 - **Status:** ✅ Fully automated
-- **Config:** `coverage.config.json` (single source of truth)
+- **Config:** `config/coverage.config.json` (single source of truth)
 - **CI/CD:** Auto-updates after every test run
 - **Docs:** Automatically synchronized across all files
 - **See:** `/tools/scripts/coverage/README.md` for details

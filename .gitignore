@@ -124,6 +124,9 @@ tools/docs/reports/protection_report_*.md
 actionlint
 actionlint.exe
 
+# Config directory (keep tracked files, ignore generated)
+# config/ files are tracked - no ignore patterns needed
+
 # User Uploads & Runtime Data
 uploads/
 !uploads/.gitkeep

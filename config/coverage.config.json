@@ -200,7 +200,7 @@
   },
 
   "documentation": {
-    "masterFile": "coverage.config.json",
+    "masterFile": "config/coverage.config.json",
     "baselineDoc": "docs/guides/COVERAGE_BASELINE.md",
     "cicdWorkflow": ".github/workflows/lokifi-unified-pipeline.yml",
     "copilotInstructions": ".github/copilot-instructions.md",
