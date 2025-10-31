@@ -194,9 +194,7 @@ class SmokeTestSuite:
         start_time = time.time()
 
         try:
-            ws_url = self.base_url.replace("http://", "ws://").replace(
-                "https://", "wss://"
-            )
+            ws_url = self.base_url.replace("http://", "ws://").replace("https://", "wss://")
             ws_url = f"{ws_url}/ws/test"
 
             async with websockets.connect(ws_url, timeout=5) as websocket:
@@ -278,9 +276,7 @@ class SmokeTestSuite:
                 if asyncio.iscoroutine(test_coro):
                     # Single test
                     result = await test_coro
-                    results = (
-                        [result] if isinstance(result, SmokeTestResult) else result
-                    )
+                    results = [result] if isinstance(result, SmokeTestResult) else result
                 else:
                     # Multiple tests
                     results = await test_coro
@@ -290,9 +286,7 @@ class SmokeTestSuite:
                     "passed": sum(1 for r in results if r.passed),
                     "failed": sum(1 for r in results if not r.passed),
                     "avg_response_time": (
-                        sum(r.response_time_ms for r in results) / len(results)
-                        if results
-                        else 0
+                        sum(r.response_time_ms for r in results) / len(results) if results else 0
                     ),
                     "details": results,
                 }
@@ -302,9 +296,7 @@ class SmokeTestSuite:
 
                 for result in results:
                     status = "✅" if result.passed else "❌"
-                    print(
-                        f"  {status} {result.test_name} ({result.response_time_ms:.1f}ms)"
-                    )
+                    print(f"  {status} {result.test_name} ({result.response_time_ms:.1f}ms)")
                     if not result.passed and result.error_message:
                         print(f"      Error: {result.error_message}")
 
@@ -328,9 +320,7 @@ class SmokeTestSuite:
             "total_tests": total_tests,
             "passed_tests": passed_tests,
             "failed_tests": total_tests - passed_tests,
-            "success_rate": (
-                (passed_tests / total_tests * 100) if total_tests > 0 else 0
-            ),
+            "success_rate": ((passed_tests / total_tests * 100) if total_tests > 0 else 0),
             "categories": category_results,
         }
 
@@ -357,7 +347,7 @@ class SmokeTestSuite:
         """Generate smoke test report"""
 
         report = f"""# Smoke Test Report
-        
+
 ## Summary
 - **Timestamp**: {summary["timestamp"]}
 - **Total Tests**: {summary["total_tests"]}
@@ -371,16 +361,12 @@ class SmokeTestSuite:
 """
 
         for category, results in summary["categories"].items():
-            status_icon = (
-                "✅" if results.get("passed", 0) == results.get("tests", 0) else "❌"
-            )
+            status_icon = "✅" if results.get("passed", 0) == results.get("tests", 0) else "❌"
             report += f"### {category} {status_icon}\n"
             report += f"- Tests: {results.get('tests', 0)}\n"
             report += f"- Passed: {results.get('passed', 0)}\n"
             report += f"- Failed: {results.get('failed', 0)}\n"
-            report += (
-                f"- Avg Response Time: {results.get('avg_response_time', 0):.1f}ms\n\n"
-            )
+            report += f"- Avg Response Time: {results.get('avg_response_time', 0):.1f}ms\n\n"
 
         return report
 
@@ -392,10 +378,11 @@ async def main():
 
         # Generate and save report to apps/backend/test-results/
         from pathlib import Path
+
         test_results_dir = Path(__file__).parent.parent.parent / "test-results"
         test_results_dir.mkdir(exist_ok=True)
         report_file = test_results_dir / "smoke_test_report.md"
-        
+
         report = suite.generate_report(summary)
         with open(report_file, "w") as f:
             f.write(report)

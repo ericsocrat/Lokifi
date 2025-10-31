@@ -179,7 +179,7 @@ GET /api/health
 ### Symbol Directory
 ```
 GET /api/v1/symbols                    # All symbols
-GET /api/v1/symbols?search=AAPL        # Search symbols  
+GET /api/v1/symbols?search=AAPL        # Search symbols
 GET /api/v1/symbols?type=stock         # Filter by type
 ```
 
@@ -203,7 +203,7 @@ GET /api/v1/ohlc/AAPL?timeframe=1h&limit=50    # Hourly, 50 bars
 The backend aggregates data from multiple providers with automatic failover:
 
 1. **Alpha Vantage** (priority 1) - Free tier: 5 calls/min
-2. **Finnhub** (priority 2) - Free tier: 60 calls/min  
+2. **Finnhub** (priority 2) - Free tier: 60 calls/min
 3. **Yahoo Finance** (priority 3) - No API key required
 4. **Mock Data** - Realistic fallback if all providers fail
 
@@ -279,7 +279,7 @@ docker-compose -f docker-compose.production.yml up -d
 
 ```bash
 make lint      # Check code
-make format    # Format code  
+make format    # Format code
 make type-check # Type checking
 make check     # Run all checks
 ```
@@ -360,7 +360,7 @@ make run
 
 1. **Setup:** `make setup`
 2. **Code:** Write features in `app/`
-3. **Test:** `make test` 
+3. **Test:** `make test`
 4. **Check:** `make check` (lint + type + test)
 5. **Run:** `make run` (verify locally)
 6. **Commit:** Git commit with descriptive message
@@ -371,7 +371,7 @@ make run
 # Update to latest versions
 make deps-update
 
-# Install updated dependencies  
+# Install updated dependencies
 make deps-sync
 
 # Verify everything works

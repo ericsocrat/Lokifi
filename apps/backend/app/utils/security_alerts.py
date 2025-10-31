@@ -14,7 +14,6 @@ from enum import Enum
 from typing import Any
 
 import requests
-
 from app.core.config import get_settings
 from app.utils.logger import get_logger
 from app.utils.security_logger import SecurityEventType, SecuritySeverity
@@ -233,7 +232,7 @@ class SecurityAlertManager:
             <div style="border-left: 4px solid {color}; padding-left: 20px;">
                 <h2 style="color: {color};">🚨 Security Alert</h2>
                 <h3>{alert.title}</h3>
-                
+
                 <table style="border-collapse: collapse; width: 100%;">
                     <tr>
                         <td style="padding: 8px; font-weight: bold;">Severity:</td>
@@ -271,7 +270,7 @@ class SecurityAlertManager:
 
         body += f"""
                 </table>
-                
+
                 <div style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border-radius: 5px;">
                     <h4>Message:</h4>
                     <p>{alert.message}</p>
@@ -349,9 +348,11 @@ class SecurityAlertManager:
             "icon_emoji": ":shield:",
             "attachments": [
                 {
-                    "color": "danger"
-                    if alert.severity in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]
-                    else "warning",
+                    "color": (
+                        "danger"
+                        if alert.severity in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]
+                        else "warning"
+                    ),
                     "title": f"{emoji} {alert.title}",
                     "text": alert.message,
                     "fields": [
@@ -359,15 +360,19 @@ class SecurityAlertManager:
                         {"title": "Event Type", "value": alert.event_type.value, "short": True},
                         {
                             "title": "Timestamp",
-                            "value": alert.timestamp.strftime("%Y-%m-%d %H:%M:%S UTC")
-                            if alert.timestamp
-                            else "N/A",
+                            "value": (
+                                alert.timestamp.strftime("%Y-%m-%d %H:%M:%S UTC")
+                                if alert.timestamp
+                                else "N/A"
+                            ),
                             "short": True,
                         },
                     ],
-                    "ts": int(alert.timestamp.timestamp())
-                    if alert.timestamp
-                    else int(datetime.now(UTC).timestamp()),
+                    "ts": (
+                        int(alert.timestamp.timestamp())
+                        if alert.timestamp
+                        else int(datetime.now(UTC).timestamp())
+                    ),
                 }
             ],
         }
@@ -400,9 +405,9 @@ class SecurityAlertManager:
             "title": f"🚨 Security Alert: {alert.title}",
             "description": alert.message,
             "color": severity_colors.get(alert.severity, 0x6C757D),
-            "timestamp": alert.timestamp.isoformat()
-            if alert.timestamp
-            else datetime.now(UTC).isoformat(),
+            "timestamp": (
+                alert.timestamp.isoformat() if alert.timestamp else datetime.now(UTC).isoformat()
+            ),
             "fields": [
                 {"name": "Severity", "value": alert.severity.value.upper(), "inline": True},
                 {"name": "Priority", "value": alert.priority.value.upper(), "inline": True},
@@ -456,9 +461,11 @@ class SecurityAlertManager:
             "total_alerts_24h": len(recent_alerts),
             "severity_breakdown": severity_counts,
             "event_type_breakdown": event_type_counts,
-            "last_alert": recent_alerts[-1].timestamp.isoformat()
-            if recent_alerts and recent_alerts[-1].timestamp
-            else None,
+            "last_alert": (
+                recent_alerts[-1].timestamp.isoformat()
+                if recent_alerts and recent_alerts[-1].timestamp
+                else None
+            ),
             "configured_channels": [c.value for c in (self.config.channels or [])],
             "priority_threshold": self.config.priority_threshold.value,
         }

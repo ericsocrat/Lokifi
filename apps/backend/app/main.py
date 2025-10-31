@@ -1,9 +1,6 @@
 import os
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
 from app.api.routes import security
@@ -43,6 +40,8 @@ from app.routers import (
 from app.routers.profile_enhanced import router as profile_enhanced_router
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 logger = get_logger(__name__)
 

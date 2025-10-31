@@ -7,15 +7,14 @@ import json
 from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
-from fastapi import WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
-
 # Import core components
 from app.core.config import settings
 from app.core.redis_client import redis_client
 from app.core.redis_keys import RedisKeyManager, RedisKeyspace
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
 
 logger = get_logger(__name__)
 

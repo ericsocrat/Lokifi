@@ -18,12 +18,11 @@ from datetime import UTC, datetime, timezone
 from typing import Any
 
 import psutil
-from sqlalchemy import text
-
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.database import db_manager
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from sqlalchemy import text
 
 logger = get_logger(__name__)
 
@@ -179,9 +178,11 @@ class PerformanceAnalyzer:
                 "cpu_usage": sum(m.cpu_usage for m in recent_metrics) / len(recent_metrics),
                 "memory_usage": sum(m.memory_usage for m in recent_metrics) / len(recent_metrics),
                 "response_time": sum(
-                    sum(m.response_times.values()) / len(m.response_times)
-                    if m.response_times
-                    else 0
+                    (
+                        sum(m.response_times.values()) / len(m.response_times)
+                        if m.response_times
+                        else 0
+                    )
                     for m in recent_metrics
                 )
                 / len(recent_metrics),

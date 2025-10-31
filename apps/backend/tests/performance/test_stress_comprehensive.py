@@ -160,8 +160,7 @@ class AdvancedStressTester:
                 elapsed = time.time() - start_time
                 max_concurrent = min(
                     config.concurrent_users,
-                    int((elapsed / config.ramp_up_seconds) * config.concurrent_users)
-                    + 1,
+                    int((elapsed / config.ramp_up_seconds) * config.concurrent_users) + 1,
                 )
                 current_concurrent = len([t for t in tasks if not t.done()])
 
@@ -220,23 +219,15 @@ class AdvancedStressTester:
             avg_response_time = statistics.mean(response_times)
             min_response_time = min(response_times)
             max_response_time = max(response_times)
-            p95_response_time = statistics.quantiles(response_times, n=20)[
-                18
-            ]  # 95th percentile
-            p99_response_time = statistics.quantiles(response_times, n=100)[
-                98
-            ]  # 99th percentile
+            p95_response_time = statistics.quantiles(response_times, n=20)[18]  # 95th percentile
+            p99_response_time = statistics.quantiles(response_times, n=100)[98]  # 99th percentile
         else:
             avg_response_time = min_response_time = max_response_time = 0
             p95_response_time = p99_response_time = 0
 
         total_requests_made = successful_requests + failed_requests
         rps = total_requests_made / actual_duration if actual_duration > 0 else 0
-        error_rate = (
-            (failed_requests / total_requests_made * 100)
-            if total_requests_made > 0
-            else 0
-        )
+        error_rate = (failed_requests / total_requests_made * 100) if total_requests_made > 0 else 0
         cpu_avg = statistics.mean(cpu_samples) if cpu_samples else 0
 
         # Create result
@@ -265,13 +256,13 @@ class AdvancedStressTester:
         # Print results
         print(f"\n✅ {config.name} Complete:")
         print(
-            f"   📊 Requests: {successful_requests}/{total_requests_made} success ({error_rate:.1f}% error)"
+            f"   � Requests: {successful_requests}/{total_requests_made} success ({error_rate:.1f}% error)"
         )
         print(f"   🚀 RPS: {rps:.1f}")
         print(f"   ⚡ Avg Response: {avg_response_time:.1f}ms")
         print(f"   🎯 P95 Response: {p95_response_time:.1f}ms")
         print(
-            f"   💾 Memory: {memory_start:.1f}MB → {memory_end:.1f}MB (peak: {memory_peak:.1f}MB)"
+            f"   � Memory: {memory_start:.1f}MB → {memory_end:.1f}MB (peak: {memory_peak:.1f}MB)"
         )
         print(f"   🖥️  CPU Avg: {cpu_avg:.1f}%")
 
@@ -339,9 +330,7 @@ class AdvancedStressTester:
                             except TimeoutError:
                                 errors.append("WebSocket receive timeout")
 
-                            await asyncio.sleep(
-                                random.uniform(0.5, 2.0)
-                            )  # Variable delay
+                            await asyncio.sleep(random.uniform(0.5, 2.0))  # Variable delay
 
                         except Exception as e:
                             errors.append(f"WebSocket send error: {e!s}")
@@ -352,10 +341,7 @@ class AdvancedStressTester:
                 errors.append(f"WebSocket connection error: {e!s}")
 
         # Start all WebSocket clients
-        tasks = [
-            asyncio.create_task(websocket_client())
-            for _ in range(concurrent_connections)
-        ]
+        tasks = [asyncio.create_task(websocket_client()) for _ in range(concurrent_connections)]
 
         # Monitor progress
         while time.time() < end_time:
@@ -386,13 +372,9 @@ class AdvancedStressTester:
 
         total_connections = successful_connections + failed_connections
         connection_success_rate = (
-            (successful_connections / total_connections * 100)
-            if total_connections > 0
-            else 0
+            (successful_connections / total_connections * 100) if total_connections > 0 else 0
         )
-        message_success_rate = (
-            (messages_received / messages_sent * 100) if messages_sent > 0 else 0
-        )
+        message_success_rate = (messages_received / messages_sent * 100) if messages_sent > 0 else 0
 
         avg_response_time = statistics.mean(response_times) if response_times else 0
         cpu_avg = statistics.mean(cpu_samples) if cpu_samples else 0
@@ -403,21 +385,15 @@ class AdvancedStressTester:
             total_requests=messages_sent,
             successful_requests=messages_received,
             failed_requests=messages_sent - messages_received,
-            requests_per_second=(
-                messages_sent / actual_duration if actual_duration > 0 else 0
-            ),
+            requests_per_second=(messages_sent / actual_duration if actual_duration > 0 else 0),
             avg_response_time_ms=avg_response_time,
             min_response_time_ms=min(response_times) if response_times else 0,
             max_response_time_ms=max(response_times) if response_times else 0,
             p95_response_time_ms=(
-                statistics.quantiles(response_times, n=20)[18]
-                if len(response_times) > 20
-                else 0
+                statistics.quantiles(response_times, n=20)[18] if len(response_times) > 20 else 0
             ),
             p99_response_time_ms=(
-                statistics.quantiles(response_times, n=100)[98]
-                if len(response_times) > 100
-                else 0
+                statistics.quantiles(response_times, n=100)[98] if len(response_times) > 100 else 0
             ),
             error_rate_percent=100 - message_success_rate,
             memory_start_mb=memory_start,
@@ -433,9 +409,7 @@ class AdvancedStressTester:
         print(
             f"   🔌 Connections: {successful_connections}/{concurrent_connections} ({connection_success_rate:.1f}%)"
         )
-        print(
-            f"   📨 Messages: {messages_received}/{messages_sent} ({message_success_rate:.1f}%)"
-        )
+        print(f"   📨 Messages: {messages_received}/{messages_sent} ({message_success_rate:.1f}%)")
         print(f"   ⚡ Avg Response: {avg_response_time:.1f}ms")
         print(
             f"   💾 Memory: {memory_start:.1f}MB → {memory_end:.1f}MB (peak: {memory_peak:.1f}MB)"
@@ -523,9 +497,7 @@ class AdvancedStressTester:
 
             # WebSocket Load Test
             try:
-                await self.run_websocket_load_test(
-                    concurrent_connections=20, duration_seconds=120
-                )
+                await self.run_websocket_load_test(concurrent_connections=20, duration_seconds=120)
                 await asyncio.sleep(5)
                 gc.collect()
             except Exception as e:
@@ -568,9 +540,7 @@ class AdvancedStressTester:
         )
 
         avg_rps = statistics.mean([r.requests_per_second for r in self.results])
-        avg_response_time = statistics.mean(
-            [r.avg_response_time_ms for r in self.results]
-        )
+        avg_response_time = statistics.mean([r.avg_response_time_ms for r in self.results])
 
         # Memory analysis
         memory_growth = []
@@ -588,12 +558,8 @@ class AdvancedStressTester:
             (
                 (overall_success_rate * 0.4)  # 40% weight on success rate
                 + (min(100, avg_rps) * 0.3)  # 30% weight on RPS (capped at 100)
-                + (
-                    max(0, 100 - avg_response_time / 10) * 0.2
-                )  # 20% weight on response time
-                + (
-                    max(0, 100 - avg_memory_growth) * 0.1
-                )  # 10% weight on memory efficiency
+                + (max(0, 100 - avg_response_time / 10) * 0.2)  # 20% weight on response time
+                + (max(0, 100 - avg_memory_growth) * 0.1)  # 10% weight on memory efficiency
             ),
         )
 
@@ -658,9 +624,7 @@ class AdvancedStressTester:
             )
 
         if success_rate >= 95 and avg_response_time < 500 and avg_rps > 100:
-            recommendations.append(
-                "🟢 Excellent performance - system is well optimized"
-            )
+            recommendations.append("🟢 Excellent performance - system is well optimized")
 
         if not recommendations:
             recommendations.append("🟢 Good baseline performance established")
@@ -692,29 +656,22 @@ async def main():
 
         # Save detailed report to apps/backend/test-results/
         from pathlib import Path
+
         test_results_dir = Path(__file__).parent.parent.parent / "test-results"
         test_results_dir.mkdir(exist_ok=True)
         report_file = test_results_dir / "comprehensive_stress_test_results.json"
-        
+
         with open(report_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2, default=str)
 
         print("\n📊 COMPREHENSIVE STRESS TEST COMPLETE")
         print("=" * 60)
-        print(
-            f"📈 Performance Score: {results['test_summary']['performance_score']}/100"
-        )
+        print(f"📈 Performance Score: {results['test_summary']['performance_score']}/100")
         print(f"📊 Total Requests: {results['test_summary']['total_requests']}")
-        print(
-            f"✅ Success Rate: {results['test_summary']['overall_success_rate_percent']}%"
-        )
+        print(f"✅ Success Rate: {results['test_summary']['overall_success_rate_percent']}%")
         print(f"🚀 Average RPS: {results['test_summary']['average_rps']}")
-        print(
-            f"⚡ Average Response: {results['test_summary']['average_response_time_ms']}ms"
-        )
-        print(
-            f"💾 Memory Efficiency: {results['memory_analysis']['memory_efficiency']}"
-        )
+        print(f"⚡ Average Response: {results['test_summary']['average_response_time_ms']}ms")
+        print(f"💾 Memory Efficiency: {results['memory_analysis']['memory_efficiency']}")
 
         print("\n💡 RECOMMENDATIONS:")
         for rec in results["recommendations"]:
