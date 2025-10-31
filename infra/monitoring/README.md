@@ -4,6 +4,12 @@ This directory contains monitoring configurations for Lokifi deployments.
 
 > **Note**: Standalone `docker-compose.monitoring.yml` was removed (Oct 2025). Use `infra/docker/docker-compose.production.yml` for full monitoring stack.
 
+## Configuration Files
+
+- **prometheus.yml**: Prometheus scrape configuration (used in production docker-compose)
+- **grafana-datasources.yml**: Grafana data source configuration
+- **lighthouserc.json**: Lighthouse CI performance monitoring configuration
+
 ## Available Monitoring Options
 
 ### 1. Docker Health Checks (Built-in)
