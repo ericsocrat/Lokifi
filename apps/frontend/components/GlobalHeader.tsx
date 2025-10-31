@@ -7,6 +7,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { AuthModal } from '@/src/components/AuthModal';
 import { NotificationBell } from './NotificationBell';
 import { useCryptoSearch } from '@/src/hooks/useBackendPrices';
+import type { CryptoAsset } from '@/src/services/backendPriceService';
 import Image from 'next/image';
 
 export default function GlobalHeader() {
@@ -147,7 +148,7 @@ export default function GlobalHeader() {
                     </div>
                   ) : searchResults.length > 0 ? (
                     <div className="py-2">
-                      {searchResults.map((crypto: any) => (
+                      {searchResults.map((crypto: CryptoAsset) => (
                         <Link
                           key={crypto.id}
                           href={`/asset/${crypto.symbol}`}

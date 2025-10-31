@@ -18,7 +18,7 @@ export default function IndicatorSettingsDrawer() {
   const setParam = (key: keyof State['params']) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = Number(e.target.value);
     if (Number.isFinite(v) && v > 0)
-      indicatorStore.set({ params: { ...s.params, [key]: v } as any });
+      indicatorStore.set({ params: { ...s.params, [key]: v } });
   };
 
   return (
@@ -100,7 +100,7 @@ export default function IndicatorSettingsDrawer() {
               type="color"
               value={s.style.bbFillColor}
               onChange={(e) =>
-                indicatorStore.set({ style: { ...s.style, bbFillColor: e.target.value } as any })
+                indicatorStore.set({ style: { ...s.style, bbFillColor: e.target.value } })
               }
               className="w-10 h-8 bg-transparent"
             />
@@ -115,7 +115,7 @@ export default function IndicatorSettingsDrawer() {
               value={s.style.bbFillOpacity}
               onChange={(e) =>
                 indicatorStore.set({
-                  style: { ...s.style, bbFillOpacity: Number(e.target.value) } as any,
+                  style: { ...s.style, bbFillOpacity: Number(e.target.value) },
                 })
               }
             />
