@@ -198,16 +198,17 @@ No password (internal network)
 
 ---
 
-## 🔑 **SSL/Security** (`ssl/`)
+## � **Security** (`security/`)
 
-**Purpose**: SSL certificates, security configurations, and cryptographic materials.
+**Purpose**: Security tooling and dependency protection system.
 
 ### Security Features:
 
-- **Certificate Management**: SSL/TLS certificate storage
-- **Key Management**: Secure key storage and rotation
-- **Security Headers**: HTTP security header configurations
-- **Access Control**: Authentication and authorization configs
+- **Dependency Protection**: Version guard system preventing supply chain attacks
+- **Security Scanner**: PowerShell-based security scanning (`tools/security-scanner.ps1`)
+- **Documentation**: Security guides in `docs/security/`
+
+**SSL/TLS**: Automatically managed by Traefik reverse proxy (see `docker/docker-compose.production.yml`)
 
 ---
 

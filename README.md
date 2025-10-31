@@ -45,10 +45,10 @@ lokifi/
 │   └── docker-compose*.yml # Service orchestration
 │
 ├── 🏗️ infra/                # Infrastructure & Platform
-│   ├── docker/             # Docker configurations
-│   ├── redis/              # Redis configs
-│   ├── monitoring/         # Observability stack
-│   ├── security/           # Security tooling
+│   ├── docker/             # Docker configurations & Traefik
+│   ├── monitoring/         # Observability stack (Prometheus, Grafana)
+│   ├── security/           # Security tooling & dependency protection
+│   ├── logs/               # Infrastructure logs
 │   ├── performance-tests/  # Load testing
 │   ├── kubernetes/         # K8s manifests (Phase 4)
 │   └── terraform/          # IaC (Phase 4)
@@ -62,12 +62,11 @@ lokifi/
 │   └── architecture/       # System architecture
 │   ├── testing/             # Testing automation
 │   └── security/            # Security tools
-├── 🏗️ infrastructure/       # Docker, nginx, monitoring configs
+├── 🏗️ infrastructure/       # Docker, Traefik, monitoring configs
 ├── 🚀 frontend/             # Next.js React application
 ├── ⚙️ backend/              # FastAPI Python backend
 ├── 📊 monitoring/           # System monitoring and observability
-├── � security/             # Security configs and audit tools
-├── 📦 redis/                # Redis configuration
+├── 🔒 security/             # Security tooling and dependency protection
 └── 🧪 performance-tests/    # Performance testing suite
 ```
 
@@ -92,8 +91,8 @@ lokifi/
 
 2. **Set up environment variables:**
    ```bash
-   cp security/configs/.env.example security/configs/.env
-   # Edit .env with your configuration (see Feature Flags section)
+   cp .env.example .env
+   # Edit .env with your API keys and configuration
    ```
 
 3. **Run with Docker Compose:**

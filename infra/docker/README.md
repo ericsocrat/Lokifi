@@ -166,7 +166,7 @@ Are you developing locally?
 - **Quick Deploy**: `../../docs/deployment/quick-start.md` - 3-step deployment guide
 - **Deployment Checklist**: `../../docs/deployment/production.md` - Full guide
 - **DNS Configuration**: `../../docs/deployment/dns.md` - Domain setup for www.lokifi.com
-- **SSL Setup**: `../ssl/SSL_SETUP_INSTRUCTIONS.md`
+- **SSL/TLS**: Automatic via Traefik (see docker-compose.production.yml)
 - **Monitoring**: `../monitoring/README.md`
 
 ### Environment Configuration

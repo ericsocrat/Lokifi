@@ -441,13 +441,11 @@ infra/
 │   ├── .env.example                          # Environment template
 │   ├── .env                                  # Production secrets (gitignored)
 │   └── LOCAL_DEVELOPMENT.md                  # Local setup guide
-├── nginx/                  # Nginx configurations
-│   ├── nginx.conf          # Main configuration
-│   └── sites-enabled/      # Virtual hosts
 ├── monitoring/             # Monitoring and observability
-│   ├── prometheus/         # Prometheus config
-│   ├── grafana/            # Grafana dashboards
-│   └── alerting/           # Alert rules
+│   ├── prometheus.yml      # Prometheus scrape config
+│   ├── grafana-datasources.yml  # Grafana data sources
+│   ├── lighthouserc.json   # Lighthouse CI config
+│   └── README.md           # Monitoring documentation
 ├── security/               # Security configurations
 │   ├── dependency_protection/  # Version guard system
 │   └── README.md           # Security documentation
