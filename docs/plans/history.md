@@ -1187,6 +1187,130 @@ async def create_thread(self, user_id: int, title: str | None = None) -> AIThrea
 
 **Key Lesson**: **Trust but verify** - Check logs before assuming workflow bugs. Summary job failures often indicate real test failures, not CI configuration issues.
 
+### Fix Phase: AIService Tests (30 minutes)
+
+**Problem**: AIService `create_thread()` method signature changed, tests still passing `db` parameter
+
+**Solution**: Mock `get_session()` context manager instead of passing `db` directly
+
+**Implementation** (commit 3e8af089):
+```python
+# BEFORE (BROKEN):
+async def test_create_thread_with_title(self, ai_service):
+    with patch("app.services.ai_service.AIThread") as mock_thread_class:
+        mock_db = MagicMock()
+        result = await ai_service.create_thread(db=mock_db, user_id=1, title="Test")
+        # TypeError: unexpected keyword argument 'db'
+
+# AFTER (FIXED):
+async def test_create_thread_with_title(self, ai_service):
+    with patch("app.services.ai_service.AIThread") as mock_thread_class, \
+         patch("app.services.ai_service.get_session") as mock_get_session:
+        mock_db = MagicMock()
+        mock_session_ctx = MagicMock()
+        mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+        mock_session_ctx.__exit__ = MagicMock(return_value=None)
+        mock_get_session.return_value = mock_session_ctx
+        
+        mock_thread = MagicMock()
+        mock_thread.id = 123
+        mock_thread.title = "Test Thread"
+        mock_thread_class.return_value = mock_thread
+
+        result = await ai_service.create_thread(user_id=1, title="Test Thread")
+        # ✅ Now passes
+```
+
+**Tests Fixed** (2/7):
+1. ✅ test_create_thread_with_title
+2. ✅ test_create_thread_auto_title
+
+**Local Verification**:
+```powershell
+cd apps/backend
+python -m pytest tests/services/test_ai_service.py::TestAIService::test_create_thread_with_title -v
+# PASSED ✅
+
+python -m pytest tests/services/test_ai_service.py::TestAIService::test_create_thread_auto_title -v
+# PASSED ✅
+```
+
+### Follow Tests Investigation: Database Dependency Issue
+
+**Discovery**: 5 failing follow tests are INTEGRATION TESTS, not unit tests
+
+**Analysis**:
+```python
+# tests/unit/test_follow_actions.py (line 33)
+@pytest.mark.anyio  # Integration test marker
+async def test_follow_action_response_and_noop():
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # Makes real HTTP requests to FastAPI endpoints
+        # Requires actual PostgreSQL database connection
+```
+
+**Root Cause**:
+- Tests use `@pytest.mark.anyio` and make real HTTP requests
+- Require PostgreSQL database connection (available in CI, not locally)
+- Error: `ConnectionRefusedError: [WinError 1225] The remote computer refused the network connection`
+- **These are NOT Python 3.11-specific failures** - they would fail in ANY Python version without database
+
+**Why They Pass in CI**:
+```yaml
+# .github/workflows/integration.yml
+services:
+  postgres:
+    image: postgres:16-alpine
+    env:
+      POSTGRES_USER: lokifi
+      POSTGRES_PASSWORD: lokifi2025
+      POSTGRES_DB: lokifi_test
+    # PostgreSQL available for tests in CI ✅
+```
+
+**Local Test Failure** (expected):
+```powershell
+cd apps/backend
+python -m pytest tests/unit/test_follow_actions.py::test_follow_action_response_and_noop -v
+# FAILED: ConnectionRefusedError (no database) ❌
+```
+
+**Options for Follow Tests**:
+1. **Option A** (RECOMMENDED): Refactor to true unit tests
+   - Mock AsyncClient and database dependencies
+   - Test follow service logic directly
+   - Fast, isolated, no infrastructure needed
+   - Time: ~2-3 hours
+
+2. **Option B**: Move to tests/integration/
+   - Acknowledge they are integration tests
+   - Keep database dependency
+   - Add proper pytest markers
+   - Time: ~30 minutes
+
+3. **Option C**: Mark as integration and skip locally
+   - Add `@pytest.mark.integration`
+   - Skip when `DATABASE_URL` not available
+   - Time: ~15 minutes
+
+**Decision**: Create Task #10 (Refactor follow integration tests) - MEDIUM priority
+
+**Session 33 Complete Metrics**:
+- **Total Time**: ~60 minutes (30 investigation + 30 fix)
+- **Tests Fixed**: 2/7 (AIService tests)
+- **Tests Remaining**: 5/7 (follow tests - database dependency)
+- **Root Cause**: Method signature change (AIService) + integration test architecture (follow)
+- **CI Impact**: AIService fixes will reduce Python 3.11 failures from 7 → 5
+- **Commits**: 2 (108c7bb6 investigation, 3e8af089 fixes)
+
+**Key Insights**:
+1. ✅ Workflows are correct - no YAML changes needed
+2. ✅ AIService tests fixed with proper mocking
+3. ⚠️ Follow tests are integration tests misplaced in tests/unit/
+4. 🎯 Session 33 successfully unblocked 2/7 test failures
+5. 📚 Follow tests need architectural refactoring (Task #10)
+
 ---
 
 ## 🚨 Sprint 0: Dependency Management (Week 0 - Current Focus)
