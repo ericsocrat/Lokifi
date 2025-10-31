@@ -517,7 +517,7 @@ function AssetDetailContent() {
               <div className="space-y-5">
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="font-bold text-gray-600 dark:text-gray-400">Today's Change</span>
+                    <span className="font-bold text-gray-600 dark:text-gray-400">Today&apos;s Change</span>
                     <span className={`font-black ${changeColor}`}>
                       {asset.changePercent >= 0 ? '+' : ''}{asset.changePercent.toFixed(2)}%
                     </span>

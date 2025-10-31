@@ -328,7 +328,7 @@ function PortfolioPageContent() {
                     </div>
                     {totalChange !== 0 && (
                       <div className="flex items-center gap-2 text-sm mb-4">
-                        <span className="opacity-80">Today's Change:</span>
+                        <span className="opacity-80">Today&apos;s Change:</span>
                         <span className="font-semibold text-base">
                           {totalChange >= 0 ? '+' : ''}
                           {formatCurrency(totalChange)}
