@@ -87,6 +87,83 @@ This document tracks the gradual improvement of code quality standards that were
 
 ---
 
+## Session 28: Node.js v22 Version Alignment (Oct 31, 2025) ✅
+
+**Status**: ✅ **COMPLETE** - All CI/CD workflows, documentation, and package.json aligned to Node.js v22
+**Timeline**: ~45 minutes
+**Commits**: 2 (187f16e4, 9d609881)
+
+### Context
+
+User inquired about `.nvmrc` file purpose after completing Session 27 test path verification. Investigation revealed Node.js version mismatch between `.nvmrc` (v22) and CI/CD workflows (v20). User approved updating all workflows to match .nvmrc specification.
+
+### Changes Implemented
+
+**CI/CD Workflows Updated** (Commit 187f16e4):
+- ✅ `.github/workflows/ci.yml`: 2 occurrences updated (ESLint job, NPM Audit job)
+  - Line 106: `node-version: "20"` → `"22"` + label update
+  - Line 272: `node-version: "20"` → `"22"` + label update
+- ✅ `.github/workflows/security.yml`: 1 occurrence updated
+  - Line 122: `node-version: "20"` → `"22"`
+- ✅ `.github/workflows/coverage.yml`: 3 conditions updated (primary version v20 → v22)
+  - Line 85: `continue-on-error: ${{ matrix.node-version != '20' }}` → `!= '22'`
+  - Line 88: `if: matrix.node-version == '20'` → `== '22'`
+  - Line 98: `if: matrix.node-version == '20'` → `== '22'`
+  - **Matrix strategy preserved**: Still tests v18, v20, v22 for compatibility
+  - **Primary version changed**: v22 now primary for uploads/failures
+
+**Documentation & Package.json Updated** (Commit 9d609881):
+- ✅ `package.json`: engines.node `>=20.0.0` → `>=22.0.0`
+- ✅ `docs/ci-cd/operational/linting.md`: node-version example 20 → 22
+- ✅ `docs/ci-cd/dependencies/management.md`: All Node.js 20 references → 22
+  - Docker images: `node:20-alpine` → `node:22-alpine`
+  - Setup-node examples: node-version 20 → 22
+  - npm version comments updated
+
+### Impact
+
+**Benefits**:
+- ✅ CI/CD now matches developer environments (v22.20.0)
+- ✅ Aligns with .nvmrc specification
+- ✅ Uses latest Node.js LTS for optimal Next.js 15.1.3 performance
+- ✅ Prevents "works locally, fails in CI" issues
+- ✅ Matrix testing still validates compatibility with older versions (v18, v20)
+
+**Validation**:
+- ✅ No other Node.js v20 references found (grep search confirmed)
+- ✅ Frontend package.json already had `>=22.0.0` (no change needed)
+- ✅ Archived workflows unchanged (`.github/workflows/.archive/`)
+
+### Metrics
+
+**Files Modified**: 6
+- 3 workflow files (.github/workflows/)
+- 2 documentation files (docs/ci-cd/)
+- 1 package.json (root)
+
+**Occurrences Updated**: 10
+- CI/CD workflows: 6 (2 ci.yml, 1 security.yml, 3 coverage.yml)
+- Documentation: 4 (1 linting.md, 3 management.md)
+
+**Commits**: 2
+- `187f16e4`: "chore(ci): align CI/CD workflows to .nvmrc Node.js v22"
+- `9d609881`: "docs: update Node.js version references from v20 to v22"
+
+### Lessons Learned
+
+1. **Version Consistency Critical**: .nvmrc and CI/CD workflows must match
+2. **Matrix Strategy Preserved**: Compatibility testing (v18/v20/v22) separate from primary version
+3. **Documentation Review**: Always check docs for hardcoded version references
+4. **Package.json Engines**: Sync root and subdirectory package.json constraints
+
+### Follow-Up Actions
+
+- [ ] Monitor CI/CD workflows after next PR to verify Node.js v22 works correctly
+- [ ] Consider documenting .nvmrc purpose in README.md for new developers
+- [ ] Evaluate Renovate bot as alternative to Dependabot for lock file management (deferred from Session 11)
+
+---
+
 ## 🚨 Sprint 0: Dependency Management (Week 0 - Current Focus)
 
 **Priority**: 🟢 **RESOLVED** - Manual dependency updates complete, PR merged to main
