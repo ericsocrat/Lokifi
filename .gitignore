@@ -23,13 +23,18 @@ htmlcov/
 .pytest_cache/
 .vitest/
 
-# Test results (JUnit XML, etc.)
+# Test results (JUnit XML, etc.) - app-specific locations
 test-results/
 **/test-results/
+apps/frontend/test-results/
+apps/backend/test-results/
 
 # Tool data (stored in tools/ directory)
 tools/.baselines/
 tools/.cache/
+
+# Legacy test cache (removed, keeping for cleanup)
+.test-cache/
 
 # Env & secrets
 .env

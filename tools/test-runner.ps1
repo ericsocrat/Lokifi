@@ -131,13 +131,13 @@ if ($CIMode) {
 # Configuration
 # ============================================================================
 
-$script:Config = @{
-    RepoRoot       = (Get-Item $PSScriptRoot).Parent.FullName
-    BackendDir     = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\backend'
-    FrontendDir    = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\frontend'
-    TestResultsDir = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'test-results'
-    CacheDir       = Join-Path (Get-Item $PSScriptRoot).Parent.FullName '.test-cache'
-    LogFile        = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'infra\logs\test-runner.log'
+$script:Paths = @{
+    RepoRoot            = (Get-Item $PSScriptRoot).Parent.FullName
+    BackendDir          = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\backend'
+    FrontendDir         = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\frontend'
+    BackendTestResults  = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\backend\test-results'
+    FrontendTestResults = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'apps\frontend\test-results'
+    LogFile             = Join-Path (Get-Item $PSScriptRoot).Parent.FullName 'infra\logs\test-runner.log'
 }
 
 # ============================================================================
@@ -173,9 +173,11 @@ function Write-TestLog {
     $logMessage = "$($icons[$Level]) $Message"
     Write-Host $logMessage -ForegroundColor $colors[$Level]
 
-    # Also log to file with timestamp
-    $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-    Add-Content -Path $Config.LogFile -Value "[$timestamp] [$Level] $Message" -ErrorAction SilentlyContinue
+    # Also log to file with timestamp (if LogFile is configured)
+    if ($script:Paths.LogFile) {
+        $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
+        Add-Content -Path $script:Paths.LogFile -Value "[$timestamp] [$Level] $Message" -ErrorAction SilentlyContinue
+    }
 }
 
 function Get-ChangedFiles {
@@ -237,6 +239,9 @@ function Initialize-TestEnvironment {
     Ensure test environment is ready
     #>
 
+    # Use script-level paths configuration
+    $Config = $script:Paths
+
     Write-TestLog 'Initializing test environment...' -Level Info
 
     # Validate environment first
@@ -258,13 +263,13 @@ function Initialize-TestEnvironment {
         Write-TestLog "Frontend directory not found: $($Config.FrontendDir)" -Level Warning
     }
 
-    # Create directories
-    if (-not (Test-Path $Config.TestResultsDir)) {
-        New-Item -ItemType Directory -Path $Config.TestResultsDir -Force | Out-Null
+    # Create test results directories for each app
+    if (-not (Test-Path $Config.BackendTestResults)) {
+        New-Item -ItemType Directory -Path $Config.BackendTestResults -Force | Out-Null
     }
 
-    if (-not (Test-Path $Config.CacheDir)) {
-        New-Item -ItemType Directory -Path $Config.CacheDir -Force | Out-Null
+    if (-not (Test-Path $Config.FrontendTestResults)) {
+        New-Item -ItemType Directory -Path $Config.FrontendTestResults -Force | Out-Null
     }
 
     # Set environment variables
@@ -287,6 +292,9 @@ function Invoke-BackendTests {
         [switch]$Quick,
         [switch]$Verbose
     )
+
+    # Use script-level paths configuration
+    $Config = $script:Paths
 
     Write-TestLog 'Running backend tests...' -Level Info
 
@@ -337,7 +345,7 @@ function Invoke-BackendTests {
             $pytestArgs += '--cov=app'
             $pytestArgs += '--cov-report=html'
             $pytestArgs += '--cov-report=term'
-            $pytestArgs += "--cov-report=json:$($Config.TestResultsDir)/backend-coverage.json"
+            $pytestArgs += "--cov-report=json:$($Config.BackendTestResults)/backend-coverage.json"
         }
 
         # Quick mode (only fast tests)
@@ -348,7 +356,7 @@ function Invoke-BackendTests {
         }
 
         # Output
-        $pytestArgs += "--junit-xml=$($Config.TestResultsDir)/backend-results.xml"
+        $pytestArgs += "--junit-xml=$($Config.BackendTestResults)/backend-results.xml"
 
         Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
 
@@ -383,6 +391,9 @@ function Invoke-FrontendTests {
         [switch]$Verbose,
         [switch]$Watch
     )
+
+    # Use script-level paths configuration
+    $Config = $script:Paths
 
     Write-TestLog 'Running frontend tests...' -Level Info
 
@@ -563,6 +574,9 @@ function Invoke-PreCommitTests {
 # ============================================================================
 
 function Invoke-GateTests {
+    # Use script-level paths configuration
+    $Config = $script:Paths
+
     Write-TestLog 'Running quality gate checks...' -Level Info
 
     # Run the enhanced CI protection script
@@ -586,6 +600,9 @@ function Invoke-SelfTest {
     .SYNOPSIS
     Run self-diagnostics on the test runner
     #>
+
+    # Use script-level paths configuration
+    $Config = $script:Paths
 
     Write-Host ''
     Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
