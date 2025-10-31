@@ -7,8 +7,9 @@
 This guide provides comprehensive documentation for all environment variables used across the Lokifi application, including security best practices and configuration examples.
 
 > **Related Resources**:
-> - **Security Tools**: [`infra/security/`](../../infra/security/README.md) - Security auditing and dependency protection tools
-> - **Security Logs**: [`infra/logs/security/`](../../infra/logs/security/README.md) - Runtime security event logs
+> - **Security Tools**: [`infra/security/`](../../infra/security/README.md) → Auditing and dependency protection
+> - **Security Logs**: [`infra/logs/security/`](../../infra/logs/security/README.md) → Runtime security event logs
+> - **Dependency Protection**: [`dependency-protection-guide.md`](./dependency-protection-guide.md) → Complete dependency security guide
 
 ## 🗂️ Environment Files Structure
 

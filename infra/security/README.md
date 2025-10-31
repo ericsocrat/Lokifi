@@ -3,9 +3,9 @@
 **Purpose**: Security auditing tools, dependency protection, and security compliance automation.
 
 > **Related Resources**:
+> - **Security Documentation**: [`docs/security/`](../../docs/security/README.md) - Security guides and policies
 > - **Security Logs**: [`infra/logs/security/`](../logs/security/README.md) - Runtime security event logs
 > - **Environment Configs**: See "Environment Configuration" section below for all `.env` file locations
-> - **Security Documentation**: [`docs/security/`](../../docs/security/README.md) - Security guides and policies
 
 ---
 
@@ -14,8 +14,7 @@
 ```
 security/
 ├── 🔍 audit-tools/             # Security auditing and analysis scripts
-├── 🛡️ dependency_protection/   # Dependency vulnerability protection
-└── 📚 dependency-protection-guide.md # Comprehensive dependency security guide
+└── 🛡️ dependency_protection/   # Dependency vulnerability protection
 ```
 
 ---
@@ -98,7 +97,10 @@ python audit-tools/security_enhancer.py
 ## 📚 **Security Documentation**
 
 ### Available Guides:
-- [`dependency-protection-guide.md`](dependency-protection-guide.md) - Comprehensive dependency security guide (457 lines)
+- **[Dependency Protection Guide](../../docs/security/dependency-protection-guide.md)** - Comprehensive dependency security guide (457 lines)
+  - **Location**: `docs/security/dependency-protection-guide.md`
+  - Complete documentation for dependency protection system (Python/Node.js)
+  - Moved from `infra/security/` for better discoverability with other security docs
 
 ### Documentation Standards:
 - **Security Policies**: Organizational security standards

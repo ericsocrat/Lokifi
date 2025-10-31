@@ -142,7 +142,7 @@ For SOC2, ISO27001, PCI-DSS compliance:
 - name: Run Trivy vulnerability scanner
   run: |
     trivy image ${{ env.IMAGE_NAME }} > infra/logs/security/security-scan-$(date +%Y%m%d).log
-    
+
 - name: Upload security scan results
   uses: actions/upload-artifact@v3
   with:

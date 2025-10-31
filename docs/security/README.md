@@ -6,10 +6,10 @@ This folder contains all security-related documentation, audits, and implementat
 
 ### � Configuration Guides
 - **[Environment Configuration](./environment.md)** - Complete guide for `.env` files and environment variables
+- **[Dependency Protection Guide](./dependency-protection-guide.md)** - Comprehensive dependency security and version guard system (457 lines)
 
 ### 🛡️ Implementation Reports
 - **[Enhanced Security Setup](./enhanced-setup.md)** - Comprehensive security configuration and implementation
-- **[Environment Configuration](./environment.md)** - Complete guide for environment variables
 
 ### 🔍 Security Audits
 - Regular security assessments and findings
