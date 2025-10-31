@@ -181,7 +181,7 @@ const defaultSessions: TradingSession[] = [
 export const useCorporateActionsStore = create<CorporateActionsState & CorporateActionsActions>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
-    immer<any>((set, get, store) => ({
+    immer<CorporateActionsState & CorporateActionsActions>((set, get, store) => ({
       // Initial State
       actions: [],
       actionsBySymbol: new Map(),

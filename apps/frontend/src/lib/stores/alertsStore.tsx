@@ -42,6 +42,7 @@ export interface AlertCondition {
   
   // Indicator conditions
   indicatorType?: string;
+  // any required: Indicator-specific parameters (structure varies by indicator type: RSI, MACD, etc.)
   indicatorParams?: Record<string, any>;
   indicatorOperator?: 'above' | 'below' | 'crosses_above' | 'crosses_below';
   indicatorValue?: number;
@@ -53,6 +54,7 @@ export interface AlertCondition {
   
   // Pattern conditions
   patternType?: 'support' | 'resistance' | 'breakout' | 'reversal' | 'custom';
+  // any required: Pattern-specific parameters (structure varies by pattern type: support, resistance, custom, etc.)
   patternParams?: Record<string, any>;
   
   // Combination conditions (for complex alerts)

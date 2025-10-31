@@ -122,7 +122,7 @@ const defaultScreenerQuery: ScreenerQuery = {
 export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
-    immer<any>((set, get, store) => ({
+    immer<WatchlistState & WatchlistActions>((set, get, store) => ({
       // Initial State
       watchlists: [],
       activeWatchlistId: null,
@@ -403,7 +403,9 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           const limitedResults: SymbolMetrics[] = results.slice(0, screenerQuery.limit);
 
           set((draft: Draft<WatchlistState>) => {
-            draft.screenerResults = limitedResults as any; // any required: Draft incompatibility with complex filter result
+            // Immer Draft requires type assertion for complex array assignments
+            // any required: Draft<SymbolMetrics[]> incompatibility with filtered/sorted result
+            draft.screenerResults = limitedResults as any;
             draft.isLoading = false;
           });
         } catch (error) {

@@ -61,6 +61,7 @@ export interface IndicatorConfig {
   id: string;
   type: string;
   name: string;
+  // any required: Indicator-specific parameters (structure varies by indicator type: RSI, MACD, Bollinger Bands, etc.)
   parameters: Record<string, any>;
   style: {
     color: string;
@@ -80,6 +81,7 @@ export interface DrawingConfig {
     fillColor?: string;
     textColor?: string;
   };
+  // any required: Drawing-specific properties (structure varies by drawing type: trendline, fibonacci, etc.)
   properties: Record<string, any>;
 }
 
@@ -212,7 +214,7 @@ const defaultExportOptions: ExportOptions = {
 export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
-    immer<any>((set, get, store) => ({
+    immer<TemplatesState & TemplatesActions>((set, get, store) => ({
       // Initial State
       templates: [],
       templatesByUser: new Map(),

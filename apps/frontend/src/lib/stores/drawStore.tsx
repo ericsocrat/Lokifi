@@ -127,12 +127,16 @@ export const drawStore = {
     const moved = _state.shapes.map((s: Shape) => {
       if (!ids.has(s.id)) return s;
       if (s.type === 'hline') return { ...s, y: s.y + dp };
-      if ('a' in s && 'b' in s)
+      if ('a' in s && 'b' in s) {
+        // Type narrowing: shapes with 'a' and 'b' properties
+        type ShapeWithPoints = Extract<Shape, { a: Point; b: Point }>;
+        const shapeWithPoints = s as ShapeWithPoints;
         return {
-          ...(s as any),
-          a: { t: s.a.t + dt, p: s.a.p + dp },
-          b: { t: s.b.t + dt, p: s.b.p + dp },
+          ...shapeWithPoints,
+          a: { t: shapeWithPoints.a.t + dt, p: shapeWithPoints.a.p + dp },
+          b: { t: shapeWithPoints.b.t + dt, p: shapeWithPoints.b.p + dp },
         };
+      }
       return s;
     });
     const sym = symbolStore.get();
