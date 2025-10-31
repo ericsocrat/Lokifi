@@ -44,6 +44,8 @@ Thumbs.db
 *.log
 logs/
 infra/logs/
+# BUT allow README files in log directories
+!**/logs/**/README.md
 
 # Backup files
 *.bak
