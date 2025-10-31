@@ -26,6 +26,9 @@ htmlcov/
 # Tool baselines (local metrics history)
 .tool-baselines/
 
+# Tool cache (local result caching)
+.tool-cache/
+
 # Env & secrets
 .env
 .env.*
