@@ -35,9 +35,9 @@ export default function PluginSettingsDrawer({
           <label className="flex items-center gap-2 mb-2">
             <span>Width mode</span>
             <select
-              value={s.channelWidthMode as any}
+              value={s.channelWidthMode}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                pluginSettingsStore.set('channelWidthMode', e.target.value as any)
+                pluginSettingsStore.set('channelWidthMode', e.target.value as 'percent' | 'pixels')
               }
               className="ml-auto px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
             >
@@ -66,7 +66,9 @@ export default function PluginSettingsDrawer({
           <div className="flex items-center gap-2">
             <select
               value={s.fibPreset}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => pluginSettingsStore.set('fibPreset', e.target.value as any)}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
+                pluginSettingsStore.set('fibPreset', e.target.value as 'Classic' | 'Extended' | 'Aggressive' | 'Custom')
+              }
               className="px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
             >
               <option value="Classic">Classic (0→1)</option>
@@ -103,13 +105,19 @@ export default function PluginSettingsDrawer({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => (window as any).__lokifiApplySymbolSettings?.()}
+              onClick={() => {
+                // any required: Plugin API extension on window global
+                (window as any).__lokifiApplySymbolSettings?.();
+              }}
               className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800"
             >
               Apply to current
             </button>
             <button
-              onClick={() => (window as any).__lokifiClearSymbolSettings?.()}
+              onClick={() => {
+                // any required: Plugin API extension on window global
+                (window as any).__lokifiClearSymbolSettings?.();
+              }}
               className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800"
             >
               Clear current
