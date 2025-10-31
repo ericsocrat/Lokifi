@@ -6,7 +6,6 @@
   ],
   "baseBranches": ["main"],
   "timezone": "Africa/Johannesburg",
-  "schedule": ["before 9am on Monday"],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "labels": ["dependencies", "renovate"],
