@@ -3,3 +3,29 @@ name = "lokifi-backend"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = []
+
+[tool.coverage.run]
+source = ["app"]
+data_file = ".coverage"
+omit = [
+    "*/tests/*",
+    "*/venv/*",
+    "*/__pycache__/*",
+    "*/migrations/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+]
+
+[tool.coverage.json]
+# Output file is relative to where pytest is run (apps/backend/)
+output = "coverage.json"
+
+[tool.coverage.html]
+# HTML report directory relative to where pytest is run (apps/backend/)
+directory = "htmlcov"

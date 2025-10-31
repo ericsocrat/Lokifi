@@ -17,6 +17,8 @@ pnpm-debug.log*
 .npm
 
 # Test Coverage (pytest, vitest)
+# Note: Coverage files should only exist in app-specific directories
+# (apps/backend/ and apps/frontend/), not at project root
 .coverage
 coverage.json
 htmlcov/
