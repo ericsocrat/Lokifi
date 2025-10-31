@@ -81,6 +81,34 @@ lokifi/
 
 ## 🚀 **Quick Start**
 
+### Prerequisites
+
+**Node.js Version Management:**
+
+This project uses **Node.js v22** (specified in `.nvmrc`). We recommend using [NVM (Node Version Manager)](https://github.com/nvm-sh/nvm) for automatic version switching.
+
+```bash
+# Install NVM (if not already installed)
+# Windows: https://github.com/coreybutler/nvm-windows
+# macOS/Linux: https://github.com/nvm-sh/nvm
+
+# Automatic version switching (recommended)
+nvm use  # Reads .nvmrc and switches to Node.js v22
+
+# Or install Node.js v22 manually
+nvm install 22
+nvm use 22
+
+# Verify version
+node --version  # Should show v22.x.x
+```
+
+**Why Node.js v22?**
+- ✅ Latest LTS (Long Term Support) with best performance
+- ✅ Required for Next.js 15.1.3 optimal compatibility
+- ✅ Ensures consistency across team and CI/CD environments
+- ✅ Prevents "works on my machine" issues
+
 ### Running Locally
 
 1. **Clone the repository:**
@@ -89,13 +117,18 @@ lokifi/
    cd Lokifi
    ```
 
-2. **Set up environment variables:**
+2. **Set up Node.js version:**
+   ```bash
+   nvm use  # Automatically uses Node.js v22 from .nvmrc
+   ```
+
+3. **Set up environment variables:**
    ```bash
    cp .env.example .env
    # Edit .env with your API keys and configuration
    ```
 
-3. **Run with Docker Compose:**
+4. **Run with Docker Compose:**
    ```bash
    cd infra/docker && docker compose up
    ```
