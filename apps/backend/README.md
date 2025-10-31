@@ -51,12 +51,86 @@ backend/
 │   ├── routers/             # API route definitions
 │   ├── services/            # Business logic
 │   │   └── data_service.py  # Market data aggregation
-│   └── utils/               # Utility functions
+│   └── utils/               # Utility functions (see Utils Guidelines below)
+├── logs/                    # Application logs (gitignored)
+│   └── security_events.log  # Security event logs
 ├── tests/                   # Test suites
 ├── requirements.txt         # Python dependencies
 ├── Makefile                # Development commands
 ├── .python-version         # Python version (pyenv)
 └── setup_backend.ps1       # Windows setup script
+```
+
+## 🛠️ Utils Guidelines
+
+The `app/utils/` directory contains reusable utilities for common tasks:
+
+### Logging (`logger.py`)
+**Use for:** Structured logging with environment-based formatting
+```python
+from app.utils.logger import get_logger
+
+logger = get_logger(__name__)
+logger.info("Processing request", extra={"user_id": 123})
+logger.error("Failed to process", exc_info=True)
+```
+
+**Features:**
+- Colored console output (development)
+- JSON structured logs (production)
+- Automatic file logging to `logs/` directory
+- Context managers for temporary log levels
+
+### Validation
+
+**For new code:** Use `enhanced_validation.py` (Pydantic-based, comprehensive)
+```python
+from app.utils.enhanced_validation import InputSanitizer
+
+# Sanitize user input
+cleaned = InputSanitizer.sanitize_string(user_input)
+safe_html = InputSanitizer.sanitize_html(html_content)
+```
+
+**Legacy:** `input_validation.py` (simple HTTPException-based)
+- Only used in `services/prices.py`
+- Prefer `enhanced_validation.py` for new features
+
+### Redis Caching
+
+**Simple caching:** Use `redis.py` (lightweight JSON wrapper)
+```python
+from app.utils.redis import redis_json_get, redis_json_set
+
+# Simple key-value caching
+await redis_json_set("key", {"data": "value"}, ttl=300)
+data = await redis_json_get("key")
+```
+
+**Production features:** Use `advanced_redis_client.py`
+- Connection pooling, sentinel support
+- Multi-layer caching strategies
+- Performance monitoring and metrics
+- Automatic failover and circuit breaker
+
+### Security
+
+**Security logging:** `security_logger.py`
+- Logs to `apps/backend/logs/security_events.log`
+- Structured JSON format for security events
+
+**Security alerts:** `security_alerts.py`
+- Multi-channel alerting (email, webhook, Slack, Discord)
+- Configurable thresholds and alert rules
+
+### Server-Sent Events
+
+**SSE support:** `sse.py`
+```python
+from app.utils.sse import EventSourceResponse
+
+# Stream events to clients
+return EventSourceResponse(event_generator())
 ```
 
 ## 🔧 Configuration

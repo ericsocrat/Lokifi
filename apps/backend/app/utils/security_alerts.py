@@ -4,7 +4,6 @@ Comprehensive monitoring with multiple alert channels
 """
 
 import json
-import logging
 import os
 import smtplib
 from dataclasses import dataclass
@@ -17,9 +16,10 @@ from typing import Any
 import requests
 
 from app.core.config import get_settings
+from app.utils.logger import get_logger
 from app.utils.security_logger import SecurityEventType, SecuritySeverity
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 settings = get_settings()
 
 

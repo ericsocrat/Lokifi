@@ -4,7 +4,6 @@ Provides JWT authentication for WebSocket connections with Redis coordination
 """
 
 import json
-import logging
 from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
@@ -15,9 +14,10 @@ from jose import JWTError, jwt
 from app.core.config import settings
 from app.core.redis_client import redis_client
 from app.core.redis_keys import RedisKeyManager, RedisKeyspace
+from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class WebSocketJWTAuth:

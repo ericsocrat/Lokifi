@@ -1,6 +1,5 @@
 # J6 Enterprise Notifications - WebSocket Real-time Delivery
 import json
-import logging
 from datetime import UTC, datetime, timezone
 from typing import Any
 
@@ -12,8 +11,9 @@ from app.models.notification_models import Notification
 # We'll handle auth differently - remove the problematic import for now
 from app.models.user import User
 from app.services.notification_service import NotificationEvent, notification_service
+from app.utils.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class NotificationWebSocketManager:

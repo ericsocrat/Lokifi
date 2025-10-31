@@ -126,6 +126,7 @@ def setup_logger(
     name: str = "lokifi",
     level: int | None = None,
     structured: bool | None = None,
+    log_file: str | None = None,
 ) -> logging.Logger:
     """
     Set up a logger with appropriate formatting based on environment
@@ -134,6 +135,7 @@ def setup_logger(
         name: Logger name (usually __name__)
         level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         structured: Force structured (JSON) logging. Auto-detected if None.
+        log_file: Optional file path for file logging (relative to apps/backend/logs/)
 
     Returns:
         Configured logger instance
@@ -166,8 +168,8 @@ def setup_logger(
         return logger
 
     # Create console handler
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(level)
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setLevel(level)
 
     # Choose formatter based on environment
     if structured is None:
@@ -178,8 +180,23 @@ def setup_logger(
     else:
         formatter = ColoredFormatter()
 
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # Add file handler if log_file specified
+    if log_file:
+        from pathlib import Path
+
+        # Ensure logs directory exists in backend folder
+        log_dir = Path(__file__).parent.parent.parent / "logs"
+        log_dir.mkdir(exist_ok=True)
+        log_path = log_dir / log_file
+
+        file_handler = logging.FileHandler(log_path)
+        file_handler.setLevel(level)
+        # Always use structured logging for files
+        file_handler.setFormatter(StructuredFormatter())
+        logger.addHandler(file_handler)
 
     # Prevent propagation to root logger
     logger.propagate = False

@@ -1,4 +1,3 @@
-import logging
 import os
 from contextlib import asynccontextmanager
 
@@ -42,9 +41,10 @@ from app.routers import (
     websocket_prices,
 )
 from app.routers.profile_enhanced import router as profile_enhanced_router
+from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @asynccontextmanager
