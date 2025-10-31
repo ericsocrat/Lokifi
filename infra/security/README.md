@@ -13,7 +13,6 @@
 
 ```
 security/
-├── 🔍 audit-tools/             # Security auditing and analysis scripts
 └── 🛡️ dependency_protection/   # Dependency vulnerability protection
 ```
 
@@ -47,31 +46,26 @@ security/
 
 ---
 
-## 🔍 **Security Audit Tools** (`audit-tools/`)
+## 🔍 **Security Scanning**
 
-**Purpose**: Security analysis, vulnerability scanning, and compliance auditing.
-
-### Available Tools:
-- `security_audit_enhanced.py` - Comprehensive security audit framework
-- `security_enhancer.py` - Security posture improvement automation
-- `validate_security.py` - Security configuration validation
+**Active Tool**: [`tools/security-scanner.ps1`](../../tools/security-scanner.ps1) - PowerShell-based comprehensive security scanner
 
 ### Capabilities:
-- **Vulnerability Scanning**: Automated dependency and code scanning
-- **Configuration Auditing**: Security settings validation
-- **Compliance Checking**: Standards adherence verification
-- **Threat Analysis**: Security risk assessment
+- **Dependency Vulnerability Scanning**: npm audit integration
+- **Code Pattern Detection**: eval, innerHTML, hardcoded secrets
+- **Security Baseline Tracking**: Historical vulnerability trends
+- **Auto-Fix**: Automated vulnerability remediation (where possible)
 
 ### Usage:
-```bash
-# Run comprehensive security audit
-python audit-tools/security_audit_enhanced.py
+```powershell
+# Quick dependency scan
+.\tools\security-scanner.ps1 -Quick
 
-# Validate current security configuration
-python audit-tools/validate_security.py
+# Deep security analysis
+.\tools\security-scanner.ps1 -Deep
 
-# Enhance security posture
-python audit-tools/security_enhancer.py
+# Auto-fix vulnerabilities
+.\tools\security-scanner.ps1 -Fix
 ```
 
 ---
