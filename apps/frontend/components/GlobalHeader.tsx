@@ -1,14 +1,14 @@
 'use client';
 
-import { useAuth } from '@/src/components/AuthProvider';
-import { Bell, User, Search, TrendingUp, X } from 'lucide-react';
-import Link from 'next/link';
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { AuthModal } from '@/src/components/AuthModal';
-import { NotificationBell } from './NotificationBell';
+import { useAuth } from '@/src/components/AuthProvider';
 import { useCryptoSearch } from '@/src/hooks/useBackendPrices';
 import type { CryptoAsset } from '@/src/services/backendPriceService';
+import { Bell, Search, User, X } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { NotificationBell } from './NotificationBell';
 
 export default function GlobalHeader() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -17,24 +17,24 @@ export default function GlobalHeader() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const { user, loading } = useAuth();
   const searchRef = useRef<HTMLDivElement>(null);
-  
+
   // Search functionality
   const { results: searchResults, loading: searchLoading } = useCryptoSearch(searchQuery, 300);
   const showSearchResults = isSearchFocused && searchQuery.length >= 2;
-  
+
   // Memoize derived state to prevent unnecessary re-renders
   const isLoggedIn = useMemo(() => !!user, [user]);
   const displayName = useMemo(() => {
     if (!user) return '';
     return user.username ? `@${user.username}` : user.email?.split('@')[0] || 'User';
   }, [user]);
-  
+
   // Memoize callbacks to prevent re-creating functions
   const handleOpenLogin = useCallback(() => {
     setAuthModalTab('login');
     setIsAuthModalOpen(true);
   }, []);
-  
+
   const handleCloseAuthModal = useCallback(() => {
     setIsAuthModalOpen(false);
   }, []);
@@ -73,7 +73,11 @@ export default function GlobalHeader() {
               <span className="text-xl font-bold text-white">Lokifi</span>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-6" role="navigation" aria-label="Main navigation">
+            <nav
+              className="hidden md:flex items-center gap-6"
+              role="navigation"
+              aria-label="Main navigation"
+            >
               <Link
                 href="/markets"
                 className="text-sm font-medium text-neutral-400 hover:text-white transition-colors relative group"
@@ -115,8 +119,8 @@ export default function GlobalHeader() {
           {/* Center: Search Bar */}
           <div className="hidden lg:flex flex-1 max-w-md mx-8" ref={searchRef}>
             <div className="relative w-full group">
-              <Search 
-                className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500 group-focus-within:text-blue-500 transition-colors" 
+              <Search
+                className="absolute left-3 top-2.5 w-4 h-4 text-neutral-500 group-focus-within:text-blue-500 transition-colors"
                 aria-hidden="true"
               />
               <input
@@ -176,7 +180,9 @@ export default function GlobalHeader() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
                               <span className="font-medium text-white truncate">{crypto.name}</span>
-                              <span className="text-xs text-neutral-500 uppercase">{crypto.symbol}</span>
+                              <span className="text-xs text-neutral-500 uppercase">
+                                {crypto.symbol}
+                              </span>
                             </div>
                             {crypto.market_cap_rank && (
                               <div className="text-xs text-neutral-500">
@@ -187,18 +193,22 @@ export default function GlobalHeader() {
                           <div className="text-right flex-shrink-0">
                             {crypto.current_price && (
                               <div className="text-sm font-medium text-white">
-                                ${crypto.current_price.toLocaleString(undefined, {
+                                $
+                                {crypto.current_price.toLocaleString(undefined, {
                                   minimumFractionDigits: 2,
-                                  maximumFractionDigits: crypto.current_price < 1 ? 6 : 2
+                                  maximumFractionDigits: crypto.current_price < 1 ? 6 : 2,
                                 })}
                               </div>
                             )}
-                            {crypto.price_change_percentage_24h !== null && crypto.price_change_percentage_24h !== undefined && (
-                              <div className={`text-xs ${crypto.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                {crypto.price_change_percentage_24h >= 0 ? '+' : ''}
-                                {crypto.price_change_percentage_24h.toFixed(2)}%
-                              </div>
-                            )}
+                            {crypto.price_change_percentage_24h !== null &&
+                              crypto.price_change_percentage_24h !== undefined && (
+                                <div
+                                  className={`text-xs ${crypto.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                                >
+                                  {crypto.price_change_percentage_24h >= 0 ? '+' : ''}
+                                  {crypto.price_change_percentage_24h.toFixed(2)}%
+                                </div>
+                              )}
                           </div>
                         </Link>
                       ))}
@@ -267,9 +277,7 @@ export default function GlobalHeader() {
       </header>
 
       {/* Auth Modal */}
-      {isAuthModalOpen && (
-        <AuthModal initialMode={authModalTab} onClose={handleCloseAuthModal} />
-      )}
+      {isAuthModalOpen && <AuthModal initialMode={authModalTab} onClose={handleCloseAuthModal} />}
     </>
   );
 }

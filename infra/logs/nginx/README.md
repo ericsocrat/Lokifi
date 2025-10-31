@@ -200,8 +200,8 @@ nginx:
 
 ## Current Status
 
-**Nginx Status**: Not currently deployed in Lokifi infrastructure  
-**Primary Proxy**: Traefik (see `/infra/logs/traefik/README.md`)  
+**Nginx Status**: Not currently deployed in Lokifi infrastructure
+**Primary Proxy**: Traefik (see `/infra/logs/traefik/README.md`)
 **Future Consideration**: May add nginx for static asset optimization in high-traffic scenarios
 
 ## Related Documentation
@@ -213,6 +213,6 @@ nginx:
 
 ---
 
-**Last Updated**: October 31, 2025  
-**Current Proxy**: Traefik (nginx not yet deployed)  
+**Last Updated**: October 31, 2025
+**Current Proxy**: Traefik (nginx not yet deployed)
 **Placeholder**: Directory prepared for future nginx integration

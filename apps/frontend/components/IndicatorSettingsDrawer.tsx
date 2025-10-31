@@ -17,8 +17,7 @@ export default function IndicatorSettingsDrawer() {
 
   const setParam = (key: keyof State['params']) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = Number(e.target.value);
-    if (Number.isFinite(v) && v > 0)
-      indicatorStore.set({ params: { ...s.params, [key]: v } });
+    if (Number.isFinite(v) && v > 0) indicatorStore.set({ params: { ...s.params, [key]: v } });
   };
 
   return (

@@ -29,6 +29,7 @@ Developer experience, workflows, and tooling:
 
 ### 📖 [Guides](./guides/)
 Frontend/backend development guides (**NEW STRUCTURE**):
+- [`copilot-usage.md`](./guides/copilot-usage.md) 📌 - GitHub Copilot shortcuts & best practices
 - [`frontend/`](./guides/frontend/) - Next.js, React, Zustand, TailwindCSS (future)
 - [`backend/`](./guides/backend/) - FastAPI, PostgreSQL, Redis
 - [`testing/`](./guides/testing/) - Testing strategies (3 guides)

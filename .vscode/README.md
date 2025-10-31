@@ -8,7 +8,7 @@ This folder contains essential VS Code workspace settings, tasks, and configurat
 ## 🚀 Quick Start
 
 1. **Open workspace** → VS Code will auto-install recommended extensions
-2. **Using Copilot?** → Check [`COPILOT_QUICK_REFERENCE.md`](COPILOT_QUICK_REFERENCE.md) 📌
+2. **Using Copilot?** → Check [`docs/guides/copilot-usage.md`](../docs/guides/copilot-usage.md) 📌
 3. **Run tasks** → Use Ctrl+Shift+P → "Tasks: Run Task"
 
 ## 📁 Essential Files
@@ -20,12 +20,10 @@ This folder contains essential VS Code workspace settings, tasks, and configurat
 - **`extensions.json`** - Recommended VS Code extensions
 - **`keybindings.json`** - Custom keyboard shortcuts
 - **`copilot-settings.json`** - GitHub Copilot configuration
-
-### Documentation & Scripts
-- **`COPILOT_QUICK_REFERENCE.md`** - 📌 **Pin this!** Quick shortcuts & tips
-- **`cleanup-extensions.ps1`** - Extension cleanup utility
-- **`monitor-vscode.ps1`** - Performance monitoring utility
 - **`snippets/`** - Code snippets for TypeScript, Python, etc.
+
+### Documentation
+- **[`docs/guides/copilot-usage.md`](../docs/guides/copilot-usage.md)** - 📌 **Pin this!** Copilot shortcuts & best practices
 
 ## 🎯 Key Features
 
