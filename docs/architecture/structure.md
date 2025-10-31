@@ -26,8 +26,7 @@ lokifi/
 ├── tools/                # Automation scripts and utilities (flat structure)
 ├── infra/                # Infrastructure, deployment, and DevOps
 ├── logs/                 # Application logs
-├── uploads/              # User uploads and temporary files
-└── htmlcov/              # Coverage reports (generated)
+└── uploads/              # User uploads and temporary files
 ```
 
 ---
@@ -507,10 +506,11 @@ infra/
 
 ### Coverage & Testing
 - `coverage.config.json` - Coverage thresholds and config (single source of truth)
-- `coverage.json` - Generated coverage data
-- `.coverage` - Python coverage data
-- `htmlcov/` - HTML coverage reports (generated)
 - `actionlint` - GitHub Actions linter config
+
+**Note**: Coverage reports (`coverage.json`, `.coverage`, `htmlcov/`) now generate in app-specific directories:
+- Backend: `apps/backend/coverage.json`, `apps/backend/htmlcov/`
+- Frontend: `apps/frontend/coverage/`
 
 ### Generated Directories
 - `.next/` - Next.js build cache (gitignored)

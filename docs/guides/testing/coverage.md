@@ -269,7 +269,7 @@ cd apps/backend
 pytest --cov=app --cov-report=html --cov-report=term
 
 # View HTML report
-cd htmlcov && python -m http.server 8080
+cd apps/backend/htmlcov && python -m http.server 8080
 ```
 
 ### Local Verification (Rarely Needed)

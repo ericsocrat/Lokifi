@@ -319,7 +319,7 @@ npm run test:e2e
 # Backend
 cd apps/backend
 pytest --cov=app --cov-report=html
-# Open htmlcov/index.html
+# Open apps/backend/htmlcov/index.html
 
 # Frontend
 cd apps/frontend
