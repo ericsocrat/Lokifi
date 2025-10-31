@@ -113,6 +113,7 @@ export interface WidgetConfig {
   aggregation?: 'avg' | 'sum' | 'min' | 'max' | 'count' | 'last';
 
   // Custom Settings
+  // any required: User-defined widget configuration (dynamic, arbitrary structure)
   customConfig?: Record<string, any>;
 }
 
@@ -224,6 +225,7 @@ export interface DataSourceConfig {
   rateLimitWindow: number; // ms
 
   // Custom settings
+  // any required: User-defined data source configuration (dynamic, provider-specific)
   customConfig?: Record<string, any>;
 }
 
@@ -353,6 +355,7 @@ export interface NotificationConfig {
     tokens: string[];
     title?: string;
     body?: string;
+    // any required: Push notification payload data (arbitrary structure per provider)
     data?: Record<string, any>;
   };
 }
@@ -451,6 +454,7 @@ export interface HealthCheckResult {
   status: 'success' | 'failure' | 'timeout';
   responseTime?: number; // milliseconds
   error?: string;
+  // any required: Health check result metadata (varies by check type)
   metadata?: Record<string, any>;
 }
 
@@ -493,6 +497,7 @@ export interface LogEntry {
   requestId?: string;
 
   // Data
+  // any required: Log entry data (arbitrary structure, application-specific)
   data?: Record<string, any>;
   error?: LogError;
 

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
 import { useCryptoSearch, useTopCryptos, useWebSocketPrices } from '@/src/hooks/useBackendPrices';
@@ -15,6 +14,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -256,7 +256,9 @@ function MarketsPageContent() {
               type="text"
               placeholder="Search cryptocurrencies by name or symbol..."
               value={searchQuery}
-              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => setSearchQuery(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+                setSearchQuery(e.target.value)
+              }
               className="w-full pl-16 pr-6 py-5 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-2 border-purple-200 dark:border-purple-800 rounded-2xl text-lg font-medium text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:border-purple-500 dark:focus:border-purple-400 shadow-xl transition-all duration-200"
             />
             {searchLoading && (
