@@ -23,6 +23,9 @@ htmlcov/
 .pytest_cache/
 .vitest/
 
+# Tool baselines (local metrics history)
+.tool-baselines/
+
 # Env & secrets
 .env
 .env.*
