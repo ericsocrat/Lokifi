@@ -1,8 +1,11 @@
 # 🔒 Security Directory
 
-**Purpose**: Centralized security management including configurations, audit tools, testing frameworks, and compliance documentation.
+**Purpose**: Security auditing tools, dependency protection, and security compliance automation.
 
-> **Note**: This directory contains security **configuration and tools**. For security **log files** (SSL, firewall, audit trails), see [`infra/logs/security/`](../logs/security/README.md).
+> **Related Resources**:
+> - **Security Logs**: [`infra/logs/security/`](../logs/security/README.md) - Runtime security event logs
+> - **Environment Configs**: See "Environment Configuration" section below for all `.env` file locations
+> - **Security Documentation**: [`docs/security/`](../../docs/security/README.md) - Security guides and policies
 
 ---
 
@@ -10,39 +13,38 @@
 
 ```
 security/
-├── ⚙️ configs/                  # Security configurations and environment files
 ├── 🔍 audit-tools/             # Security auditing and analysis scripts
 ├── 🛡️ dependency_protection/   # Dependency vulnerability protection
-└── 📚 DEPENDENCY_PROTECTION_GUIDE.md # Security documentation
+└── 📚 DEPENDENCY_PROTECTION_GUIDE.md # Comprehensive dependency security guide
 ```
 
 ---
 
-## ⚙️ **Security Configurations** (`configs/`)
+## ⚙️ **Environment Configuration Files**
 
-**Purpose**: Environment configurations, security settings, and application secrets.
+**Note**: Environment variables and `.env` files are managed in their respective application directories:
 
-### Available Files:
-- `.env` - Main environment configuration
-- `.env.development` - Development environment settings
-- `.env.example` - Template for environment setup
-- `.env.production` - Production environment configuration
-- `.env.security.template` - Security-focused environment template
+### Configuration Locations:
+- **Backend Application Config**: [`apps/backend/.env.example`](../../apps/backend/.env.example)
+  - JWT secrets, database URLs, backend API keys
+  
+- **Docker Services Config**: [`infra/docker/.env.example`](../docker/.env.example)
+  - Redis password, PostgreSQL credentials, service secrets
+  
+- **API Keys & External Services**: [`.env.example`](../../.env.example) (project root)
+  - Trading APIs (Polygon, AlphaVantage), external service keys
 
-### Security Features:
-- **Encrypted Storage**: Sensitive data encryption at rest
-- **Access Control**: Role-based configuration access
-- **Secret Management**: Secure handling of API keys and tokens
-- **Environment Isolation**: Separate configs per environment
+### Documentation:
+- **Complete Environment Guide**: [`docs/security/environment.md`](../../docs/security/environment.md)
+  - Detailed documentation for all environment variables
+  - Security best practices and setup instructions
+  - Variable reference and examples
 
-### Usage Guidelines:
-```bash
-# Copy example to create local environment
-cp .env.example .env
-
-# Generate secure secrets
-python ../scripts/security/generate_secrets.py
-```
+### Security Best Practices:
+- **Never commit** `.env` files to version control (already in `.gitignore`)
+- **Use strong secrets**: Generate with cryptographically secure random generators
+- **Rotate credentials**: Regular rotation schedule for production secrets
+- **Principle of least privilege**: Only grant necessary permissions
 
 ---
 
