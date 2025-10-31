@@ -1,10 +1,10 @@
 aiofiles==25.1.0
 aiohappyeyeballs==2.6.1
-aiohttp==3.13.1
+aiohttp==3.13.2
 aiosignal==1.4.0
 aiosmtplib==4.0.2
 aiosqlite==0.21.0
-alembic==1.17.0
+alembic==1.17.1
 amqp==5.3.1
 annotated-types==0.7.0
 anyio==4.11.0
@@ -19,8 +19,8 @@ billiard==4.2.2
 black==25.9.0
 bleach==6.2.0
 boolean.py==5.0
-boto3==1.40.59
-botocore==1.40.59
+boto3==1.40.63
+botocore==1.40.63
 CacheControl==0.14.3
 celery==5.5.3
 certifi==2025.10.5
@@ -52,7 +52,7 @@ harfile==0.4.0
 httpcore==1.0.9
 httptools==0.7.1
 httpx==0.28.1
-hypothesis==6.142.4
+hypothesis==6.142.5
 hypothesis-graphql==0.11.1
 hypothesis-jsonschema==0.23.1
 idna==3.11
@@ -133,7 +133,7 @@ rsa==4.9.1
 ruff==0.14.2
 s3transfer==0.14.0
 schedule==1.2.2
-schemathesis==4.3.13
+schemathesis==4.3.16
 sentry-sdk==2.42.1
 setuptools==80.9.0
 six==1.17.0
