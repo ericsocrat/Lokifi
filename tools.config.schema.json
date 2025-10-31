@@ -1,0 +1,152 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lokifi.com/schemas/tools.config.schema.json",
+  "title": "Lokifi Tools Configuration",
+  "description": "Configuration schema for Lokifi development tools",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "description": {
+      "type": "string",
+      "description": "Configuration file description"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Configuration version (semver)"
+    },
+    "test-runner": {
+      "type": "object",
+      "properties": {
+        "timeout": {
+          "type": "integer",
+          "minimum": 60,
+          "description": "Test timeout in seconds"
+        },
+        "parallel": {
+          "type": "boolean",
+          "description": "Enable parallel test execution"
+        },
+        "coverage_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum coverage percentage"
+        },
+        "default_category": {
+          "type": "string",
+          "enum": ["all", "backend", "frontend", "api", "unit", "integration", "e2e", "security", "services"],
+          "description": "Default test category"
+        },
+        "log_directory": {
+          "type": "string",
+          "description": "Directory for test logs"
+        }
+      }
+    },
+    "codebase-analyzer": {
+      "type": "object",
+      "properties": {
+        "use_cache": {
+          "type": "boolean",
+          "description": "Enable result caching"
+        },
+        "cache_ttl_minutes": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Cache time-to-live in minutes"
+        },
+        "default_region": {
+          "type": "string",
+          "enum": ["us", "eu", "asia", "remote"],
+          "description": "Default region for cost estimates"
+        },
+        "output_format": {
+          "type": "string",
+          "enum": ["markdown", "json", "csv", "html", "all"],
+          "description": "Default output format"
+        },
+        "scan_mode": {
+          "type": "string",
+          "enum": ["full", "codeonly", "docsonly", "quick", "search", "custom"],
+          "description": "Default scan mode"
+        }
+      }
+    },
+    "security-scanner": {
+      "type": "object",
+      "properties": {
+        "default_mode": {
+          "type": "string",
+          "enum": ["quick", "deep"],
+          "description": "Default scan mode"
+        },
+        "auto_fix": {
+          "type": "boolean",
+          "description": "Enable automatic fixes"
+        },
+        "severity_threshold": {
+          "type": "string",
+          "enum": ["critical", "high", "moderate", "low"],
+          "description": "Minimum severity to report"
+        },
+        "ignore_patterns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Glob patterns to ignore"
+        }
+      }
+    },
+    "setup-precommit-hooks": {
+      "type": "object",
+      "properties": {
+        "strict_mode": {
+          "type": "boolean",
+          "description": "Enable strict mode (block on any failure)"
+        },
+        "coverage_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Minimum coverage for pre-commit"
+        },
+        "enable_hooks": {
+          "type": "object",
+          "properties": {
+            "pre-commit": {
+              "type": "boolean"
+            },
+            "pre-push": {
+              "type": "boolean"
+            },
+            "commit-msg": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "common": {
+      "type": "object",
+      "properties": {
+        "verbose": {
+          "type": "boolean",
+          "description": "Enable verbose output"
+        },
+        "ci_mode": {
+          "type": "boolean",
+          "description": "Enable CI/CD mode (JSON output)"
+        },
+        "color_output": {
+          "type": "boolean",
+          "description": "Enable colored output"
+        }
+      }
+    }
+  }
+}

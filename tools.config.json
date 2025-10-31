@@ -1,0 +1,43 @@
+{
+  "$schema": "./tools.config.schema.json",
+  "description": "Configuration file for Lokifi development tools",
+  "version": "1.0.0",
+  "test-runner": {
+    "timeout": 300,
+    "parallel": true,
+    "coverage_threshold": 25,
+    "default_category": "all",
+    "log_directory": "./test-results"
+  },
+  "codebase-analyzer": {
+    "use_cache": true,
+    "cache_ttl_minutes": 60,
+    "default_region": "us",
+    "output_format": "markdown",
+    "scan_mode": "full"
+  },
+  "security-scanner": {
+    "default_mode": "quick",
+    "auto_fix": false,
+    "severity_threshold": "moderate",
+    "ignore_patterns": [
+      "**/node_modules/**",
+      "**/venv/**",
+      "**/.git/**"
+    ]
+  },
+  "setup-precommit-hooks": {
+    "strict_mode": false,
+    "coverage_threshold": 15,
+    "enable_hooks": {
+      "pre-commit": true,
+      "pre-push": true,
+      "commit-msg": true
+    }
+  },
+  "common": {
+    "verbose": false,
+    "ci_mode": false,
+    "color_output": true
+  }
+}
