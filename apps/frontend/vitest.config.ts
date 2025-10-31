@@ -44,6 +44,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'json'],
+      reportsDirectory: './coverage', // Explicit: create coverage files in apps/frontend/coverage
       include: [
         'src/**/*.{ts,tsx}',
         'lib/**/*.{ts,tsx}',
