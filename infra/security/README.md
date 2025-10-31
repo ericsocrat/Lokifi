@@ -15,7 +15,7 @@
 security/
 ├── 🔍 audit-tools/             # Security auditing and analysis scripts
 ├── 🛡️ dependency_protection/   # Dependency vulnerability protection
-└── 📚 DEPENDENCY_PROTECTION_GUIDE.md # Comprehensive dependency security guide
+└── 📚 dependency-protection-guide.md # Comprehensive dependency security guide
 ```
 
 ---
@@ -27,10 +27,10 @@ security/
 ### Configuration Locations:
 - **Backend Application Config**: [`apps/backend/.env.example`](../../apps/backend/.env.example)
   - JWT secrets, database URLs, backend API keys
-  
+
 - **Docker Services Config**: [`infra/docker/.env.example`](../docker/.env.example)
   - Redis password, PostgreSQL credentials, service secrets
-  
+
 - **API Keys & External Services**: [`.env.example`](../../.env.example) (project root)
   - Trading APIs (Polygon, AlphaVantage), external service keys
 
@@ -98,7 +98,7 @@ python audit-tools/security_enhancer.py
 ## 📚 **Security Documentation**
 
 ### Available Guides:
-- `DEPENDENCY_PROTECTION_GUIDE.md` - Comprehensive dependency security guide
+- [`dependency-protection-guide.md`](dependency-protection-guide.md) - Comprehensive dependency security guide (457 lines)
 
 ### Documentation Standards:
 - **Security Policies**: Organizational security standards

@@ -1,6 +1,6 @@
 # Archived: infra/security/configs/
 
-**Archived Date**: October 31, 2025  
+**Archived Date**: October 31, 2025
 **Reason**: Directory structure cleanup - removed redundant configuration storage
 
 ## Why This Directory Was Archived
