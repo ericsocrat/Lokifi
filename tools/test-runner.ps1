@@ -699,17 +699,17 @@ function Invoke-ParallelTests {
     <#
     .SYNOPSIS
     Execute backend and frontend tests in parallel using PowerShell runspaces
-    
+
     .DESCRIPTION
     Uses PowerShell runspace pools to execute backend and frontend tests concurrently.
     Provides 2-3x speedup compared to sequential execution.
-    
+
     .PARAMETER MaxThreads
     Maximum number of concurrent runspaces (default: 2 for backend + frontend)
-    
+
     .PARAMETER Coverage
     Enable coverage reporting for both test suites
-    
+
     .PARAMETER Verbose
     Enable verbose output from test execution
     #>
@@ -720,7 +720,7 @@ function Invoke-ParallelTests {
     )
 
     Write-TestLog "Parallel execution mode - using $MaxThreads threads" -Level Info
-    Write-TestLog "Starting backend and frontend tests concurrently..." -Level Info
+    Write-TestLog 'Starting backend and frontend tests concurrently...' -Level Info
 
     # Create runspace pool
     $runspacePool = [runspacefactory]::CreateRunspacePool(1, $MaxThreads)
@@ -732,114 +732,111 @@ function Invoke-ParallelTests {
     try {
         # Backend test job
         $backendJob = [powershell]::Create().AddScript({
-            param($BackendDir, $CoverageFlag, $VerboseFlag, $Paths)
-            
-            Push-Location $BackendDir
-            try {
-                # Set Python path
-                $env:PYTHONPATH = $PWD.Path
+                param($BackendDir, $CoverageFlag, $VerboseFlag, $Paths)
 
-                # Build pytest command
-                $pytestArgs = @('tests/', '-v')
-                
-                if ($CoverageFlag) {
-                    $pytestArgs += '--cov=app'
-                    $pytestArgs += '--cov-report=html'
-                    $pytestArgs += '--cov-report=term'
-                    $pytestArgs += "--cov-report=json:$($Paths.BackendTestResults)/backend-coverage.json"
-                }
-                
-                if ($VerboseFlag) {
-                    $pytestArgs += '-vv'
-                    $pytestArgs += '--tb=long'
-                }
+                Push-Location $BackendDir
+                try {
+                    # Set Python path
+                    $env:PYTHONPATH = $PWD.Path
 
-                # Execute pytest
-                $output = & .\venv\Scripts\python.exe -m pytest @pytestArgs 2>&1
-                $exitCode = $LASTEXITCODE
+                    # Build pytest command
+                    $pytestArgs = @('tests/', '-v')
 
-                return @{
-                    Name     = 'Backend'
-                    ExitCode = $exitCode
-                    Output   = $output -join "`n"
-                    Duration = 0  # Will be calculated by caller
+                    if ($CoverageFlag) {
+                        $pytestArgs += '--cov=app'
+                        $pytestArgs += '--cov-report=html'
+                        $pytestArgs += '--cov-report=term'
+                        $pytestArgs += "--cov-report=json:$($Paths.BackendTestResults)/backend-coverage.json"
+                    }
+
+                    if ($VerboseFlag) {
+                        $pytestArgs += '-vv'
+                        $pytestArgs += '--tb=long'
+                    }
+
+                    # Execute pytest
+                    $output = & .\venv\Scripts\python.exe -m pytest @pytestArgs 2>&1
+                    $exitCode = $LASTEXITCODE
+
+                    return @{
+                        Name     = 'Backend'
+                        ExitCode = $exitCode
+                        Output   = $output -join "`n"
+                        Duration = 0  # Will be calculated by caller
+                    }
+                } catch {
+                    return @{
+                        Name     = 'Backend'
+                        ExitCode = 1
+                        Output   = $_.Exception.Message
+                        Duration = 0
+                    }
+                } finally {
+                    Pop-Location
                 }
-            }
-            catch {
-                return @{
-                    Name     = 'Backend'
-                    ExitCode = 1
-                    Output   = $_.Exception.Message
-                    Duration = 0
-                }
-            }
-            finally {
-                Pop-Location
-            }
-        }).AddArgument($script:Paths.BackendDir).AddArgument($Coverage.IsPresent).AddArgument($Verbose.IsPresent).AddArgument($script:Paths)
+            }).AddArgument($script:Paths.BackendDir).AddArgument($Coverage.IsPresent).AddArgument($Verbose.IsPresent).AddArgument($script:Paths)
 
         $backendJob.RunspacePool = $runspacePool
         $jobs += @{
-            Name   = 'Backend'
+            Name       = 'Backend'
             PowerShell = $backendJob
-            Handle = $backendJob.BeginInvoke()
-            StartTime = Get-Date
+            Handle     = $backendJob.BeginInvoke()
+            StartTime  = Get-Date
         }
 
         # Frontend test job
         $frontendJob = [powershell]::Create().AddScript({
-            param($FrontendDir, $CoverageFlag, $VerboseFlag)
-            
-            Push-Location $FrontendDir
-            try {
-                # Build vitest command
-                $vitestArgs = @('run')
-                
-                if ($CoverageFlag) {
-                    $vitestArgs += '--coverage'
-                }
-                
-                if ($VerboseFlag) {
-                    $vitestArgs += '--reporter=verbose'
-                }
+                param($FrontendDir, $CoverageFlag, $VerboseFlag)
 
-                # Execute vitest
-                $output = & npm run test -- @vitestArgs 2>&1
-                $exitCode = $LASTEXITCODE
+                # Change to frontend directory
+                Set-Location $FrontendDir
+                try {
+                    # Build vitest command
+                    $vitestArgs = @('run')
 
-                return @{
-                    Name     = 'Frontend'
-                    ExitCode = $exitCode
-                    Output   = $output -join "`n"
-                    Duration = 0  # Will be calculated by caller
+                    if ($CoverageFlag) {
+                        $vitestArgs += '--coverage'
+                    }
+
+                    if ($VerboseFlag) {
+                        $vitestArgs += '--reporter=verbose'
+                    }
+
+                    # Execute vitest (working directory is now frontend dir)
+                    $output = & npm run test -- @vitestArgs 2>&1
+                    $exitCode = $LASTEXITCODE
+
+                    return @{
+                        Name     = 'Frontend'
+                        ExitCode = $exitCode
+                        Output   = $output -join "`n"
+                        Duration = 0  # Will be calculated by caller
+                    }
+                } catch {
+                    return @{
+                        Name     = 'Frontend'
+                        ExitCode = 1
+                        Output   = $_.Exception.Message
+                        Duration = 0
+                    }
+                } finally {
+                    # Note: Set-Location doesn't need Pop-Location in runspace
                 }
-            }
-            catch {
-                return @{
-                    Name     = 'Frontend'
-                    ExitCode = 1
-                    Output   = $_.Exception.Message
-                    Duration = 0
-                }
-            }
-            finally {
-                Pop-Location
-            }
-        }).AddArgument($script:Paths.FrontendDir).AddArgument($Coverage.IsPresent).AddArgument($Verbose.IsPresent)
+            }).AddArgument($script:Paths.FrontendDir).AddArgument($Coverage.IsPresent).AddArgument($Verbose.IsPresent)
 
         $frontendJob.RunspacePool = $runspacePool
         $jobs += @{
-            Name   = 'Frontend'
+            Name       = 'Frontend'
             PowerShell = $frontendJob
-            Handle = $frontendJob.BeginInvoke()
-            StartTime = Get-Date
+            Handle     = $frontendJob.BeginInvoke()
+            StartTime  = Get-Date
         }
 
         # Wait for all jobs to complete
         $results = @()
         foreach ($job in $jobs) {
             Write-TestLog "Waiting for $($job.Name) tests to complete..." -Level Info
-            
+
             # Wait for job completion
             $result = $job.PowerShell.EndInvoke($job.Handle)
             $endTime = Get-Date
@@ -870,17 +867,17 @@ function Invoke-ParallelTests {
         $failedTests = $results | Where-Object { $_.ExitCode -ne 0 }
 
         Write-Host "`n╔════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-        Write-Host "║           Parallel Execution Summary                      ║" -ForegroundColor Cyan
-        Write-Host "╚════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
-        
+        Write-Host '║           Parallel Execution Summary                      ║' -ForegroundColor Cyan
+        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+
         foreach ($result in $results) {
             $status = if ($result.ExitCode -eq 0) { '✅ PASS' } else { '❌ FAIL' }
             $duration = '{0:N2}s' -f $result.Duration
             Write-Host "$status $($result.Name): $duration" -ForegroundColor $(if ($result.ExitCode -eq 0) { 'Green' } else { 'Red' })
         }
-        
+
         Write-Host "`nTotal parallel duration: $('{0:N2}' -f $totalDuration)s" -ForegroundColor Cyan
-        
+
         # Calculate estimated sequential duration (backend + frontend)
         $estimatedSequential = ($results | Measure-Object -Property Duration -Maximum).Maximum * $results.Count
         $speedup = if ($totalDuration -gt 0) { $estimatedSequential / $totalDuration } else { 1 }
@@ -891,8 +888,7 @@ function Invoke-ParallelTests {
             return 1
         }
         return 0
-    }
-    finally {
+    } finally {
         # Cleanup runspace pool
         $runspacePool.Close()
         $runspacePool.Dispose()
