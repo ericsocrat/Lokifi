@@ -150,7 +150,7 @@ mobile/
 All applications share:
 - **Common Backend API** (apps/backend)
 - **Unified Auth System** (JWT tokens)
-- **Shared Redis Cache** (infra/redis)
+- **Shared Redis Cache** (configured in docker-compose files)
 - **Common Database** (PostgreSQL)
 
 ### Communication
