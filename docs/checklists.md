@@ -1235,4 +1235,176 @@ pytest -m "not integration"
 
 ---
 
+## 🐛 CI/CD Test Failure Debugging (Session 33 Patterns)
+
+### Debugging Summary Job Failures
+
+**Systematic Investigation Process**:
+
+**Step 1: Get PR Status** (~2 minutes):
+```powershell
+gh pr checks <pr-number> --repo ericsocrat/Lokifi
+```
+
+**Identify failure patterns**:
+- Summary jobs failing? → Could be aggregation OR real failures
+- Python version-specific? → Environment or compatibility issue
+- Infrastructure failures? → Database/service configuration
+
+**Step 2: Retrieve Detailed Logs** (~5 minutes):
+```powershell
+# Get run ID from failing job
+gh run list --repo ericsocrat/Lokifi --branch <branch> --limit 5
+
+# Get detailed failure logs
+gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Pattern "FAILED|ERROR" -Context 3
+```
+
+**Step 3: Decision Tree** (~5-10 minutes):
+
+**Pattern A: Real Test Failures** (Session 33: AIService)
+- **Symptoms**: 
+  - Specific test names in output: `FAILED tests/services/test_ai.py::test_name`
+  - Stack traces showing actual errors: `TypeError: unexpected keyword argument`
+  - Test summary: `826 passed, 7 failed, 115 skipped`
+- **Root Causes**:
+  - Method signature changes not reflected in tests
+  - Breaking changes in dependencies
+  - Async/await compatibility issues (Python version-specific)
+- **Action**: Fix test code or production code
+- **Time**: 15-45 minutes per test
+- **Verification**: 
+  ```powershell
+  cd apps/backend
+  python -m pytest path/to/test.py::test_name -v
+  ```
+
+**Pattern B: Integration Test Architecture Issues** (Session 33: Follow Tests)
+- **Symptoms**:
+  - `ConnectionRefusedError`, database connection errors **locally**
+  - Tests **pass in CI** where PostgreSQL services configured
+  - Tests use `@pytest.mark.anyio` or make real HTTP requests
+  - Located in `tests/unit/` but require external services
+- **Root Cause**: Integration tests misplaced in unit test directory
+- **Solutions**:
+  1. ✅ **Refactor to unit tests** (RECOMMENDED):
+     - Mock AsyncClient and database dependencies
+     - Test service logic directly without HTTP layer
+     - Fast, isolated, no infrastructure needed
+     - Time: ~2-3 hours
+  2. **Move to `tests/integration/`**:
+     - Acknowledge integration test nature
+     - Keep database dependency
+     - Add proper pytest markers
+     - Time: ~30 minutes
+  3. **Mark as integration, skip locally**:
+     - Add `@pytest.mark.integration`
+     - Skip when `DATABASE_URL` not available
+     - Time: ~15 minutes
+- **Example**:
+  ```python
+  # ❌ BAD - Integration test in tests/unit/
+  @pytest.mark.anyio
+  async def test_follow_action():
+      transport = ASGITransport(app=app)
+      async with AsyncClient(transport=transport, base_url="http://test") as client:
+          # Makes real HTTP requests, requires database
+          
+  # ✅ GOOD - True unit test with mocks
+  @pytest.mark.asyncio
+  async def test_follow_action():
+      mock_db = MagicMock()
+      follow_service = FollowService()
+      # Test service logic directly
+  ```
+
+**Pattern C: Workflow Aggregation Issues** (Sessions 8-9)
+- **Symptoms**: 
+  - Summary job fails but ALL matrix jobs pass
+  - Example: "Coverage Complete" fails, all coverage tests pass
+  - No actual test failures in logs
+- **Root Cause**: YAML conditional logic treating `skipped` as `failure`
+- **Action**: Fix workflow YAML conditional logic
+- **Time**: 10-20 minutes
+
+**Pattern D: Infrastructure Failures** (Sessions 8-9)
+- **Symptoms**:
+  - PostgreSQL connection errors in CI
+  - Redis unavailable errors
+  - Service health check timeouts
+- **Root Cause**: Missing service configurations in workflow
+- **Action**: Add PostgreSQL/Redis services to workflow YAML
+- **Time**: 15-30 minutes
+- **Example**:
+  ```yaml
+  services:
+    postgres:
+      image: postgres:16-alpine
+      env:
+        POSTGRES_USER: lokifi
+        POSTGRES_PASSWORD: lokifi2025
+      options: >-
+        --health-cmd "pg_isready -U lokifi"
+        --health-interval 10s
+  ```
+
+### Session 33 Case Study: AIService Tests
+
+**Problem**: 2 tests failing with `TypeError: unexpected keyword argument 'db'`
+
+**Root Cause**: Method signature changed, tests still passing removed parameter
+```python
+# Production code (changed)
+async def create_thread(self, user_id: int, title: str | None = None) -> AIThread:
+    with get_session() as db:  # DB now internal
+
+# Test code (broken)
+result = await ai_service.create_thread(db=mock_db, user_id=1, title="Test")
+```
+
+**Solution**: Mock `get_session()` context manager instead
+```python
+with patch("app.services.ai_service.get_session") as mock_get_session:
+    mock_db = MagicMock()
+    mock_session_ctx = MagicMock()
+    mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+    mock_session_ctx.__exit__ = MagicMock(return_value=None)
+    mock_get_session.return_value = mock_session_ctx
+    
+    result = await ai_service.create_thread(user_id=1, title="Test")
+```
+
+**Time**: 30 minutes (2 tests)
+**Impact**: Python 3.11 failures reduced from 7 → 5
+
+### Key Principles
+
+**1. Evidence-Based Debugging** 📊:
+- ✅ Always check logs BEFORE modifying code
+- ✅ Retrieve full test output with `gh run view --log-failed`
+- ❌ Don't assume root cause without evidence
+- ❌ Don't modify workflows without understanding failures
+
+**2. Pattern Recognition** 🔍:
+- Summary job failures ≠ Always workflow bugs
+- Real test failures have specific test names in output
+- Integration tests may pass in CI, fail locally
+- Version-specific failures suggest compatibility issues
+
+**3. Systematic Approach** 📝:
+1. Get PR status (2 min)
+2. Retrieve logs (5 min)
+3. Categorize failure pattern (5 min)
+4. Apply appropriate solution (15 min - 3 hours)
+5. Verify fix locally if possible
+6. Document findings for future reference
+
+**4. Documentation** 📚:
+- Document recurring patterns (like Session 33)
+- Create tasks for architectural issues (Task #10)
+- Update checklists with new insights
+- Share learnings with team
+
+---
+
 **Remember**: Checklists are living documents - update them based on what you learn from each project cycle! 🚀
