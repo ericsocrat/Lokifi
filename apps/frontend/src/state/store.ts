@@ -237,20 +237,24 @@ export const useChartStore = create<ChartState>()(
               enabled: true,
               triggers: 0,
               ...a,
-            } as Alert,  // any required: Spread operator with discriminated union
+            } as Alert, // any required: Spread operator with discriminated union
           ],
         });
       },
       removeAlert: (id: string) => set({ alerts: get().alerts.filter((a) => a.id !== id) }),
       updateAlert: (id: string, patch: Partial<Alert>) =>
-        set({ alerts: get().alerts.map((a) => (a.id === id ? { ...a, ...patch } as Alert : a)) }),
+        set({ alerts: get().alerts.map((a) => (a.id === id ? ({ ...a, ...patch } as Alert) : a)) }),
       toggleAlert: (id: string) =>
         set({
-          alerts: get().alerts.map((a) => (a.id === id ? { ...a, enabled: !a.enabled } as Alert : a)),
+          alerts: get().alerts.map((a) =>
+            a.id === id ? ({ ...a, enabled: !a.enabled } as Alert) : a
+          ),
         }),
       snoozeAlert: (id: string, until: number | undefined) =>
         set({
-          alerts: get().alerts.map((a) => (a.id === id ? { ...a, snoozedUntil: until } as Alert : a)),
+          alerts: get().alerts.map((a) =>
+            a.id === id ? ({ ...a, snoozedUntil: until } as Alert) : a
+          ),
         }),
       clearAlertEvents: () => set({ alertEvents: [] }),
 

@@ -1,5 +1,4 @@
 import type { Drawing } from '@/lib/utils/drawings';
-import type { Alert } from '@/lib/utils/alerts';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 
@@ -39,34 +38,34 @@ export default function AlertModal({ open, onClose }: Props) {
       cooldownMs: cooldown || 0,
       maxTriggers: maxTriggers === '' ? undefined : Number(maxTriggers),
     };
-    
+
     if (kind === 'time') {
       if (!when) return;
-      s.addAlert({ 
-        ...baseProps, 
-        kind: 'time' as const, 
-        when: new Date(when).getTime() 
+      s.addAlert({
+        ...baseProps,
+        kind: 'time' as const,
+        when: new Date(when).getTime(),
       });
     } else {
       if (!primary) return;
       if (kind === 'fib-cross') {
-        s.addAlert({ 
-          ...baseProps, 
-          kind: 'fib-cross' as const, 
-          drawingId: primary.id, 
-          fibLevel 
+        s.addAlert({
+          ...baseProps,
+          kind: 'fib-cross' as const,
+          drawingId: primary.id,
+          fibLevel,
         });
       } else if (kind === 'region-touch') {
-        s.addAlert({ 
-          ...baseProps, 
-          kind: 'region-touch' as const, 
-          drawingId: primary.id 
+        s.addAlert({
+          ...baseProps,
+          kind: 'region-touch' as const,
+          drawingId: primary.id,
         });
       } else {
-        s.addAlert({ 
-          ...baseProps, 
-          kind: 'cross' as const, 
-          drawingId: primary.id 
+        s.addAlert({
+          ...baseProps,
+          kind: 'cross' as const,
+          drawingId: primary.id,
         });
       }
     }

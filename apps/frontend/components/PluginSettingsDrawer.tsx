@@ -66,8 +66,11 @@ export default function PluginSettingsDrawer({
           <div className="flex items-center gap-2">
             <select
               value={s.fibPreset}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => 
-                pluginSettingsStore.set('fibPreset', e.target.value as 'Classic' | 'Extended' | 'Aggressive' | 'Custom')
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                pluginSettingsStore.set(
+                  'fibPreset',
+                  e.target.value as 'Classic' | 'Extended' | 'Aggressive' | 'Custom'
+                )
               }
               className="px-2 py-1 bg-neutral-950 border border-neutral-800 rounded-lg"
             >

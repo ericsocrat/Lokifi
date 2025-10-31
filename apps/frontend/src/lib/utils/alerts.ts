@@ -8,7 +8,7 @@ interface BaseAlert {
   id: string;
   enabled: boolean;
   sound?: 'ping' | 'none';
-  snoozedUntil?: number;  // timestamp in ms
+  snoozedUntil?: number; // timestamp in ms
   maxTriggers?: number;
   triggers?: number;
   note?: string;
@@ -18,7 +18,7 @@ interface BaseAlert {
 // Specific alert types with discriminated 'kind' property
 export type TimeAlert = BaseAlert & {
   kind: 'time';
-  when: number;  // timestamp in ms
+  when: number; // timestamp in ms
 };
 
 export type CrossAlert = BaseAlert & {
@@ -46,10 +46,10 @@ export type PctChangeAlert = BaseAlert & {
 };
 
 // Discriminated union of all alert types
-export type Alert = 
-  | TimeAlert 
-  | CrossAlert 
-  | FibCrossAlert 
+export type Alert =
+  | TimeAlert
+  | CrossAlert
+  | FibCrossAlert
   | RegionTouchAlert
   | PriceThresholdAlert
   | PctChangeAlert;
@@ -66,7 +66,7 @@ export type CreateAlertInput =
 export type AlertEvent = {
   id: string;
   kind: string;
-  at: number;  // timestamp in ms
+  at: number; // timestamp in ms
   price?: number;
 };
 
@@ -77,13 +77,15 @@ export async function listAlerts(): Promise<Alert[]> {
   return [];
 }
 
-export async function createAlert(payload: Omit<Alert, 'id'|'enabled'|'triggers'>): Promise<Alert> {
+export async function createAlert(
+  payload: Omit<Alert, 'id' | 'enabled' | 'triggers'>
+): Promise<Alert> {
   return {
     id: String(Date.now()),
     enabled: true,
     triggers: 0,
-    ...payload
-  } as Alert;  // any required: Generic object construction for discriminated union
+    ...payload,
+  } as Alert; // any required: Generic object construction for discriminated union
 }
 
 export async function toggleAlert(id: string, enabled: boolean): Promise<boolean> {
@@ -107,5 +109,7 @@ export function subscribeAlerts(cb: (ev: AlertEvent) => void, withPast?: boolean
     setTimeout(tick, 60_000);
   };
   tick();
-  return () => { stopped = true; };
+  return () => {
+    stopped = true;
+  };
 }
