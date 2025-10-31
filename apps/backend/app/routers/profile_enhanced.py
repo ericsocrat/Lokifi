@@ -22,7 +22,7 @@ from app.services.profile_enhanced import EnhancedProfileService
 router = APIRouter(prefix="/profile", tags=["profile-enhanced"])
 
 # Create uploads directory if it doesn't exist
-UPLOAD_DIR = Path("uploads/avatars")
+UPLOAD_DIR = Path(__file__).parent.parent.parent / "uploads" / "avatars"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # Allowed image extensions

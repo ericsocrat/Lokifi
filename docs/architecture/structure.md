@@ -24,9 +24,8 @@ lokifi/
 │   └── mobile/           # Mobile app (future)
 ├── docs/                 # All documentation (organized by category)
 ├── tools/                # Automation scripts and utilities (flat structure)
-├── infra/                # Infrastructure, deployment, and DevOps
-├── logs/                 # Application logs
-└── uploads/              # User uploads and temporary files
+├── infra/
+└── logs/
 ```
 
 ---
@@ -525,7 +524,6 @@ infra/
 - `.next/` - Next.js build cache (gitignored)
 - `node_modules/` - Node dependencies (gitignored)
 - `logs/` - Application logs (gitignored)
-- `uploads/` - User uploads (gitignored)
 
 ### VS Code Configuration
 - `.vscode/` - VS Code workspace settings

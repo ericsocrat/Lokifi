@@ -127,9 +127,9 @@ tools/actionlint.exe
 # Config directory (keep tracked files, ignore generated)
 # config/ files are tracked - no ignore patterns needed
 
-# User Uploads & Runtime Data
-uploads/
-!uploads/.gitkeep
+# User Uploads & Runtime Data (backend-managed)
+apps/backend/uploads/
+!apps/backend/uploads/.gitkeep
 
 # Redis/Celery Runtime Data
 dump.rdb
