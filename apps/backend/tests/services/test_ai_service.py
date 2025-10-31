@@ -287,14 +287,15 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_create_thread_with_title(self, ai_service):
         """Test creating thread with custom title"""
-        with patch("app.services.ai_service.AIThread") as mock_thread_class, \
-             patch("app.services.ai_service.get_session") as mock_get_session:
+        with patch("app.services.ai_service.AIThread") as mock_thread_class, patch(
+            "app.services.ai_service.get_session"
+        ) as mock_get_session:
             mock_db = MagicMock()
             mock_session_ctx = MagicMock()
             mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
             mock_session_ctx.__exit__ = MagicMock(return_value=None)
             mock_get_session.return_value = mock_session_ctx
-            
+
             mock_thread = MagicMock()
             mock_thread.id = 123
             mock_thread.title = "Test Thread"
@@ -310,14 +311,15 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_create_thread_auto_title(self, ai_service):
         """Test creating thread with auto-generated title"""
-        with patch("app.services.ai_service.AIThread") as mock_thread_class, \
-             patch("app.services.ai_service.get_session") as mock_get_session:
+        with patch("app.services.ai_service.AIThread") as mock_thread_class, patch(
+            "app.services.ai_service.get_session"
+        ) as mock_get_session:
             mock_db = MagicMock()
             mock_session_ctx = MagicMock()
             mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
             mock_session_ctx.__exit__ = MagicMock(return_value=None)
             mock_get_session.return_value = mock_session_ctx
-            
+
             mock_thread = MagicMock()
             mock_thread.id = 123
             mock_thread.title = "New Chat"

@@ -1211,7 +1211,7 @@ async def test_create_thread_with_title(self, ai_service):
         mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
         mock_session_ctx.__exit__ = MagicMock(return_value=None)
         mock_get_session.return_value = mock_session_ctx
-        
+
         mock_thread = MagicMock()
         mock_thread.id = 123
         mock_thread.title = "Test Thread"

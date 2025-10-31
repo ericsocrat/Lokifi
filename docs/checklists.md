@@ -1263,7 +1263,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 **Step 3: Decision Tree** (~5-10 minutes):
 
 **Pattern A: Real Test Failures** (Session 33: AIService)
-- **Symptoms**: 
+- **Symptoms**:
   - Specific test names in output: `FAILED tests/services/test_ai.py::test_name`
   - Stack traces showing actual errors: `TypeError: unexpected keyword argument`
   - Test summary: `826 passed, 7 failed, 115 skipped`
@@ -1273,7 +1273,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - Async/await compatibility issues (Python version-specific)
 - **Action**: Fix test code or production code
 - **Time**: 15-45 minutes per test
-- **Verification**: 
+- **Verification**:
   ```powershell
   cd apps/backend
   python -m pytest path/to/test.py::test_name -v
@@ -1309,7 +1309,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
       transport = ASGITransport(app=app)
       async with AsyncClient(transport=transport, base_url="http://test") as client:
           # Makes real HTTP requests, requires database
-          
+
   # ✅ GOOD - True unit test with mocks
   @pytest.mark.asyncio
   async def test_follow_action():
@@ -1319,7 +1319,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   ```
 
 **Pattern C: Workflow Aggregation Issues** (Sessions 8-9)
-- **Symptoms**: 
+- **Symptoms**:
   - Summary job fails but ALL matrix jobs pass
   - Example: "Coverage Complete" fails, all coverage tests pass
   - No actual test failures in logs
@@ -1370,7 +1370,7 @@ with patch("app.services.ai_service.get_session") as mock_get_session:
     mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
     mock_session_ctx.__exit__ = MagicMock(return_value=None)
     mock_get_session.return_value = mock_session_ctx
-    
+
     result = await ai_service.create_thread(user_id=1, title="Test")
 ```
 
