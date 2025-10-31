@@ -94,7 +94,7 @@
 # From current ci.yml workflow
 - uses: actions/setup-node@v4
   with:
-    node-version: 20
+    node-version: 22
     cache: "npm"  # ✅ Enabled
     cache-dependency-path: apps/frontend/package-lock.json
 ```
@@ -230,11 +230,11 @@ visual-regression:
 # Default npm in ubuntu-latest is usually recent enough
 ```
 
-**Solution 2** (Better): Use Node.js 20 which includes npm 10+
+**Solution 2** (Better): Use Node.js 22 which includes npm 10+
 ```yaml
 - uses: actions/setup-node@v4
   with:
-    node-version: 20  # Includes npm 10.x
+    node-version: 22  # Includes npm 10.x
     # No need to upgrade npm
 ```
 
@@ -242,7 +242,7 @@ visual-regression:
 ```yaml
 runs-on: ubuntu-latest
 container:
-  image: node:20-alpine  # Includes latest npm
+  image: node:22-alpine  # Includes latest npm
 ```
 
 **Expected Savings**: 1-1.5 min/run total
@@ -450,7 +450,7 @@ updates:
 # - name: 🔼 Upgrade npm to latest
 #   run: npm install -g npm@latest
 
-# Node.js 20 already includes npm 10+, which is sufficient
+# Node.js 22 already includes npm 10+, which is sufficient
 ```
 
 **Jobs to update**:
@@ -649,7 +649,7 @@ updates:
 
 ```dockerfile
 # frontend-ci.Dockerfile
-FROM node:20-alpine
+FROM node:22-alpine
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
