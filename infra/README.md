@@ -9,11 +9,10 @@
 ```
 infra/
 ├── 🐳 docker/            # Docker configurations and compose files
-├── 🌐 nginx/             # Nginx configurations and load balancing
-├── 📊 monitoring/        # Monitoring and observability configs
-├── 🔒 security/          # Security tooling & configs
-├── 🔑 ssl/               # SSL certificates and security configs
-├── 📝 redis/             # Redis configuration files
+├── 📊 monitoring/        # Monitoring and observability configs (Prometheus, Grafana, Loki)
+├── 🔒 security/          # Security tooling & dependency protection
+├── � redis/             # Redis configuration files
+├── � logs/              # Infrastructure logs (docker, traefik, monitoring, security)
 └── 📄 Makefile           # Build and deployment automation
 ```
 
@@ -55,20 +54,36 @@ docker compose -f docker-compose.production.yml up -d
 
 ---
 
-## 🌐 **Nginx Configuration** (`nginx/`)
+## 🌐 **Reverse Proxy (Traefik)**
 
-**Purpose**: Reverse proxy, load balancing, and web server configurations.
+**Purpose**: Modern reverse proxy with automatic SSL/TLS, load balancing, and service discovery.
 
-### Available Files:
-
-- `nginx_loadbalancer.conf` - Load balancer configuration for lokifi backend and frontend services
+**Configuration**: See `docker/docker-compose.production.yml`
 
 ### Features:
 
-- **Load Balancing**: Distributes traffic across lokifi backend/frontend services
-- **SSL Termination**: Handles HTTPS certificates
-- **Static File Serving**: Optimized static asset delivery
-- **Caching**: Intelligent caching strategies
+- **Automatic SSL/TLS**: Let's Encrypt certificate management (auto-renewal)
+- **Service Discovery**: Auto-detects Docker containers via labels
+- **Load Balancing**: Built-in load balancing across service instances
+- **HTTP to HTTPS**: Automatic redirect for all HTTP traffic
+- **Dashboard**: Web UI at `traefik.www.lokifi.com:8080`
+- **Access Logs**: Comprehensive request logging at `logs/traefik/`
+
+### Endpoints:
+
+- **Frontend**: `www.lokifi.com` (port 443)
+- **Backend API**: `api.www.lokifi.com` (port 443)
+- **Traefik Dashboard**: `traefik.www.lokifi.com` (port 8080)
+
+### Configuration Example:
+
+```yaml
+labels:
+  - "traefik.enable=true"
+  - "traefik.http.routers.frontend.rule=Host(`www.lokifi.com`)"
+  - "traefik.http.routers.frontend.entrypoints=websecure"
+  - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+```
 
 ---
 
