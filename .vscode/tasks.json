@@ -19,7 +19,7 @@
         "showReuseMessage": false,
         "clear": false,
         "revealProblems": "never",
-        "close": false
+        "close": true
       },
       "isBackground": false,
       "problemMatcher": []
@@ -112,7 +112,7 @@
         "showReuseMessage": false,
         "clear": false,
         "revealProblems": "never",
-        "close": false
+        "close": true
       },
       "isBackground": false,
       "problemMatcher": []

@@ -83,17 +83,21 @@ This folder contains essential VS Code workspace settings, tasks, and configurat
 
 Run tasks with `Ctrl/Cmd + Shift + P` → "Run Task"
 
-### Redis
-- 🔴 **Start Redis Server (Docker)** - Start/create Redis container
+### Individual Services
+- 🔴 **Start Redis Server (Docker Compose)** - Start Redis via docker-compose
+- 🗃️ **Start PostgreSQL Server (Docker Compose)** - Start PostgreSQL via docker-compose
+- 🔧 **Start Backend Server** - FastAPI with hot reload (local terminal)
+- 🎨 **Start Frontend Server** - Next.js development server (local terminal)
+- 📊 **Start Coverage Dashboard** - Live coverage metrics on port 3002 (local terminal)
 
-### Backend
-- 🔧 **Start Backend Server** - FastAPI with hot reload
+### Orchestration Tasks
+- 🚀 **Start All Servers** - Start all 5 services sequentially (recommended)
+- � **Stop All Servers** - Stop Docker Compose services (close terminals manually)
+- 🔄 **Restart All Servers** - Guided restart workflow
 
-### Frontend
-- 🎨 **Start Frontend Server** - Next.js development server
-
-### All Servers
-- 🚀 **Start All Servers** - Redis → Backend → Frontend (sequential)
+### Architecture
+- **Docker Compose** (Redis, PostgreSQL): Run in background via `infra/docker/docker-compose.yml`
+- **Local Terminals** (Backend, Frontend, Dashboard): Run in VS Code with hot-reload
 
 ## 📊 Extensions Installed
 

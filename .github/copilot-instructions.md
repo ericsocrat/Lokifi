@@ -1494,13 +1494,21 @@ When suggesting code or answering questions, prefer these docs:
 # VS Code Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
 Tasks: Run Task → 🚀 Start All Servers
 
-# This starts:
-# 1. Redis (Docker) - Port 6379
-# 2. PostgreSQL (Docker) - Port 5432
-# 3. Backend (FastAPI) - Port 8000
-# 4. Frontend (Next.js) - Port 3000
-# 5. Coverage Dashboard - Port 3002 ⭐
+# This starts (in sequence):
+# 1. Redis (Docker Compose) - Port 6379 - Completes and closes terminal
+# 2. PostgreSQL (Docker Compose) - Port 5432 - Completes and closes terminal
+# 3. Backend (FastAPI) - Port 8000 - Persistent terminal with hot-reload
+# 4. Frontend (Next.js) - Port 3000 - Persistent terminal with hot-reload
+# 5. Coverage Dashboard - Port 3002 - Persistent terminal serving live metrics ⭐
 ```
+
+**Architecture:**
+- **Docker Compose Services** (Redis, PostgreSQL): Start via `infra/docker/docker-compose.yml`
+  - Containers: `lokifi-redis-dev`, `lokifi-postgres-dev`
+  - Run in background, terminals close after startup
+- **Local Terminal Services** (Backend, Frontend, Dashboard): Run in VS Code terminals
+  - Keep terminals open for logs and hot-reload
+  - Press Ctrl+C to stop individual services
 
 **Service URLs:**
 - Frontend: http://localhost:3000
@@ -1511,14 +1519,24 @@ Tasks: Run Task → 🚀 Start All Servers
 **Stop All Services:**
 ```powershell
 Tasks: Run Task → 🛑 Stop All Servers
+# Stops Docker Compose services (Redis, PostgreSQL)
+# Manually close terminal servers (Backend, Frontend, Dashboard) with Ctrl+C
+```
+
+**Restart All Services:**
+```powershell
+Tasks: Run Task → 🔄 Restart All Servers
+# 1. Stops Docker Compose services
+# 2. Shows instructions to close terminal servers
+# 3. Re-run "🚀 Start All Servers" after closing terminals
 ```
 
 **Coverage Dashboard Features:**
-- ✅ Real-time coverage metrics
-- ✅ File-level breakdown
-- ✅ Trend analysis
+- ✅ Real-time coverage metrics (auto-updates with test runs)
+- ✅ File-level coverage breakdown
+- ✅ Trend analysis and visualizations
 - ✅ Protected thresholds
-- ✅ Auto-refreshes with test runs
+- ✅ Runs continuously in background (like dev servers)
 
 **Documentation:**
 - **Quick Reference**: `/docs/guides/COVERAGE_DASHBOARD_QUICK_REF.md`
