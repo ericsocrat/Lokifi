@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "🔴 Start Redis Server (Docker)",
+      "label": "🔴 Start Redis Server (Docker Compose)",
       "type": "shell",
-      "command": "Write-Host '🔴 Redis Server (Docker)' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host '🔍 Checking Docker...' -ForegroundColor Cyan; if (Get-Command docker -ErrorAction SilentlyContinue) { $existing = docker ps -a --filter 'name=lokifi-redis' --format '{{.Names}}' 2>$null; if ($existing -eq 'lokifi-redis') { $running = docker ps --filter 'name=lokifi-redis' --format '{{.Names}}' 2>$null; if ($running -eq 'lokifi-redis') { Write-Host '✅ Redis container already running' -ForegroundColor Green } else { Write-Host '▶️ Starting Redis container...' -ForegroundColor Yellow; docker start lokifi-redis; Write-Host '✅ Redis started' -ForegroundColor Green } } else { Write-Host '🚀 Creating Redis container...' -ForegroundColor Yellow; docker run -d --name lokifi-redis -p 6379:6379 -e REDIS_PASSWORD=23233 --restart unless-stopped redis:latest redis-server --requirepass 23233; Write-Host '✅ Redis created and started' -ForegroundColor Green }; Write-Host ''; Write-Host '📋 Connection Details:' -ForegroundColor Cyan; Write-Host '   URL: redis://:23233@localhost:6379/0' -ForegroundColor White; Write-Host '   Password: 23233' -ForegroundColor White; Write-Host '   Container: lokifi-redis' -ForegroundColor White; Write-Host ''; Write-Host '💡 To stop: docker stop lokifi-redis' -ForegroundColor Gray; Write-Host '💡 To manage: .\\manage-redis.ps1' -ForegroundColor Gray; } else { Write-Host '❌ Docker not found!' -ForegroundColor Red; Write-Host '⚠️ Please install Docker Desktop' -ForegroundColor Yellow }",
+      "command": "Write-Host '🔴 Redis Server (Docker Compose)' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; cd infra/docker; Write-Host '🔍 Checking Redis status...' -ForegroundColor Cyan; $status = docker compose ps redis --format json 2>$null | ConvertFrom-Json; if ($status -and $status.State -eq 'running') { Write-Host '✅ Redis already running' -ForegroundColor Green } else { Write-Host '🚀 Starting Redis via docker compose...' -ForegroundColor Yellow; docker compose up -d redis; Write-Host '✅ Redis started' -ForegroundColor Green }; Write-Host ''; Write-Host '📋 Connection Details:' -ForegroundColor Cyan; Write-Host '   URL: redis://:23233@localhost:6379/0' -ForegroundColor White; Write-Host '   Password: 23233' -ForegroundColor White; Write-Host '   Container: lokifi-redis-dev' -ForegroundColor White; Write-Host ''; Write-Host '💡 To stop: docker compose -f infra/docker/docker-compose.yml down' -ForegroundColor Gray",
       "options": {
         "shell": {
           "executable": "pwsh.exe",
@@ -95,9 +95,9 @@
       }
     },
     {
-      "label": "🗃️ Start PostgreSQL Server (Docker)",
+      "label": "🗃️ Start PostgreSQL Server (Docker Compose)",
       "type": "shell",
-      "command": "Write-Host '🗃️ PostgreSQL Server (Docker)' -ForegroundColor Blue; Write-Host '============================================' -ForegroundColor Green; Write-Host '🔍 Checking Docker...' -ForegroundColor Cyan; if (Get-Command docker -ErrorAction SilentlyContinue) { $existing = docker ps -a --filter 'name=lokifi-postgres' --format '{{.Names}}' 2>$null; if ($existing -eq 'lokifi-postgres') { $running = docker ps --filter 'name=lokifi-postgres' --format '{{.Names}}' 2>$null; if ($running -eq 'lokifi-postgres') { Write-Host '✅ PostgreSQL container already running' -ForegroundColor Green } else { Write-Host '▶️ Starting PostgreSQL container...' -ForegroundColor Yellow; docker start lokifi-postgres; Write-Host '✅ PostgreSQL started' -ForegroundColor Green } } else { Write-Host '🚀 Creating PostgreSQL container...' -ForegroundColor Yellow; docker run -d --name lokifi-postgres -p 5432:5432 -e POSTGRES_USER=lokifi -e POSTGRES_PASSWORD=lokifi2025 -e POSTGRES_DB=lokifi --restart unless-stopped postgres:16-alpine; Write-Host '✅ PostgreSQL created and started' -ForegroundColor Green }; Write-Host ''; Write-Host '📋 Connection Details:' -ForegroundColor Cyan; Write-Host '   URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi' -ForegroundColor White; Write-Host '   User: lokifi' -ForegroundColor White; Write-Host '   Password: lokifi2025' -ForegroundColor White; Write-Host '   Database: lokifi' -ForegroundColor White; Write-Host '   Container: lokifi-postgres' -ForegroundColor White; Write-Host ''; Write-Host '💡 To stop: docker stop lokifi-postgres' -ForegroundColor Gray; } else { Write-Host '❌ Docker not found!' -ForegroundColor Red; Write-Host '⚠️ Please install Docker Desktop' -ForegroundColor Yellow }",
+      "command": "Write-Host '🗃️ PostgreSQL Server (Docker Compose)' -ForegroundColor Blue; Write-Host '============================================' -ForegroundColor Green; cd infra/docker; Write-Host '🔍 Checking PostgreSQL status...' -ForegroundColor Cyan; $status = docker compose ps postgres --format json 2>$null | ConvertFrom-Json; if ($status -and $status.State -eq 'running') { Write-Host '✅ PostgreSQL already running' -ForegroundColor Green } else { Write-Host '🚀 Starting PostgreSQL via docker compose...' -ForegroundColor Yellow; docker compose up -d postgres; Write-Host '✅ PostgreSQL started' -ForegroundColor Green }; Write-Host ''; Write-Host '📋 Connection Details:' -ForegroundColor Cyan; Write-Host '   URL: postgresql://lokifi:lokifi_dev_password@localhost:5432/lokifi_db' -ForegroundColor White; Write-Host '   User: lokifi' -ForegroundColor White; Write-Host '   Password: lokifi_dev_password' -ForegroundColor White; Write-Host '   Database: lokifi_db' -ForegroundColor White; Write-Host '   Container: lokifi-postgres-dev' -ForegroundColor White; Write-Host ''; Write-Host '💡 To stop: docker compose -f infra/docker/docker-compose.yml down' -ForegroundColor Gray",
       "options": {
         "shell": {
           "executable": "pwsh.exe",
@@ -156,8 +156,8 @@
       "label": "🚀 Start All Servers",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "🔴 Start Redis Server (Docker)",
-        "🗃️ Start PostgreSQL Server (Docker)",
+        "🔴 Start Redis Server (Docker Compose)",
+        "🗃️ Start PostgreSQL Server (Docker Compose)",
         "🔧 Start Backend Server",
         "🎨 Start Frontend Server",
         "📊 Start Coverage Dashboard"
@@ -167,7 +167,7 @@
     {
       "label": "🛑 Stop All Servers",
       "type": "shell",
-      "command": "Write-Host '🛑 Stopping All Servers' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '🔴 Stopping Redis...' -ForegroundColor Yellow; docker stop lokifi-redis 2>$null; Write-Host '🗃️ Stopping PostgreSQL...' -ForegroundColor Yellow; docker stop lokifi-postgres 2>$null; Write-Host ''; Write-Host '✅ All Docker containers stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 Terminal servers (Backend, Frontend, Dashboard) should be closed manually' -ForegroundColor Gray; Write-Host '   Press Ctrl+C in each terminal or close the terminal windows' -ForegroundColor Gray",
+      "command": "Write-Host '🛑 Stopping All Servers' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; cd infra/docker; Write-Host '� Stopping Redis & PostgreSQL...' -ForegroundColor Yellow; docker compose down; Write-Host '✅ All Docker Compose services stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 Terminal servers (Backend, Frontend, Dashboard) should be closed manually' -ForegroundColor Gray; Write-Host '   Press Ctrl+C in each terminal or close the terminal windows' -ForegroundColor Gray",
       "options": {
         "shell": {
           "executable": "pwsh.exe",
@@ -187,7 +187,7 @@
     {
       "label": "🔄 Restart All Servers",
       "type": "shell",
-      "command": "Write-Host '🔄 Restarting All Servers' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '⚠️ MANUAL STEP REQUIRED:' -ForegroundColor Yellow; Write-Host '   1. Close all terminal windows (Backend, Frontend, Dashboard)' -ForegroundColor White; Write-Host '   2. Press Ctrl+C in each terminal OR close the terminal tabs' -ForegroundColor White; Write-Host '   3. Then run the \"🚀 Start All Servers\" task again' -ForegroundColor White; Write-Host ''; Write-Host '🔴 Stopping Docker containers...' -ForegroundColor Yellow; docker stop lokifi-redis lokifi-postgres 2>$null; Write-Host '✅ Docker containers stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 After closing terminal servers, use:' -ForegroundColor Cyan; Write-Host '   Ctrl+Shift+P → Tasks: Run Task → 🚀 Start All Servers' -ForegroundColor Gray",
+      "command": "Write-Host '🔄 Restarting All Servers' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '⚠️ MANUAL STEP REQUIRED:' -ForegroundColor Yellow; Write-Host '   1. Close all terminal windows (Backend, Frontend, Dashboard)' -ForegroundColor White; Write-Host '   2. Press Ctrl+C in each terminal OR close the terminal tabs' -ForegroundColor White; Write-Host '   3. Then run the \"🚀 Start All Servers\" task again' -ForegroundColor White; Write-Host ''; cd infra/docker; Write-Host '🔴 Stopping Docker Compose services...' -ForegroundColor Yellow; docker compose down; Write-Host '✅ Docker Compose services stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 After closing terminal servers, use:' -ForegroundColor Cyan; Write-Host '   Ctrl+Shift+P → Tasks: Run Task → 🚀 Start All Servers' -ForegroundColor Gray",
       "options": {
         "shell": {
           "executable": "pwsh.exe",
