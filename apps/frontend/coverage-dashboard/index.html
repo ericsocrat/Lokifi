@@ -1817,25 +1817,42 @@
 
         metrics.forEach((metric) => {
           const canvas = document.getElementById(`${metric}Sparkline`);
-          if (!canvas) return;
+          if (!canvas) {
+            console.error(`Canvas not found for ${metric}Sparkline`);
+            return;
+          }
+
+          // Set explicit canvas dimensions to fix rendering
+          canvas.width = canvas.offsetWidth || 200;
+          canvas.height = 40;
 
           const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error(`Failed to get context for ${metric}Sparkline`);
+            return;
+          }
+
           const data = trends.slice(-10).map((t) => t.coverage[metric]);
           const current = data[data.length - 1];
           const previous = data[data.length - 2] || current;
           const change = current - previous;
 
           // Update value display
-          document.getElementById(`${metric}SparklineValue`).textContent = current.toFixed(1) + '%';
+          const valueEl = document.getElementById(`${metric}SparklineValue`);
+          if (valueEl) {
+            valueEl.textContent = current.toFixed(1) + '%';
+          }
 
           // Update trend text
           const trendEl = document.getElementById(`${metric}Trend`);
-          if (change > 0) {
-            trendEl.innerHTML = `<span class="text-green-400">↑ +${change.toFixed(2)}%</span> from last run`;
-          } else if (change < 0) {
-            trendEl.innerHTML = `<span class="text-red-400">↓ ${change.toFixed(2)}%</span> from last run`;
-          } else {
-            trendEl.innerHTML = `<span class="text-gray-400">→ No change</span>`;
+          if (trendEl) {
+            if (change > 0) {
+              trendEl.innerHTML = `<span class="text-green-400">↑ +${change.toFixed(2)}%</span> from last run`;
+            } else if (change < 0) {
+              trendEl.innerHTML = `<span class="text-red-400">↓ ${change.toFixed(2)}%</span> from last run`;
+            } else {
+              trendEl.innerHTML = `<span class="text-gray-400">→ No change</span>`;
+            }
           }
 
           // Create mini sparkline chart
@@ -1863,16 +1880,25 @@
             options: {
               responsive: true,
               maintainAspectRatio: false,
+              animation: {
+                duration: 500,
+              },
               plugins: {
                 legend: { display: false },
                 tooltip: { enabled: false },
               },
               scales: {
                 x: { display: false },
-                y: { display: false, min: Math.min(...data) - 5, max: Math.max(...data) + 5 },
+                y: { 
+                  display: false,
+                  min: Math.max(0, Math.min(...data) - 5),
+                  max: Math.min(100, Math.max(...data) + 5),
+                },
               },
             },
           });
+
+          console.log(`Created sparkline for ${metric} with ${data.length} data points`);
         });
       }
 
