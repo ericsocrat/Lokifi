@@ -8,7 +8,7 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": ["-Command"]
         }
       },
       "presentation": {
@@ -101,7 +101,7 @@
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": ["-Command"]
         }
       },
       "presentation": {
