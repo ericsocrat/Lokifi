@@ -166,7 +166,7 @@
       "args": [
         "-NoExit",
         "-Command",
-        "Write-Host '🛑 Stopping All Servers' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '🔴 Stopping Redis...' -ForegroundColor Yellow; docker stop lokifi-redis 2>$null; Write-Host '🗃️ Stopping PostgreSQL...' -ForegroundColor Yellow; docker stop lokifi-postgres 2>$null; Write-Host ''; Write-Host '✅ All Docker containers stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 Terminal servers (Backend, Frontend, Dashboard) should be closed manually' -ForegroundColor Gray; Write-Host '   Press Ctrl+C in each terminal or close the terminal windows' -ForegroundColor Gray"
+        "Write-Host 'Stopping All Servers' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host 'Stopping Redis...' -ForegroundColor Yellow; docker stop lokifi-redis 2>$null; Write-Host 'Stopping PostgreSQL...' -ForegroundColor Yellow; docker stop lokifi-postgres 2>$null; Write-Host ''; Write-Host 'All Docker containers stopped' -ForegroundColor Green; Write-Host ''; Write-Host 'Terminal servers should be closed manually' -ForegroundColor Gray; Write-Host '   Press Ctrl+C in each terminal or close the terminal windows' -ForegroundColor Gray"
       ],
       "presentation": {
         "echo": true,
