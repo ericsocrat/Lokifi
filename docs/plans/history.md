@@ -1530,7 +1530,7 @@ python -m pytest tests/unit/test_follow_actions.py::test_follow_action_response_
 Test-Path "htmlcov"                    # True (❌ BAD)
 Test-Path "apps/backend/htmlcov"       # True
 
-# After fix  
+# After fix
 Test-Path "htmlcov"                    # False (✅ GOOD)
 Test-Path "apps/backend/htmlcov"       # True (✅ GOOD)
 ```
