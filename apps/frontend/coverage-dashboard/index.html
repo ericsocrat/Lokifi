@@ -1823,7 +1823,9 @@
           }
 
           // Set explicit canvas dimensions to fix rendering
-          canvas.width = canvas.offsetWidth || 200;
+          // Use parent width if available, otherwise default to 200px
+          const parentWidth = canvas.parentElement?.offsetWidth || 200;
+          canvas.width = Math.max(parentWidth - 32, 150); // Subtract padding, min 150px
           canvas.height = 40;
 
           const ctx = canvas.getContext('2d');
@@ -1878,11 +1880,9 @@
               ],
             },
             options: {
-              responsive: true,
+              responsive: false, // Disable responsive to prevent infinite resize loop
               maintainAspectRatio: false,
-              animation: {
-                duration: 500,
-              },
+              animation: false, // Disable animation to prevent render loops
               plugins: {
                 legend: { display: false },
                 tooltip: { enabled: false },
