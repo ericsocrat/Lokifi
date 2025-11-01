@@ -1,0 +1,4 @@
+htmlcov/
+coverage.json
+.coverage
+.pytest_cache/

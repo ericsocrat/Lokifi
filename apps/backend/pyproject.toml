@@ -27,6 +27,5 @@ exclude_lines = [
 output = "coverage.json"
 
 [tool.coverage.html]
-# HTML report directory relative to where pytest is run
-# Using ../../htmlcov to place in project root for consistency with coverage.json
-directory = "../../htmlcov"
+# HTML report directory relative to where pytest is run (apps/backend/)
+directory = "htmlcov"
