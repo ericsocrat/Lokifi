@@ -174,11 +174,13 @@ jobs:
             apps/backend/requirements-dev.txt
 
       - name: 📦 Install dependencies
+        working-directory: apps/backend
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
       - name: 🗃️ Setup database schema
+        working-directory: apps/backend
         run: alembic upgrade head
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
@@ -186,6 +188,7 @@ jobs:
           TESTING: 1
 
       - name: 🧪 Run tests with coverage
+        working-directory: apps/backend
         run: pytest --cov=app --cov-report=term-missing --cov-report=json --cov-report=html --cov-fail-under=25 -m "not config_validation"
         env:
           PYTHONPATH: ${{ github.workspace }}/apps/backend
