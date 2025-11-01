@@ -1496,7 +1496,7 @@ Tasks: Run Task → 🚀 Start All Servers
 
 # This starts:
 # 1. Redis (Docker) - Port 6379
-# 2. PostgreSQL (Docker) - Port 5432  
+# 2. PostgreSQL (Docker) - Port 5432
 # 3. Backend (FastAPI) - Port 8000
 # 4. Frontend (Next.js) - Port 3000
 # 5. Coverage Dashboard - Port 3002 ⭐
@@ -1671,8 +1671,8 @@ For TypeScript type improvements, use **Copilot Edits** with full workspace cont
 
 ### Use Workspace Context
 - Use `@workspace` to query entire codebase
-- Use `#file:filename` to reference specific files
-- Use `#selection` for selected code context
+- Use the file reference syntax with # symbol followed by file: and the filename to reference specific files
+- Highlight code in your editor to provide targeted context for questions
 
 ### Be Specific
 - "Generate a Vitest test for the `calculateTotal` function in `lib/math.ts`"

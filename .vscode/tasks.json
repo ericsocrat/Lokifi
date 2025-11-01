@@ -148,7 +148,7 @@
       }
     },
     {
-      "label": " Start All Servers",
+      "label": "🚀 Start All Servers",
       "dependsOrder": "sequence",
       "dependsOn": [
         "🔴 Start Redis Server (Docker)",
