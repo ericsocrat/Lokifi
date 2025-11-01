@@ -185,14 +185,44 @@
       "problemMatcher": []
     },
     {
-      "label": "🔄 Restart All Servers",
+      "label": "🔄 Restart Docker Services",
       "type": "shell",
-      "command": "Write-Host '🔄 Restarting All Servers' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '⚠️ MANUAL STEP REQUIRED:' -ForegroundColor Yellow; Write-Host '   1. Close all terminal windows (Backend, Frontend, Dashboard)' -ForegroundColor White; Write-Host '   2. Press Ctrl+C in each terminal OR close the terminal tabs' -ForegroundColor White; Write-Host '   3. Then run the \"🚀 Start All Servers\" task again' -ForegroundColor White; Write-Host ''; cd infra/docker; Write-Host '🔴 Stopping Docker Compose services...' -ForegroundColor Yellow; docker compose down; Write-Host '✅ Docker Compose services stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 After closing terminal servers, use:' -ForegroundColor Cyan; Write-Host '   Ctrl+Shift+P → Tasks: Run Task → 🚀 Start All Servers' -ForegroundColor Gray",
+      "command": "Write-Host '🔄 Restarting Docker Services' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; cd infra/docker; Write-Host '🔴 Stopping Docker Compose services...' -ForegroundColor Yellow; docker compose down; Write-Host '✅ Stopped' -ForegroundColor Green; Write-Host ''; Start-Sleep -Seconds 2; Write-Host '🚀 Starting Docker Compose services...' -ForegroundColor Yellow; docker compose up -d redis postgres; Write-Host '✅ Docker services restarted' -ForegroundColor Green; Write-Host ''; Write-Host '📋 Services Running:' -ForegroundColor Cyan; Write-Host '   ✓ Redis (lokifi-redis-dev)' -ForegroundColor Gray; Write-Host '   ✓ PostgreSQL (lokifi-postgres-dev)' -ForegroundColor Gray; Write-Host ''; Write-Host '💡 Backend/Frontend/Dashboard terminals unaffected' -ForegroundColor Gray",
       "options": {
         "shell": {
           "executable": "pwsh.exe",
-          "args": ["-NoExit", "-Command"]
+          "args": ["-Command"]
         }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "close": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "🔄 Restart All Servers",
+      "type": "shell",
+      "command": "Write-Host '🔄 Restarting All Servers' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '⚠️ MANUAL STEPS:' -ForegroundColor Yellow; Write-Host '   1. Press Ctrl+C in Backend/Frontend/Dashboard terminals' -ForegroundColor White; Write-Host '   2. Docker services will restart automatically' -ForegroundColor White; Write-Host '   3. Then run \"🚀 Start All Servers\" task' -ForegroundColor White; Write-Host ''; cd infra/docker; Write-Host '🔴 Stopping Docker Compose services...' -ForegroundColor Yellow; docker compose down; Write-Host '✅ Stopped' -ForegroundColor Green; Write-Host ''; Start-Sleep -Seconds 2; Write-Host '🚀 Restarting Docker Compose services...' -ForegroundColor Yellow; docker compose up -d redis postgres; Write-Host '✅ Docker services restarted' -ForegroundColor Green; Write-Host ''; Write-Host '💡 Now close terminal servers and run \"🚀 Start All Servers\"' -ForegroundColor Cyan",
+      "options": {
+        "shell": {
+          "executable": "pwsh.exe",
+          "args": ["-Command"]
+        }
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "close": true
       },
       "problemMatcher": []
     }
