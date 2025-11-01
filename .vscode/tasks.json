@@ -92,12 +92,98 @@
       }
     },
     {
-      "label": "🚀 Start All Servers",
+      "label": "�️ Start PostgreSQL Server (Docker)",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host '🗃️ PostgreSQL Server (Docker)' -ForegroundColor Blue; Write-Host '============================================' -ForegroundColor Green; Write-Host 'Checking Docker...' -ForegroundColor Cyan; if (Get-Command docker -ErrorAction SilentlyContinue) { $existing = docker ps -a --filter 'name=lokifi-postgres' --format '{{.Names}}' 2>$null; if ($existing -eq 'lokifi-postgres') { $running = docker ps --filter 'name=lokifi-postgres' --format '{{.Names}}' 2>$null; if ($running -eq 'lokifi-postgres') { Write-Host '✅ PostgreSQL container already running' -ForegroundColor Green } else { Write-Host '▶️ Starting PostgreSQL container...' -ForegroundColor Yellow; docker start lokifi-postgres; Write-Host '✅ PostgreSQL started' -ForegroundColor Green } } else { Write-Host '🚀 Creating PostgreSQL container...' -ForegroundColor Yellow; docker run -d --name lokifi-postgres -p 5432:5432 -e POSTGRES_USER=lokifi -e POSTGRES_PASSWORD=lokifi2025 -e POSTGRES_DB=lokifi --restart unless-stopped postgres:16-alpine; Write-Host '✅ PostgreSQL created and started' -ForegroundColor Green }; Write-Host ''; Write-Host '📋 Connection Details:' -ForegroundColor Cyan; Write-Host '   URL: postgresql://lokifi:lokifi2025@localhost:5432/lokifi' -ForegroundColor White; Write-Host '   User: lokifi' -ForegroundColor White; Write-Host '   Password: lokifi2025' -ForegroundColor White; Write-Host '   Database: lokifi' -ForegroundColor White; Write-Host '   Container: lokifi-postgres' -ForegroundColor White; Write-Host ''; Write-Host '💡 To stop: docker stop lokifi-postgres' -ForegroundColor Gray; } else { Write-Host '❌ Docker not found!' -ForegroundColor Red; Write-Host 'Please install Docker Desktop' -ForegroundColor Yellow }"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "revealProblems": "never",
+        "close": false
+      },
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "📊 Start Coverage Dashboard",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host '📊 Coverage Dashboard' -ForegroundColor Cyan; Write-Host '============================================' -ForegroundColor Green; cd apps/frontend; Write-Host '🔄 Checking coverage data...' -ForegroundColor Yellow; if (-not (Test-Path coverage-dashboard/data.json)) { Write-Host '⚠️ No coverage data found. Generating initial coverage...' -ForegroundColor Yellow; npm run test:coverage 2>&1 | Out-Null; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Coverage data generated' -ForegroundColor Green } else { Write-Host '⚠️ Tests had issues but continuing with existing data...' -ForegroundColor Yellow } } else { Write-Host '✅ Coverage data found' -ForegroundColor Green }; Write-Host ''; Write-Host '🌐 Starting dashboard server on http://localhost:3002' -ForegroundColor Cyan; Write-Host '📁 Serving from: coverage-dashboard/' -ForegroundColor Gray; Write-Host ''; Write-Host '💡 Dashboard Features:' -ForegroundColor White; Write-Host '   ✓ Live coverage metrics' -ForegroundColor Gray; Write-Host '   ✓ File-level coverage breakdown' -ForegroundColor Gray; Write-Host '   ✓ Trend analysis & visualizations' -ForegroundColor Gray; Write-Host '   ✓ Auto-refreshes with test runs' -ForegroundColor Gray; Write-Host ''; Write-Host '🔄 To update coverage: npm run test:coverage' -ForegroundColor Gray; Write-Host ''; npx serve coverage-dashboard -l 3002"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false,
+        "revealProblems": "never",
+        "close": false
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": "Accepting connections"
+        }
+      }
+    },
+    {
+      "label": "�🚀 Start All Servers",
       "dependsOrder": "sequence",
       "dependsOn": [
         "🔴 Start Redis Server",
+        "🗃️ Start PostgreSQL Server (Docker)",
         "🔧 Start Backend Server",
-        "🎨 Start Frontend Server"
+        "🎨 Start Frontend Server",
+        "📊 Start Coverage Dashboard"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "🛑 Stop All Servers",
+      "type": "shell",
+      "command": "pwsh",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Write-Host '🛑 Stopping All Servers' -ForegroundColor Red; Write-Host '============================================' -ForegroundColor Green; Write-Host ''; Write-Host '🔴 Stopping Redis...' -ForegroundColor Yellow; docker stop lokifi-redis 2>$null; Write-Host '🗃️ Stopping PostgreSQL...' -ForegroundColor Yellow; docker stop lokifi-postgres 2>$null; Write-Host ''; Write-Host '✅ All Docker containers stopped' -ForegroundColor Green; Write-Host ''; Write-Host '💡 Terminal servers (Backend, Frontend, Dashboard) should be closed manually' -ForegroundColor Gray; Write-Host '   Press Ctrl+C in each terminal or close the terminal windows' -ForegroundColor Gray"
+      ],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "dedicated",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "🔄 Restart All Servers",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "🛑 Stop All Servers",
+        "🚀 Start All Servers"
       ],
       "problemMatcher": []
     }

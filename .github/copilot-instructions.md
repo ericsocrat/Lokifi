@@ -1487,6 +1487,43 @@ When suggesting code or answering questions, prefer these docs:
 
 ## Common Commands
 
+### Development Server Management
+
+**Start All Services (Recommended):**
+```powershell
+# VS Code Command Palette (Ctrl+Shift+P / Cmd+Shift+P)
+Tasks: Run Task → 🚀 Start All Servers
+
+# This starts:
+# 1. Redis (Docker) - Port 6379
+# 2. PostgreSQL (Docker) - Port 5432  
+# 3. Backend (FastAPI) - Port 8000
+# 4. Frontend (Next.js) - Port 3000
+# 5. Coverage Dashboard - Port 3002 ⭐
+```
+
+**Service URLs:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
+- API Docs: http://localhost:8000/docs
+- **Coverage Dashboard**: http://localhost:3002 ⭐ (Live test coverage metrics)
+
+**Stop All Services:**
+```powershell
+Tasks: Run Task → 🛑 Stop All Servers
+```
+
+**Coverage Dashboard Features:**
+- ✅ Real-time coverage metrics
+- ✅ File-level breakdown
+- ✅ Trend analysis
+- ✅ Protected thresholds
+- ✅ Auto-refreshes with test runs
+
+**Documentation:**
+- **Quick Reference**: `/docs/guides/COVERAGE_DASHBOARD_QUICK_REF.md`
+- **Full Guide**: `/docs/guides/COVERAGE_DASHBOARD_INTEGRATION.md`
+
 ### GitHub CLI (Workflow Monitoring & Health Checks)
 ```powershell
 # PR Status & Workflow Monitoring
