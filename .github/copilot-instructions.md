@@ -1671,7 +1671,7 @@ For TypeScript type improvements, use **Copilot Edits** with full workspace cont
 
 ### Use Workspace Context
 - Use `@workspace` to query entire codebase
-- Use the file reference syntax with # symbol followed by file: and the filename to reference specific files
+- Use the file reference syntax with hash symbol followed by file: and the filename
 - Highlight code in your editor to provide targeted context for questions
 
 ### Be Specific
