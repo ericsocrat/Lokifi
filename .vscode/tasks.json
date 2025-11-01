@@ -30,7 +30,7 @@
       "args": [
         "-NoExit",
         "-Command",
-        "Write-Host '🔧 Backend Server (FastAPI)' -ForegroundColor Blue; Write-Host '============================================' -ForegroundColor Green; cd apps/backend; if (Test-Path venv/Scripts/Activate.ps1) { ./venv/Scripts/Activate.ps1 } else { python -m venv venv; ./venv/Scripts/Activate.ps1; pip install -r requirements.txt }; Write-Host '📡 Starting on http://localhost:8000' -ForegroundColor Cyan; $env:PYTHONPATH=(Get-Location).Path; python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
+        "Write-Host 'Backend Server (FastAPI)' -ForegroundColor Blue; Write-Host '============================================' -ForegroundColor Green; cd apps/backend; if (Test-Path venv/Scripts/Activate.ps1) { ./venv/Scripts/Activate.ps1 } else { python -m venv venv; ./venv/Scripts/Activate.ps1; pip install -r requirements.txt }; Write-Host 'Starting on http://localhost:8000' -ForegroundColor Cyan; $env:PYTHONPATH=(Get-Location).Path; python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"
       ],
       "presentation": {
         "echo": true,
@@ -64,7 +64,7 @@
       "args": [
         "-NoExit",
         "-Command",
-        "Write-Host '🎨 Frontend Server (Next.js)' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; cd apps/frontend; if (-not (Test-Path node_modules)) { Write-Host '📦 Installing dependencies...' -ForegroundColor Yellow; npm install }; Write-Host '🌐 Starting on http://localhost:3000' -ForegroundColor Cyan; npm run dev"
+        "Write-Host 'Frontend Server (Next.js)' -ForegroundColor Magenta; Write-Host '============================================' -ForegroundColor Green; cd apps/frontend; if (-not (Test-Path node_modules)) { Write-Host 'Installing dependencies...' -ForegroundColor Yellow; npm install }; Write-Host 'Starting on http://localhost:3000' -ForegroundColor Cyan; npm run dev"
       ],
       "presentation": {
         "echo": true,
@@ -120,7 +120,7 @@
       "args": [
         "-NoExit",
         "-Command",
-        "Write-Host '📊 Coverage Dashboard' -ForegroundColor Cyan; Write-Host '============================================' -ForegroundColor Green; cd apps/frontend; Write-Host '🔄 Checking coverage data...' -ForegroundColor Yellow; if (-not (Test-Path coverage-dashboard/data.json)) { Write-Host '⚠️ No coverage data found. Generating initial coverage...' -ForegroundColor Yellow; npm run test:coverage 2>&1 | Out-Null; if ($LASTEXITCODE -eq 0) { Write-Host '✅ Coverage data generated' -ForegroundColor Green } else { Write-Host '⚠️ Tests had issues but continuing with existing data...' -ForegroundColor Yellow } } else { Write-Host '✅ Coverage data found' -ForegroundColor Green }; Write-Host ''; Write-Host '🌐 Starting dashboard server on http://localhost:3002' -ForegroundColor Cyan; Write-Host '📁 Serving from: coverage-dashboard/' -ForegroundColor Gray; Write-Host ''; Write-Host '💡 Dashboard Features:' -ForegroundColor White; Write-Host '   ✓ Live coverage metrics' -ForegroundColor Gray; Write-Host '   ✓ File-level coverage breakdown' -ForegroundColor Gray; Write-Host '   ✓ Trend analysis & visualizations' -ForegroundColor Gray; Write-Host '   ✓ Auto-refreshes with test runs' -ForegroundColor Gray; Write-Host ''; Write-Host '🔄 To update coverage: npm run test:coverage' -ForegroundColor Gray; Write-Host ''; npx serve coverage-dashboard -l 3002"
+        "Write-Host 'Coverage Dashboard' -ForegroundColor Cyan; Write-Host '============================================' -ForegroundColor Green; cd apps/frontend; Write-Host 'Checking coverage data...' -ForegroundColor Yellow; if (-not (Test-Path coverage-dashboard/data.json)) { Write-Host 'No coverage data found. Generating initial coverage...' -ForegroundColor Yellow; npm run test:coverage 2>&1 | Out-Null; if ($LASTEXITCODE -eq 0) { Write-Host 'Coverage data generated' -ForegroundColor Green } else { Write-Host 'Tests had issues but continuing with existing data...' -ForegroundColor Yellow } } else { Write-Host 'Coverage data found' -ForegroundColor Green }; Write-Host ''; Write-Host 'Starting dashboard server on http://localhost:3002' -ForegroundColor Cyan; Write-Host 'Serving from: coverage-dashboard/' -ForegroundColor Gray; Write-Host ''; Write-Host 'Dashboard Features:' -ForegroundColor White; Write-Host '   Live coverage metrics' -ForegroundColor Gray; Write-Host '   File-level coverage breakdown' -ForegroundColor Gray; Write-Host '   Trend analysis and visualizations' -ForegroundColor Gray; Write-Host '   Auto-refreshes with test runs' -ForegroundColor Gray; Write-Host ''; Write-Host 'To update coverage: npm run test:coverage' -ForegroundColor Gray; Write-Host ''; npx serve coverage-dashboard -l 3002"
       ],
       "presentation": {
         "echo": true,
