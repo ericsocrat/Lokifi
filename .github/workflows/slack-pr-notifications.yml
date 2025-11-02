@@ -12,10 +12,10 @@ name: 📬 PR Notifications
 on:
   pull_request:
     types:
-      - opened           # PR created
-      - reopened         # PR reopened
+      - opened # PR created
+      - reopened # PR reopened
       - ready_for_review # Draft → Ready
-      - closed           # PR merged or closed
+      - closed # PR merged or closed
     branches:
       - main
 
@@ -62,8 +62,8 @@ jobs:
               emoji = isBot ? '🤖' : '✨';
               severity = isBot ? 'info' : 'medium';
               title = `${emoji} New PR: ${pr.title}`;
-              description = isBot ? 
-                `Automated dependency update ready for review` : 
+              description = isBot ?
+                `Automated dependency update ready for review` :
                 `Development PR opened by @${pr.user.login}`;
             } else if (action === 'ready_for_review') {
               emoji = '👀';
@@ -204,7 +204,7 @@ jobs:
           echo "**Notification**: ${{ steps.notification.outputs.title }}" >> $GITHUB_STEP_SUMMARY
           echo "**Severity**: ${{ steps.notification.outputs.severity }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]]; then
             echo "**Status**: ✅ Slack notification sent successfully" >> $GITHUB_STEP_SUMMARY
           else

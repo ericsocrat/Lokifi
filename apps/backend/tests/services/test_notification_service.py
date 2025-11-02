@@ -21,6 +21,7 @@ import pytest
 
 # Import module under test
 try:
+    from app.models.notification_models import Notification, NotificationPreference
     from app.services.notification_service import (
         NotificationData,
         NotificationEvent,
@@ -29,7 +30,6 @@ try:
         NotificationStats,
         NotificationType,
     )
-    from app.models.notification_models import Notification, NotificationPreference
 except ImportError as e:
     pytest.skip(f"Module import failed: {e}", allow_module_level=True)
 

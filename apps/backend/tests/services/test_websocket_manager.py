@@ -22,12 +22,12 @@ from fastapi import WebSocket
 
 # Import module under test
 try:
-    from app.services.websocket_manager import ConnectionManager
     from app.schemas.conversation import (
         MessageResponse,
         NewMessageNotification,
         TypingIndicatorMessage,
     )
+    from app.services.websocket_manager import ConnectionManager
 except ImportError as e:
     pytest.skip(f"Module import failed: {e}", allow_module_level=True)
 
@@ -81,7 +81,7 @@ def mock_redis_client():
 def mock_message_response(sample_user_id, sample_conversation_id):
     """Mock MessageResponse for testing"""
     from app.models.conversation import ContentType
-    
+
     return MessageResponse(
         id=uuid.uuid4(),
         conversation_id=sample_conversation_id,
@@ -260,9 +260,7 @@ class TestMessageBroadcasting:
         # Should not raise exception
         await connection_manager.send_personal_message(message, sample_user_id)
 
-    async def test_send_personal_message_connection_fails(
-        self, connection_manager, sample_user_id
-    ):
+    async def test_send_personal_message_connection_fails(self, connection_manager, sample_user_id):
         """Test handling failed message send"""
         mock_ws_fail = AsyncMock(spec=WebSocket)
         mock_ws_fail.send_text = AsyncMock(side_effect=Exception("Connection lost"))

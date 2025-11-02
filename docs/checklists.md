@@ -324,14 +324,27 @@ grep_search "<package-name>|<import-name>" apps/backend/**/*.py
 > - **Services Tested**: ai_service, conversation_service, follow_service, profile_service
 > - **Pass Rate**: 100% (770 total passing tests)
 > - **Document**: SESSION_30_SERVICE_TESTS_PHASE1.md
+>
+> **✅ Session 62 Complete (Nov 2, 2025)**: Slack PR Notifications + notification_service Phase 1
+> - **Tests Added**: 13 passing (3 async tests skipped - DB mocking complexity)
+> - **Service Tested**: notification_service (partial coverage)
+> - **Decision**: Skip async tests, proceed to Phase 2 (Option B)
+> - **Document**: history.md Session 62
+>
+> **✅ Session 63 Complete (Nov 2, 2025)**: websocket_manager Tests Phase 2
+> - **Coverage**: websocket_manager 19% → 49% (+30pp)
+> - **Tests Added**: 14 passing (initialization, connection management, message broadcasting)
+> - **Service Tested**: websocket_manager (ConnectionManager class)
+> - **Bug Discovered**: UUID JSON serialization issue in Redis publish (documented)
+> - **Document**: history.md Session 63
 
 ### Services Coverage Status
 - [x] **ai_service.py**: 14% → 44% (+30pp) - 20 tests (Phase 1)
 - [x] **conversation_service.py**: 14% → 54% (+40pp) - 12 tests (Phase 2)
 - [x] **follow_service.py**: 14% → 40% (+26pp) - 12 tests (Phase 3)
 - [x] **profile_service.py**: 0% → 43% (+43pp) - 12 tests (Phase 4)
-- [ ] **notification_service.py**: Low coverage - Integration tests needed
-- [ ] **websocket_manager.py**: Low coverage - WebSocket tests needed
+- [x] **notification_service.py**: 25% - 13 tests (Session 62 Phase 1 partial, 3 async pending)
+- [x] **websocket_manager.py**: 19% → 49% (+30pp) - 14 tests (Session 63 Phase 2) ✅
 - [ ] **auth_service.py**: Moderate coverage - Security tests added (Session 29)
 
 ### Routers/Endpoints Coverage Status
