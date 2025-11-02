@@ -230,6 +230,18 @@ lokifi/
 
 ## Common Patterns
 
+> **📚 Pattern Library**: For battle-tested patterns with success metrics, examples, and anti-patterns, see:
+> - **[Testing Patterns](../docs/architecture/patterns/testing/)** - AsyncMock (95% success, +30-40pp), Pure Functions, Mathematical Testing, Fixtures
+> - **[CI/CD Patterns](../docs/architecture/patterns/ci-cd/)** - Workflow Health Check, GitHub CLI Investigation, Service Config Standards
+> - **[Code Quality Patterns](../docs/architecture/patterns/code-quality/)** - TypeScript Any Elimination (96.3%), Zustand+Immer, Draft<T>, Python Ruff, ESLint
+> - **[Dependencies](../docs/architecture/patterns/dependencies/)** - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patches
+> - **[Python Patterns](../docs/architecture/patterns/python/)** - Python 3.10 Compatibility, UTC Import, Lambda UTC
+> - **[Debugging Patterns](../docs/architecture/patterns/debugging/)** - Root Cause Analysis (100% success), Log Analysis (75-88% time savings)
+
+### Quick Code Templates (For Copilot Generation)
+
+**Note**: These are minimal boilerplate templates for fast code generation. For comprehensive production patterns with real-world examples and success metrics, see the Pattern Library above.
+
 ### Frontend Component Pattern
 ```typescript
 import { FC } from 'react';
@@ -249,6 +261,9 @@ export const ComponentName: FC<Props> = ({ prop1, prop2 }) => {
 ```
 
 ### Zustand Store Pattern (Basic)
+
+> **📚 Production Pattern**: [Zustand+Immer Pattern](../docs/architecture/patterns/code-quality/zustand-immer-pattern.md) - Complete pattern with Draft<T> usage for type-safe mutations (100% success rate, 10 stores)
+
 ```typescript
 import { create } from 'zustand';
 
@@ -294,7 +309,7 @@ export const useStore = create<Store>((set, get) => ({
 }));
 ```
 
-**Note**: For complex state mutations, see the **Zustand + Immer pattern** in the "When Writing Code" section (lines 66-114) for `Draft<T>` usage.
+**Note**: For complex state mutations, see the **Zustand + Immer pattern** for `Draft<T>` usage.
 
 ### Backend Route Pattern
 ```python
@@ -314,6 +329,9 @@ async def get_endpoint(
 ```
 
 ### Test Pattern (Frontend)
+
+> **📚 Production Pattern**: [AsyncMock Pattern](../docs/architecture/patterns/testing/asyncmock-pattern.md) - Comprehensive async testing pattern (95% success, 4 sessions, +30-40pp coverage)
+
 ```typescript
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -400,6 +418,9 @@ const items: any[] = [...];  // NO - use proper Item[] type!
 ```
 
 **Zustand + Immer Store Pattern** (Proven in Sprint 2 & 3):
+
+> **📚 Production Pattern**: [Zustand+Immer Pattern](../docs/architecture/patterns/code-quality/zustand-immer-pattern.md) - Complete pattern with Draft<T> usage for type-safe mutations (100% success rate, 10 stores)
+
 ```typescript
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
@@ -447,6 +468,8 @@ export const useStore = create<StoreState & StoreActions>()(
 // ❌ BAD: set((state) => { state.items.push(...) })  // Won't work with Immer!
 // ✅ GOOD: set((draft: Draft<State>) => { draft.items.push(...) })
 ```
+
+**Note**: For complete pattern with anti-patterns and troubleshooting, see the Zustand+Immer pattern in the Pattern Library.
 
 **React Event Handler Types** (Common patterns):
 ```typescript
@@ -1500,9 +1523,63 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - Update parent README.md to explain archived content
 - Update all cross-references to point to new locations
 
+## 📚 Pattern Library
+
+**Location**: `/docs/architecture/patterns/` ⭐
+
+**When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
+
+**22 Battle-Tested Patterns** from 66+ sessions with proven success metrics:
+
+**Testing Patterns** (4):
+- [AsyncMock Pattern](../docs/architecture/patterns/testing/asyncmock-pattern.md) - 95% success, +30-40pp coverage (Sessions 30, 62, 63, 66)
+- [Pure Function Testing](../docs/architecture/patterns/testing/pure-function-testing.md) - 100% success, <15 min implementation
+- [Mathematical Testing](../docs/architecture/patterns/testing/mathematical-testing.md) - 33 tests, 100% coverage (Session 66)
+- [Fixture Design](../docs/architecture/patterns/testing/fixture-design.md) - Reusable test data patterns
+
+**CI/CD Patterns** (4):
+- [Workflow Health Check](../docs/architecture/patterns/ci-cd/workflow-health-check.md) - GitHub CLI investigation (10+ sessions)
+- [GitHub CLI Investigation](../docs/architecture/patterns/ci-cd/github-cli-investigation.md) - Rapid failure diagnosis
+- [Service Config Standards](../docs/architecture/patterns/ci-cd/service-config-standards.md) - PostgreSQL/Redis consistency
+- [Working Directory Context](../docs/architecture/patterns/ci-cd/working-directory-context.md) - Path management (Session 33)
+
+**Code Quality Patterns** (5):
+- [TypeScript Any Elimination](../docs/architecture/patterns/code-quality/typescript-any-elimination.md) - 96.3% improvement, Sprint 2 (Sessions 42-51)
+- [Zustand + Immer Pattern](../docs/architecture/patterns/code-quality/zustand-immer-pattern.md) - 100% success, 10 stores
+- [Draft<T> Mutations](../docs/architecture/patterns/code-quality/draft-type-mutations.md) - Type-safe Immer usage
+- [Python Ruff Compliance](../docs/architecture/patterns/code-quality/python-ruff-compliance.md) - 367→0 violations (Session 52)
+- [ESLint Quality Campaign](../docs/architecture/patterns/code-quality/eslint-quality-campaign.md) - 15.1% reduction (Sessions 53-59)
+
+**Dependencies Patterns** (4):
+- [Conflict Resolution](../docs/architecture/patterns/dependencies/conflict-resolution.md) - Session 30 Werkzeug/openapi-core
+- [Pin vs Replace Decision](../docs/architecture/patterns/dependencies/pin-vs-replace.md) - 4 options with time estimates
+- [Renovate Migration](../docs/architecture/patterns/dependencies/renovate-migration.md) - Dependabot→Renovate (Session 29)
+- [Security Patch Evaluation](../docs/architecture/patterns/dependencies/security-patch-evaluation.md) - CVE triage workflow
+
+**Python Patterns** (3):
+- [Python 3.10 Compatibility](../docs/architecture/patterns/python/python310-compatibility.md) - 60 files, 8 functions (Session 66)
+- [UTC Import Pattern](../docs/architecture/patterns/python/utc-import-pattern.md) - datetime.timezone fixes
+- [Lambda UTC Import](../docs/architecture/patterns/python/lambda-utc-import.md) - AWS Lambda timezone handling
+
+**Debugging Patterns** (2):
+- [Root Cause Analysis](../docs/architecture/patterns/debugging/root-cause-analysis.md) - 100% success, Session 33 (7 failures→2 fixes)
+- [Log Analysis](../docs/architecture/patterns/debugging/log-analysis.md) - 75-88% time savings (10+ sessions)
+
+**How to find the right pattern**: Use the [Pattern Selection Guide](../docs/architecture/patterns/README.md#pattern-selection-guide) with interactive decision trees:
+- **Testing**: "What are you testing?" → 4 pattern options
+- **Debugging**: "What type of failure?" → 3 debugging approaches
+- **Dependencies**: "What dependency issue?" → 4 dependency scenarios
+- **Code Quality**: "What code quality issue?" → 5 quality patterns
+- **Python**: "What Python issue?" → 3 Python-specific patterns
+
+**Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
+
+**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses AsyncMock pattern from Session 30")
+
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
+- **Pattern Library**: `/docs/architecture/patterns/` - 22 battle-tested patterns ⭐ NEW!
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
 - **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide

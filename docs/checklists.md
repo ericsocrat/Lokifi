@@ -116,142 +116,30 @@ npm run lint
 **Validation:** ✅ Active monitoring, lock files sync atomically
 **ROI:** 10-15 hours/year saved vs Dependabot manual lock file fixes
 
-### ✅ Dependency Conflict Resolution (Session 30)
+### ✅ Dependency Conflict Resolution
 
-**When Renovate PRs Fail CI** - Follow this systematic approach:
+> **📚 Pattern Library**: [Conflict Resolution Pattern](../architecture/patterns/dependencies/conflict-resolution.md)
+> 
+> **Quick Summary**: Systematic 6-step approach to resolve dependency conflicts in Renovate PRs. Includes decision tree for 4 solution options (Upgrade 1-2h, Pin 5min, Replace 3-4h, Wait ∞) with time estimates and real Session 30 Werkzeug/openapi-core example.
 
-#### Step 1: Identify Conflict Pattern (~5 minutes)
-```powershell
-# Check PR status
-gh pr checks <pr-number> --repo ericsocrat/Lokifi
+**When to use**: Renovate PRs failing CI due to dependency incompatibility
 
-# Look for patterns:
-# - Frontend passing, backend failing? → Backend dependency issue
-# - All failing? → Configuration or infrastructure issue
-# - Specific Python versions failing? → Version-specific dependency conflict
-```
+**Quick Checklist**:
+- [ ] **Identify conflict pattern** (~5 min): `gh pr checks` → Analyze failure patterns
+- [ ] **Analyze error logs** (~10 min): `gh run view --log-failed` → Find "ResolutionImpossible" errors
+- [ ] **Root cause analysis** (~15 min): Check versions, verify latest available, grep codebase usage
+- [ ] **Choose solution** (~15 min): Upgrade (1-2h), Pin (5min) ✅, Replace (3-4h), Wait (∞)
+- [ ] **Implement fix** (~5-10 min): Update requirements.txt + renovate.json, close PR, commit
+- [ ] **Monitor follow-up**: Weekly version checks, CVE monitoring, 30-day review
 
-#### Step 2: Analyze Error Logs (~10 minutes)
-```powershell
-# Get detailed failure logs
-gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Pattern "ERROR|ResolutionImpossible" -Context 2
+**Most Common Solution**: **Pin temporarily** (5 minutes) when conflicting package is LATEST
 
-# Common error patterns:
-# - "ResolutionImpossible" → Dependency constraint conflict
-# - "Cannot install X and Y" → Version incompatibility
-# - "No matching distribution" → Package version doesn't exist
-```
-
-#### Step 3: Root Cause Analysis (~15 minutes)
-```powershell
-# Check current versions
-grep_search "<package-name>" apps/backend/requirements.txt
-
-# Verify latest versions available
-pip index versions <package-name>
-
-# Check usage in codebase
-grep_search "<package-name>|<import-name>" apps/backend/**/*.py
-```
-
-#### Step 4: Solution Decision Tree (~15 minutes)
-
-**Evaluate 4 Options:**
-
-**Option 1: Upgrade Conflicting Dependency** ⏱️ 1-2 hours
-- ✅ Use when: Newer version available that's compatible
-- ❌ Avoid when: Latest version doesn't support new dependency
-- **Check**: `pip index versions <package>` to verify latest
-- **Risk**: May introduce breaking changes, requires testing
-
-**Option 2: Pin Temporarily** ⏱️ 5 minutes ✅ **PREFERRED for short-term**
-- ✅ Use when:
-  - Conflicting package is LATEST (no update available)
-  - Library actively maintained (updated within 6 months)
-  - Security risk is acceptable (no known CVEs)
-- ❌ Avoid when:
-  - Critical vulnerability in pinned version
-  - Library abandoned (>1 year no updates)
-- **Implementation**:
-  ```txt
-  # requirements.txt
-  PackageA<3.0.0  # Pinned: PackageB 1.2.3 incompatible with >=3.0.0 (Session X)
-  ```
-  ```json
-  // renovate.json
-  {
-    "description": "PackageA pinned (Session X: PackageB compatibility)",
-    "matchPackageNames": ["PackageA"],
-    "enabled": false
-  }
-  ```
-
-**Option 3: Replace Dependency** ⏱️ 3-4 hours
-- ✅ Use when:
-  - Library abandoned (>1 year no updates)
-  - Critical CVE with no patch available
-  - Better-maintained alternative exists
-- ❌ Avoid when:
-  - Library actively maintained
-  - Temporary pin is viable
-  - No clear replacement exists
-- **Risk**: High time investment, potential test coverage reduction
-
-**Option 4: Wait for Maintainers** ⏱️ Indefinite
-- ✅ Use when: Non-critical dependency, can afford to wait
-- ❌ Avoid when: Blocking security patches or new features
-- **Risk**: No control over timeline
-
-#### Step 5: Implementation (~5-10 minutes)
-
-**For Option 2 (Pin) - Most Common**:
-
-1. Update `requirements.txt`:
-   ```txt
-   PackageA<3.0.0  # Pinned: PackageB incompatible (Session X)
-   ```
-
-2. Update `renovate.json`:
-   ```json
-   {
-     "description": "PackageA pinned (Session X: reason)",
-     "matchPackageNames": ["PackageA"],
-     "enabled": false
-   }
-   ```
-
-3. Close conflicting PR with explanation:
-   ```powershell
-   gh pr close <pr-number> --repo ericsocrat/Lokifi --comment "Closing due to dependency conflict. Temporarily pinning PackageA. Other updates will come in separate PRs. See SESSION_X for analysis."
-   ```
-
-4. Commit and push:
-   ```powershell
-   git add apps/backend/requirements.txt renovate.json
-   git commit -m "fix(deps): pin PackageA for PackageB compatibility"
-   git push origin main
-   ```
-
-#### Step 6: Follow-up Monitoring
-
-- [ ] **Track updates**: Check weekly for compatible versions (`pip index versions`)
-- [ ] **Monitor security**: Watch for CVEs in pinned packages
-- [ ] **Document decision**: Add to session history with rationale
-- [ ] **Set reminder**: Review after 30 days for permanent solution
-- [ ] **Re-enable updates**: When compatible version available
-
-#### Real-World Example: Session 30 (Werkzeug/openapi-core)
-
-**Problem**: Werkzeug 3.1.3 incompatible with openapi-core 0.19.5
-**Investigation**: 45 minutes, confirmed openapi-core 0.19.5 is LATEST
-**Decision**: Option 2 (Pin Werkzeug<3.1.3)
-**Rationale**:
-- openapi-core actively used (API schema validation)
-- No critical CVEs in Werkzeug 3.1.1
-- Replacement would take 3-4 hours
-**Implementation**: 10 minutes (requirements.txt + renovate.json)
-**Outcome**: Backend CI unblocked, PR #61 closed, PR #62 validated
-**Follow-up**: Monitor openapi-core for Werkzeug >=3.1.3 support
+**See full pattern for**:
+- Complete decision tree with when to use each option
+- Step-by-step PowerShell commands
+- Anti-patterns and common mistakes
+- Session 30 detailed case study (Werkzeug/openapi-core)
+- Follow-up monitoring checklist
 
 ### ✅ VS Code Workspace (COMPLETE)
 - [x] **Settings optimized** (`.vscode/settings.json`):
