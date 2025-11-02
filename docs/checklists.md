@@ -337,6 +337,13 @@ grep_search "<package-name>|<import-name>" apps/backend/**/*.py
 > - **Service Tested**: websocket_manager (ConnectionManager class)
 > - **Bug Discovered**: UUID JSON serialization issue in Redis publish (documented)
 > - **Document**: history.md Session 63
+>
+> **✅ Session 64 Complete (Nov 2, 2025)**: Strategic Pivot - Integration Tests Deferred
+> - **Decision**: Defer integration tests (Docker/PostgreSQL dependency + 3-4 hours investment)
+> - **Rationale**: Router tests provide better ROI (2-4pp/hour vs 1.25-2.5pp/hour)
+> - **Next Phase**: Router/endpoint tests (Profile, Conversations, Follow, AI routers)
+> - **Target**: +10-15pp coverage gain (4 routers, 17-25 tests, 2-3 hours)
+> - **Document**: history.md Session 64
 
 ### Services Coverage Status
 - [x] **ai_service.py**: 14% → 44% (+30pp) - 20 tests (Phase 1)
