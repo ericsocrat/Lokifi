@@ -344,6 +344,15 @@ grep_search "<package-name>|<import-name>" apps/backend/**/*.py
 > - **Next Phase**: Router/endpoint tests (Profile, Conversations, Follow, AI routers)
 > - **Target**: +10-15pp coverage gain (4 routers, 17-25 tests, 2-3 hours)
 > - **Document**: history.md Session 64
+>
+> **⚠️ Session 65 Partial (Nov 2, 2025)**: Social Router Tests - Database Mocking Complexity
+> - **Created**: test_social_routes.py (544 lines, 16 tests for /api/social/* endpoints)
+> - **Results**: 2/16 passing (12.5%) - Feed tests passing, User/Follow/Post tests failing
+> - **Root Cause**: Synchronous `get_session()` context manager harder to mock than async services
+> - **Status**: Test foundation created, mocking challenges documented, deferred for future session
+> - **Time**: ~1 hour (test creation + investigation)
+> - **Value**: Foundation exists for future work, complexity well-documented
+> - **Document**: history.md Session 65
 
 ### Services Coverage Status
 - [x] **ai_service.py**: 14% → 44% (+30pp) - 20 tests (Phase 1)
