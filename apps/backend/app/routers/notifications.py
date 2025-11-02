@@ -1,6 +1,6 @@
 # J6 Enterprise Notifications - REST API Router
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
