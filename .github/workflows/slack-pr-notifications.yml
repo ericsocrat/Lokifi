@@ -1,0 +1,212 @@
+# Slack PR Notifications - Renovate & Development PRs
+# Sends Slack notifications for PR lifecycle events (opened, ready for review, merged)
+# Provides team awareness of dependency updates and development progress
+#
+# Setup Requirements:
+# 1. SLACK_WEBHOOK_URL secret must be configured (already done ✅)
+# 2. Customize notification channel preferences below
+# 3. Adjust PR filters (renovate-only vs all PRs)
+
+name: 📬 PR Notifications
+
+on:
+  pull_request:
+    types:
+      - opened           # PR created
+      - reopened         # PR reopened
+      - ready_for_review # Draft → Ready
+      - closed           # PR merged or closed
+    branches:
+      - main
+
+  pull_request_review:
+    types:
+      - submitted # PR review submitted (approved/changes requested)
+
+permissions:
+  pull-requests: read
+  contents: read
+
+jobs:
+  notify-slack:
+    name: Send PR Notification
+    runs-on: ubuntu-latest
+
+    # Skip notifications for draft PRs (unless transitioning to ready_for_review)
+    if: >
+      (github.event.action != 'opened' || !github.event.pull_request.draft) ||
+      github.event.action == 'ready_for_review'
+
+    steps:
+      - name: 🔍 Determine notification type
+        id: notification
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const action = context.payload.action;
+            const review = context.payload.review;
+
+            // Determine PR type
+            const isRenovate = pr.user.login === 'renovate[bot]';
+            const isDependabot = pr.user.login === 'dependabot[bot]';
+            const isBot = isRenovate || isDependabot;
+
+            // Determine notification severity and emoji
+            let emoji = '📬';
+            let severity = 'info';
+            let title = '';
+            let description = '';
+
+            if (action === 'opened') {
+              emoji = isBot ? '🤖' : '✨';
+              severity = isBot ? 'info' : 'medium';
+              title = `${emoji} New PR: ${pr.title}`;
+              description = isBot ? 
+                `Automated dependency update ready for review` : 
+                `Development PR opened by @${pr.user.login}`;
+            } else if (action === 'ready_for_review') {
+              emoji = '👀';
+              severity = 'medium';
+              title = `${emoji} PR Ready for Review: ${pr.title}`;
+              description = `Draft PR is now ready for review`;
+            } else if (action === 'closed' && pr.merged) {
+              emoji = '✅';
+              severity = 'low';
+              title = `${emoji} PR Merged: ${pr.title}`;
+              description = `Merged by @${pr.merged_by.login}`;
+            } else if (action === 'closed' && !pr.merged) {
+              emoji = '❌';
+              severity = 'low';
+              title = `${emoji} PR Closed: ${pr.title}`;
+              description = `Closed without merging`;
+            } else if (action === 'reopened') {
+              emoji = '🔄';
+              severity = 'medium';
+              title = `${emoji} PR Reopened: ${pr.title}`;
+              description = `Reopened by @${pr.user.login}`;
+            } else if (review) {
+              if (review.state === 'approved') {
+                emoji = '✅';
+                severity = 'low';
+                title = `${emoji} PR Approved: ${pr.title}`;
+                description = `Approved by @${review.user.login}`;
+              } else if (review.state === 'changes_requested') {
+                emoji = '🔧';
+                severity = 'medium';
+                title = `${emoji} Changes Requested: ${pr.title}`;
+                description = `@${review.user.login} requested changes`;
+              }
+            }
+
+            // Set outputs
+            core.setOutput('emoji', emoji);
+            core.setOutput('severity', severity);
+            core.setOutput('title', title);
+            core.setOutput('description', description);
+            core.setOutput('is_bot', isBot);
+            core.setOutput('is_renovate', isRenovate);
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('pr_url', pr.html_url);
+            core.setOutput('pr_author', pr.user.login);
+            core.setOutput('pr_title', pr.title);
+
+      - name: 📢 Send Slack notification
+        uses: slackapi/slack-github-action@v1.27.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        with:
+          payload: |
+            {
+              "text": "${{ steps.notification.outputs.title }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "${{ steps.notification.outputs.title }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n<https://github.com/${{ github.repository }}|${{ github.repository }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*PR Number:*\n<${{ steps.notification.outputs.pr_url }}|#${{ steps.notification.outputs.pr_number }}>"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Author:*\n${{ steps.notification.outputs.pr_author }}"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Status:*\n${{ steps.notification.outputs.description }}"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*PR Title:* ${{ steps.notification.outputs.pr_title }}"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View PR",
+                        "emoji": true
+                      },
+                      "url": "${{ steps.notification.outputs.pr_url }}",
+                      "style": "primary"
+                    },
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Files Changed",
+                        "emoji": true
+                      },
+                      "url": "${{ steps.notification.outputs.pr_url }}/files"
+                    }
+                  ]
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "🤖 Automated notification from GitHub Actions | <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow>"
+                    }
+                  ]
+                }
+              ]
+            }
+
+      - name: 📊 Create workflow summary
+        if: always()
+        run: |
+          echo "## 📬 PR Notification Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**PR**: #${{ steps.notification.outputs.pr_number }} - ${{ steps.notification.outputs.pr_title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Author**: ${{ steps.notification.outputs.pr_author }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Action**: ${{ github.event.action }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Notification**: ${{ steps.notification.outputs.title }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Severity**: ${{ steps.notification.outputs.severity }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ -n "${{ secrets.SLACK_WEBHOOK_URL }}" ]]; then
+            echo "**Status**: ✅ Slack notification sent successfully" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status**: ⚠️ Slack webhook not configured (notifications disabled)" >> $GITHUB_STEP_SUMMARY
+          fi
