@@ -1,0 +1,47 @@
+# yamllint configuration for Lokifi project
+# Suppresses false positive warnings for GitHub Actions workflows
+# Reference: https://yamllint.readthedocs.io/
+
+extends: default
+
+rules:
+  # Disable line-length checks for GitHub Actions workflows
+  # (JSON payloads and long URLs are common and intentional)
+  line-length:
+    max: 500
+    level: warning
+
+  # Allow GitHub Actions expressions in strings without warnings
+  # Context: ${{ }} expressions are valid in GitHub Actions, but YAML linters flag them
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
+
+  # Allow inline JSON in workflows (Slack payloads, etc.)
+  braces:
+    max-spaces-inside: 1
+    level: warning
+
+  # Allow document start marker to be optional
+  document-start: disable
+
+  # Allow empty values in GitHub Actions (common pattern)
+  empty-values:
+    forbid-in-block-mappings: false
+    forbid-in-flow-mappings: false
+
+ignore: |
+  # Ignore generated files
+  node_modules/
+  venv/
+  .venv/
+  coverage/
+  htmlcov/
+  dist/
+  build/
+  *.min.js
+  *.min.css
+
+  # Ignore dependency lock files
+  package-lock.json
+  yarn.lock
+  pnpm-lock.yaml

@@ -6,6 +6,10 @@
 # 1. SLACK_WEBHOOK_URL secret must be configured (already done ✅)
 # 2. Customize notification channel preferences below
 # 3. Adjust PR filters (renovate-only vs all PRs)
+#
+# NOTE: YAML linter warnings for ${{ }} expressions are FALSE POSITIVES.
+# These GitHub Actions expressions are valid and required for dynamic values.
+# See: https://docs.github.com/en/actions/learn-github-actions/expressions
 
 name: 📬 PR Notifications
 

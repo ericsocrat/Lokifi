@@ -1377,14 +1377,14 @@ def test_get_current_user_profile(client, auth_headers):
         display_name="Test User",
         bio="Test bio"
     )
-    
+
     # Mock service layer (isolate router from service implementation)
     with patch('app.routers.profile.profile_service') as mock_service:
         mock_service.get_profile_by_user_id = AsyncMock(return_value=mock_profile)
-        
+
         # Act
         response = client.get("/api/profile/me", headers=auth_headers)
-        
+
         # Assert
         assert response.status_code == 200
         data = response.json()
@@ -1500,7 +1500,7 @@ pytest tests/api/test_social_routes.py -v
   # Router code (synchronous)
   with get_session() as db:
       user = db.execute(select(User).where(User.handle == handle)).scalar_one_or_none()
-  
+
   # Mock attempt (not working)
   mock_get_session.return_value.__enter__.return_value = mock_session
   # Issue: Complex query chaining not properly mocked

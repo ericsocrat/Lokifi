@@ -15,9 +15,8 @@ from datetime import datetime
 from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.main import app
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -87,20 +86,21 @@ class TestUserEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock no existing user
         mock_session.execute.return_value.scalar_one_or_none.return_value = None
-        
+
         # Mock flush to set user id
         def set_id(*args, **kwargs):
             mock_db_user.id = 1
+
         mock_session.flush.side_effect = set_id
         mock_session.add.return_value = None
 
         payload = {
             "handle": "newuser",
             "avatar_url": "https://example.com/avatar.jpg",
-            "bio": "Test bio"
+            "bio": "Test bio",
         }
 
         # Act
@@ -122,14 +122,14 @@ class TestUserEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock existing user
         mock_session.execute.return_value.scalar_one_or_none.return_value = mock_db_user
 
         payload = {
             "handle": "testuser",
             "avatar_url": "https://example.com/avatar.jpg",
-            "bio": "Test bio"
+            "bio": "Test bio",
         }
 
         # Act
@@ -145,10 +145,10 @@ class TestUserEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user exists
         mock_session.execute.return_value.scalar_one_or_none.return_value = mock_db_user
-        
+
         # Mock counts (following, followers, posts)
         mock_session.execute.return_value.scalar_one.side_effect = [5, 10, 20]
 
@@ -171,7 +171,7 @@ class TestUserEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user not found
         mock_session.execute.return_value.scalar_one_or_none.return_value = None
 
@@ -193,25 +193,25 @@ class TestFollowEndpoints:
 
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
-    def test_follow_success(self, mock_get_session, mock_require_handle, 
-                           mock_db_user, mock_db_user_2):
+    def test_follow_success(
+        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2
+    ):
         """Test successful follow operation"""
         # Arrange
         mock_require_handle.return_value = "testuser"
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookups
         mock_session.execute.return_value.scalar_one_or_none.side_effect = [
-            mock_db_user,      # Me
-            mock_db_user_2,    # Target
-            None               # No existing follow
+            mock_db_user,  # Me
+            mock_db_user_2,  # Target
+            None,  # No existing follow
         ]
 
         # Act
         response = client.post(
-            "/api/social/follow/anotheruser",
-            headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
         )
 
         # Assert
@@ -223,25 +223,25 @@ class TestFollowEndpoints:
 
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
-    def test_follow_already_following(self, mock_get_session, mock_require_handle,
-                                      mock_db_user, mock_db_user_2, mock_db_follow):
+    def test_follow_already_following(
+        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2, mock_db_follow
+    ):
         """Test follow when already following"""
         # Arrange
         mock_require_handle.return_value = "testuser"
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookups + existing follow
         mock_session.execute.return_value.scalar_one_or_none.side_effect = [
-            mock_db_user,      # Me
-            mock_db_user_2,    # Target
-            mock_db_follow     # Existing follow
+            mock_db_user,  # Me
+            mock_db_user_2,  # Target
+            mock_db_follow,  # Existing follow
         ]
 
         # Act
         response = client.post(
-            "/api/social/follow/anotheruser",
-            headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
         )
 
         # Assert
@@ -259,17 +259,16 @@ class TestFollowEndpoints:
         mock_require_handle.return_value = "testuser"
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock same user for both lookups
         mock_session.execute.return_value.scalar_one_or_none.side_effect = [
             mock_db_user,  # Me
-            mock_db_user   # Target (same user)
+            mock_db_user,  # Target (same user)
         ]
 
         # Act
         response = client.post(
-            "/api/social/follow/testuser",
-            headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/testuser", headers={"Authorization": "Bearer test_token"}
         )
 
         # Assert
@@ -278,25 +277,25 @@ class TestFollowEndpoints:
 
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
-    def test_unfollow_success(self, mock_get_session, mock_require_handle,
-                             mock_db_user, mock_db_user_2, mock_db_follow):
+    def test_unfollow_success(
+        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2, mock_db_follow
+    ):
         """Test successful unfollow operation"""
         # Arrange
         mock_require_handle.return_value = "testuser"
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookups + existing follow
         mock_session.execute.return_value.scalar_one_or_none.side_effect = [
-            mock_db_user,      # Me
-            mock_db_user_2,    # Target
-            mock_db_follow     # Existing follow to delete
+            mock_db_user,  # Me
+            mock_db_user_2,  # Target
+            mock_db_follow,  # Existing follow to delete
         ]
 
         # Act
         response = client.delete(
-            "/api/social/follow/anotheruser",
-            headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
         )
 
         # Assert
@@ -308,25 +307,25 @@ class TestFollowEndpoints:
 
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
-    def test_unfollow_not_following(self, mock_get_session, mock_require_handle,
-                                   mock_db_user, mock_db_user_2):
+    def test_unfollow_not_following(
+        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2
+    ):
         """Test unfollow when not following"""
         # Arrange
         mock_require_handle.return_value = "testuser"
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookups + no existing follow
         mock_session.execute.return_value.scalar_one_or_none.side_effect = [
-            mock_db_user,      # Me
-            mock_db_user_2,    # Target
-            None               # No follow to delete
+            mock_db_user,  # Me
+            mock_db_user_2,  # Target
+            None,  # No follow to delete
         ]
 
         # Act
         response = client.delete(
-            "/api/social/follow/anotheruser",
-            headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
         )
 
         # Assert
@@ -347,33 +346,29 @@ class TestPostEndpoints:
 
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
-    def test_create_post_success(self, mock_get_session, mock_require_handle,
-                                 mock_db_user, mock_db_post):
+    def test_create_post_success(
+        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_post
+    ):
         """Test successful post creation"""
         # Arrange
         mock_require_handle.return_value = "testuser"
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookup
         mock_session.execute.return_value.scalar_one_or_none.return_value = mock_db_user
-        
+
         # Mock flush to set post id
         def set_id(*args, **kwargs):
             mock_db_post.id = 1
+
         mock_session.flush.side_effect = set_id
 
-        payload = {
-            "handle": "testuser",
-            "content": "Test post content",
-            "symbol": "BTC"
-        }
+        payload = {"handle": "testuser", "content": "Test post content", "symbol": "BTC"}
 
         # Act
         response = client.post(
-            "/api/social/posts",
-            json=payload,
-            headers={"Authorization": "Bearer test_token"}
+            "/api/social/posts", json=payload, headers={"Authorization": "Bearer test_token"}
         )
 
         # Assert
@@ -391,11 +386,9 @@ class TestPostEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock query results (post, user) tuples
-        mock_session.execute.return_value.all.return_value = [
-            (mock_db_post, mock_db_user)
-        ]
+        mock_session.execute.return_value.all.return_value = [(mock_db_post, mock_db_user)]
 
         # Act
         response = client.get("/api/social/posts")
@@ -414,11 +407,9 @@ class TestPostEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock query results
-        mock_session.execute.return_value.all.return_value = [
-            (mock_db_post, mock_db_user)
-        ]
+        mock_session.execute.return_value.all.return_value = [(mock_db_post, mock_db_user)]
 
         # Act
         response = client.get("/api/social/posts?symbol=BTC")
@@ -435,7 +426,7 @@ class TestPostEndpoints:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock query results
         mock_session.execute.return_value.all.return_value = []
 
@@ -462,23 +453,23 @@ class TestFeedEndpoint:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookup
         execute_mock = MagicMock()
         mock_get_session.return_value.__enter__.return_value.execute = execute_mock
-        
+
         # First call: user lookup
         user_result = MagicMock()
         user_result.scalar_one_or_none.return_value = mock_db_user
-        
+
         # Second call: followee IDs
         followee_result = MagicMock()
         followee_result.all.return_value = [(2,), (3,)]
-        
+
         # Third call: posts
         posts_result = MagicMock()
         posts_result.all.return_value = [(mock_db_post, mock_db_user_2)]
-        
+
         execute_mock.side_effect = [user_result, followee_result, posts_result]
 
         # Act
@@ -495,23 +486,23 @@ class TestFeedEndpoint:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user lookup
         execute_mock = MagicMock()
         mock_get_session.return_value.__enter__.return_value.execute = execute_mock
-        
+
         # First call: user lookup
         user_result = MagicMock()
         user_result.scalar_one_or_none.return_value = mock_db_user
-        
+
         # Second call: no followees
         followee_result = MagicMock()
         followee_result.all.return_value = []
-        
+
         # Third call: global posts
         posts_result = MagicMock()
         posts_result.all.return_value = [(mock_db_post, mock_db_user)]
-        
+
         execute_mock.side_effect = [user_result, followee_result, posts_result]
 
         # Act
@@ -528,7 +519,7 @@ class TestFeedEndpoint:
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
-        
+
         # Mock user not found
         mock_session.execute.return_value.scalar_one_or_none.return_value = None
 

@@ -745,4 +745,8 @@
 
   // Use .github/copilot-instructions.md for project-specific instructions
   "github.copilot.chat.codeGeneration.useInstructionFiles": true
+
+  // ===== CSPELL CONFIGURATION =====
+  // Custom dictionary maintained in /cspell.json (single source of truth)
+  // VS Code automatically uses root cspell.json - no duplication needed
 }

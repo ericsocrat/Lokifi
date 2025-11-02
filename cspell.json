@@ -1,0 +1,300 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en",
+
+  // =============================================================================
+  // LOKIFI CUSTOM DICTIONARY - WORLD-CLASS CONFIGURATION
+  // =============================================================================
+  //
+  // PURPOSE: Centralized spell-checking dictionary for the entire codebase
+  // SCOPE: Frontend (Next.js/React), Backend (FastAPI/Python), Infrastructure
+  //
+  // MAINTENANCE GUIDELINES:
+  // - Add new terms alphabetically within their category
+  // - Use lowercase for generic terms, PascalCase for proper nouns
+  // - Document ambiguous terms with inline comments
+  // - Run full codebase scan after major additions: npx cspell "**/*"
+  //
+  // CATEGORIES:
+  // 1. Frontend Frameworks & Libraries (UI, state, testing)
+  // 2. Backend Frameworks & Libraries (API, database, async)
+  // 3. Build Tools & Development (linters, formatters, configs)
+  // 4. React Hooks & Frontend APIs (React-specific)
+  // 5. Testing & Code Quality (pytest, vitest, fixtures)
+  // 6. Project-Specific (Lokifi domain terms)
+  // 7. Security & Standards (auth, CORS, CSRF, metadata)
+  // 8. UI Components & Patterns (form elements, navigation)
+  // 9. Shell & Environment (terminal, virtual environments)
+  // 10. Conventions & Patterns (naming, patterns, utilities)
+  //
+  // Last Updated: November 2, 2025
+  // Total Terms: 164
+  // =============================================================================
+
+  // =============================================================================
+  // CI/CD INTEGRATION (GitHub Actions)
+  // =============================================================================
+  //
+  // BASIC SPELL CHECK (Run in PR workflow):
+  //   - name: Spell Check
+  //     run: npx cspell "**/*.{ts,tsx,js,jsx,py,md,json}"
+  //
+  // STRICT MODE (Fail on any spelling errors):
+  //   - name: Spell Check (Strict)
+  //     run: npx cspell --no-progress --show-suggestions "**/*"
+  //
+  // CHECK SPECIFIC DIRECTORIES:
+  //   - name: Spell Check Frontend
+  //     run: npx cspell "apps/frontend/**/*"
+  //   - name: Spell Check Backend
+  //     run: npx cspell "apps/backend/**/*.py"
+  //
+  // LOCAL USAGE:
+  //   npx cspell "**/*"                    # Check entire codebase
+  //   npx cspell "path/to/file.ts"         # Check single file
+  //   npx cspell "**/*.ts" --no-progress   # Check TypeScript files only
+  //
+  // =============================================================================
+
+  "ignorePaths": [
+    // Dependencies
+    "node_modules",
+    "venv",
+    "**/.venv",
+    "**/env",
+
+    // Build artifacts
+    "dist",
+    "build",
+    "out",
+    ".next",
+    "__pycache__",
+    "*.pyc",
+
+    // Coverage & reports
+    "coverage",
+    "htmlcov",
+    ".coverage",
+    "test-results",
+
+    // Generated files
+    "*.min.js",
+    "*.min.css",
+    "*.bundle.js",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "requirements.txt",
+    "Pipfile.lock",
+
+    // Version control & configs
+    ".git",
+    ".vscode",
+    "*.log",
+    "*.map",
+
+    // Media & binary
+    "**/*.jpg",
+    "**/*.jpeg",
+    "**/*.png",
+    "**/*.gif",
+    "**/*.svg",
+    "**/*.ico",
+    "**/*.woff",
+    "**/*.woff2",
+    "**/*.ttf",
+    "**/*.eot"
+  ],
+
+  // Case sensitivity settings
+  "caseSensitive": false,
+  "allowCompoundWords": true,
+
+  // Performance optimization
+  "maxNumberOfProblems": 100,
+  "minWordLength": 3,
+
+  "words": [
+    // Frontend Frameworks & Libraries
+    "ESLint",
+    "Husky",
+    "Immer",
+    "nextjs",
+    "Recharts",
+    "shadcn",
+    "TailwindCSS",
+    "Vitest",
+    "Zustand",
+    "zustand",
+
+    // Backend Frameworks & Libraries
+    "alembic",
+    "anyio",
+    "argon",
+    "ASGI",
+    "asyncio",
+    "asyncpg",
+    "bcrypt",
+    "datetime",
+    "dotenv",
+    "FastAPI",
+    "fastapi",
+    "httpx",
+    "PostgreSQL",
+    "Pydantic",
+    "Pytest",
+    "pytest",
+    "Redis",
+    "ruff",
+    "SQLAlchemy",
+    "Traefik",
+    "uvicorn",
+    "websocket",
+    "Werkzeug",
+
+    // Build Tools & Development
+    "actionlint",
+    "autopep8",
+    "axios",
+    "CodeQL",
+    "Codecov",
+    "dbclient",
+    "Dependabot",
+    "dockerfile",
+    "editorconfig",
+    "eslintrc",
+    "flake8",
+    "gitkraken",
+    "gitignored",
+    "isort",
+    "lerna",
+    "mcp",
+    "monorepo",
+    "mypy",
+    "noqa",
+    "nvmrc",
+    "playwright",
+    "pnpm",
+    "postcss",
+    "prettierrc",
+    "Pylance",
+    "pyproject",
+    "Renovate",
+    "renovatebot",
+    "Rollup",
+    "SARIF",
+    "tailwindcss",
+    "tsc",
+    "tsconfig",
+    "turbo",
+    "vite",
+    "vitest",
+    "vsix",
+    "yamllint",
+
+    // React Hooks & Frontend APIs
+    "useCallback",
+    "useEffect",
+    "useMemo",
+    "useState",
+
+    // Testing & Code Quality
+    "conftest",
+    "dataclass",
+    "Docstrings",
+    "hashlib",
+    "hexdigest",
+    "htmlcov",
+    "jest",
+    "unittest",
+
+    // Project-Specific (Lokifi)
+    "anotheruser",
+    "ericsocrat",
+    "followee",
+    "follower",
+    "iready",
+    "isready",
+    "Lokifi",
+    "lokifi",
+    "testuser",
+
+    // Security & Standards
+    "authtoken",
+    "backoff",
+    "Cloudflare",
+    "CORS",
+    "CSRF",
+    "csrf",
+    "favicon",
+    "fromkeys",
+    "getenv",
+    "HSTS",
+    "instanceof",
+    "loadenv",
+    "maxretries",
+    "metadata",
+    "middlewares",
+    "offboarding",
+    "onboarding",
+    "opengraph",
+    "reqid",
+    "robots",
+    "serverless",
+    "sessionid",
+    "signin",
+    "signup",
+    "sitemap",
+    "strftime",
+    "strptime",
+    "stylesheet",
+    "tolist",
+    "typeof",
+    "userid",
+    "WCAG",
+    "workspaces",
+
+    // UI Components & Patterns
+    "autocomplete",
+    "checkbox",
+    "dropdown",
+    "navbar",
+    "popover",
+    "sidebar",
+    "textarea",
+    "tooltip",
+
+    // Shell & Environment
+    "powershell",
+    "pwsh",
+    "venv",
+
+    // Conventions & Patterns
+    "codebase",
+    "Contentful",
+    "deps",
+    "enum",
+    "kebab",
+    "networkidle",
+    "postmortem",
+    "screencast",
+    "sqlmodel",
+    "subfolders",
+    "tsx"
+  ],
+  "flagWords": [],
+  "enabledLanguageIds": [
+    "typescript",
+    "javascript",
+    "python",
+    "markdown",
+    "json",
+    "jsonc",
+    "yaml",
+    "yml",
+    "html",
+    "css",
+    "scss"
+  ]
+}

@@ -6,6 +6,10 @@
 # 1. Create Slack Incoming Webhook: https://api.slack.com/messaging/webhooks
 # 2. Add webhook URL to GitHub Secrets as SLACK_WEBHOOK_URL
 # 3. Test by triggering a workflow failure on main branch
+#
+# NOTE: YAML linter warnings for ${{ }} expressions are FALSE POSITIVES.
+# These GitHub Actions expressions are valid and required for dynamic values.
+# See: https://docs.github.com/en/actions/learn-github-actions/expressions
 
 name: 📢 Slack Notifications
 

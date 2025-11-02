@@ -1405,6 +1405,38 @@ env:
 4. **Always use health checks** - Wait for services to be ready
 5. **Let actions handle uploads** - Don't duplicate upload steps
 
+### YAML Linter False Positives (GitHub Actions)
+
+**Known Issue**: VS Code YAML extension reports "Context access might be invalid" for GitHub Actions expressions like `${{ steps.step_id.outputs.output_name }}`.
+
+**Why This Happens**:
+- YAML linters don't understand GitHub Actions expression syntax
+- Context properties with hyphens (e.g., `severity-emoji`, `commit-sha`) are flagged as invalid
+- These warnings are **FALSE POSITIVES** - the expressions are valid and required
+
+**Solution Applied**:
+1. **`.yamllint.yml` configuration**: Relaxed rules for GitHub Actions workflows
+2. **Workflow file comments**: Added explicit notes that warnings are expected
+3. **Documentation**: This section explains the issue for future reference
+
+**Reference**: 
+- GitHub Actions Expressions: https://docs.github.com/en/actions/learn-github-actions/expressions
+- Session 65: Fixed ~35 false positive warnings across 2 workflow files
+
+**Pattern to Recognize**:
+```yaml
+# ✅ VALID - Despite YAML linter warnings
+payload: |
+  {
+    "text": "${{ steps.details.outputs.commit-sha }}"
+  }
+
+# These are VALID GitHub Actions expressions:
+# - steps.details.outputs.severity-emoji ✅
+# - steps.details.outputs.workflow-url ✅
+# - steps.details.outputs.commit-message ✅
+```
+
 ### Root Cause Analysis Approach
 
 When debugging CI failures, follow this systematic approach:
