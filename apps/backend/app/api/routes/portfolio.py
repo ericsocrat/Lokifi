@@ -4,7 +4,7 @@ __all__ = ["router"]
 
 import csv
 import io
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Header, HTTPException, Query, Request
@@ -199,7 +199,7 @@ async def add_or_update_position(
                 PortfolioPosition.symbol == payload.symbol,
             )
         ).scalar_one_or_none()
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
         if existing:
             existing.qty = payload.qty
             existing.cost_basis = payload.cost_basis

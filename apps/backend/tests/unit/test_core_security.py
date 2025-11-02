@@ -5,7 +5,7 @@ Tests password hashing, JWT token creation/validation, and authentication utilit
 NO database required - pure unit tests for maximum coverage.
 """
 
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from fastapi import HTTPException
@@ -112,8 +112,8 @@ class TestJWTTokenCreation:
         jwt_secret = settings.get_jwt_secret()
         decoded = jwt.decode(token, jwt_secret, algorithms=[settings.JWT_ALGORITHM])
 
-        exp = datetime.fromtimestamp(decoded["exp"], UTC)
-        iat = datetime.fromtimestamp(decoded["iat"], UTC)
+        exp = datetime.fromtimestamp(decoded["exp"], timezone.utc)
+        iat = datetime.fromtimestamp(decoded["iat"], timezone.utc)
 
         # Should be approximately 30 minutes apart
         delta = exp - iat
@@ -127,8 +127,8 @@ class TestJWTTokenCreation:
         jwt_secret = settings.get_jwt_secret()
         decoded = jwt.decode(token, jwt_secret, algorithms=[settings.JWT_ALGORITHM])
 
-        exp = datetime.fromtimestamp(decoded["exp"], UTC)
-        iat = datetime.fromtimestamp(decoded["iat"], UTC)
+        exp = datetime.fromtimestamp(decoded["exp"], timezone.utc)
+        iat = datetime.fromtimestamp(decoded["iat"], timezone.utc)
 
         # Should match JWT_EXPIRE_MINUTES setting
         expected_minutes = settings.JWT_EXPIRE_MINUTES
@@ -307,14 +307,14 @@ class TestRefreshTokenCreation:
             refresh_token, jwt_secret, algorithms=[settings.JWT_ALGORITHM]
         )
 
-        access_exp = datetime.fromtimestamp(access_decoded["exp"], UTC)
-        refresh_exp = datetime.fromtimestamp(refresh_decoded["exp"], UTC)
+        access_exp = datetime.fromtimestamp(access_decoded["exp"], timezone.utc)
+        refresh_exp = datetime.fromtimestamp(refresh_decoded["exp"], timezone.utc)
 
         # Refresh token should expire much later
         assert refresh_exp > access_exp
 
         # Should be approximately 30 days
-        delta = refresh_exp - datetime.now(UTC)
+        delta = refresh_exp - datetime.now(timezone.utc)
         assert 28 <= delta.days <= 31
 
 

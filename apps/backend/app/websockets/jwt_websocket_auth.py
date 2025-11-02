@@ -4,7 +4,7 @@ Provides JWT authentication for WebSocket connections with Redis coordination
 """
 
 import json
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 # Import core components
@@ -34,9 +34,9 @@ class WebSocketJWTAuth:
         to_encode = data.copy()
 
         if expires_delta:
-            expire = datetime.now(UTC) + expires_delta
+            expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.now(UTC) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
 
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
@@ -118,8 +118,8 @@ class AuthenticatedWebSocketManager:
                 "websocket": websocket,
                 "user_id": user_id,
                 "username": user_auth.get("username"),
-                "connected_at": datetime.now(UTC).isoformat(),
-                "last_seen": datetime.now(UTC).isoformat(),
+                "connected_at": datetime.now(timezone.utc).isoformat(),
+                "last_seen": datetime.now(timezone.utc).isoformat(),
             }
 
             # Track user connections
@@ -217,7 +217,7 @@ class AuthenticatedWebSocketManager:
             connection_data = {
                 "user_id": user_id,
                 "username": user_auth.get("username"),
-                "connected_at": datetime.now(UTC).isoformat(),
+                "connected_at": datetime.now(timezone.utc).isoformat(),
                 "instance": settings.APP_NAME or "lokifi",
             }
 
@@ -276,14 +276,14 @@ class AuthenticatedWebSocketManager:
             presence_data = {
                 "user_id": user_id,
                 "status": status,
-                "last_seen": datetime.now(UTC).isoformat(),
+                "last_seen": datetime.now(timezone.utc).isoformat(),
                 "instance": settings.APP_NAME or "lokifi",
             }
 
             # Store presence with TTL
             await redis_client.set(presence_key, json.dumps(presence_data), ttl=300)  # 5 minutes
             await redis_client.set(
-                heartbeat_key, datetime.now(UTC).isoformat(), ttl=60
+                heartbeat_key, datetime.now(timezone.utc).isoformat(), ttl=60
             )  # 1 minute heartbeat
 
         except Exception as e:

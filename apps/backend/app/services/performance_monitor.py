@@ -8,7 +8,7 @@ import time
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 logger = logging.getLogger(__name__)
@@ -33,7 +33,7 @@ class HealthCheck:
     status: str  # "healthy", "degraded", "unhealthy"
     response_time_ms: float
     details: dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class PerformanceMonitor:
@@ -50,7 +50,7 @@ class PerformanceMonitor:
     ):
         """Record a performance metric."""
         metric = PerformanceMetric(
-            name=name, value=value, unit=unit, timestamp=datetime.now(UTC), tags=tags or {}
+            name=name, value=value, unit=unit, timestamp=datetime.now(timezone.utc), tags=tags or {}
         )
         self.metrics[name].append(metric)
 
@@ -66,13 +66,13 @@ class PerformanceMonitor:
 
     def record_websocket_connection(self, user_id: uuid.UUID):
         """Record WebSocket connection."""
-        self.websocket_connections[user_id] = datetime.now(UTC)
+        self.websocket_connections[user_id] = datetime.now(timezone.utc)
         self.record_metric("websocket_connections", len(self.websocket_connections), "count")
 
     def record_websocket_disconnection(self, user_id: uuid.UUID):
         """Record WebSocket disconnection."""
         if user_id in self.websocket_connections:
-            connection_time = datetime.now(UTC) - self.websocket_connections[user_id]
+            connection_time = datetime.now(timezone.utc) - self.websocket_connections[user_id]
             self.record_metric(
                 "websocket_session_duration", connection_time.total_seconds(), "seconds"
             )
@@ -86,7 +86,7 @@ class PerformanceMonitor:
 
     def get_metrics_summary(self, minutes_back: int = 10) -> dict[str, Any]:
         """Get performance metrics summary for the last N minutes."""
-        cutoff_time = datetime.now(UTC) - timedelta(minutes=minutes_back)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=minutes_back)
 
         summary = {
             "period_minutes": minutes_back,
@@ -196,7 +196,7 @@ class PerformanceMonitor:
 
     def get_websocket_stats(self) -> dict[str, Any]:
         """Get WebSocket connection statistics."""
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
         connection_ages = [
             (now - conn_time).total_seconds() for conn_time in self.websocket_connections.values()
         ]

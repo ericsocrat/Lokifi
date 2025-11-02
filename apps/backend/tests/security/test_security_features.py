@@ -6,7 +6,7 @@ Tests all enhanced security features including bleach integration
 
 import os
 import sys
-from datetime import UTC, timezone
+from datetime import timezone
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -153,7 +153,7 @@ def test_security_logger():
             severity=SecuritySeverity.MEDIUM,
             client_ip="192.168.1.100",
             user_agent="Test Agent",
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(timezone.utc),
         )
 
         assert test_event.event_type == SecurityEventType.AUTHENTICATION_FAILURE

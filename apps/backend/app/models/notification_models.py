@@ -1,6 +1,6 @@
 # J6 Enterprise Notifications - Database Models
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 from enum import Enum
 from typing import Any
 
@@ -57,7 +57,7 @@ class Notification(Base):
     payload = Column(JSON, nullable=True)  # Rich structured data
 
     # Delivery and interaction tracking
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     read_at = Column(DateTime(timezone=True), nullable=True)
     delivered_at = Column(DateTime(timezone=True), nullable=True)
     clicked_at = Column(DateTime(timezone=True), nullable=True)
@@ -112,35 +112,35 @@ class Notification(Base):
         """Check if notification has expired"""
         if self.expires_at is None:
             return False
-        return datetime.now(UTC) > self.expires_at
+        return datetime.now(timezone.utc) > self.expires_at
 
     @property
     def age_seconds(self) -> int:
         """Get notification age in seconds"""
-        return int((datetime.now(UTC) - self.created_at).total_seconds())
+        return int((datetime.now(timezone.utc) - self.created_at).total_seconds())
 
     def mark_as_read(self) -> None:
         """Mark notification as read with timestamp"""
         if not self.is_read:
             self.is_read = True
-            self.read_at = datetime.now(UTC)
+            self.read_at = datetime.now(timezone.utc)
 
     def mark_as_delivered(self) -> None:
         """Mark notification as delivered with timestamp"""
         if not self.is_delivered:
             self.is_delivered = True
-            self.delivered_at = datetime.now(UTC)
+            self.delivered_at = datetime.now(timezone.utc)
 
     def mark_as_clicked(self) -> None:
         """Mark notification as clicked with timestamp"""
-        self.clicked_at = datetime.now(UTC)
+        self.clicked_at = datetime.now(timezone.utc)
         if not self.is_read:
             self.mark_as_read()
 
     def dismiss(self) -> None:
         """Dismiss notification with timestamp"""
         self.is_dismissed = True
-        self.dismissed_at = datetime.now(UTC)
+        self.dismissed_at = datetime.now(timezone.utc)
         if not self.is_read:
             self.mark_as_read()
 
@@ -211,8 +211,8 @@ class NotificationPreference(Base):
     digest_time = Column(String(5), nullable=False, default="09:00")
 
     # Metadata
-    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
-    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="notification_preferences")
@@ -237,7 +237,7 @@ class NotificationPreference(Base):
             return False
 
         if check_time is None:
-            check_time = datetime.now(UTC)
+            check_time = datetime.now(timezone.utc)
 
         # Convert to user's timezone if specified
         # For now, assume timezone.utc (can be enhanced with timezone conversion)

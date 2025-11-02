@@ -12,7 +12,7 @@ Coverage targets:
 """
 
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -101,7 +101,7 @@ class TestFollowOperations:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
         mock_follow_result = MagicMock()
         mock_follow_result.scalar_one_or_none.return_value = existing_follow
@@ -158,7 +158,7 @@ class TestFollowOperations:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = existing_follow

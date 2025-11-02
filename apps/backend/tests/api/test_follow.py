@@ -16,7 +16,7 @@ Coverage targets:
 """
 
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -96,7 +96,7 @@ def sample_followers_list():
         is_following=False,
         follows_you=True,
         mutual_follow=False,
-        created_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
     )
 
     return FollowersListResponse(
@@ -119,7 +119,7 @@ def sample_following_list():
         is_following=True,
         follows_you=False,
         mutual_follow=False,
-        created_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
     )
 
     return FollowingListResponse(
@@ -412,7 +412,7 @@ class TestMutualFollowsAndSuggestions:
             is_following=True,
             follows_you=True,
             mutual_follow=True,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
 
         mutual_response = MutualFollowsResponse(
@@ -451,7 +451,7 @@ class TestMutualFollowsAndSuggestions:
             is_following=False,
             follows_you=False,
             mutual_follow=False,
-            created_at=datetime.now(UTC),
+            created_at=datetime.now(timezone.utc),
         )
 
         suggestions_response = SuggestedUsersResponse(

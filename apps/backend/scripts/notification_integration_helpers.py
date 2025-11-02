@@ -159,7 +159,7 @@ class J6NotificationIntegrator:
                 mentioning_user=mentioning_user,
                 content=content,
                 context_type=context_type,
-                context_id=context_id or f"{context_type}_{datetime.now(timezone.timezone.utc).timestamp()}",
+                context_id=context_id or f"{context_type}_{datetime.now(timezone.utc).timestamp()}",
             )
 
             self._integration_stats["mention_notifications"] += 1
