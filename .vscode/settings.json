@@ -744,9 +744,20 @@
   "workbench.editor.tabActionLocation": "right",
 
   // Use .github/copilot-instructions.md for project-specific instructions
-  "github.copilot.chat.codeGeneration.useInstructionFiles": true
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
 
   // ===== CSPELL CONFIGURATION =====
   // Custom dictionary maintained in /cspell.json (single source of truth)
   // VS Code automatically uses root cspell.json - no duplication needed
+
+  // ===== YAML VALIDATION =====
+  // Suppress false positive warnings for GitHub Actions workflows
+  // Context: VS Code YAML extension doesn't understand ${{ }} expressions
+  // These expressions are VALID per GitHub Actions documentation
+  // Solution: Disable GitHub Workflow schema validation (prevents false positives)
+  "yaml.validate": true,
+  "yaml.schemas": {
+    // Explicitly set to false to disable schema validation for GitHub Actions
+    "https://json.schemastore.org/github-workflow.json": []
+  }
 }
