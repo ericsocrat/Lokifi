@@ -1419,7 +1419,7 @@ env:
 2. **Workflow file comments**: Added explicit notes that warnings are expected
 3. **Documentation**: This section explains the issue for future reference
 
-**Reference**: 
+**Reference**:
 - GitHub Actions Expressions: https://docs.github.com/en/actions/learn-github-actions/expressions
 - Session 65: Fixed ~35 false positive warnings across 2 workflow files
 
