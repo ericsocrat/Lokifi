@@ -2,7 +2,7 @@
 
 **Sprint Start:** November 3, 2025
 **Last Updated:** November 3, 2025
-**Status:** Sprint 6 - Documentation Optimization & Planning
+**Status:** Sprint 7 - Backend Testing & Performance Optimization
 
 > **📊 Quick Stats**:
 > - **CI/CD**: 100% pass rate (35/35 workflows) ✅
@@ -11,36 +11,47 @@
 > - **ESLint**: 287 warnings (all documented as acceptable) ✅
 > - **Frontend Coverage**: 11.61% (passing 10% threshold) ✅
 > - **Backend Coverage**: 30.75% (target: 40-50%)
+> - **Pre-commit Hooks**: Active (quality + security gates) ✅
 
 ---
 
 ## 🎯 Current Sprint Goals
 
 ### Primary Objectives
-- [x] **Documentation Optimization**: Streamline documentation workflow ✅
-  - ✅ Archive history.md (redundant with Git commits)
-  - ✅ Refactor checklists.md (process-focused, not sprint-tracking)
-  - ✅ Create CURRENT_SPRINT.md (lightweight sprint tracking)
-  - ✅ Update copilot-instructions.md references
-  - ✅ Validate new documentation flow
+- [ ] **Backend Test Coverage Improvement**: Push toward 40-50% coverage
+  - Current: 30.75%
+  - Focus Areas:
+    - Profile API tests (routers/profile.py)
+    - Conversations API tests (routers/conversations.py)
+    - Follow system tests (routers/follow.py)
+    - AI integration tests (routers/ai.py, routers/ai_websocket.py)
+  - Target: +10-15pp coverage gain
+  - Estimated Time: 6-8 hours
+  - Strategy: Use AsyncMock pattern from Pattern Library
 
-- [x] **Tool Integration** (Sessions 66-67): Local quality gates ✅
-  - ✅ Pre-commit hooks installed (test-runner.ps1, security-scanner.ps1)
-  - ✅ Evaluate CI integration approach (cross-platform analysis)
-  - ✅ Implement local-only strategy (proven approach)
-  - ✅ Complete documentation updates
-  - **Time**: ~1.3 hours | **Value**: Early issue detection, fast feedback
+- [ ] **Frontend Performance Optimization**: Improve bundle size and loading
+  - Current Status: Needs assessment
+  - Focus Areas:
+    - Bundle size analysis (Next.js Bundle Analyzer)
+    - Lazy loading for non-critical components
+    - Code splitting verification
+    - Image optimization review
+  - Target: <500KB initial bundle, First Contentful Paint <1.5s
+  - Estimated Time: 4-6 hours
+  - Strategy: Use Performance patterns from checklists.md
 
 ### Secondary Objectives
-- [ ] **Backend Test Coverage**: Continue progress toward 40-50%
-  - Current: 30.75%
-  - Focus: Router/endpoint tests (Profile, Conversations, Follow, AI)
-  - Target: +10-15pp coverage gain
+- [ ] **Phase 3 Tool Monitoring**: Continue tracking pre-commit hook performance
+  - Monitor execution times (target: <80 seconds)
+  - Gather developer feedback
+  - Optimize coverage thresholds if needed
+  - Duration: Ongoing (1-2 weeks)
 
-- [ ] **Frontend Performance**: Address remaining optimization opportunities
-  - Current bundle size analysis
-  - Lazy loading implementation review
-  - Code splitting verification
+- [ ] **(Optional) Fix Pre-existing Test Failures**: Clean up known issues
+  - Backend API tests: Unhandled GET /api/auth/me
+  - Frontend AuthProvider tests: Mock setup, act() warnings
+  - Estimated Time: 1-2 hours
+  - Priority: Low (doesn't block development)
 
 ---
 
@@ -58,7 +69,7 @@ See `manage_todo_list` tool for current task list managed by Copilot.
 
 ## 📊 Sprint History Summary
 
-> **Note**: For detailed historical records, see Git commit history or archived documentation at `/docs/plans/.archive/history-legacy.md`
+> **Note**: For detailed historical records, see Git commit history or sprint archives at `/docs/plans/.archive/`
 
 ### Completed Sprints (High-Level Overview)
 - **Sprint 0**: Dependency management, Python 3.10, asyncpg ✅
@@ -67,7 +78,7 @@ See `manage_todo_list` tool for current task list managed by Copilot.
 - **Sprint 3**: Frontend any type elimination (94.5% reduction: 1,166 → 64) ✅
 - **Sprint 4**: Backend Python quality (367 → 0 Ruff violations) ✅
 - **Sprint 5**: ESLint quality campaign (338 → 287 warnings, 15.1% reduction) ✅
-- **Sprint 6**: Documentation optimization + Tool integration ✅
+- **Sprint 6**: Documentation optimization + Tool integration ✅ ([archive](./. archive/sprint-6-summary.md))
 
 ### Key Achievements (Cumulative)
 - **Type Safety**: 1,166 any types → 64 (94.5% improvement)
@@ -80,64 +91,61 @@ See `manage_todo_list` tool for current task list managed by Copilot.
 
 ---
 
+## 🚧 Current Blockers
+
+**None** - All systems operational, ready for Sprint 7 work
+
+---
+
+## 📈 Recent Progress
+
+### Sprint 6 Highlights (Completed - [see archive](./. archive/sprint-6-summary.md))
+- ✅ Documentation workflow optimized (Git as source of truth)
+- ✅ Pre-commit hooks integrated (test-runner.ps1 + security-scanner.ps1)
+- ✅ Local-only tool strategy validated (cross-platform limitations documented)
+- ✅ Quality + security gates active (~40-80 seconds pre-commit)
+
+### Next: Sprint 7 Focus
+- 🎯 Backend test coverage push (+10-15pp toward 40-50%)
+- 🎯 Frontend performance optimization (bundle size, lazy loading)
+- 📊 Continue Phase 3 monitoring (hook performance tracking)
+
+---
+
+## 🛠️ Active Tool Integrations
+
+### Pre-commit Hooks (Installed & Validated ✅)
+
+---
+
 ## �️ Tool Integration Details (Sessions 66-67)
 
-### Implementation Summary
+**Installation:** `.\tools\setup-precommit-hooks.ps1`
+**Status:** ✅ Active (November 3, 2025)
+**Documentation:** See [Tool Integration Checklist](../../checklists.md#-tool-integration--cicd-checklist) and [Sprint 6 Archive](./. archive/sprint-6-summary.md)
 
-**Phase 1: Pre-commit Hooks** ✅
-- Installed `setup-precommit-hooks.ps1` (3 hooks: pre-commit, pre-push, commit-msg)
-- test-runner.ps1 integration with configurable coverage thresholds
-- Bug fix: Separated script path from execution flags
-- Validation: Real commit blocked correctly
-
-**Phase 2: CI Evaluation + Security Integration** ✅
-- Evaluated test-runner.ps1 CI integration (3 test commits)
-- Discovered PowerShell cross-platform limitations:
-  - Export-ModuleMember incompatibility
-  - Windows path format issues on Linux runners
-- **Decision**: Local-only strategy (pragmatic over perfect)
-- Integrated security-scanner.ps1 into pre-commit hook
-- Reverted CI workflows to direct npm/pytest commands
-
-**Phase 3: Monitoring & Refinement** ⏳
-- Track hook performance in real-world usage
-- Gather developer feedback
-- Optimize thresholds based on data
-
-### Pre-commit Workflow
-
+**Pre-commit Workflow:**
 ```
 Commit Attempt
     ↓
-test-runner.ps1 -PreCommit -CoverageThreshold 15
-    • Frontend linting (ESLint, security, a11y)
-    • TypeScript type checking  
-    • Unit tests (~30-60 seconds)
+test-runner.ps1 -PreCommit
+    • Linting + Type checking
+    • Unit tests (~30-60s)
     ↓
-security-scanner.ps1 -Quick -CIMode
+security-scanner.ps1 -Quick
     • Security scoring
-    • Code pattern detection
-    • Baseline tracking (~10-20 seconds)
+    • Code pattern detection (~10-20s)
     ↓
-Commit Approved/Blocked
+Commit Approved/Blocked (Total: 40-80s)
 ```
 
-### Integration Status
+**Integration Status:**
+| Tool | Pre-commit | Pre-push | CI |
+|------|-----------|----------|-----|
+| test-runner.ps1 | ✅ | ✅ | Local Only |
+| security-scanner.ps1 | ✅ | ❌ | Local Only |
 
-| Tool | Pre-commit | Pre-push | CI Workflows |
-|------|-----------|----------|--------------|
-| test-runner.ps1 | ✅ Active | ✅ Active | ⚠️ Local Only |
-| security-scanner.ps1 | ✅ Active | ❌ | ⚠️ Local Only |
-
-### Key Learnings
-
-**Local-Only Strategy Benefits**:
-- ✅ Fast local feedback loop (40-80 seconds total)
-- ✅ CI remains simple and cross-platform
-- ✅ Tools optimized for their execution environment
-- ✅ No complex compatibility layer needed
-
-**Pattern**: Match tools to optimal execution context (PowerShell locally, direct commands in CI)
+**Emergency Bypass:** `git commit --no-verify` (use sparingly!)
 
 ---
 
