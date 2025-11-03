@@ -131,13 +131,13 @@ fi
 
 # Get the repository root
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
-PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1 -PreCommit"
+PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1"
 
 # Run enhanced protection with relaxed/strict settings for pre-commit
 if [ -f "`$PROTECTION_SCRIPT" ]; then
     echo "🔍 Running enhanced protection checks..."
 
-    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -CoverageThreshold $preCommitCoverage $enforceStrictParam; then
+    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -PreCommit -CoverageThreshold $preCommitCoverage $enforceStrictParam; then
         echo ""
         echo "✅ All quality gates passed! Commit allowed."
         echo ""
@@ -220,7 +220,7 @@ else
 fi
 
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
-PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1 -PreCommit"
+PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1"
 
 # Run comprehensive protection checks
 if [ -f "`$PROTECTION_SCRIPT" ]; then
@@ -229,7 +229,7 @@ if [ -f "`$PROTECTION_SCRIPT" ]; then
     # Use higher coverage threshold for push
     PUSH_COVERAGE=$prePushCoverage
 
-    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -CoverageThreshold `$PUSH_COVERAGE -GenerateReport; then
+    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -PreCommit -CoverageThreshold `$PUSH_COVERAGE -GenerateReport; then
         echo ""
         echo "✅ All comprehensive checks passed! Push allowed."
         echo ""
