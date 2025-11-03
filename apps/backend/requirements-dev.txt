@@ -7,7 +7,7 @@ pytest-asyncio==1.2.0
 pytest-cov==7.0.0
 
 # API Contract Testing (Phase 1.6 Task 2)
-schemathesis==4.3.16
+schemathesis==4.3.18
 openapi-core==0.19.5
 openapi-spec-validator==0.7.2
 
