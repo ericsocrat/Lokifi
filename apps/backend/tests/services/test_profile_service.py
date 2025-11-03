@@ -1074,16 +1074,16 @@ class TestNotificationPreferencesDatabaseInteractions:
 class TestFollowServiceIntegration:
     """
     Gap 3: FollowService integration tests
-    
+
     Covers lines 194-207 (get_public_profile with is_following check)
     Covers lines 245-267 (search_profiles with batch_follow_status)
-    
+
     Tests verify:
     - get_public_profile returns is_following for authenticated users
     - get_public_profile returns None for anonymous users
     - search_profiles includes follow status via batch_follow_status
     - FollowService methods are called correctly with proper arguments
-    
+
     Target: +2-3pp coverage (79% → 81-82%)
     """
 
@@ -1201,16 +1201,16 @@ class TestFollowServiceIntegration:
         profile_service = ProfileService(mock_db_session)
         current_user_id = uuid.uuid4()
         query = "test"
-        
+
         # Create 3 mock profiles
         profile1_id = uuid.uuid4()
         profile2_id = uuid.uuid4()
         profile3_id = uuid.uuid4()
-        
+
         user1_id = uuid.uuid4()
         user2_id = uuid.uuid4()
         user3_id = uuid.uuid4()
-        
+
         mock_profiles = [
             Profile(
                 id=profile1_id,
@@ -1256,10 +1256,10 @@ class TestFollowServiceIntegration:
         # Mock profile search results (2 queries: SELECT profiles + SELECT COUNT)
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 3  # Total count
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Mock FollowService.batch_follow_status
@@ -1293,15 +1293,15 @@ class TestFollowServiceIntegration:
             # Verify response includes follow status for each profile
             assert result.total == 3
             assert len(result.profiles) == 3
-            
+
             # Profile 1: is_following=True
             assert result.profiles[0].username == "testuser1"
             assert result.profiles[0].is_following is True
-            
+
             # Profile 2: is_following=False
             assert result.profiles[1].username == "testuser2"
             assert result.profiles[1].is_following is False
-            
+
             # Profile 3: is_following=True
             assert result.profiles[2].username == "testuser3"
             assert result.profiles[2].is_following is True
@@ -1312,13 +1312,13 @@ class TestFollowServiceIntegration:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "test"
-        
+
         # Create 2 mock profiles
         profile1_id = uuid.uuid4()
         profile2_id = uuid.uuid4()
         user1_id = uuid.uuid4()
         user2_id = uuid.uuid4()
-        
+
         mock_profiles = [
             Profile(
                 id=profile1_id,
@@ -1351,10 +1351,10 @@ class TestFollowServiceIntegration:
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 2
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act (no current_user_id)
@@ -1371,3 +1371,483 @@ class TestFollowServiceIntegration:
             assert len(result.profiles) == 2
             assert result.profiles[0].is_following is None
             assert result.profiles[1].is_following is None
+
+
+# ============================================================================
+# GAP 4: SEARCH & PAGINATION TESTS
+# ============================================================================
+
+
+class TestSearchAndPagination:
+    """
+    Gap 4: Search & Pagination tests
+    
+    Covers lines 217-252 (search_profiles logic)
+    
+    Tests verify:
+    - ILIKE query matching (username OR display_name)
+    - is_public=True filtering
+    - follower_count DESC ordering (primary), username ordering (secondary)
+    - Offset/limit pagination
+    - Empty results handling
+    - Count query accuracy
+    
+    Target: 92% → 95%+ (+3-5pp)
+    """
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_ilike_username_match(self, mock_db_session):
+        """Test search_profiles uses ILIKE for username matching (case-insensitive partial match)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "test"  # Should match "testuser1", "testuser2", etc.
+        
+        # Create mock profiles that match query
+        profile1 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="testuser1",
+            display_name="John Doe",
+            bio="Bio 1",
+            avatar_url=None,
+            is_public=True,
+            follower_count=100,
+            following_count=50,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        profile2 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="anothertest",
+            display_name="Jane Doe",
+            bio="Bio 2",
+            avatar_url=None,
+            is_public=True,
+            follower_count=50,
+            following_count=30,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        mock_profiles = [profile1, profile2]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 2
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+        # Assert
+        assert result.total == 2
+        assert len(result.profiles) == 2
+        assert result.profiles[0].username == "testuser1"
+        assert result.profiles[1].username == "anothertest"
+        
+        # Verify ILIKE pattern was used (SELECT statement with ILIKE)
+        assert mock_db_session.execute.call_count == 2  # SELECT + COUNT
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_ilike_display_name_match(self, mock_db_session):
+        """Test search_profiles uses ILIKE for display_name matching (case-insensitive partial match)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "john"  # Should match display_name "John Doe"
+        
+        profile = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="user123",
+            display_name="John Smith",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=75,
+            following_count=25,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        mock_profiles = [profile]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 1
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+        # Assert
+        assert result.total == 1
+        assert len(result.profiles) == 1
+        assert result.profiles[0].display_name == "John Smith"
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_public_filter(self, mock_db_session):
+        """Test search_profiles filters by is_public=True only"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "test"
+        
+        # Only public profiles should be returned (is_public=True in model)
+        public_profile = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="publicuser",
+            display_name="Public User",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=100,
+            following_count=50,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        mock_profiles = [public_profile]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 1
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+        # Assert
+        assert result.total == 1
+        assert len(result.profiles) == 1
+        assert result.profiles[0].is_public is True
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_ordering(self, mock_db_session):
+        """Test search_profiles orders by follower_count DESC, then username ASC"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "user"
+        
+        # Create profiles with different follower counts
+        profile1 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="userA",
+            display_name="User A",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=200,  # Highest follower count
+            following_count=50,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        profile2 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="userB",
+            display_name="User B",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=100,  # Middle follower count
+            following_count=30,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        profile3 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="userC",
+            display_name="User C",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=100,  # Same as profile2, should order by username
+            following_count=20,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        # Mock returns profiles in correct order (follower_count DESC, username ASC)
+        mock_profiles = [profile1, profile2, profile3]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 3
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+        # Assert - Verify ordering
+        assert result.total == 3
+        assert len(result.profiles) == 3
+        
+        # First profile should have highest follower count
+        assert result.profiles[0].follower_count == 200
+        assert result.profiles[0].username == "userA"
+        
+        # Next two profiles have same follower count, should order by username
+        assert result.profiles[1].follower_count == 100
+        assert result.profiles[1].username == "userB"
+        
+        assert result.profiles[2].follower_count == 100
+        assert result.profiles[2].username == "userC"
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_pagination_page_1(self, mock_db_session):
+        """Test search_profiles pagination - page 1 with page_size=2"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "user"
+        page = 1
+        page_size = 2
+        
+        # Create 2 profiles for page 1
+        profile1 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="user1",
+            display_name="User 1",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=100,
+            following_count=50,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        profile2 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="user2",
+            display_name="User 2",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=90,
+            following_count=40,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        mock_profiles = [profile1, profile2]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        # Total count is 5 (more than one page)
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 5
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=page, page_size=page_size)
+
+        # Assert - Pagination metadata
+        assert result.total == 5
+        assert result.page == 1
+        assert result.page_size == 2
+        assert len(result.profiles) == 2
+        assert result.has_next is True  # (0 + 2) < 5
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_pagination_page_2(self, mock_db_session):
+        """Test search_profiles pagination - page 2 with page_size=2 (offset calculation)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "user"
+        page = 2
+        page_size = 2
+        
+        # Create 2 profiles for page 2
+        profile3 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="user3",
+            display_name="User 3",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=80,
+            following_count=30,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        profile4 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="user4",
+            display_name="User 4",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=70,
+            following_count=20,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        mock_profiles = [profile3, profile4]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        # Total count is 5 (more than two pages)
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 5
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=page, page_size=page_size)
+
+        # Assert - Page 2 metadata
+        assert result.total == 5
+        assert result.page == 2
+        assert result.page_size == 2
+        assert len(result.profiles) == 2
+        assert result.has_next is True  # (2 + 2) < 5 → offset 2, limit 2
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_pagination_last_page(self, mock_db_session):
+        """Test search_profiles pagination - last page (has_next=False)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "user"
+        page = 3
+        page_size = 2
+        
+        # Create 1 profile for last page
+        profile5 = Profile(
+            id=uuid.uuid4(),
+            user_id=uuid.uuid4(),
+            username="user5",
+            display_name="User 5",
+            bio="Bio",
+            avatar_url=None,
+            is_public=True,
+            follower_count=60,
+            following_count=10,
+            created_at=datetime.now(timezone.utc),
+            updated_at=datetime.now(timezone.utc),
+        )
+        
+        mock_profiles = [profile5]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        # Total count is 5 (last page)
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 5
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=page, page_size=page_size)
+
+        # Assert - Last page metadata
+        assert result.total == 5
+        assert result.page == 3
+        assert result.page_size == 2
+        assert len(result.profiles) == 1  # Only 1 profile on last page
+        assert result.has_next is False  # (4 + 2) >= 5 → no next page
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_empty_results(self, mock_db_session):
+        """Test search_profiles handles empty results (no matches)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "nonexistent"
+        
+        # Mock empty results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = []
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 0
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+        # Assert - Empty results
+        assert result.total == 0
+        assert len(result.profiles) == 0
+        assert result.page == 1
+        assert result.page_size == 10
+        assert result.has_next is False  # (0 + 10) >= 0
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_count_query_accuracy(self, mock_db_session):
+        """Test search_profiles count query uses same filters as main query"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "test"
+        
+        # Create 3 profiles
+        profiles = [
+            Profile(
+                id=uuid.uuid4(),
+                user_id=uuid.uuid4(),
+                username=f"testuser{i}",
+                display_name=f"Test User {i}",
+                bio=f"Bio {i}",
+                avatar_url=None,
+                is_public=True,
+                follower_count=100 - (i * 10),
+                following_count=50 - (i * 5),
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            )
+            for i in range(1, 4)
+        ]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = profiles
+        
+        # Count should match number of profiles returned
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 3
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act
+        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+        # Assert - Count matches actual results
+        assert result.total == 3
+        assert len(result.profiles) == 3
+        
+        # Verify both queries executed (SELECT + COUNT)
+        assert mock_db_session.execute.call_count == 2
