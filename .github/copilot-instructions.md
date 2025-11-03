@@ -4,7 +4,10 @@
 
 > **🎯 Quality-First Philosophy**: Take whatever time, commits, and tokens needed to achieve world-class code quality, structure, and tests. No rush - systematic, thorough work is valued over speed. Multiple debugging sessions and deep root cause analysis are encouraged.
 
+> **📋 ALWAYS Reference Checklists**: For ANY workflow question (pre-merge, security, Renovate PRs, testing, deployment, CI/CD debugging), ALWAYS check `/docs/checklists.md` FIRST. It contains ALL repeatable processes with step-by-step instructions. Reference specific checklist sections in your responses.
+
 > **✅ Session Best Practices**:
+> - **Check checklists.md first** for standard workflows before suggesting custom solutions
 > - Systematic root cause analysis > quick symptom fixes
 > - Deep log investigation reveals issues status checks miss
 > - Multiple commits per issue are fine - prefer atomic, well-documented changes
@@ -25,10 +28,12 @@
 - **Documentation References** - Key docs to reference
 
 **When You Need**:
-- 🛫 **Pre-Flight Checks**: See "Pre-Flight Checks & Code Generation" section (ALWAYS USE!)
+- � **Process Checklists**: `/docs/checklists.md` (CHECK THIS FIRST FOR ALL WORKFLOWS!) ⭐⭐⭐
+- �🛫 **Pre-Flight Checks**: See "Pre-Flight Checks & Code Generation" section (ALWAYS USE!)
 - 🔍 **Service Configuration**: See "CI/CD & Workflow Standards" section
-- 📋 **Process Checklists**: Reference `/docs/checklists.md`
-- 🔐 **Security Guidance**: See "Security Best Practices" section
+- � **Security Guidance**: `/docs/checklists.md` Security Implementation section + "Security Best Practices" section
+- 🤖 **Renovate PRs**: `/docs/checklists.md` Renovate PR Review Checklist
+- 🚀 **Deployment**: `/docs/checklists.md` Deployment Checklist
 - 🎯 **Code Patterns**: See "Common Patterns" section
 - 🐛 **Anti-Patterns**: See "Common Anti-Patterns to Avoid" section
 
@@ -1579,7 +1584,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
+- **Process Checklists**: `/docs/checklists.md` - ALL repeatable workflows (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
 - **Pattern Library**: See "Pattern Library" section above - 22 battle-tested patterns ⭐
+- **Current Sprint**: `/docs/plans/CURRENT_SPRINT.md` - Active sprint goals and metrics ⭐
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
 - **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
