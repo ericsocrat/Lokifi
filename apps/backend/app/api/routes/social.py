@@ -2,14 +2,13 @@ from __future__ import annotations
 
 __all__ = ["router"]
 
+from app.db.db import get_session, init_db
+from app.db.models import Follow, Post, User
+from app.services.auth import require_handle
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
-
-from app.db.db import get_session, init_db
-from app.db.models import Follow, Post, User
-from app.services.auth import require_handle
 
 router = APIRouter()
 
@@ -68,7 +67,8 @@ def create_user(payload: UserCreate):
             raise HTTPException(status_code=409, detail="Handle already exists")
         u = User(handle=payload.handle, avatar_url=payload.avatar_url, bio=payload.bio)
         db.add(u)
-        db.flush()  # get id
+        db.commit()  # Commit to get id and trigger default values
+        db.refresh(u)  # Refresh to ensure created_at is populated
         # counts
         out = UserOut(
             handle=u.handle,
@@ -147,7 +147,8 @@ def create_post(payload: PostCreate, authorization: str | None = Header(None)):
         u = _user_by_handle(db, payload.handle)
         p = Post(user_id=u.id, content=payload.content, symbol=payload.symbol)
         db.add(p)
-        db.flush()
+        db.commit()  # Commit to get id and trigger default values
+        db.refresh(p)  # Refresh to ensure created_at is populated
         return PostOut(
             id=p.id,
             handle=u.handle,

@@ -87,15 +87,31 @@ class TestUserEndpoints:
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
-        # Mock no existing user
+        # Mock no existing user (first query for duplicate check)
         mock_session.execute.return_value.scalar_one_or_none.return_value = None
 
-        # Mock flush to set user id
-        def set_id(*args, **kwargs):
-            mock_db_user.id = 1
+        # Mock the User object that will be created
+        mock_new_user = MagicMock()
+        mock_new_user.handle = "newuser"
+        mock_new_user.avatar_url = "https://example.com/avatar.jpg"
+        mock_new_user.bio = "Test bio"
+        mock_new_user.created_at = datetime(2024, 1, 1, 12, 0, 0)  # Set timestamp
 
-        mock_session.flush.side_effect = set_id
-        mock_session.add.return_value = None
+        # Mock db.add to capture the user being added
+        def capture_add(user):
+            # Copy properties from the real User object to our mock
+            mock_new_user.handle = user.handle
+            mock_new_user.avatar_url = user.avatar_url
+            mock_new_user.bio = user.bio
+
+        mock_session.add.side_effect = capture_add
+        mock_session.commit.return_value = None
+
+        # Mock db.refresh to ensure created_at is set
+        def set_timestamps(user):
+            user.created_at = mock_new_user.created_at
+
+        mock_session.refresh.side_effect = set_timestamps
 
         payload = {
             "handle": "newuser",
@@ -115,6 +131,7 @@ class TestUserEndpoints:
         assert data["following_count"] == 0
         assert data["followers_count"] == 0
         assert data["posts_count"] == 0
+        assert "created_at" in data  # Verify timestamp is present
 
     @patch("app.api.routes.social.get_session")
     def test_create_user_duplicate_handle(self, mock_get_session, mock_db_user):
@@ -358,11 +375,30 @@ class TestPostEndpoints:
         # Mock user lookup
         mock_session.execute.return_value.scalar_one_or_none.return_value = mock_db_user
 
-        # Mock flush to set post id
-        def set_id(*args, **kwargs):
-            mock_db_post.id = 1
+        # Mock the Post object that will be created
+        mock_new_post = MagicMock()
+        mock_new_post.id = 1
+        mock_new_post.user_id = mock_db_user.id
+        mock_new_post.content = "Test post content"
+        mock_new_post.symbol = "BTC"
+        mock_new_post.created_at = datetime(2024, 1, 1, 12, 0, 0)
 
-        mock_session.flush.side_effect = set_id
+        # Mock db.add to capture the post being added
+        def capture_add(post):
+            # Copy properties from the real Post object to our mock
+            mock_new_post.content = post.content
+            mock_new_post.symbol = post.symbol
+            mock_new_post.user_id = post.user_id
+        
+        mock_session.add.side_effect = capture_add
+        mock_session.commit.return_value = None
+        
+        # Mock db.refresh to ensure created_at is set
+        def set_timestamps(post):
+            post.id = mock_new_post.id
+            post.created_at = mock_new_post.created_at
+        
+        mock_session.refresh.side_effect = set_timestamps
 
         payload = {"handle": "testuser", "content": "Test post content", "symbol": "BTC"}
 
