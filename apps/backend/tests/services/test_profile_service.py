@@ -58,6 +58,24 @@ def profile_service(mock_db_session):
 
 
 @pytest.fixture
+def mock_profile():
+    """Mock Profile object with all required fields"""
+    return Profile(
+        id=uuid.uuid4(),
+        user_id=uuid.uuid4(),
+        username="testuser",
+        display_name="Test User",
+        bio="Test bio",
+        avatar_url=None,
+        is_public=True,
+        follower_count=10,
+        following_count=5,
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
+    )
+
+
+@pytest.fixture
 def sample_user_ids():
     """Sample UUIDs for testing"""
     return {
@@ -914,7 +932,10 @@ class TestNotificationPreferencesDatabaseInteractions:
         )
 
         # Act
-        with patch("app.services.profile_service.NotificationPreferencesResponse.model_validate", return_value=mock_response):
+        with patch(
+            "app.services.profile_service.NotificationPreferencesResponse.model_validate",
+            return_value=mock_response,
+        ):
             result = await profile_service.update_notification_preferences(user_id, prefs_data)
 
         # Assert - Verify database operations
@@ -971,7 +992,10 @@ class TestNotificationPreferencesDatabaseInteractions:
         )
 
         # Act
-        with patch("app.services.profile_service.NotificationPreferencesResponse.model_validate", return_value=mock_response):
+        with patch(
+            "app.services.profile_service.NotificationPreferencesResponse.model_validate",
+            return_value=mock_response,
+        ):
             result = await profile_service.update_notification_preferences(user_id, prefs_data)
 
         # Assert - Verify database operations
@@ -1028,7 +1052,10 @@ class TestNotificationPreferencesDatabaseInteractions:
         )
 
         # Act
-        with patch("app.services.profile_service.NotificationPreferencesResponse.model_validate", return_value=mock_response):
+        with patch(
+            "app.services.profile_service.NotificationPreferencesResponse.model_validate",
+            return_value=mock_response,
+        ):
             result = await profile_service.update_notification_preferences(user_id, prefs_data)
 
         # Assert - Only SELECT, no UPDATE
@@ -1037,3 +1064,310 @@ class TestNotificationPreferencesDatabaseInteractions:
         assert not mock_db_session.refresh.called  # No refresh if no update
 
         assert result is not None
+
+
+# ============================================================================
+# GAP 3: FOLLOWSERVICE INTEGRATION TESTS
+# ============================================================================
+
+
+class TestFollowServiceIntegration:
+    """
+    Gap 3: FollowService integration tests
+    
+    Covers lines 194-207 (get_public_profile with is_following check)
+    Covers lines 245-267 (search_profiles with batch_follow_status)
+    
+    Tests verify:
+    - get_public_profile returns is_following for authenticated users
+    - get_public_profile returns None for anonymous users
+    - search_profiles includes follow status via batch_follow_status
+    - FollowService methods are called correctly with proper arguments
+    
+    Target: +2-3pp coverage (79% → 81-82%)
+    """
+
+    @pytest.mark.asyncio
+    async def test_get_public_profile_authenticated_following(
+        self, mock_db_session, mock_user, mock_profile
+    ):
+        """Test get_public_profile returns is_following=True for authenticated user who follows target"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        current_user_id = uuid.uuid4()
+        profile_id = mock_profile.id
+
+        # Mock profile lookup
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = mock_profile
+        mock_db_session.execute.return_value = mock_result
+
+        # Mock FollowService.is_following to return True
+        # Patch at module level where FollowService is imported from
+        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+            mock_follow_service = MagicMock()
+            mock_follow_service.is_following = AsyncMock(return_value=True)
+            mock_follow_service_cls.return_value = mock_follow_service
+
+            # Act
+            result = await profile_service.get_public_profile(
+                profile_id=profile_id, current_user_id=current_user_id
+            )
+
+            # Assert
+            # Verify FollowService was instantiated
+            mock_follow_service_cls.assert_called_once_with(mock_db_session)
+
+            # Verify is_following was called with correct arguments
+            mock_follow_service.is_following.assert_awaited_once_with(
+                follower_id=current_user_id, followee_id=mock_profile.user_id
+            )
+
+            # Verify response includes is_following=True
+            assert result.is_following is True
+            assert result.id == mock_profile.id
+            assert result.username == mock_profile.username
+
+    @pytest.mark.asyncio
+    async def test_get_public_profile_authenticated_not_following(
+        self, mock_db_session, mock_user, mock_profile
+    ):
+        """Test get_public_profile returns is_following=False for authenticated user who doesn't follow target"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        current_user_id = uuid.uuid4()
+        profile_id = mock_profile.id
+
+        # Mock profile lookup
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = mock_profile
+        mock_db_session.execute.return_value = mock_result
+
+        # Mock FollowService.is_following to return False
+        # Patch at module level where FollowService is imported from
+        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+            mock_follow_service = MagicMock()
+            mock_follow_service.is_following = AsyncMock(return_value=False)
+            mock_follow_service_cls.return_value = mock_follow_service
+
+            # Act
+            result = await profile_service.get_public_profile(
+                profile_id=profile_id, current_user_id=current_user_id
+            )
+
+            # Assert
+            # Verify FollowService was called
+            mock_follow_service_cls.assert_called_once_with(mock_db_session)
+            mock_follow_service.is_following.assert_awaited_once_with(
+                follower_id=current_user_id, followee_id=mock_profile.user_id
+            )
+
+            # Verify response includes is_following=False
+            assert result.is_following is False
+            assert result.id == mock_profile.id
+
+    @pytest.mark.asyncio
+    async def test_get_public_profile_anonymous_user(
+        self, mock_db_session, mock_user, mock_profile
+    ):
+        """Test get_public_profile returns is_following=None for anonymous user (no current_user_id)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        profile_id = mock_profile.id
+
+        # Mock profile lookup
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none.return_value = mock_profile
+        mock_db_session.execute.return_value = mock_result
+
+        # Act (no current_user_id)
+        # Patch at module level where FollowService is imported from
+        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+            result = await profile_service.get_public_profile(profile_id=profile_id)
+
+            # Assert
+            # Verify FollowService was NOT instantiated (no current_user_id)
+            mock_follow_service_cls.assert_not_called()
+
+            # Verify response includes is_following=None
+            assert result.is_following is None
+            assert result.id == mock_profile.id
+            assert result.username == mock_profile.username
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_with_follow_status(self, mock_db_session, mock_user):
+        """Test search_profiles includes follow status via batch_follow_status for authenticated user"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        current_user_id = uuid.uuid4()
+        query = "test"
+        
+        # Create 3 mock profiles
+        profile1_id = uuid.uuid4()
+        profile2_id = uuid.uuid4()
+        profile3_id = uuid.uuid4()
+        
+        user1_id = uuid.uuid4()
+        user2_id = uuid.uuid4()
+        user3_id = uuid.uuid4()
+        
+        mock_profiles = [
+            Profile(
+                id=profile1_id,
+                user_id=user1_id,
+                username="testuser1",
+                display_name="Test User 1",
+                bio="Bio 1",
+                avatar_url=None,
+                is_public=True,
+                follower_count=10,
+                following_count=5,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            ),
+            Profile(
+                id=profile2_id,
+                user_id=user2_id,
+                username="testuser2",
+                display_name="Test User 2",
+                bio="Bio 2",
+                avatar_url=None,
+                is_public=True,
+                follower_count=20,
+                following_count=8,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            ),
+            Profile(
+                id=profile3_id,
+                user_id=user3_id,
+                username="testuser3",
+                display_name="Test User 3",
+                bio="Bio 3",
+                avatar_url=None,
+                is_public=True,
+                follower_count=15,
+                following_count=6,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            ),
+        ]
+
+        # Mock profile search results (2 queries: SELECT profiles + SELECT COUNT)
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 3  # Total count
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Mock FollowService.batch_follow_status
+        # Simulate: user follows profile1 (True), doesn't follow profile2 (False), follows profile3 (True)
+        mock_follow_map = {
+            user1_id: {"is_following": True},
+            user2_id: {"is_following": False},
+            user3_id: {"is_following": True},
+        }
+
+        # Patch at module level where FollowService is imported from
+        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+            mock_follow_service = MagicMock()
+            mock_follow_service.batch_follow_status = AsyncMock(return_value=mock_follow_map)
+            mock_follow_service_cls.return_value = mock_follow_service
+
+            # Act
+            result = await profile_service.search_profiles(
+                query=query, current_user_id=current_user_id, page=1, page_size=10
+            )
+
+            # Assert
+            # Verify FollowService was instantiated
+            mock_follow_service_cls.assert_called_once_with(mock_db_session)
+
+            # Verify batch_follow_status was called with correct arguments
+            mock_follow_service.batch_follow_status.assert_awaited_once_with(
+                current_user_id=current_user_id, target_user_ids=[user1_id, user2_id, user3_id]
+            )
+
+            # Verify response includes follow status for each profile
+            assert result.total == 3
+            assert len(result.profiles) == 3
+            
+            # Profile 1: is_following=True
+            assert result.profiles[0].username == "testuser1"
+            assert result.profiles[0].is_following is True
+            
+            # Profile 2: is_following=False
+            assert result.profiles[1].username == "testuser2"
+            assert result.profiles[1].is_following is False
+            
+            # Profile 3: is_following=True
+            assert result.profiles[2].username == "testuser3"
+            assert result.profiles[2].is_following is True
+
+    @pytest.mark.asyncio
+    async def test_search_profiles_anonymous_user(self, mock_db_session, mock_user):
+        """Test search_profiles returns is_following=None for all profiles when anonymous (no current_user_id)"""
+        # Arrange
+        profile_service = ProfileService(mock_db_session)
+        query = "test"
+        
+        # Create 2 mock profiles
+        profile1_id = uuid.uuid4()
+        profile2_id = uuid.uuid4()
+        user1_id = uuid.uuid4()
+        user2_id = uuid.uuid4()
+        
+        mock_profiles = [
+            Profile(
+                id=profile1_id,
+                user_id=user1_id,
+                username="testuser1",
+                display_name="Test User 1",
+                bio="Bio 1",
+                avatar_url=None,
+                is_public=True,
+                follower_count=10,
+                following_count=5,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            ),
+            Profile(
+                id=profile2_id,
+                user_id=user2_id,
+                username="testuser2",
+                display_name="Test User 2",
+                bio="Bio 2",
+                avatar_url=None,
+                is_public=True,
+                follower_count=20,
+                following_count=8,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            ),
+        ]
+
+        # Mock profile search results
+        mock_profiles_result = MagicMock()
+        mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
+        
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 2
+        
+        mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
+
+        # Act (no current_user_id)
+        # Patch at module level where FollowService is imported from
+        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+            result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+
+            # Assert
+            # Verify FollowService was NOT instantiated (no current_user_id)
+            mock_follow_service_cls.assert_not_called()
+
+            # Verify all profiles have is_following=None
+            assert result.total == 2
+            assert len(result.profiles) == 2
+            assert result.profiles[0].is_following is None
+            assert result.profiles[1].is_following is None
