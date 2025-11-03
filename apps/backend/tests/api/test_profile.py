@@ -17,8 +17,6 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, status
-
 from app.routers.profile import (
     delete_account,
     get_my_profile,
@@ -41,6 +39,7 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
+from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -213,6 +212,57 @@ class TestProfileCRUD:
         assert isinstance(result, ProfileResponse)
         mock_service.update_profile.assert_awaited_once_with(mock_current_user.id, profile_data)
 
+    @pytest.mark.asyncio
+    async def test_update_profile_username_conflict(self, mock_db_session):
+        """Test updating profile with username that already exists (409 Conflict)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock existing profile
+        existing_profile = MagicMock()
+        existing_profile.id = uuid.uuid4()
+        existing_profile.username = "testuser"
+
+        # Mock profile with new username that conflicts
+        conflicting_profile = MagicMock()
+        conflicting_profile.id = uuid.uuid4()
+        conflicting_profile.username = "newusername"
+
+        # First query returns user's profile, second returns conflicting username
+        mock_result1 = MagicMock()
+        mock_result1.scalar_one_or_none = MagicMock(return_value=existing_profile)
+        mock_result2 = MagicMock()
+        mock_result2.scalar_one_or_none = MagicMock(return_value=conflicting_profile)
+
+        mock_db_session.execute = AsyncMock(side_effect=[mock_result1, mock_result2])
+
+        profile_service = ProfileService(mock_db_session)
+        profile_data = ProfileUpdateRequest(username="newusername")
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.update_profile(existing_profile.id, profile_data)
+
+        assert exc_info.value.status_code == status.HTTP_409_CONFLICT
+        assert "Username already taken" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    async def test_update_profile_not_found(self, mock_db_session):
+        """Test updating profile that doesn't exist (404 Not Found)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock no profile found
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none = MagicMock(return_value=None)
+        mock_db_session.execute = AsyncMock(return_value=mock_result)
+
+        profile_service = ProfileService(mock_db_session)
+        profile_data = ProfileUpdateRequest(username="newusername")
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.update_profile(uuid.uuid4(), profile_data)
+
+        assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+        assert "Profile not found" in exc_info.value.detail
+
 
 # ============================================================================
 # TEST CLASS 2: Public Profile Access
@@ -352,6 +402,84 @@ class TestUserSettings:
             mock_current_user.id, settings_data
         )
 
+    @pytest.mark.asyncio
+    @patch("app.core.security.validate_email")
+    async def test_update_user_settings_invalid_email(self, mock_validate_email, mock_db_session):
+        """Test updating user settings with invalid email format (400 Bad Request)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock user found
+        user = MagicMock()
+        user.id = uuid.uuid4()
+        user.email = "old@example.com"
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none = MagicMock(return_value=user)
+        mock_db_session.execute = AsyncMock(return_value=mock_result)
+
+        # Mock invalid email validation
+        mock_validate_email.return_value = False
+
+        profile_service = ProfileService(mock_db_session)
+        settings_data = UserSettingsUpdateRequest(email="invalid-email")
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.update_user_settings(user.id, settings_data)
+
+        assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
+        assert "Invalid email format" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    @patch("app.core.security.validate_email")
+    async def test_update_user_settings_email_conflict(self, mock_validate_email, mock_db_session):
+        """Test updating user settings with email already in use (409 Conflict)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock user found and email validated
+        user = MagicMock()
+        user.id = uuid.uuid4()
+        user.email = "old@example.com"
+
+        existing_user = MagicMock()
+        existing_user.id = uuid.uuid4()
+        existing_user.email = "taken@example.com"
+
+        # First query returns user, second returns existing user with that email
+        mock_result1 = MagicMock()
+        mock_result1.scalar_one_or_none = MagicMock(return_value=user)
+        mock_result2 = MagicMock()
+        mock_result2.scalar_one_or_none = MagicMock(return_value=existing_user)
+
+        mock_db_session.execute = AsyncMock(side_effect=[mock_result1, mock_result2])
+        mock_validate_email.return_value = True
+
+        profile_service = ProfileService(mock_db_session)
+        settings_data = UserSettingsUpdateRequest(email="taken@example.com")
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.update_user_settings(user.id, settings_data)
+
+        assert exc_info.value.status_code == status.HTTP_409_CONFLICT
+        assert "Email already in use" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    async def test_update_user_settings_user_not_found(self, mock_db_session):
+        """Test updating settings for non-existent user (404 Not Found)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock no user found
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none = MagicMock(return_value=None)
+        mock_db_session.execute = AsyncMock(return_value=mock_result)
+
+        profile_service = ProfileService(mock_db_session)
+        settings_data = UserSettingsUpdateRequest(full_name="Test")
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.update_user_settings(uuid.uuid4(), settings_data)
+
+        assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+        assert "User not found" in exc_info.value.detail
+
 
 # ============================================================================
 # TEST CLASS 4: Notification Preferences & Account Deletion
@@ -409,6 +537,61 @@ class TestNotificationPreferencesAndDeletion:
         mock_service.update_notification_preferences.assert_awaited_once_with(
             mock_current_user.id, prefs_data
         )
+
+    @pytest.mark.asyncio
+    async def test_get_notification_preferences_not_found(self, mock_db_session):
+        """Test getting notification preferences when not found (404 Not Found)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock no preferences found
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none = MagicMock(return_value=None)
+        mock_db_session.execute = AsyncMock(return_value=mock_result)
+
+        profile_service = ProfileService(mock_db_session)
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.get_notification_preferences(uuid.uuid4())
+
+        assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+        assert "Notification preferences not found" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    async def test_update_notification_preferences_not_found(self, mock_db_session):
+        """Test updating notification preferences when not found (404 Not Found)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock no preferences found
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none = MagicMock(return_value=None)
+        mock_db_session.execute = AsyncMock(return_value=mock_result)
+
+        profile_service = ProfileService(mock_db_session)
+        prefs_data = NotificationPreferencesUpdateRequest(email_enabled=False)
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.update_notification_preferences(uuid.uuid4(), prefs_data)
+
+        assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+        assert "Notification preferences not found" in exc_info.value.detail
+
+    @pytest.mark.asyncio
+    async def test_get_public_profile_not_found(self, mock_db_session):
+        """Test getting public profile when not found (404 Not Found)."""
+        from app.services.profile_service import ProfileService
+
+        # Mock no profile found
+        mock_result = MagicMock()
+        mock_result.scalar_one_or_none = MagicMock(return_value=None)
+        mock_db_session.execute = AsyncMock(return_value=mock_result)
+
+        profile_service = ProfileService(mock_db_session)
+
+        with pytest.raises(HTTPException) as exc_info:
+            await profile_service.get_public_profile(uuid.uuid4())
+
+        assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
+        assert "Profile not found" in exc_info.value.detail
 
     @pytest.mark.asyncio
     async def test_delete_account_success(self, mock_current_user, mock_db_session):
