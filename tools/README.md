@@ -12,6 +12,8 @@ tools/
 ├── codebase-analyzer.ps1        # Project metrics, cost estimates & technical debt analysis
 ├── security-scanner.ps1         # Security vulnerability scanning & secret detection
 ├── setup-precommit-hooks.ps1    # Git pre-commit hook setup & bypass management
+├── mcp-coverage-server.js       # MCP server for real-time coverage data access
+├── package.json                 # MCP server dependencies (Node.js)
 ├── lib/                         # Shared library modules
 │   ├── Common-Functions.ps1     # Shared utilities (logging, CI/CD output, config)
 │   ├── Baseline-Tracker.ps1     # Metrics history tracking & comparison
@@ -21,12 +23,91 @@ tools/
 │   └── Test-Cache-Manager.ps1
 ├── .baselines/                  # Tool metrics history (gitignored)
 ├── .cache/                      # Tool result cache (gitignored)
+├── node_modules/                # MCP server dependencies (gitignored)
 └── README.md                    # This file
 ```
 
 ---
 
-## 🚀 Quick Start (Standard Tools)
+## � MCP Coverage Server
+
+Real-time test coverage queries **without running tests** via Model Context Protocol (MCP).
+
+**Installation**:
+```bash
+cd tools
+npm install
+```
+
+**Activation**: Restart VS Code → MCP server auto-starts with Copilot
+
+**Usage**: Ask Copilot coverage questions like "What's my test coverage?" or "Which files need more tests?"
+
+**Available Tools**:
+- `get_coverage_summary` - Overall metrics & test counts
+- `get_low_coverage_files` - Files needing tests (default: <80%)
+- `get_coverage_trends` - Coverage changes over time
+- `get_file_coverage` - Line-by-line file analysis
+- `check_coverage_thresholds` - Pass/fail validation
+
+**Documentation**: [MCP Coverage Server Guide](/docs/guides/mcp-coverage-server.md)
+
+---
+
+## � Tool Integration Status
+
+### ✅ Fully Integrated
+
+**test-runner.ps1** - Comprehensive test orchestration:
+- ✅ **Pre-commit hooks** - Runs with `-PreCommit` flag (15% coverage threshold)
+- ✅ **Pre-push hooks** - Runs with `-PreCommit -GenerateReport` (20% coverage threshold)
+- ⚠️ **CI/CD workflows** - NOT YET INTEGRATED (uses direct npm/pytest commands)
+- **Features**: Environment validation, logging, parallel execution, smart test selection
+
+**security-scanner.ps1** - Security vulnerability scanning:
+- ⚠️ **Pre-commit hooks** - NOT YET INTEGRATED
+- ⚠️ **CI/CD workflows** - NOT YET INTEGRATED (uses custom npm audit conversion)
+- **Features**: Security scoring, baseline tracking, code pattern analysis, `-CIMode` flag ready
+
+**setup-precommit-hooks.ps1** - Git hook management:
+- ✅ **Installed** - 3/3 hooks active (pre-commit, pre-push, commit-msg)
+- ✅ **Tested** - All hooks verified and working
+- **Features**: Conventional commit enforcement, quality gates, bypass utility
+
+### 📦 Standalone Tools
+
+**codebase-analyzer.ps1** - Project metrics & reporting:
+- Manual analysis tool for stakeholder reports
+- Not intended for CI/CD automation
+- **Features**: Cost estimates, git insights, technical debt tracking, `-CIMode` flag for JSON output
+
+**bypass-hooks.ps1** - Emergency hook bypass:
+- Local developer utility for emergencies only
+- Bypasses all quality gates (use with caution!)
+- Created automatically by `setup-precommit-hooks.ps1`
+
+**mcp-coverage-server.js** - VS Code + Copilot integration:
+- Developer assistance tool (not CI/CD)
+- Real-time coverage queries via Model Context Protocol
+- Activated via VS Code settings (`.vscode/settings.json`)
+
+### 🎯 Next Integration Steps
+
+**Priority 1**: Integrate test-runner.ps1 into CI workflows (~30-45 min)
+- Update `ci.yml` to use `test-runner.ps1 -PreCommit -CIMode`
+- Update `coverage.yml` to use `test-runner.ps1 -Coverage -CIMode`
+- Benefits: Orchestration layer, environment validation, comprehensive logging
+
+**Priority 2**: Integrate security-scanner.ps1 into CI workflows (~30-45 min)
+- Update `security.yml` to use `security-scanner.ps1 -Deep -CIMode`
+- Add `-Quick` mode to pre-commit hook for fast scans
+- Benefits: Security scoring, baseline tracking vs current custom npm audit
+
+**Documentation**: See `/docs/checklists.md` → "Tool Integration & CI/CD" section
+
+---
+
+## �🚀 Quick Start (Standard Tools)
 
 ### Infrastructure
 ```bash

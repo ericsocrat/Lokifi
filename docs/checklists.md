@@ -20,6 +20,168 @@
 
 ---
 
+## 🔗 Tool Integration & CI/CD Checklist
+
+### Integration Status Overview
+
+**Purpose**: Track which `/tools/` scripts are integrated into CI/CD workflows and pre-commit hooks.
+
+| Tool | Pre-commit Hook | Pre-push Hook | CI Workflows | Status |
+|------|----------------|---------------|--------------|--------|
+| `test-runner.ps1` | ✅ Active | ✅ Active | ⚠️ Not integrated | Partial |
+| `security-scanner.ps1` | ❌ Not integrated | ❌ Not integrated | ❌ Not integrated | None |
+| `setup-precommit-hooks.ps1` | N/A (installer) | N/A (installer) | N/A (installer) | Complete |
+| `codebase-analyzer.ps1` | N/A (manual) | N/A (manual) | N/A (manual) | N/A |
+| `bypass-hooks.ps1` | N/A (emergency) | N/A (emergency) | N/A (emergency) | N/A |
+| `mcp-coverage-server.js` | N/A (VS Code) | N/A (VS Code) | N/A (VS Code) | Complete |
+
+### ✅ Active Integrations
+
+#### test-runner.ps1 → Pre-commit/Pre-push Hooks
+- [x] **Pre-commit hook installed** - `.git/hooks/pre-commit`
+  - Runs: `test-runner.ps1 -PreCommit -CoverageThreshold 15`
+  - Blocks commits that fail quality gates
+  - Execution time: ~30-60 seconds (frontend linting + unit tests)
+- [x] **Pre-push hook installed** - `.git/hooks/pre-push`
+  - Runs: `test-runner.ps1 -PreCommit -CoverageThreshold 20 -GenerateReport`
+  - Blocks pushes that fail comprehensive tests
+  - Execution time: ~2-3 minutes (full test suite + coverage)
+- [x] **Commit-msg hook installed** - `.git/hooks/commit-msg`
+  - Validates conventional commit format
+  - Blocks commits with malformed messages
+
+**Installation**: `.\tools\setup-precommit-hooks.ps1`
+**Status**: ✅ Installed and tested (November 3, 2025)
+
+### ⚠️ Pending Integrations
+
+#### test-runner.ps1 → CI Workflows
+**Problem**: Workflows use direct `npm run` and `pytest` commands instead of `test-runner.ps1`
+**Impact**: Missing orchestration, environment validation, logging, smart test selection
+
+**Current approach** (`.github/workflows/ci.yml`):
+```yaml
+- run: npm run lint
+- run: npm run typecheck
+- run: npm run test:unit
+```
+
+**Recommended approach**:
+```yaml
+- name: Run quality gates with test-runner
+  run: |
+    pwsh -ExecutionPolicy Bypass -File ./tools/test-runner.ps1 `
+      -PreCommit -CIMode -Timeout 600
+```
+
+**Benefits**:
+- Unified test orchestration across local + CI
+- Environment validation (Python, Node.js, npm, git)
+- File logging with timestamps (`infra/logs/test-runner.log`)
+- Machine-readable JSON output (`-CIMode`)
+- Smart test selection (`-Smart` for changed files)
+
+**Estimated time**: 30-45 minutes (update 2-3 workflows)
+
+#### security-scanner.ps1 → CI Workflows & Hooks
+**Problem**: Custom npm audit → SARIF conversion in `security.yml`, no pre-commit scanning
+**Impact**: Missing security scoring, baseline tracking, code pattern analysis
+
+**Current approach** (`.github/workflows/security.yml`):
+```yaml
+- run: npm audit --json > npm-audit.json
+- run: node convert-npm-audit.js  # Custom SARIF converter
+```
+
+**Recommended approach**:
+```yaml
+- name: Run security scanner
+  run: |
+    pwsh -ExecutionPolicy Bypass -File ./tools/security-scanner.ps1 `
+      -Deep -CIMode
+```
+
+**Benefits**:
+- Security scoring (0-100 scale)
+- Baseline tracking (compare against historical scans)
+- Code pattern detection (eval, innerHTML, hardcoded secrets)
+- Integrated with CodeQL and dependency scanning
+
+**Pre-commit integration** (add to `.git/hooks/pre-commit`):
+```bash
+# Quick security scan before commit
+if $SHELL_CMD -ExecutionPolicy Bypass -File "$REPO_ROOT/tools/security-scanner.ps1" -Quick -CIMode; then
+    echo "✅ Security scan passed"
+else
+    echo "❌ Security issues detected"
+    exit 1
+fi
+```
+
+**Estimated time**: 30-45 minutes (workflow update + hook modification)
+
+### 🎯 Integration Plan
+
+**Phase 1: Pre-commit Hooks** ✅ COMPLETE
+- [x] Install `setup-precommit-hooks.ps1` (creates 3 hooks)
+- [x] Test pre-commit quality gates
+- [x] Test pre-push comprehensive checks
+- [x] Document emergency bypass procedure
+
+**Phase 2: CI/CD Workflows** 🔄 IN PROGRESS
+- [ ] Integrate `test-runner.ps1` into `ci.yml`, `coverage.yml`, `integration.yml`
+- [ ] Integrate `security-scanner.ps1` into `security.yml`
+- [ ] Add security-scanner to pre-commit hook
+- [ ] Validate all workflows pass with new tool integration
+- [ ] Update documentation (`/docs/ci-cd/overview.md`)
+
+**Phase 3: Monitoring & Refinement** ⏳ PENDING
+- [ ] Track test execution times (pre/post integration)
+- [ ] Monitor CI/CD pass rates
+- [ ] Gather developer feedback on hook performance
+- [ ] Optimize coverage thresholds based on data
+- [ ] Document lessons learned
+
+### 📋 Quick Reference
+
+**Emergency Bypass** (use sparingly!):
+```powershell
+# Skip pre-commit hook
+git commit --no-verify -m "emergency: critical fix"
+
+# Skip pre-push hook
+git push --no-verify
+
+# Use bypass utility
+.\tools\bypass-hooks.ps1 -Commit "emergency: production hotfix"
+```
+
+**Manual Tool Execution**:
+```powershell
+# Test runner (comprehensive)
+.\tools\test-runner.ps1 -PreCommit -Verbose
+
+# Security scanner (deep scan)
+.\tools\security-scanner.ps1 -Deep
+
+# Codebase analysis (project metrics)
+.\tools\codebase-analyzer.ps1 -OutputFormat markdown
+```
+
+**Hook Management**:
+```powershell
+# Reinstall hooks
+.\tools\setup-precommit-hooks.ps1
+
+# Uninstall hooks
+.\tools\setup-precommit-hooks.ps1 -UninstallHooks
+
+# Test hook setup
+.\tools\setup-precommit-hooks.ps1 -DryRun
+```
+
+---
+
 ## 🎯 Code Quality Implementation Checklist
 
 ### ✅ Pre-commit Hook Setup
