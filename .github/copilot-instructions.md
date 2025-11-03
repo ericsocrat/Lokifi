@@ -1801,6 +1801,81 @@ For TypeScript type improvements, use **Copilot Edits** with full workspace cont
 - "Add proper type definitions to the `usePortfolio` Zustand store"
 - "Improve type safety in the `lib/api/client.ts` file"
 
+## 🛠️ VS Code Copilot Tool Sets
+
+**Status**: ✅ Configured - 5 tool sets active for automated workflow assistance
+
+Lokifi uses custom Copilot Tool Sets to automatically execute project-specific commands. These are pre-configured command groups that Copilot can use based on context.
+
+### Available Tool Sets
+
+**1. Lokifi Testing** 🧪
+- **Purpose**: Run tests, check coverage, validate code quality
+- **When Used**: Test execution, coverage analysis, pre-commit validation
+- **Key Commands**: 
+  - `.\tools\test-runner.ps1` (Smart, All, PreCommit modes)
+  - `npm test`, `npm run test:coverage` (Frontend)
+  - `pytest`, `pytest --cov` (Backend)
+  - Coverage dashboard server
+
+**2. Lokifi Quality Checks** ✅
+- **Purpose**: Type checking, linting, code formatting validation
+- **When Used**: Pre-commit checks, CI debugging, quality assurance
+- **Key Commands**:
+  - `npm run typecheck`, `npm run lint`, `npm run build` (Frontend)
+  - `ruff check .`, `black . --check` (Backend)
+  - Pre-commit validation workflows
+
+**3. Lokifi Development** 🚀
+- **Purpose**: Start/stop servers, manage development environment
+- **When Used**: Starting development session, server management
+- **Key Commands**:
+  - VS Code tasks (Start All Servers, Stop All Servers)
+  - Docker Compose commands (up, down, logs)
+  - Service status checks
+
+**4. Lokifi Debugging** 🔍
+- **Purpose**: CI/CD investigation, logs, workflow debugging
+- **When Used**: CI failures, workflow debugging, error investigation
+- **Key Commands**:
+  - GitHub CLI debugging (`gh pr checks`, `gh run view --log-failed`)
+  - Local debugging (git status, typecheck with error filtering)
+  - Error log analysis
+
+**5. Lokifi Deployment** 📊
+- **Purpose**: Deployment checks, Docker builds, production validation
+- **When Used**: Pre-deployment validation, production deployment
+- **Key Commands**:
+  - Pre-deployment checks (test-runner PreCommit mode)
+  - Docker production builds
+  - Health check validation
+
+### How Tool Sets Work
+
+**Automatic Invocation**:
+- Copilot automatically suggests relevant tool sets based on conversation context
+- Example: Discussing test failures → Copilot offers "Lokifi Testing" tools
+- Example: Debugging CI → Copilot offers "Lokifi Debugging" tools
+
+**Manual Invocation**:
+- Reference tool sets by name: "Run the Lokifi Testing tool set"
+- Ask for specific commands: "Use the test-runner with PreCommit mode"
+- Copilot will execute appropriate commands from the tool set
+
+**Integration with Instructions**:
+- Tool sets complement the documentation in this file
+- Commands match patterns described in "Common Commands" section
+- Pre-configured to use correct working directories and flags
+
+### Best Practices
+
+- ✅ Let Copilot suggest tool sets automatically based on context
+- ✅ Tool sets respect project structure (apps/frontend, apps/backend)
+- ✅ Commands include proper error handling and output formatting
+- ✅ Tool sets integrate with existing VS Code tasks
+- ❌ Don't manually run commands that tool sets can handle
+- ❌ Don't override tool set paths unless troubleshooting
+
 ## Tips for Best Results
 
 ### Use Workspace Context
