@@ -28,7 +28,7 @@
 
 | Tool | Pre-commit Hook | Pre-push Hook | CI Workflows | Status |
 |------|----------------|---------------|--------------|--------|
-| `test-runner.ps1` | ✅ Active | ✅ Active | ⚠️ Not integrated | Partial |
+| `test-runner.ps1` | ✅ Active | ✅ Active | ✅ Integrated (ci.yml, coverage.yml) | Complete |
 | `security-scanner.ps1` | ❌ Not integrated | ❌ Not integrated | ❌ Not integrated | None |
 | `setup-precommit-hooks.ps1` | N/A (installer) | N/A (installer) | N/A (installer) | Complete |
 | `codebase-analyzer.ps1` | N/A (manual) | N/A (manual) | N/A (manual) | N/A |
@@ -53,35 +53,40 @@
 **Installation**: `.\tools\setup-precommit-hooks.ps1`
 **Status**: ✅ Installed and tested (November 3, 2025)
 
-### ⚠️ Pending Integrations
+#### test-runner.ps1 → CI Workflows ✅ COMPLETE
+**Status**: ✅ Integrated into `ci.yml` and `coverage.yml` (November 3, 2025)
 
-#### test-runner.ps1 → CI Workflows
-**Problem**: Workflows use direct `npm run` and `pytest` commands instead of `test-runner.ps1`
-**Impact**: Missing orchestration, environment validation, logging, smart test selection
-
-**Current approach** (`.github/workflows/ci.yml`):
+**Implementation** (`.github/workflows/ci.yml`):
 ```yaml
-- run: npm run lint
-- run: npm run typecheck
-- run: npm run test:unit
-```
-
-**Recommended approach**:
-```yaml
-- name: Run quality gates with test-runner
+- name: 🛡️ Run Quality Gates (test-runner.ps1)
   run: |
-    pwsh -ExecutionPolicy Bypass -File ./tools/test-runner.ps1 `
+    pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 `
       -PreCommit -CIMode -Timeout 600
+  env:
+    NODE_ENV: test
+    CI: true
 ```
 
-**Benefits**:
-- Unified test orchestration across local + CI
-- Environment validation (Python, Node.js, npm, git)
-- File logging with timestamps (`infra/logs/test-runner.log`)
-- Machine-readable JSON output (`-CIMode`)
-- Smart test selection (`-Smart` for changed files)
+**Implementation** (`.github/workflows/coverage.yml`):
+```yaml
+- name: 🧪 Run tests with coverage (test-runner.ps1)
+  run: |
+    pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 `
+      -Coverage -CIMode -Timeout 600
+  env:
+    NODE_ENV: test
+    CI: true
+```
 
-**Estimated time**: 30-45 minutes (update 2-3 workflows)
+**Benefits Achieved**:
+- ✅ Unified test orchestration across local + CI
+- ✅ Environment validation (Python, Node.js, npm, git)
+- ✅ File logging with timestamps (`infra/logs/test-runner.log`)
+- ✅ Machine-readable JSON output (`-CIMode`)
+- ✅ Replaced 5 separate npm commands with single orchestrated call
+- ✅ Consistent test execution between local pre-commit hooks and CI
+
+### ⚠️ Pending Integrations
 
 #### security-scanner.ps1 → CI Workflows & Hooks
 **Problem**: Custom npm audit → SARIF conversion in `security.yml`, no pre-commit scanning
@@ -129,7 +134,8 @@ fi
 - [x] Document emergency bypass procedure
 
 **Phase 2: CI/CD Workflows** 🔄 IN PROGRESS
-- [ ] Integrate `test-runner.ps1` into `ci.yml`, `coverage.yml`, `integration.yml`
+- [x] Integrate `test-runner.ps1` into `ci.yml`, `coverage.yml` (November 3, 2025)
+- [ ] Integrate `test-runner.ps1` into `integration.yml` (optional - backend focused)
 - [ ] Integrate `security-scanner.ps1` into `security.yml`
 - [ ] Add security-scanner to pre-commit hook
 - [ ] Validate all workflows pass with new tool integration
