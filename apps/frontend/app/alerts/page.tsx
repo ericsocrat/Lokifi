@@ -1,6 +1,5 @@
 'use client';
 
-import { AuthModal } from '@/src/components/AuthModal';
 import { requireAuth } from '@/src/lib/api/auth-guard';
 import {
   createAlert,
@@ -11,7 +10,18 @@ import {
   type Alert,
   type AlertEvent,
 } from '@/src/lib/utils/alerts';
+import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState } from 'react';
+
+// Lazy load AuthModal - only loads when user needs to authenticate
+// Prevents auth modal code from loading for already-authenticated users
+const AuthModal = dynamic(
+  () => import('@/src/components/AuthModal').then((mod) => ({ default: mod.AuthModal })),
+  {
+    loading: () => null,
+    ssr: false,
+  }
+);
 
 type Kind = 'price_threshold' | 'pct_change';
 

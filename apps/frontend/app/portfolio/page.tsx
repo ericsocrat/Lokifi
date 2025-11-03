@@ -81,8 +81,15 @@ interface Asset {
   change: number;
 }
 
-import AddAssetModal from '@/src/components/portfolio/AddAssetModal';
 import { usePortfolioPrices } from '@/src/hooks/useMarketData';
+import dynamic from 'next/dynamic';
+
+// Lazy load AddAssetModal - only loads when user clicks "Add Asset" button
+// Prevents modal code from bloating initial portfolio page bundle
+const AddAssetModal = dynamic(() => import('@/src/components/portfolio/AddAssetModal'), {
+  loading: () => null, // No loading state needed for modals
+  ssr: false, // Modals don't need SSR
+});
 
 function PortfolioPageContent() {
   const router = useRouter();
