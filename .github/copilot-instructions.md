@@ -1812,7 +1812,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 **1. Lokifi Testing** 🧪
 - **Purpose**: Run tests, check coverage, validate code quality
 - **When Used**: Test execution, coverage analysis, pre-commit validation
-- **Key Commands**: 
+- **Key Commands**:
   - `.\tools\test-runner.ps1` (Smart, All, PreCommit modes)
   - `npm test`, `npm run test:coverage` (Frontend)
   - `pytest`, `pytest --cov` (Backend)
@@ -1875,6 +1875,118 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 - ✅ Tool sets integrate with existing VS Code tasks
 - ❌ Don't manually run commands that tool sets can handle
 - ❌ Don't override tool set paths unless troubleshooting
+
+## 📊 MCP Coverage Server
+
+**Status**: ✅ Active - Real-time coverage data access via Model Context Protocol
+
+The Lokifi Coverage MCP Server provides instant access to test coverage metrics without running tests. It connects directly to the coverage dashboard data and provides 5 intelligent tools for coverage analysis.
+
+### Available Coverage Tools
+
+**1. get_coverage_summary** - Quick coverage overview
+- **Query**: "What's my current test coverage?"
+- **Returns**: Overall metrics, test counts, threshold status
+- **Use Case**: Quick coverage check before commits
+
+**2. get_low_coverage_files** - Find files needing tests
+- **Query**: "Which files have low coverage?" or "Show files below 80% coverage"
+- **Returns**: Top 20 files with lowest coverage, sorted by statements
+- **Use Case**: Prioritize testing efforts, identify gaps
+
+**3. get_coverage_trends** - Track coverage over time
+- **Query**: "Has coverage improved?" or "Show coverage trends"
+- **Returns**: Current vs historical comparison, trend direction
+- **Use Case**: Track progress, validate improvements
+
+**4. get_file_coverage** - Detailed file analysis
+- **Query**: "Show coverage for portfolioStore" or "Coverage for dashboard/PriceChart"
+- **Returns**: Line-by-line coverage with uncovered line numbers
+- **Use Case**: Focus testing on specific components
+
+**5. check_coverage_thresholds** - Validate goals
+- **Query**: "Are we meeting coverage thresholds?" or "Can I merge this PR?"
+- **Returns**: Pass/fail status for each metric (statements, branches, functions, lines)
+- **Use Case**: Pre-merge validation, CI gate checks
+
+### Configuration
+
+**Location**: `/tools/mcp-coverage-server.js`
+**Data Source**: `/apps/frontend/coverage-dashboard/data.json`
+**Documentation**: `/tools/MCP_COVERAGE_SERVER.md`
+
+**VS Code Settings** (already configured in `.vscode/settings.json`):
+```json
+{
+  "github.copilot.chat.mcpServers": {
+    "lokifi-coverage": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
+    }
+  }
+}
+```
+
+### Usage Examples
+
+**Example 1: Quick Coverage Check**
+```
+User: "What's my test coverage?"
+Copilot: [Uses get_coverage_summary MCP tool]
+Response: "Frontend: 11.72%, Backend: 30.75%, Overall: 19.31%
+✅ Frontend passing 10% threshold
+⚠️ Overall below 20% threshold"
+```
+
+**Example 2: Find Testing Priorities**
+```
+User: "Which components need more tests?"
+Copilot: [Uses get_low_coverage_files with threshold 80]
+Response: "Top 5 files needing tests:
+1. portfolioStore.tsx - 45% coverage
+2. PriceChart.tsx - 52% coverage
+3. aiStore.tsx - 58% coverage
+..."
+```
+
+**Example 3: Pre-Merge Validation**
+```
+User: "Am I ready to merge?"
+Copilot: [Uses check_coverage_thresholds]
+Response: "✅ All frontend thresholds met:
+- Statements: 11.72% (≥10%) ✓
+- Branches: 89.36% (≥10%) ✓
+- Functions: 80.63% (≥10%) ✓"
+```
+
+### Benefits
+
+**For Developers**:
+- ✅ Query coverage without running tests (saves 30-60 seconds per query)
+- ✅ Instant file-level analysis for targeted testing
+- ✅ Pre-commit validation without CI wait times
+- ✅ Track trends to measure improvement
+
+**For AI Assistants**:
+- ✅ Context-aware coverage recommendations
+- ✅ Data-driven test suggestions
+- ✅ Automatic threshold validation
+- ✅ Intelligent file prioritization
+
+### Troubleshooting
+
+**"Coverage data not found"**:
+```powershell
+cd apps/frontend
+npm run test:coverage
+```
+
+**MCP Server not responding**:
+1. Restart VS Code (Reload Window)
+2. Check Node.js version: `node --version` (≥18.0.0 required)
+3. Verify installation: `cd tools && npm list @modelcontextprotocol/sdk`
+
+**See full documentation**: `/tools/MCP_COVERAGE_SERVER.md`
 
 ## Tips for Best Results
 

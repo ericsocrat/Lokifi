@@ -1,0 +1,16 @@
+{
+  "name": "lokifi-mcp-coverage-server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MCP server providing test coverage data access for Lokifi",
+  "main": "mcp-coverage-server.js",
+  "scripts": {
+    "start": "node mcp-coverage-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

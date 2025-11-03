@@ -759,5 +759,14 @@
   "yaml.schemas": {
     // Explicitly set to false to disable schema validation for GitHub Actions
     "https://json.schemastore.org/github-workflow.json": []
+  },
+
+  // ===== GITHUB COPILOT - MCP SERVERS =====
+  // Model Context Protocol servers for enhanced AI context
+  "github.copilot.chat.mcpServers": {
+    "lokifi-coverage": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
+    }
   }
 }
