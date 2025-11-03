@@ -808,10 +808,9 @@ import { usePortfolioStore } from '../../lib/stores/portfolioStore';
 
 ✅ **Documentation updates required**:
 - **README.md**: Update if adding new features, dependencies, or setup steps
-- **plans/CURRENT_SPRINT.md**: Update sprint goals, progress, and blockers
-- **checklists.md**: Update process checklists if new workflows introduced
+- **checklists.md**: Update "Current Focus" section for sprint objectives, update process checklists if new workflows introduced
 - **Todo list**: Mark completed tasks, add new follow-up tasks
-- **Git commits**: Use as source of truth for detailed history (history.md archived)
+- **Git commits**: Use as source of truth for detailed history and sprint transitions
 
 ✅ **Code comment standards**:
 ```typescript
@@ -923,7 +922,7 @@ pytest --cov
 - [ ] All linters pass (ESLint, Ruff, actionlint)
 - [ ] All tests pass (if logic changed)
 - [ ] Build succeeds (`npm run build` or Docker build)
-- [ ] Documentation updated (todo list, plans/CURRENT_SPRINT.md if sprint-related)
+- [ ] Documentation updated (todo list, checklists.md "Current Focus" if sprint objectives changed)
 - [ ] Commit message follows conventions (Git commit is source of truth for history)
 
 ### 6. Change Communication & Integration (COORDINATE WITH TEAM)
@@ -1507,14 +1506,14 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Best Practices**:
 1. **Search first**: Use `grep_search` or `file_search` to find existing related documents
-2. **Update existing**: Prefer updating checklists.md, plans/CURRENT_SPRINT.md, or existing guides
+2. **Update existing**: Prefer updating checklists.md or existing guides
 3. **Avoid duplication**: Don't create session-specific docs when Git commits track history
 4. **Archive outdated**: Move replaced documents to .archive/ folder with context
 5. **Document decisions**: Add to existing decision logs, not new files
 
 **Examples**:
-- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `plans/CURRENT_SPRINT.md` already exists
-- ✅ **Good**: Update `plans/CURRENT_SPRINT.md` with new sprint planning
+- ❌ **Bad**: Create `NEW_SPRINT_PLAN.md` when `checklists.md` "Current Focus" section exists
+- ✅ **Good**: Update `checklists.md` "Current Focus" section with sprint objectives
 - ❌ **Bad**: Create `SESSION_NOTES.md` when Git commits provide detailed history
 - ✅ **Good**: Write comprehensive Git commit messages with all session details
 - ❌ **Bad**: Create `DEPLOYMENT_CHECKLIST.md` when `checklists.md` exists
@@ -1584,9 +1583,8 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
-- **Process Checklists**: `/docs/checklists.md` - ALL repeatable workflows (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
+- **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
 - **Pattern Library**: See "Pattern Library" section above - 22 battle-tested patterns ⭐
-- **Current Sprint**: `/docs/plans/CURRENT_SPRINT.md` - Active sprint goals and metrics ⭐
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
 - **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
