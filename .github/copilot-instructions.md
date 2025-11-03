@@ -803,9 +803,10 @@ import { usePortfolioStore } from '../../lib/stores/portfolioStore';
 
 ✅ **Documentation updates required**:
 - **README.md**: Update if adding new features, dependencies, or setup steps
-- **plans/history.md**: Add session summary with metrics and decisions
+- **plans/CURRENT_SPRINT.md**: Update sprint goals, progress, and blockers
 - **checklists.md**: Update process checklists if new workflows introduced
 - **Todo list**: Mark completed tasks, add new follow-up tasks
+- **Git commits**: Use as source of truth for detailed history (history.md archived)
 
 ✅ **Code comment standards**:
 ```typescript
@@ -917,8 +918,8 @@ pytest --cov
 - [ ] All linters pass (ESLint, Ruff, actionlint)
 - [ ] All tests pass (if logic changed)
 - [ ] Build succeeds (`npm run build` or Docker build)
-- [ ] Documentation updated (todo list, plans/history.md)
-- [ ] Commit message follows conventions
+- [ ] Documentation updated (todo list, plans/CURRENT_SPRINT.md if sprint-related)
+- [ ] Commit message follows conventions (Git commit is source of truth for history)
 
 ### 6. Change Communication & Integration (COORDINATE WITH TEAM)
 
@@ -1013,7 +1014,6 @@ WIP: stuff
 
 ### Documentation
 - [ ] Todo list updated (manage_todo_list)
-- [ ] plans/history.md session added
 - [ ] Inline comments explain WHY not WHAT
 - [ ] Acceptable any types documented
 
@@ -1502,14 +1502,16 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Best Practices**:
 1. **Search first**: Use `grep_search` or `file_search` to find existing related documents
-2. **Update existing**: Prefer updating checklists.md, plans/history.md, or existing guides
-3. **Avoid duplication**: Don't create SESSION_NOTES.md when plans/history.md exists
+2. **Update existing**: Prefer updating checklists.md, plans/CURRENT_SPRINT.md, or existing guides
+3. **Avoid duplication**: Don't create session-specific docs when Git commits track history
 4. **Archive outdated**: Move replaced documents to .archive/ folder with context
 5. **Document decisions**: Add to existing decision logs, not new files
 
 **Examples**:
-- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `plans/history.md` already tracks sprints
-- ✅ **Good**: Update `plans/history.md` with new sprint planning and add to Decision Log
+- ❌ **Bad**: Create `NEW_FEATURE_PLAN.md` when `plans/CURRENT_SPRINT.md` already exists
+- ✅ **Good**: Update `plans/CURRENT_SPRINT.md` with new sprint planning
+- ❌ **Bad**: Create `SESSION_NOTES.md` when Git commits provide detailed history
+- ✅ **Good**: Write comprehensive Git commit messages with all session details
 - ❌ **Bad**: Create `DEPLOYMENT_CHECKLIST.md` when `checklists.md` exists
 - ✅ **Good**: Update `checklists.md` with new deployment section
 - ❌ **Bad**: Create `TESTING_BEST_PRACTICES.md` when `TESTING_GUIDE.md` exists

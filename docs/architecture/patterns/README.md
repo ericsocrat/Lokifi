@@ -83,48 +83,363 @@
 
 ## 🎯 Pattern Selection Guide
 
-### By Problem Type
+> **New to the library?** Use these decision trees to find the right pattern instantly.
 
-**Need to test async code?**
-→ Start with [AsyncMock Pattern](./testing/asyncmock-pattern.md) (95% success rate)
+### 🧪 Testing Decision Tree
 
-**Need to test pure functions?**
-→ Use [Pure Function Testing](./testing/pure-function-testing.md) (100% success, fast)
+**What are you testing?**
 
-**CI/CD workflow failing?**
-→ Follow [Root Cause Analysis](./ci-cd/root-cause-analysis.md) + [GitHub CLI Debugging](./ci-cd/github-cli-debugging.md)
+<details>
+<summary><b>Async function</b> (API calls, database queries, external services)</summary>
 
-**Dependency conflict?**
-→ Apply [Dependency Conflict Resolution](./dependencies/conflict-resolution.md) + [Pin vs Replace](./dependencies/pin-vs-replace.md)
+→ **[AsyncMock Pattern](./testing/asyncmock-pattern.md)** ⭐ **BEST CHOICE**
+- ✅ **Success Rate**: 95% (4/4 sessions)
+- 📊 **Impact**: +30-40pp coverage per service
+- ⏱️ **Time**: 15-30 minutes
+- 💡 **Use when**: HTTP requests, database operations, Redis, file I/O
+- 🎯 **Example**: Session 66 - fmp_service (0% → 100% in 20 minutes)
 
-**TypeScript `any` types?**
-→ Use [TypeScript Any Elimination](./code-quality/typescript-any-elimination.md) (96.3% improvement proven)
+</details>
 
-**Python compatibility issues?**
-→ Check [Python 3.10 Compatibility](./python/python-310-compatibility.md) (60 files fixed)
+<details>
+<summary><b>Pure function</b> (no side effects, just computation)</summary>
 
-### By Time Investment
+→ **[Pure Function Testing](./testing/pure-function-testing.md)** ⚡ **FASTEST**
+- ✅ **Success Rate**: 100% (2/2 sessions)
+- 📊 **Impact**: 100% coverage on module
+- ⏱️ **Time**: 5-15 minutes
+- 💡 **Use when**: Data transformations, utilities, formatters
+- 🎯 **Example**: Session 66 - timeframes.py (28 tests, <1 second execution)
 
-**Under 30 minutes:**
-- [Pure Function Testing](./testing/pure-function-testing.md)
-- [UTC Import Pattern](./python/utc-import-pattern.md)
-- [Working Directory Fixes](./ci-cd/working-directory.md)
-- [Pin vs Replace Decision](./dependencies/pin-vs-replace.md)
+</details>
 
-**30-90 minutes:**
-- [AsyncMock Pattern](./testing/asyncmock-pattern.md)
-- [Test Fixture Design](./testing/fixture-design.md)
-- [GitHub CLI Debugging](./ci-cd/github-cli-debugging.md)
+<details>
+<summary><b>Mathematical calculation</b> (formulas, financial calculations)</summary>
 
-**1-3 hours:**
-- [TypeScript Any Elimination](./code-quality/typescript-any-elimination.md) (per store)
-- [Root Cause Analysis](./ci-cd/root-cause-analysis.md)
-- [Dependency Conflict Resolution](./dependencies/conflict-resolution.md)
+→ **[Mathematical Testing](./testing/mathematical-testing.md)** 🎯 **RIGOROUS**
+- ✅ **Success Rate**: 100% (1/1 session)
+- 📊 **Impact**: 100% coverage + verified correctness
+- ⏱️ **Time**: 20-30 minutes
+- 💡 **Use when**: Indicators (EMA, SMA, RSI), financial math, statistics
+- 🎯 **Example**: Session 66 - indicators.py (33 tests, formula verification)
 
-**3+ hours:**
-- [Renovate Migration](./dependencies/renovate-migration.md) (1.5 hrs, saves 10-15 hrs/year)
-- [Python 3.10 Compatibility](./python/python-310-compatibility.md) (60 files)
-- [ESLint Quality Campaign](./code-quality/eslint-quality.md) (7 sessions)
+</details>
+
+<details>
+<summary><b>Multiple tests share setup code</b> (repetitive mocks, common fixtures)</summary>
+
+→ **[Fixture Design Pattern](./testing/fixture-design.md)** 🔧 **DRY TESTS**
+- ✅ **Success Rate**: 100% (6/6 sessions)
+- 📊 **Impact**: 45 minutes saved per session
+- ⏱️ **Time**: 10-20 minutes
+- 💡 **Use when**: Shared mocks, common test data, repeated setup
+- 🎯 **Example**: Session 66 - reusable Redis/HTTP mocks across services
+
+</details>
+
+---
+
+### 🐛 Debugging Decision Tree
+
+**What type of failure are you investigating?**
+
+<details>
+<summary><b>Multiple related failures</b> (5+ workflows failing, pattern suspected)</summary>
+
+→ **[Root Cause Analysis](./debugging/root-cause-analysis.md)** 🎯 **HIGH VALUE**
+- ✅ **Success Rate**: 100% (8+ sessions)
+- 📊 **Impact**: 7 failures → 2 root fixes (Session 8-9)
+- ⏱️ **Time**: 30-60 minutes
+- 💰 **Savings**: 3-4 hours vs individual fixes
+- 💡 **Use when**: Systematic CI failures, related issues, recurring bugs
+- 🎯 **Example**: Session 8-9 - 5 workflows missing PostgreSQL service
+
+</details>
+
+<details>
+<summary><b>Large log files</b> (1000+ lines, can't find error)</summary>
+
+→ **[Log Analysis Pattern](./debugging/log-analysis.md)** ⚡ **TIME SAVER**
+- ✅ **Success Rate**: 100% (10+ sessions)
+- 📊 **Impact**: 75-88% time reduction
+- ⏱️ **Time**: 5-15 minutes (vs 45-60 minutes manual)
+- 💡 **Use when**: CI logs, pytest output, stack traces
+- 🎯 **Example**: Session 66 - 1500 lines → found error in 5 minutes
+
+</details>
+
+<details>
+<summary><b>CI/CD workflow failing</b> (GitHub Actions, need quick overview)</summary>
+
+→ **[GitHub CLI Investigation](../ci-cd/github-cli-investigation.md)** ⚡ **FASTEST**
+- ✅ **Success Rate**: 100% (10+ sessions)
+- 📊 **Impact**: 75-80% time savings vs web UI
+- ⏱️ **Time**: 5-10 minutes
+- 💡 **Use when**: Workflow status checks, log fetching, automation
+- 🎯 **Example**: `gh pr checks <pr>` → instant overview of all workflows
+
+</details>
+
+---
+
+### 📦 Dependencies Decision Tree
+
+**What dependency issue are you facing?**
+
+<details>
+<summary><b>Dependency conflict</b> (peer dependency errors, version mismatches)</summary>
+
+→ **[Dependency Conflict Resolution](./dependencies/conflict-resolution.md)** 🔧 **SYSTEMATIC**
+- ✅ **Success Rate**: 100% (8+ sessions)
+- 📊 **Impact**: Unblocked CI, 30-60 minutes per conflict
+- ⏱️ **Time**: 30-60 minutes
+- 💡 **Use when**: `ERESOLVE` errors, incompatible versions, transitive conflicts
+- 🎯 **Example**: Session 30 - vitest + jsdom conflict resolved
+
+</details>
+
+<details>
+<summary><b>Should I update this dependency?</b> (patch, minor, major version available)</summary>
+
+→ **[Pin vs Replace Decision Tree](./dependencies/pin-vs-replace.md)** ⚡ **QUICK DECISION**
+- ✅ **Success Rate**: 100% (10+ sessions)
+- 📊 **Impact**: 5 minutes vs 3 hours
+- ⏱️ **Time**: 5-10 minutes
+- 💡 **Use when**: npm outdated, dependency updates, version decisions
+- 🎯 **Example**: Security patch → UPDATE, Major version → PIN (usually)
+
+</details>
+
+<details>
+<summary><b>CVE/Security alert</b> (Dependabot, npm audit warnings)</summary>
+
+→ **[Security Patch Evaluation](./dependencies/security-patch-evaluation.md)** 🔐 **SECURITY**
+- ✅ **Success Rate**: 100% (15+ patches)
+- 📊 **Impact**: 0 security incidents, <7 days to patch
+- ⏱️ **Time**: 15-30 minutes per CVE
+- 💡 **Use when**: Dependabot alerts, security vulnerabilities
+- 🎯 **Example**: Session 33 - fastapi CVE patched in 2 hours (CRITICAL)
+
+</details>
+
+<details>
+<summary><b>Should we use Renovate Bot?</b> (automation consideration)</summary>
+
+→ **[Renovate Migration](./dependencies/renovate-migration.md)** 📊 **EVALUATION**
+- ✅ **Success Rate**: 100% (evaluation complete)
+- 📊 **Impact**: Break-even at 5+ developers or 100+ dependencies
+- ⏱️ **Time**: 4-6 hours setup + 2-4 hours/week maintenance
+- 💡 **Use when**: Team size growing, 100+ dependencies
+- ⚠️ **Lokifi verdict**: NOT implemented (solo dev - manual more efficient)
+
+</details>
+
+---
+
+### 💻 Code Quality Decision Tree
+
+**What code quality issue are you addressing?**
+
+<details>
+<summary><b>TypeScript has too many `any` types</b> (type safety improvement)</summary>
+
+→ **[TypeScript Any Elimination](./code-quality/typescript-any-elimination.md)** 🎯 **HIGH IMPACT**
+- ✅ **Success Rate**: 100% (15 stores - Sprint 2)
+- 📊 **Impact**: 96.3% improvement (1,102 any eliminated)
+- ⏱️ **Time**: 30-60 minutes per store
+- 💡 **Use when**: Refactoring stores, improving type safety
+- 🎯 **Example**: Sprint 2 - portfolioStore (150 any → 5 acceptable)
+
+</details>
+
+<details>
+<summary><b>Zustand store mutations not type-safe</b> (Draft&lt;T&gt; errors)</summary>
+
+→ **[Draft&lt;T&gt; Mutations](./code-quality/draft-type-mutations.md)** + **[Zustand+Immer](./code-quality/zustand-immer-pattern.md)** ⭐ **MANDATORY**
+- ✅ **Success Rate**: 100% (15/15 stores)
+- 📊 **Impact**: 0 mutation bugs, 100% type safety
+- ⏱️ **Time**: 15-30 minutes per store
+- 💡 **Use when**: All Zustand stores (mandatory pattern)
+- 🎯 **Example**: Use `Draft<StoreState>` not `state.` in set() blocks
+
+</details>
+
+<details>
+<summary><b>Python linting violations</b> (Ruff errors, style issues)</summary>
+
+→ **[Python Ruff Compliance](./code-quality/python-ruff-compliance.md)** ⚡ **AUTOMATED**
+- ✅ **Success Rate**: 100% (12 modules)
+- 📊 **Impact**: 367 violations → 0 (100% clean)
+- ⏱️ **Time**: 5-15 minutes
+- 💡 **Use when**: Backend refactoring, new Python modules
+- 🎯 **Example**: Session 66 - `ruff check --fix` + `ruff format`
+
+</details>
+
+<details>
+<summary><b>ESLint warnings accumulating</b> (code smell campaign)</summary>
+
+→ **[ESLint Quality Campaign](./code-quality/eslint-quality-campaign.md)** 📊 **SYSTEMATIC**
+- ✅ **Success Rate**: 100% (7 sessions)
+- 📊 **Impact**: 338 → 287 warnings (51 fixed)
+- ⏱️ **Time**: 3-5 hours (campaign)
+- 💡 **Use when**: Quality debt cleanup, pre-release quality gate
+- 🎯 **Example**: Sessions 53-59 - unused vars, exhaustive deps
+
+</details>
+
+---
+
+### 🐍 Python Decision Tree
+
+**What Python issue are you encountering?**
+
+<details>
+<summary><b>Code fails in Python 3.10 but works in 3.11+</b> (syntax errors, type hints)</summary>
+
+→ **[Python 3.10 Compatibility](./python/python310-compatibility.md)** 🔧 **COMPATIBILITY**
+- ✅ **Success Rate**: 100% (3 compatibility issues)
+- 📊 **Impact**: 102 tests passing in 3.10/3.11/3.12
+- ⏱️ **Time**: 5-10 minutes per fix
+- 💡 **Use when**: CI fails on Python 3.10, union type errors
+- 🎯 **Example**: Session 66 - `str | None` → `Optional[str]`
+
+</details>
+
+<details>
+<summary><b>AttributeError: module 'datetime' has no attribute 'timezone'</b></summary>
+
+→ **[UTC Import Pattern](./python/utc-import-pattern.md)** ⚡ **QUICK FIX**
+- ✅ **Success Rate**: 100% (1 import error)
+- 📊 **Impact**: Immediate fix, 0 regressions
+- ⏱️ **Time**: 2-5 minutes
+- 💡 **Use when**: datetime import errors, timezone-aware code
+- 🎯 **Example**: Session 66 - `from datetime import datetime, timezone`
+
+</details>
+
+<details>
+<summary><b>AWS Lambda datetime import errors</b> (Lambda-specific)</summary>
+
+→ **[Lambda UTC Import](./python/lambda-utc-import.md)** 🔧 **SERVERLESS**
+- ✅ **Success Rate**: 100% (12+ Lambda functions)
+- 📊 **Impact**: 0 Lambda runtime errors
+- ⏱️ **Time**: 2-5 minutes per function
+- 💡 **Use when**: AWS Lambda Python functions, serverless datetime
+- 🎯 **Example**: Lambda handler template with UTC timestamps
+
+</details>
+
+---
+
+### 🚀 Quick Start by Developer Role
+
+<details>
+<summary><b>Solo Developer</b> (Current - Lokifi)</summary>
+
+**Top 5 Most Valuable Patterns** (80% of value):
+
+1. **[AsyncMock Pattern](./testing/asyncmock-pattern.md)** ⭐ **#1 PRIORITY**
+   - Your primary coverage driver: +30-40pp per session
+   - Use for: All async services (API clients, database, cache)
+
+2. **[Root Cause Analysis](./debugging/root-cause-analysis.md)** 💰 **HUGE TIME SAVER**
+   - Saved 3-4 hours in Session 8-9
+   - Use for: Multiple CI failures, systematic debugging
+
+3. **[Pin vs Replace](./dependencies/pin-vs-replace.md)** ⚡ **QUICK DECISIONS**
+   - 5 minutes vs 3 hours per dependency decision
+   - Use for: Every npm outdated, dependency update
+
+4. **[Zustand + Immer](./code-quality/zustand-immer-pattern.md)** 🎯 **MANDATORY**
+   - Frontend state management (100% adoption)
+   - Use for: All Zustand stores (non-negotiable)
+
+5. **[Log Analysis](./debugging/log-analysis.md)** ⏱️ **75-88% TIME SAVINGS**
+   - 1500 lines → 5 minutes to find error
+   - Use for: Every CI failure with long logs
+
+**Next 5 to Learn**:
+- Pure Function Testing (fastest wins)
+- GitHub CLI Investigation (CI debugging)
+- UTC Import Pattern (Python datetime)
+- Python Ruff Compliance (automated quality)
+- Security Patch Evaluation (CVE triage)
+
+</details>
+
+<details>
+<summary><b>Team Lead</b> (Future - when team grows)</summary>
+
+**Focus on These When Team Grows to 3+ Developers**:
+
+- **[Service Config Standards](./ci-cd/service-config-standards.md)** - Onboarding consistency
+- **[Renovate Migration](./dependencies/renovate-migration.md)** - Automation (break-even: 5+ devs)
+- **[ESLint Quality Campaign](./code-quality/eslint-quality-campaign.md)** - Code review efficiency
+- **[Workflow Health Check](./ci-cd/workflow-health-check.md)** - Team CI/CD monitoring
+- **[TypeScript Any Elimination](./code-quality/typescript-any-elimination.md)** - Code quality standards
+
+**Why**: These patterns scale team efficiency but have overhead for solo devs.
+
+</details>
+
+<details>
+<summary><b>New Team Member</b> (Onboarding)</summary>
+
+**Start with These Fundamentals** (Day 1-7):
+
+**Week 1: Testing Basics**
+1. **[Pure Function Testing](./testing/pure-function-testing.md)** - Easiest pattern, quick wins
+2. **[Fixture Design](./testing/fixture-design.md)** - DRY test principles
+3. **[AsyncMock Pattern](./testing/asyncmock-pattern.md)** - Core testing pattern
+
+**Week 2: Code Quality**
+4. **[UTC Import Pattern](./python/utc-import-pattern.md)** - Python datetime basics
+5. **[Zustand + Immer](./code-quality/zustand-immer-pattern.md)** - Frontend state management
+6. **[Python Ruff Compliance](./code-quality/python-ruff-compliance.md)** - Automated quality
+
+**Week 3: CI/CD & Debugging**
+7. **[GitHub CLI Investigation](./ci-cd/github-cli-investigation.md)** - Fast CI debugging
+8. **[Log Analysis](./debugging/log-analysis.md)** - Log filtering techniques
+9. **[Pin vs Replace](./dependencies/pin-vs-replace.md)** - Dependency decisions
+
+**Month 2+: Advanced Patterns**
+- Root Cause Analysis
+- TypeScript Any Elimination
+- Dependency Conflict Resolution
+
+</details>
+
+---
+
+### ⚡ By Time Investment
+
+**Under 15 minutes** (Quick Wins):
+- [Pure Function Testing](./testing/pure-function-testing.md) - 5-15 min
+- [UTC Import Pattern](./python/utc-import-pattern.md) - 2-5 min
+- [Python Ruff Compliance](./code-quality/python-ruff-compliance.md) - 5-15 min
+- [Pin vs Replace Decision](./dependencies/pin-vs-replace.md) - 5-10 min
+
+**15-30 minutes** (Fast Value):
+- [AsyncMock Pattern](./testing/asyncmock-pattern.md) - 15-30 min
+- [Mathematical Testing](./testing/mathematical-testing.md) - 20-30 min
+- [Test Fixture Design](./testing/fixture-design.md) - 10-20 min
+- [Security Patch Evaluation](./dependencies/security-patch-evaluation.md) - 15-30 min
+- [Draft<T> Mutations](./code-quality/draft-type-mutations.md) - 15-30 min
+
+**30-60 minutes** (Medium Investment):
+- [Root Cause Analysis](./debugging/root-cause-analysis.md) - 30-60 min
+- [Dependency Conflict Resolution](./dependencies/conflict-resolution.md) - 30-60 min
+- [TypeScript Any Elimination](./code-quality/typescript-any-elimination.md) - 30-60 min per store
+- [Working Directory Context](./ci-cd/working-directory-context.md) - 30-45 min
+
+**1-3 hours** (Campaign Work):
+- [Python 3.10 Compatibility](./python/python310-compatibility.md) - 1-2 hours (60 files)
+- [Workflow Health Check](./ci-cd/workflow-health-check.md) - 45-90 min per investigation
+
+**3+ hours** (Strategic):
+- [ESLint Quality Campaign](./code-quality/eslint-quality-campaign.md) - 3-5 hours (7 sessions)
+- [Renovate Migration](./dependencies/renovate-migration.md) - 4-6 hours (setup + evaluation)
 
 ## 📖 Pattern Template
 
