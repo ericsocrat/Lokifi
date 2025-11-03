@@ -111,9 +111,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: 🛡️ Run Quality Gates (test-runner.ps1)
-        run: |
-          pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 `
-            -PreCommit -CIMode -Timeout 600
+        run: pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 -PreCommit -CIMode -Timeout 600
         env:
           NODE_ENV: test
           CI: true

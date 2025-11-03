@@ -79,9 +79,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: 🧪 Run tests with coverage (test-runner.ps1)
-        run: |
-          pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 `
-            -Coverage -CIMode -Timeout 600
+        run: pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 -Coverage -CIMode -Timeout 600
         env:
           NODE_ENV: test
           CI: true
