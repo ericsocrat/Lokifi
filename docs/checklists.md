@@ -29,7 +29,7 @@
 | Tool | Pre-commit Hook | Pre-push Hook | CI Workflows | Status |
 |------|----------------|---------------|--------------|--------|
 | `test-runner.ps1` | ✅ Active | ✅ Active | ⚠️ Local Only (cross-platform limitations) | Partial |
-| `security-scanner.ps1` | ❌ Not integrated | ❌ Not integrated | ❌ Not integrated | None |
+| `security-scanner.ps1` | ✅ Active (-Quick mode) | ❌ Not integrated | ⚠️ Local Only (same limitations) | Partial |
 | `setup-precommit-hooks.ps1` | N/A (installer) | N/A (installer) | N/A (installer) | Complete |
 | `codebase-analyzer.ps1` | N/A (manual) | N/A (manual) | N/A (manual) | N/A |
 | `bypass-hooks.ps1` | N/A (emergency) | N/A (emergency) | N/A (emergency) | N/A |
@@ -52,6 +52,7 @@
 
 **Installation**: `.\tools\setup-precommit-hooks.ps1`
 **Status**: ✅ Installed and tested (November 3, 2025)
+**Update**: ✅ Enhanced with security-scanner.ps1 integration (November 3, 2025)
 
 #### test-runner.ps1 → CI Workflows ⚠️ NOT RECOMMENDED
 **Status**: ⚠️ Local Only - Cross-platform compatibility limitations (November 3, 2025)
@@ -77,11 +78,25 @@ After testing CI integration, discovered PowerShell cross-platform issues:
 - **Complexity**: High (module loading, path normalization, cross-platform testing)
 - **ROI**: Low (CI already has simple, working npm/pytest commands)
 
+#### security-scanner.ps1 → Pre-commit Hook ✅ COMPLETE
+**Status**: ✅ Integrated into pre-commit hook (November 3, 2025)
+**Implementation**:
+- Runs after test-runner.ps1 quality gates pass
+- Uses `-Quick` mode for fast scans (~10-20 seconds)
+- Blocks commits with security issues
+- Provides actionable guidance for fixes
+
+**Benefits**:
+- Security scoring before every commit
+- Early detection of code pattern issues (eval, innerHTML, hardcoded secrets)
+- Consistent security baseline tracking
+- Local-only (Windows PowerShell tool, proven strategy)
+
 ### ⚠️ Pending Integrations
 
-#### security-scanner.ps1 → CI Workflows & Hooks
-**Problem**: Custom npm audit → SARIF conversion in `security.yml`, no pre-commit scanning
-**Impact**: Missing security scoring, baseline tracking, code pattern analysis
+#### security-scanner.ps1 → CI Workflows
+**Problem**: Custom npm audit → SARIF conversion in `security.yml`, could be replaced
+**Impact**: Missing security scoring, baseline tracking, code pattern analysis in CI
 
 **Current approach** (`.github/workflows/security.yml`):
 ```yaml
@@ -89,7 +104,7 @@ After testing CI integration, discovered PowerShell cross-platform issues:
 - run: node convert-npm-audit.js  # Custom SARIF converter
 ```
 
-**Recommended approach**:
+**Recommended approach** (if pursuing CI integration):
 ```yaml
 - name: Run security scanner
   run: |
@@ -103,18 +118,13 @@ After testing CI integration, discovered PowerShell cross-platform issues:
 - Code pattern detection (eval, innerHTML, hardcoded secrets)
 - Integrated with CodeQL and dependency scanning
 
-**Pre-commit integration** (add to `.git/hooks/pre-commit`):
-```bash
-# Quick security scan before commit
-if $SHELL_CMD -ExecutionPolicy Bypass -File "$REPO_ROOT/tools/security-scanner.ps1" -Quick -CIMode; then
-    echo "✅ Security scan passed"
-else
-    echo "❌ Security issues detected"
-    exit 1
-fi
-```
+**Evaluation Needed**:
+- Same PowerShell cross-platform limitations as test-runner.ps1
+- Current npm audit → SARIF conversion already works
+- ROI analysis: 30-45 minutes integration + potential compatibility issues
+- Recommendation: Keep local-only (pre-commit already integrated ✅)
 
-**Estimated time**: 30-45 minutes (workflow update + hook modification)
+**Estimated time**: 30-45 minutes (workflow update) + compatibility analysis
 
 ### 🎯 Integration Plan
 
@@ -124,13 +134,17 @@ fi
 - [x] Test pre-push comprehensive checks
 - [x] Document emergency bypass procedure
 
-**Phase 2: CI/CD Workflows** 🔄 IN PROGRESS
-- [x] Integrate `test-runner.ps1` into `ci.yml`, `coverage.yml` (November 3, 2025)
-- [ ] Integrate `test-runner.ps1` into `integration.yml` (optional - backend focused)
-- [ ] Integrate `security-scanner.ps1` into `security.yml`
-- [ ] Add security-scanner to pre-commit hook
-- [ ] Validate all workflows pass with new tool integration
-- [ ] Update documentation (`/docs/ci-cd/overview.md`)
+**Phase 2: CI/CD Workflows** ✅ COMPLETE (Local-only strategy)
+- [x] Evaluate `test-runner.ps1` CI integration (November 3, 2025)
+- [x] Decision: Keep local-only due to cross-platform limitations
+- [x] Add `security-scanner.ps1` to pre-commit hook (November 3, 2025)
+- [x] Validate hook execution with test commit
+- [x] Update documentation (`checklists.md`, `tools/README.md`)
+
+**Future Considerations** (Optional):
+- [ ] Evaluate `security-scanner.ps1` CI integration (same limitations as test-runner.ps1)
+- [ ] Consider Windows-only CI runner for PowerShell tools (infrastructure overhead)
+- [ ] Monitor CI health and pass rates post-revert
 
 **Phase 3: Monitoring & Refinement** ⏳ PENDING
 - [ ] Track test execution times (pre/post integration)

@@ -132,6 +132,7 @@ fi
 # Get the repository root
 REPO_ROOT=`$(git rev-parse --show-toplevel)`
 PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1"
+SECURITY_SCRIPT="`$REPO_ROOT/tools/security-scanner.ps1"
 
 # Run enhanced protection with relaxed/strict settings for pre-commit
 if [ -f "`$PROTECTION_SCRIPT" ]; then
@@ -139,9 +140,35 @@ if [ -f "`$PROTECTION_SCRIPT" ]; then
 
     if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -PreCommit -CoverageThreshold $preCommitCoverage $enforceStrictParam; then
         echo ""
-        echo "✅ All quality gates passed! Commit allowed."
+        echo "✅ Quality gates passed!"
         echo ""
-        exit 0
+        
+        # Run security scan (quick mode for pre-commit)
+        if [ -f "`$SECURITY_SCRIPT" ]; then
+            echo "🔒 Running security scan..."
+            
+            if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$SECURITY_SCRIPT" -Quick -CIMode; then
+                echo ""
+                echo "✅ Security scan passed! Commit allowed."
+                echo ""
+                exit 0
+            else
+                echo ""
+                echo "⚠️  Security issues detected!"
+                echo ""
+                echo "🔧 To review issues:"
+                echo "   • Run: .\tools\security-scanner.ps1 -Deep"
+                echo "   • Review security report and fix issues"
+                echo "   • Or use: git commit --no-verify (skip hooks - use carefully!)"
+                echo ""
+                exit 1
+            fi
+        else
+            echo "⚠️  Security scanner not found. Skipping security scan."
+            echo "✅ Commit allowed."
+            echo ""
+            exit 0
+        fi
     else
         echo ""
         echo "❌ Quality gates failed!"

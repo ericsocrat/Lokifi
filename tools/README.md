@@ -66,9 +66,10 @@ npm install
 - **Note**: Designed for Windows/local development. CI uses direct npm/pytest commands for cross-platform compatibility.
 
 **security-scanner.ps1** - Security vulnerability scanning:
-- ⚠️ **Pre-commit hooks** - NOT YET INTEGRATED
-- ⚠️ **CI/CD workflows** - NOT YET INTEGRATED (uses custom npm audit conversion)
-- **Features**: Security scoring, baseline tracking, code pattern analysis, `-CIMode` flag ready
+- ✅ **Pre-commit hooks** - Active with `-Quick` mode for fast scans
+- ⚠️ **CI/CD workflows** - Local only (same PowerShell limitations as test-runner.ps1)
+- **Features**: Security scoring, baseline tracking, code pattern analysis, `-CIMode` flag, `-Quick` for pre-commit
+- **Note**: Integrated into pre-commit workflow (November 3, 2025). Runs after quality gates pass.
 
 **setup-precommit-hooks.ps1** - Git hook management:
 - ✅ **Installed** - 3/3 hooks active (pre-commit, pre-push, commit-msg)
@@ -94,10 +95,20 @@ npm install
 
 ### 🎯 Next Integration Steps
 
-**Priority 1**: Add security-scanner.ps1 to pre-commit hook (~15-20 min)
-- Local-only integration (Windows PowerShell tool)
-- Add `-Quick` mode to pre-commit hook for fast scans
-- Benefits: Security scoring, baseline tracking before commits
+**Completed** ✅:
+- ~~Add security-scanner.ps1 to pre-commit hook~~ - Integrated (November 3, 2025)
+- Local-only integration strategy proven effective
+- Pre-commit workflow: test-runner.ps1 → security-scanner.ps1 → commit
+
+**Priority 1**: Monitor hook performance in real-world usage (~ongoing)
+- Track execution times (quality gates + security scan)
+- Gather developer feedback
+- Optimize coverage thresholds based on data
+
+**Optional**: Evaluate security-scanner.ps1 CI integration (~30-45 min + analysis)
+- Same cross-platform limitations as test-runner.ps1
+- Current npm audit → SARIF conversion already works
+- ROI analysis needed before pursuing
 
 **Priority 2**: Evaluate security-scanner.ps1 CI integration (~30-45 min)
 - Note: Same PowerShell cross-platform limitations as test-runner.ps1
