@@ -1527,8 +1527,6 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 ## 📚 Pattern Library
 
-**Location**: `/docs/architecture/patterns/` ⭐
-
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
 **22 Battle-Tested Patterns** from 66+ sessions with proven success metrics:
@@ -1567,12 +1565,12 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Root Cause Analysis** - 100% success, Session 33 (7 failures→2 fixes)
 - **Log Analysis** - 75-88% time savings (10+ sessions)
 
-**How to find the right pattern**: Check `/docs/architecture/patterns/README.md` for the Pattern Selection Guide with interactive decision trees:
-- **Testing**: "What are you testing?" → 4 pattern options
-- **Debugging**: "What type of failure?" → 3 debugging approaches
-- **Dependencies**: "What dependency issue?" → 4 dependency scenarios
-- **Code Quality**: "What code quality issue?" → 5 quality patterns
-- **Python**: "What Python issue?" → 3 Python-specific patterns
+**Pattern Selection Guide**:
+- **Testing**: "What are you testing?" → AsyncMock, Pure Functions, Mathematical Testing, Fixtures
+- **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
+- **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
+- **Code Quality**: "What code quality issue?" → TypeScript Any, Zustand+Immer, Python Ruff, ESLint
+- **Python**: "What Python issue?" → Python 3.10 Compatibility, UTC Import, Lambda UTC
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
@@ -1581,7 +1579,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
-- **Pattern Library**: `/docs/architecture/patterns/` - 22 battle-tested patterns ⭐ NEW!
+- **Pattern Library**: See "Pattern Library" section above - 22 battle-tested patterns ⭐
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
 - **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
