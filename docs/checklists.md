@@ -28,7 +28,7 @@
 
 | Tool | Pre-commit Hook | Pre-push Hook | CI Workflows | Status |
 |------|----------------|---------------|--------------|--------|
-| `test-runner.ps1` | ✅ Active | ✅ Active | ✅ Integrated (ci.yml, coverage.yml) | Complete |
+| `test-runner.ps1` | ✅ Active | ✅ Active | ⚠️ Local Only (cross-platform limitations) | Partial |
 | `security-scanner.ps1` | ❌ Not integrated | ❌ Not integrated | ❌ Not integrated | None |
 | `setup-precommit-hooks.ps1` | N/A (installer) | N/A (installer) | N/A (installer) | Complete |
 | `codebase-analyzer.ps1` | N/A (manual) | N/A (manual) | N/A (manual) | N/A |
@@ -53,38 +53,29 @@
 **Installation**: `.\tools\setup-precommit-hooks.ps1`
 **Status**: ✅ Installed and tested (November 3, 2025)
 
-#### test-runner.ps1 → CI Workflows ✅ COMPLETE
-**Status**: ✅ Integrated into `ci.yml` and `coverage.yml` (November 3, 2025)
+#### test-runner.ps1 → CI Workflows ⚠️ NOT RECOMMENDED
+**Status**: ⚠️ Local Only - Cross-platform compatibility limitations (November 3, 2025)
 
-**Implementation** (`.github/workflows/ci.yml`):
-```yaml
-- name: 🛡️ Run Quality Gates (test-runner.ps1)
-  run: |
-    pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 `
-      -PreCommit -CIMode -Timeout 600
-  env:
-    NODE_ENV: test
-    CI: true
-```
+**Evaluation Result**:
+After testing CI integration, discovered PowerShell cross-platform issues:
+- ❌ `Export-ModuleMember` cmdlet incompatible with non-module execution in CI
+- ❌ Windows path formats (`.\venv\Scripts\pip.exe`) don't work on Linux runners
+- ❌ PowerShell module system designed for Windows/local development
 
-**Implementation** (`.github/workflows/coverage.yml`):
-```yaml
-- name: 🧪 Run tests with coverage (test-runner.ps1)
-  run: |
-    pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 `
-      -Coverage -CIMode -Timeout 600
-  env:
-    NODE_ENV: test
-    CI: true
-```
+**Decision**: Keep test-runner.ps1 for **local hooks only**
+- ✅ **Local pre-commit/pre-push**: Works perfectly, provides unified orchestration
+- ✅ **CI/CD workflows**: Use direct npm/pytest commands for cross-platform reliability
 
-**Benefits Achieved**:
-- ✅ Unified test orchestration across local + CI
-- ✅ Environment validation (Python, Node.js, npm, git)
-- ✅ File logging with timestamps (`infra/logs/test-runner.log`)
-- ✅ Machine-readable JSON output (`-CIMode`)
-- ✅ Replaced 5 separate npm commands with single orchestrated call
-- ✅ Consistent test execution between local pre-commit hooks and CI
+**Benefits of Local-Only Approach**:
+- ✅ Developers get consistent quality gates via pre-commit/pre-push hooks
+- ✅ CI remains simple, fast, and cross-platform compatible
+- ✅ No complex PowerShell Core compatibility layer needed
+- ✅ Tool optimized for its primary use case (local development)
+
+**Alternative Considered**: PowerShell Core compatibility refactoring
+- **Estimated effort**: 2-4 hours for module system redesign
+- **Complexity**: High (module loading, path normalization, cross-platform testing)
+- **ROI**: Low (CI already has simple, working npm/pytest commands)
 
 ### ⚠️ Pending Integrations
 

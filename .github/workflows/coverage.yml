@@ -78,11 +78,10 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: 🧪 Run tests with coverage (test-runner.ps1)
-        run: pwsh -ExecutionPolicy Bypass -File ../../tools/test-runner.ps1 -Coverage -CIMode -Timeout 600
+      - name: 🧪 Run tests with coverage
+        run: npm run test:coverage
         env:
           NODE_ENV: test
-          CI: true
         continue-on-error: ${{ matrix.node-version != '22' }} # Only fail on primary version
 
       - name: Upload coverage artifact

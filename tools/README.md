@@ -61,8 +61,9 @@ npm install
 **test-runner.ps1** - Comprehensive test orchestration:
 - ✅ **Pre-commit hooks** - Runs with `-PreCommit` flag (15% coverage threshold)
 - ✅ **Pre-push hooks** - Runs with `-PreCommit -GenerateReport` (20% coverage threshold)
-- ✅ **CI/CD workflows** - Integrated into `ci.yml` and `coverage.yml` (November 3, 2025)
+- ⚠️ **CI/CD workflows** - Local only (PowerShell cross-platform limitations)
 - **Features**: Environment validation, logging, parallel execution, smart test selection, CI mode with JSON output
+- **Note**: Designed for Windows/local development. CI uses direct npm/pytest commands for cross-platform compatibility.
 
 **security-scanner.ps1** - Security vulnerability scanning:
 - ⚠️ **Pre-commit hooks** - NOT YET INTEGRATED
@@ -93,14 +94,20 @@ npm install
 
 ### 🎯 Next Integration Steps
 
-**Priority 1**: Integrate security-scanner.ps1 into CI workflows (~30-45 min)
-- Update `security.yml` to use `security-scanner.ps1 -Deep -CIMode`
+**Priority 1**: Add security-scanner.ps1 to pre-commit hook (~15-20 min)
+- Local-only integration (Windows PowerShell tool)
 - Add `-Quick` mode to pre-commit hook for fast scans
-- Benefits: Security scoring, baseline tracking vs current custom npm audit
+- Benefits: Security scoring, baseline tracking before commits
 
-**Priority 2**: Expand test-runner.ps1 to integration.yml (optional, ~15-20 min)
-- Backend-focused workflow may benefit from unified orchestration
-- Consider if backend tests need environment validation layer
+**Priority 2**: Evaluate security-scanner.ps1 CI integration (~30-45 min)
+- Note: Same PowerShell cross-platform limitations as test-runner.ps1
+- Options: Windows-only CI runner, PowerShell Core compatibility fixes, or keep local-only
+- Consider ROI: Current custom npm audit → SARIF conversion works in CI
+
+**Lessons Learned**: PowerShell Tools in CI
+- ✅ Excellent for local development (pre-commit/pre-push hooks)
+- ⚠️ Cross-platform challenges in Linux CI runners
+- 💡 Pragmatic approach: Keep tools local, use simple commands in CI
 
 **Documentation**: See `/docs/checklists.md` → "Tool Integration & CI/CD" section
 
