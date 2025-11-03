@@ -1913,7 +1913,7 @@ The Lokifi Coverage MCP Server provides instant access to test coverage metrics 
 
 **Location**: `/tools/mcp-coverage-server.js`
 **Data Source**: `/apps/frontend/coverage-dashboard/data.json`
-**Documentation**: `/tools/MCP_COVERAGE_SERVER.md`
+**Documentation**: `/docs/guides/mcp-coverage-server.md`
 
 **VS Code Settings** (already configured in `.vscode/settings.json`):
 ```json
@@ -1986,7 +1986,7 @@ npm run test:coverage
 2. Check Node.js version: `node --version` (≥18.0.0 required)
 3. Verify installation: `cd tools && npm list @modelcontextprotocol/sdk`
 
-**See full documentation**: `/tools/MCP_COVERAGE_SERVER.md`
+**See full documentation**: `/docs/guides/mcp-coverage-server.md`
 
 ## Tips for Best Results
 
