@@ -965,6 +965,368 @@ class TestClickNotification:
 
 
 # ============================================================================
+# ANALYTICS, CLEANUP & EVENT SYSTEM TESTS (Gap 3)
+# ============================================================================
+
+
+class TestNotificationStats:
+    """Test suite for get_notification_stats comprehensive analytics"""
+
+    @pytest.mark.asyncio
+    async def test_get_notification_stats_success(
+        self, notification_service, sample_user_id, mock_db_session
+    ):
+        """Test successful get_notification_stats"""
+        # Create mock notifications with various states
+        now = datetime.now(timezone.utc)
+        notifications = []
+        
+        for i in range(5):
+            notification = Mock(spec=Notification)
+            notification.type = "FOLLOW" if i % 2 == 0 else "LIKE"
+            notification.priority = "NORMAL"
+            notification.is_read = i < 3  # First 3 are read
+            notification.is_dismissed = i == 4  # Last one dismissed
+            notification.is_delivered = True
+            notification.clicked_at = now if i < 2 else None  # First 2 clicked
+            notification.created_at = now
+            notification.read_at = now if i < 3 else None
+            notifications.append(notification)
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock all count queries
+            def make_scalar_mock(value):
+                mock_result = Mock()
+                mock_result.scalar.return_value = value
+                return mock_result
+
+            # Mock execute calls for various counts
+            mock_db_session.execute.side_effect = [
+                make_scalar_mock(5),  # total_count
+                make_scalar_mock(2),  # unread_count
+                make_scalar_mock(1),  # dismissed_count
+                make_scalar_mock(5),  # delivered_count
+                make_scalar_mock(2),  # clicked_count
+                Mock(scalars=Mock(return_value=Mock(all=Mock(return_value=notifications))))  # all_notifications
+            ]
+
+            result = await notification_service.get_notification_stats(sample_user_id)
+
+            assert isinstance(result, NotificationStats)
+            assert result.total_notifications == 5
+            assert result.unread_count == 2
+            assert result.read_count == 3
+            assert result.by_type["FOLLOW"] == 3
+            assert result.by_type["LIKE"] == 2
+
+    @pytest.mark.asyncio
+    async def test_get_notification_stats_error_handling(
+        self, notification_service, sample_user_id, mock_db_session
+    ):
+        """Test get_notification_stats error handling"""
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+            mock_db_session.execute.side_effect = Exception("Database error")
+
+            result = await notification_service.get_notification_stats(sample_user_id)
+
+            # Should return empty stats on error
+            assert isinstance(result, NotificationStats)
+            assert result.total_notifications == 0
+            assert result.unread_count == 0
+
+
+class TestCleanupExpired:
+    """Test suite for cleanup_expired_notifications"""
+
+    @pytest.mark.asyncio
+    async def test_cleanup_expired_notifications_success(
+        self, notification_service, mock_db_session
+    ):
+        """Test successful cleanup_expired_notifications"""
+        # Create expired notifications
+        past_time = datetime(2020, 1, 1, tzinfo=timezone.utc)
+        expired_notifications = []
+        
+        for i in range(3):
+            notification = Mock(spec=Notification)
+            notification.id = str(uuid.uuid4())
+            notification.expires_at = past_time
+            expired_notifications.append(notification)
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock query result with expired notifications
+            mock_result = Mock()
+            mock_scalars = Mock()
+            mock_scalars.all.return_value = expired_notifications
+            mock_result.scalars.return_value = mock_scalars
+            mock_db_session.execute.return_value = mock_result
+            mock_db_session.delete = AsyncMock()
+
+            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                result = await notification_service.cleanup_expired_notifications()
+
+            assert result == 3
+            assert mock_db_session.delete.call_count == 3
+
+    @pytest.mark.asyncio
+    async def test_cleanup_expired_notifications_none_expired(
+        self, notification_service, mock_db_session
+    ):
+        """Test cleanup_expired_notifications with no expired notifications"""
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock empty result
+            mock_result = Mock()
+            mock_scalars = Mock()
+            mock_scalars.all.return_value = []
+            mock_result.scalars.return_value = mock_scalars
+            mock_db_session.execute.return_value = mock_result
+
+            result = await notification_service.cleanup_expired_notifications()
+
+            assert result == 0
+
+    @pytest.mark.asyncio
+    async def test_cleanup_expired_notifications_error_handling(
+        self, notification_service, mock_db_session
+    ):
+        """Test cleanup_expired_notifications error handling"""
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+            mock_db_session.execute.side_effect = Exception("Database error")
+
+            result = await notification_service.cleanup_expired_notifications()
+
+            assert result == 0
+
+
+class TestPreferenceLogic:
+    """Test suite for _get_user_preferences and _should_deliver_notification"""
+
+    @pytest.mark.asyncio
+    async def test_get_user_preferences_success(
+        self, notification_service, sample_user_id, mock_preference
+    ):
+        """Test _get_user_preferences success"""
+        mock_session = AsyncMock()
+        mock_result = Mock()
+        mock_result.scalar_one_or_none.return_value = mock_preference
+        mock_session.execute.return_value = mock_result
+
+        result = await notification_service._get_user_preferences(
+            mock_session, sample_user_id
+        )
+
+        assert result == mock_preference
+
+    @pytest.mark.asyncio
+    async def test_get_user_preferences_not_found(
+        self, notification_service, sample_user_id
+    ):
+        """Test _get_user_preferences with no preferences"""
+        mock_session = AsyncMock()
+        mock_result = Mock()
+        mock_result.scalar_one_or_none.return_value = None
+        mock_session.execute.return_value = mock_result
+
+        result = await notification_service._get_user_preferences(
+            mock_session, sample_user_id
+        )
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_get_user_preferences_error_handling(
+        self, notification_service, sample_user_id
+    ):
+        """Test _get_user_preferences error handling"""
+        mock_session = AsyncMock()
+        mock_session.execute.side_effect = Exception("Database error")
+
+        result = await notification_service._get_user_preferences(
+            mock_session, sample_user_id
+        )
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_should_deliver_notification_no_preferences(
+        self, notification_service, sample_notification_data
+    ):
+        """Test _should_deliver_notification with no preferences (default allow)"""
+        result = await notification_service._should_deliver_notification(
+            None, sample_notification_data
+        )
+
+        assert result is True
+
+    @pytest.mark.asyncio
+    async def test_should_deliver_notification_in_app_disabled(
+        self, notification_service, sample_notification_data, mock_preference
+    ):
+        """Test _should_deliver_notification with in-app disabled"""
+        mock_preference.in_app_enabled = False
+
+        result = await notification_service._should_deliver_notification(
+            mock_preference, sample_notification_data
+        )
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_should_deliver_notification_type_preference_blocked(
+        self, notification_service, sample_notification_data, mock_preference
+    ):
+        """Test _should_deliver_notification blocked by type preference"""
+        mock_preference.in_app_enabled = True
+        mock_preference.get_type_preference = Mock(return_value=False)
+
+        result = await notification_service._should_deliver_notification(
+            mock_preference, sample_notification_data
+        )
+
+        assert result is False
+
+    @pytest.mark.asyncio
+    async def test_should_deliver_notification_quiet_hours_urgent(
+        self, notification_service, sample_user_id, mock_preference
+    ):
+        """Test _should_deliver_notification during quiet hours with urgent priority"""
+        mock_preference.in_app_enabled = True
+        mock_preference.get_type_preference = Mock(return_value=True)
+        mock_preference.is_in_quiet_hours = Mock(return_value=True)
+
+        # Urgent notification should pass through quiet hours
+        urgent_data = NotificationData(
+            user_id=sample_user_id,
+            type=NotificationType.SYSTEM_ALERT,
+            title="Urgent",
+            priority=NotificationPriority.URGENT
+        )
+
+        result = await notification_service._should_deliver_notification(
+            mock_preference, urgent_data
+        )
+
+        assert result is True
+
+
+class TestDeliveryAndEvents:
+    """Test suite for _deliver_notification and event system"""
+
+    @pytest.mark.asyncio
+    async def test_deliver_notification_success(
+        self, notification_service, mock_db_session, mock_notification, sample_notification_data
+    ):
+        """Test _deliver_notification success"""
+        mock_notification.mark_as_delivered = Mock()
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                await notification_service._deliver_notification(
+                    mock_notification, sample_notification_data
+                )
+
+            mock_notification.mark_as_delivered.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_deliver_notification_error_handling(
+        self, notification_service, mock_db_session, mock_notification, sample_notification_data
+    ):
+        """Test _deliver_notification error handling"""
+        mock_notification.mark_as_delivered = Mock(side_effect=Exception("Delivery error"))
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Should not raise exception
+            await notification_service._deliver_notification(
+                mock_notification, sample_notification_data
+            )
+
+    @pytest.mark.asyncio
+    async def test_emit_event_async_handler(self, notification_service):
+        """Test _emit_event with async handler"""
+        async_handler = AsyncMock()
+        notification_service.add_event_handler(NotificationEvent.CREATED, async_handler)
+
+        await notification_service._emit_event(NotificationEvent.CREATED, {"test": "data"})
+
+        async_handler.assert_called_once_with({"test": "data"})
+
+    @pytest.mark.asyncio
+    async def test_emit_event_sync_handler(self, notification_service):
+        """Test _emit_event with sync handler"""
+        sync_handler = Mock()
+        notification_service.add_event_handler(NotificationEvent.READ, sync_handler)
+
+        await notification_service._emit_event(NotificationEvent.READ, {"test": "data"})
+
+        sync_handler.assert_called_once_with({"test": "data"})
+
+    @pytest.mark.asyncio
+    async def test_emit_event_handler_error(self, notification_service):
+        """Test _emit_event with handler that raises exception"""
+        faulty_handler = Mock(side_effect=Exception("Handler error"))
+        notification_service.add_event_handler(NotificationEvent.DISMISSED, faulty_handler)
+
+        # Should not raise exception, just log error
+        await notification_service._emit_event(NotificationEvent.DISMISSED, {"test": "data"})
+
+    def test_add_event_handler(self, notification_service):
+        """Test add_event_handler"""
+        handler = Mock()
+        notification_service.add_event_handler(NotificationEvent.CLICKED, handler)
+
+        assert NotificationEvent.CLICKED in notification_service.event_handlers
+        assert handler in notification_service.event_handlers[NotificationEvent.CLICKED]
+
+    def test_remove_event_handler(self, notification_service):
+        """Test remove_event_handler"""
+        handler = Mock()
+        notification_service.add_event_handler(NotificationEvent.EXPIRED, handler)
+        notification_service.remove_event_handler(NotificationEvent.EXPIRED, handler)
+
+        assert handler not in notification_service.event_handlers[NotificationEvent.EXPIRED]
+
+    def test_remove_event_handler_not_found(self, notification_service):
+        """Test remove_event_handler with non-existent handler"""
+        handler = Mock()
+        
+        # Should not raise exception
+        notification_service.remove_event_handler(NotificationEvent.CREATED, handler)
+
+
+# ============================================================================
 # INTEGRATION TESTS
 # ============================================================================
 
