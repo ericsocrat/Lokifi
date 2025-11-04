@@ -15,6 +15,12 @@ describe('AuthProvider', () => {
 
   describe('initialization', () => {
     it('starts with loading state', () => {
+      server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        })
+      );
+
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
       });
@@ -149,6 +155,9 @@ describe('AuthProvider', () => {
 
     it('throws error on login failure', async () => {
       server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        }),
         http.post(`${API_URL}/api/auth/login`, () => {
           return HttpResponse.json({ detail: 'Invalid credentials' }, { status: 401 });
         })
@@ -264,6 +273,9 @@ describe('AuthProvider', () => {
 
     it('throws error on registration failure', async () => {
       server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        }),
         http.post(`${API_URL}/api/auth/register`, () => {
           return HttpResponse.json({ detail: 'Email already exists' }, { status: 400 });
         })
@@ -528,6 +540,12 @@ describe('AuthProvider', () => {
     });
 
     it('returns context value when used inside AuthProvider', () => {
+      server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        })
+      );
+
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
       });
@@ -543,6 +561,12 @@ describe('AuthProvider', () => {
 
   describe('renders children correctly', () => {
     it('renders child components', () => {
+      server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        })
+      );
+
       render(
         <AuthProvider>
           <div data-testid="child">Child Content</div>
