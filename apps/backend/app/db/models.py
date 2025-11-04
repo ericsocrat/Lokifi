@@ -10,7 +10,7 @@ __all__ = [
     "User",
 ]
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import (
     Boolean,
@@ -38,7 +38,7 @@ class User(Base):
     password_hash: Mapped[str | None] = mapped_column(String(255), nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
     bio: Mapped[str | None] = mapped_column(String(280), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     posts: Mapped[list[Post]] = relationship(back_populates="user", cascade="all, delete-orphan")
     following: Mapped[list[Follow]] = relationship(
@@ -60,7 +60,7 @@ class Follow(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     follower_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     followee_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     follower: Mapped[User] = relationship(foreign_keys=[follower_id], back_populates="following")
     followee: Mapped[User] = relationship(foreign_keys=[followee_id], back_populates="followers")
@@ -74,7 +74,7 @@ class Post(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     content: Mapped[str] = mapped_column(Text)
     symbol: Mapped[str | None] = mapped_column(String(24), index=True)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc), index=True)
 
     user: Mapped[User] = relationship(back_populates="posts")
 
@@ -90,8 +90,8 @@ class PortfolioPosition(Base):
     qty: Mapped[float] = mapped_column(Float)
     cost_basis: Mapped[float] = mapped_column(Float)
     tags: Mapped[str | None] = mapped_column(String(256), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc))
 
     user: Mapped[User] = relationship(back_populates="positions")
 
@@ -106,8 +106,8 @@ class AIThread(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     title: Mapped[str] = mapped_column(String(255))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     is_archived: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Relationships
@@ -138,7 +138,7 @@ class AIMessage(Base):
     token_count: Mapped[int | None] = mapped_column(
         Integer, nullable=True
     )  # Number of tokens in response
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at: Mapped[datetime | None] = mapped_column(
         DateTime, nullable=True
     )  # When AI finished generating
