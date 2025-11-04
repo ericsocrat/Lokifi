@@ -1,5 +1,5 @@
 import AlertPortal from '@/components/AlertPortal';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock AlertModal since we're testing the portal wrapper
@@ -45,7 +45,10 @@ describe('AlertPortal', () => {
       render(<AlertPortal />);
 
       // Dispatch the custom event
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
@@ -55,7 +58,10 @@ describe('AlertPortal', () => {
     it('should show Alert Modal content after event', async () => {
       render(<AlertPortal />);
 
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Alert Modal')).toBeInTheDocument();
@@ -65,7 +71,10 @@ describe('AlertPortal', () => {
     it('should pass open=true to AlertModal after event', async () => {
       render(<AlertPortal />);
 
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         const modal = screen.getByTestId('alert-modal');
@@ -85,13 +94,19 @@ describe('AlertPortal', () => {
       render(<AlertPortal />);
 
       // First event
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
       });
 
       // Second event (should still be open)
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
       });
@@ -103,7 +118,10 @@ describe('AlertPortal', () => {
       render(<AlertPortal />);
 
       // Open the modal
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
@@ -111,7 +129,9 @@ describe('AlertPortal', () => {
 
       // Click close button
       const closeButton = screen.getByText('Close Alert');
-      closeButton.click();
+      await act(async () => {
+        closeButton.click();
+      });
 
       await waitFor(() => {
         expect(screen.queryByTestId('alert-modal')).not.toBeInTheDocument();
@@ -121,7 +141,10 @@ describe('AlertPortal', () => {
     it('should pass onClose callback to AlertModal', async () => {
       render(<AlertPortal />);
 
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         const closeButton = screen.getByText('Close Alert');
@@ -133,13 +156,18 @@ describe('AlertPortal', () => {
       render(<AlertPortal />);
 
       // Open
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByText('Alert Modal')).toBeInTheDocument();
       });
 
       // Close
-      screen.getByText('Close Alert').click();
+      await act(async () => {
+        screen.getByText('Close Alert').click();
+      });
       await waitFor(() => {
         expect(screen.queryByText('Alert Modal')).not.toBeInTheDocument();
       });
@@ -192,16 +220,24 @@ describe('AlertPortal', () => {
       render(<AlertPortal />);
 
       // Open
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
       });
 
       // Close
-      screen.getByText('Close Alert').click();
+      await act(async () => {
+        screen.getByText('Close Alert').click();
+      });
 
       // Open again quickly
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
       });
@@ -236,13 +272,18 @@ describe('AlertPortal', () => {
       expect(screen.queryByTestId('alert-modal')).not.toBeInTheDocument();
 
       // Opens on event
-      window.dispatchEvent(new Event('lokifi:open-alert'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-alert'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('alert-modal')).toBeInTheDocument();
       });
 
       // Closes on button click
-      screen.getByText('Close Alert').click();
+      await act(async () => {
+        screen.getByText('Close Alert').click();
+      });
       await waitFor(() => {
         expect(screen.queryByTestId('alert-modal')).not.toBeInTheDocument();
       });
