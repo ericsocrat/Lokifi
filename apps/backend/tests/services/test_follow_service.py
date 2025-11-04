@@ -834,9 +834,7 @@ class TestGetFollowing:
     """Test get_following with pagination and batch_follow_status integration."""
 
     @pytest.mark.asyncio
-    async def test_get_following_with_data(
-        self, follow_service, mock_db_session, sample_user_ids
-    ):
+    async def test_get_following_with_data(self, follow_service, mock_db_session, sample_user_ids):
         """Test get_following returns following list with follow status."""
         user_id = sample_user_ids["user1"]
         following1_id = sample_user_ids["user2"]
@@ -873,7 +871,9 @@ class TestGetFollowing:
         ]  # user1 follows both
 
         mock_follows_you_result = MagicMock()
-        mock_follows_you_result.all.return_value = [(following1_id,)]  # Only following1 follows back
+        mock_follows_you_result.all.return_value = [
+            (following1_id,)
+        ]  # Only following1 follows back
 
         # Setup execute side_effects (4 queries)
         mock_db_session.execute.side_effect = [
@@ -911,9 +911,7 @@ class TestGetFollowing:
         assert following2.mutual_follow is False
 
     @pytest.mark.asyncio
-    async def test_get_following_pagination(
-        self, follow_service, mock_db_session, sample_user_ids
-    ):
+    async def test_get_following_pagination(self, follow_service, mock_db_session, sample_user_ids):
         """Test get_following pagination with page 2."""
         user_id = sample_user_ids["user1"]
 
@@ -994,9 +992,7 @@ class TestGetMutualFollows:
         assert mutual.mutual_follow is True
 
     @pytest.mark.asyncio
-    async def test_get_mutual_follows_empty(
-        self, follow_service, mock_db_session, sample_user_ids
-    ):
+    async def test_get_mutual_follows_empty(self, follow_service, mock_db_session, sample_user_ids):
         """Test get_mutual_follows with no mutual follows."""
         user1_id = sample_user_ids["user1"]
         user2_id = sample_user_ids["user2"]
@@ -1016,9 +1012,7 @@ class TestGetMutualFollows:
         ]
 
         # Act
-        result = await follow_service.get_mutual_follows(
-            user_id=user1_id, other_user_id=user2_id
-        )
+        result = await follow_service.get_mutual_follows(user_id=user1_id, other_user_id=user2_id)
 
         # Assert
         assert result.total == 0
@@ -1057,3 +1051,390 @@ class TestGetMutualFollows:
         assert result.total == 15
         assert result.page == 1
         assert result.page_size == 10
+
+
+# ============================================
+# Gap 3: Advanced Features Tests
+# ============================================
+
+
+class TestGetFollowSuggestions:
+    """Test get_follow_suggestions with mutual follows algorithm and popular fallback."""
+
+    @pytest.mark.asyncio
+    async def test_get_follow_suggestions_mutual_follows(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_suggestions returns mutual follow recommendations."""
+        user_id = sample_user_ids["user1"]
+        suggested_user_id = sample_user_ids["user2"]
+
+        # Mock mutual follows query (aliased joins: Follow1, Follow2)
+        # Returns page_size results (no sentinel), so no popular fallback needed
+        mock_mutual_result = MagicMock()
+        mock_rows = [
+            MagicMock(
+                followee_id=suggested_user_id,
+                username="suggested_user",
+                display_name="Suggested User",
+                avatar_url="https://example.com/avatar.jpg",
+                mutual_count=3,
+            )
+        ] + [
+            MagicMock(
+                followee_id=uuid.uuid4(),
+                username=f"user{i}",
+                display_name=f"User {i}",
+                avatar_url=None,
+                mutual_count=1,
+            )
+            for i in range(19)  # Fill to page_size (20 total, no sentinel)
+        ]
+        mock_mutual_result.all.return_value = mock_rows
+
+        # Setup execute (only mutual query, no popular fallback because page is full)
+        mock_db_session.execute.side_effect = [
+            mock_mutual_result,  # Mutual follows query
+        ]
+
+        # Act
+        result = await follow_service.get_follow_suggestions(user_id=user_id, page=1, page_size=20)
+
+        # Assert
+        assert result.reason == "mutual_follows"
+        assert result.total == 20
+        assert len(result.suggestions) == 20
+
+        # Check first suggestion
+        suggestion = result.suggestions[0]
+        assert suggestion.user_id == suggested_user_id
+        assert suggestion.username == "suggested_user"
+        assert suggestion.display_name == "Suggested User"
+        assert suggestion.is_following is False
+        assert suggestion.follows_you is False
+        assert suggestion.mutual_follow is False
+
+    @pytest.mark.asyncio
+    async def test_get_follow_suggestions_popular_fallback(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_suggestions falls back to popular users when no mutual follows."""
+        user_id = sample_user_ids["user1"]
+        popular_user_id = sample_user_ids["user2"]
+
+        # Mock empty mutual follows query
+        mock_mutual_result = MagicMock()
+        mock_mutual_result.all.return_value = []
+
+        # Mock popular users query (fallback)
+        # FIX: Use spec-less mock with configure_mock for proper attribute access
+        mock_popular_result = MagicMock()
+        mock_popular_row = MagicMock(spec=[])  # No spec to allow direct getattr access
+        mock_popular_row.configure_mock(
+            user_id=popular_user_id,  # Real UUID object
+            username="popular_user",
+            display_name="Popular User",
+            avatar_url="https://example.com/popular.jpg",
+            follower_count=10000
+        )
+        mock_popular_result.all.return_value = [mock_popular_row]
+
+        # Setup execute (2 queries: mutual + popular)
+        mock_db_session.execute.side_effect = [
+            mock_mutual_result,  # Mutual follows query (empty)
+            mock_popular_result,  # Popular users fallback
+        ]
+
+        # Act
+        result = await follow_service.get_follow_suggestions(user_id=user_id, page=1, page_size=20)
+
+        # Assert - Reason switches to "popular" when no mutual follows
+        assert result.reason == "popular"
+        assert result.total == 1
+        assert len(result.suggestions) == 1
+
+        suggestion = result.suggestions[0]
+        assert suggestion.user_id == popular_user_id
+        assert suggestion.username == "popular_user"
+        assert suggestion.display_name == "Popular User"
+
+    @pytest.mark.asyncio
+    async def test_get_follow_suggestions_sentinel_pagination(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_suggestions sentinel pattern for has_next detection."""
+        user_id = sample_user_ids["user1"]
+
+        # Mock mutual follows query with sentinel (page_size + 1)
+        # Requesting 20, but return 21 to indicate has_next
+        mock_mutual_result = MagicMock()
+        mock_rows = [
+            MagicMock(
+                followee_id=uuid.uuid4(),
+                username=f"user{i}",
+                display_name=f"User {i}",
+                avatar_url=None,
+                mutual_count=2,
+            )
+            for i in range(21)  # 21 results (page_size=20 + 1 sentinel)
+        ]
+        mock_mutual_result.all.return_value = mock_rows
+
+        # Setup execute
+        mock_db_session.execute.side_effect = [
+            mock_mutual_result,
+        ]
+
+        # Act
+        result = await follow_service.get_follow_suggestions(user_id=user_id, page=1, page_size=20)
+
+        # Assert - Sentinel detected, has_next is True, but only 20 results returned
+        assert result.has_next is True
+        assert len(result.suggestions) == 20  # Sentinel removed
+        assert result.reason == "mutual_follows"
+
+    @pytest.mark.asyncio
+    async def test_get_follow_suggestions_empty(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_suggestions with no mutual or popular suggestions."""
+        user_id = sample_user_ids["user1"]
+
+        # Mock empty mutual follows
+        mock_mutual_result = MagicMock()
+        mock_mutual_result.all.return_value = []
+
+        # Mock empty popular users
+        mock_popular_result = MagicMock()
+        mock_popular_result.all.return_value = []
+
+        # Setup execute
+        mock_db_session.execute.side_effect = [
+            mock_mutual_result,
+            mock_popular_result,
+        ]
+
+        # Act
+        result = await follow_service.get_follow_suggestions(user_id=user_id)
+
+        # Assert
+        assert result.reason == "popular"
+        assert result.total == 0
+        assert len(result.suggestions) == 0
+        assert result.has_next is False
+
+
+class TestGetFollowActivity:
+    """Test get_follow_activity with time-based queries and growth metrics."""
+
+    @pytest.mark.asyncio
+    async def test_get_follow_activity_with_recent_data(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_activity returns recent followers, following, and growth."""
+        user_id = sample_user_ids["user1"]
+        follower_id = sample_user_ids["user2"]
+        following_id = sample_user_ids["user3"]
+
+        # Mock recent followers query (last 7 days, limit 5)
+        mock_recent_followers_result = MagicMock()
+        mock_follower_row = MagicMock(
+            follower_id=follower_id,
+            username="recent_follower",
+            display_name="Recent Follower",
+            avatar_url="https://example.com/follower.jpg",
+            created_at=datetime(2024, 1, 10, tzinfo=timezone.utc),
+        )
+        mock_recent_followers_result.all.return_value = [mock_follower_row]
+
+        # Mock recent following query (last 7 days, limit 5)
+        mock_recent_following_result = MagicMock()
+        mock_following_row = MagicMock(
+            followee_id=following_id,
+            username="recent_following",
+            display_name="Recent Following",
+            avatar_url="https://example.com/following.jpg",
+            created_at=datetime(2024, 1, 11, tzinfo=timezone.utc),
+        )
+        mock_recent_following_result.all.return_value = [mock_following_row]
+
+        # Mock follower growth count
+        mock_follower_growth_result = MagicMock()
+        mock_follower_growth_result.scalar.return_value = 5  # 5 new followers in 7 days
+
+        # Mock following growth count
+        mock_following_growth_result = MagicMock()
+        mock_following_growth_result.scalar.return_value = 3  # 3 new following in 7 days
+
+        # Setup execute (4 queries: recent followers, recent following, 2 growth counts)
+        mock_db_session.execute.side_effect = [
+            mock_recent_followers_result,
+            mock_recent_following_result,
+            mock_follower_growth_result,
+            mock_following_growth_result,
+        ]
+
+        # Act
+        result = await follow_service.get_follow_activity(user_id=user_id)
+
+        # Assert - Recent followers
+        assert len(result.recent_followers) == 1
+        follower = result.recent_followers[0]
+        assert follower.user_id == follower_id
+        assert follower.username == "recent_follower"
+        assert follower.follows_you is True
+        assert follower.is_following is False
+
+        # Assert - Recent following
+        assert len(result.recent_following) == 1
+        following = result.recent_following[0]
+        assert following.user_id == following_id
+        assert following.username == "recent_following"
+        assert following.is_following is True
+        assert following.follows_you is False
+
+        # Assert - Growth metrics
+        assert result.follower_growth == 5
+        assert result.following_growth == 3
+
+    @pytest.mark.asyncio
+    async def test_get_follow_activity_empty(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_activity with no recent activity (7 days)."""
+        user_id = sample_user_ids["user1"]
+
+        # Mock empty recent followers
+        mock_recent_followers_result = MagicMock()
+        mock_recent_followers_result.all.return_value = []
+
+        # Mock empty recent following
+        mock_recent_following_result = MagicMock()
+        mock_recent_following_result.all.return_value = []
+
+        # Mock zero follower growth
+        mock_follower_growth_result = MagicMock()
+        mock_follower_growth_result.scalar.return_value = 0
+
+        # Mock zero following growth
+        mock_following_growth_result = MagicMock()
+        mock_following_growth_result.scalar.return_value = 0
+
+        # Setup execute
+        mock_db_session.execute.side_effect = [
+            mock_recent_followers_result,
+            mock_recent_following_result,
+            mock_follower_growth_result,
+            mock_following_growth_result,
+        ]
+
+        # Act
+        result = await follow_service.get_follow_activity(user_id=user_id)
+
+        # Assert - All empty
+        assert len(result.recent_followers) == 0
+        assert len(result.recent_following) == 0
+        assert result.follower_growth == 0
+        assert result.following_growth == 0
+
+
+class TestGetFollowStats:
+    """Test get_follow_stats with mutual follower count calculation."""
+
+    @pytest.mark.asyncio
+    async def test_get_follow_stats_with_mutual_count(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_stats returns user stats with mutual followers count."""
+        user_id = sample_user_ids["user1"]
+        current_user_id = sample_user_ids["user2"]
+
+        # Mock profile query
+        mock_profile_result = MagicMock()
+        mock_profile = MagicMock(
+            user_id=user_id,
+            username="test_user",
+            display_name="Test User",
+            follower_count=100,
+            following_count=50,
+        )
+        mock_profile_result.scalar_one_or_none.return_value = mock_profile
+
+        # Mock _get_mutual_followers_count query (aliased joins)
+        mock_mutual_count_result = MagicMock()
+        mock_mutual_count_result.scalar.return_value = 10  # 10 mutual followers
+
+        # Setup execute (2 queries: profile + mutual count)
+        mock_db_session.execute.side_effect = [
+            mock_profile_result,
+            mock_mutual_count_result,
+        ]
+
+        # Act
+        result = await follow_service.get_follow_stats(
+            user_id=user_id, current_user_id=current_user_id
+        )
+
+        # Assert
+        assert result.user_id == user_id
+        assert result.username == "test_user"
+        assert result.display_name == "Test User"
+        assert result.follower_count == 100
+        assert result.following_count == 50
+        assert result.mutual_followers_count == 10
+
+    @pytest.mark.asyncio
+    async def test_get_follow_stats_without_current_user(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_stats without current_user (no mutual count)."""
+        user_id = sample_user_ids["user1"]
+
+        # Mock profile query
+        mock_profile_result = MagicMock()
+        mock_profile = MagicMock(
+            user_id=user_id,
+            username="test_user",
+            display_name="Test User",
+            follower_count=100,
+            following_count=50,
+        )
+        mock_profile_result.scalar_one_or_none.return_value = mock_profile
+
+        # Setup execute (only 1 query: profile, no mutual count)
+        mock_db_session.execute.side_effect = [
+            mock_profile_result,
+        ]
+
+        # Act
+        result = await follow_service.get_follow_stats(user_id=user_id, current_user_id=None)
+
+        # Assert
+        assert result.user_id == user_id
+        assert result.username == "test_user"
+        assert result.follower_count == 100
+        assert result.following_count == 50
+        assert result.mutual_followers_count is None  # No current_user provided
+
+    @pytest.mark.asyncio
+    async def test_get_follow_stats_user_not_found(
+        self, follow_service, mock_db_session, sample_user_ids
+    ):
+        """Test get_follow_stats raises 404 when user not found."""
+        user_id = sample_user_ids["user1"]
+
+        # Mock empty profile query (user not found)
+        mock_profile_result = MagicMock()
+        mock_profile_result.scalar_one_or_none.return_value = None
+
+        # Setup execute
+        mock_db_session.execute.side_effect = [
+            mock_profile_result,
+        ]
+
+        # Act & Assert
+        with pytest.raises(HTTPException) as exc_info:
+            await follow_service.get_follow_stats(user_id=user_id)
+
+        assert exc_info.value.status_code == 404
+        assert "not found" in exc_info.value.detail.lower()
