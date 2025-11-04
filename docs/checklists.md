@@ -38,10 +38,31 @@
   - **Pattern Success**: AsyncMock 100% success rate across all 40 tests
   - **Duration**: ~2.5 hours total (4 gaps)
   - **Remaining Uncovered**: Lines 71, 104, 108, 116, 126, 282-291 (error branches + get_notification_preferences)
-- [ ] **Backend Test Coverage**: Push from 30.75% → 40-50% (+10-15pp)
-  - Next targets: Conversations API, Follow system, AI integration
-  - Use AsyncMock pattern from Pattern Library (proven 100% success in ProfileService)
-  - Estimated: 4-6 hours (ProfileService methodology proven fast)
+- [x] **ConversationService Test Coverage** ✅ COMPLETE - 54% → 99% (+45pp!) 🎉
+  - **Gap 1-3**: DM creation, message read tracking, helper methods
+  - **Total Tests**: 21 → 32 tests (+11 new, 32 passing)
+  - **Pattern Success**: AsyncMock 100% success rate, Pydantic validation established
+  - **Duration**: ~2.5 hours total
+  - **Remaining Uncovered**: 2 lines (error edge cases)
+- [x] **FollowService Test Coverage** ✅ COMPLETE - 40% → 97% (+57pp!) 🏆
+  - **Gap 1-3**: Follow operations, pagination, recommendations algorithm
+  - **Total Tests**: 14 → 40 tests (+26 new, 38 passing, 2 skipped)
+  - **Pattern Success**: Sentinel pagination, popular fallback, aliased joins
+  - **Duration**: ~2 hours total
+  - **Remaining Uncovered**: 6 lines (error edge cases)
+- [x] **AIService Test Coverage** ✅ COMPLETE - 49% → 86% (+37pp!) 🚀
+  - **Gap 1** (send_message): 49% → 77% (+28pp, 9 tests) - Commit: c15c7490
+  - **Gap 2** (Thread Management): 77% → 85% (+8pp, 8 tests) - Commit: b54aab0f
+  - **Gap 3** (Provider Integration): 85% → 86% (+1pp, 5 tests) - Commit: a46f9c3d
+  - **Total Tests**: 22 → 44 tests (+22 new, 42 passing, 2 skipped)
+  - **Pattern Breakthrough**: AsyncGenerator mocking for streaming responses
+  - **Duration**: ~2 hours total (3 gaps)
+  - **Remaining Uncovered**: 29 lines (helper methods, error edge cases)
+- [ ] **Backend Test Coverage**: Push from 28.17% → 40-50% (+12-22pp)
+  - **4 Services Complete**: ProfileService (92%), ConversationService (99%), FollowService (97%), AIService (86%)
+  - **Next targets**: NotificationService (25%), AuthService (19%), AlertsService, CryptoDiscoveryService
+  - Use AsyncMock + AsyncGenerator patterns (proven 100% success across 129 tests)
+  - Estimated: 6-8 hours (4-5 more services)
 - [ ] **Frontend Performance**: Optimize bundle size and loading
   - Bundle analysis, lazy loading, code splitting, image optimization
   - Performance patterns from checklists.md
@@ -1101,18 +1122,156 @@ mock_row.configure_mock(
    - Recommendations, social graphs, time-series all testable
    - **AsyncMock pattern removes infrastructure barrier for complex features**
 
+### AIService Test Coverage Case Study ✅
+
+**Status**: COMPLETE - Outstanding coverage achieved (49% → 86%, +37pp in 2 hours) 🚀
+
+**Objective**: Master AsyncGenerator streaming patterns for AI chat features, establish multi-provider testing framework
+
+**Timeline**:
+- **Gap 1** (send_message Core Flow): 49% → 77% (+28pp!, 9 tests, ~50 min) - Commit: c15c7490
+- **Gap 2** (Thread Management): 77% → 85% (+8pp, 8 tests, ~30 min) - Commit: b54aab0f
+- **Gap 3** (Provider Integration): 85% → 86% (+1pp, 5 tests, ~20 min) - Commit: a46f9c3d
+
+**Final Metrics**:
+- **Coverage**: 49% → **86%** (+37pp) - 209 statements, **29 uncovered**
+- **Tests**: 22 → **44 tests** (+22 new tests, 42 passing, 2 skipped)
+- **Success Rate**: 100% (42/42 passing tests using AsyncMock pattern)
+- **Duration**: ~2 hours (consistent with ProfileService, FollowService)
+- **Backend Overall**: 28.02% → 28.17% (+0.15pp)
+- **Pattern Breakthrough**: AsyncGenerator mocking established for streaming responses
+
+**Why 86% Coverage?**
+- **Gap 1** (+28pp!): send_message streaming flow (lines 257-432) - rate limiting, safety filters, thread ownership, message persistence, AI provider streaming, context building (20 messages), output moderation, token truncation
+- **Gap 2** (+8pp): delete_thread cascade deletion (lines 436-455), update_thread_title with validation + truncation (lines 461-477)
+- **Gap 3** (+1pp): get_provider_status multi-provider health checks (lines 481-485), get_rate_limit_status helper
+- **Remaining 29 lines**: Helper methods (63-64, 148-149, 176, 210-214, 220-230, 236-255), error handling edge cases (282, 407-432)
+
+**Key Testing Patterns**:
+
+1. **AsyncGenerator Mocking for Streaming** (Gap 1 - BREAKTHROUGH!):
+```python
+# Pattern: Mock async generator yielding StreamChunk objects
+async def mock_stream():
+    from app.services.ai_provider import StreamChunk
+    import uuid
+    yield StreamChunk(id=str(uuid.uuid4()), content="Hello", is_complete=False)
+    yield StreamChunk(id=str(uuid.uuid4()), content=" world", is_complete=True)
+
+# Mock provider with streaming response
+mock_provider = AsyncMock()
+mock_provider.stream_chat = AsyncMock(return_value=mock_stream())
+
+# Execute send_message and collect streamed chunks
+chunks = []
+async for item in ai_service.send_message(user_id, thread_id, message):
+    if hasattr(item, 'is_complete'):  # StreamChunk
+        chunks.append(item)
+    else:  # Final AIMessage
+        final_message = item
+
+# Verify streaming behavior
+assert len(chunks) >= 2
+assert chunks[0].content == "Hello"
+```
+
+2. **Multi-Layer Validation Testing** (Gap 1):
+```python
+# Pattern: Test 6 validation layers in send_message flow
+# Layer 1: Rate limiting
+with patch.object(ai_service.rate_limiter, 'check_rate_limit', return_value=False):
+    with pytest.raises(RateLimitError, match="Rate limit exceeded"):
+        async for _ in ai_service.send_message(...): pass
+
+# Layer 2: Input moderation
+mock_mod.level = ModerationLevel.BLOCKED
+with pytest.raises(SafetyFilterError, match="Message blocked"):
+    async for _ in ai_service.send_message(...): pass
+
+# Layer 3: Thread ownership
+mock_db.query.return_value.filter.return_value.first.return_value = None
+with pytest.raises(ValueError, match="Thread not found or access denied"):
+    async for _ in ai_service.send_message(...): pass
+
+# Layer 4: Message count limit
+mock_db.query.return_value.filter.return_value.count.return_value = 100
+with pytest.raises(ValueError, match="reached maximum message limit"):
+    async for _ in ai_service.send_message(...): pass
+
+# Layer 5: Output moderation (AI response blocked)
+mock_output_mod.level = ModerationLevel.BLOCKED
+# Verify replacement message: "I apologize, but I can't provide..."
+
+# Layer 6: Token limit truncation
+ai_service.max_tokens_per_request = 5
+# Verify truncation message or stop after limit
+```
+
+3. **Authorization Pattern** (Gap 2):
+```python
+# Pattern: Test ownership verification via user_id filtering
+db.query(AIThread).filter(
+    AIThread.id == thread_id,
+    AIThread.user_id == user_id  # Authorization check
+).first()
+
+# Test unauthorized access
+wrong_user_id = 999
+result = await ai_service.delete_thread(wrong_user_id, thread_id)
+assert result is False  # Ownership check fails
+```
+
+4. **Cascade Deletion Testing** (Gap 2):
+```python
+# Pattern: Verify messages deleted BEFORE thread deletion
+db.query(AIMessage).filter(AIMessage.thread_id == thread_id).delete()
+db.delete(thread)
+db.commit()
+
+# Test: Verify both delete calls made in sequence
+assert mock_filter.delete.called  # Messages deleted
+assert mock_db.delete.called      # Thread deleted
+```
+
+**Lessons Learned**:
+
+1. **AsyncGenerator Pattern is Reusable for Streaming APIs**:
+   - Established for AI chat streaming (send_message)
+   - Applies to: Server-Sent Events (SSE), WebSocket streams, file uploads/downloads
+   - Pattern: Mock `async def` function returning AsyncGenerator
+   - **Use Case**: Any API that streams data chunk-by-chunk to client
+
+2. **Multi-Layer Validation is CRITICAL for AI Services**:
+   - 6 validation layers in send_message (rate limit, safety, ownership, limits, moderation, tokens)
+   - Each layer tested independently with mocks
+   - Gap 1 gave +28pp by covering ALL validation paths
+   - **Best Practice**: Test validation layers BEFORE core logic
+
+3. **Content Moderation is Complex but Testable**:
+   - ModerationLevel enum: SAFE, FLAGGED, BLOCKED
+   - Input moderation: Block before AI call (save costs)
+   - Output moderation: Replace blocked responses with apology
+   - **Pattern**: Mock moderation functions, test all enum values
+
+4. **Authorization MUST Be Database-Level**:
+   - Don't trust client-side checks (easily bypassed)
+   - Always filter by user_id in SQL queries
+   - Test unauthorized access explicitly
+   - **Security**: Authorization in WHERE clause, not application layer
+
 **Comparison with Other Services**:
 
-| Metric | ProfileService | ConversationService | FollowService | Pattern |
-|--------|----------------|---------------------|---------------|---------|
-| **Starting Coverage** | 14% | 54% | 40% | Varies by baseline |
-| **Final Coverage** | 92% | 99% | **97%** | 90%+ achievable |
-| **Total Gain** | +78pp | +45pp | **+57pp** | 45-78pp range |
-| **Duration** | 2.5 hours | 2.5 hours | **2 hours** | 2-2.5 hours |
-| **Tests Added** | +23 tests | +11 tests | **+26 tests** | 11-26 tests |
-| **Success Rate** | 100% | 100% | **100%** | Perfect pattern |
-| **Uncovered Lines** | 11 lines | 2 lines | **6 lines** | 2-11 lines |
-| **Complexity** | CRUD | Messaging | **Algorithms** | Scales well |
+| Metric | ProfileService | ConversationService | FollowService | **AIService** | Pattern |
+|--------|----------------|---------------------|---------------|---------------|---------|
+| **Starting Coverage** | 14% | 54% | 40% | **49%** | Varies by baseline |
+| **Final Coverage** | 92% | 99% | 97% | **86%** | 85%+ achievable |
+| **Total Gain** | +78pp | +45pp | +57pp | **+37pp** | 37-78pp range |
+| **Duration** | 2.5 hours | 2.5 hours | 2 hours | **2 hours** | 2-2.5 hours |
+| **Tests Added** | +23 tests | +11 tests | +26 tests | **+22 tests** | 11-26 tests |
+| **Success Rate** | 100% | 100% | 100% | **100%** | Perfect pattern |
+| **Uncovered Lines** | 11 lines | 2 lines | 6 lines | **29 lines** | 2-29 lines |
+| **Complexity** | CRUD | Messaging | Algorithms | **Streaming** | Scales well |
+| **Unique Pattern** | Conditional imports | Pydantic strict | Sentinel pagination | **AsyncGenerator** | Reusable
 
 **Key Insights**:
 - ✅ **AsyncMock pattern 100% success** across 3 diverse services (97 tests total)
