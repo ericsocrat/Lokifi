@@ -758,6 +758,213 @@ class TestMarkAllAsRead:
 
 
 # ============================================================================
+# NOTIFICATION STATE MANAGEMENT TESTS (Gap 2)
+# ============================================================================
+
+
+class TestDismissNotification:
+    """Test suite for dismiss_notification"""
+
+    @pytest.mark.asyncio
+    async def test_dismiss_notification_success(
+        self, notification_service, sample_user_id, mock_db_session, mock_notification
+    ):
+        """Test successful dismiss_notification"""
+        notification_id = str(uuid.uuid4())
+        mock_notification.is_dismissed = False
+        mock_notification.dismiss = Mock()
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock query result
+            mock_result = Mock()
+            mock_result.scalar_one_or_none.return_value = mock_notification
+            mock_db_session.execute.return_value = mock_result
+
+            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                result = await notification_service.dismiss_notification(
+                    notification_id, sample_user_id
+                )
+
+            assert result is True
+            mock_notification.dismiss.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_dismiss_notification_not_found(
+        self, notification_service, sample_user_id, mock_db_session
+    ):
+        """Test dismiss_notification with non-existent notification"""
+        notification_id = str(uuid.uuid4())
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock not found result
+            mock_result = Mock()
+            mock_result.scalar_one_or_none.return_value = None
+            mock_db_session.execute.return_value = mock_result
+
+            result = await notification_service.dismiss_notification(
+                notification_id, sample_user_id
+            )
+
+            assert result is False
+
+    @pytest.mark.asyncio
+    async def test_dismiss_notification_without_user_id(
+        self, notification_service, mock_db_session, mock_notification
+    ):
+        """Test dismiss_notification without user_id verification"""
+        notification_id = str(uuid.uuid4())
+        mock_notification.is_dismissed = False
+        mock_notification.dismiss = Mock()
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            mock_result = Mock()
+            mock_result.scalar_one_or_none.return_value = mock_notification
+            mock_db_session.execute.return_value = mock_result
+
+            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                result = await notification_service.dismiss_notification(
+                    notification_id, user_id=None
+                )
+
+            assert result is True
+
+    @pytest.mark.asyncio
+    async def test_dismiss_notification_error_handling(
+        self, notification_service, sample_user_id, mock_db_session
+    ):
+        """Test dismiss_notification error handling"""
+        notification_id = str(uuid.uuid4())
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+            mock_db_session.execute.side_effect = Exception("Database error")
+
+            result = await notification_service.dismiss_notification(
+                notification_id, sample_user_id
+            )
+
+            assert result is False
+
+
+class TestClickNotification:
+    """Test suite for click_notification"""
+
+    @pytest.mark.asyncio
+    async def test_click_notification_success(
+        self, notification_service, sample_user_id, mock_db_session, mock_notification
+    ):
+        """Test successful click_notification"""
+        notification_id = str(uuid.uuid4())
+        mock_notification.mark_as_clicked = Mock()
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock query result
+            mock_result = Mock()
+            mock_result.scalar_one_or_none.return_value = mock_notification
+            mock_db_session.execute.return_value = mock_result
+
+            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                result = await notification_service.click_notification(
+                    notification_id, sample_user_id
+                )
+
+            assert result is True
+            mock_notification.mark_as_clicked.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_click_notification_not_found(
+        self, notification_service, sample_user_id, mock_db_session
+    ):
+        """Test click_notification with non-existent notification"""
+        notification_id = str(uuid.uuid4())
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            # Mock not found result
+            mock_result = Mock()
+            mock_result.scalar_one_or_none.return_value = None
+            mock_db_session.execute.return_value = mock_result
+
+            result = await notification_service.click_notification(
+                notification_id, sample_user_id
+            )
+
+            assert result is False
+
+    @pytest.mark.asyncio
+    async def test_click_notification_without_user_id(
+        self, notification_service, mock_db_session, mock_notification
+    ):
+        """Test click_notification without user_id verification"""
+        notification_id = str(uuid.uuid4())
+        mock_notification.mark_as_clicked = Mock()
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+
+            mock_result = Mock()
+            mock_result.scalar_one_or_none.return_value = mock_notification
+            mock_db_session.execute.return_value = mock_result
+
+            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                result = await notification_service.click_notification(
+                    notification_id, user_id=None
+                )
+
+            assert result is True
+
+    @pytest.mark.asyncio
+    async def test_click_notification_error_handling(
+        self, notification_service, sample_user_id, mock_db_session
+    ):
+        """Test click_notification error handling"""
+        notification_id = str(uuid.uuid4())
+
+        with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
+            mock_db_session.execute.side_effect = Exception("Database error")
+
+            result = await notification_service.click_notification(
+                notification_id, sample_user_id
+            )
+
+            assert result is False
+
+
+# ============================================================================
 # INTEGRATION TESTS
 # ============================================================================
 
