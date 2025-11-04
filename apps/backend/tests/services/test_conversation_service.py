@@ -844,3 +844,319 @@ class TestGetUserConversationsDetailed:
         # Note: We can't inspect the actual SQL WHERE clause from mocks,
         # but we verify the service method completes successfully
         # Real integration tests would verify actual filtering
+
+
+# ============================================================================
+# GAP 2: mark_messages_read COMPREHENSIVE TESTS
+# Coverage Target: Lines 250-313 (mark_messages_read method)
+# Expected Gain: +10-15pp (63% → 73-78%)
+# ============================================================================
+
+
+class TestMarkMessagesReadValidation:
+    """Test suite for mark_messages_read validation logic"""
+
+    @pytest.mark.asyncio
+    async def test_mark_messages_read_validates_participant(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test that mark_messages_read validates user is a participant"""
+        from app.schemas.conversation import MarkReadRequest
+
+        user_id = sample_user_ids["user1"]
+        target_message_id = uuid.uuid4()
+        mark_read_data = MarkReadRequest(message_id=target_message_id)
+
+        # Mock: User is NOT a participant (empty result)
+        mock_participant_result = MagicMock()
+        mock_participant_result.scalar_one_or_none.return_value = None
+
+        mock_db_session.execute.return_value = mock_participant_result
+
+        # Verify: HTTPException 403 raised
+        with pytest.raises(HTTPException) as exc_info:
+            await conversation_service.mark_messages_read(
+                sample_conversation_id, user_id, mark_read_data
+            )
+
+        assert exc_info.value.status_code == 403
+        assert "not a participant" in exc_info.value.detail.lower()
+
+        # Verify: Only participant query executed (no further queries)
+        assert mock_db_session.execute.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_mark_messages_read_validates_message_exists(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test that mark_messages_read validates message exists in conversation"""
+        from app.schemas.conversation import MarkReadRequest
+
+        user_id = sample_user_ids["user1"]
+        target_message_id = uuid.uuid4()
+        mark_read_data = MarkReadRequest(message_id=target_message_id)
+
+        # Mock: Participant valid
+        mock_participant = MagicMock()
+        mock_participant_result = MagicMock()
+        mock_participant_result.scalar_one_or_none.return_value = mock_participant
+
+        # Mock: Target message doesn't exist in conversation
+        mock_message_result = MagicMock()
+        mock_message_result.scalar_one_or_none.return_value = None
+
+        mock_db_session.execute.side_effect = [mock_participant_result, mock_message_result]
+
+        # Verify: HTTPException 404 raised
+        with pytest.raises(HTTPException) as exc_info:
+            await conversation_service.mark_messages_read(
+                sample_conversation_id, user_id, mark_read_data
+            )
+
+        assert exc_info.value.status_code == 404
+        assert "message not found" in exc_info.value.detail.lower()
+
+        # Verify: Participant query + message query executed (2 queries)
+        assert mock_db_session.execute.call_count == 2
+
+
+class TestMarkMessagesReadReceipts:
+    """Test suite for mark_messages_read receipt creation logic"""
+
+    @pytest.mark.asyncio
+    async def test_mark_messages_read_creates_new_receipts(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test creating new receipts for unread messages"""
+        from app.schemas.conversation import MarkReadRequest
+
+        user_id = sample_user_ids["user1"]
+        target_message_id = uuid.uuid4()
+        mark_read_data = MarkReadRequest(message_id=target_message_id)
+
+        # Mock: Participant valid
+        mock_participant = MagicMock()
+        mock_participant.last_read_message_id = None
+        mock_participant_result = MagicMock()
+        mock_participant_result.scalar_one_or_none.return_value = mock_participant
+
+        # Mock: Target message exists
+        mock_target_message = MagicMock()
+        mock_target_message.id = target_message_id
+        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message_result = MagicMock()
+        mock_message_result.scalar_one_or_none.return_value = mock_target_message
+
+        # Mock: 5 messages in conversation
+        message_ids = [uuid.uuid4() for _ in range(5)]
+        mock_messages_result = MagicMock()
+        mock_messages_result.all.return_value = [(msg_id,) for msg_id in message_ids]
+
+        # Mock: 2 messages already have receipts
+        existing_ids = message_ids[:2]
+        mock_existing_receipts_result = MagicMock()
+        mock_existing_receipts_result.all.return_value = [(msg_id,) for msg_id in existing_ids]
+
+        # Side effects for 4 queries + 1 update
+        mock_db_session.execute.side_effect = [
+            mock_participant_result,  # Participant validation
+            mock_message_result,  # Target message validation
+            mock_messages_result,  # Get message IDs up to target
+            mock_existing_receipts_result,  # Get existing receipts
+            AsyncMock(),  # Update participant query
+        ]
+
+        # Execute
+        result = await conversation_service.mark_messages_read(
+            sample_conversation_id, user_id, mark_read_data
+        )
+
+        # Verify: Result is True
+        assert result is True
+
+        # Verify: add_all called with 3 new receipts (5 total - 2 existing)
+        assert mock_db_session.add_all.called
+        new_receipts = mock_db_session.add_all.call_args[0][0]
+        assert len(new_receipts) == 3
+        assert all(isinstance(r, MessageReceipt) for r in new_receipts)
+
+        # Verify: commit called
+        assert mock_db_session.commit.called
+
+    @pytest.mark.asyncio
+    async def test_mark_messages_read_handles_all_read(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test when all messages already have receipts (no new receipts needed)"""
+        from app.schemas.conversation import MarkReadRequest
+
+        user_id = sample_user_ids["user1"]
+        target_message_id = uuid.uuid4()
+        mark_read_data = MarkReadRequest(message_id=target_message_id)
+
+        # Mock: Participant valid
+        mock_participant = MagicMock()
+        mock_participant.last_read_message_id = None
+        mock_participant_result = MagicMock()
+        mock_participant_result.scalar_one_or_none.return_value = mock_participant
+
+        # Mock: Target message exists
+        mock_target_message = MagicMock()
+        mock_target_message.id = target_message_id
+        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message_result = MagicMock()
+        mock_message_result.scalar_one_or_none.return_value = mock_target_message
+
+        # Mock: 5 messages in conversation
+        message_ids = [uuid.uuid4() for _ in range(5)]
+        mock_messages_result = MagicMock()
+        mock_messages_result.all.return_value = [(msg_id,) for msg_id in message_ids]
+
+        # Mock: ALL messages already have receipts
+        mock_existing_receipts_result = MagicMock()
+        mock_existing_receipts_result.all.return_value = [(msg_id,) for msg_id in message_ids]
+
+        # Side effects for 4 queries + 1 update
+        mock_db_session.execute.side_effect = [
+            mock_participant_result,  # Participant validation
+            mock_message_result,  # Target message validation
+            mock_messages_result,  # Get message IDs up to target
+            mock_existing_receipts_result,  # Get existing receipts (all)
+            AsyncMock(),  # Update participant query
+        ]
+
+        # Execute
+        result = await conversation_service.mark_messages_read(
+            sample_conversation_id, user_id, mark_read_data
+        )
+
+        # Verify: Result is True
+        assert result is True
+
+        # Verify: add_all NOT called (or called with empty list)
+        if mock_db_session.add_all.called:
+            new_receipts = mock_db_session.add_all.call_args[0][0]
+            assert len(new_receipts) == 0
+
+        # Verify: commit still called (last_read_message_id updated)
+        assert mock_db_session.commit.called
+
+    @pytest.mark.asyncio
+    async def test_mark_messages_read_filters_by_timestamp(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test that only messages up to target timestamp are marked read"""
+        from app.schemas.conversation import MarkReadRequest
+
+        user_id = sample_user_ids["user1"]
+        target_message_id = uuid.uuid4()
+        mark_read_data = MarkReadRequest(message_id=target_message_id)
+
+        # Mock: Participant valid
+        mock_participant = MagicMock()
+        mock_participant.last_read_message_id = None
+        mock_participant_result = MagicMock()
+        mock_participant_result.scalar_one_or_none.return_value = mock_participant
+
+        # Mock: Target message at specific timestamp
+        target_timestamp = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message = MagicMock()
+        mock_target_message.id = target_message_id
+        mock_target_message.created_at = target_timestamp
+        mock_message_result = MagicMock()
+        mock_message_result.scalar_one_or_none.return_value = mock_target_message
+
+        # Mock: 10 messages total, but query returns only 6 (created_at <= target)
+        # This simulates messages before and at the target timestamp
+        message_ids_before_target = [uuid.uuid4() for _ in range(6)]
+        mock_messages_result = MagicMock()
+        mock_messages_result.all.return_value = [(msg_id,) for msg_id in message_ids_before_target]
+
+        # Mock: No existing receipts
+        mock_existing_receipts_result = MagicMock()
+        mock_existing_receipts_result.all.return_value = []
+
+        # Side effects for 4 queries + 1 update
+        mock_db_session.execute.side_effect = [
+            mock_participant_result,  # Participant validation
+            mock_message_result,  # Target message validation
+            mock_messages_result,  # Get message IDs (filtered by timestamp)
+            mock_existing_receipts_result,  # Get existing receipts
+            AsyncMock(),  # Update participant query
+        ]
+
+        # Execute
+        result = await conversation_service.mark_messages_read(
+            sample_conversation_id, user_id, mark_read_data
+        )
+
+        # Verify: Result is True
+        assert result is True
+
+        # Verify: Only 6 receipts created (messages up to target timestamp)
+        assert mock_db_session.add_all.called
+        new_receipts = mock_db_session.add_all.call_args[0][0]
+        assert len(new_receipts) == 6
+
+        # Verify: commit called
+        assert mock_db_session.commit.called
+
+    @pytest.mark.asyncio
+    async def test_mark_messages_read_excludes_deleted_messages(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test that deleted messages are excluded from marking read"""
+        from app.schemas.conversation import MarkReadRequest
+
+        user_id = sample_user_ids["user1"]
+        target_message_id = uuid.uuid4()
+        mark_read_data = MarkReadRequest(message_id=target_message_id)
+
+        # Mock: Participant valid
+        mock_participant = MagicMock()
+        mock_participant.last_read_message_id = None
+        mock_participant_result = MagicMock()
+        mock_participant_result.scalar_one_or_none.return_value = mock_participant
+
+        # Mock: Target message exists
+        mock_target_message = MagicMock()
+        mock_target_message.id = target_message_id
+        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message_result = MagicMock()
+        mock_message_result.scalar_one_or_none.return_value = mock_target_message
+
+        # Mock: 10 total messages, but query returns only 7 (excludes 3 deleted)
+        # This simulates the is_deleted filter in the query
+        message_ids_not_deleted = [uuid.uuid4() for _ in range(7)]
+        mock_messages_result = MagicMock()
+        mock_messages_result.all.return_value = [(msg_id,) for msg_id in message_ids_not_deleted]
+
+        # Mock: No existing receipts
+        mock_existing_receipts_result = MagicMock()
+        mock_existing_receipts_result.all.return_value = []
+
+        # Side effects for 4 queries + 1 update
+        mock_db_session.execute.side_effect = [
+            mock_participant_result,  # Participant validation
+            mock_message_result,  # Target message validation
+            mock_messages_result,  # Get message IDs (excludes deleted)
+            mock_existing_receipts_result,  # Get existing receipts
+            AsyncMock(),  # Update participant query
+        ]
+
+        # Execute
+        result = await conversation_service.mark_messages_read(
+            sample_conversation_id, user_id, mark_read_data
+        )
+
+        # Verify: Result is True
+        assert result is True
+
+        # Verify: Only 7 receipts created (excludes deleted messages)
+        assert mock_db_session.add_all.called
+        new_receipts = mock_db_session.add_all.call_args[0][0]
+        assert len(new_receipts) == 7
+
+        # Verify: commit called
+        assert mock_db_session.commit.called
+
