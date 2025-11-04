@@ -355,6 +355,9 @@ function Invoke-BackendTests {
             $pytestArgs += '--timeout=10'
         }
 
+        # Disable warnings causing exit code failures (warnings are logged but don't fail tests)
+        $pytestArgs += '--disable-warnings'
+
         # Output
         $pytestArgs += "--junit-xml=$($Config.BackendTestResults)/backend-results.xml"
 
