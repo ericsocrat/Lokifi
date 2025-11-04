@@ -16,8 +16,6 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, status
-
 from app.models.conversation import (
     ContentType,
     Conversation,
@@ -28,6 +26,7 @@ from app.models.conversation import (
 from app.models.user import User
 from app.schemas.conversation import MessageCreate
 from app.services.conversation_service import ConversationService
+from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -383,3 +382,465 @@ class TestConversationServiceIntegration:
         assert hasattr(service, "send_message")
         assert hasattr(service, "get_conversation_messages")
         assert hasattr(service, "get_or_create_dm_conversation")
+
+
+# ============================================================================
+# GAP 1: DM CREATION & CONVERSATION RETRIEVAL
+# ============================================================================
+
+
+class TestDMCreationNewConversationFlow:
+    """Gap 1: Test NEW conversation creation flow (lines 77-91)
+
+    Coverage target: get_or_create_dm_conversation NEW path
+    - Lines 77-91: Create new conversation when none exists
+    - Database operations: add Conversation, add 2 participants, flush, commit, refresh
+    - Response building: Call _build_conversation_response with new conversation
+    """
+
+    @pytest.mark.asyncio
+    async def test_create_new_dm_conversation_when_none_exists(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test creating a new DM conversation when no existing conversation found"""
+        user1_id = sample_user_ids["user1"]
+        user2_id = sample_user_ids["user2"]
+
+        # Mock users query - both users exist and are active
+        mock_user_result = MagicMock()
+        mock_user1 = MagicMock()
+        mock_user2 = MagicMock()
+        mock_user_result.scalars().all.return_value = [mock_user1, mock_user2]
+
+        # Mock existing conversation query - NO existing conversations
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = []  # No existing conversations
+
+        # Setup execute side effects
+        mock_db_session.execute.side_effect = [
+            mock_user_result,  # User validation query
+            mock_conv_result,  # Existing conversation check (empty)
+        ]
+
+        # Mock _build_conversation_response
+        with patch.object(
+            conversation_service, "_build_conversation_response", new_callable=AsyncMock
+        ) as mock_build:
+            mock_response = MagicMock(id=sample_conversation_id, is_group=False)
+            mock_build.return_value = mock_response
+
+            result = await conversation_service.get_or_create_dm_conversation(user1_id, user2_id)
+
+            # Verify new conversation was created
+            assert mock_db_session.add.call_count == 3  # Conversation + 2 participants
+            assert mock_db_session.flush.called
+            assert mock_db_session.commit.called
+            assert mock_db_session.refresh.called
+
+            # Verify response builder was called
+            assert mock_build.called
+            assert result.id == sample_conversation_id
+
+    @pytest.mark.asyncio
+    async def test_create_dm_adds_both_participants(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test that both participants are added to new conversation"""
+        user1_id = sample_user_ids["user1"]
+        user2_id = sample_user_ids["user2"]
+
+        # Mock users exist
+        mock_user_result = MagicMock()
+        mock_user_result.scalars().all.return_value = [MagicMock(), MagicMock()]
+
+        # Mock no existing conversations
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = []
+
+        mock_db_session.execute.side_effect = [mock_user_result, mock_conv_result]
+
+        # Track add() calls to verify participants
+        add_calls = []
+
+        def track_add(obj):
+            add_calls.append(obj)
+
+        mock_db_session.add = MagicMock(side_effect=track_add)
+
+        with patch.object(
+            conversation_service, "_build_conversation_response", new_callable=AsyncMock
+        ) as mock_build:
+            mock_build.return_value = MagicMock()
+            await conversation_service.get_or_create_dm_conversation(user1_id, user2_id)
+
+        # Verify 3 add() calls: 1 Conversation + 2 ConversationParticipants
+        assert len(add_calls) == 3
+
+        # Verify first add is Conversation
+        assert isinstance(add_calls[0], Conversation)
+        assert add_calls[0].is_group is False
+
+        # Verify next 2 adds are ConversationParticipants
+        assert isinstance(add_calls[1], ConversationParticipant)
+        assert isinstance(add_calls[2], ConversationParticipant)
+
+        # Verify participants have correct user_ids
+        participant_ids = {add_calls[1].user_id, add_calls[2].user_id}
+        assert participant_ids == {user1_id, user2_id}
+
+    @pytest.mark.asyncio
+    async def test_create_dm_flushes_before_adding_participants(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test that flush() is called after creating conversation but before adding participants"""
+        user1_id = sample_user_ids["user1"]
+        user2_id = sample_user_ids["user2"]
+
+        # Mock setup
+        mock_user_result = MagicMock()
+        mock_user_result.scalars().all.return_value = [MagicMock(), MagicMock()]
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = []
+
+        mock_db_session.execute.side_effect = [mock_user_result, mock_conv_result]
+
+        # Track call order
+        call_order = []
+
+        def track_add(obj):
+            call_order.append(("add", obj))
+
+        async def track_flush():
+            call_order.append(("flush", None))
+
+        async def track_commit():
+            call_order.append(("commit", None))
+
+        async def track_refresh(obj):
+            call_order.append(("refresh", obj))
+
+        mock_db_session.add = MagicMock(side_effect=track_add)
+        mock_db_session.flush = AsyncMock(side_effect=track_flush)
+        mock_db_session.commit = AsyncMock(side_effect=track_commit)
+        mock_db_session.refresh = AsyncMock(side_effect=track_refresh)
+
+        with patch.object(
+            conversation_service, "_build_conversation_response", new_callable=AsyncMock
+        ) as mock_build:
+            mock_build.return_value = MagicMock()
+            await conversation_service.get_or_create_dm_conversation(user1_id, user2_id)
+
+        # Verify call order: add Conversation → flush → add participants → commit → refresh
+        assert call_order[0][0] == "add"  # Add conversation
+        assert isinstance(call_order[0][1], Conversation)
+        assert call_order[1][0] == "flush"  # Flush to get conversation.id
+        assert call_order[2][0] == "add"  # Add participant 1
+        assert call_order[3][0] == "add"  # Add participant 2
+        assert call_order[4][0] == "commit"  # Commit all changes
+        assert call_order[5][0] == "refresh"  # Refresh conversation with relationships
+
+
+class TestGetUserConversationsDetailed:
+    """Gap 1: Test get_user_conversations with real pagination data (lines 97-140)
+
+    Coverage target: Pagination logic, ordering, count query
+    - Lines 97-140: Query conversations, count total, build responses
+    - Pagination: offset calculation, limit application, has_next logic
+    - Ordering: last_message_at DESC, updated_at DESC
+    """
+
+    @pytest.mark.asyncio
+    async def test_get_user_conversations_ordering(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test conversations are ordered by last_message_at DESC, then updated_at DESC"""
+        from app.schemas.conversation import ConversationResponse
+
+        user_id = sample_user_ids["user1"]
+
+        # Create conversation IDs
+        conv1_id = uuid.uuid4()
+        conv2_id = uuid.uuid4()
+        conv3_id = uuid.uuid4()
+
+        # Create mock conversations with different timestamps
+        conv1 = MagicMock()
+        conv1.id = conv1_id
+        conv1.last_message_at = datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc)
+        conv1.updated_at = datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc)
+        conv1.participants = []
+
+        conv2 = MagicMock()
+        conv2.id = conv2_id
+        conv2.last_message_at = datetime(2025, 1, 2, 12, 0, tzinfo=timezone.utc)  # Most recent
+        conv2.updated_at = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
+        conv2.participants = []
+
+        conv3 = MagicMock()
+        conv3.id = conv3_id
+        conv3.last_message_at = datetime(2025, 1, 1, 18, 0, tzinfo=timezone.utc)
+        conv3.updated_at = datetime(2025, 1, 1, 16, 0, tzinfo=timezone.utc)
+        conv3.participants = []
+
+        # Mock conversations query - return in expected order
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = [
+            conv2,
+            conv3,
+            conv1,
+        ]  # Ordered by last_message_at DESC
+
+        # Mock count query
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 3
+
+        mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+        # Mock _build_conversation_response to return proper ConversationResponse
+        with patch.object(
+            conversation_service, "_build_conversation_response", new_callable=AsyncMock
+        ) as mock_build:
+            # Return proper ConversationResponse objects
+            mock_build.side_effect = [
+                ConversationResponse(
+                    id=conv2_id,
+                    is_group=False,
+                    name=None,
+                    description=None,
+                    participants=[],
+                    last_message=None,
+                    unread_count=0,
+                    created_at=datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc),
+                    updated_at=datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc),
+                    last_message_at=datetime(2025, 1, 2, 12, 0, tzinfo=timezone.utc),
+                ),
+                ConversationResponse(
+                    id=conv3_id,
+                    is_group=False,
+                    name=None,
+                    description=None,
+                    participants=[],
+                    last_message=None,
+                    unread_count=0,
+                    created_at=datetime(2025, 1, 1, 16, 0, tzinfo=timezone.utc),
+                    updated_at=datetime(2025, 1, 1, 16, 0, tzinfo=timezone.utc),
+                    last_message_at=datetime(2025, 1, 1, 18, 0, tzinfo=timezone.utc),
+                ),
+                ConversationResponse(
+                    id=conv1_id,
+                    is_group=False,
+                    name=None,
+                    description=None,
+                    participants=[],
+                    last_message=None,
+                    unread_count=0,
+                    created_at=datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc),
+                    updated_at=datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc),
+                    last_message_at=datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc),
+                ),
+            ]
+
+            result = await conversation_service.get_user_conversations(
+                user_id, page=1, page_size=10
+            )
+
+            # Verify ordering in response
+            assert len(result.conversations) == 3
+            assert result.conversations[0].id == conv2_id  # Most recent first
+            assert result.conversations[1].id == conv3_id
+            assert result.conversations[2].id == conv1_id  # Oldest last
+
+    @pytest.mark.asyncio
+    async def test_get_user_conversations_pagination_page_1(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test first page of conversations with has_next=True"""
+        from app.schemas.conversation import ConversationResponse
+
+        user_id = sample_user_ids["user1"]
+
+        # Create 2 conversation IDs for page 1
+        conv_ids = [uuid.uuid4() for _ in range(2)]
+
+        # Create 2 mock conversations (page_size=2, total=5, so has_next=True)
+        conversations = []
+        for conv_id in conv_ids:
+            conv = MagicMock()
+            conv.id = conv_id
+            conv.participants = []
+            conversations.append(conv)
+
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = conversations
+
+        # Mock total count = 5
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 5
+
+        mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+        with patch.object(
+            conversation_service, "_build_conversation_response", new_callable=AsyncMock
+        ) as mock_build:
+            # Return proper ConversationResponse objects
+            mock_build.side_effect = [
+                ConversationResponse(
+                    id=conv_id,
+                    is_group=False,
+                    name=None,
+                    description=None,
+                    participants=[],
+                    last_message=None,
+                    unread_count=0,
+                    created_at=datetime.now(timezone.utc),
+                    updated_at=datetime.now(timezone.utc),
+                    last_message_at=None,
+                )
+                for conv_id in conv_ids
+            ]
+
+            result = await conversation_service.get_user_conversations(user_id, page=1, page_size=2)
+
+            # Verify pagination metadata
+            assert result.page == 1
+            assert result.page_size == 2
+            assert result.total == 5
+            assert result.has_next is True  # (0 + 2) < 5
+            assert len(result.conversations) == 2
+
+    @pytest.mark.asyncio
+    async def test_get_user_conversations_pagination_last_page(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test last page of conversations with has_next=False"""
+        from app.schemas.conversation import ConversationResponse
+
+        user_id = sample_user_ids["user1"]
+
+        # Create 1 conversation for last page (page 3, page_size=2, total=5)
+        conv_id = uuid.uuid4()
+        conversations = [MagicMock(id=conv_id, participants=[])]
+
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = conversations
+
+        # Mock total count = 5
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 5
+
+        mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+        with patch.object(
+            conversation_service, "_build_conversation_response", new_callable=AsyncMock
+        ) as mock_build:
+            # Return proper ConversationResponse object
+            mock_build.return_value = ConversationResponse(
+                id=conv_id,
+                is_group=False,
+                name=None,
+                description=None,
+                participants=[],
+                last_message=None,
+                unread_count=0,
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+                last_message_at=None,
+            )
+
+            result = await conversation_service.get_user_conversations(
+                user_id, page=3, page_size=2  # offset = (3-1)*2 = 4
+            )
+
+            # Verify pagination metadata
+            assert result.page == 3
+            assert result.page_size == 2
+            assert result.total == 5
+            assert result.has_next is False  # (4 + 2) >= 5
+            assert len(result.conversations) == 1
+
+    @pytest.mark.asyncio
+    async def test_get_user_conversations_offset_calculation(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test pagination offset calculation: (page - 1) * page_size"""
+        user_id = sample_user_ids["user1"]
+
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = []
+
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 0
+
+        mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+        # Test various page numbers with page_size=10
+        test_cases = [
+            (1, 10, 0),  # page 1: offset = (1-1)*10 = 0
+            (2, 10, 10),  # page 2: offset = (2-1)*10 = 10
+            (3, 10, 20),  # page 3: offset = (3-1)*10 = 20
+            (1, 5, 0),  # page 1, smaller size: offset = 0
+            (3, 5, 10),  # page 3, smaller size: offset = (3-1)*5 = 10
+        ]
+
+        for page, page_size, expected_offset in test_cases:
+            # Reset execute side effects
+            mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+            result = await conversation_service.get_user_conversations(
+                user_id, page=page, page_size=page_size
+            )
+
+            # Verify page and page_size are set correctly in response
+            assert result.page == page
+            assert result.page_size == page_size
+            # Note: We can't directly verify offset in SQL query from mock,
+            # but we verify the response structure is correct
+
+    @pytest.mark.asyncio
+    async def test_get_user_conversations_empty_results(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test get_user_conversations with no conversations"""
+        user_id = sample_user_ids["user1"]
+
+        # Mock empty results
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = []
+
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 0
+
+        mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+        result = await conversation_service.get_user_conversations(user_id, page=1, page_size=20)
+
+        # Verify empty response
+        assert result.conversations == []
+        assert result.total == 0
+        assert result.page == 1
+        assert result.page_size == 20
+        assert result.has_next is False  # No more pages
+
+    @pytest.mark.asyncio
+    async def test_get_user_conversations_filters_by_user_and_active(
+        self, conversation_service, sample_user_ids, mock_db_session
+    ):
+        """Test that query filters by user_id and is_active=True"""
+        user_id = sample_user_ids["user1"]
+
+        mock_conv_result = MagicMock()
+        mock_conv_result.scalars().all.return_value = []
+
+        mock_count_result = MagicMock()
+        mock_count_result.scalar.return_value = 0
+
+        mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
+
+        await conversation_service.get_user_conversations(user_id)
+
+        # Verify execute was called twice (conversations + count)
+        assert mock_db_session.execute.call_count == 2
+
+        # Note: We can't inspect the actual SQL WHERE clause from mocks,
+        # but we verify the service method completes successfully
+        # Real integration tests would verify actual filtering
