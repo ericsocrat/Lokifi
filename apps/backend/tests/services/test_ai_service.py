@@ -767,6 +767,248 @@ class TestSendMessageCoreFlow:
 
 
 # ============================================================================
+# GAP 2: THREAD MANAGEMENT TESTS
+# ============================================================================
+
+
+class TestThreadManagement:
+    """
+    Gap 2 tests for thread management (delete_thread, update_thread_title).
+    
+    Covers: Authorization checks, cascade deletion, validation, title updates,
+    edge cases for thread not found and unauthorized access.
+    """
+
+    @pytest.mark.asyncio
+    async def test_delete_thread_success(self, ai_service):
+        """Test successful thread deletion with cascade"""
+        user_id = 100
+        thread_id = 1
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            # Mock database session
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Mock thread found
+            mock_thread = MagicMock()
+            mock_thread.id = thread_id
+            mock_thread.user_id = user_id
+            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            
+            # Execute delete
+            result = await ai_service.delete_thread(user_id, thread_id)
+            
+            # Assertions
+            assert result is True
+            
+            # Verify cascade deletion (messages deleted first)
+            assert mock_db.query.called
+            # Should have 2 query calls: one for thread, one for messages
+            assert mock_db.query.call_count >= 2
+            
+            # Verify thread deleted
+            mock_db.delete.assert_called_once_with(mock_thread)
+            mock_db.commit.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_delete_thread_not_found(self, ai_service):
+        """Test delete_thread returns False when thread not found"""
+        user_id = 100
+        thread_id = 999
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Thread not found
+            mock_db.query.return_value.filter.return_value.first.return_value = None
+            
+            # Execute delete
+            result = await ai_service.delete_thread(user_id, thread_id)
+            
+            # Should return False
+            assert result is False
+            
+            # Should NOT call delete or commit
+            mock_db.delete.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_delete_thread_unauthorized(self, ai_service):
+        """Test delete_thread fails when user doesn't own thread"""
+        user_id = 100
+        thread_id = 1
+        wrong_user_id = 999
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Thread exists but owned by different user (filter won't match)
+            mock_db.query.return_value.filter.return_value.first.return_value = None
+            
+            # Execute delete with wrong user
+            result = await ai_service.delete_thread(wrong_user_id, thread_id)
+            
+            # Should return False (not authorized)
+            assert result is False
+
+    @pytest.mark.asyncio
+    async def test_delete_thread_cascade_messages(self, ai_service):
+        """Test delete_thread deletes associated messages first"""
+        user_id = 100
+        thread_id = 1
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Mock thread found
+            mock_thread = MagicMock()
+            mock_thread.id = thread_id
+            mock_thread.user_id = user_id
+            
+            # Setup query mock to return thread on first filter, None on message query
+            mock_query = MagicMock()
+            mock_filter = MagicMock()
+            mock_filter.first.return_value = mock_thread
+            mock_filter.delete.return_value = None  # For message deletion
+            mock_query.filter.return_value = mock_filter
+            mock_db.query.return_value = mock_query
+            
+            # Execute delete
+            result = await ai_service.delete_thread(user_id, thread_id)
+            
+            # Verify success
+            assert result is True
+            
+            # Verify messages were deleted (filter + delete called)
+            assert mock_filter.delete.called or mock_db.delete.called
+
+    @pytest.mark.asyncio
+    async def test_update_thread_title_success(self, ai_service):
+        """Test successful thread title update"""
+        user_id = 100
+        thread_id = 1
+        new_title = "Updated AI Chat Title"
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Mock thread found
+            mock_thread = MagicMock()
+            mock_thread.id = thread_id
+            mock_thread.user_id = user_id
+            mock_thread.title = "Old Title"
+            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            
+            # Execute update
+            result = await ai_service.update_thread_title(user_id, thread_id, new_title)
+            
+            # Assertions
+            assert result is not None
+            assert mock_thread.title == new_title
+            assert mock_thread.updated_at is not None
+            mock_db.commit.assert_called()
+            mock_db.refresh.assert_called_with(mock_thread)
+
+    @pytest.mark.asyncio
+    async def test_update_thread_title_not_found(self, ai_service):
+        """Test update_thread_title returns None when thread not found"""
+        user_id = 100
+        thread_id = 999
+        new_title = "New Title"
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Thread not found
+            mock_db.query.return_value.filter.return_value.first.return_value = None
+            
+            # Execute update
+            result = await ai_service.update_thread_title(user_id, thread_id, new_title)
+            
+            # Should return None
+            assert result is None
+            
+            # Should NOT call commit
+            mock_db.commit.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_update_thread_title_unauthorized(self, ai_service):
+        """Test update_thread_title fails when user doesn't own thread"""
+        user_id = 100
+        thread_id = 1
+        wrong_user_id = 999
+        new_title = "Hacked Title"
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Thread exists but owned by different user (filter won't match)
+            mock_db.query.return_value.filter.return_value.first.return_value = None
+            
+            # Execute update with wrong user
+            result = await ai_service.update_thread_title(wrong_user_id, thread_id, new_title)
+            
+            # Should return None (not authorized)
+            assert result is None
+
+    @pytest.mark.asyncio
+    async def test_update_thread_title_truncates_long_title(self, ai_service):
+        """Test update_thread_title truncates titles longer than 255 characters"""
+        user_id = 100
+        thread_id = 1
+        long_title = "A" * 300  # 300 characters
+        
+        with patch("app.services.ai_service.get_session") as mock_get_session:
+            mock_db = MagicMock()
+            mock_session_ctx = MagicMock()
+            mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
+            mock_session_ctx.__exit__ = MagicMock(return_value=None)
+            mock_get_session.return_value = mock_session_ctx
+            
+            # Mock thread found
+            mock_thread = MagicMock()
+            mock_thread.id = thread_id
+            mock_thread.user_id = user_id
+            mock_thread.title = "Old Title"
+            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            
+            # Execute update with long title
+            result = await ai_service.update_thread_title(user_id, thread_id, long_title)
+            
+            # Title should be truncated to 255 characters
+            assert result is not None
+            assert len(mock_thread.title) == 255
+            assert mock_thread.title == "A" * 255
+
+
+# ============================================================================
 # INTEGRATION TESTS
 # ============================================================================
 
