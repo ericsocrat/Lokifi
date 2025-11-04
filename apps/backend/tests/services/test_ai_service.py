@@ -1009,6 +1009,144 @@ class TestThreadManagement:
 
 
 # ============================================================================
+# GAP 3: PROVIDER INTEGRATION & REMAINING METHODS
+# ============================================================================
+
+
+class TestProviderIntegration:
+    """
+    Gap 3 tests for provider integration and remaining helper methods.
+    
+    Covers: get_provider_status, get_rate_limit_status, multi-provider health checks,
+    availability testing, error handling.
+    """
+
+    @pytest.mark.asyncio
+    async def test_get_provider_status_success(self, ai_service):
+        """Test get_provider_status returns status for all providers"""
+        with patch("app.services.ai_service.ai_provider_manager") as mock_manager:
+            # Mock provider status response
+            mock_status = {
+                "openrouter": {
+                    "available": True,
+                    "models": ["gpt-4", "claude-3"],
+                    "default_model": "gpt-4",
+                    "name": "openrouter",
+                    "type": "api"
+                },
+                "ollama": {
+                    "available": True,
+                    "models": ["llama2", "mistral"],
+                    "default_model": "llama2",
+                    "name": "ollama",
+                    "type": "local"
+                }
+            }
+            
+            mock_manager.get_provider_status = AsyncMock(return_value=mock_status)
+            
+            # Execute
+            result = await ai_service.get_provider_status()
+            
+            # Assertions
+            assert result is not None
+            assert "openrouter" in result
+            assert "ollama" in result
+            assert result["openrouter"]["available"] is True
+            assert result["ollama"]["available"] is True
+            assert len(result["openrouter"]["models"]) > 0
+
+    @pytest.mark.asyncio
+    async def test_get_provider_status_with_unavailable_providers(self, ai_service):
+        """Test get_provider_status handles unavailable providers gracefully"""
+        with patch("app.services.ai_service.ai_provider_manager") as mock_manager:
+            # Mock mixed availability
+            mock_status = {
+                "openrouter": {
+                    "available": True,
+                    "models": ["gpt-4"],
+                    "default_model": "gpt-4",
+                    "name": "openrouter",
+                    "type": "api"
+                },
+                "ollama": {
+                    "available": False,
+                    "error": "Connection refused",
+                    "models": [],
+                    "default_model": None
+                }
+            }
+            
+            mock_manager.get_provider_status = AsyncMock(return_value=mock_status)
+            
+            # Execute
+            result = await ai_service.get_provider_status()
+            
+            # Assertions
+            assert result["openrouter"]["available"] is True
+            assert result["ollama"]["available"] is False
+            assert "error" in result["ollama"]
+
+    @pytest.mark.asyncio
+    async def test_get_provider_status_error_handling(self, ai_service):
+        """Test get_provider_status handles errors gracefully"""
+        with patch("app.services.ai_service.ai_provider_manager") as mock_manager:
+            # Mock manager raises exception
+            mock_manager.get_provider_status = AsyncMock(
+                side_effect=Exception("Provider manager error")
+            )
+            
+            # Execute should raise exception (no error handling in AIService.get_provider_status)
+            with pytest.raises(Exception, match="Provider manager error"):
+                await ai_service.get_provider_status()
+
+    def test_get_rate_limit_status(self, ai_service):
+        """Test get_rate_limit_status returns user rate limit info"""
+        user_id = 100
+        
+        # Mock rate limiter
+        with patch.object(ai_service.rate_limiter, 'get_user_usage') as mock_get_usage:
+            mock_usage = {
+                "requests": 5,
+                "window_start": 1234567890,
+                "limit": 10,
+                "remaining": 5
+            }
+            mock_get_usage.return_value = mock_usage
+            
+            # Execute
+            result = ai_service.get_rate_limit_status(user_id)
+            
+            # Assertions
+            assert result is not None
+            assert result["requests"] == 5
+            assert result["remaining"] == 5
+            assert result["limit"] == 10
+            mock_get_usage.assert_called_once_with(user_id)
+
+    def test_get_rate_limit_status_no_usage(self, ai_service):
+        """Test get_rate_limit_status when user has no usage history"""
+        user_id = 999
+        
+        with patch.object(ai_service.rate_limiter, 'get_user_usage') as mock_get_usage:
+            # Return empty/default usage
+            mock_usage = {
+                "requests": 0,
+                "window_start": 0,
+                "limit": 10,
+                "remaining": 10
+            }
+            mock_get_usage.return_value = mock_usage
+            
+            # Execute
+            result = ai_service.get_rate_limit_status(user_id)
+            
+            # Should return default state
+            assert result["requests"] == 0
+            assert result["remaining"] == 10
+
+
+# ============================================================================
 # INTEGRATION TESTS
 # ============================================================================
 
