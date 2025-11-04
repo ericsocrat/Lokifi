@@ -2,13 +2,13 @@
 
 /**
  * Lokifi MCP Coverage Server
- * 
+ *
  * Model Context Protocol server that provides real-time access to test coverage data.
  * Allows AI assistants to query coverage metrics without running tests.
- * 
+ *
  * Usage:
  *   node tools/mcp-coverage-server.js
- * 
+ *
  * VS Code Configuration:
  *   Add to .vscode/settings.json:
  *   {

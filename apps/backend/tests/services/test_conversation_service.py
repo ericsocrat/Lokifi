@@ -1176,8 +1176,8 @@ class TestBuildConversationResponse:
         self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
     ):
         """Test building conversation response with participants and last message"""
-        from app.schemas.conversation import MessageResponse
         from app.models.profile import Profile
+        from app.schemas.conversation import MessageResponse
 
         user_id = sample_user_ids["user1"]
         user2_id = sample_user_ids["user2"]
@@ -1250,9 +1250,7 @@ class TestBuildConversationResponse:
         ]
 
         # Execute
-        result = await conversation_service._build_conversation_response(
-            mock_conversation, user_id
-        )
+        result = await conversation_service._build_conversation_response(mock_conversation, user_id)
 
         # Verify response structure
         assert result.id == sample_conversation_id
@@ -1316,9 +1314,7 @@ class TestBuildConversationResponse:
         ]
 
         # Execute
-        result = await conversation_service._build_conversation_response(
-            mock_conversation, user_id
-        )
+        result = await conversation_service._build_conversation_response(mock_conversation, user_id)
 
         # Verify: Unread count uses "messages after last_read" logic
         assert result.unread_count == 3
@@ -1375,9 +1371,7 @@ class TestBuildConversationResponse:
         ]
 
         # Execute
-        result = await conversation_service._build_conversation_response(
-            mock_conversation, user_id
-        )
+        result = await conversation_service._build_conversation_response(mock_conversation, user_id)
 
         # Verify: Unread count uses "count all messages" logic
         assert result.unread_count == 10
@@ -1458,4 +1452,3 @@ class TestBuildMessageResponse:
         assert result.id == message_id
         assert result.content == "Unread message"
         assert len(result.read_by) == 0  # No one has read
-

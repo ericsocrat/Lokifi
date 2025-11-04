@@ -464,6 +464,7 @@ class TestUserNotificationRetrieval:
     ):
         """Test get_user_notifications with unread_only and type filters"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -477,10 +478,7 @@ class TestUserNotificationRetrieval:
             mock_db_session.execute.return_value = mock_result
 
             result = await notification_service.get_user_notifications(
-                sample_user_id,
-                unread_only=True,
-                notification_type="FOLLOW",
-                category="social"
+                sample_user_id, unread_only=True, notification_type="FOLLOW", category="social"
             )
 
             assert isinstance(result, list)
@@ -492,6 +490,7 @@ class TestUserNotificationRetrieval:
     ):
         """Test get_user_notifications with pagination"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -517,6 +516,7 @@ class TestUserNotificationRetrieval:
     ):
         """Test get_user_notifications error handling"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -532,9 +532,7 @@ class TestUnreadCount:
     """Test suite for get_unread_count with Redis caching"""
 
     @pytest.mark.asyncio
-    async def test_get_unread_count_cache_hit(
-        self, notification_service, sample_user_id
-    ):
+    async def test_get_unread_count_cache_hit(self, notification_service, sample_user_id):
         """Test get_unread_count returns cached value"""
         with patch("app.services.notification_service.redis_client") as mock_redis:
             mock_redis.get_cached_unread_count = AsyncMock(return_value=5)
@@ -554,6 +552,7 @@ class TestUnreadCount:
             mock_redis.cache_unread_count = AsyncMock()
 
             with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
                 async def mock_get_session(*args, **kwargs):
                     yield mock_db_session
 
@@ -567,9 +566,7 @@ class TestUnreadCount:
                 result = await notification_service.get_unread_count(sample_user_id)
 
                 assert result == 3
-                mock_redis.cache_unread_count.assert_called_once_with(
-                    sample_user_id, 3, ttl=300
-                )
+                mock_redis.cache_unread_count.assert_called_once_with(sample_user_id, 3, ttl=300)
 
     @pytest.mark.asyncio
     async def test_get_unread_count_error_handling(
@@ -580,6 +577,7 @@ class TestUnreadCount:
             mock_redis.get_cached_unread_count = AsyncMock(return_value=None)
 
             with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
                 async def mock_get_session(*args, **kwargs):
                     yield mock_db_session
 
@@ -604,6 +602,7 @@ class TestMarkAsRead:
         mock_notification.mark_as_read = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -628,6 +627,7 @@ class TestMarkAsRead:
         notification_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -652,6 +652,7 @@ class TestMarkAsRead:
         mock_notification.mark_as_read = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -674,6 +675,7 @@ class TestMarkAsRead:
         notification_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -699,6 +701,7 @@ class TestMarkAllAsRead:
             notification.mark_as_read = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -724,6 +727,7 @@ class TestMarkAllAsRead:
     ):
         """Test mark_all_as_read with no unread notifications"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -746,6 +750,7 @@ class TestMarkAllAsRead:
     ):
         """Test mark_all_as_read error handling"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -775,6 +780,7 @@ class TestDismissNotification:
         mock_notification.dismiss = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -801,6 +807,7 @@ class TestDismissNotification:
         notification_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -827,6 +834,7 @@ class TestDismissNotification:
         mock_notification.dismiss = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -851,6 +859,7 @@ class TestDismissNotification:
         notification_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -876,6 +885,7 @@ class TestClickNotification:
         mock_notification.mark_as_clicked = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -902,6 +912,7 @@ class TestClickNotification:
         notification_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -912,9 +923,7 @@ class TestClickNotification:
             mock_result.scalar_one_or_none.return_value = None
             mock_db_session.execute.return_value = mock_result
 
-            result = await notification_service.click_notification(
-                notification_id, sample_user_id
-            )
+            result = await notification_service.click_notification(notification_id, sample_user_id)
 
             assert result is False
 
@@ -927,6 +936,7 @@ class TestClickNotification:
         mock_notification.mark_as_clicked = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -951,15 +961,14 @@ class TestClickNotification:
         notification_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
             mock_db_manager.get_session.return_value = mock_get_session()
             mock_db_session.execute.side_effect = Exception("Database error")
 
-            result = await notification_service.click_notification(
-                notification_id, sample_user_id
-            )
+            result = await notification_service.click_notification(notification_id, sample_user_id)
 
             assert result is False
 
@@ -980,7 +989,7 @@ class TestNotificationStats:
         # Create mock notifications with various states
         now = datetime.now(timezone.utc)
         notifications = []
-        
+
         for i in range(5):
             notification = Mock(spec=Notification)
             notification.type = "FOLLOW" if i % 2 == 0 else "LIKE"
@@ -994,6 +1003,7 @@ class TestNotificationStats:
             notifications.append(notification)
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1012,7 +1022,9 @@ class TestNotificationStats:
                 make_scalar_mock(1),  # dismissed_count
                 make_scalar_mock(5),  # delivered_count
                 make_scalar_mock(2),  # clicked_count
-                Mock(scalars=Mock(return_value=Mock(all=Mock(return_value=notifications))))  # all_notifications
+                Mock(
+                    scalars=Mock(return_value=Mock(all=Mock(return_value=notifications)))
+                ),  # all_notifications
             ]
 
             result = await notification_service.get_notification_stats(sample_user_id)
@@ -1030,6 +1042,7 @@ class TestNotificationStats:
     ):
         """Test get_notification_stats error handling"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1055,7 +1068,7 @@ class TestCleanupExpired:
         # Create expired notifications
         past_time = datetime(2020, 1, 1, tzinfo=timezone.utc)
         expired_notifications = []
-        
+
         for i in range(3):
             notification = Mock(spec=Notification)
             notification.id = str(uuid.uuid4())
@@ -1063,6 +1076,7 @@ class TestCleanupExpired:
             expired_notifications.append(notification)
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1088,6 +1102,7 @@ class TestCleanupExpired:
     ):
         """Test cleanup_expired_notifications with no expired notifications"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1110,6 +1125,7 @@ class TestCleanupExpired:
     ):
         """Test cleanup_expired_notifications error handling"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1134,39 +1150,29 @@ class TestPreferenceLogic:
         mock_result.scalar_one_or_none.return_value = mock_preference
         mock_session.execute.return_value = mock_result
 
-        result = await notification_service._get_user_preferences(
-            mock_session, sample_user_id
-        )
+        result = await notification_service._get_user_preferences(mock_session, sample_user_id)
 
         assert result == mock_preference
 
     @pytest.mark.asyncio
-    async def test_get_user_preferences_not_found(
-        self, notification_service, sample_user_id
-    ):
+    async def test_get_user_preferences_not_found(self, notification_service, sample_user_id):
         """Test _get_user_preferences with no preferences"""
         mock_session = AsyncMock()
         mock_result = Mock()
         mock_result.scalar_one_or_none.return_value = None
         mock_session.execute.return_value = mock_result
 
-        result = await notification_service._get_user_preferences(
-            mock_session, sample_user_id
-        )
+        result = await notification_service._get_user_preferences(mock_session, sample_user_id)
 
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_get_user_preferences_error_handling(
-        self, notification_service, sample_user_id
-    ):
+    async def test_get_user_preferences_error_handling(self, notification_service, sample_user_id):
         """Test _get_user_preferences error handling"""
         mock_session = AsyncMock()
         mock_session.execute.side_effect = Exception("Database error")
 
-        result = await notification_service._get_user_preferences(
-            mock_session, sample_user_id
-        )
+        result = await notification_service._get_user_preferences(mock_session, sample_user_id)
 
         assert result is None
 
@@ -1222,7 +1228,7 @@ class TestPreferenceLogic:
             user_id=sample_user_id,
             type=NotificationType.SYSTEM_ALERT,
             title="Urgent",
-            priority=NotificationPriority.URGENT
+            priority=NotificationPriority.URGENT,
         )
 
         result = await notification_service._should_deliver_notification(
@@ -1243,6 +1249,7 @@ class TestDeliveryAndEvents:
         mock_notification.mark_as_delivered = Mock()
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1263,6 +1270,7 @@ class TestDeliveryAndEvents:
         mock_notification.mark_as_delivered = Mock(side_effect=Exception("Delivery error"))
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+
             async def mock_get_session(*args, **kwargs):
                 yield mock_db_session
 
@@ -1321,7 +1329,7 @@ class TestDeliveryAndEvents:
     def test_remove_event_handler_not_found(self, notification_service):
         """Test remove_event_handler with non-existent handler"""
         handler = Mock()
-        
+
         # Should not raise exception
         notification_service.remove_event_handler(NotificationEvent.CREATED, handler)
 

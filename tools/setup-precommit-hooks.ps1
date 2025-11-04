@@ -142,11 +142,11 @@ if [ -f "`$PROTECTION_SCRIPT" ]; then
         echo ""
         echo "✅ Quality gates passed!"
         echo ""
-        
+
         # Run security scan (quick mode for pre-commit)
         if [ -f "`$SECURITY_SCRIPT" ]; then
             echo "🔒 Running security scan..."
-            
+
             if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$SECURITY_SCRIPT" -Quick -CIMode; then
                 echo ""
                 echo "✅ Security scan passed! Commit allowed."

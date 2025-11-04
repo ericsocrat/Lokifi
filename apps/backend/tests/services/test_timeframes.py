@@ -91,10 +91,10 @@ class TestNormalize:
         """Test ValueError for unsupported timeframes"""
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             normalize("2m")
-        
+
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             normalize("30m")
-        
+
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             normalize("invalid")
 
@@ -113,7 +113,7 @@ class TestNormalize:
         """Test unsupported numeric values"""
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             normalize("30")  # Not in supported numeric aliases
-        
+
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             normalize("120")
 
@@ -181,7 +181,7 @@ class TestSeconds:
         """Test ValueError for unsupported timeframes"""
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             seconds("2m")
-        
+
         with pytest.raises(ValueError, match="Unsupported timeframe"):
             seconds("invalid")
 
@@ -198,25 +198,42 @@ class TestTimeframesIntegration:
         """Test that all normalizable aliases have seconds mappings"""
         # All aliases from normalize function
         test_cases = [
-            ("1", 60), ("1m", 60), ("1min", 60),
-            ("5", 300), ("5m", 300), ("5min", 300),
-            ("15", 900), ("15m", 900), ("15min", 900),
-            ("60", 3600), ("1h", 3600), ("1hr", 3600), ("h1", 3600),
-            ("240", 14400), ("4h", 14400), ("4hr", 14400), ("h4", 14400),
-            ("1d", 86400), ("d1", 86400), ("day", 86400), ("daily", 86400),
+            ("1", 60),
+            ("1m", 60),
+            ("1min", 60),
+            ("5", 300),
+            ("5m", 300),
+            ("5min", 300),
+            ("15", 900),
+            ("15m", 900),
+            ("15min", 900),
+            ("60", 3600),
+            ("1h", 3600),
+            ("1hr", 3600),
+            ("h1", 3600),
+            ("240", 14400),
+            ("4h", 14400),
+            ("4hr", 14400),
+            ("h4", 14400),
+            ("1d", 86400),
+            ("d1", 86400),
+            ("day", 86400),
+            ("daily", 86400),
         ]
-        
+
         for alias, expected_seconds in test_cases:
             canonical = normalize(alias)
             assert canonical in CANONICAL, f"{alias} normalized to {canonical} not in CANONICAL"
-            assert seconds(alias) == expected_seconds, f"{alias} → {canonical} → {seconds(alias)} != {expected_seconds}"
+            assert (
+                seconds(alias) == expected_seconds
+            ), f"{alias} → {canonical} → {seconds(alias)} != {expected_seconds}"
 
     def test_normalize_then_seconds_consistency(self):
         """Test that normalize → seconds is consistent"""
         for canonical in CANONICAL:
             normalized = normalize(canonical)
             assert normalized == canonical, f"{canonical} should normalize to itself"
-            
+
             # Verify seconds works with canonical
             secs = seconds(canonical)
             assert isinstance(secs, int), f"seconds({canonical}) should return int"
@@ -225,14 +242,15 @@ class TestTimeframesIntegration:
     def test_unsupported_fails_at_normalize(self):
         """Test that unsupported timeframes fail at normalize stage"""
         unsupported = ["2m", "30m", "2h", "weekly", "monthly", "invalid"]
-        
+
         for tf in unsupported:
             with pytest.raises(ValueError, match="Unsupported timeframe"):
                 normalize(tf)
-            
+
             # seconds should also fail (calls normalize internally)
             with pytest.raises(ValueError, match="Unsupported timeframe"):
                 seconds(tf)
+
     # - External API calls
     # - Service interactions
     # - End-to-end workflows

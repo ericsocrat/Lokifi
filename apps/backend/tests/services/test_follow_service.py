@@ -1135,7 +1135,7 @@ class TestGetFollowSuggestions:
             username="popular_user",
             display_name="Popular User",
             avatar_url="https://example.com/popular.jpg",
-            follower_count=10000
+            follower_count=10000,
         )
         mock_popular_result.all.return_value = [mock_popular_row]
 

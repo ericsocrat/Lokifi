@@ -1343,7 +1343,7 @@ with patch("app.services.notification_service.redis_client") as mock_redis:
     mock_redis.get_cached_unread_count = AsyncMock(return_value=5)
     result = await notification_service.get_unread_count(user_id)
     assert result == 5  # Returns cached value
-    
+
     # Cache miss scenario
     mock_redis.get_cached_unread_count = AsyncMock(return_value=None)
     mock_redis.cache_unread_count = AsyncMock()
