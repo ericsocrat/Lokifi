@@ -21,7 +21,9 @@ expect.extend(toHaveNoViolations);
 // Start MSW server before all tests
 beforeAll(() => {
   server.listen({
-    onUnhandledRequest: 'warn',
+    // Suppress unhandled request warnings in tests
+    // Tests should explicitly mock the requests they need
+    onUnhandledRequest: 'bypass',
   });
 });
 

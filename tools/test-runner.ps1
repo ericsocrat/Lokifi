@@ -363,7 +363,7 @@ function Invoke-BackendTests {
 
         Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
 
-        & .\venv\Scripts\python.exe -m pytest @pytestArgs
+        & .\venv\Scripts\python.exe -m pytest @pytestArgs | Out-Host
 
         $exitCode = $LASTEXITCODE
 
@@ -444,7 +444,7 @@ function Invoke-FrontendTests {
 
         Write-TestLog "npm $($testArgs -join ' ')" -Level Info
 
-        npm @testArgs
+        npm @testArgs | Out-Host
 
         $exitCode = $LASTEXITCODE
 
