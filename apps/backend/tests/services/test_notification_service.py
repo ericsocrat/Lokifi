@@ -207,7 +207,11 @@ class TestNotificationCreation:
         """Test successful notification creation"""
         # Mock database manager
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
-            mock_db_manager.get_session.return_value.__aenter__.return_value = mock_db_session
+            # Mock db_manager.get_session() to return async generator yielding mock_db_session
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
             mock_db_session.refresh.side_effect = lambda obj: setattr(
                 obj, "id", mock_notification.id
             )
@@ -254,7 +258,11 @@ class TestNotificationCreation:
     ):
         """Test notification creation skipping preference check"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
-            mock_db_manager.get_session.return_value.__aenter__.return_value = mock_db_session
+            # Mock db_manager.get_session() to return async generator yielding mock_db_session
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
             mock_db_session.refresh.side_effect = lambda obj: setattr(
                 obj, "id", mock_notification.id
             )
@@ -279,8 +287,12 @@ class TestNotificationCreation:
         batch_id = str(uuid.uuid4())
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            # Mock db_manager.get_session() to return async generator yielding mock_db_session
+            async def mock_get_session(*args, **kwargs):
+                yield mock_db_session
+
+            mock_db_manager.get_session.return_value = mock_get_session()
             mock_db_session.refresh.side_effect = lambda obj: setattr(obj, "batch_id", batch_id)
-            mock_db_manager.get_session.return_value.__aenter__.return_value = mock_db_session
 
             with patch.object(notification_service, "_get_user_preferences", return_value=Mock()):
                 with patch.object(
@@ -404,12 +416,6 @@ class TestBatchOperations:
                 results = await notification_service.create_batch_notifications(notifications_data)
 
         assert len(results) == 2  # Only successful ones
-
-    @pytest.mark.asyncio
-    async def test_basic_functionality(self, sample_data):
-        """Test basic functionality"""
-        # TODO: Add basic functionality test
-        assert sample_data is not None
 
     # TODO: Add more test cases for:
     # - Happy path scenarios
