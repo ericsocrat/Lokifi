@@ -1160,3 +1160,302 @@ class TestMarkMessagesReadReceipts:
         # Verify: commit called
         assert mock_db_session.commit.called
 
+
+# ============================================================================
+# GAP 3: _build_conversation_response & _build_message_response HELPERS
+# Coverage Target: Lines 320-423 (helper methods)
+# Expected Gain: +5-10pp (82% → 87-92%)
+# ============================================================================
+
+
+class TestBuildConversationResponse:
+    """Test suite for _build_conversation_response helper method"""
+
+    @pytest.mark.asyncio
+    async def test_build_conversation_response_with_participants_and_last_message(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test building conversation response with participants and last message"""
+        from app.schemas.conversation import MessageResponse
+        from app.models.profile import Profile
+
+        user_id = sample_user_ids["user1"]
+        user2_id = sample_user_ids["user2"]
+
+        # Mock conversation
+        mock_conversation = MagicMock()
+        mock_conversation.id = sample_conversation_id
+        mock_conversation.is_group = False
+        mock_conversation.name = None
+        mock_conversation.description = None
+        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+
+        # Mock participants with profiles
+        mock_participant1 = MagicMock(spec=ConversationParticipant)
+        mock_participant1.user_id = user_id
+        mock_participant1.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant1.is_active = True
+        mock_participant1.last_read_message_id = None
+
+        mock_participant2 = MagicMock(spec=ConversationParticipant)
+        mock_participant2.user_id = user2_id
+        mock_participant2.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant2.is_active = True
+        mock_participant2.last_read_message_id = None
+
+        mock_profile1 = MagicMock(spec=Profile)
+        mock_profile1.username = "user1"
+        mock_profile1.display_name = "User One"
+        mock_profile1.avatar_url = None
+
+        mock_profile2 = MagicMock(spec=Profile)
+        mock_profile2.username = "user2"
+        mock_profile2.display_name = "User Two"
+        mock_profile2.avatar_url = None
+
+        # Mock participants query result
+        mock_participants_result = MagicMock()
+        mock_participants_result.all.return_value = [
+            (mock_participant1, mock_profile1),
+            (mock_participant2, mock_profile2),
+        ]
+
+        # Mock last message
+        mock_last_message = MagicMock(spec=Message)
+        mock_last_message.id = uuid.uuid4()
+        mock_last_message.conversation_id = sample_conversation_id
+        mock_last_message.sender_id = user2_id
+        mock_last_message.content = "Hello"
+        mock_last_message.content_type = ContentType.TEXT
+        mock_last_message.is_edited = False
+        mock_last_message.is_deleted = False
+        mock_last_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_last_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_last_message.receipts = []
+
+        mock_last_message_result = MagicMock()
+        mock_last_message_result.scalar_one_or_none.return_value = mock_last_message
+
+        # Mock unread count query (no last_read_message_id)
+        mock_unread_count_result = MagicMock()
+        mock_unread_count_result.scalar.return_value = 5
+
+        # Side effects: participants + last_message + unread_count
+        mock_db_session.execute.side_effect = [
+            mock_participants_result,  # Participants query
+            mock_last_message_result,  # Last message query
+            mock_unread_count_result,  # Unread count query
+        ]
+
+        # Execute
+        result = await conversation_service._build_conversation_response(
+            mock_conversation, user_id
+        )
+
+        # Verify response structure
+        assert result.id == sample_conversation_id
+        assert result.is_group is False
+        assert len(result.participants) == 2
+        assert result.participants[0].username == "user1"
+        assert result.participants[1].username == "user2"
+        assert result.last_message is not None
+        assert result.last_message.content == "Hello"
+        assert result.unread_count == 5
+
+    @pytest.mark.asyncio
+    async def test_build_conversation_response_unread_count_with_last_read(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test unread count calculation when participant has last_read_message_id"""
+        from app.models.profile import Profile
+
+        user_id = sample_user_ids["user1"]
+        last_read_msg_id = uuid.uuid4()
+
+        # Mock conversation
+        mock_conversation = MagicMock()
+        mock_conversation.id = sample_conversation_id
+        mock_conversation.is_group = False
+        mock_conversation.name = None
+        mock_conversation.description = None
+        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+
+        # Mock participant with last_read_message_id
+        mock_participant = MagicMock(spec=ConversationParticipant)
+        mock_participant.user_id = user_id
+        mock_participant.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant.is_active = True
+        mock_participant.last_read_message_id = last_read_msg_id
+
+        mock_profile = MagicMock(spec=Profile)
+        mock_profile.username = "user1"
+        mock_profile.display_name = "User One"
+        mock_profile.avatar_url = None
+
+        # Mock participants query result
+        mock_participants_result = MagicMock()
+        mock_participants_result.all.return_value = [(mock_participant, mock_profile)]
+
+        # Mock no last message
+        mock_last_message_result = MagicMock()
+        mock_last_message_result.scalar_one_or_none.return_value = None
+
+        # Mock unread count query (with last_read_message_id - count messages after)
+        mock_unread_count_result = MagicMock()
+        mock_unread_count_result.scalar.return_value = 3
+
+        # Side effects: participants + last_message + unread_count (after last_read)
+        mock_db_session.execute.side_effect = [
+            mock_participants_result,  # Participants query
+            mock_last_message_result,  # Last message query (None)
+            mock_unread_count_result,  # Unread count (messages after last_read)
+        ]
+
+        # Execute
+        result = await conversation_service._build_conversation_response(
+            mock_conversation, user_id
+        )
+
+        # Verify: Unread count uses "messages after last_read" logic
+        assert result.unread_count == 3
+        assert result.last_message is None
+
+    @pytest.mark.asyncio
+    async def test_build_conversation_response_unread_count_no_last_read(
+        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+    ):
+        """Test unread count when participant has NO last_read_message_id (never read)"""
+        from app.models.profile import Profile
+
+        user_id = sample_user_ids["user1"]
+
+        # Mock conversation
+        mock_conversation = MagicMock()
+        mock_conversation.id = sample_conversation_id
+        mock_conversation.is_group = False
+        mock_conversation.name = None
+        mock_conversation.description = None
+        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+
+        # Mock participant with NO last_read_message_id
+        mock_participant = MagicMock(spec=ConversationParticipant)
+        mock_participant.user_id = user_id
+        mock_participant.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant.is_active = True
+        mock_participant.last_read_message_id = None  # Never read
+
+        mock_profile = MagicMock(spec=Profile)
+        mock_profile.username = "user1"
+        mock_profile.display_name = "User One"
+        mock_profile.avatar_url = None
+
+        # Mock participants query result
+        mock_participants_result = MagicMock()
+        mock_participants_result.all.return_value = [(mock_participant, mock_profile)]
+
+        # Mock no last message
+        mock_last_message_result = MagicMock()
+        mock_last_message_result.scalar_one_or_none.return_value = None
+
+        # Mock unread count query (count all messages, excluding sender's own)
+        mock_unread_count_result = MagicMock()
+        mock_unread_count_result.scalar.return_value = 10
+
+        # Side effects: participants + last_message + unread_count (all messages)
+        mock_db_session.execute.side_effect = [
+            mock_participants_result,  # Participants query
+            mock_last_message_result,  # Last message query (None)
+            mock_unread_count_result,  # Unread count (all messages excluding sender)
+        ]
+
+        # Execute
+        result = await conversation_service._build_conversation_response(
+            mock_conversation, user_id
+        )
+
+        # Verify: Unread count uses "count all messages" logic
+        assert result.unread_count == 10
+        assert result.last_message is None
+
+
+class TestBuildMessageResponse:
+    """Test suite for _build_message_response helper method"""
+
+    @pytest.mark.asyncio
+    async def test_build_message_response_with_read_receipts(
+        self, conversation_service, sample_user_ids, sample_conversation_id
+    ):
+        """Test building message response with read receipts"""
+        user1_id = sample_user_ids["user1"]
+        user2_id = sample_user_ids["user2"]
+        message_id = uuid.uuid4()
+
+        # Mock message with receipts
+        mock_receipt1 = MagicMock(spec=MessageReceipt)
+        mock_receipt1.user_id = user1_id
+
+        mock_receipt2 = MagicMock(spec=MessageReceipt)
+        mock_receipt2.user_id = user2_id
+
+        mock_message = MagicMock(spec=Message)
+        mock_message.id = message_id
+        mock_message.conversation_id = sample_conversation_id
+        mock_message.sender_id = user1_id
+        mock_message.content = "Test message"
+        mock_message.content_type = ContentType.TEXT
+        mock_message.is_edited = False
+        mock_message.is_deleted = False
+        mock_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message.receipts = [mock_receipt1, mock_receipt2]
+
+        # Execute
+        result = await conversation_service._build_message_response(mock_message)
+
+        # Verify response
+        assert result.id == message_id
+        assert result.conversation_id == sample_conversation_id
+        assert result.sender_id == user1_id
+        assert result.content == "Test message"
+        assert result.content_type == ContentType.TEXT
+        assert result.is_edited is False
+        assert result.is_deleted is False
+        assert len(result.read_by) == 2
+        assert user1_id in result.read_by
+        assert user2_id in result.read_by
+
+    @pytest.mark.asyncio
+    async def test_build_message_response_no_receipts(
+        self, conversation_service, sample_user_ids, sample_conversation_id
+    ):
+        """Test building message response with no read receipts"""
+        user1_id = sample_user_ids["user1"]
+        message_id = uuid.uuid4()
+
+        # Mock message with NO receipts
+        mock_message = MagicMock(spec=Message)
+        mock_message.id = message_id
+        mock_message.conversation_id = sample_conversation_id
+        mock_message.sender_id = user1_id
+        mock_message.content = "Unread message"
+        mock_message.content_type = ContentType.TEXT
+        mock_message.is_edited = False
+        mock_message.is_deleted = False
+        mock_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message.receipts = []  # No receipts
+
+        # Execute
+        result = await conversation_service._build_message_response(mock_message)
+
+        # Verify response
+        assert result.id == message_id
+        assert result.content == "Unread message"
+        assert len(result.read_by) == 0  # No one has read
+
