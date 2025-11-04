@@ -14,7 +14,7 @@ rules:
   # Allow GitHub Actions expressions in strings without warnings
   # Context: ${{ }} expressions are valid in GitHub Actions, but YAML linters flag them
   truthy:
-    allowed-values: ['true', 'false', 'on', 'off']
+    allowed-values: ["true", "false", "on", "off"]
 
   # Allow inline JSON in workflows (Slack payloads, etc.)
   braces:

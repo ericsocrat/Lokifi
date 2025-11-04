@@ -240,6 +240,7 @@ class TestFetchNewsEdgeCases:
         assert all(item["symbol"] == "aapl" for item in result)
         mock_get.assert_called_once()
         assert mock_get.call_args[0][1]["tickers"] == "aapl"
+
     # - External API calls
     # - Service interactions
     # - End-to-end workflows

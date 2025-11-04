@@ -16,8 +16,11 @@ export function getToken(): string | null {
 
 export async function apiFetch(input: string, init: RequestInit = {}) {
   const url = `${API_BASE}${input}`;
-  console.log('🌐 apiFetch: Making request to:', url);
-  console.log('🌐 apiFetch: Method:', init.method || 'GET');
+
+  // Development-only logging
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🌐 apiFetch:', init.method || 'GET', url);
+  }
 
   const headers = new Headers(init.headers || {});
   // Using HTTP-only cookies for auth, no need for Authorization header
@@ -30,11 +33,8 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
       credentials: 'include', // Enable sending/receiving cookies
     });
 
-    console.log('🌐 apiFetch: Response status:', res.status);
-
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      console.log('❌ apiFetch: Error response:', text);
       // Try to parse error detail from JSON response
       try {
         const errorData = JSON.parse(text);
@@ -48,7 +48,10 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
 
     return res;
   } catch (error) {
-    console.error('❌ apiFetch: Request failed:', error);
+    // Development-only error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('❌ apiFetch failed:', error);
+    }
     throw error;
   }
 }

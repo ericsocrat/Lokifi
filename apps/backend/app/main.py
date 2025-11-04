@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from app.api.j6_2_endpoints import j6_2_router
 from app.api.market.routes import router as realtime_market_router
+from app.api.routes import social  # Use comprehensive social router from api/routes
 from app.api.routes import security
 from app.api.routes.monitoring import router as monitoring_router
 
@@ -33,7 +34,6 @@ from app.routers import (
     portfolio,
     profile,
     smart_prices,
-    social,
     websocket,
     websocket_prices,
 )

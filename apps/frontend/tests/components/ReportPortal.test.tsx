@@ -1,5 +1,5 @@
 import ReportPortal from '@/components/ReportPortal';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock ReportComposer since we're testing the portal wrapper
@@ -45,7 +45,10 @@ describe('ReportPortal', () => {
       render(<ReportPortal />);
 
       // Dispatch the custom event
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('report-composer')).toBeInTheDocument();
@@ -55,7 +58,10 @@ describe('ReportPortal', () => {
     it('should show Report Composer content after event', async () => {
       render(<ReportPortal />);
 
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         expect(screen.getByText('Report Composer')).toBeInTheDocument();
@@ -65,7 +71,10 @@ describe('ReportPortal', () => {
     it('should pass open=true to ReportComposer after event', async () => {
       render(<ReportPortal />);
 
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         const composer = screen.getByTestId('report-composer');
@@ -85,13 +94,19 @@ describe('ReportPortal', () => {
       render(<ReportPortal />);
 
       // First event
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('report-composer')).toBeInTheDocument();
       });
 
       // Second event (should still be open)
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('report-composer')).toBeInTheDocument();
       });
@@ -103,7 +118,10 @@ describe('ReportPortal', () => {
       render(<ReportPortal />);
 
       // Open the composer
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         expect(screen.getByTestId('report-composer')).toBeInTheDocument();
@@ -111,7 +129,9 @@ describe('ReportPortal', () => {
 
       // Click close button
       const closeButton = screen.getByText('Close');
-      closeButton.click();
+      await act(async () => {
+        closeButton.click();
+      });
 
       await waitFor(() => {
         expect(screen.queryByTestId('report-composer')).not.toBeInTheDocument();
@@ -121,7 +141,10 @@ describe('ReportPortal', () => {
     it('should pass onClose callback to ReportComposer', async () => {
       render(<ReportPortal />);
 
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
 
       await waitFor(() => {
         const closeButton = screen.getByText('Close');
@@ -133,13 +156,18 @@ describe('ReportPortal', () => {
       render(<ReportPortal />);
 
       // Open
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByText('Report Composer')).toBeInTheDocument();
       });
 
       // Close
-      screen.getByText('Close').click();
+      await act(async () => {
+        screen.getByText('Close').click();
+      });
       await waitFor(() => {
         expect(screen.queryByText('Report Composer')).not.toBeInTheDocument();
       });
@@ -192,16 +220,24 @@ describe('ReportPortal', () => {
       render(<ReportPortal />);
 
       // Open
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('report-composer')).toBeInTheDocument();
       });
 
       // Close
-      screen.getByText('Close').click();
+      await act(async () => {
+        screen.getByText('Close').click();
+      });
 
       // Open again quickly
-      window.dispatchEvent(new Event('lokifi:open-report'));
+      await act(async () => {
+        window.dispatchEvent(new Event('lokifi:open-report'));
+        await new Promise(resolve => setTimeout(resolve, 0));
+      });
       await waitFor(() => {
         expect(screen.getByTestId('report-composer')).toBeInTheDocument();
       });

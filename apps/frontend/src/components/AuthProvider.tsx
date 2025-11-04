@@ -36,11 +36,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Memoize refresh function to prevent unnecessary re-renders
   const refresh = useCallback(async () => {
     try {
-      console.log('🔄 AuthProvider: Refreshing user data...');
       const response = await me();
       // Backend returns { user: {...}, profile: {...} }
       if (response.user) {
-        console.log('✅ AuthProvider: User data received:', response.user.email);
         setUser({
           id: response.user.id,
           email: response.user.email,
@@ -52,7 +50,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
       }
     } catch (error) {
-      console.log('❌ AuthProvider: Failed to get user data:', error);
       setUser(null);
     }
   }, []);
@@ -64,9 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Memoize login function to prevent re-renders
   const handleLogin = useCallback(
     async (email: string, password: string) => {
-      console.log('🔐 AuthProvider: Logging in...');
       await login(email, password);
-      console.log('🔐 AuthProvider: Login successful, refreshing user data...');
       await refresh();
     },
     [refresh]
@@ -75,9 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Memoize register function to prevent re-renders
   const handleRegister = useCallback(
     async (email: string, password: string, full_name: string, username?: string) => {
-      console.log('📝 AuthProvider: Registering...');
       await registerApi(email, password, full_name, username);
-      console.log('📝 AuthProvider: Registration successful, refreshing user data...');
       await refresh();
     },
     [refresh]
@@ -85,10 +78,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Memoize logout function to prevent re-renders
   const handleLogout = useCallback(async () => {
-    console.log('🚪 AuthProvider: Logging out...');
     await logoutApi();
     setUser(null);
-    console.log('🚪 AuthProvider: Logged out');
   }, []);
 
   const value = useMemo<AuthContextType>(

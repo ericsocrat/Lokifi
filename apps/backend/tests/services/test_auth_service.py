@@ -136,9 +136,7 @@ class TestAuthServiceRegistration:
             mock_db_session.commit.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_register_user_invalid_email(
-        self, auth_service, sample_user_register_request
-    ):
+    async def test_register_user_invalid_email(self, auth_service, sample_user_register_request):
         """Test registration with invalid email"""
         with patch("app.services.auth_service.validate_email", return_value=False):
             with pytest.raises(HTTPException) as exc_info:
@@ -148,9 +146,7 @@ class TestAuthServiceRegistration:
             assert "Invalid email format" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_register_user_weak_password(
-        self, auth_service, sample_user_register_request
-    ):
+    async def test_register_user_weak_password(self, auth_service, sample_user_register_request):
         """Test registration with weak password"""
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
@@ -268,9 +264,7 @@ class TestAuthServiceLogin:
     ):
         """Test login with non-existent user"""
         # Mock no user found
-        mock_db_session.execute = AsyncMock(
-            return_value=Mock(one_or_none=Mock(return_value=None))
-        )
+        mock_db_session.execute = AsyncMock(return_value=Mock(one_or_none=Mock(return_value=None)))
 
         with pytest.raises(HTTPException) as exc_info:
             await auth_service.login_user(sample_user_login_request)
@@ -388,19 +382,13 @@ class TestAuthServiceIntegration:
                 return_value=True,
             ),
             patch("app.services.auth_service.hash_password", return_value="hashed"),
-            patch(
-                "app.services.auth_service.create_access_token", return_value="access"
-            ),
-            patch(
-                "app.services.auth_service.create_refresh_token", return_value="refresh"
-            ),
+            patch("app.services.auth_service.create_access_token", return_value="access"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh"),
         ):
             result = await auth_service.register_user(sample_user_register_request)
 
             # Verify all database objects were created
-            assert (
-                mock_db_session.add.call_count >= 3
-            )  # User, Profile, NotificationPreference
+            assert mock_db_session.add.call_count >= 3  # User, Profile, NotificationPreference
             assert mock_db_session.commit.called
 
             # Verify response structure
@@ -482,9 +470,7 @@ class TestAuthServiceIntegration:
 
             # Mock login query
             mock_db_session.execute = AsyncMock(
-                return_value=Mock(
-                    one_or_none=Mock(return_value=(mock_user, mock_profile))
-                )
+                return_value=Mock(one_or_none=Mock(return_value=(mock_user, mock_profile)))
             )
 
             with patch("app.services.auth_service.verify_password", return_value=True):
@@ -539,28 +525,20 @@ class TestAuthServiceEdgeCases:
                 return_value=True,
             ),
             patch("app.services.auth_service.hash_password", return_value="hashed"),
-            patch(
-                "app.services.auth_service.create_access_token", return_value="access"
-            ),
-            patch(
-                "app.services.auth_service.create_refresh_token", return_value="refresh"
-            ),
+            patch("app.services.auth_service.create_access_token", return_value="access"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh"),
         ):
             result = await auth_service.register_user(request)
             assert result is not None
 
     @pytest.mark.asyncio
-    async def test_login_with_special_characters_in_email(
-        self, auth_service, mock_db_session
-    ):
+    async def test_login_with_special_characters_in_email(self, auth_service, mock_db_session):
         """Test login with special characters in email"""
         from datetime import datetime
 
         from app.schemas.auth import UserLoginRequest
 
-        request = UserLoginRequest(
-            email="test+special@example.com", password="password123"
-        )
+        request = UserLoginRequest(email="test+special@example.com", password="password123")
 
         mock_user = Mock(spec=User)
         mock_user.id = uuid.uuid4()
@@ -591,12 +569,8 @@ class TestAuthServiceEdgeCases:
 
         with (
             patch("app.services.auth_service.verify_password", return_value=True),
-            patch(
-                "app.services.auth_service.create_access_token", return_value="access"
-            ),
-            patch(
-                "app.services.auth_service.create_refresh_token", return_value="refresh"
-            ),
+            patch("app.services.auth_service.create_access_token", return_value="access"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh"),
         ):
             result = await auth_service.login_user(request)
             assert result is not None
@@ -629,9 +603,7 @@ class TestAuthServiceEdgeCases:
         self, auth_service, mock_db_session, sample_user_login_request
     ):
         """Test handling of database errors during login"""
-        mock_db_session.execute = AsyncMock(
-            side_effect=Exception("Database connection lost")
-        )
+        mock_db_session.execute = AsyncMock(side_effect=Exception("Database connection lost"))
 
         with pytest.raises(Exception) as exc_info:
             await auth_service.login_user(sample_user_login_request)
@@ -665,3 +637,220 @@ class TestAuthServiceEdgeCases:
                 await auth_service.register_user(sample_user_register_request)
 
             assert "Token error" in str(exc_info.value)
+
+
+# ============================================================================
+# OAUTH AUTHENTICATION TESTS (Gap 1 - AuthService 65% → 90%+)
+# ============================================================================
+
+
+class TestOAuthAuthentication:
+    """Test suite for OAuth authentication flow (Google OAuth)"""
+
+    @pytest.mark.asyncio
+    async def test_create_user_from_oauth_new_user(self, mock_db_session):
+        """Test creating a new user from OAuth (Google) - new user flow"""
+        from datetime import datetime, timezone
+
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock database query returns None (no existing user)
+        mock_result = Mock()
+        mock_result.one_or_none.return_value = None
+        mock_db_session.execute.return_value = mock_result
+
+        # Mock flush/commit to set defaults (simulates database server_default)
+        async def mock_flush_with_defaults():
+            # Set defaults on User when flushed
+            for call in mock_db_session.add.call_args_list:
+                obj = call[0][0]
+                if isinstance(obj, User) and not hasattr(obj, "_defaults_set"):
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
+                    obj._defaults_set = True
+
+        async def mock_commit_with_defaults():
+            # Set defaults on all objects when committed
+            for call in mock_db_session.add.call_args_list:
+                obj = call[0][0]
+                if isinstance(obj, User) and not hasattr(obj, "_defaults_set"):
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
+                    obj._defaults_set = True
+                elif isinstance(obj, Profile) and not hasattr(obj, "_defaults_set"):
+                    obj.follower_count = 0
+                    obj.following_count = 0
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
+                    obj._defaults_set = True
+
+        mock_db_session.flush = AsyncMock(side_effect=mock_flush_with_defaults)
+        mock_db_session.commit = AsyncMock(side_effect=mock_commit_with_defaults)
+
+        with (
+            patch("app.services.auth_service.create_access_token", return_value="access_token"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+        ):
+            result = await auth_service.create_user_from_oauth(
+                email="newuser@gmail.com", full_name="New User", google_id="google_123"
+            )
+
+        # Verify database operations
+        assert mock_db_session.add.call_count == 3  # User + Profile + NotificationPreference
+        mock_db_session.flush.assert_called_once()
+        mock_db_session.commit.assert_called_once()
+
+        # Verify result structure (don't validate Pydantic models directly)
+        assert "user" in result
+        assert "profile" in result
+        assert "tokens" in result
+        assert result["tokens"].access_token == "access_token"
+        assert result["tokens"].refresh_token == "refresh_token"
+
+    @pytest.mark.asyncio
+    async def test_create_user_from_oauth_existing_user_no_google_id(
+        self, mock_db_session, mock_user, mock_profile
+    ):
+        """Test OAuth with existing user without Google ID - should update"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock existing user without google_id
+        mock_user.google_id = None
+        mock_user.last_login = None
+
+        # Mock database query returns existing user + profile
+        mock_result = Mock()
+        mock_result.one_or_none.return_value = (mock_user, mock_profile)
+        mock_db_session.execute.return_value = mock_result
+        mock_db_session.commit = AsyncMock()
+
+        with (
+            patch("app.services.auth_service.create_access_token", return_value="access_token"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+        ):
+            result = await auth_service.create_user_from_oauth(
+                email="test@example.com", full_name="Test User", google_id="google_456"
+            )
+
+        # Verify Google ID updated and last_login set
+        mock_db_session.commit.assert_called_once()
+        assert result["user"] is not None
+        assert result["tokens"].access_token == "access_token"
+
+    @pytest.mark.asyncio
+    async def test_create_user_from_oauth_existing_user_with_google_id(
+        self, mock_db_session, mock_user, mock_profile
+    ):
+        """Test OAuth with existing user with Google ID - should just login"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock existing user with google_id already set
+        mock_user.google_id = "google_789"
+
+        # Mock database query returns existing user + profile
+        mock_result = Mock()
+        mock_result.one_or_none.return_value = (mock_user, mock_profile)
+        mock_db_session.execute.return_value = mock_result
+        mock_db_session.commit = AsyncMock()
+
+        with (
+            patch("app.services.auth_service.create_access_token", return_value="access_token"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+        ):
+            result = await auth_service.create_user_from_oauth(
+                email="test@example.com", full_name="Test User", google_id="google_789"
+            )
+
+        # Verify only last_login updated (google_id already set)
+        mock_db_session.commit.assert_called_once()
+        assert result["user"] is not None
+        assert result["profile"] is not None
+
+    @pytest.mark.asyncio
+    async def test_create_user_from_oauth_existing_user_no_profile(
+        self, mock_db_session, mock_user
+    ):
+        """Test OAuth with existing user but no profile - should return None profile"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock existing user without profile
+        mock_user.google_id = "google_abc"
+
+        # Mock database query returns user but no profile
+        mock_result = Mock()
+        mock_result.one_or_none.return_value = (mock_user, None)
+        mock_db_session.execute.return_value = mock_result
+        mock_db_session.commit = AsyncMock()
+
+        with (
+            patch("app.services.auth_service.create_access_token", return_value="access_token"),
+            patch("app.services.auth_service.create_refresh_token", return_value="refresh_token"),
+        ):
+            result = await auth_service.create_user_from_oauth(
+                email="test@example.com", full_name="Test User", google_id="google_abc"
+            )
+
+        # Verify profile is None but user and tokens present
+        assert result["user"] is not None
+        assert result["profile"] is None
+        assert result["tokens"] is not None
+
+
+class TestGetUserMethods:
+    """Test suite for get_user_by_id and get_user_by_email helper methods"""
+
+    @pytest.mark.asyncio
+    async def test_get_user_by_id_found(self, mock_db_session, mock_user):
+        """Test get_user_by_id when user exists"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock database query returns user
+        mock_result = Mock()
+        mock_result.scalar_one_or_none.return_value = mock_user
+        mock_db_session.execute.return_value = mock_result
+
+        result = await auth_service.get_user_by_id(mock_user.id)
+
+        assert result == mock_user
+
+    @pytest.mark.asyncio
+    async def test_get_user_by_id_not_found(self, mock_db_session):
+        """Test get_user_by_id when user doesn't exist"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock database query returns None
+        mock_result = Mock()
+        mock_result.scalar_one_or_none.return_value = None
+        mock_db_session.execute.return_value = mock_result
+
+        result = await auth_service.get_user_by_id(uuid.uuid4())
+
+        assert result is None
+
+    @pytest.mark.asyncio
+    async def test_get_user_by_email_found(self, mock_db_session, mock_user):
+        """Test get_user_by_email when user exists"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock database query returns user
+        mock_result = Mock()
+        mock_result.scalar_one_or_none.return_value = mock_user
+        mock_db_session.execute.return_value = mock_result
+
+        result = await auth_service.get_user_by_email("test@example.com")
+
+        assert result == mock_user
+
+    @pytest.mark.asyncio
+    async def test_get_user_by_email_not_found(self, mock_db_session):
+        """Test get_user_by_email when user doesn't exist"""
+        auth_service = AuthService(db=mock_db_session)
+
+        # Mock database query returns None
+        mock_result = Mock()
+        mock_result.scalar_one_or_none.return_value = None
+        mock_db_session.execute.return_value = mock_result
+
+        result = await auth_service.get_user_by_email("nonexistent@example.com")
+
+        assert result is None

@@ -15,6 +15,12 @@ describe('AuthProvider', () => {
 
   describe('initialization', () => {
     it('starts with loading state', () => {
+      server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        })
+      );
+
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
       });
@@ -149,6 +155,9 @@ describe('AuthProvider', () => {
 
     it('throws error on login failure', async () => {
       server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        }),
         http.post(`${API_URL}/api/auth/login`, () => {
           return HttpResponse.json({ detail: 'Invalid credentials' }, { status: 401 });
         })
@@ -169,14 +178,10 @@ describe('AuthProvider', () => {
       }).rejects.toThrow();
     });
 
-    it('logs login attempts with console', async () => {
-      const consoleSpy = vi.spyOn(console, 'log');
-
+    it('updates user state after successful login', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/login`, () => {
-          return HttpResponse.json({
-            access_token: 'test-token',
-          });
+          return HttpResponse.json({});
         }),
         http.get(`${API_URL}/api/auth/me`, () => {
           return HttpResponse.json({
@@ -202,10 +207,16 @@ describe('AuthProvider', () => {
         await result.current.login('test@example.com', 'password123');
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('🔐 AuthProvider: Logging in...');
-      expect(consoleSpy).toHaveBeenCalledWith(
-        '🔐 AuthProvider: Login successful, refreshing user data...'
-      );
+      // Verify user state is updated after login
+      expect(result.current.user).toEqual({
+        id: '1',
+        email: 'test@example.com',
+        full_name: 'Test User',
+        username: undefined,
+        avatar_url: undefined,
+        bio: undefined,
+        created_at: '2024-01-01T00:00:00Z',
+      });
     });
   });
 
@@ -262,6 +273,9 @@ describe('AuthProvider', () => {
 
     it('throws error on registration failure', async () => {
       server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        }),
         http.post(`${API_URL}/api/auth/register`, () => {
           return HttpResponse.json({ detail: 'Email already exists' }, { status: 400 });
         })
@@ -282,9 +296,7 @@ describe('AuthProvider', () => {
       }).rejects.toThrow();
     });
 
-    it('logs registration attempts with console', async () => {
-      const consoleSpy = vi.spyOn(console, 'log');
-
+    it('updates user state after successful registration', async () => {
       server.use(
         http.post(`${API_URL}/api/auth/register`, () => {
           return HttpResponse.json({
@@ -316,10 +328,16 @@ describe('AuthProvider', () => {
         await result.current.register('new@example.com', 'password123', 'New User');
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('📝 AuthProvider: Registering...');
-      expect(consoleSpy).toHaveBeenCalledWith(
-        '📝 AuthProvider: Registration successful, refreshing user data...'
-      );
+      // Verify user state is updated after registration
+      expect(result.current.user).toEqual({
+        id: '1',
+        email: 'new@example.com',
+        full_name: 'New User',
+        username: undefined,
+        avatar_url: undefined,
+        bio: undefined,
+        created_at: '2024-01-01T00:00:00Z',
+      });
     });
   });
 
@@ -364,9 +382,7 @@ describe('AuthProvider', () => {
       });
     });
 
-    it('logs logout attempts with console', async () => {
-      const consoleSpy = vi.spyOn(console, 'log');
-
+    it('clears user state after logout', async () => {
       server.use(
         http.get(`${API_URL}/api/auth/me`, () => {
           return HttpResponse.json({
@@ -391,12 +407,15 @@ describe('AuthProvider', () => {
         expect(result.current.loading).toBe(false);
       });
 
+      // Verify user is logged in
+      expect(result.current.user).not.toBeNull();
+
       await act(async () => {
         result.current.logout();
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('🚪 AuthProvider: Logging out...');
-      expect(consoleSpy).toHaveBeenCalledWith('🚪 AuthProvider: Logged out');
+      // Verify user state is cleared after logout
+      expect(result.current.user).toBeNull();
     });
 
     it('throws error if logout API call fails', async () => {
@@ -521,6 +540,12 @@ describe('AuthProvider', () => {
     });
 
     it('returns context value when used inside AuthProvider', () => {
+      server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        })
+      );
+
       const { result } = renderHook(() => useAuth(), {
         wrapper: AuthProvider,
       });
@@ -536,6 +561,12 @@ describe('AuthProvider', () => {
 
   describe('renders children correctly', () => {
     it('renders child components', () => {
+      server.use(
+        http.get(`${API_URL}/api/auth/me`, () => {
+          return HttpResponse.json({ detail: 'Unauthorized' }, { status: 401 });
+        })
+      );
+
       render(
         <AuthProvider>
           <div data-testid="child">Child Content</div>

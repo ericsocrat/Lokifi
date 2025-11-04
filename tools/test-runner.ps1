@@ -355,12 +355,15 @@ function Invoke-BackendTests {
             $pytestArgs += '--timeout=10'
         }
 
+        # Disable warnings causing exit code failures (warnings are logged but don't fail tests)
+        $pytestArgs += '--disable-warnings'
+
         # Output
         $pytestArgs += "--junit-xml=$($Config.BackendTestResults)/backend-results.xml"
 
         Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
 
-        & .\venv\Scripts\python.exe -m pytest @pytestArgs
+        & .\venv\Scripts\python.exe -m pytest @pytestArgs | Out-Host
 
         $exitCode = $LASTEXITCODE
 
@@ -441,7 +444,7 @@ function Invoke-FrontendTests {
 
         Write-TestLog "npm $($testArgs -join ' ')" -Level Info
 
-        npm @testArgs
+        npm @testArgs | Out-Host
 
         $exitCode = $LASTEXITCODE
 

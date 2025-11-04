@@ -9,6 +9,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Suppress console output during tests (except errors)
+    silent: false, // Keep false to see test failures
+    reporters: process.env.CI ? ['dot'] : ['default'], // Minimal output in CI
     // Exclude Playwright E2E tests and tests with missing implementations
     exclude: [
       '**/node_modules/**',

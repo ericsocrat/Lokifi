@@ -1381,9 +1381,9 @@ class TestFollowServiceIntegration:
 class TestSearchAndPagination:
     """
     Gap 4: Search & Pagination tests
-    
+
     Covers lines 217-252 (search_profiles logic)
-    
+
     Tests verify:
     - ILIKE query matching (username OR display_name)
     - is_public=True filtering
@@ -1391,7 +1391,7 @@ class TestSearchAndPagination:
     - Offset/limit pagination
     - Empty results handling
     - Count query accuracy
-    
+
     Target: 92% → 95%+ (+3-5pp)
     """
 
@@ -1401,7 +1401,7 @@ class TestSearchAndPagination:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "test"  # Should match "testuser1", "testuser2", etc.
-        
+
         # Create mock profiles that match query
         profile1 = Profile(
             id=uuid.uuid4(),
@@ -1416,7 +1416,7 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         profile2 = Profile(
             id=uuid.uuid4(),
             user_id=uuid.uuid4(),
@@ -1430,16 +1430,16 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         mock_profiles = [profile1, profile2]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 2
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1450,7 +1450,7 @@ class TestSearchAndPagination:
         assert len(result.profiles) == 2
         assert result.profiles[0].username == "testuser1"
         assert result.profiles[1].username == "anothertest"
-        
+
         # Verify ILIKE pattern was used (SELECT statement with ILIKE)
         assert mock_db_session.execute.call_count == 2  # SELECT + COUNT
 
@@ -1460,7 +1460,7 @@ class TestSearchAndPagination:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "john"  # Should match display_name "John Doe"
-        
+
         profile = Profile(
             id=uuid.uuid4(),
             user_id=uuid.uuid4(),
@@ -1474,16 +1474,16 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         mock_profiles = [profile]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 1
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1500,7 +1500,7 @@ class TestSearchAndPagination:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "test"
-        
+
         # Only public profiles should be returned (is_public=True in model)
         public_profile = Profile(
             id=uuid.uuid4(),
@@ -1515,16 +1515,16 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         mock_profiles = [public_profile]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 1
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1541,7 +1541,7 @@ class TestSearchAndPagination:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "user"
-        
+
         # Create profiles with different follower counts
         profile1 = Profile(
             id=uuid.uuid4(),
@@ -1556,7 +1556,7 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         profile2 = Profile(
             id=uuid.uuid4(),
             user_id=uuid.uuid4(),
@@ -1570,7 +1570,7 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         profile3 = Profile(
             id=uuid.uuid4(),
             user_id=uuid.uuid4(),
@@ -1584,17 +1584,17 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         # Mock returns profiles in correct order (follower_count DESC, username ASC)
         mock_profiles = [profile1, profile2, profile3]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 3
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1603,15 +1603,15 @@ class TestSearchAndPagination:
         # Assert - Verify ordering
         assert result.total == 3
         assert len(result.profiles) == 3
-        
+
         # First profile should have highest follower count
         assert result.profiles[0].follower_count == 200
         assert result.profiles[0].username == "userA"
-        
+
         # Next two profiles have same follower count, should order by username
         assert result.profiles[1].follower_count == 100
         assert result.profiles[1].username == "userB"
-        
+
         assert result.profiles[2].follower_count == 100
         assert result.profiles[2].username == "userC"
 
@@ -1623,7 +1623,7 @@ class TestSearchAndPagination:
         query = "user"
         page = 1
         page_size = 2
-        
+
         # Create 2 profiles for page 1
         profile1 = Profile(
             id=uuid.uuid4(),
@@ -1638,7 +1638,7 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         profile2 = Profile(
             id=uuid.uuid4(),
             user_id=uuid.uuid4(),
@@ -1652,17 +1652,17 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         mock_profiles = [profile1, profile2]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         # Total count is 5 (more than one page)
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 5
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1683,7 +1683,7 @@ class TestSearchAndPagination:
         query = "user"
         page = 2
         page_size = 2
-        
+
         # Create 2 profiles for page 2
         profile3 = Profile(
             id=uuid.uuid4(),
@@ -1698,7 +1698,7 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         profile4 = Profile(
             id=uuid.uuid4(),
             user_id=uuid.uuid4(),
@@ -1712,17 +1712,17 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         mock_profiles = [profile3, profile4]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         # Total count is 5 (more than two pages)
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 5
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1743,7 +1743,7 @@ class TestSearchAndPagination:
         query = "user"
         page = 3
         page_size = 2
-        
+
         # Create 1 profile for last page
         profile5 = Profile(
             id=uuid.uuid4(),
@@ -1758,17 +1758,17 @@ class TestSearchAndPagination:
             created_at=datetime.now(timezone.utc),
             updated_at=datetime.now(timezone.utc),
         )
-        
+
         mock_profiles = [profile5]
 
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = mock_profiles
-        
+
         # Total count is 5 (last page)
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 5
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1787,14 +1787,14 @@ class TestSearchAndPagination:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "nonexistent"
-        
+
         # Mock empty results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = []
-        
+
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 0
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1813,7 +1813,7 @@ class TestSearchAndPagination:
         # Arrange
         profile_service = ProfileService(mock_db_session)
         query = "test"
-        
+
         # Create 3 profiles
         profiles = [
             Profile(
@@ -1835,11 +1835,11 @@ class TestSearchAndPagination:
         # Mock profile search results
         mock_profiles_result = MagicMock()
         mock_profiles_result.scalars.return_value.all.return_value = profiles
-        
+
         # Count should match number of profiles returned
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 3
-        
+
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
@@ -1848,6 +1848,6 @@ class TestSearchAndPagination:
         # Assert - Count matches actual results
         assert result.total == 3
         assert len(result.profiles) == 3
-        
+
         # Verify both queries executed (SELECT + COUNT)
         assert mock_db_session.execute.call_count == 2

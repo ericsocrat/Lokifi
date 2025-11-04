@@ -389,15 +389,15 @@ class TestPostEndpoints:
             mock_new_post.content = post.content
             mock_new_post.symbol = post.symbol
             mock_new_post.user_id = post.user_id
-        
+
         mock_session.add.side_effect = capture_add
         mock_session.commit.return_value = None
-        
+
         # Mock db.refresh to ensure created_at is set
         def set_timestamps(post):
             post.id = mock_new_post.id
             post.created_at = mock_new_post.created_at
-        
+
         mock_session.refresh.side_effect = set_timestamps
 
         payload = {"handle": "testuser", "content": "Test post content", "symbol": "BTC"}
