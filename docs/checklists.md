@@ -1531,105 +1531,23 @@ assert result is True  # Urgent bypasses quiet hours
 **Key Testing Patterns**:
 
 1. **Server Default Simulation for Pydantic Validation** ⭐ NEW PATTERN!
-```python
-# Challenge: SQLAlchemy models use server_default=func.now() for timestamps
-# Problem: server_default means database sets values, not Python/SQLAlchemy
-# Impact: Pydantic strict validation rejects None for datetime/int fields
-# Error: ValidationError: created_at - Input should be a valid datetime [type=datetime_type, input_value=None]
-
-# Solution: Mock flush/commit to simulate database default-setting behavior
-async def mock_flush_with_defaults():
-    """Set User defaults when User is flushed"""
-    for call in mock_db_session.add.call_args_list:
-        obj = call[0][0]
-        if isinstance(obj, User) and not hasattr(obj, '_defaults_set'):
-            obj.created_at = datetime.now(timezone.utc)
-            obj.updated_at = datetime.now(timezone.utc)
-            obj._defaults_set = True  # Prevent double-setting
-
-async def mock_commit_with_defaults():
-    """Set Profile/other defaults when everything is committed"""
-    for call in mock_db_session.add.call_args_list:
-        obj = call[0][0]
-        if isinstance(obj, User) and not hasattr(obj, '_defaults_set'):
-            obj.created_at = datetime.now(timezone.utc)
-            obj.updated_at = datetime.now(timezone.utc)
-            obj._defaults_set = True
-        elif isinstance(obj, Profile) and not hasattr(obj, '_defaults_set'):
-            obj.follower_count = 0  # server_default="0"
-            obj.following_count = 0  # server_default="0"
-            obj.created_at = datetime.now(timezone.utc)
-            obj.updated_at = datetime.now(timezone.utc)
-            obj._defaults_set = True
-
-# Mock both flush and commit with side_effects
-mock_db_session.flush = AsyncMock(side_effect=mock_flush_with_defaults)
-mock_db_session.commit = AsyncMock(side_effect=mock_commit_with_defaults)
-
-# Why this works:
-# 1. Service calls await self.db.flush() after adding User
-# 2. mock_flush_with_defaults sets User timestamps
-# 3. Service then adds Profile/NotificationPreference
-# 4. Service calls await self.db.commit()
-# 5. mock_commit_with_defaults sets Profile timestamps + counts
-# 6. Pydantic validation now succeeds with actual datetime/int values!
-```
+   - **Full Pattern Documentation**: [Server Default Simulation Pattern](./architecture/patterns/testing/server-default-simulation.md)
+   - **Problem**: SQLAlchemy `server_default` fields return None in tests, breaking Pydantic validation
+   - **Solution**: Mock flush/commit with side_effects to simulate database default-setting
+   - **Success**: Enabled 100% coverage for AuthService (65% → 100%)
+   - **Reusability**: Any service creating User/Profile or models with server_default fields
 
 2. **OAuth Flow Testing** (4 comprehensive tests):
-```python
-# Test 1: New user creation with Google OAuth
-async def test_create_user_from_oauth_new_user():
-    mock_db_session.execute.return_value.scalar.return_value = None  # No existing user
-    result = await service.create_user_from_oauth(oauth_data)
-    assert result.email == "newuser@example.com"
-    assert result.google_id == "google-oauth-id-12345"
-    # Verify User + Profile + NotificationPreference created
+   - New user creation with Google OAuth
+   - Existing user without Google ID (update flow)
+   - Existing user with Google ID (re-authentication)
+   - Existing user without profile (error handling)
+   - See: `tests/services/test_auth_service.py::TestOAuthAuthentication`
 
-# Test 2: Existing user without Google ID (update flow)
-async def test_create_user_from_oauth_existing_user_no_google_id():
-    mock_user = User(email="existing@example.com", google_id=None)
-    mock_db_session.execute.return_value.scalar.return_value = mock_user
-    result = await service.create_user_from_oauth(oauth_data)
-    assert result.google_id == "google-oauth-id-12345"  # Updated
-
-# Test 3: Existing user with Google ID (re-authentication)
-async def test_create_user_from_oauth_existing_user_with_google_id():
-    mock_user = User(email="existing@example.com", google_id="google-oauth-id-12345")
-    result = await service.create_user_from_oauth(oauth_data)
-    assert result.google_id == "google-oauth-id-12345"  # Unchanged
-
-# Test 4: Existing user without profile (error handling)
-async def test_create_user_from_oauth_existing_user_no_profile():
-    mock_user = User(email="existing@example.com", profile=None)
-    with pytest.raises(Exception):  # Should handle missing profile gracefully
-        await service.create_user_from_oauth(oauth_data)
-```
-
-3. **Helper Method Testing** (4 simple but complete tests):
-```python
-# Pattern: Test found and not found cases for both helpers
-# get_user_by_id tests
-async def test_get_user_by_id_found():
-    mock_user = User(id=1, email="user@example.com")
-    mock_db_session.execute.return_value.scalar.return_value = mock_user
-    result = await service.get_user_by_id(1)
-    assert result.id == 1
-
-async def test_get_user_by_id_not_found():
-    mock_db_session.execute.return_value.scalar.return_value = None
-    result = await service.get_user_by_id(999)
-    assert result is None
-
-# get_user_by_email tests
-async def test_get_user_by_email_found():
-    mock_user = User(email="user@example.com")
-    result = await service.get_user_by_email("user@example.com")
-    assert result.email == "user@example.com"
-
-async def test_get_user_by_email_not_found():
-    result = await service.get_user_by_email("nonexistent@example.com")
-    assert result is None
-```
+3. **Helper Method Testing** (4 simple tests):
+   - get_user_by_id (found/not found cases)
+   - get_user_by_email (found/not found cases)
+   - See: `tests/services/test_auth_service.py::TestGetUserMethods`
 
 **Lessons Learned**:
 

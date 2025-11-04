@@ -651,7 +651,7 @@ class TestOAuthAuthentication:
     async def test_create_user_from_oauth_new_user(self, mock_db_session):
         """Test creating a new user from OAuth (Google) - new user flow"""
         from datetime import datetime, timezone
-        
+
         auth_service = AuthService(db=mock_db_session)
 
         # Mock database query returns None (no existing user)
@@ -664,26 +664,26 @@ class TestOAuthAuthentication:
             # Set defaults on User when flushed
             for call in mock_db_session.add.call_args_list:
                 obj = call[0][0]
-                if isinstance(obj, User) and not hasattr(obj, '_defaults_set'):
+                if isinstance(obj, User) and not hasattr(obj, "_defaults_set"):
                     obj.created_at = datetime.now(timezone.utc)
                     obj.updated_at = datetime.now(timezone.utc)
                     obj._defaults_set = True
-        
+
         async def mock_commit_with_defaults():
             # Set defaults on all objects when committed
             for call in mock_db_session.add.call_args_list:
                 obj = call[0][0]
-                if isinstance(obj, User) and not hasattr(obj, '_defaults_set'):
+                if isinstance(obj, User) and not hasattr(obj, "_defaults_set"):
                     obj.created_at = datetime.now(timezone.utc)
                     obj.updated_at = datetime.now(timezone.utc)
                     obj._defaults_set = True
-                elif isinstance(obj, Profile) and not hasattr(obj, '_defaults_set'):
+                elif isinstance(obj, Profile) and not hasattr(obj, "_defaults_set"):
                     obj.follower_count = 0
                     obj.following_count = 0
                     obj.created_at = datetime.now(timezone.utc)
                     obj.updated_at = datetime.now(timezone.utc)
                     obj._defaults_set = True
-        
+
         mock_db_session.flush = AsyncMock(side_effect=mock_flush_with_defaults)
         mock_db_session.commit = AsyncMock(side_effect=mock_commit_with_defaults)
 

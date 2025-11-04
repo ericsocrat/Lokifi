@@ -31,6 +31,7 @@
 | Pattern | Category | Success Rate | Impact | Sessions Used |
 |---------|----------|--------------|--------|---------------|
 | [AsyncMock for Async Functions](./testing/asyncmock-pattern.md) | 🟡 Intermediate | 95% (4/4) | 🎯 +30-40pp | 30, 62, 63, 66 |
+| [Server Default Simulation](./testing/server-default-simulation.md) | 🔴 Advanced | 100% (1/1) | 🎯 100% coverage | 67 |
 | [Pure Function Testing](./testing/pure-function-testing.md) | 🟢 Beginner | 100% (2/2) | ✅ +100% coverage | 66 |
 | [Mathematical Correctness Testing](./testing/mathematical-testing.md) | 🟡 Intermediate | 100% (1/1) | ✅ +100% coverage | 66 |
 | [Async Context Manager Mocking](./testing/async-context-manager.md) | 🔴 Advanced | 67% (2/3) | ⚠️ Complex | 30, 62, 63 |
