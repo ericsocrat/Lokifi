@@ -778,47 +778,10 @@ pytest -m "not integration"
 
 **Key Testing Patterns**:
 
-1. **AsyncMock for Database Operations** (95% success rate):
-```python
-# Pattern: Mock db.execute() with side_effect for multiple queries
-mock_db_session.execute.side_effect = [
-    mock_profiles_result,  # SELECT query result
-    mock_count_result,     # COUNT query result
-]
-
-# Verify query execution
-assert mock_db_session.execute.call_count == 2
-```
-
-2. **Conditional Import Patching** (Gap 3 breakthrough):
-```python
-# ✅ CORRECT: Patch at module source (where imported)
-@patch("app.services.follow_service.FollowService")
-
-# ❌ WRONG: Patch at import site (conditional imports fail)
-@patch("app.services.profile_service.FollowService")
-```
-
-3. **Full Model Object Construction** (prevent attribute errors):
-```python
-# ✅ Complete Profile object with all fields
-mock_profile = Profile(
-    id=uuid4(), user_id=uuid4(), username="testuser",
-    display_name="Test User", bio="Test bio",
-    follower_count=100, following_count=50,
-    created_at=datetime.now(timezone.utc),
-    updated_at=datetime.now(timezone.utc),
-    is_public=True
-)
-```
-
-4. **Pagination Logic Testing** (Gap 4 comprehensive coverage):
-```python
-# Test offset calculation: (page - 1) * page_size
-# Test has_next logic: (offset + page_size) < total
-# Test ordering: follower_count DESC, username ASC
-# Test empty results: total=0, profiles=[], has_next=False
-```
+1. **[AsyncMock Pattern](./architecture/patterns/testing/asyncmock-pattern.md)** - Mock db.execute() with side_effect for multiple queries (95% success rate)
+2. **[Conditional Import Patching](./architecture/patterns/testing/conditional-import-patching.md)** - Patch at module source, not import site (Gap 3 breakthrough)
+3. **Model Object Construction** - Complete Profile objects with all fields (prevent attribute errors)
+4. **Pagination Logic Testing** - Offset calculation, has_next logic, ordering, empty results (Gap 4)
 
 **Lessons Learned**:
 
@@ -917,34 +880,8 @@ mock_build.return_value = ConversationResponse(
 mock_build.return_value = MagicMock(id=conv_id)  # ValidationError!
 ```
 
-3. **Transaction Order Tracking** (Gap 1):
-```python
-# Pattern: Track add/flush/commit/refresh call order
-call_order = []
-mock_db_session.add = MagicMock(side_effect=lambda obj: call_order.append(("add", obj)))
-mock_db_session.flush = AsyncMock(side_effect=lambda: call_order.append(("flush", None)))
-
-# Verify exact sequence
-assert call_order[0][0] == "add"     # Add conversation
-assert call_order[1][0] == "flush"   # Flush to get ID
-assert call_order[2][0] == "add"     # Add participant 1
-```
-
-4. **Helper Method Direct Testing** (Gap 3 - KEY INSIGHT!):
-```python
-# ✅ BEST: Test helper methods directly (no mocking of helpers)
-result = await conversation_service._build_conversation_response(
-    mock_conversation, user_id
-)
-
-# Verify complex response structure
-assert len(result.participants) == 2
-assert result.last_message is not None
-assert result.unread_count == 5
-
-# Why this works: Covers ALL lines in helper, not just return values
-# Gap 3 gave +17pp because helpers called by EVERY public method!
-```
+3. **[Transaction Order Tracking](./architecture/patterns/testing/transaction-order-tracking.md)** - Track add/flush/commit/refresh call order with side_effect (Gap 1)
+4. **[Helper Method Testing](./architecture/patterns/testing/helper-method-testing.md)** - Test _build_conversation_response directly to cover ALL callers (Gap 3, +17pp - KEY INSIGHT!)
 
 **Lessons Learned**:
 
@@ -1086,25 +1023,7 @@ mock_db_session.execute.side_effect = [
 ]
 ```
 
-5. **MagicMock + Pydantic Validation Fix** (Gap 3 breakthrough):
-```python
-# Problem: MagicMock(user_id=uuid) wraps UUID in MagicMock
-# Pydantic rejects: "UUID input should be string, bytes or UUID object"
-
-# ❌ BAD: Constructor assignment wraps in MagicMock
-mock_row = MagicMock(user_id=uuid.uuid4())
-# getattr(mock_row, "user_id") returns <MagicMock ...> not UUID
-
-# ✅ GOOD: Use spec=[] + configure_mock() for direct attribute access
-popular_user_id = uuid.uuid4()  # Real UUID
-mock_row = MagicMock(spec=[])  # No spec allows getattr passthrough
-mock_row.configure_mock(
-    user_id=popular_user_id,  # Sets as real UUID
-    username="user",
-    display_name="User",
-)
-# getattr(mock_row, "user_id") returns UUID object ✓
-```
+5. **[Pydantic Model Mocking](./architecture/patterns/testing/pydantic-model-mocking.md)** - Use spec=[] + configure_mock() for real UUID attributes (Gap 3 breakthrough, prevents ValidationError)
 
 **Lessons Learned**:
 
@@ -1249,6 +1168,9 @@ assert mock_filter.delete.called  # Messages deleted
 assert mock_db.delete.called      # Thread deleted
 ```
 
+2. **[AsyncGenerator Mocking](./architecture/patterns/testing/async-generator-mocking.md)** - Mock AI streaming with async def yielding StreamChunk objects (Gap 1, +28pp - BREAKTHROUGH!)
+3. **Multi-Layer Validation Testing** - Test 6 validation layers independently (rate limit, safety, ownership, limits, moderation, tokens)
+
 **Lessons Learned**:
 
 1. **AsyncGenerator Pattern is Reusable for Streaming APIs**:
@@ -1341,102 +1263,11 @@ assert mock_db.delete.called      # Thread deleted
 
 **Key Testing Patterns**:
 
-1. **AsyncMock + Redis Caching Pattern** (Gap 1 - NEW!):
-```python
-# Pattern: Mock Redis get/set with cache hit/miss scenarios
-with patch("app.services.notification_service.redis_client") as mock_redis:
-    # Cache hit scenario
-    mock_redis.get_cached_unread_count = AsyncMock(return_value=5)
-    result = await notification_service.get_unread_count(user_id)
-    assert result == 5  # Returns cached value
-
-    # Cache miss scenario
-    mock_redis.get_cached_unread_count = AsyncMock(return_value=None)
-    mock_redis.cache_unread_count = AsyncMock()
-    # Falls through to database query
-    mock_db_session.execute.return_value.scalar.return_value = 3
-    result = await notification_service.get_unread_count(user_id)
-    assert result == 3
-    mock_redis.cache_unread_count.assert_called_once_with(user_id, 3, ttl=300)
-```
-
-2. **Async Generator Mocking for Database Sessions** (Gap 1-3 - From AIService):
-```python
-# Pattern: Mock db_manager.get_session() returning async generator
-async def mock_get_session(*args, **kwargs):
-    yield mock_db_session
-
-mock_db_manager.get_session.return_value = mock_get_session()
-
-# Now service can use `async for session in db_manager.get_session():`
-result = await notification_service.get_user_notifications(user_id)
-```
-
-3. **Complex Analytics Testing** (Gap 3 - NEW!):
-```python
-# Pattern: Mock 6+ sequential count queries for comprehensive stats
-mock_db_session.execute.side_effect = [
-    make_scalar_mock(5),   # total_count
-    make_scalar_mock(2),   # unread_count
-    make_scalar_mock(1),   # dismissed_count
-    make_scalar_mock(5),   # delivered_count
-    make_scalar_mock(2),   # clicked_count
-    Mock(scalars=Mock(return_value=Mock(all=Mock(return_value=notifications))))
-]
-
-result = await notification_service.get_notification_stats(user_id)
-assert result.total_notifications == 5
-assert result.by_type["FOLLOW"] == 3
-assert result.avg_read_time_seconds > 0
-```
-
-4. **Event Handler Testing** (Gap 3 - NEW!):
-```python
-# Pattern: Test async + sync handlers with error handling
-async_handler = AsyncMock()
-sync_handler = Mock()
-faulty_handler = Mock(side_effect=Exception("Handler error"))
-
-notification_service.add_event_handler(NotificationEvent.CREATED, async_handler)
-notification_service.add_event_handler(NotificationEvent.READ, sync_handler)
-notification_service.add_event_handler(NotificationEvent.DISMISSED, faulty_handler)
-
-# Test async handler
-await notification_service._emit_event(NotificationEvent.CREATED, {"test": "data"})
-async_handler.assert_called_once_with({"test": "data"})
-
-# Test sync handler
-await notification_service._emit_event(NotificationEvent.READ, {"test": "data"})
-sync_handler.assert_called_once_with({"test": "data"})
-
-# Test faulty handler (should not raise, just log)
-await notification_service._emit_event(NotificationEvent.DISMISSED, {"test": "data"})
-# No exception raised ✓
-```
-
-5. **User Preference Logic Testing** (Gap 3 - NEW!):
-```python
-# Pattern: Test preference validation layers
-# Layer 1: No preferences = allow by default
-result = await service._should_deliver_notification(None, notification_data)
-assert result is True
-
-# Layer 2: In-app disabled = block all
-mock_preference.in_app_enabled = False
-result = await service._should_deliver_notification(mock_preference, notification_data)
-assert result is False
-
-# Layer 3: Type preference blocked
-mock_preference.get_type_preference = Mock(return_value=False)
-result = await service._should_deliver_notification(mock_preference, notification_data)
-assert result is False
-
-# Layer 4: Quiet hours with urgent priority bypass
-mock_preference.is_in_quiet_hours = Mock(return_value=True)
-urgent_data = NotificationData(..., priority=NotificationPriority.URGENT)
-result = await service._should_deliver_notification(mock_preference, urgent_data)
-assert result is True  # Urgent bypasses quiet hours
-```
+1. **[Redis Caching Mocking](./architecture/patterns/testing/redis-caching-mocking.md)** - Mock Redis get/set for cache hit/miss scenarios (Gap 1, +23pp)
+2. **[AsyncGenerator Mocking](./architecture/patterns/testing/async-generator-mocking.md)** - Mock db_manager.get_session() returning async generator (Gap 1-3, from AIService)
+3. **Complex Analytics Testing** - Mock 6+ sequential count queries for comprehensive stats (Gap 3)
+4. **[Event Handler Testing](./architecture/patterns/testing/event-handler-testing.md)** - Test async/sync handlers with error handling (Gap 3, +29pp)
+5. **User Preference Logic Testing** - Test 4 preference validation layers including quiet hours bypass (Gap 3)
 
 **Lessons Learned**:
 

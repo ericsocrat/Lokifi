@@ -37,15 +37,15 @@ ValidationError: 1 validation error for UserResponse
 ```python
 # Timestamps
 created_at: Mapped[datetime] = mapped_column(
-    DateTime(timezone=True), 
+    DateTime(timezone=True),
     server_default=func.now()
 )
 
 # Numeric defaults
 follower_count: Mapped[int] = mapped_column(
-    Integer, 
-    nullable=False, 
-    default=0, 
+    Integer,
+    nullable=False,
+    default=0,
     server_default="0"
 )
 ```
@@ -113,15 +113,15 @@ async def mock_commit_with_defaults():
 def mock_db_session():
     """Mock database session with server default simulation"""
     session = AsyncMock()
-    
+
     # Configure basic session behavior
     session.add = Mock()
     session.execute = AsyncMock()
-    
+
     # Apply side effects for server defaults
     session.flush = AsyncMock(side_effect=mock_flush_with_defaults)
     session.commit = AsyncMock(side_effect=mock_commit_with_defaults)
-    
+
     return session
 ```
 
@@ -139,10 +139,10 @@ async def test_create_user_from_oauth_new_user(mock_db_session):
         username="newuser",
         avatar_url="https://example.com/avatar.jpg"
     )
-    
+
     # Act
     result = await service.create_user_from_oauth(oauth_data)
-    
+
     # Assert - Pydantic validation now succeeds!
     assert result.email == "newuser@example.com"
     assert result.google_id == "google-oauth-id-12345"
@@ -160,7 +160,7 @@ async def create_user_from_oauth(self, oauth_data: OAuthUserData) -> UserRespons
     """Create or update user from OAuth data"""
     # Check if user exists
     user = await self.get_user_by_email(oauth_data.email)
-    
+
     if not user:
         # Create new user
         user = User(
@@ -171,7 +171,7 @@ async def create_user_from_oauth(self, oauth_data: OAuthUserData) -> UserRespons
         )
         self.db.add(user)
         await self.db.flush()  # ← Triggers mock_flush_with_defaults
-        
+
         # Create profile (needs user.id)
         profile = Profile(
             user_id=user.id,
@@ -179,13 +179,13 @@ async def create_user_from_oauth(self, oauth_data: OAuthUserData) -> UserRespons
             avatar_url=oauth_data.avatar_url
         )
         self.db.add(profile)
-        
+
         # Create notification preferences
         preferences = NotificationPreference(user_id=user.id)
         self.db.add(preferences)
-        
+
         await self.db.commit()  # ← Triggers mock_commit_with_defaults
-    
+
     # Return Pydantic response (strict validation!)
     return UserResponse.model_validate(user)  # ← Validates created_at, updated_at
 ```
@@ -207,7 +207,7 @@ def mock_db_session():
     session = AsyncMock()
     session.add = Mock()
     session.execute = AsyncMock()
-    
+
     async def mock_flush_with_defaults():
         """Set User defaults when User is flushed"""
         for call in session.add.call_args_list:
@@ -217,7 +217,7 @@ def mock_db_session():
                 obj.created_at = datetime.now(timezone.utc)
                 obj.updated_at = datetime.now(timezone.utc)
                 obj._defaults_set = True
-    
+
     async def mock_commit_with_defaults():
         """Set Profile/NotificationPreference defaults when committed"""
         for call in session.add.call_args_list:
@@ -237,10 +237,10 @@ def mock_db_session():
                 obj.created_at = datetime.now(timezone.utc)
                 obj.updated_at = datetime.now(timezone.utc)
                 obj._defaults_set = True
-    
+
     session.flush = AsyncMock(side_effect=mock_flush_with_defaults)
     session.commit = AsyncMock(side_effect=mock_commit_with_defaults)
-    
+
     return session
 
 @pytest.fixture
@@ -259,17 +259,17 @@ async def test_create_user_from_oauth_new_user(auth_service, mock_db_session):
         username="newuser",
         avatar_url="https://example.com/avatar.jpg"
     )
-    
+
     # Act
     result = await auth_service.create_user_from_oauth(oauth_data)
-    
+
     # Assert - Pydantic validation succeeds!
     assert result.email == "newuser@example.com"
     assert result.google_id == "google-oauth-id-12345"
     assert result.created_at is not None
     assert result.updated_at is not None
     assert isinstance(result.created_at, datetime)
-    
+
     # Verify database operations
     assert mock_db_session.add.call_count == 3  # User + Profile + Preferences
     mock_db_session.flush.assert_called_once()
@@ -337,7 +337,7 @@ async def mock_commit_with_defaults():
     """Handle multiple model types with defaults"""
     for call in session.add.call_args_list:
         obj = call[0][0]
-        
+
         # Use match/case for clarity (Python 3.10+)
         match type(obj).__name__:
             case 'User':

@@ -30,12 +30,20 @@
 
 | Pattern | Category | Success Rate | Impact | Sessions Used |
 |---------|----------|--------------|--------|---------------|
+| [AsyncGenerator Mocking](./testing/async-generator-mocking.md) | 🟡 Intermediate | 100% (2/2) | 🚀 Streaming APIs | AIService, NotificationService |
 | [AsyncMock for Async Functions](./testing/asyncmock-pattern.md) | 🟡 Intermediate | 95% (4/4) | 🎯 +30-40pp | 30, 62, 63, 66 |
-| [Server Default Simulation](./testing/server-default-simulation.md) | 🔴 Advanced | 100% (1/1) | 🎯 100% coverage | 67 |
-| [Pure Function Testing](./testing/pure-function-testing.md) | 🟢 Beginner | 100% (2/2) | ✅ +100% coverage | 66 |
-| [Mathematical Correctness Testing](./testing/mathematical-testing.md) | 🟡 Intermediate | 100% (1/1) | ✅ +100% coverage | 66 |
 | [Async Context Manager Mocking](./testing/async-context-manager.md) | 🔴 Advanced | 67% (2/3) | ⚠️ Complex | 30, 62, 63 |
+| [Conditional Import Patching](./testing/conditional-import-patching.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Solves patch failures | ProfileService Gap 3 |
+| [Event Handler Testing](./testing/event-handler-testing.md) | � Intermediate | 100% (1/1) | 🎯 Event-driven systems | NotificationService Gap 3 |
+| [Helper Method Testing](./testing/helper-method-testing.md) | 🟢 Beginner | 100% (4/4) | 🚀 +17-29pp per service | ConversationService, FollowService, AIService, NotificationService |
+| [Mathematical Correctness Testing](./testing/mathematical-testing.md) | 🟡 Intermediate | 100% (1/1) | ✅ +100% coverage | 66 |
+| [Pydantic Model Mocking](./testing/pydantic-model-mocking.md) | 🟡 Intermediate | 100% (2/2) | 🎯 Prevents ValidationError | ConversationService, FollowService |
+| [Pure Function Testing](./testing/pure-function-testing.md) | 🟢 Beginner | 100% (2/2) | ✅ +100% coverage | 66 |
+| [Redis Caching Mocking](./testing/redis-caching-mocking.md) | 🟢 Beginner | 100% (1/1) | 🎯 Cache hit/miss testing | NotificationService Gap 1 |
+| [Sentinel Pagination](./testing/sentinel-pagination.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Efficient pagination | FollowService Gap 3 |
+| [Server Default Simulation](./testing/server-default-simulation.md) | 🔴 Advanced | 100% (1/1) | 🎯 100% coverage | 67 |
 | [Test Fixture Design](./testing/fixture-design.md) | 🟢 Beginner | 100% (6/6) | ✅ DRY tests | 30, 62, 63, 66 |
+| [Transaction Order Tracking](./testing/transaction-order-tracking.md) | 🟡 Intermediate | 100% (1/1) | 🎯 Transaction safety | ConversationService Gap 1 |
 
 ### CI/CD Patterns
 
