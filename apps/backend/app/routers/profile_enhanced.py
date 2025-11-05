@@ -7,16 +7,17 @@ from pathlib import Path
 from uuid import UUID
 
 import aiofiles
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
+from PIL import Image
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.auth_deps import get_current_user
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.auth import MessageResponse
 from app.schemas.profile import ProfileUpdateRequest
 from app.services.profile_enhanced import EnhancedProfileService
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
-from PIL import Image
-from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/profile", tags=["profile-enhanced"])
 

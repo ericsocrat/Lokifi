@@ -20,7 +20,6 @@ import pytest_asyncio
 
 from app.services.alerts import Alert, AlertEvaluator, AlertStore, SSEHub
 
-
 # ============================================================================
 # FIXTURES
 # ============================================================================
@@ -96,7 +95,7 @@ class TestAlertStore:
         """Test that load() creates empty file if it doesn't exist"""
         store = AlertStore(str(temp_alert_path))
         await store.load()
-        
+
         assert temp_alert_path.exists()
         data = json.loads(temp_alert_path.read_text())
         assert data == {}
@@ -106,23 +105,27 @@ class TestAlertStore:
         """Test loading existing alerts from file"""
         # Create file with sample alert
         temp_alert_path.write_text(
-            json.dumps({"alert-001": {
-                "id": "alert-001",
-                "type": "price_threshold",
-                "symbol": "BTCUSDT",
-                "timeframe": "1h",
-                "active": True,
-                "created_at": sample_alert.created_at,
-                "min_interval_sec": 300,
-                "last_triggered_at": None,
-                "config": {"direction": "above", "price": 50000},
-                "owner_handle": "testuser",
-            }})
+            json.dumps(
+                {
+                    "alert-001": {
+                        "id": "alert-001",
+                        "type": "price_threshold",
+                        "symbol": "BTCUSDT",
+                        "timeframe": "1h",
+                        "active": True,
+                        "created_at": sample_alert.created_at,
+                        "min_interval_sec": 300,
+                        "last_triggered_at": None,
+                        "config": {"direction": "above", "price": 50000},
+                        "owner_handle": "testuser",
+                    }
+                }
+            )
         )
-        
+
         store = AlertStore(str(temp_alert_path))
         await store.load()
-        
+
         alerts = await store.list()
         assert len(alerts) == 1
         assert alerts[0].id == "alert-001"
@@ -132,10 +135,10 @@ class TestAlertStore:
     async def test_load_corrupted_file(self, temp_alert_path: Path):
         """Test handling of corrupted JSON file"""
         temp_alert_path.write_text("invalid json {{{")
-        
+
         store = AlertStore(str(temp_alert_path))
         await store.load()
-        
+
         # Should reset to empty dict on corruption
         alerts = await store.list()
         assert len(alerts) == 0
@@ -144,7 +147,7 @@ class TestAlertStore:
     async def test_add_alert(self, alert_store: AlertStore, sample_alert: Alert):
         """Test adding alert to store"""
         result = await alert_store.add(sample_alert)
-        
+
         assert result.id == sample_alert.id
         alerts = await alert_store.list()
         assert len(alerts) == 1
@@ -154,10 +157,10 @@ class TestAlertStore:
     async def test_remove_alert(self, alert_store: AlertStore, sample_alert: Alert):
         """Test removing alert from store"""
         await alert_store.add(sample_alert)
-        
+
         existed = await alert_store.remove("alert-001")
         assert existed is True
-        
+
         alerts = await alert_store.list()
         assert len(alerts) == 0
 
@@ -171,7 +174,7 @@ class TestAlertStore:
     async def test_get_alert(self, alert_store: AlertStore, sample_alert: Alert):
         """Test retrieving alert by ID"""
         await alert_store.add(sample_alert)
-        
+
         alert = await alert_store.get("alert-001")
         assert alert is not None
         assert alert.id == "alert-001"
@@ -187,11 +190,11 @@ class TestAlertStore:
     async def test_set_active(self, alert_store: AlertStore, sample_alert: Alert):
         """Test setting alert active status"""
         await alert_store.add(sample_alert)
-        
+
         result = await alert_store.set_active("alert-001", False)
         assert result is not None
         assert result.active is False
-        
+
         # Verify persistence
         alert = await alert_store.get("alert-001")
         assert alert.active is False
@@ -203,11 +206,13 @@ class TestAlertStore:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_list_alerts(self, alert_store: AlertStore, sample_alert: Alert, sample_pct_alert: Alert):
+    async def test_list_alerts(
+        self, alert_store: AlertStore, sample_alert: Alert, sample_pct_alert: Alert
+    ):
         """Test listing all alerts"""
         await alert_store.add(sample_alert)
         await alert_store.add(sample_pct_alert)
-        
+
         alerts = await alert_store.list()
         assert len(alerts) == 2
         assert {a.id for a in alerts} == {"alert-001", "alert-002"}
@@ -218,11 +223,11 @@ class TestAlertStore:
         store = AlertStore(str(temp_alert_path))
         await store.load()
         await store.add(sample_alert)
-        
+
         # Create new store instance and load
         store2 = AlertStore(str(temp_alert_path))
         await store2.load()
-        
+
         alerts = await store2.list()
         assert len(alerts) == 1
         assert alerts[0].id == "alert-001"
@@ -240,7 +245,7 @@ class TestSSEHub:
     async def test_register_client(self, sse_hub: SSEHub):
         """Test registering SSE client"""
         queue = await sse_hub.register()
-        
+
         assert isinstance(queue, asyncio.Queue)
         assert queue in sse_hub._clients
 
@@ -249,7 +254,7 @@ class TestSSEHub:
         """Test unregistering SSE client"""
         queue = await sse_hub.register()
         await sse_hub.unregister(queue)
-        
+
         assert queue not in sse_hub._clients
 
     @pytest.mark.asyncio
@@ -257,14 +262,14 @@ class TestSSEHub:
         """Test broadcasting event to all clients"""
         queue1 = await sse_hub.register()
         queue2 = await sse_hub.register()
-        
+
         event = {"type": "alert.triggered", "data": "test"}
         await sse_hub.broadcast(event)
-        
+
         # Both clients should receive event
         received1 = await asyncio.wait_for(queue1.get(), timeout=1.0)
         received2 = await asyncio.wait_for(queue2.get(), timeout=1.0)
-        
+
         assert received1 == event
         assert received2 == event
 
@@ -274,13 +279,13 @@ class TestSSEHub:
         # Create queue with size 1
         queue = asyncio.Queue(maxsize=1)
         sse_hub._clients.add(queue)
-        
+
         # Fill queue
         await queue.put({"first": "event"})
-        
+
         # This should not raise even though queue is full
         await sse_hub.broadcast({"second": "event"})
-        
+
         # Queue should still have original item
         item = await queue.get()
         assert item == {"first": "event"}
@@ -289,22 +294,22 @@ class TestSSEHub:
     async def test_multiple_broadcasts(self, sse_hub: SSEHub):
         """Test multiple sequential broadcasts"""
         queue = await sse_hub.register()
-        
+
         events = [
             {"type": "event1", "data": 1},
             {"type": "event2", "data": 2},
             {"type": "event3", "data": 3},
         ]
-        
+
         for event in events:
             await sse_hub.broadcast(event)
-        
+
         # Retrieve all events
         received = []
         for _ in range(3):
             item = await asyncio.wait_for(queue.get(), timeout=1.0)
             received.append(item)
-        
+
         assert received == events
 
 
@@ -328,7 +333,7 @@ class TestAlertEvaluator:
     async def test_start_evaluator(self, evaluator: AlertEvaluator):
         """Test starting the evaluator"""
         evaluator.start()
-        
+
         assert evaluator._task is not None
         assert not evaluator._task.done()
 
@@ -337,11 +342,11 @@ class TestAlertEvaluator:
         """Test starting evaluator when already running"""
         evaluator.start()
         task1 = evaluator._task
-        
+
         # Starting again should not create new task
         evaluator.start()
         task2 = evaluator._task
-        
+
         assert task1 is task2
 
     @pytest.mark.asyncio
@@ -349,9 +354,9 @@ class TestAlertEvaluator:
         """Test stopping the evaluator"""
         evaluator.start()
         await asyncio.sleep(0.1)  # Let it run briefly
-        
+
         await evaluator.stop()
-        
+
         assert evaluator._stop.is_set()
         assert evaluator._task.done() or evaluator._task.cancelled()
 
@@ -360,10 +365,10 @@ class TestAlertEvaluator:
         """Test stop timeout handling"""
         # Mock a task that won't complete
         evaluator._task = asyncio.create_task(asyncio.sleep(10))
-        
+
         # Stop should timeout and cancel
         await evaluator.stop()
-        
+
         assert evaluator._task.cancelled()
 
     @pytest.mark.asyncio
@@ -373,12 +378,10 @@ class TestAlertEvaluator:
     ):
         """Test price threshold alert triggered (above)"""
         # Mock OHLC data with price above threshold
-        mock_get_ohlc.return_value = [
-            {"close": "51000.00"}  # Above threshold of 50000
-        ]
-        
+        mock_get_ohlc.return_value = [{"close": "51000.00"}]  # Above threshold of 50000
+
         triggered, payload = await evaluator._evaluate(sample_alert)
-        
+
         assert triggered is True
         assert payload["price"] == 51000.0
         assert payload["target"] == 50000.0
@@ -391,12 +394,10 @@ class TestAlertEvaluator:
     ):
         """Test price threshold alert not triggered (above)"""
         # Mock OHLC data with price below threshold
-        mock_get_ohlc.return_value = [
-            {"close": "49000.00"}  # Below threshold of 50000
-        ]
-        
+        mock_get_ohlc.return_value = [{"close": "49000.00"}]  # Below threshold of 50000
+
         triggered, payload = await evaluator._evaluate(sample_alert)
-        
+
         assert triggered is False
         assert payload["price"] == 49000.0
 
@@ -418,13 +419,11 @@ class TestAlertEvaluator:
             config={"direction": "below", "price": 50000},
             owner_handle="testuser",
         )
-        
-        mock_get_ohlc.return_value = [
-            {"close": "49000.00"}  # Below threshold
-        ]
-        
+
+        mock_get_ohlc.return_value = [{"close": "49000.00"}]  # Below threshold
+
         triggered, payload = await evaluator._evaluate(alert)
-        
+
         assert triggered is True
         assert payload["price"] == 49000.0
         assert payload["direction"] == "below"
@@ -440,9 +439,9 @@ class TestAlertEvaluator:
             {"close": "2000.00"},  # Starting price
             {"close": "2100.00"},  # 5% increase
         ]
-        
+
         triggered, payload = await evaluator._evaluate(sample_pct_alert)
-        
+
         assert triggered is True
         assert payload["pct_change"] == 5.0
         assert payload["direction"] == "up"
@@ -458,9 +457,9 @@ class TestAlertEvaluator:
             {"close": "2000.00"},
             {"close": "2050.00"},  # Only 2.5% increase
         ]
-        
+
         triggered, payload = await evaluator._evaluate(sample_pct_alert)
-        
+
         assert triggered is False
         assert payload["pct_change"] == 2.5
 
@@ -482,14 +481,14 @@ class TestAlertEvaluator:
             config={"window_minutes": 60, "direction": "down", "threshold_pct": 3.0},
             owner_handle="testuser",
         )
-        
+
         mock_get_ohlc.return_value = [
             {"close": "2000.00"},
             {"close": "1940.00"},  # 3% decrease
         ]
-        
+
         triggered, payload = await evaluator._evaluate(alert)
-        
+
         assert triggered is True
         assert payload["pct_change"] == -3.0
         assert payload["direction"] == "down"
@@ -512,24 +511,22 @@ class TestAlertEvaluator:
             config={"window_minutes": 60, "direction": "abs", "threshold_pct": 3.0},
             owner_handle="testuser",
         )
-        
+
         # Test with negative change
         mock_get_ohlc.return_value = [
             {"close": "2000.00"},
             {"close": "1940.00"},  # -3% change
         ]
-        
+
         triggered, payload = await evaluator._evaluate(alert)
-        
+
         assert triggered is True
         assert abs(payload["pct_change"]) >= 3.0
         assert payload["direction"] == "abs"
 
     @pytest.mark.asyncio
     @patch("app.services.alerts.get_ohlc")
-    async def test_evaluate_unknown_type(
-        self, mock_get_ohlc: AsyncMock, evaluator: AlertEvaluator
-    ):
+    async def test_evaluate_unknown_type(self, mock_get_ohlc: AsyncMock, evaluator: AlertEvaluator):
         """Test evaluation of unknown alert type"""
         alert = Alert(
             id="alert-unknown",
@@ -543,9 +540,9 @@ class TestAlertEvaluator:
             config={},
             owner_handle="testuser",
         )
-        
+
         triggered, payload = await evaluator._evaluate(alert)
-        
+
         assert triggered is False
         assert payload["reason"] == "unknown_type"
 
@@ -556,15 +553,15 @@ class TestAlertEvaluator:
     ):
         """Test _tick processes active alerts and broadcasts"""
         await evaluator.store.add(sample_alert)
-        
+
         # Mock triggered alert
         mock_get_ohlc.return_value = [{"close": "51000.00"}]
-        
+
         # Register client to receive broadcast
         queue = await evaluator.hub.register()
-        
+
         await evaluator._tick()
-        
+
         # Should have broadcast event
         event = await asyncio.wait_for(queue.get(), timeout=1.0)
         assert event["type"] == "alert.triggered"
@@ -578,12 +575,12 @@ class TestAlertEvaluator:
         """Test _tick skips inactive alerts"""
         sample_alert.active = False
         await evaluator.store.add(sample_alert)
-        
+
         # Register client
         queue = await evaluator.hub.register()
-        
+
         await evaluator._tick()
-        
+
         # Should not broadcast (alert inactive)
         assert queue.empty()
 
@@ -596,12 +593,12 @@ class TestAlertEvaluator:
         # Set recent trigger time
         sample_alert.last_triggered_at = time.time()
         await evaluator.store.add(sample_alert)
-        
+
         mock_get_ohlc.return_value = [{"close": "51000.00"}]
         queue = await evaluator.hub.register()
-        
+
         await evaluator._tick()
-        
+
         # Should not broadcast due to debouncing
         assert queue.empty()
 
@@ -612,13 +609,13 @@ class TestAlertEvaluator:
     ):
         """Test _tick handles evaluation errors gracefully"""
         await evaluator.store.add(sample_alert)
-        
+
         # Mock evaluation error
         mock_get_ohlc.side_effect = Exception("API error")
-        
+
         # Should not raise
         await evaluator._tick()
-        
+
         # Evaluator should continue running
         assert not evaluator._stop.is_set()
 
@@ -629,12 +626,12 @@ class TestAlertEvaluator:
     ):
         """Test _tick updates last_triggered_at on trigger"""
         await evaluator.store.add(sample_alert)
-        
+
         mock_get_ohlc.return_value = [{"close": "51000.00"}]
-        
+
         before = sample_alert.last_triggered_at
         await evaluator._tick()
-        
+
         # Reload alert
         alert = await evaluator.store.get("alert-001")
         assert alert.last_triggered_at != before
@@ -669,7 +666,9 @@ class TestAlertEdgeCases:
         await evaluator.stop()
 
     @pytest.mark.asyncio
-    async def test_concurrent_store_operations(self, alert_store_edge: AlertStore, sample_alert: Alert):
+    async def test_concurrent_store_operations(
+        self, alert_store_edge: AlertStore, sample_alert: Alert
+    ):
         """Test concurrent operations on store"""
         # Add multiple alerts concurrently
         alerts = [
@@ -687,10 +686,10 @@ class TestAlertEdgeCases:
             )
             for i in range(10)
         ]
-        
+
         # Concurrent adds
         await asyncio.gather(*[alert_store_edge.add(a) for a in alerts])
-        
+
         stored = await alert_store_edge.list()
         assert len(stored) == 10
 
@@ -709,15 +708,15 @@ class TestAlertEdgeCases:
             config={"window_minutes": 60, "direction": "up", "threshold_pct": 5.0},
             owner_handle="testuser",
         )
-        
+
         with patch("app.services.alerts.get_ohlc") as mock_get_ohlc:
             mock_get_ohlc.return_value = [
                 {"close": "0.00"},
                 {"close": "100.00"},
             ]
-            
-            triggered, payload = await evaluator._evaluate(alert)
-            
+
+            _triggered, payload = await evaluator._evaluate(alert)
+
             # Should handle zero division
             assert payload["pct_change"] == 0.0
 
@@ -726,10 +725,10 @@ class TestAlertEdgeCases:
         """Test operations on empty store"""
         alerts = await alert_store_edge.list()
         assert len(alerts) == 0
-        
+
         alert = await alert_store_edge.get("nonexistent")
         assert alert is None
-        
+
         existed = await alert_store_edge.remove("nonexistent")
         assert existed is False
 
@@ -744,9 +743,9 @@ class TestAlertEdgeCases:
         """Test that file writes are atomic (uses .tmp file)"""
         store = AlertStore(str(temp_alert_path))
         await store.load()
-        
+
         await store.add(sample_alert)
-        
+
         # Check that .tmp file was used
         assert temp_alert_path.exists()
         assert not temp_alert_path.with_suffix(".tmp").exists()

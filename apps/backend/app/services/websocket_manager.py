@@ -5,7 +5,7 @@ WebSocket manager for real-time direct messaging (J4) with J6.2 Redis integratio
 import json
 import logging
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 from fastapi import WebSocket
 
@@ -218,7 +218,7 @@ class ConnectionManager:
                 conversation_id=conversation_id,
                 user_id=user_id,
                 message_id=message_id,
-                read_at=datetime.now(timezone.utc),
+                read_at=datetime.now(UTC),
             )
             message_json = read_msg.model_dump_json()
 
@@ -236,7 +236,7 @@ class ConnectionManager:
                             "conversation_id": str(conversation_id),
                             "user_id": str(user_id),
                             "message_id": str(message_id),
-                            "read_at": datetime.now(timezone.utc).isoformat(),
+                            "read_at": datetime.now(UTC).isoformat(),
                             "participant_ids": [str(uid) for uid in participant_ids],
                         }
                     ),
@@ -253,7 +253,7 @@ class ConnectionManager:
             welcome_msg = {
                 "type": "connection_established",
                 "user_id": str(user_id),
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
             await websocket.send_text(json.dumps(welcome_msg))
 

@@ -20,10 +20,12 @@ Coverage targets:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
@@ -34,7 +36,6 @@ from app.schemas.profile import (
     UserSettingsUpdateRequest,
 )
 from app.services.profile_service import ProfileService
-from fastapi import HTTPException
 
 # ============================================================================
 # FIXTURES
@@ -70,8 +71,8 @@ def mock_profile():
         is_public=True,
         follower_count=10,
         following_count=5,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
     )
 
 
@@ -643,8 +644,8 @@ class TestProfileUpdateDatabaseInteractions:
             is_public=True,
             follower_count=0,
             following_count=0,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         update_data = ProfileUpdateRequest(
@@ -699,8 +700,8 @@ class TestProfileUpdateDatabaseInteractions:
             is_public=True,
             follower_count=0,
             following_count=0,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         # Only update bio and display_name (username=None should not update)
@@ -744,8 +745,8 @@ class TestProfileUpdateDatabaseInteractions:
             is_public=True,  # Add required boolean field
             follower_count=0,
             following_count=0,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         # All fields None - no update should happen
@@ -798,8 +799,8 @@ class TestUserSettingsDatabaseInteractions:
             full_name="Test User",
             is_verified=True,
             is_active=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         settings_data = UserSettingsUpdateRequest(
@@ -838,8 +839,8 @@ class TestUserSettingsDatabaseInteractions:
             timezone="UTC",
             full_name="Test User",
             is_active=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
             is_verified=True,
         )
 
@@ -927,8 +928,8 @@ class TestNotificationPreferencesDatabaseInteractions:
             push_messages=True,
             push_ai_responses=False,
             push_system=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         # Act
@@ -987,8 +988,8 @@ class TestNotificationPreferencesDatabaseInteractions:
             push_messages=True,
             push_ai_responses=False,
             push_system=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         # Act
@@ -1047,8 +1048,8 @@ class TestNotificationPreferencesDatabaseInteractions:
             push_messages=True,
             push_ai_responses=False,
             push_system=True,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         # Act
@@ -1222,8 +1223,8 @@ class TestFollowServiceIntegration:
                 is_public=True,
                 follower_count=10,
                 following_count=5,
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
             ),
             Profile(
                 id=profile2_id,
@@ -1235,8 +1236,8 @@ class TestFollowServiceIntegration:
                 is_public=True,
                 follower_count=20,
                 following_count=8,
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
             ),
             Profile(
                 id=profile3_id,
@@ -1248,8 +1249,8 @@ class TestFollowServiceIntegration:
                 is_public=True,
                 follower_count=15,
                 following_count=6,
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
             ),
         ]
 
@@ -1330,8 +1331,8 @@ class TestFollowServiceIntegration:
                 is_public=True,
                 follower_count=10,
                 following_count=5,
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
             ),
             Profile(
                 id=profile2_id,
@@ -1343,8 +1344,8 @@ class TestFollowServiceIntegration:
                 is_public=True,
                 follower_count=20,
                 following_count=8,
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
             ),
         ]
 
@@ -1413,8 +1414,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=100,
             following_count=50,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         profile2 = Profile(
@@ -1427,8 +1428,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=50,
             following_count=30,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         mock_profiles = [profile1, profile2]
@@ -1471,8 +1472,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=75,
             following_count=25,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         mock_profiles = [profile]
@@ -1512,8 +1513,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=100,
             following_count=50,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         mock_profiles = [public_profile]
@@ -1553,8 +1554,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=200,  # Highest follower count
             following_count=50,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         profile2 = Profile(
@@ -1567,8 +1568,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=100,  # Middle follower count
             following_count=30,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         profile3 = Profile(
@@ -1581,8 +1582,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=100,  # Same as profile2, should order by username
             following_count=20,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         # Mock returns profiles in correct order (follower_count DESC, username ASC)
@@ -1635,8 +1636,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=100,
             following_count=50,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         profile2 = Profile(
@@ -1649,8 +1650,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=90,
             following_count=40,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         mock_profiles = [profile1, profile2]
@@ -1695,8 +1696,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=80,
             following_count=30,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         profile4 = Profile(
@@ -1709,8 +1710,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=70,
             following_count=20,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         mock_profiles = [profile3, profile4]
@@ -1755,8 +1756,8 @@ class TestSearchAndPagination:
             is_public=True,
             follower_count=60,
             following_count=10,
-            created_at=datetime.now(timezone.utc),
-            updated_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
+            updated_at=datetime.now(UTC),
         )
 
         mock_profiles = [profile5]
@@ -1826,8 +1827,8 @@ class TestSearchAndPagination:
                 is_public=True,
                 follower_count=100 - (i * 10),
                 following_count=50 - (i * 5),
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
             )
             for i in range(1, 4)
         ]

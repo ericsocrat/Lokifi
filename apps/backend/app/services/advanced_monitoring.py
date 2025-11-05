@@ -14,15 +14,16 @@ import time
 from collections import deque
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from typing import Any
 
 import psutil
+from sqlalchemy import text
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.database import db_manager
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from sqlalchemy import text
 
 logger = get_logger(__name__)
 
@@ -107,7 +108,7 @@ class AlertManager:
 
     async def evaluate_rules(self, metrics: dict[str, Any]):
         """Evaluate alert rules against current metrics"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
 
         for rule in self.alert_rules:
             try:
@@ -269,7 +270,7 @@ class PerformanceAnalyzer:
         if isinstance(metrics, dict):
             # Create a SystemMetrics object from the dict
             metrics_obj = SystemMetrics(
-                timestamp=metrics.get("timestamp", datetime.now(timezone.utc)),
+                timestamp=metrics.get("timestamp", datetime.now(UTC)),
                 cpu_usage=metrics.get("cpu_usage", 0.0),
                 memory_usage=metrics.get("memory_usage", 0.0),
                 disk_usage=metrics.get("disk_usage", 0.0),
@@ -460,7 +461,7 @@ class AdvancedMonitoringSystem:
                 all_data = {
                     "system_metrics": metrics,
                     "health_status": await self._run_all_health_checks(),
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 }
 
                 await self.alert_manager.evaluate_rules(all_data)
@@ -514,7 +515,7 @@ class AdvancedMonitoringSystem:
         response_times = await self._get_response_time_metrics()
 
         return {
-            "timestamp": datetime.now(timezone.utc),
+            "timestamp": datetime.now(UTC),
             "cpu_usage": cpu_usage,
             "memory_usage": memory.percent,
             "disk_usage": disk.percent,
@@ -549,7 +550,7 @@ class AdvancedMonitoringSystem:
                     service=service,
                     status=status["status"],
                     response_time=response_time,
-                    last_check=datetime.now(timezone.utc),
+                    last_check=datetime.now(UTC),
                     error_message=status.get("error"),
                     details=status.get("details") or {},
                 )
@@ -559,7 +560,7 @@ class AdvancedMonitoringSystem:
                     service=service,
                     status="unhealthy",
                     response_time=0,
-                    last_check=datetime.now(timezone.utc),
+                    last_check=datetime.now(UTC),
                     error_message=str(e),
                 )
 
@@ -732,7 +733,7 @@ class AdvancedMonitoringSystem:
         recent_alerts = list(self.alert_manager.alert_history)[-10:]
 
         return {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "system_status": system_status,
             "health_checks": {k: v.to_dict() for k, v in health_status.items()},
             "current_metrics": self.last_metrics if self.last_metrics else {},

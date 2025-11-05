@@ -13,7 +13,7 @@ Usage:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 
 import pytest
 import pytest_asyncio
@@ -41,7 +41,7 @@ async def test_users(integration_db_session):
             full_name=f"Test User {i}",
             password_hash="hashed_password_placeholder",
             is_active=True,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         integration_db_session.add(user)
         users.append(user)

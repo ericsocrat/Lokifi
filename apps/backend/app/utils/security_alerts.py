@@ -7,13 +7,14 @@ import json
 import os
 import smtplib
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
 from typing import Any
 
 import requests
+
 from app.core.config import get_settings
 from app.utils.logger import get_logger
 from app.utils.security_logger import SecurityEventType, SecuritySeverity
@@ -72,7 +73,7 @@ class Alert:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.now(timezone.utc)
+            self.timestamp = datetime.now(UTC)
 
 
 class SecurityAlertManager:
@@ -153,7 +154,7 @@ class SecurityAlertManager:
         self._update_rate_limit_cache(alert)
 
         # Keep only recent alerts (last 24 hours)
-        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=24)
+        cutoff_time = datetime.now(UTC) - timedelta(hours=24)
         self.alert_history = [a for a in self.alert_history if a.timestamp > cutoff_time]
 
         return success_count > 0
@@ -175,7 +176,7 @@ class SecurityAlertManager:
         last_sent = self.rate_limit_cache.get(cache_key)
 
         if last_sent:
-            time_diff = datetime.now(timezone.utc) - last_sent
+            time_diff = datetime.now(UTC) - last_sent
             return time_diff.total_seconds() < (self.config.rate_limit_minutes * 60)
 
         return False
@@ -183,10 +184,10 @@ class SecurityAlertManager:
     def _update_rate_limit_cache(self, alert: Alert):
         """Update rate limit cache"""
         cache_key = f"{alert.event_type.value}_{alert.source_ip or 'unknown'}"
-        self.rate_limit_cache[cache_key] = datetime.now(timezone.utc)
+        self.rate_limit_cache[cache_key] = datetime.now(UTC)
 
         # Clean old entries
-        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=self.config.rate_limit_minutes * 2)
+        cutoff_time = datetime.now(UTC) - timedelta(minutes=self.config.rate_limit_minutes * 2)
         self.rate_limit_cache = {k: v for k, v in self.rate_limit_cache.items() if v > cutoff_time}
 
     async def _send_email_alert(self, alert: Alert):
@@ -371,7 +372,7 @@ class SecurityAlertManager:
                     "ts": (
                         int(alert.timestamp.timestamp())
                         if alert.timestamp
-                        else int(datetime.now(timezone.utc).timestamp())
+                        else int(datetime.now(UTC).timestamp())
                     ),
                 }
             ],
@@ -406,7 +407,7 @@ class SecurityAlertManager:
             "description": alert.message,
             "color": severity_colors.get(alert.severity, 0x6C757D),
             "timestamp": (
-                alert.timestamp.isoformat() if alert.timestamp else datetime.now(timezone.utc).isoformat()
+                alert.timestamp.isoformat() if alert.timestamp else datetime.now(UTC).isoformat()
             ),
             "fields": [
                 {"name": "Severity", "value": alert.severity.value.upper(), "inline": True},
@@ -445,7 +446,7 @@ class SecurityAlertManager:
     def get_alert_statistics(self) -> dict[str, Any]:
         """Get statistics about recent alerts"""
         recent_alerts = [
-            a for a in self.alert_history if a.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
+            a for a in self.alert_history if a.timestamp > datetime.now(UTC) - timedelta(hours=24)
         ]
 
         severity_counts = {}

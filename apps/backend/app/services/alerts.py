@@ -149,7 +149,7 @@ class AlertEvaluator:
             # Wait for stop signal or timeout
             try:
                 await asyncio.wait_for(self._stop.wait(), timeout=self.interval_sec)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 pass  # Timeout is expected - continue loop
 
     async def _tick(self):

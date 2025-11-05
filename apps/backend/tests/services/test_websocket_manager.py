@@ -14,7 +14,7 @@ Session: 63 - Backend Test Coverage Expansion Phase 2
 
 import json
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
@@ -90,8 +90,8 @@ def mock_message_response(sample_user_id, sample_conversation_id):
         content_type=ContentType.TEXT,
         is_edited=False,
         is_deleted=False,
-        created_at=datetime.now(timezone.utc),
-        updated_at=datetime.now(timezone.utc),
+        created_at=datetime.now(UTC),
+        updated_at=datetime.now(UTC),
         read_by=[],
     )
 

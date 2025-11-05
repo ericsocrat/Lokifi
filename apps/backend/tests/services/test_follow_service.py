@@ -12,10 +12,13 @@ Coverage targets:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.follow import Follow
 from app.models.notification_models import Notification, NotificationType
 from app.models.profile import Profile
@@ -29,8 +32,6 @@ from app.schemas.follow import (
     UserFollowStatus,
 )
 from app.services.follow_service import FollowService
-from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # FIXTURES
@@ -100,7 +101,7 @@ class TestFollowOperations:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         mock_follow_result = MagicMock()
         mock_follow_result.scalar_one_or_none.return_value = existing_follow
@@ -157,7 +158,7 @@ class TestFollowOperations:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = existing_follow
@@ -383,7 +384,7 @@ class TestFollowUserComplete:
 
         def mock_add(obj):
             if isinstance(obj, Follow) and obj.created_at is None:
-                obj.created_at = datetime.now(timezone.utc)
+                obj.created_at = datetime.now(UTC)
             added_objects.append(obj)
 
         mock_db_session.add = mock_add
@@ -392,11 +393,11 @@ class TestFollowUserComplete:
             # Set created_at on Follow objects during flush
             for obj in added_objects:
                 if isinstance(obj, Follow) and obj.created_at is None:
-                    obj.created_at = datetime.now(timezone.utc)
+                    obj.created_at = datetime.now(UTC)
 
         mock_db_session.flush = mock_flush
 
-        result = await follow_service.follow_user(follower_id, followee_id)
+        await follow_service.follow_user(follower_id, followee_id)
 
         # Verify Follow object added
         assert len(added_objects) == 2  # Follow + Notification
@@ -445,7 +446,7 @@ class TestFollowUserComplete:
         # Mock add to set created_at on Follow objects
         def mock_add(obj):
             if isinstance(obj, Follow) and obj.created_at is None:
-                obj.created_at = datetime.now(timezone.utc)
+                obj.created_at = datetime.now(UTC)
 
         mock_db_session.add = mock_add
 
@@ -477,7 +478,7 @@ class TestUnfollowCounterUpdates:
             id=uuid.uuid4(),
             follower_id=follower_id,
             followee_id=followee_id,
-            created_at=datetime.now(timezone.utc),
+            created_at=datetime.now(UTC),
         )
         mock_follow_result = MagicMock()
         mock_follow_result.scalar_one_or_none.return_value = existing_follow
@@ -693,14 +694,14 @@ class TestGetFollowers:
         mock_followers_result = MagicMock()
         mock_row1 = MagicMock(
             follower_id=follower1_id,
-            created_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
             username="follower1",
             display_name="Follower One",
             avatar_url="https://example.com/avatar1.jpg",
         )
         mock_row2 = MagicMock(
             follower_id=follower2_id,
-            created_at=datetime(2024, 1, 2, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 2, tzinfo=UTC),
             username="follower2",
             display_name="Follower Two",
             avatar_url="https://example.com/avatar2.jpg",
@@ -802,7 +803,7 @@ class TestGetFollowers:
         mock_followers_result = MagicMock()
         mock_row = MagicMock(
             follower_id=follower_id,
-            created_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
             username="follower",
             display_name="Follower",
             avatar_url=None,
@@ -845,14 +846,14 @@ class TestGetFollowing:
         mock_following_result = MagicMock()
         mock_row1 = MagicMock(
             followee_id=following1_id,
-            created_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
             username="following1",
             display_name="Following One",
             avatar_url="https://example.com/avatar1.jpg",
         )
         mock_row2 = MagicMock(
             followee_id=following2_id,
-            created_at=datetime(2024, 1, 2, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 2, tzinfo=UTC),
             username="following2",
             display_name="Following Two",
             avatar_url=None,
@@ -960,7 +961,7 @@ class TestGetMutualFollows:
             username="mutual_user",
             display_name="Mutual User",
             avatar_url="https://example.com/avatar.jpg",
-            created_at=datetime(2024, 1, 1, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 1, tzinfo=UTC),
         )
         mock_mutual_result.all.return_value = [mock_row]
 
@@ -1243,7 +1244,7 @@ class TestGetFollowActivity:
             username="recent_follower",
             display_name="Recent Follower",
             avatar_url="https://example.com/follower.jpg",
-            created_at=datetime(2024, 1, 10, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 10, tzinfo=UTC),
         )
         mock_recent_followers_result.all.return_value = [mock_follower_row]
 
@@ -1254,7 +1255,7 @@ class TestGetFollowActivity:
             username="recent_following",
             display_name="Recent Following",
             avatar_url="https://example.com/following.jpg",
-            created_at=datetime(2024, 1, 11, tzinfo=timezone.utc),
+            created_at=datetime(2024, 1, 11, tzinfo=UTC),
         )
         mock_recent_following_result.all.return_value = [mock_following_row]
 

@@ -101,7 +101,10 @@ export default defineConfig({
       '@/utils': path.resolve(__dirname, './src/utils'),
       // Fix for lucide-react 0.552.0: Force use of ESM build instead of CJS
       // The CJS build tries to require('react') which fails in Vitest's ESM environment
-      'lucide-react': path.resolve(__dirname, '../../node_modules/lucide-react/dist/esm/lucide-react.js'),
+      'lucide-react': path.resolve(
+        __dirname,
+        '../../node_modules/lucide-react/dist/esm/lucide-react.js'
+      ),
     },
     dedupe: ['react', 'react-dom'],
     conditions: ['import', 'module', 'default'],

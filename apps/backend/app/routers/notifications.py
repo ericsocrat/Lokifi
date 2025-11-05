@@ -1,7 +1,11 @@
 # J6 Enterprise Notifications - REST API Router
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
 
 from app.core.auth_deps import get_current_user
 from app.core.redis_cache import cache_notifications
@@ -9,9 +13,6 @@ from app.models.notification_models import NotificationPriority
 from app.models.user import User
 from app.services.notification_emitter import notification_emitter
 from app.services.notification_service import notification_service
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -188,7 +189,7 @@ async def get_unread_count(request: Request, current_user: User = Depends(get_cu
             content={
                 "unread_count": unread_count,
                 "user_id": current_user.id,
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": datetime.now(UTC).isoformat(),
             }
         )
 
@@ -360,8 +361,8 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
             "daily_digest_enabled": False,
             "weekly_digest_enabled": False,
             "digest_time": "09:00",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(UTC).isoformat(),
+            "updated_at": datetime.now(UTC).isoformat(),
         }
 
         return NotificationPreferencesResponse(**default_preferences)

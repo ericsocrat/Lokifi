@@ -12,10 +12,12 @@ Coverage focus: Happy path flows, edge cases, authorization validation
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+
 from app.models.conversation import (
     ContentType,
     Conversation,
@@ -26,7 +28,6 @@ from app.models.conversation import (
 from app.models.user import User
 from app.schemas.conversation import MessageCreate
 from app.services.conversation_service import ConversationService
-from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -566,20 +567,20 @@ class TestGetUserConversationsDetailed:
         # Create mock conversations with different timestamps
         conv1 = MagicMock()
         conv1.id = conv1_id
-        conv1.last_message_at = datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc)
-        conv1.updated_at = datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc)
+        conv1.last_message_at = datetime(2025, 1, 1, 12, 0, tzinfo=UTC)
+        conv1.updated_at = datetime(2025, 1, 1, 10, 0, tzinfo=UTC)
         conv1.participants = []
 
         conv2 = MagicMock()
         conv2.id = conv2_id
-        conv2.last_message_at = datetime(2025, 1, 2, 12, 0, tzinfo=timezone.utc)  # Most recent
-        conv2.updated_at = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
+        conv2.last_message_at = datetime(2025, 1, 2, 12, 0, tzinfo=UTC)  # Most recent
+        conv2.updated_at = datetime(2025, 1, 2, 10, 0, tzinfo=UTC)
         conv2.participants = []
 
         conv3 = MagicMock()
         conv3.id = conv3_id
-        conv3.last_message_at = datetime(2025, 1, 1, 18, 0, tzinfo=timezone.utc)
-        conv3.updated_at = datetime(2025, 1, 1, 16, 0, tzinfo=timezone.utc)
+        conv3.last_message_at = datetime(2025, 1, 1, 18, 0, tzinfo=UTC)
+        conv3.updated_at = datetime(2025, 1, 1, 16, 0, tzinfo=UTC)
         conv3.participants = []
 
         # Mock conversations query - return in expected order
@@ -610,9 +611,9 @@ class TestGetUserConversationsDetailed:
                     participants=[],
                     last_message=None,
                     unread_count=0,
-                    created_at=datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc),
-                    updated_at=datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc),
-                    last_message_at=datetime(2025, 1, 2, 12, 0, tzinfo=timezone.utc),
+                    created_at=datetime(2025, 1, 2, 10, 0, tzinfo=UTC),
+                    updated_at=datetime(2025, 1, 2, 10, 0, tzinfo=UTC),
+                    last_message_at=datetime(2025, 1, 2, 12, 0, tzinfo=UTC),
                 ),
                 ConversationResponse(
                     id=conv3_id,
@@ -622,9 +623,9 @@ class TestGetUserConversationsDetailed:
                     participants=[],
                     last_message=None,
                     unread_count=0,
-                    created_at=datetime(2025, 1, 1, 16, 0, tzinfo=timezone.utc),
-                    updated_at=datetime(2025, 1, 1, 16, 0, tzinfo=timezone.utc),
-                    last_message_at=datetime(2025, 1, 1, 18, 0, tzinfo=timezone.utc),
+                    created_at=datetime(2025, 1, 1, 16, 0, tzinfo=UTC),
+                    updated_at=datetime(2025, 1, 1, 16, 0, tzinfo=UTC),
+                    last_message_at=datetime(2025, 1, 1, 18, 0, tzinfo=UTC),
                 ),
                 ConversationResponse(
                     id=conv1_id,
@@ -634,9 +635,9 @@ class TestGetUserConversationsDetailed:
                     participants=[],
                     last_message=None,
                     unread_count=0,
-                    created_at=datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc),
-                    updated_at=datetime(2025, 1, 1, 10, 0, tzinfo=timezone.utc),
-                    last_message_at=datetime(2025, 1, 1, 12, 0, tzinfo=timezone.utc),
+                    created_at=datetime(2025, 1, 1, 10, 0, tzinfo=UTC),
+                    updated_at=datetime(2025, 1, 1, 10, 0, tzinfo=UTC),
+                    last_message_at=datetime(2025, 1, 1, 12, 0, tzinfo=UTC),
                 ),
             ]
 
@@ -692,8 +693,8 @@ class TestGetUserConversationsDetailed:
                     participants=[],
                     last_message=None,
                     unread_count=0,
-                    created_at=datetime.now(timezone.utc),
-                    updated_at=datetime.now(timezone.utc),
+                    created_at=datetime.now(UTC),
+                    updated_at=datetime.now(UTC),
                     last_message_at=None,
                 )
                 for conv_id in conv_ids
@@ -742,8 +743,8 @@ class TestGetUserConversationsDetailed:
                 participants=[],
                 last_message=None,
                 unread_count=0,
-                created_at=datetime.now(timezone.utc),
-                updated_at=datetime.now(timezone.utc),
+                created_at=datetime.now(UTC),
+                updated_at=datetime.now(UTC),
                 last_message_at=None,
             )
 
@@ -782,7 +783,7 @@ class TestGetUserConversationsDetailed:
             (3, 5, 10),  # page 3, smaller size: offset = (3-1)*5 = 10
         ]
 
-        for page, page_size, expected_offset in test_cases:
+        for page, page_size, _expected_offset in test_cases:
             # Reset execute side effects
             mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
 
@@ -943,7 +944,7 @@ class TestMarkMessagesReadReceipts:
         # Mock: Target message exists
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
-        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = mock_target_message
 
@@ -1003,7 +1004,7 @@ class TestMarkMessagesReadReceipts:
         # Mock: Target message exists
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
-        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = mock_target_message
 
@@ -1059,7 +1060,7 @@ class TestMarkMessagesReadReceipts:
         mock_participant_result.scalar_one_or_none.return_value = mock_participant
 
         # Mock: Target message at specific timestamp
-        target_timestamp = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        target_timestamp = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
         mock_target_message.created_at = target_timestamp
@@ -1121,7 +1122,7 @@ class TestMarkMessagesReadReceipts:
         # Mock: Target message exists
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
-        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = mock_target_message
 
@@ -1188,20 +1189,20 @@ class TestBuildConversationResponse:
         mock_conversation.is_group = False
         mock_conversation.name = None
         mock_conversation.description = None
-        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
-        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
+        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
+        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
 
         # Mock participants with profiles
         mock_participant1 = MagicMock(spec=ConversationParticipant)
         mock_participant1.user_id = user_id
-        mock_participant1.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant1.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
         mock_participant1.is_active = True
         mock_participant1.last_read_message_id = None
 
         mock_participant2 = MagicMock(spec=ConversationParticipant)
         mock_participant2.user_id = user2_id
-        mock_participant2.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant2.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
         mock_participant2.is_active = True
         mock_participant2.last_read_message_id = None
 
@@ -1231,8 +1232,8 @@ class TestBuildConversationResponse:
         mock_last_message.content_type = ContentType.TEXT
         mock_last_message.is_edited = False
         mock_last_message.is_deleted = False
-        mock_last_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_last_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_last_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
+        mock_last_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_last_message.receipts = []
 
         mock_last_message_result = MagicMock()
@@ -1278,14 +1279,14 @@ class TestBuildConversationResponse:
         mock_conversation.is_group = False
         mock_conversation.name = None
         mock_conversation.description = None
-        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
-        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
+        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
+        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
 
         # Mock participant with last_read_message_id
         mock_participant = MagicMock(spec=ConversationParticipant)
         mock_participant.user_id = user_id
-        mock_participant.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
         mock_participant.is_active = True
         mock_participant.last_read_message_id = last_read_msg_id
 
@@ -1335,14 +1336,14 @@ class TestBuildConversationResponse:
         mock_conversation.is_group = False
         mock_conversation.name = None
         mock_conversation.description = None
-        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
-        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
+        mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
+        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
 
         # Mock participant with NO last_read_message_id
         mock_participant = MagicMock(spec=ConversationParticipant)
         mock_participant.user_id = user_id
-        mock_participant.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
+        mock_participant.joined_at = datetime(2025, 1, 15, 10, 0, tzinfo=UTC)
         mock_participant.is_active = True
         mock_participant.last_read_message_id = None  # Never read
 
@@ -1405,8 +1406,8 @@ class TestBuildMessageResponse:
         mock_message.content_type = ContentType.TEXT
         mock_message.is_edited = False
         mock_message.is_deleted = False
-        mock_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
+        mock_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_message.receipts = [mock_receipt1, mock_receipt2]
 
         # Execute
@@ -1441,8 +1442,8 @@ class TestBuildMessageResponse:
         mock_message.content_type = ContentType.TEXT
         mock_message.is_edited = False
         mock_message.is_deleted = False
-        mock_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
+        mock_message.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=UTC)
         mock_message.receipts = []  # No receipts
 
         # Execute

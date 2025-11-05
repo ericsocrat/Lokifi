@@ -1,7 +1,10 @@
 # J6 Enterprise Notifications - WebSocket Real-time Delivery
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from typing import Any
+
+from fastapi import WebSocket
+from fastapi.routing import APIRouter
 
 from app.models.notification_models import Notification
 
@@ -9,8 +12,6 @@ from app.models.notification_models import Notification
 from app.models.user import User
 from app.services.notification_service import NotificationEvent, notification_service
 from app.utils.logger import get_logger
-from fastapi import WebSocket
-from fastapi.routing import APIRouter
 
 logger = get_logger(__name__)
 
@@ -80,8 +81,8 @@ class NotificationWebSocketManager:
             self.connection_metadata[websocket] = {
                 "user_id": user_id_str,
                 "username": user.username,
-                "connected_at": datetime.now(timezone.utc),
-                "last_activity": datetime.now(timezone.utc),
+                "connected_at": datetime.now(UTC),
+                "last_activity": datetime.now(UTC),
             }
 
             # Update stats
@@ -95,7 +96,7 @@ class NotificationWebSocketManager:
                     "type": "connection_established",
                     "data": {
                         "user_id": user.id,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                         "features": [
                             "real_time_notifications",
                             "unread_count_updates",
@@ -114,7 +115,7 @@ class NotificationWebSocketManager:
                     "data": {
                         "count": unread_count,
                         "user_id": user.id,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     },
                 },
             )
@@ -148,7 +149,7 @@ class NotificationWebSocketManager:
                 metadata = self.connection_metadata[websocket]
                 del self.connection_metadata[websocket]
 
-                connection_duration = (datetime.now(timezone.utc) - metadata["connected_at"]).total_seconds()
+                connection_duration = (datetime.now(UTC) - metadata["connected_at"]).total_seconds()
 
                 logger.info(
                     f"WebSocket disconnected for user {metadata['username']} "
@@ -188,7 +189,7 @@ class NotificationWebSocketManager:
 
                 # Update last activity
                 if websocket in self.connection_metadata:
-                    self.connection_metadata[websocket]["last_activity"] = datetime.now(timezone.utc)
+                    self.connection_metadata[websocket]["last_activity"] = datetime.now(UTC)
 
             except Exception as e:
                 logger.warning(f"Failed to send message to WebSocket for user {user_id}: {e}")
@@ -246,7 +247,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "count": unread_count,
                     "user_id": notification.user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
             }
 
@@ -271,7 +272,7 @@ class NotificationWebSocketManager:
                     "data": {
                         "notification_id": data.id,
                         "user_id": user_id,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     },
                 }
             elif isinstance(data, dict) and data.get("batch"):
@@ -282,7 +283,7 @@ class NotificationWebSocketManager:
                     "data": {
                         "count": data["count"],
                         "user_id": user_id,
-                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "timestamp": datetime.now(UTC).isoformat(),
                     },
                 }
             else:
@@ -297,7 +298,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "count": unread_count,
                     "user_id": user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
             }
 
@@ -314,7 +315,7 @@ class NotificationWebSocketManager:
                 "data": {
                     "notification_id": notification.id,
                     "user_id": notification.user_id,
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
             }
 
@@ -338,7 +339,7 @@ class NotificationWebSocketManager:
                     "connected_at": metadata["connected_at"].isoformat(),
                     "last_activity": metadata["last_activity"].isoformat(),
                     "connection_duration_seconds": (
-                        datetime.now(timezone.utc) - metadata["connected_at"]
+                        datetime.now(UTC) - metadata["connected_at"]
                     ).total_seconds(),
                 }
                 for metadata in self.connection_metadata.values()
@@ -347,7 +348,7 @@ class NotificationWebSocketManager:
 
     async def cleanup_stale_connections(self, timeout_seconds: int = 300):
         """Clean up stale WebSocket connections"""
-        current_time = datetime.now(timezone.utc)
+        current_time = datetime.now(UTC)
         stale_connections = []
 
         for websocket, metadata in self.connection_metadata.items():

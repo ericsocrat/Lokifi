@@ -2,13 +2,14 @@ from __future__ import annotations
 
 __all__ = ["router"]
 
-from app.db.db import get_session, init_db
-from app.db.models import Follow, Post, User
-from app.services.auth import require_handle
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import desc, func, select
 from sqlalchemy.orm import Session
+
+from app.db.db import get_session, init_db
+from app.db.models import Follow, Post, User
+from app.services.auth import require_handle
 
 router = APIRouter()
 

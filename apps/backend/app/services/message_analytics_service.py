@@ -4,7 +4,7 @@ Message analytics service for J4 Direct Messages.
 
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import and_, desc, func, select
@@ -52,7 +52,7 @@ class MessageAnalyticsService:
     ) -> UserMessageStats:
         """Get comprehensive messaging statistics for a user."""
 
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # Total messages sent
         messages_count_stmt = select(func.count(Message.id)).where(
@@ -149,7 +149,7 @@ class MessageAnalyticsService:
         if not result.scalar_one_or_none():
             return None
 
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=days_back)
+        cutoff_date = datetime.now(UTC) - timedelta(days=days_back)
 
         # Total messages in conversation
         total_messages_stmt = select(func.count(Message.id)).where(
@@ -222,7 +222,7 @@ class MessageAnalyticsService:
         """Get overall platform messaging statistics."""
 
         # Total messages (last 30 days)
-        cutoff_date = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff_date = datetime.now(UTC) - timedelta(days=30)
 
         total_messages_stmt = select(func.count(Message.id)).where(
             and_(Message.created_at >= cutoff_date, ~Message.is_deleted)
@@ -259,7 +259,7 @@ class MessageAnalyticsService:
             "avg_messages_per_user": total_messages / max(active_users, 1),
             "avg_messages_per_conversation": total_messages / max(total_conversations, 1),
             "messages_by_type": messages_by_type,
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
         }
 
     async def get_trending_conversations(
@@ -284,7 +284,7 @@ class MessageAnalyticsService:
             )
             .where(
                 and_(
-                    Message.created_at >= datetime.now(timezone.utc) - timedelta(hours=24),
+                    Message.created_at >= datetime.now(UTC) - timedelta(hours=24),
                     ~Message.is_deleted,
                 )
             )

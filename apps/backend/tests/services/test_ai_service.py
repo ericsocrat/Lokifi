@@ -10,7 +10,7 @@ Coverage focus: Happy path flows, edge cases, error handling
 """
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
@@ -58,8 +58,8 @@ def mock_thread():
     thread.id = 1
     thread.user_id = 100
     thread.title = "Test Chat"
-    thread.created_at = datetime.now(timezone.utc)
-    thread.updated_at = datetime.now(timezone.utc)
+    thread.created_at = datetime.now(UTC)
+    thread.updated_at = datetime.now(UTC)
     return thread
 
 
@@ -71,7 +71,7 @@ def mock_message():
     message.thread_id = 1
     message.role = "user"
     message.content = "Hello, AI!"
-    message.created_at = datetime.now(timezone.utc)
+    message.created_at = datetime.now(UTC)
     return message
 
 
@@ -654,7 +654,7 @@ class TestSendMessageCoreFlow:
                 # Provider raises error
                 mock_get_provider.side_effect = Exception("Provider unavailable")
 
-                with pytest.raises(Exception):
+                with pytest.raises(Exception, match="Provider unavailable"):
                     async for _ in ai_service.send_message(user_id, thread_id, message):
                         pass
 
@@ -892,7 +892,7 @@ class TestThreadManagement:
     @pytest.mark.asyncio
     async def test_delete_thread_unauthorized(self, ai_service):
         """Test delete_thread fails when user doesn't own thread"""
-        user_id = 100
+        _user_id = 100  # Original thread owner (not used in this test)
         thread_id = 1
         wrong_user_id = 999
 
@@ -1007,7 +1007,7 @@ class TestThreadManagement:
     @pytest.mark.asyncio
     async def test_update_thread_title_unauthorized(self, ai_service):
         """Test update_thread_title fails when user doesn't own thread"""
-        user_id = 100
+        _user_id = 100  # Original thread owner (not used in this test)
         thread_id = 1
         wrong_user_id = 999
         new_title = "Hacked Title"

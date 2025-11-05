@@ -16,7 +16,7 @@ Coverage targets:
 """
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -61,7 +61,7 @@ def mock_current_user():
     user.email = "test@example.com"
     user.avatar_url = "https://example.com/avatar.jpg"
     user.bio = "Test user bio"
-    user.created_at = datetime.now(timezone.utc)
+    user.created_at = datetime.now(UTC)
     return user
 
 
@@ -83,9 +83,9 @@ def sample_conversation():
     conversation.is_group = False
     conversation.name = "DM Conversation"
     conversation.description = "Direct message conversation"
-    conversation.created_at = datetime.now(timezone.utc)
-    conversation.updated_at = datetime.now(timezone.utc)
-    conversation.last_message_at = datetime.now(timezone.utc)
+    conversation.created_at = datetime.now(UTC)
+    conversation.updated_at = datetime.now(UTC)
+    conversation.last_message_at = datetime.now(UTC)
 
     # Last message (MessageResponse type)
     last_msg = MagicMock()
@@ -96,8 +96,8 @@ def sample_conversation():
     last_msg.content_type = "text"
     last_msg.is_deleted = False
     last_msg.is_read = False
-    last_msg.created_at = datetime.now(timezone.utc)
-    last_msg.updated_at = datetime.now(timezone.utc)
+    last_msg.created_at = datetime.now(UTC)
+    last_msg.updated_at = datetime.now(UTC)
     conversation.last_message = last_msg
 
     # Participants (ConversationParticipantResponse fields)
@@ -106,7 +106,7 @@ def sample_conversation():
     participant.username = "otheruser"  # String, not MagicMock
     participant.display_name = "Other User"  # String, not MagicMock
     participant.avatar_url = "https://example.com/other.jpg"  # String, not MagicMock
-    participant.joined_at = datetime.now(timezone.utc)
+    participant.joined_at = datetime.now(UTC)
     participant.is_active = True
     participant.last_read_message_id = uuid.uuid4()  # UUID, not MagicMock
     conversation.participants = [participant]
@@ -126,8 +126,8 @@ def sample_message():
     message.content_type = "text"
     message.is_deleted = False
     message.is_read = False
-    message.created_at = datetime.now(timezone.utc)
-    message.updated_at = datetime.now(timezone.utc)
+    message.created_at = datetime.now(UTC)
+    message.updated_at = datetime.now(UTC)
     # Add sender details
     message.sender = MagicMock()
     message.sender.id = uuid.uuid4()

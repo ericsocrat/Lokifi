@@ -1,6 +1,6 @@
 # Backend Test Coverage Best Practices
 
-> **Last Updated**: Session 69 (November 5, 2025)  
+> **Last Updated**: Session 69 (November 5, 2025)
 > **Status**: ✅ Active - Implemented and Validated
 
 ## Overview
@@ -21,7 +21,7 @@ def process_data(value: int) -> str:
         return "negative"  # But this branch might never be tested!
 ```
 
-**With line coverage only**: If you test with `value=5`, line coverage shows 100% ✅  
+**With line coverage only**: If you test with `value=5`, line coverage shows 100% ✅
 **With branch coverage**: Branch coverage shows 50% ⚠️ (only `if` path tested, not `else`)
 
 ### Configuration
@@ -107,7 +107,7 @@ exclude_lines =
     def __repr__              # String representations
     raise AssertionError      # Defensive programming
     raise NotImplementedError # Interface contracts
-    
+
     # Session 69 additions (world-class patterns)
     if __name__ == .__main__.:  # Script entry points
     if TYPE_CHECKING:           # Type-only imports (PEP 563)
@@ -132,7 +132,7 @@ class DataProvider(ABC):
         ...  # ✅ Excluded from coverage (never executed)
 ```
 
-**Without exclusions**: Coverage shows this as "uncovered" (false negative)  
+**Without exclusions**: Coverage shows this as "uncovered" (false negative)
 **With exclusions**: Coverage correctly ignores abstract methods
 
 **Lokifi Usage**:
@@ -148,7 +148,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     # ✅ Excluded from coverage (only for type checkers)
     from .models import User  # Import only for type hints
-    
+
 def process_user(user: "User") -> None:
     # Type hints use string literal to avoid runtime import
     ...
@@ -198,7 +198,7 @@ async def test_alert_evaluation(mock_get_ohlc):
     """Test alert evaluation with mocked API."""
     evaluator = AlertEvaluator(get_ohlc=mock_get_ohlc)
     result = await evaluator.evaluate_alert("AAPL > 140")
-    
+
     assert result["triggered"] is True
     mock_get_ohlc.assert_called_once_with("AAPL")
 ```
@@ -222,10 +222,10 @@ async def test_save_alerts(tmp_path):
     """Test AlertStore saves alerts to file."""
     store_path = tmp_path / "alerts.json"
     store = AlertStore(store_path)
-    
+
     alerts = [{"id": "1", "symbol": "AAPL", "condition": ">140"}]
     await store.save_alerts(alerts)
-    
+
     # Verify file exists and contains correct data
     assert store_path.exists()
     saved_data = json.loads(store_path.read_text())
@@ -251,12 +251,12 @@ class TestAlertStore:
     def store_path(self, tmp_path):
         """Fixture specific to AlertStore tests."""
         return tmp_path / "alerts.json"
-    
+
     @pytest.fixture
     def store(self, store_path):
         """AlertStore instance for testing."""
         return AlertStore(store_path)
-    
+
     @pytest.mark.asyncio
     async def test_save_alerts(self, store, store_path):
         """Test saving alerts."""
@@ -268,7 +268,7 @@ class TestSSEHub:
     def hub(self):
         """Fixture specific to SSEHub tests."""
         return SSEHub()
-    
+
     @pytest.mark.asyncio
     async def test_subscribe(self, hub):
         """Test SSE subscription."""
@@ -424,7 +424,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .heavy_module import ExpensiveClass
-    
+
 def my_function(obj: "ExpensiveClass") -> None:
     # Runtime: No import overhead
     # Type checking: Full type safety
@@ -461,9 +461,9 @@ def my_function(obj: "ExpensiveClass") -> None:
 
 ## Pattern Library Entry
 
-**Pattern Name**: Backend Branch Coverage + Smart Exclusions  
-**Success Rate**: 100% (Session 69)  
-**Effort**: ~15 minutes  
-**Impact**: High - Better coverage quality, fewer false negatives  
-**Reusability**: High - Apply to all Python projects with pytest  
+**Pattern Name**: Backend Branch Coverage + Smart Exclusions
+**Success Rate**: 100% (Session 69)
+**Effort**: ~15 minutes
+**Impact**: High - Better coverage quality, fewer false negatives
+**Reusability**: High - Apply to all Python projects with pytest
 **Maintainability**: Low - Configuration-based, no code changes needed
