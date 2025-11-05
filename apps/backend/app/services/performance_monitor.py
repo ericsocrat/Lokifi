@@ -88,7 +88,7 @@ class PerformanceMonitor:
         """Get performance metrics summary for the last N minutes."""
         cutoff_time = datetime.now(UTC) - timedelta(minutes=minutes_back)
 
-        summary = {
+        summary: dict[str, Any] = {
             "period_minutes": minutes_back,
             "websocket_connections": len(self.websocket_connections),
             "metrics": {},
@@ -203,9 +203,9 @@ class PerformanceMonitor:
 
         return {
             "total_connections": len(self.websocket_connections),
-            "avg_connection_age_seconds": sum(connection_ages) / len(connection_ages)
-            if connection_ages
-            else 0,
+            "avg_connection_age_seconds": (
+                sum(connection_ages) / len(connection_ages) if connection_ages else 0
+            ),
             "oldest_connection_seconds": max(connection_ages) if connection_ages else 0,
             "newest_connection_seconds": min(connection_ages) if connection_ages else 0,
         }

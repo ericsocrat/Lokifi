@@ -7,6 +7,7 @@ Shows the capabilities of our comprehensive stress testing framework
 import asyncio
 import random
 from datetime import datetime
+from typing import cast
 
 import psutil
 
@@ -77,7 +78,7 @@ async def simulate_stress_test_scenarios():
             await asyncio.sleep(0.5)  # Simulate test duration
 
         # Simulate results
-        actual_rps = scenario["expected_rps"] * random.uniform(0.9, 1.1)
+        actual_rps = cast(float, scenario["expected_rps"]) * random.uniform(0.9, 1.1)
         response_time_avg = random.uniform(50, 200)
         response_time_p95 = response_time_avg * 1.5
         response_time_p99 = response_time_avg * 2.0
@@ -87,7 +88,7 @@ async def simulate_stress_test_scenarios():
         print(f"   ⚡ Avg Response Time: {response_time_avg:.1f}ms")
         print(f"   📊 P95 Response Time: {response_time_p95:.1f}ms")
         print(f"   📊 P99 Response Time: {response_time_p99:.1f}ms")
-        print(f"   ✅ Success Rate: {scenario['simulated_success_rate']:.1f}%")
+        print(f"   ✅ Success Rate: {cast(float, scenario['simulated_success_rate']):.1f}%")
         print()
 
     # Final system metrics

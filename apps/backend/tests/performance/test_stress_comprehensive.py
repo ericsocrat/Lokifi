@@ -94,6 +94,7 @@ class AdvancedStressTester:
 
     async def run_load_test(self, config: LoadTestConfig) -> StressTestResult:
         """Run a single load test configuration"""
+        assert self.session is not None, "Session must be initialized before running tests"
 
         print(f"\n🔥 Starting Load Test: {config.name}")
         print(f"   👥 Concurrent Users: {config.concurrent_users}")
@@ -151,7 +152,7 @@ class AdvancedStressTester:
         semaphore = asyncio.Semaphore(config.concurrent_users)
 
         # Generate requests
-        tasks = []
+        tasks: list[Any] = []  # asyncio.Task, will be converted to Future by as_completed()
         requests_sent = 0
 
         while time.time() < end_time and requests_sent < config.total_requests:
@@ -187,7 +188,7 @@ class AdvancedStressTester:
         # Wait for all tasks to complete
         print(f"   ⏳ Waiting for {len(tasks)} requests to complete...")
 
-        for i, task in enumerate(asyncio.as_completed(tasks)):
+        for i, task in enumerate(asyncio.as_completed(tasks)):  # type: ignore[assignment]
             try:
                 success, response_time, error = await task
 
@@ -261,9 +262,7 @@ class AdvancedStressTester:
         print(f"   🚀 RPS: {rps:.1f}")
         print(f"   ⚡ Avg Response: {avg_response_time:.1f}ms")
         print(f"   🎯 P95 Response: {p95_response_time:.1f}ms")
-        print(
-            f"   � Memory: {memory_start:.1f}MB → {memory_end:.1f}MB (peak: {memory_peak:.1f}MB)"
-        )
+        print(f"   � Memory: {memory_start:.1f}MB → {memory_end:.1f}MB (peak: {memory_peak:.1f}MB)")
         print(f"   🖥️  CPU Avg: {cpu_avg:.1f}%")
 
         if errors:
@@ -544,7 +543,7 @@ class AdvancedStressTester:
 
         # Memory analysis
         memory_growth = []
-        peak_memory = 0
+        peak_memory: float = 0.0
         for result in self.results:
             if result.memory_end_mb > result.memory_start_mb:
                 memory_growth.append(result.memory_end_mb - result.memory_start_mb)
