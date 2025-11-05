@@ -39,7 +39,7 @@ class EnhancedSettings(BaseSettings):
     WORKERS: int = Field(default=1, description="Number of workers")
 
     # Database
-    DATABASE_URL: str = Field(..., description="Database connection URL")
+    DATABASE_URL: str = Field(default="sqlite+aiosqlite:///./lokifi.db", description="Database connection URL")
     RUN_MIGRATIONS: bool = Field(default=True, description="Run migrations at startup")
 
     # Redis
@@ -47,7 +47,7 @@ class EnhancedSettings(BaseSettings):
     REDIS_PASSWORD: str | None = Field(default=None, description="Redis password")
 
     # Security
-    JWT_SECRET_KEY: str = Field(..., description="JWT secret key")
+    JWT_SECRET_KEY: str = Field(default="change-me-in-production", description="JWT secret key")
     CORS_ORIGINS: list = Field(default=["http://localhost:3000"], description="CORS origins")
 
     # Features
