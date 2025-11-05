@@ -1533,10 +1533,11 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**22 Battle-Tested Patterns** from 66+ sessions with proven success metrics:
+**23 Battle-Tested Patterns** from 69+ sessions with proven success metrics:
 
-**Testing Patterns** (4):
+**Testing Patterns** (5):
 - **AsyncMock Pattern** - 95% success, +30-40pp coverage (Sessions 30, 62, 63, 66)
+- **Branch Coverage + Smart Exclusions** - 100% success, 15min implementation (Session 69)
 - **Pure Function Testing** - 100% success, <15 min implementation
 - **Mathematical Testing** - 33 tests, 100% coverage (Session 66)
 - **Fixture Design** - Reusable test data patterns
