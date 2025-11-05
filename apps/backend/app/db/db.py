@@ -3,6 +3,7 @@ from __future__ import annotations
 __all__ = ["SessionLocal", "engine", "get_session", "init_db"]
 
 import os
+from collections.abc import Generator
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine
@@ -26,7 +27,8 @@ def init_db():
 
 
 @contextmanager
-def get_session() -> Session:
+def get_session() -> Generator[Session, None, None]:
+    """Provide a transactional database session with automatic commit/rollback."""
     db = SessionLocal()
     try:
         yield db

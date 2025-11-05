@@ -5,7 +5,9 @@ from fastapi.responses import StreamingResponse
 
 class EventSourceResponse(StreamingResponse):
     def __init__(self, content, *args: Any, **kwargs: Any):
-        super().__init__(self._wrap(content), media_type="text/event-stream", *args, **kwargs)
+        # Set media_type in kwargs if not already set
+        kwargs.setdefault("media_type", "text/event-stream")
+        super().__init__(self._wrap(content), *args, **kwargs)
 
     async def _wrap(self, agen):
         async for event in agen:

@@ -4,12 +4,11 @@ from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
 
+from app.core.database import Base
+from app.models.user import User
 from sqlalchemy import JSON, Boolean, Column, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
-from app.core.database import Base
-from app.models.user import User
 
 
 class NotificationType(str, Enum):
@@ -57,9 +56,7 @@ class Notification(Base):
     payload = Column(JSON, nullable=True)  # Rich structured data
 
     # Delivery and interaction tracking
-    created_at = Column(
-        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
-    )
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
     read_at = Column(DateTime(timezone=True), nullable=True)
     delivered_at = Column(DateTime(timezone=True), nullable=True)
     clicked_at = Column(DateTime(timezone=True), nullable=True)
@@ -213,12 +210,8 @@ class NotificationPreference(Base):
     digest_time = Column(String(5), nullable=False, default="09:00")
 
     # Metadata
-    created_at = Column(
-        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
-    )
-    updated_at = Column(
-        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC)
-    )
+    created_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    updated_at = Column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
 
     # Relationships
     user = relationship("User", back_populates="notification_preferences")

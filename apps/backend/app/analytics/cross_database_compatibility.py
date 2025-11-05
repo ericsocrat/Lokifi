@@ -237,7 +237,7 @@ class AnalyticsQueryBuilder:
 
             result = session.execute(base_query, {"cutoff_date": cutoff_date})
 
-            analytics = {
+            analytics: dict[str, Any] = {
                 "by_type": {},
                 "by_priority": {},
                 "overall_metrics": {
