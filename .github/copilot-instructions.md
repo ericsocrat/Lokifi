@@ -1588,6 +1588,7 @@ When suggesting code or answering questions, prefer these docs:
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
 - **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
+- **Backend Testing Best Practices**: `/docs/guides/backend-coverage-best-practices.md` - Branch coverage, smart exclusions, AsyncMock patterns (Session 69) ⭐
 - **Standards**: `/docs/guides/standards.md` - Code style and conventions
 - **Code Quality**: `/docs/guides/overview.md` - Quality tools and automation
 - **Architecture**: `/docs/guides/structure.md` - Project structure
