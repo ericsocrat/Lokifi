@@ -4,6 +4,7 @@ Profile service for user profile and settings management.
 
 import uuid
 from datetime import UTC, datetime, timezone
+from typing import Any
 
 from fastapi import HTTPException, status
 from sqlalchemy import and_, func, or_, select, update
@@ -60,7 +61,7 @@ class ProfileService:
                 )
 
         # Update fields
-        update_data = {}
+        update_data: dict[str, Any] = {}
         if profile_data.username is not None:
             update_data["username"] = profile_data.username
         if profile_data.display_name is not None:
@@ -99,7 +100,7 @@ class ProfileService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
         # Update fields
-        update_data = {}
+        update_data: dict[str, Any] = {}
         if settings_data.full_name is not None:
             update_data["full_name"] = settings_data.full_name
         if settings_data.timezone is not None:
@@ -157,7 +158,7 @@ class ProfileService:
             )
 
         # Update fields
-        update_data = {}
+        update_data: dict[str, Any] = {}
         for field, value in prefs_data.model_dump(exclude_unset=True).items():
             if value is not None:
                 update_data[field] = value

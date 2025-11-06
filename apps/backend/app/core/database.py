@@ -2,8 +2,9 @@
 import logging
 import re
 from collections.abc import AsyncGenerator
+from typing import Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
 
@@ -20,10 +21,10 @@ class DatabaseManager:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.primary_engine = None
-        self.replica_engine = None
-        self.primary_session_factory = None
-        self.replica_session_factory = None
+        self.primary_engine: Optional[AsyncEngine] = None
+        self.replica_engine: Optional[AsyncEngine] = None
+        self.primary_session_factory: Optional[async_sessionmaker[AsyncSession]] = None
+        self.replica_session_factory: Optional[async_sessionmaker[AsyncSession]] = None
         self._initialized = False
 
     def _is_sqlite(self, database_url: str) -> bool:
