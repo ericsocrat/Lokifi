@@ -12,12 +12,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import Field
-
-try:
-    from pydantic_settings import BaseSettings
-except ImportError:
-    # Fallback for older pydantic versions
-    from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 import uvicorn
 
@@ -39,7 +34,9 @@ class EnhancedSettings(BaseSettings):
     WORKERS: int = Field(default=1, description="Number of workers")
 
     # Database
-    DATABASE_URL: str = Field(default="sqlite+aiosqlite:///./lokifi.db", description="Database connection URL")
+    DATABASE_URL: str = Field(
+        default="sqlite+aiosqlite:///./lokifi.db", description="Database connection URL"
+    )
     RUN_MIGRATIONS: bool = Field(default=True, description="Run migrations at startup")
 
     # Redis
@@ -110,9 +107,8 @@ async def run_database_migrations():
         logger.info("🗄️ Running database migrations...")
 
         # Import Alembic components
-        from alembic.config import Config
-
         from alembic import command
+        from alembic.config import Config
 
         # Configure Alembic
         alembic_cfg = Config("alembic.ini")

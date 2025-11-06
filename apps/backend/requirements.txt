@@ -146,6 +146,7 @@ starlette==0.48.0
 toml==0.10.2
 tomli==2.3.0
 tqdm==4.67.1
+types-aiofiles==25.1.0.20251011
 types-bleach==6.3.0.20251029
 types-psutil==7.0.0.20251001
 types-python-dateutil==2.9.0.20251008
