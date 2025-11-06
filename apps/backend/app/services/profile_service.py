@@ -147,7 +147,9 @@ class ProfileService:
     ) -> NotificationPreferencesResponse:
         """Update notification preferences."""
         # Get existing preferences
-        select_stmt = select(NotificationPreference).where(NotificationPreference.user_id == user_id)
+        select_stmt = select(NotificationPreference).where(
+            NotificationPreference.user_id == user_id
+        )
         result = await self.db.execute(select_stmt)
         prefs = result.scalar_one_or_none()
 

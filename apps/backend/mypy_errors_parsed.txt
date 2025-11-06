@@ -1,0 +1,102 @@
+
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	∩╗┐2025-11-05T14:07:08.5103111Z ##[group]Run mypy . --config-file=mypy.ini
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5103460Z mypy . --config-file=mypy.ini
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5137030Z shell: /usr/bin/bash -e {0}
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5137254Z env:
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5137540Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.14/x64
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5137944Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib/pkgconfig
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5138355Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5138693Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5139041Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.14/x64
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5139384Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.14/x64/lib
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:08.5139669Z ##[endgroup]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2438628Z tests/lib/load_tester.py: note: In class "LoadTestResult":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2439301Z tests/lib/load_tester.py:43:32: error: Incompatible types in assignment
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2439938Z (expression has type "None", variable has type "dict[str, Any]")  [assignment]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2440499Z         metadata: dict[str, Any] = None
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2440834Z                                    ^~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2441329Z tests/lib/load_tester.py: note: In member "__init__" of class "WebSocketLoadTester":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2441883Z tests/lib/load_tester.py:101:32: error: Name
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2442753Z "websockets.WebSocketServerProtocol" is not defined  [name-defined]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2443398Z             self.connections: list[websockets.WebSocketServerProtocol] = [...
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2443866Z                                    ^
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2444365Z tests/lib/load_tester.py: note: In member "simulate_api_user" of class "APILoadTester":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2445025Z tests/lib/load_tester.py:360:17: error: Incompatible types in assignment
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2445604Z (expression has type "float", variable has type "int")  [assignment]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2446056Z                     cumulative += weight
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2446375Z                     ^~~~~~~~~~~~~~~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2446811Z tests/lib/load_tester.py:362:41: error: Incompatible types in assignment
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2447352Z (expression has type "tuple[str, str]", variable has type
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2447767Z "tuple[str, str, float]")  [assignment]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2448148Z                         selected_endpoint = (method, endpoint)
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2448525Z                                             ^~~~~~~~~~~~~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2449010Z tests/lib/load_tester.py:365:32: error: Too many values to unpack (2 expected,
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2449480Z 3 provided)  [misc]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2449768Z                 method, endpoint = selected_endpoint
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2450127Z                                    ^~~~~~~~~~~~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2450594Z tests/lib/load_tester.py:370:28: error: Item "None" of "ClientSession | None"
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2451104Z has no attribute "request"  [union-attr]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2451478Z                     async with self.session.request(method, f"{self.base_u...
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2451816Z                                ^~~~~~~~~~~~~~~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2452530Z tests/lib/load_tester.py: note: In member "generate_summary_report" of class "ComprehensiveLoadTester":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2453437Z tests/lib/load_tester.py:539:13: error: Unsupported target for indexed
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2453816Z assignment ("object")  [index]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2454106Z                 summary["test_summaries"][test_name] = test_summary
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2454423Z                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2474658Z tests/fixtures/mock_websocket_manager.py: note: In function "mock_redis_cache":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2475296Z tests/fixtures/mock_websocket_manager.py:55:5: error: Need type annotation for
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2475760Z "cache" (hint: "cache: dict[<type>, <type>] = ...")  [var-annotated]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2476093Z         cache = {}
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2476554Z         ^~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2508940Z tests/fixtures/mock_notification_service.py: note: In function "mock_redis_cache":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2509624Z tests/fixtures/mock_notification_service.py:55:5: error: Need type annotation
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2510147Z for "cache" (hint: "cache: dict[<type>, <type>] = ...")  [var-annotated]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2510512Z         cache = {}
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.2510703Z         ^~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3060141Z tests/e2e/test_smoke.py: note: In member "run_comprehensive_tests" of class "SmokeTestSuite":
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3061178Z tests/e2e/test_smoke.py:282:21: error: Statement is unreachable  [unreachable]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3061716Z                         results = await test_coro
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3062073Z                         ^~~~~~~~~~~~~~~~~~~~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3062846Z tests/e2e/test_smoke.py:285:34: error: Argument 1 to "len" has incompatible
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3063359Z type "object"; expected "Sized"  [arg-type]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3063726Z                         "tests": len(results),
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3064058Z                                      ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3064520Z tests/e2e/test_smoke.py:286:35: error: Generator has incompatible item type
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3065001Z "int"; expected "bool"  [misc]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3065367Z                         "passed": sum(1 for r in results if r.passed),
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3065753Z                                       ^
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3066208Z tests/e2e/test_smoke.py:286:46: error: "object" has no attribute "__iter__";
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3066751Z maybe "__dir__" or "__str__"? (not iterable)  [attr-defined]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3067195Z                         "passed": sum(1 for r in results if r.passed),
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3067588Z                                                  ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3068088Z tests/e2e/test_smoke.py:287:35: error: Generator has incompatible item type
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3068557Z "int"; expected "bool"  [misc]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3068918Z                         "failed": sum(1 for r in results if not r.passed),
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3069303Z                                       ^
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3069742Z tests/e2e/test_smoke.py:287:46: error: "object" has no attribute "__iter__";
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3070288Z maybe "__dir__" or "__str__"? (not iterable)  [attr-defined]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3070752Z                         "failed": sum(1 for r in results if not r.passed),
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3071149Z                                                  ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3071609Z tests/e2e/test_smoke.py:289:57: error: "object" has no attribute "__iter__";
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3072111Z maybe "__dir__" or "__str__"? (not iterable)  [attr-defined]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3072603Z     ...                 sum(r.response_time_ms for r in results) / len(result...
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3072956Z                                                         ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3073331Z tests/e2e/test_smoke.py:289:72: error: Argument 1 to "len" has incompatible
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3073735Z type "object"; expected "Sized"  [arg-type]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3074115Z     ...  sum(r.response_time_ms for r in results) / len(results) if results e...
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3074494Z                                                         ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3075082Z tests/e2e/test_smoke.py:294:36: error: Argument 1 to "len" has incompatible
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3075469Z type "object"; expected "Sized"  [arg-type]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3075754Z                     total_tests += len(results)
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3076058Z                                        ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3076423Z tests/e2e/test_smoke.py:295:37: error: Generator has incompatible item type
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3076801Z "int"; expected "bool"  [misc]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3077086Z                     passed_tests += sum(1 for r in results if r.passed)
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3077401Z                                         ^
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3077891Z tests/e2e/test_smoke.py:295:48: error: "object" has no attribute "__iter__";
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3078313Z maybe "__dir__" or "__str__"? (not iterable)  [attr-defined]
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3078669Z                     passed_tests += sum(1 for r in results if r.passed)
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3078990Z                                                    ^~~~~~~
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3079369Z tests/e2e/test_smoke.py:297:31: error: "object" has no attribute "__iter__";
+> ≡ƒöº Backend Fast Checks	≡ƒöì Type Check (mypy)	2025-11-05T14:07:23.3079782Z maybe "__dir__" or "__str__"? (not iterable)  [attr-defined]
+

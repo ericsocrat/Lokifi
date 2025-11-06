@@ -14,10 +14,12 @@ Coverage targets:
 
 import uuid
 from datetime import UTC, datetime, timezone
+from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from fastapi import HTTPException, status
+from pydantic import HttpUrl
 
 from app.routers.profile import (
     delete_account,
@@ -203,7 +205,7 @@ class TestProfileCRUD:
             username="updateduser",
             display_name="Updated Name",
             bio="Updated bio",
-            avatar_url="https://example.com/new.jpg",
+            avatar_url=cast(HttpUrl, "https://example.com/new.jpg"),  # Cast str to HttpUrl for Pydantic
         )
 
         result = await update_my_profile(
