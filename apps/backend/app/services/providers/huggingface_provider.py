@@ -8,7 +8,6 @@ import uuid
 from collections.abc import AsyncGenerator
 
 import httpx
-
 from app.services.ai_provider import (
     AIMessage,
     AIProvider,
@@ -91,13 +90,12 @@ class HuggingFaceProvider(AIProvider):
                 full_response = ""
 
                 # HF doesn't have true streaming for most models, so we'll simulate it
-                # Type narrowing: explicit bytes type for chunk
-                chunk: bytes
-                async for chunk in response.aiter_bytes():
-                    if chunk:
+                # Type narrowing: rename to byte_chunk to avoid shadowing StreamChunk variable
+                async for byte_chunk in response.aiter_bytes():
+                    if byte_chunk:
                         try:
                             # Try to parse as complete response
-                            chunk_str = chunk.decode("utf-8")
+                            chunk_str = byte_chunk.decode("utf-8")
                             if chunk_str:
                                 response_data = json.loads(chunk_str)
 
@@ -119,7 +117,7 @@ class HuggingFaceProvider(AIProvider):
 
                         except (json.JSONDecodeError, UnicodeDecodeError):
                             # If not JSON, treat as raw text
-                            text_chunk = chunk.decode("utf-8", errors="ignore")
+                            text_chunk = byte_chunk.decode("utf-8", errors="ignore")
                             if text_chunk:
                                 full_response += text_chunk
 
@@ -152,14 +150,16 @@ class HuggingFaceProvider(AIProvider):
                 id=chunk_id,
                 content=content,
                 is_complete=(i == len(words) - 1),
-                token_usage=TokenUsage(
-                    prompt_tokens=sum(self.estimate_tokens(msg.content) for msg in messages),
-                    completion_tokens=len(words),
-                    total_tokens=sum(self.estimate_tokens(msg.content) for msg in messages)
-                    + len(words),
-                )
-                if i == len(words) - 1
-                else None,
+                token_usage=(
+                    TokenUsage(
+                        prompt_tokens=sum(self.estimate_tokens(msg.content) for msg in messages),
+                        completion_tokens=len(words),
+                        total_tokens=sum(self.estimate_tokens(msg.content) for msg in messages)
+                        + len(words),
+                    )
+                    if i == len(words) - 1
+                    else None
+                ),
                 model=model,
                 metadata={"provider": "huggingface", "simulated_streaming": True},
             )
