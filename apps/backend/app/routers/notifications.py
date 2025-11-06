@@ -346,25 +346,24 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
     """Get notification preferences for the current user"""
     try:
         # This would need to be implemented in the notification service
-        # For now, return default preferences
-        default_preferences = {
-            "id": f"pref_{current_user.id}",
-            "user_id": current_user.id,
-            "email_enabled": True,
-            "push_enabled": True,
-            "in_app_enabled": True,
-            "type_preferences": {},
-            "quiet_hours_start": None,
-            "quiet_hours_end": None,
-            "timezone": "timezone.utc",
-            "daily_digest_enabled": False,
-            "weekly_digest_enabled": False,
-            "digest_time": "09:00",
-            "created_at": datetime.now(UTC).isoformat(),
-            "updated_at": datetime.now(UTC).isoformat(),
-        }
-
-        return NotificationPreferencesResponse(**default_preferences)
+        # For now, return default preferences with explicit field assignment
+        # Pattern: Explicit construction instead of dict unpacking for type safety
+        return NotificationPreferencesResponse(
+            id=f"pref_{current_user.id}",
+            user_id=str(current_user.id),  # Explicit str conversion
+            email_enabled=True,
+            push_enabled=True,
+            in_app_enabled=True,
+            type_preferences={},
+            quiet_hours_start=None,
+            quiet_hours_end=None,
+            timezone="UTC",  # Fixed: Was "timezone.utc" string
+            daily_digest_enabled=False,
+            weekly_digest_enabled=False,
+            digest_time="09:00",
+            created_at=datetime.now(UTC).isoformat(),
+            updated_at=datetime.now(UTC).isoformat(),
+        )
 
     except Exception as e:
         logger.error(f"Failed to get notification preferences for user {current_user.id}: {e}")
