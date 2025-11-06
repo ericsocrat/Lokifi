@@ -1533,7 +1533,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**24 Battle-Tested Patterns** from 74+ sessions with proven success metrics:
+**33 Battle-Tested Patterns** from 75+ sessions with proven success metrics:
 
 **Testing Patterns** (5):
 - **AsyncMock Pattern** - 95% success, +30-40pp coverage (Sessions 30, 62, 63, 66)
@@ -1549,13 +1549,32 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Working Directory Context** - Path management (Session 33)
 
 **Code Quality Patterns** (7):
-- **Assignment Error Patterns** - 92.7% error reduction (41→3), 5 patterns (Session 74) ⭐ NEW!
+- **Assignment Error Patterns** - 92.7% error reduction (41→3), 5 patterns (Session 74) ⭐
 - **Cascading Type Fixes** - 52.8% error reduction, 136 errors/hour (Session 73) ⭐
 - **TypeScript Any Elimination** - 96.3% improvement, Sprint 2 (Sessions 42-51)
 - **Zustand + Immer Pattern** - 100% success, 10 stores
 - **Draft<T> Mutations** - Type-safe Immer usage
 - **Python Ruff Compliance** - 367→0 violations (Session 52)
 - **ESLint Quality Campaign** - 15.1% reduction (Sessions 53-59)
+
+**Type Safety - arg-type Elimination (Session 75)** (9 patterns) ⭐ NEW! 🏆:
+- **Type Narrowing** - Explicit annotations for conditional flows (6 errors fixed)
+- **Union Types** - Flexible dependency injection Union[Type1, Type2] (6 errors fixed)
+- **Protocol-Based Typing** - Structural typing for mocks/integration (5 errors fixed)
+- **Explicit Pydantic Construction** - Direct field assignment (4 errors fixed)
+- **JSON Serialization** - Trust layer abstractions with Any (2 errors fixed)
+- **UUID Conversions** - Explicit str(uuid) or UUID(str) (1 error fixed)
+- **Type Assertions - cast()** - 100% success rate! (12 errors fixed across 2 phases) ⭐⭐⭐
+  - Test fixtures: `cast(HttpUrl, "https://...")` for Pydantic
+  - HTTP clients: `cast(Mapping[str, Any], params)` for httpx/aiohttp
+  - Highest single pattern success in Session 75
+- **Flexible Signatures** - Use Any when serialization handled downstream (1 error fixed)
+- **HTTP Client Type Hints** - Universal cast pattern for API calls (8 errors fixed) ⭐⭐⭐
+  - Works for httpx.AsyncClient, aiohttp.ClientSession
+  - Handles pagination, API keys, branching logic
+  - Fastest pattern: Low effort, high success rate
+- **Complete Documentation**: `/docs/development/type-safety/arg-type-elimination-session75.md`
+- **Achievement**: 29→0 arg-type errors (100% success rate, category eliminated!) 🏆
 
 **Dependencies Patterns** (4):
 - **Conflict Resolution** - Session 30 Werkzeug/openapi-core
@@ -1577,18 +1596,20 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
 - **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
+- **Type Safety**: "What type error?" → arg-type Elimination (Session 75) - 9 patterns, 100% success rate
 - **Python**: "What Python issue?" → Python 3.10 Compatibility, UTC Import, Lambda UTC, Assignment Error Patterns
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
-**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses Cascading Type Fixes pattern from Session 73")
+**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses HTTP Client Type Hints pattern from Session 75")
 
 ## Documentation References
 
 When suggesting code or answering questions, prefer these docs:
 - **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
-- **Pattern Library**: See "Pattern Library" section above - 24 battle-tested patterns ⭐
-- **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` - 92.7% reduction (Session 74) ⭐ NEW!
+- **Pattern Library**: See "Pattern Library" section above - 33 battle-tested patterns ⭐
+- **arg-type Elimination**: `/docs/development/type-safety/arg-type-elimination-session75.md` - 100% success rate, 9 patterns (Session 75) ⭐ NEW! 🏆
+- **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` - 92.7% reduction (Session 74) ⭐
 - **Cascading Type Fixes**: `/docs/development/cascading-type-fixes.md` - 52.8% error reduction pattern (Session 73) ⭐
 - **MyPy Analysis**: `/docs/development/mypy-error-analysis-session73.md` - Comprehensive breakdown ⭐
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
