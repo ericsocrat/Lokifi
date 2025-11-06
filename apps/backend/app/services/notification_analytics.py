@@ -467,11 +467,12 @@ class NotificationAnalytics:
             scores = []
 
             # Delivery success rate (0-100)
-            delivery_score = min(notification_metrics.delivery_rate, 100)
+            # Type narrowing: use dict access instead of attribute access
+            delivery_score = min(notification_metrics["delivery_rate"], 100)
             scores.append(delivery_score)
 
             # Engagement score (0-100)
-            engagement_score = min(notification_metrics.read_rate, 100)
+            engagement_score = min(notification_metrics["read_rate"], 100)
             scores.append(engagement_score)
 
             # System performance (0-100)

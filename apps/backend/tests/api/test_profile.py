@@ -18,9 +18,6 @@ from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, status
-from pydantic import HttpUrl
-
 from app.routers.profile import (
     delete_account,
     get_my_profile,
@@ -43,6 +40,8 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
+from fastapi import HTTPException, status
+from pydantic import HttpUrl
 
 # ============================================================================
 # FIXTURES
@@ -205,7 +204,9 @@ class TestProfileCRUD:
             username="updateduser",
             display_name="Updated Name",
             bio="Updated bio",
-            avatar_url=cast(HttpUrl, "https://example.com/new.jpg"),  # Cast str to HttpUrl for Pydantic
+            avatar_url=cast(
+                HttpUrl, "https://example.com/new.jpg"
+            ),  # Cast str to HttpUrl for Pydantic
         )
 
         result = await update_my_profile(

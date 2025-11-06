@@ -127,16 +127,26 @@ class DatabaseMigrationService:
             },
         ]
 
-        results = {"migrations_run": [], "migrations_failed": [], "total_applied": 0}
+        # Type narrowing: explicit types for results tracking
+        migrations_run: list[str] = []
+        migrations_failed: list[str] = []
+        total_applied = 0
+
+        results = {
+            "migrations_run": migrations_run,
+            "migrations_failed": migrations_failed,
+            "total_applied": total_applied,
+        }
 
         for migration in migrations:
             success = await self.apply_migration(migration["name"], migration["sql"])
             if success:
-                results["migrations_run"].append(migration["name"])
-                results["total_applied"] += 1
+                migrations_run.append(migration["name"])
+                total_applied += 1
             else:
-                results["migrations_failed"].append(migration["name"])
+                migrations_failed.append(migration["name"])
 
+        results["total_applied"] = total_applied
         return results
 
     async def rollback_migration(self, migration_name: str) -> bool:

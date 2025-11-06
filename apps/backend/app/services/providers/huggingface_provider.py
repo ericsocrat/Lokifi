@@ -91,6 +91,8 @@ class HuggingFaceProvider(AIProvider):
                 full_response = ""
 
                 # HF doesn't have true streaming for most models, so we'll simulate it
+                # Type narrowing: explicit bytes type for chunk
+                chunk: bytes
                 async for chunk in response.aiter_bytes():
                     if chunk:
                         try:

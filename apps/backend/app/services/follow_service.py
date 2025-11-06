@@ -5,11 +5,6 @@ Follow service for managing follow relationships and social graph.
 import uuid
 from datetime import UTC, datetime, timedelta, timezone
 
-from fastapi import HTTPException, status
-from sqlalchemy import and_, desc, exists, func, not_, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import aliased
-
 from app.models.follow import Follow
 from app.models.notification_models import Notification, NotificationType
 from app.models.profile import Profile
@@ -25,6 +20,10 @@ from app.schemas.follow import (
     SuggestedUsersResponse,
     UserFollowStatus,
 )
+from fastapi import HTTPException, status
+from sqlalchemy import and_, desc, exists, func, not_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import aliased
 
 
 class FollowService:

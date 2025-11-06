@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import Any, Mapping, cast
 
 import httpx
-
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 

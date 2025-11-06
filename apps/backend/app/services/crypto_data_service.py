@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 from typing import Any
 
 import httpx
-
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 

@@ -110,9 +110,11 @@ class AdvancedRedisClient:
         try:
             if settings.redis_sentinel_hosts:
                 # Use Redis Sentinel for high availability
+                # Type narrowing: explicit str type for host strings
+                sentinel_host_list = settings.redis_sentinel_hosts.split(",")
+                host: str
                 sentinel_hosts = [
-                    (host.split(":")[0], int(host.split(":")[1]))
-                    for host in settings.redis_sentinel_hosts.split(",")
+                    (host.split(":")[0], int(host.split(":")[1])) for host in sentinel_host_list
                 ]
 
                 self.sentinel = Sentinel(
