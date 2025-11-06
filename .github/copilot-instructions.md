@@ -1533,7 +1533,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**24 Battle-Tested Patterns** from 73+ sessions with proven success metrics:
+**24 Battle-Tested Patterns** from 74+ sessions with proven success metrics:
 
 **Testing Patterns** (5):
 - **AsyncMock Pattern** - 95% success, +30-40pp coverage (Sessions 30, 62, 63, 66)
@@ -1548,8 +1548,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Service Config Standards** - PostgreSQL/Redis consistency
 - **Working Directory Context** - Path management (Session 33)
 
-**Code Quality Patterns** (6):
-- **Cascading Type Fixes** - 52.8% error reduction, 136 errors/hour (Session 73) ⭐ NEW!
+**Code Quality Patterns** (7):
+- **Assignment Error Patterns** - 92.7% error reduction (41→3), 5 patterns (Session 74) ⭐ NEW!
+- **Cascading Type Fixes** - 52.8% error reduction, 136 errors/hour (Session 73) ⭐
 - **TypeScript Any Elimination** - 96.3% improvement, Sprint 2 (Sessions 42-51)
 - **Zustand + Immer Pattern** - 100% success, 10 stores
 - **Draft<T> Mutations** - Type-safe Immer usage
@@ -1575,8 +1576,8 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Testing**: "What are you testing?" → AsyncMock, Pure Functions, Mathematical Testing, Fixtures
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
-- **Code Quality**: "What code quality issue?" → Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
-- **Python**: "What Python issue?" → Python 3.10 Compatibility, UTC Import, Lambda UTC
+- **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
+- **Python**: "What Python issue?" → Python 3.10 Compatibility, UTC Import, Lambda UTC, Assignment Error Patterns
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
@@ -1587,6 +1588,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 When suggesting code or answering questions, prefer these docs:
 - **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
 - **Pattern Library**: See "Pattern Library" section above - 24 battle-tested patterns ⭐
+- **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` - 92.7% reduction (Session 74) ⭐ NEW!
 - **Cascading Type Fixes**: `/docs/development/cascading-type-fixes.md` - 52.8% error reduction pattern (Session 73) ⭐
 - **MyPy Analysis**: `/docs/development/mypy-error-analysis-session73.md` - Comprehensive breakdown ⭐
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
