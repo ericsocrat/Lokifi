@@ -5,6 +5,7 @@ Provides real stock prices, market data, and related information
 using Alpha Vantage's Global Quote endpoint.
 """
 
+import json
 import logging
 from datetime import UTC, datetime, timezone
 
@@ -147,8 +148,10 @@ class StockService:
             cache_key = f"stocks:all:{limit}"
             if self.redis_client:
                 try:
-                    cached_data = await self.redis_client.get(cache_key)
-                    if cached_data:
+                    cached_json = await self.redis_client.get(cache_key)
+                    if cached_json:
+                        # Pattern: JSON deserialization from Redis (str → list[dict])
+                        cached_data = json.loads(cached_json)
                         logger.info(f"Returning cached stock data for {limit} stocks")
                         return cached_data
                 except Exception as e:
@@ -168,10 +171,12 @@ class StockService:
                         logger.error(f"Error fetching stock {symbol}: {e}")
                         continue
 
-            # Cache the results
+            # Cache the results with JSON serialization for type safety
             if self.redis_client and stocks:
                 try:
-                    await self.redis_client.set(cache_key, stocks, expire=self.cache_ttl)
+                    # Pattern: JSON serialization for Redis (list[dict] → str)
+                    stocks_json = json.dumps(stocks)
+                    await self.redis_client.set(cache_key, stocks_json, ttl=self.cache_ttl)
                     logger.info(f"Cached {len(stocks)} stocks for {self.cache_ttl}s")
                 except Exception as e:
                     logger.warning(f"Redis cache write failed: {e}")
