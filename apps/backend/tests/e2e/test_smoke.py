@@ -273,12 +273,18 @@ class SmokeTestSuite:
             print(f"\n📋 Testing: {category_name}")
 
             try:
+                # Type-narrowed results handling
+                results: list[SmokeTestResult]
                 if asyncio.iscoroutine(test_coro):
-                    # Single test
+                    # Single test - wrap in list for uniform handling
                     result = await test_coro
-                    results = [result] if isinstance(result, SmokeTestResult) else result
+                    if isinstance(result, SmokeTestResult):
+                        results = [result]
+                    else:
+                        # Already a list
+                        results = result
                 else:
-                    # Multiple tests
+                    # Multiple tests - already returns list
                     results = await test_coro
 
                 category_results[category_name] = {

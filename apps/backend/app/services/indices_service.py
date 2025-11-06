@@ -7,8 +7,7 @@ import logging
 from datetime import UTC, datetime, timezone
 
 import httpx
-
-from app.core.advanced_redis_client import advanced_redis_client
+from app.core.advanced_redis_client import AdvancedRedisClient, advanced_redis_client
 from app.core.config import settings
 from app.core.redis_client import RedisClient
 
@@ -44,7 +43,7 @@ class IndicesService:
         "ASX200": {"av": "AXJO", "yahoo": "^AXJO", "name": "ASX 200"},
     }
 
-    def __init__(self, redis_client: RedisClient = None):
+    def __init__(self, redis_client: RedisClient | AdvancedRedisClient | None = None):
         self.redis_client = redis_client or advanced_redis_client
         self.client: httpx.AsyncClient | None = None
         self.cache_ttl = 60  # 60 seconds for indices
