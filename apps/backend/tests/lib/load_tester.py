@@ -40,7 +40,7 @@ class LoadTestResult:
     status_code: int | None = None
     error: str | None = None
     response_size: int | None = None
-    metadata: dict[str, Any] = None
+    metadata: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -363,16 +363,16 @@ class APILoadTester:
 
             # Weighted random selection
             rand = random.random()
-            cumulative = 0
-            selected_endpoint = endpoints[0]  # Default
+            cumulative: float = 0.0
+            selected_endpoint: tuple[str, str, float] = endpoints[0]  # Default
 
             for method, endpoint, weight in endpoints:
                 cumulative += weight
                 if rand <= cumulative:
-                    selected_endpoint = (method, endpoint)
+                    selected_endpoint = (method, endpoint, weight)
                     break
 
-            method, endpoint = selected_endpoint
+            method, endpoint, _ = selected_endpoint
 
             # Execute API request
             start_time = time.time()
