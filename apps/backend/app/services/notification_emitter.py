@@ -1,7 +1,7 @@
 # J6 Enterprise Notification Event Emitters
 import logging
 from datetime import UTC, datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Protocol
 
 from app.models.user import User
 from app.services.notification_service import (
@@ -14,6 +14,32 @@ from app.services.notification_service import (
 logger = logging.getLogger(__name__)
 
 
+# ================================================================================
+# Protocol Definition for User-Like Objects
+# ================================================================================
+# Allows notification emitter to work with both real User models and
+# lightweight mock objects from integration layer
+
+
+class UserLike(Protocol):
+    """
+    Protocol for user-like objects in notification system
+
+    Supports structural typing so that both User models and MockUser
+    objects from integration layer can be used interchangeably.
+    """
+
+    id: int | str
+    username: str
+    display_name: str | None
+    avatar_url: str | None
+
+
+# ================================================================================
+# Notification Event Emitter
+# ================================================================================
+
+
 class NotificationEventEmitter:
     """
     Event emitter for system notifications
@@ -23,7 +49,7 @@ class NotificationEventEmitter:
     """
 
     @staticmethod
-    async def emit_follow_notification(follower_user: User, followed_user: User) -> bool:
+    async def emit_follow_notification(follower_user: UserLike, followed_user: UserLike) -> bool:
         """
         Emit notification when a user follows another user
 
@@ -36,7 +62,7 @@ class NotificationEventEmitter:
         """
         try:
             notification_data = NotificationData(
-                user_id=followed_user.id,
+                user_id=str(followed_user.id),
                 type=NotificationType.FOLLOW,
                 priority=NotificationPriority.NORMAL,
                 category="social",
@@ -75,8 +101,8 @@ class NotificationEventEmitter:
 
     @staticmethod
     async def emit_dm_message_received_notification(
-        sender_user: User,
-        recipient_user: User,
+        sender_user: UserLike,
+        recipient_user: UserLike,
         message_id: str,
         message_content: str,
         thread_id: str,
@@ -101,7 +127,7 @@ class NotificationEventEmitter:
             )
 
             notification_data = NotificationData(
-                user_id=recipient_user.id,
+                user_id=str(recipient_user.id),
                 type=NotificationType.DM_MESSAGE_RECEIVED,
                 priority=NotificationPriority.HIGH,  # DMs are high priority
                 category="messages",
@@ -146,7 +172,7 @@ class NotificationEventEmitter:
 
     @staticmethod
     async def emit_ai_reply_finished_notification(
-        user: User,
+        user: UserLike,
         ai_provider: str,
         message_id: str,
         thread_id: str,
@@ -186,7 +212,7 @@ class NotificationEventEmitter:
             }.get(ai_provider, ai_provider.title())
 
             notification_data = NotificationData(
-                user_id=user.id,
+                user_id=str(user.id),
                 type=NotificationType.AI_REPLY_FINISHED,
                 priority=priority,
                 category="ai",
