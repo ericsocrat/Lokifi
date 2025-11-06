@@ -5,6 +5,7 @@ Prevents duplicates and manages crypto/stock/index discovery
 
 import logging
 from dataclasses import dataclass
+from typing import Any, Mapping, cast
 
 import httpx
 
@@ -89,9 +90,9 @@ class UnifiedAssetService:
 
             if self.client is None:
                 async with httpx.AsyncClient(timeout=30.0) as client:
-                    resp = await client.get(url, params=params)
+                    resp = await client.get(url, params=cast(Mapping[str, Any], params))
             else:
-                resp = await self.client.get(url, params=params)
+                resp = await self.client.get(url, params=cast(Mapping[str, Any], params))
 
             resp.raise_for_status()
             data = resp.json()
