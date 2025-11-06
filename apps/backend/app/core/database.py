@@ -4,11 +4,15 @@ import re
 from collections.abc import AsyncGenerator
 from typing import Optional
 
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from app.core.config import Settings, settings
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
-
-from app.core.config import Settings, settings
 
 logger = logging.getLogger(__name__)
 
@@ -133,6 +137,7 @@ class DatabaseManager:
             await self.initialize()
 
         # Use replica for read-only queries when available
+        session_factory: Optional[async_sessionmaker[AsyncSession]]
         if read_only and self.replica_session_factory:
             session_factory = self.replica_session_factory
         else:
@@ -190,9 +195,11 @@ class DatabaseManager:
             "database_type": db_type,
             "primary_url": self._sanitize_url(self.settings.DATABASE_URL),
             "replica_configured": bool(self.settings.DATABASE_REPLICA_URL),
-            "replica_url": self._sanitize_url(self.settings.DATABASE_REPLICA_URL)
-            if self.settings.DATABASE_REPLICA_URL
-            else None,
+            "replica_url": (
+                self._sanitize_url(self.settings.DATABASE_REPLICA_URL)
+                if self.settings.DATABASE_REPLICA_URL
+                else None
+            ),
             "pool_size": self.settings.DATABASE_POOL_SIZE,
             "max_overflow": self.settings.DATABASE_MAX_OVERFLOW,
             "pool_timeout": self.settings.DATABASE_POOL_TIMEOUT,

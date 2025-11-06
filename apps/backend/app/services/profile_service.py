@@ -6,10 +6,6 @@ import uuid
 from datetime import UTC, datetime, timezone
 from typing import Any
 
-from fastapi import HTTPException, status
-from sqlalchemy import and_, func, or_, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
@@ -23,6 +19,9 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
+from fastapi import HTTPException, status
+from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ProfileService:
@@ -119,8 +118,8 @@ class ProfileService:
                 )
 
             # Check if email already exists
-            stmt = select(User).where(User.email == settings_data.email)
-            result = await self.db.execute(stmt)
+            check_stmt = select(User).where(User.email == settings_data.email)
+            result = await self.db.execute(check_stmt)
             existing_user = result.scalar_one_or_none()
 
             if existing_user:
@@ -134,8 +133,8 @@ class ProfileService:
         if update_data:
             update_data["updated_at"] = datetime.now(UTC)
 
-            stmt = update(User).where(User.id == user_id).values(**update_data)
-            await self.db.execute(stmt)
+            update_stmt = update(User).where(User.id == user_id).values(**update_data)
+            await self.db.execute(update_stmt)
             await self.db.commit()
 
             # Refresh user
@@ -148,8 +147,8 @@ class ProfileService:
     ) -> NotificationPreferencesResponse:
         """Update notification preferences."""
         # Get existing preferences
-        stmt = select(NotificationPreference).where(NotificationPreference.user_id == user_id)
-        result = await self.db.execute(stmt)
+        select_stmt = select(NotificationPreference).where(NotificationPreference.user_id == user_id)
+        result = await self.db.execute(select_stmt)
         prefs = result.scalar_one_or_none()
 
         if not prefs:
@@ -166,12 +165,12 @@ class ProfileService:
         if update_data:
             update_data["updated_at"] = datetime.now(UTC)
 
-            stmt = (
+            update_stmt = (
                 update(NotificationPreference)
                 .where(NotificationPreference.id == prefs.id)
                 .values(**update_data)
             )
-            await self.db.execute(stmt)
+            await self.db.execute(update_stmt)
             await self.db.commit()
 
             # Refresh preferences

@@ -12,10 +12,10 @@ async def mock_ohlc(symbol: str = "BTCUSD", timeframe: str = "1h", limit: int = 
 
     # Generate mock candlestick data
     candles = []
-    base_price = 50000 if "BTC" in symbol else 100  # Base price for different symbols
+    base_price = 50000.0 if "BTC" in symbol else 100.0  # Base price for different symbols
     current_time = int(time.time()) - (limit * 3600)  # Start from limit hours ago
 
-    current_price = base_price
+    current_price: float = base_price
 
     for i in range(limit):
         # Generate realistic OHLC data
