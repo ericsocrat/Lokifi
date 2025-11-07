@@ -27,6 +27,7 @@ ignore = [
   "S311",   # Non-cryptographic random (OK for non-security use)
   "S105",   # Possible hardcoded password (many false positives)
   "S106",   # Possible hardcoded password in argument
+  "UP017",  # Use timezone.utc for Python 3.10 compatibility (datetime.UTC added in 3.11)
   # Temporary ignores to unblock CI (TODO: Fix gradually)
   "B904",   # raise-without-from-inside-except (131 - style)
   "F403",   # undefined-local-with-import-star (105 - existing pattern)
