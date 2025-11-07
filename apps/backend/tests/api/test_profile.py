@@ -13,7 +13,7 @@ Coverage targets:
 """
 
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -62,11 +62,11 @@ def mock_current_user():
     user.bio = "Test bio"
     user.is_active = True
     user.is_verified = True
-    user.timezone = "UTC"
+    user.timezone = "timezone.utc"
     user.language = "en"
-    user.created_at = datetime.now(UTC)
-    user.updated_at = datetime.now(UTC)
-    user.last_login = datetime.now(UTC)
+    user.created_at = datetime.now(timezone.utc)
+    user.updated_at = datetime.now(timezone.utc)
+    user.last_login = datetime.now(timezone.utc)
     return user
 
 
@@ -93,8 +93,8 @@ def sample_profile_response():
         is_public=True,
         follower_count=100,
         following_count=50,
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
 
@@ -111,7 +111,7 @@ def sample_public_profile():
         follower_count=100,
         following_count=50,
         is_following=False,
-        created_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
     )
 
 
@@ -122,13 +122,13 @@ def sample_user_settings():
         id=uuid.uuid4(),
         email="test@example.com",
         full_name="Test User",
-        timezone="UTC",
+        timezone="timezone.utc",
         language="en",
         is_verified=True,
         is_active=True,
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
-        last_login=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
+        last_login=datetime.now(timezone.utc),
     )
 
 
@@ -148,8 +148,8 @@ def sample_notification_preferences():
         push_messages=True,
         push_ai_responses=True,
         push_system=True,
-        created_at=datetime.now(UTC),
-        updated_at=datetime.now(UTC),
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
     )
 
 

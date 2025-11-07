@@ -5,7 +5,7 @@ This script provides integration patches for existing routers to trigger notific
 """
 
 import logging
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 from app.integrations.notification_hooks import notification_integration
@@ -159,7 +159,7 @@ class J6NotificationIntegrator:
                 mentioning_user=mentioning_user,
                 content=content,
                 context_type=context_type,
-                context_id=context_id or f"{context_type}_{datetime.now(UTC).timestamp()}",
+                context_id=context_id or f"{context_type}_{datetime.now(timezone.utc).timestamp()}",
             )
 
             self._integration_stats["mention_notifications"] += 1

@@ -8,7 +8,7 @@ import logging
 from collections import Counter
 from collections.abc import Callable, Generator
 from dataclasses import dataclass
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import desc, func
@@ -61,7 +61,7 @@ class AIAnalyticsService:
         """Get comprehensive conversation metrics."""
 
         with self.session_factory() as db:
-            start_date = datetime.now(UTC) - timedelta(days=days_back)
+            start_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
             # Base query
             base_query = db.query(AIThread).filter(AIThread.created_at >= start_date)
@@ -143,7 +143,7 @@ class AIAnalyticsService:
         """Get detailed insights for a specific user."""
 
         with self.session_factory() as db:
-            start_date = datetime.now(UTC) - timedelta(days=days_back)
+            start_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
             # Basic stats
             total_threads = (
@@ -210,7 +210,7 @@ class AIAnalyticsService:
         """Get performance metrics for each AI provider."""
 
         with self.session_factory() as db:
-            start_date = datetime.now(UTC) - timedelta(days=days_back)
+            start_date = datetime.now(timezone.utc) - timedelta(days=days_back)
 
             providers_data = {}
 

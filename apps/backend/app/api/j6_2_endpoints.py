@@ -8,7 +8,7 @@ Advanced API endpoints for J6.2 notification system including:
 - Batch management
 """
 
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -220,7 +220,7 @@ async def schedule_notification_endpoint(
 ):
     """Schedule a notification for future delivery"""
     try:
-        if request.scheduled_for <= datetime.now(UTC):
+        if request.scheduled_for <= datetime.now(timezone.utc):
             raise HTTPException(status_code=400, detail="Scheduled time must be in the future")
 
         schedule_id = await schedule_notification(

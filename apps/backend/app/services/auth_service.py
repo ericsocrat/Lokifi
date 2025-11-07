@@ -3,7 +3,7 @@ Authentication service for user management.
 """
 
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 from fastapi import HTTPException, status
@@ -152,7 +152,7 @@ class AuthService:
             )
 
         # Update last login
-        user.last_login = datetime.now(UTC)
+        user.last_login = datetime.now(timezone.utc)
         await self.db.commit()
 
         # Generate tokens
@@ -207,7 +207,7 @@ class AuthService:
                 needs_update = True
 
             # Update last login timestamp
-            existing_user.last_login = datetime.now(UTC)
+            existing_user.last_login = datetime.now(timezone.utc)
             needs_update = True
 
             if needs_update:

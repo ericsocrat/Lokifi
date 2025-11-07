@@ -1,6 +1,6 @@
 # J6 Enterprise Notifications - Database Models
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime
 from enum import Enum
 from typing import Any, Optional
 
@@ -57,7 +57,7 @@ class Notification(Base):
     payload: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)  # Rich structured data
 
     # Delivery and interaction tracking
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     clicked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -112,35 +112,35 @@ class Notification(Base):
         """Check if notification has expired"""
         if self.expires_at is None:
             return False
-        return datetime.now(UTC) > self.expires_at
+        return datetime.now(timezone.utc) > self.expires_at
 
     @property
     def age_seconds(self) -> int:
         """Get notification age in seconds"""
-        return int((datetime.now(UTC) - self.created_at).total_seconds())
+        return int((datetime.now(timezone.utc) - self.created_at).total_seconds())
 
     def mark_as_read(self) -> None:
         """Mark notification as read with timestamp"""
         if not self.is_read:
             self.is_read = True
-            self.read_at = datetime.now(UTC)
+            self.read_at = datetime.now(timezone.utc)
 
     def mark_as_delivered(self) -> None:
         """Mark notification as delivered with timestamp"""
         if not self.is_delivered:
             self.is_delivered = True
-            self.delivered_at = datetime.now(UTC)
+            self.delivered_at = datetime.now(timezone.utc)
 
     def mark_as_clicked(self) -> None:
         """Mark notification as clicked with timestamp"""
-        self.clicked_at = datetime.now(UTC)
+        self.clicked_at = datetime.now(timezone.utc)
         if not self.is_read:
             self.mark_as_read()
 
     def dismiss(self) -> None:
         """Dismiss notification with timestamp"""
         self.is_dismissed = True
-        self.dismissed_at = datetime.now(UTC)
+        self.dismissed_at = datetime.now(timezone.utc)
         if not self.is_read:
             self.mark_as_read()
 
@@ -203,7 +203,7 @@ class NotificationPreference(Base):
     # Timing preferences
     quiet_hours_start: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "22:00"
     quiet_hours_end: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "08:00"
-    timezone: Mapped[str] = mapped_column(String(50), nullable=False, default="timezone.utc")
+    timezone: Mapped[str] = mapped_column(String(50), nullable=False, default="timezone.timezone.utc")
 
     # Digest settings
     daily_digest_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -211,8 +211,8 @@ class NotificationPreference(Base):
     digest_time: Mapped[str] = mapped_column(String(5), nullable=False, default="09:00")
 
     # Metadata
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     # Relationships
     user = relationship("User", back_populates="notification_preferences")
@@ -237,10 +237,10 @@ class NotificationPreference(Base):
             return False
 
         if check_time is None:
-            check_time = datetime.now(UTC)
+            check_time = datetime.now(timezone.utc)
 
         # Convert to user's timezone if specified
-        # For now, assume timezone.utc (can be enhanced with timezone conversion)
+        # For now, assume timezone.timezone.utc (can be enhanced with timezone conversion)
         time_str = check_time.strftime("%H:%M")
 
         # Handle quiet hours that span midnight

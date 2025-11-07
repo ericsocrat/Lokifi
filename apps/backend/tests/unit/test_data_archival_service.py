@@ -14,14 +14,13 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 import pytest_asyncio
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.core.config import Settings
 from app.services.data_archival_service import (
     ArchivalStats,
     DataArchivalService,
     StorageMetrics,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # FIXTURES

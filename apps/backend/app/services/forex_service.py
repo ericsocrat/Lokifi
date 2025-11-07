@@ -7,7 +7,7 @@ ExchangeRate-API's latest rates endpoint.
 
 import json
 import logging
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 
 import httpx
 
@@ -164,7 +164,7 @@ class ForexService:
             quote = pair["quote"]
 
             # Check internal cache (5 minutes) to reduce API calls
-            cache_key = f"{base}_{int(datetime.now(UTC).timestamp() / 300)}"
+            cache_key = f"{base}_{int(datetime.now(timezone.utc).timestamp() / 300)}"
 
             if cache_key in self._rates_cache:
                 rates = self._rates_cache[cache_key]
@@ -214,7 +214,7 @@ class ForexService:
                 "high_24h": rate * 1.01,  # Estimate
                 "low_24h": rate * 0.99,  # Estimate
                 "image": f"https://flagcdn.com/w40/{quote.lower()[:2]}.png",  # Country flag
-                "last_updated": datetime.now(UTC).isoformat(),
+                "last_updated": datetime.now(timezone.utc).isoformat(),
                 "asset_type": "forex",
             }
 

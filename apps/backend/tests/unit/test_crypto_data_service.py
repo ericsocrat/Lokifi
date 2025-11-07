@@ -31,7 +31,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
-
 from app.services.crypto_data_service import CryptoDataService
 
 

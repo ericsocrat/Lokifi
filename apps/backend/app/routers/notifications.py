@@ -1,6 +1,6 @@
 # J6 Enterprise Notifications - REST API Router
 import logging
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
@@ -189,7 +189,7 @@ async def get_unread_count(request: Request, current_user: User = Depends(get_cu
             content={
                 "unread_count": unread_count,
                 "user_id": current_user.id,
-                "timestamp": datetime.now(UTC).isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         )
 
@@ -358,12 +358,12 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
             type_preferences={},
             quiet_hours_start=None,
             quiet_hours_end=None,
-            timezone="UTC",  # Fixed: Was "timezone.utc" string
+            timezone="timezone.utc",  # Fixed: Was "timezone.timezone.utc" string
             daily_digest_enabled=False,
             weekly_digest_enabled=False,
             digest_time="09:00",
-            created_at=datetime.now(UTC).isoformat(),
-            updated_at=datetime.now(UTC).isoformat(),
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
         )
 
     except Exception as e:

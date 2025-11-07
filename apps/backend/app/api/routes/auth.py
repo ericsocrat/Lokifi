@@ -2,7 +2,7 @@ from __future__ import annotations
 
 __all__ = ["router"]
 
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Header, HTTPException
 from jose import JWTError, jwt
@@ -48,7 +48,7 @@ def _user_by_handle(db: Session, handle: str) -> User | None:
 
 
 def _issue_token(handle: str) -> TokenOut:
-    now = datetime.now(UTC)
+    now = datetime.now(timezone.utc)
     exp = now + timedelta(minutes=JWT_TTL_MIN)
     payload = {"sub": handle, "iat": int(now.timestamp()), "exp": int(exp.timestamp())}
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALG)

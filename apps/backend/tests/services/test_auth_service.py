@@ -5,7 +5,7 @@ Comprehensive test suite using generated mocks and fixtures
 """
 
 import uuid
-from datetime import UTC, timezone
+from datetime import timezone
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
@@ -40,8 +40,8 @@ def mock_user():
     user.full_name = "Test User"
     user.is_active = True
     user.is_verified = False
-    user.created_at = datetime.now(UTC)
-    user.updated_at = datetime.now(UTC)
+    user.created_at = datetime.now(timezone.utc)
+    user.updated_at = datetime.now(timezone.utc)
     return user
 
 
@@ -60,8 +60,8 @@ def mock_profile():
     profile.is_public = True
     profile.follower_count = 0
     profile.following_count = 0
-    profile.created_at = datetime.now(UTC)
-    profile.updated_at = datetime.now(UTC)
+    profile.created_at = datetime.now(timezone.utc)
+    profile.updated_at = datetime.now(timezone.utc)
     return profile
 
 
@@ -98,9 +98,9 @@ class TestAuthServiceRegistration:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(UTC)
+                    obj.updated_at = datetime.now(timezone.utc)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -367,9 +367,9 @@ class TestAuthServiceIntegration:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(UTC)
+                    obj.updated_at = datetime.now(timezone.utc)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -414,9 +414,9 @@ class TestAuthServiceIntegration:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(UTC)
+                    obj.updated_at = datetime.now(timezone.utc)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -429,8 +429,8 @@ class TestAuthServiceIntegration:
         mock_user.is_active = True
         mock_user.full_name = "Test User"
         mock_user.is_verified = False
-        mock_user.created_at = datetime.now(UTC)
-        mock_user.updated_at = datetime.now(UTC)
+        mock_user.created_at = datetime.now(timezone.utc)
+        mock_user.updated_at = datetime.now(timezone.utc)
 
         mock_profile = Mock(spec=Profile)
         mock_profile.id = uuid.uuid4()
@@ -442,8 +442,8 @@ class TestAuthServiceIntegration:
         mock_profile.is_public = True
         mock_profile.follower_count = 0
         mock_profile.following_count = 0
-        mock_profile.created_at = datetime.now(UTC)
-        mock_profile.updated_at = datetime.now(UTC)
+        mock_profile.created_at = datetime.now(timezone.utc)
+        mock_profile.updated_at = datetime.now(timezone.utc)
 
         with (
             patch("app.services.auth_service.validate_email", return_value=True),
@@ -511,9 +511,9 @@ class TestAuthServiceEdgeCases:
                 obj = call[0][0]
                 # Set timestamps if not already set (using getattr to handle missing attributes)
                 if getattr(obj, "created_at", None) is None:
-                    obj.created_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
                 if getattr(obj, "updated_at", None) is None:
-                    obj.updated_at = datetime.now(UTC)
+                    obj.updated_at = datetime.now(timezone.utc)
 
         mock_db_session.flush = AsyncMock(side_effect=mock_set_timestamps)
         mock_db_session.commit = AsyncMock(side_effect=mock_set_timestamps)
@@ -547,8 +547,8 @@ class TestAuthServiceEdgeCases:
         mock_user.full_name = "Test User"
         mock_user.is_active = True
         mock_user.is_verified = False
-        mock_user.created_at = datetime.now(UTC)
-        mock_user.updated_at = datetime.now(UTC)
+        mock_user.created_at = datetime.now(timezone.utc)
+        mock_user.updated_at = datetime.now(timezone.utc)
 
         mock_profile = Mock(spec=Profile)
         mock_profile.id = uuid.uuid4()
@@ -560,8 +560,8 @@ class TestAuthServiceEdgeCases:
         mock_profile.is_public = True
         mock_profile.follower_count = 0
         mock_profile.following_count = 0
-        mock_profile.created_at = datetime.now(UTC)
-        mock_profile.updated_at = datetime.now(UTC)
+        mock_profile.created_at = datetime.now(timezone.utc)
+        mock_profile.updated_at = datetime.now(timezone.utc)
 
         mock_db_session.execute = AsyncMock(
             return_value=Mock(one_or_none=Mock(return_value=(mock_user, mock_profile)))
@@ -665,8 +665,8 @@ class TestOAuthAuthentication:
             for call in mock_db_session.add.call_args_list:
                 obj = call[0][0]
                 if isinstance(obj, User) and not hasattr(obj, "_defaults_set"):
-                    obj.created_at = datetime.now(UTC)
-                    obj.updated_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
                     obj._defaults_set = True
 
         async def mock_commit_with_defaults():
@@ -674,14 +674,14 @@ class TestOAuthAuthentication:
             for call in mock_db_session.add.call_args_list:
                 obj = call[0][0]
                 if isinstance(obj, User) and not hasattr(obj, "_defaults_set"):
-                    obj.created_at = datetime.now(UTC)
-                    obj.updated_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
                     obj._defaults_set = True
                 elif isinstance(obj, Profile) and not hasattr(obj, "_defaults_set"):
                     obj.follower_count = 0
                     obj.following_count = 0
-                    obj.created_at = datetime.now(UTC)
-                    obj.updated_at = datetime.now(UTC)
+                    obj.created_at = datetime.now(timezone.utc)
+                    obj.updated_at = datetime.now(timezone.utc)
                     obj._defaults_set = True
 
         mock_db_session.flush = AsyncMock(side_effect=mock_flush_with_defaults)

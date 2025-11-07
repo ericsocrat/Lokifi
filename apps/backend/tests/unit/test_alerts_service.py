@@ -17,7 +17,6 @@ from unittest.mock import AsyncMock, MagicMock, call, mock_open, patch
 
 import pytest
 import pytest_asyncio
-
 from app.services.alerts import Alert, AlertEvaluator, AlertStore, SSEHub
 
 # ============================================================================

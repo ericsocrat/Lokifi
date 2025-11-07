@@ -19,7 +19,7 @@ import random
 import statistics
 import time
 from dataclasses import asdict, dataclass
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
@@ -214,7 +214,7 @@ class WebSocketLoadTester:
     async def run_load_test(self, scenario: LoadTestScenario) -> LoadTestReport:
         """Run WebSocket load test scenario"""
         logger.info(f"Starting WebSocket load test: {scenario.name}")
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         all_results = []
         tasks = []
@@ -246,7 +246,7 @@ class WebSocketLoadTester:
             elif isinstance(result, Exception):
                 logger.error(f"Task failed: {result}")
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
 
         # Generate report
         return self._generate_report(scenario, start_time, end_time, all_results)
@@ -416,7 +416,7 @@ class APILoadTester:
     async def run_load_test(self, scenario: LoadTestScenario) -> LoadTestReport:
         """Run API load test scenario"""
         logger.info(f"Starting API load test: {scenario.name}")
-        start_time = datetime.now(UTC)
+        start_time = datetime.now(timezone.utc)
 
         all_results = []
         tasks = []
@@ -435,7 +435,7 @@ class APILoadTester:
             if isinstance(result, list):
                 all_results.extend(result)
 
-        end_time = datetime.now(UTC)
+        end_time = datetime.now(timezone.utc)
 
         # Generate report using WebSocket tester's method (reusable)
         ws_tester = WebSocketLoadTester()

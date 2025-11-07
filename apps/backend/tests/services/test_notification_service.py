@@ -14,7 +14,7 @@ Session: 62 - Backend Test Coverage Expansion Phase 1
 """
 
 import uuid
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import pytest
@@ -76,7 +76,7 @@ def mock_notification(sample_user_id):
     notification.priority = NotificationPriority.NORMAL.value
     notification.title = "New follower"
     notification.message = "John Doe started following you"
-    notification.created_at = datetime.now(UTC)
+    notification.created_at = datetime.now(timezone.utc)
     notification.read_at = None
     notification.is_read = False
     notification.is_delivered = True
@@ -137,7 +137,7 @@ class TestNotificationData:
     def test_notification_data_creation_full(self, sample_user_id):
         """Test NotificationData creation with all fields"""
         payload = {"key": "value"}
-        expires_at = datetime.now(UTC)
+        expires_at = datetime.now(timezone.utc)
 
         data = NotificationData(
             user_id=sample_user_id,
@@ -987,7 +987,7 @@ class TestNotificationStats:
     ):
         """Test successful get_notification_stats"""
         # Create mock notifications with various states
-        now = datetime.now(UTC)
+        now = datetime.now(timezone.utc)
         notifications = []
 
         for i in range(5):
@@ -1066,7 +1066,7 @@ class TestCleanupExpired:
     ):
         """Test successful cleanup_expired_notifications"""
         # Create expired notifications
-        past_time = datetime(2020, 1, 1, tzinfo=UTC)
+        past_time = datetime(2020, 1, 1, tzinfo=timezone.utc)
         expired_notifications = []
 
         for _i in range(3):
