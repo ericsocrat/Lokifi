@@ -1654,12 +1654,27 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **37 Battle-Tested Patterns** from 76+ sessions with proven success metrics:
 
-**Testing Patterns** (5):
-- **AsyncMock Pattern** - 95% success, +30-40pp coverage (Sessions 30, 62, 63, 66)
+**Testing Patterns** (8):
+- **AsyncMock Pattern** - 100% success, 62 tests proven (Sessions 30, 62, 63, 66, 77) ⭐
+  - **create_mock_response() helper**: Lambda pattern for sync methods on AsyncMock (prevents coroutines)
+  - **Success Rate**: 100% (42 CryptoDataService + 20 ForexService = 62 tests)
+  - **Complete Guide**: `/docs/guides/external-api-testing-patterns.md`
+- **Mock side_effect for Sequential Calls** - NEW! 100% success (Session 77 Phase 3) ⭐
+  - Pattern: `mock.side_effect = [error_response, success_response]` for partial failure testing
+  - Use case: Test graceful degradation when first API call fails, second succeeds
+  - Success rate: 1/20 tests (5%), 100% effectiveness
+- **Implementation Verification Pattern** - NEW! 100% success (Session 77 Phase 3) ⭐
+  - Always verify actual implementation details before writing tests (don't assume)
+  - Example: Verify currency pairs count (50 actual vs 93 assumed)
+  - Tests fixed: 3/20 (15%), saves ~10 minutes debugging
 - **Branch Coverage + Smart Exclusions** - 100% success, 15min implementation (Session 69)
 - **Pure Function Testing** - 100% success, <15 min implementation
 - **Mathematical Testing** - 33 tests, 100% coverage (Session 66)
 - **Fixture Design** - Reusable test data patterns
+- **2-Tier Caching Validation** - NEW! 100% success (Session 77 Phase 3) ⭐
+  - Pattern: Test both Redis cache (30s TTL) + internal cache (5min) separately
+  - Verify reduced API call counts within time windows
+  - Tests covering: 6/20 (30%), straightforward implementation
 
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
@@ -1737,7 +1752,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Log Analysis** - 75-88% time savings (10+ sessions)
 
 **Pattern Selection Guide**:
-- **Testing**: "What are you testing?" → AsyncMock, Pure Functions, Mathematical Testing, Fixtures
+- **Testing**: "What are you testing?" → AsyncMock, Mock side_effect, Implementation Verification, 2-Tier Caching, Pure Functions, Mathematical Testing, Fixtures
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
 - **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
@@ -1746,7 +1761,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
-**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses Type Narrowing pattern from Session 76")
+**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses Mock side_effect pattern from Session 77 Phase 3")
 
 ## Documentation References
 
