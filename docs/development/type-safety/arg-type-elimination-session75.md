@@ -784,7 +784,7 @@ Are you passing params to httpx/aiohttp?
 ### Phase 5B Commit
 - **Commit**: a4de7b01
 - **Message**: "feat(types): Session 75 Phase 5B - httpx QueryParams (-8 arg-type errors, 8 to 0)"
-- **Validation**: 
+- **Validation**:
   - Backend: 206 API + 26 security tests passed
   - Frontend: 486 component tests passed
   - Coverage: Backend 25.84%, Frontend maintained

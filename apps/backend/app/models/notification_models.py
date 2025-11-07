@@ -4,11 +4,12 @@ from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, Optional
 
-from app.core.database import Base
-from app.models.user import User
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, JSON, String, Text
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, Index, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.core.database import Base
+from app.models.user import User
 
 
 class NotificationType(str, Enum):
@@ -48,19 +49,19 @@ class Notification(Base):
     # Notification classification
     type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     priority: Mapped[str] = mapped_column(String(20), nullable=False, default=NotificationPriority.NORMAL.value)
-    category: Mapped[Optional[str]] = mapped_column(String(50), nullable=True, index=True)  # For grouping notifications
+    category: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)  # For grouping notifications
 
     # Content and metadata
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    message: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    payload: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, nullable=True)  # Rich structured data
+    message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    payload: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)  # Rich structured data
 
     # Delivery and interaction tracking
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(UTC))
-    read_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    delivered_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    clicked_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
-    dismissed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    clicked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    dismissed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Status flags
     is_read: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, index=True)
@@ -74,18 +75,18 @@ class Notification(Base):
     in_app_sent: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     # Expiration and cleanup
-    expires_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Reference to related entities
-    related_entity_type: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)  # e.g., "message", "thread", "user"
-    related_entity_id: Mapped[Optional[uuid.UUID]] = mapped_column(UUID(as_uuid=True), nullable=True)
-    related_user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+    related_entity_type: Mapped[str | None] = mapped_column(String(50), nullable=True)  # e.g., "message", "thread", "user"
+    related_entity_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
+    related_user_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )  # For user-specific notifications
 
     # Batching and grouping
-    batch_id: Mapped[Optional[uuid.UUID]] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)  # For batch operations
-    parent_notification_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+    batch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)  # For batch operations
+    parent_notification_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("notifications.id"), nullable=True
     )
 
@@ -200,8 +201,8 @@ class NotificationPreference(Base):
     type_preferences: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
 
     # Timing preferences
-    quiet_hours_start: Mapped[Optional[str]] = mapped_column(String(5), nullable=True)  # "22:00"
-    quiet_hours_end: Mapped[Optional[str]] = mapped_column(String(5), nullable=True)  # "08:00"
+    quiet_hours_start: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "22:00"
+    quiet_hours_end: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "08:00"
     timezone: Mapped[str] = mapped_column(String(50), nullable=False, default="timezone.utc")
 
     # Digest settings

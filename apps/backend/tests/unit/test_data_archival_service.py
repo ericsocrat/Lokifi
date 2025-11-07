@@ -14,13 +14,14 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import Settings
 from app.services.data_archival_service import (
     ArchivalStats,
     DataArchivalService,
     StorageMetrics,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # FIXTURES
@@ -102,9 +103,7 @@ class TestDataArchivalServiceInit:
         assert archival_service.delete_threshold_days == 365
         assert archival_service.enabled is True
 
-    def test_init_with_disabled_archival(
-        self, archival_service_disabled: DataArchivalService
-    ):
+    def test_init_with_disabled_archival(self, archival_service_disabled: DataArchivalService):
         """Test initialization with archival disabled"""
         assert archival_service_disabled.enabled is False
 
@@ -137,9 +136,7 @@ class TestStorageMetrics:
             ]
         )
 
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
             # Setup async context manager
             async def async_generator():
                 yield mock_session
@@ -173,9 +170,8 @@ class TestStorageMetrics:
             ]
         )
 
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -205,9 +201,8 @@ class TestStorageMetrics:
             ]
         )
 
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -225,9 +220,7 @@ class TestStorageMetrics:
         self, archival_service: DataArchivalService, caplog
     ):
         """Test metrics retrieval when database error occurs"""
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
 
             async def async_generator():
                 raise Exception("Database connection failed")
@@ -257,9 +250,8 @@ class TestArchiveTableCreation:
         self, archival_service: DataArchivalService, mock_session: AsyncMock, caplog
     ):
         """Test successful archive table creation"""
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -279,13 +271,10 @@ class TestArchiveTableCreation:
         self, archival_service: DataArchivalService, mock_session: AsyncMock, caplog
     ):
         """Test archive table creation when error occurs"""
-        mock_session.execute = AsyncMock(
-            side_effect=Exception("Table creation failed")
-        )
+        mock_session.execute = AsyncMock(side_effect=Exception("Table creation failed"))
 
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -324,14 +313,13 @@ class TestArchiveOldConversations:
     ):
         """Test successful archival of old conversations"""
         # Mock create_archive_table to avoid execution
-        with patch.object(
-            archival_service, "create_archive_table_if_not_exists", new=AsyncMock()
-        ):
+        with patch.object(archival_service, "create_archive_table_if_not_exists", new=AsyncMock()):
             mock_session.scalar = AsyncMock(return_value=1500)  # old_count
 
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
+
                 async def async_generator():
                     yield mock_session
 
@@ -349,14 +337,13 @@ class TestArchiveOldConversations:
         self, archival_service: DataArchivalService, mock_session: AsyncMock, caplog
     ):
         """Test archival when no messages are eligible"""
-        with patch.object(
-            archival_service, "create_archive_table_if_not_exists", new=AsyncMock()
-        ):
+        with patch.object(archival_service, "create_archive_table_if_not_exists", new=AsyncMock()):
             mock_session.scalar = AsyncMock(return_value=0)  # No old messages
 
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
+
                 async def async_generator():
                     yield mock_session
 
@@ -373,14 +360,13 @@ class TestArchiveOldConversations:
         self, archival_service: DataArchivalService, mock_session: AsyncMock
     ):
         """Test archival with custom batch size"""
-        with patch.object(
-            archival_service, "create_archive_table_if_not_exists", new=AsyncMock()
-        ):
+        with patch.object(archival_service, "create_archive_table_if_not_exists", new=AsyncMock()):
             mock_session.scalar = AsyncMock(return_value=500)
 
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
+
                 async def async_generator():
                     yield mock_session
 
@@ -395,9 +381,7 @@ class TestArchiveOldConversations:
         self, archival_service: DataArchivalService, caplog
     ):
         """Test archival when database error occurs"""
-        with patch.object(
-            archival_service, "create_archive_table_if_not_exists", new=AsyncMock()
-        ):
+        with patch.object(archival_service, "create_archive_table_if_not_exists", new=AsyncMock()):
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
@@ -421,14 +405,13 @@ class TestArchiveOldConversations:
         self, archival_service: DataArchivalService, mock_session: AsyncMock
     ):
         """Test that cutoff date is calculated correctly"""
-        with patch.object(
-            archival_service, "create_archive_table_if_not_exists", new=AsyncMock()
-        ):
+        with patch.object(archival_service, "create_archive_table_if_not_exists", new=AsyncMock()):
             mock_session.scalar = AsyncMock(return_value=100)
 
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
+
                 async def async_generator():
                     yield mock_session
 
@@ -441,9 +424,8 @@ class TestArchiveOldConversations:
 
                     await archival_service.archive_old_conversations()
 
-                    # Verify cutoff date calculation (90 days ago)
-                    expected_cutoff = mock_now - timedelta(days=90)
-                    # The WHERE clause should use this cutoff
+                    # Verify cutoff date calculation (90 days ago) was used in query
+                    # The WHERE clause should use the calculated cutoff
                     mock_session.scalar.assert_called_once()
 
 
@@ -460,9 +442,8 @@ class TestDatabaseVacuum:
         self, archival_service: DataArchivalService, mock_session: AsyncMock, caplog
     ):
         """Test successful SQLite VACUUM operation"""
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -482,9 +463,8 @@ class TestDatabaseVacuum:
         self, archival_service_postgres: DataArchivalService, mock_session: AsyncMock, caplog
     ):
         """Test successful PostgreSQL VACUUM operation"""
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -507,9 +487,8 @@ class TestDatabaseVacuum:
         """Test vacuum when database error occurs"""
         mock_session.execute = AsyncMock(side_effect=Exception("VACUUM failed"))
 
-        with patch(
-            "app.services.data_archival_service.db_manager.get_session"
-        ) as mock_get_session:
+        with patch("app.services.data_archival_service.db_manager.get_session") as mock_get_session:
+
             async def async_generator():
                 yield mock_session
 
@@ -544,9 +523,7 @@ class TestFullMaintenance:
             "archive_old_conversations",
             new=AsyncMock(return_value=mock_archive_stats),
         ):
-            with patch.object(
-                archival_service, "vacuum_database", new=AsyncMock()
-            ):
+            with patch.object(archival_service, "vacuum_database", new=AsyncMock()):
                 with patch.object(
                     archival_service,
                     "get_storage_metrics",
@@ -635,9 +612,7 @@ class TestDataArchivalEdgeCases:
         assert metrics.archived_messages == 0
 
     @pytest.mark.asyncio
-    async def test_concurrent_maintenance_operations(
-        self, archival_service: DataArchivalService
-    ):
+    async def test_concurrent_maintenance_operations(self, archival_service: DataArchivalService):
         """Test that concurrent maintenance operations work correctly"""
         import asyncio
 
@@ -670,23 +645,20 @@ class TestDataArchivalEdgeCases:
         self, archival_service: DataArchivalService, mock_session: AsyncMock
     ):
         """Test archival with very large batch size"""
-        with patch.object(
-            archival_service, "create_archive_table_if_not_exists", new=AsyncMock()
-        ):
+        with patch.object(archival_service, "create_archive_table_if_not_exists", new=AsyncMock()):
             # Simulate large number of messages
             mock_session.scalar = AsyncMock(return_value=1000000)
 
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
+
                 async def async_generator():
                     yield mock_session
 
                 mock_get_session.return_value = async_generator()
 
-                stats = await archival_service.archive_old_conversations(
-                    batch_size=50000
-                )
+                stats = await archival_service.archive_old_conversations(batch_size=50000)
 
                 assert stats.messages_archived == 1000000
 
@@ -706,6 +678,7 @@ class TestDataArchivalEdgeCases:
             with patch(
                 "app.services.data_archival_service.db_manager.get_session"
             ) as mock_get_session:
+
                 async def async_generator():
                     yield mock_session
 

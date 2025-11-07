@@ -8,13 +8,12 @@ import sys
 from contextlib import asynccontextmanager
 from typing import Any
 
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import Field
 from pydantic_settings import BaseSettings
-
-import uvicorn
 
 # Import existing components
 from app.core.database import db_manager
@@ -107,8 +106,9 @@ async def run_database_migrations():
         logger.info("🗄️ Running database migrations...")
 
         # Import Alembic components
-        from alembic import command
         from alembic.config import Config
+
+        from alembic import command
 
         # Configure Alembic
         alembic_cfg = Config("alembic.ini")

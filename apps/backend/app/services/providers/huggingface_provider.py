@@ -8,6 +8,7 @@ import uuid
 from collections.abc import AsyncGenerator
 
 import httpx
+
 from app.services.ai_provider import (
     AIMessage,
     AIProvider,

@@ -16,12 +16,13 @@ from datetime import UTC, datetime, timezone
 from typing import Any
 
 import redis.asyncio as redis
-from app.core.config import settings
 from redis.asyncio import ConnectionPool, Sentinel
 from redis.backoff import ExponentialBackoff
 from redis.exceptions import ConnectionError as RedisConnectionError
 from redis.exceptions import RedisError
 from redis.retry import Retry
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -108,10 +109,10 @@ class AdvancedRedisClient:
         """Initialize Redis connection with sentinel support"""
         try:
             if settings.redis_sentinel_hosts:
-                # Use Redis Sentinel for high availability  
+                # Use Redis Sentinel for high availability
                 # settings.redis_sentinel_hosts is already list[str], no split needed
                 sentinel_hosts = [
-                    (host.split(":")[0], int(host.split(":")[1])) 
+                    (host.split(":")[0], int(host.split(":")[1]))
                     for host in settings.redis_sentinel_hosts
                 ]
 

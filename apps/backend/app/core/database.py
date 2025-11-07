@@ -4,7 +4,6 @@ import re
 from collections.abc import AsyncGenerator
 from typing import Optional
 
-from app.core.config import Settings, settings
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -13,6 +12,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
+
+from app.core.config import Settings, settings
 
 logger = logging.getLogger(__name__)
 
@@ -25,10 +26,10 @@ class DatabaseManager:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.primary_engine: Optional[AsyncEngine] = None
-        self.replica_engine: Optional[AsyncEngine] = None
-        self.primary_session_factory: Optional[async_sessionmaker[AsyncSession]] = None
-        self.replica_session_factory: Optional[async_sessionmaker[AsyncSession]] = None
+        self.primary_engine: AsyncEngine | None = None
+        self.replica_engine: AsyncEngine | None = None
+        self.primary_session_factory: async_sessionmaker[AsyncSession] | None = None
+        self.replica_session_factory: async_sessionmaker[AsyncSession] | None = None
         self._initialized = False
 
     def _is_sqlite(self, database_url: str) -> bool:
@@ -137,7 +138,7 @@ class DatabaseManager:
             await self.initialize()
 
         # Use replica for read-only queries when available
-        session_factory: Optional[async_sessionmaker[AsyncSession]]
+        session_factory: async_sessionmaker[AsyncSession] | None
         if read_only and self.replica_session_factory:
             session_factory = self.replica_session_factory
         else:

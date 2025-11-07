@@ -4,10 +4,12 @@ Prevents duplicates and manages crypto/stock/index discovery
 """
 
 import logging
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, Mapping, cast
+from typing import Any, cast
 
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 

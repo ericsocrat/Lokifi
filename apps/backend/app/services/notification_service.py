@@ -8,6 +8,8 @@ from datetime import UTC, datetime, timezone
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import and_, desc, func, or_, select
+
 from app.core.database import db_manager
 from app.core.redis_client import redis_client
 from app.models.notification_models import (
@@ -16,7 +18,6 @@ from app.models.notification_models import (
     NotificationPriority,
     NotificationType,
 )
-from sqlalchemy import and_, desc, func, or_, select
 
 logger = logging.getLogger(__name__)
 

@@ -35,7 +35,7 @@
 - **Solution**:
   ```python
   from typing import Protocol
-  
+
   class ArchivalProtocol(Protocol):
       async def compress_old_messages(self, batch_size: int) -> dict[str, Any]: ...
       async def delete_expired_conversations(self) -> dict[str, Any]: ...
@@ -163,7 +163,7 @@
    class NotificationMetrics(BaseModel):
        delivery_rate: float
        read_rate: float
-   
+
    notification_metrics = NotificationMetrics(**data)
    ```
 **Recommended**: Option A (dict access) - simpler, less overhead

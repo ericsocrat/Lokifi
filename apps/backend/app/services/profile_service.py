@@ -6,6 +6,10 @@ import uuid
 from datetime import UTC, datetime, timezone
 from typing import Any
 
+from fastapi import HTTPException, status
+from sqlalchemy import and_, func, or_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
@@ -19,9 +23,6 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
-from fastapi import HTTPException, status
-from sqlalchemy import and_, func, or_, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class ProfileService:

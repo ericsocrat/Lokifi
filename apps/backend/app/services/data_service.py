@@ -5,9 +5,10 @@ Supports multiple data sources with failover capabilities.
 
 import logging
 import os
+from collections.abc import Mapping
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Mapping, cast
+from typing import Any, cast
 
 import aiohttp
 from pydantic import BaseModel

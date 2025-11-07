@@ -2,11 +2,13 @@
 
 import logging
 import time
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Any, Literal, Mapping, cast
+from typing import Any, Literal, cast
 
 import httpx
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.config import settings
 

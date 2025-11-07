@@ -16,6 +16,9 @@ from datetime import UTC, datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.follow import Follow
 from app.models.notification_models import Notification, NotificationType
 from app.models.profile import Profile
@@ -29,8 +32,6 @@ from app.schemas.follow import (
     UserFollowStatus,
 )
 from app.services.follow_service import FollowService
-from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # FIXTURES

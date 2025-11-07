@@ -424,9 +424,7 @@ class SecurityAlertManager:
             fields.append({"name": "Source IP", "value": alert.source_ip, "inline": "True"})
 
         if alert.affected_user:
-            fields.append(
-                {"name": "Affected User", "value": alert.affected_user, "inline": "True"}
-            )
+            fields.append({"name": "Affected User", "value": alert.affected_user, "inline": "True"})
 
         payload = {"embeds": [embed]}
 

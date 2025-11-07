@@ -932,9 +932,7 @@ class AdvancedTestFramework:
             ]
 
             if failed_categories:
-                recommendations.append(
-                    f"Review failed tests in: {', '.join(failed_categories)}"
-                )
+                recommendations.append(f"Review failed tests in: {', '.join(failed_categories)}")
 
         if not self.auth_token:
             recommendations.append("Authentication system needs verification")

@@ -38,7 +38,7 @@ from app.services.crypto_data_service import CryptoDataService
 # Helper function for creating async mock responses
 def create_mock_response(data: Any, status_code: int = 200):
     """Helper to create a properly mocked httpx response
-    
+
     Note: httpx response.json() is NOT async, it's a regular method
     Also: response.raise_for_status() is NOT async either
     """
@@ -411,42 +411,6 @@ class TestGetTopCoins:
             assert result == sample_top_coins_data
 
             # Verify cache was not checked (force refresh)
-            mock_redis_client.get.assert_not_awaited()
-
-    @pytest.mark.asyncio
-    async def test_get_top_coins_with_custom_params(
-        self, crypto_service, mock_httpx_client, mock_redis_client, sample_top_coins_data
-    ):
-        """Test get_top_coins with custom limit and currency"""
-        mock_redis_client.get.return_value = None
-        mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_top_coins_data))
-
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
-            result = await crypto_service.get_top_coins(limit=50, vs_currency="eur")
-            assert result == sample_top_coins_data
-
-            # Verify API was called with correct params
-            call_args = mock_httpx_client.get.call_args
-            assert "vs_currency" in call_args.kwargs["params"]
-            assert call_args.kwargs["params"]["vs_currency"] == "eur"
-            assert call_args.kwargs["params"]["per_page"] == 50
-
-    @pytest.mark.asyncio
-    async def test_get_top_coins_force_refresh(
-        self, crypto_service, mock_httpx_client, mock_redis_client, sample_top_coins_data
-    ):
-        """Test get_top_coins bypasses cache with force_refresh=True"""
-        mock_redis_client.get.return_value = {"old": "data"}
-        mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_top_coins_data))
-
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
-            result = await crypto_service.get_top_coins(force_refresh=True)
-            assert result == sample_top_coins_data
-            # Cache get should not be called
             mock_redis_client.get.assert_not_awaited()
 
 

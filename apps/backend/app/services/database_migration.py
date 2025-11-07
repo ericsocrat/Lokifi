@@ -33,13 +33,15 @@ class DatabaseMigrationService:
                 if not table_exists:
                     # Create migrations table
                     await session.execute(
-                        text("""
+                        text(
+                            """
                         CREATE TABLE migrations (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             name VARCHAR(255) NOT NULL UNIQUE,
                             applied_at DATETIME DEFAULT CURRENT_TIMESTAMP
                         )
-                    """)
+                    """
+                        )
                     )
                     await session.commit()
                     logger.info("Created migrations table")
@@ -106,22 +108,22 @@ class DatabaseMigrationService:
             {
                 "name": "001_initial_indexes",
                 "sql": """
-                    CREATE INDEX IF NOT EXISTS idx_notifications_user_unread 
-                    ON notifications(user_id, is_read) 
+                    CREATE INDEX IF NOT EXISTS idx_notifications_user_unread
+                    ON notifications(user_id, is_read)
                     WHERE is_read = 0;
-                    
-                    CREATE INDEX IF NOT EXISTS idx_users_email 
-                    ON users(email) 
+
+                    CREATE INDEX IF NOT EXISTS idx_users_email
+                    ON users(email)
                     WHERE email IS NOT NULL;
                 """,
             },
             {
                 "name": "002_performance_indexes",
                 "sql": """
-                    CREATE INDEX IF NOT EXISTS idx_notifications_type 
+                    CREATE INDEX IF NOT EXISTS idx_notifications_type
                     ON notifications(type, created_at);
-                    
-                    CREATE INDEX IF NOT EXISTS idx_notifications_user_created 
+
+                    CREATE INDEX IF NOT EXISTS idx_notifications_user_created
                     ON notifications(user_id, created_at);
                 """,
             },

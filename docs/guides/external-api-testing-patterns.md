@@ -1,7 +1,7 @@
 # External API Testing Patterns (Session 77)
 
-**Last Updated:** November 7, 2025  
-**Status:** Production-Ready Patterns  
+**Last Updated:** November 7, 2025
+**Status:** Production-Ready Patterns
 **Success Rate:** 100% (proven across CryptoDataService with 42 tests, 92% coverage)
 
 > **🎯 Purpose**: Battle-tested patterns for testing services that interact with external APIs (httpx, aiohttp, requests)
@@ -52,14 +52,14 @@ from unittest.mock import MagicMock
 
 def create_mock_response(data: Any, status_code: int = 200):
     """Helper to create a properly mocked httpx response
-    
+
     Note: httpx response.json() is NOT async, it's a regular method
     Also: response.raise_for_status() is NOT async either
-    
+
     Args:
         data: Data to return from json() call
         status_code: HTTP status code (default: 200)
-        
+
     Returns:
         MagicMock with properly configured json() and raise_for_status()
     """
@@ -94,10 +94,10 @@ async def test_get_data_from_api(service, mock_httpx_client, sample_data):
     mock_httpx_client.get = AsyncMock(
         return_value=create_mock_response(sample_data)
     )
-    
+
     with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
         result = await service.get_data()
-        
+
     assert result == sample_data
     mock_httpx_client.get.assert_awaited_once()
 ```
@@ -148,14 +148,14 @@ import httpx
 def mock_httpx_client():
     """Mock httpx.AsyncClient with full async context manager support"""
     mock_client = AsyncMock(spec=httpx.AsyncClient)
-    
+
     # CRITICAL: Add async context manager support
     mock_client.__aenter__ = AsyncMock(return_value=mock_client)
     mock_client.__aexit__ = AsyncMock(return_value=None)
-    
+
     # Optional: Add aclose() for explicit cleanup
     mock_client.aclose = AsyncMock()
-    
+
     return mock_client
 ```
 
@@ -187,7 +187,7 @@ async def test_context_manager_exit_closes_client(service, mock_httpx_client):
     with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
         async with service:
             pass  # Just enter and exit
-    
+
     # Verify cleanup
     mock_httpx_client.aclose.assert_awaited_once()
 ```
@@ -211,13 +211,13 @@ class ExternalAPIService:
     def __init__(self):
         self._request_count = 0
         self._rate_limit_reset = datetime.now()  # ⚠️ Changes every init!
-    
+
     async def _check_rate_limit(self):
         now = datetime.now()
         if now > self._rate_limit_reset:
             self._request_count = 0
             self._rate_limit_reset = now + timedelta(minutes=1)
-        
+
         self._request_count += 1
 ```
 
@@ -236,13 +236,13 @@ async def test_check_rate_limit_increments_counter(service):
     """Test that rate limit counter increments correctly"""
     # Set reset time to FUTURE to prevent counter reset
     service._rate_limit_reset = datetime.now() + timedelta(minutes=1)
-    
+
     # Set initial counter
     service._request_count = 29
-    
+
     # Call rate limit check (must await async method!)
     await service._check_rate_limit()
-    
+
     # Verify counter incremented (not reset to 0)
     assert service._request_count == 30
 
@@ -252,9 +252,9 @@ async def test_check_rate_limit_resets_after_minute(service):
     # Set reset time to PAST to trigger reset
     service._rate_limit_reset = datetime.now() - timedelta(seconds=1)
     service._request_count = 50
-    
+
     await service._check_rate_limit()
-    
+
     # Counter should reset to 1 (not 51)
     assert service._request_count == 1
     # Reset time should be in the future
@@ -269,11 +269,11 @@ async def test_check_rate_limit_with_api_key(service):
     """Test rate limit with API key (higher limit: 30/min)"""
     with patch("service_module.settings") as mock_settings:
         mock_settings.API_KEY = "test_api_key"
-        
+
         service._request_count = 29
         service._rate_limit_reset = datetime.now() + timedelta(minutes=1)
         await service._check_rate_limit()
-        
+
         assert service._request_count == 30  # Higher limit reached
 
 @pytest.mark.asyncio
@@ -281,11 +281,11 @@ async def test_check_rate_limit_without_api_key(service):
     """Test rate limit without API key (lower limit: 10/min)"""
     with patch("service_module.settings") as mock_settings:
         mock_settings.API_KEY = None
-        
+
         service._request_count = 9
         service._rate_limit_reset = datetime.now() + timedelta(minutes=1)
         await service._check_rate_limit()
-        
+
         assert service._request_count == 10  # Lower limit reached
 ```
 
@@ -336,10 +336,10 @@ async def test_get_data_returns_cached(service, mock_redis_client):
     """Test that cached data is returned without API call"""
     cached_data = {"cached": True, "source": "redis"}
     mock_redis_client.get.return_value = json.dumps(cached_data)
-    
+
     with patch.object(service, "_redis_client", mock_redis_client):
         result = await service.get_data()
-    
+
     # Verify cache was checked
     mock_redis_client.get.assert_awaited_once_with("expected:cache:key")
     # Verify no API call was made (would be in another mock)
@@ -350,17 +350,17 @@ async def test_get_data_fetches_and_caches(service, mock_redis_client, mock_http
     """Test that API data is cached after fetch"""
     # Cache miss
     mock_redis_client.get.return_value = None
-    
+
     # API response
     api_data = {"fresh": True, "source": "api"}
     mock_httpx_client.get = AsyncMock(
         return_value=create_mock_response(api_data)
     )
-    
+
     with patch.object(service, "_redis_client", mock_redis_client):
         with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
             result = await service.get_data()
-    
+
     # Verify cache was checked
     mock_redis_client.get.assert_awaited_once()
     # Verify data was stored to cache
@@ -375,11 +375,11 @@ async def test_force_refresh_bypasses_cache(service, mock_redis_client, mock_htt
     mock_httpx_client.get = AsyncMock(
         return_value=create_mock_response({"fresh": True})
     )
-    
+
     with patch.object(service, "_redis_client", mock_redis_client):
         with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
             result = await service.get_data(force_refresh=True)
-    
+
     # Cache get should NOT be called
     mock_redis_client.get.assert_not_awaited()
     # Cache set should still be called (store fresh data)
@@ -433,10 +433,10 @@ async def test_fetch_handles_429_rate_limit(service, mock_httpx_client):
             response=MagicMock(status_code=429)
         )
     )
-    
+
     with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
         result = await service.get_data()
-    
+
     # Service should return None or empty result gracefully
     assert result is None or result == []
 
@@ -450,10 +450,10 @@ async def test_fetch_handles_500_server_error(service, mock_httpx_client):
             response=MagicMock(status_code=500)
         )
     )
-    
+
     with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
         result = await service.get_data()
-    
+
     assert result is None or result == []
 ```
 
@@ -466,10 +466,10 @@ async def test_fetch_handles_network_errors(service, mock_httpx_client):
     mock_httpx_client.get = AsyncMock(
         side_effect=httpx.ConnectError("Connection refused")
     )
-    
+
     with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
         result = await service.get_data()
-    
+
     # Service should handle gracefully without crashing
     assert result is None or result == []
 ```
@@ -481,10 +481,10 @@ async def test_fetch_handles_network_errors(service, mock_httpx_client):
 async def test_get_cached_returns_none_on_error(service, mock_redis_client):
     """Test that cache errors are handled gracefully"""
     mock_redis_client.get = AsyncMock(side_effect=Exception("Redis down"))
-    
+
     with patch.object(service, "_redis_client", mock_redis_client):
         result = await service._get_cached("some:key")
-    
+
     # Should return None instead of crashing
     assert result is None
 
@@ -492,11 +492,11 @@ async def test_get_cached_returns_none_on_error(service, mock_redis_client):
 async def test_set_cache_handles_error_gracefully(service, mock_redis_client):
     """Test that cache write errors don't crash the service"""
     mock_redis_client.set = AsyncMock(side_effect=Exception("Redis write failed"))
-    
+
     with patch.object(service, "_redis_client", mock_redis_client):
         # Should not raise exception
         await service._set_cache("some:key", {"data": "value"})
-    
+
     # No assertion needed - we're just verifying it doesn't crash
 ```
 
@@ -524,10 +524,10 @@ async def test_ohlc_transforms_array_to_dict(service, mock_httpx_client):
     mock_httpx_client.get = AsyncMock(
         return_value=create_mock_response(raw_ohlc)
     )
-    
+
     with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
         result = await service.get_ohlc("bitcoin", days=7)
-    
+
     # Verify transformation: array → dict
     assert isinstance(result, list)
     assert all(isinstance(item, dict) for item in result)
@@ -551,11 +551,11 @@ async def test_caches_formatted_data_not_raw(service, mock_redis_client, mock_ht
         return_value=create_mock_response(raw_response)
     )
     mock_redis_client.get.return_value = None  # Cache miss
-    
+
     with patch.object(service, "_redis_client", mock_redis_client):
         with patch("service_module.httpx.AsyncClient", return_value=mock_httpx_client):
             result = await service.get_global_data()
-    
+
     # Verify formatted data was cached
     mock_redis_client.set.assert_awaited_once()
     cached_data = json.loads(mock_redis_client.set.call_args[0][1])
@@ -708,13 +708,13 @@ class TestExternalAPIServiceInit:
         """Test service initializes with correct defaults"""
         assert service._request_count == 0
         assert service._http_client is None
-    
+
     @pytest.mark.asyncio
     async def test_context_manager_enter_creates_client(self, service):
         """Test async context manager creates httpx client"""
         async with service as svc:
             assert svc._http_client is not None
-    
+
     @pytest.mark.asyncio
     async def test_context_manager_exit_closes_client(self, service, mock_httpx_client):
         """Test async context manager closes httpx client"""
@@ -730,25 +730,25 @@ class TestCacheOperations:
         """Test cache key generation with single parameter"""
         key = service._get_cache_key("resource", id="123")
         assert key == "resource:id=123"
-    
+
     @pytest.mark.asyncio
     async def test_get_cached_returns_data(self, service, mock_redis_client):
         """Test retrieving data from cache"""
         cached_data = {"cached": True}
         mock_redis_client.get.return_value = json.dumps(cached_data)
-        
+
         result = await service._get_cached("test:key")
-        
+
         assert result == cached_data
         mock_redis_client.get.assert_awaited_once_with("test:key")
-    
+
     @pytest.mark.asyncio
     async def test_set_cache_stores_data(self, service, mock_redis_client):
         """Test storing data to cache"""
         data = {"new": True}
-        
+
         await service._set_cache("test:key", data)
-        
+
         mock_redis_client.set.assert_awaited_once()
         stored_data = json.loads(mock_redis_client.set.call_args[0][1])
         assert stored_data == data
@@ -762,19 +762,19 @@ class TestRateLimiting:
         # Pattern 3: Future timestamp control
         service._rate_limit_reset = datetime.now() + timedelta(minutes=1)
         service._request_count = 29
-        
+
         await service._check_rate_limit()
-        
+
         assert service._request_count == 30
-    
+
     @pytest.mark.asyncio
     async def test_check_rate_limit_resets_after_minute(self, service):
         """Test counter resets after rate limit window expires"""
         service._rate_limit_reset = datetime.now() - timedelta(seconds=1)
         service._request_count = 50
-        
+
         await service._check_rate_limit()
-        
+
         assert service._request_count == 1
 
 
@@ -785,12 +785,12 @@ class TestGetData:
         """Test cached data is returned without API call"""
         # Pattern 4: Cache validation
         mock_redis_client.get.return_value = json.dumps(sample_data)
-        
+
         result = await service.get_data("bitcoin")
-        
+
         assert result == sample_data
         mock_redis_client.get.assert_awaited_once()
-    
+
     @pytest.mark.asyncio
     async def test_get_data_fetches_from_api(self, service, mock_redis_client, mock_httpx_client, sample_data):
         """Test API fetch when cache misses"""
@@ -799,10 +799,10 @@ class TestGetData:
         mock_httpx_client.get = AsyncMock(
             return_value=create_mock_response(sample_data)
         )
-        
+
         with patch("app.services.external_api_service.httpx.AsyncClient", return_value=mock_httpx_client):
             result = await service.get_data("bitcoin")
-        
+
         assert result == sample_data
         mock_httpx_client.get.assert_awaited_once()
         mock_redis_client.set.assert_awaited_once()
@@ -821,22 +821,22 @@ class TestErrorHandling:
                 response=MagicMock(status_code=429)
             )
         )
-        
+
         with patch("app.services.external_api_service.httpx.AsyncClient", return_value=mock_httpx_client):
             result = await service.get_data("bitcoin")
-        
+
         assert result is None
-    
+
     @pytest.mark.asyncio
     async def test_fetch_handles_network_errors(self, service, mock_httpx_client):
         """Test graceful handling of network errors"""
         mock_httpx_client.get = AsyncMock(
             side_effect=httpx.ConnectError("Connection refused")
         )
-        
+
         with patch("app.services.external_api_service.httpx.AsyncClient", return_value=mock_httpx_client):
             result = await service.get_data("bitcoin")
-        
+
         assert result is None
 ```
 
@@ -875,6 +875,6 @@ class TestErrorHandling:
 
 ---
 
-**Reference Implementation**: `apps/backend/tests/unit/test_crypto_data_service.py`  
-**Session**: 77 Phase 2 (November 7, 2025)  
+**Reference Implementation**: `apps/backend/tests/unit/test_crypto_data_service.py`
+**Session**: 77 Phase 2 (November 7, 2025)
 **Commit**: 07b79cd6
