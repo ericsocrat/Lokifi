@@ -2,7 +2,126 @@
 
 > **Project Context**: Lokifi is a full-stack financial application with Next.js frontend, FastAPI backend, and Redis caching.
 
-> **🎯 Quality-First Philosophy**: Take whatever time, commits, and tokens needed to achieve world-class code quality, structure, and tests. No rush - systematic, thorough work is valued over speed. Multiple debugging sessions and deep root cause analysis are encouraged.
+## 🎯 Core Working Principles
+
+**These principles guide ALL development work. Follow them systematically for every task.**
+
+### 1. Continue with Recommended Steps
+- Follow the next logical steps based on current progress and priorities
+- If multiple paths exist, prioritize tasks that:
+  - Deliver the highest impact to code quality or test coverage
+  - Align with project goals and sprint objectives
+  - Validate recently established patterns across multiple use cases
+  - Unlock future work or remove blockers
+
+### 2. Proactive Recommendations
+- While working on tasks, proactively identify and suggest:
+  - Code improvements, optimizations, or refactoring opportunities
+  - Additional test cases, edge cases, or error scenarios
+  - Documentation gaps or unclear workflows
+  - Reusable patterns or best practices
+- **If you encounter effective patterns**, document them immediately in the relevant `docs/` folder
+- Don't wait to be asked - suggest improvements when you see them
+
+### 3. Documentation Standards
+- **Ensure all effective patterns are documented comprehensively**:
+  - Debugging journeys with iteration counts and lessons learned
+  - Reusable solutions with complete code examples
+  - Best practices with anti-patterns and common pitfalls
+  - Success metrics (coverage gains, test counts, time savings)
+- **Update two locations**:
+  - Pattern Library in `.github/copilot-instructions.md` (reference + metrics)
+  - Detailed guides in relevant `docs/` folder (complete examples)
+- **Documentation quality checklist**:
+  - ✅ Clear problem statement and context
+  - ✅ Complete solution with code examples
+  - ✅ Anti-patterns and common mistakes
+  - ✅ Success metrics and reusability assessment
+  - ✅ References to related patterns or documents
+
+### 4. Guidance and Checklists
+- **Use `.github/copilot-instructions.md` and `docs/checklists.md` as primary references**:
+  - Check `checklists.md` FIRST for ANY workflow question
+  - Reference specific checklist sections in responses
+  - Follow established patterns from Pattern Library
+  - Adhere to world-class quality standards outlined in these documents
+- **Before suggesting new approaches**:
+  - Search existing documentation for proven solutions
+  - Check Pattern Library for similar problems
+  - Verify alignment with project conventions
+
+### 5. Quality-First Philosophy
+- **Prioritize systematic, thorough work over speed**:
+  - Take whatever time, commits, and tokens needed
+  - No rush - quality is valued over completion speed
+  - Multiple debugging sessions encouraged for complex issues
+  - Deep root cause analysis over quick symptom fixes
+- **Never compromise on quality**, even for minor tasks:
+  - World-class test coverage (80%+ for new code)
+  - Comprehensive error handling (all edge cases)
+  - Type safety (zero tolerance for `any` without documentation)
+  - Production-ready documentation
+
+### 6. Unlimited Resources Mindset
+- **Assume unlimited time and tokens are available**:
+  - Focus on delivering the best possible outcomes
+  - No shortcuts or rushed decisions
+  - Marathon debugging sessions acceptable
+  - Multiple iterations to achieve world-class quality
+- **Token budget is generous** - use it for:
+  - Thorough analysis and investigation
+  - Comprehensive documentation
+  - Multiple validation approaches
+  - Deep root cause analysis
+
+### 7. Validation and Testing
+- **Ensure ALL changes are validated comprehensively**:
+  - Unit tests with edge cases and error scenarios
+  - Integration tests for cross-component interactions
+  - Full test suite execution (verify no regressions)
+  - Coverage improvements measured and documented
+- **Before claiming completion**:
+  - ✅ All tests passing (100% pass rate)
+  - ✅ Coverage meets or exceeds targets (80%+ for new code)
+  - ✅ Pre-commit hooks pass (quality + security gates)
+  - ✅ Documentation updated (code + patterns)
+  - ✅ Commit message follows conventions
+
+### 8. Commit and Communication Standards
+- **Use clear, detailed commit messages** following conventional commits:
+  - Format: `<type>(<scope>): <description>` with comprehensive body
+  - Explain changes, their impact, and validation steps taken
+  - Reference related issues, PRs, or documentation
+  - Include metrics (test counts, coverage gains, time saved)
+- **Communicate progress, blockers, and discoveries effectively**:
+  - Provide fact-based status updates
+  - Document discoveries and lessons learned
+  - Raise blockers early with context
+  - Celebrate wins with metrics
+
+### 9. Iterative Improvements
+- **After completing a task**:
+  - Review results for further refinement opportunities
+  - Identify follow-up actions or enhancements
+  - Update documentation with lessons learned
+  - Add discovered patterns to Pattern Library
+- **Continuously improve**:
+  - Codebase (refactoring, optimization)
+  - Documentation (clarity, completeness)
+  - Processes (efficiency, quality gates)
+  - Test coverage (new cases, edge scenarios)
+
+### 10. Focus on Impact
+- **Prioritize tasks that deliver measurable improvements**:
+  - Code quality (type safety, error handling, structure)
+  - Test coverage (percentage gains, edge cases)
+  - Developer experience (documentation, tooling, workflows)
+  - Production readiness (performance, security, reliability)
+- **Balance quick wins with long-term strategic goals**:
+  - Quick wins: Validate patterns, fix critical bugs, document discoveries
+  - Strategic: Refactor complex systems, comprehensive test suites, tooling improvements
+
+---
 
 > **📋 ALWAYS Reference Checklists**: For ANY workflow question (pre-merge, security, Renovate PRs, testing, deployment, CI/CD debugging), ALWAYS check `/docs/checklists.md` FIRST. It contains ALL repeatable processes with step-by-step instructions. Reference specific checklist sections in your responses.
 
