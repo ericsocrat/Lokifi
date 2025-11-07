@@ -326,8 +326,9 @@ class TestAlertEvaluator:
         """AlertEvaluator instance for testing"""
         evaluator = AlertEvaluator(store=alert_store, hub=sse_hub, interval_sec=1)
         yield evaluator
-        # Cleanup
-        await evaluator.stop()
+        # Cleanup - only stop if task exists and isn't already done/cancelled
+        if evaluator._task and not evaluator._task.done():
+            await evaluator.stop()
 
     @pytest.mark.asyncio
     async def test_start_evaluator(self, evaluator: AlertEvaluator):
