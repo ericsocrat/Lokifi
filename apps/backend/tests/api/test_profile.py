@@ -14,9 +14,13 @@ Coverage targets:
 
 import uuid
 from datetime import datetime, timezone
+from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+from pydantic import HttpUrl
+
 from app.routers.profile import (
     delete_account,
     get_my_profile,
@@ -39,7 +43,6 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
-from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -59,7 +62,7 @@ def mock_current_user():
     user.bio = "Test bio"
     user.is_active = True
     user.is_verified = True
-    user.timezone = "UTC"
+    user.timezone = "timezone.utc"
     user.language = "en"
     user.created_at = datetime.now(timezone.utc)
     user.updated_at = datetime.now(timezone.utc)
@@ -119,7 +122,7 @@ def sample_user_settings():
         id=uuid.uuid4(),
         email="test@example.com",
         full_name="Test User",
-        timezone="UTC",
+        timezone="timezone.utc",
         language="en",
         is_verified=True,
         is_active=True,
@@ -202,7 +205,9 @@ class TestProfileCRUD:
             username="updateduser",
             display_name="Updated Name",
             bio="Updated bio",
-            avatar_url="https://example.com/new.jpg",
+            avatar_url=cast(
+                HttpUrl, "https://example.com/new.jpg"
+            ),  # Cast str to HttpUrl for Pydantic
         )
 
         result = await update_my_profile(

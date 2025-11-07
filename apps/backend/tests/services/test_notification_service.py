@@ -1069,7 +1069,7 @@ class TestCleanupExpired:
         past_time = datetime(2020, 1, 1, tzinfo=timezone.utc)
         expired_notifications = []
 
-        for i in range(3):
+        for _i in range(3):
             notification = Mock(spec=Notification)
             notification.id = str(uuid.uuid4())
             notification.expires_at = past_time

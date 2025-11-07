@@ -258,9 +258,11 @@ class NotificationAnalytics:
                     return UserEngagementMetrics(
                         active_users=1 if total_notifications > 0 else 0,
                         avg_notifications_per_user=total_notifications or 0,
-                        engagement_rate=(read_notifications / total_notifications * 100)
-                        if total_notifications > 0
-                        else 0,
+                        engagement_rate=(
+                            (read_notifications / total_notifications * 100)
+                            if total_notifications > 0
+                            else 0
+                        ),
                         most_active_times=[],
                         user_retention_7d=100.0,
                     )
@@ -427,11 +429,7 @@ class NotificationAnalytics:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good"
-            if overall_score >= 75
-            else "fair"
-            if overall_score >= 50
-            else "poor"
+            else "good" if overall_score >= 75 else "fair" if overall_score >= 50 else "poor"
         )
 
         return {
@@ -467,11 +465,12 @@ class NotificationAnalytics:
             scores = []
 
             # Delivery success rate (0-100)
-            delivery_score = min(notification_metrics.delivery_rate, 100)
+            # Type narrowing: use dict access instead of attribute access
+            delivery_score = min(notification_metrics["delivery_rate"], 100)
             scores.append(delivery_score)
 
             # Engagement score (0-100)
-            engagement_score = min(notification_metrics.read_rate, 100)
+            engagement_score = min(notification_metrics["read_rate"], 100)
             scores.append(engagement_score)
 
             # System performance (0-100)

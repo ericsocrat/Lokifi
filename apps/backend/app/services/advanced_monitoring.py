@@ -18,11 +18,12 @@ from datetime import datetime, timezone
 from typing import Any
 
 import psutil
+from sqlalchemy import text
+
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.database import db_manager
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from sqlalchemy import text
 
 logger = get_logger(__name__)
 

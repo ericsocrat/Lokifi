@@ -2,8 +2,14 @@
 import logging
 import re
 from collections.abc import AsyncGenerator
+from typing import Optional
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
 
@@ -20,10 +26,10 @@ class DatabaseManager:
 
     def __init__(self, settings: Settings):
         self.settings = settings
-        self.primary_engine = None
-        self.replica_engine = None
-        self.primary_session_factory = None
-        self.replica_session_factory = None
+        self.primary_engine: AsyncEngine | None = None
+        self.replica_engine: AsyncEngine | None = None
+        self.primary_session_factory: async_sessionmaker[AsyncSession] | None = None
+        self.replica_session_factory: async_sessionmaker[AsyncSession] | None = None
         self._initialized = False
 
     def _is_sqlite(self, database_url: str) -> bool:
@@ -132,6 +138,7 @@ class DatabaseManager:
             await self.initialize()
 
         # Use replica for read-only queries when available
+        session_factory: async_sessionmaker[AsyncSession] | None
         if read_only and self.replica_session_factory:
             session_factory = self.replica_session_factory
         else:
@@ -189,9 +196,11 @@ class DatabaseManager:
             "database_type": db_type,
             "primary_url": self._sanitize_url(self.settings.DATABASE_URL),
             "replica_configured": bool(self.settings.DATABASE_REPLICA_URL),
-            "replica_url": self._sanitize_url(self.settings.DATABASE_REPLICA_URL)
-            if self.settings.DATABASE_REPLICA_URL
-            else None,
+            "replica_url": (
+                self._sanitize_url(self.settings.DATABASE_REPLICA_URL)
+                if self.settings.DATABASE_REPLICA_URL
+                else None
+            ),
             "pool_size": self.settings.DATABASE_POOL_SIZE,
             "max_overflow": self.settings.DATABASE_MAX_OVERFLOW,
             "pool_timeout": self.settings.DATABASE_POOL_TIMEOUT,

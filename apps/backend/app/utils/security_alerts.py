@@ -14,6 +14,7 @@ from enum import Enum
 from typing import Any
 
 import requests
+
 from app.core.config import get_settings
 from app.utils.logger import get_logger
 from app.utils.security_logger import SecurityEventType, SecuritySeverity
@@ -361,7 +362,7 @@ class SecurityAlertManager:
                         {
                             "title": "Timestamp",
                             "value": (
-                                alert.timestamp.strftime("%Y-%m-%d %H:%M:%S UTC")
+                                alert.timestamp.strftime("%Y-%m-%d %H:%M:%S timezone.utc")
                                 if alert.timestamp
                                 else "N/A"
                             ),
@@ -401,6 +402,13 @@ class SecurityAlertManager:
             SecuritySeverity.CRITICAL: 0xDC3545,
         }
 
+        # Type narrowing: explicit list type for fields
+        fields: list[dict[str, str]] = [
+            {"name": "Severity", "value": alert.severity.value.upper(), "inline": "True"},
+            {"name": "Priority", "value": alert.priority.value.upper(), "inline": "True"},
+            {"name": "Event Type", "value": alert.event_type.value, "inline": "True"},
+        ]
+
         embed = {
             "title": f"🚨 Security Alert: {alert.title}",
             "description": alert.message,
@@ -408,21 +416,15 @@ class SecurityAlertManager:
             "timestamp": (
                 alert.timestamp.isoformat() if alert.timestamp else datetime.now(timezone.utc).isoformat()
             ),
-            "fields": [
-                {"name": "Severity", "value": alert.severity.value.upper(), "inline": True},
-                {"name": "Priority", "value": alert.priority.value.upper(), "inline": True},
-                {"name": "Event Type", "value": alert.event_type.value, "inline": True},
-            ],
+            "fields": fields,
             "footer": {"text": "Lokifi Security Monitor"},
         }
 
         if alert.source_ip:
-            embed["fields"].append({"name": "Source IP", "value": alert.source_ip, "inline": True})
+            fields.append({"name": "Source IP", "value": alert.source_ip, "inline": "True"})
 
         if alert.affected_user:
-            embed["fields"].append(
-                {"name": "Affected User", "value": alert.affected_user, "inline": True}
-            )
+            fields.append({"name": "Affected User", "value": alert.affected_user, "inline": "True"})
 
         payload = {"embeds": [embed]}
 

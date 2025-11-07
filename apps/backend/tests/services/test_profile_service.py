@@ -24,6 +24,8 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
 from app.models.user import User
@@ -34,7 +36,6 @@ from app.schemas.profile import (
     UserSettingsUpdateRequest,
 )
 from app.services.profile_service import ProfileService
-from fastapi import HTTPException
 
 # ============================================================================
 # FIXTURES
@@ -290,7 +291,7 @@ class TestUserSettingsUpdate:
         """Test updating settings when user doesn't exist returns 404"""
         # Arrange
         user_id = uuid.uuid4()
-        settings_data = UserSettingsUpdateRequest(timezone="UTC")
+        settings_data = UserSettingsUpdateRequest(timezone="timezone.utc")
 
         mock_result = MagicMock()
         mock_result.scalar_one_or_none.return_value = None
@@ -794,7 +795,7 @@ class TestUserSettingsDatabaseInteractions:
         user = User(
             id=user_id,
             email="old@example.com",
-            timezone="UTC",
+            timezone="timezone.utc",
             full_name="Test User",
             is_verified=True,
             is_active=True,
@@ -835,7 +836,7 @@ class TestUserSettingsDatabaseInteractions:
         user = User(
             id=user_id,
             email="old@example.com",
-            timezone="UTC",
+            timezone="timezone.utc",
             full_name="Test User",
             is_active=True,
             created_at=datetime.now(timezone.utc),

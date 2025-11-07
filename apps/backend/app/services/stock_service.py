@@ -5,11 +5,13 @@ Provides real stock prices, market data, and related information
 using Alpha Vantage's Global Quote endpoint.
 """
 
+import json
 import logging
 from datetime import datetime, timezone
 
 import httpx
 
+from app.core.advanced_redis_client import AdvancedRedisClient
 from app.core.redis_client import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -18,7 +20,7 @@ logger = logging.getLogger(__name__)
 class StockService:
     """Service for fetching real-time stock market data from Alpha Vantage"""
 
-    def __init__(self, redis_client: RedisClient = None):
+    def __init__(self, redis_client: RedisClient | AdvancedRedisClient | None = None):
         self.redis_client = redis_client
         self.api_key = "D8RDSS583XDQ1DIA"
         self.base_url = "https://www.alphavantage.co/query"
@@ -147,8 +149,10 @@ class StockService:
             cache_key = f"stocks:all:{limit}"
             if self.redis_client:
                 try:
-                    cached_data = await self.redis_client.get(cache_key)
-                    if cached_data:
+                    cached_json = await self.redis_client.get(cache_key)
+                    if cached_json:
+                        # Pattern: JSON deserialization from Redis (str → list[dict])
+                        cached_data = json.loads(cached_json)
                         logger.info(f"Returning cached stock data for {limit} stocks")
                         return cached_data
                 except Exception as e:
@@ -168,10 +172,12 @@ class StockService:
                         logger.error(f"Error fetching stock {symbol}: {e}")
                         continue
 
-            # Cache the results
+            # Cache the results with JSON serialization for type safety
             if self.redis_client and stocks:
                 try:
-                    await self.redis_client.set(cache_key, stocks, expire=self.cache_ttl)
+                    # Pattern: JSON serialization for Redis (list[dict] → str)
+                    stocks_json = json.dumps(stocks)
+                    await self.redis_client.set(cache_key, stocks_json, ttl=self.cache_ttl)
                     logger.info(f"Cached {len(stocks)} stocks for {self.cache_ttl}s")
                 except Exception as e:
                     logger.warning(f"Redis cache write failed: {e}")

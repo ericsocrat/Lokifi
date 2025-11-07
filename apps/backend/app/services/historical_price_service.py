@@ -2,9 +2,10 @@
 
 import logging
 import time
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
-from typing import Literal
+from typing import Any, Literal, cast
 
 import httpx
 
@@ -249,7 +250,7 @@ class HistoricalPriceService:
                 params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
 
             logger.debug(f"Fetching crypto history: {url} (coin_id={coin_id}, days={days})")
-            resp = await client.get(url, params=params)
+            resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
             data = resp.json()
 
@@ -305,7 +306,7 @@ class HistoricalPriceService:
             }
 
             logger.debug(f"Fetching stock history: {symbol} (resolution={resolution}, days={days})")
-            resp = await client.get(url, params=params)
+            resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
             data = resp.json()
 
@@ -389,7 +390,7 @@ class HistoricalPriceService:
             if settings.COINGECKO_KEY:
                 params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
 
-            resp = await client.get(url, params=params)
+            resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
             data = resp.json()
 
@@ -438,7 +439,7 @@ class HistoricalPriceService:
                 "token": settings.FINNHUB_KEY,
             }
 
-            resp = await client.get(url, params=params)
+            resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
             data = resp.json()
 

@@ -165,7 +165,7 @@ class CircuitBreaker:
         self.failure_threshold = failure_threshold
         self.recovery_timeout = recovery_timeout
         self._failure_count = 0
-        self._last_failure_time = 0
+        self._last_failure_time: float = 0.0
         self._state = "closed"  # closed, open, half_open
 
     async def call(self, func: Callable[..., Any], *args: Any, **kwargs: Any):

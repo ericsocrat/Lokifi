@@ -3,14 +3,15 @@ import json
 from datetime import datetime, timezone
 from typing import Any
 
+from fastapi import WebSocket
+from fastapi.routing import APIRouter
+
 from app.models.notification_models import Notification
 
 # We'll handle auth differently - remove the problematic import for now
 from app.models.user import User
 from app.services.notification_service import NotificationEvent, notification_service
 from app.utils.logger import get_logger
-from fastapi import WebSocket
-from fastapi.routing import APIRouter
 
 logger = get_logger(__name__)
 

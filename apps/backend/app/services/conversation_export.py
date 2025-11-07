@@ -109,7 +109,7 @@ class ConversationExporter:
             messages = messages_query.order_by(AIMessage.created_at).all()
 
             # Build conversation data
-            conversation_data = {
+            conversation_data: dict[str, Any] = {
                 "thread_id": thread.id,
                 "title": thread.title,
                 "created_at": thread.created_at.isoformat(),

@@ -6,6 +6,7 @@ Provides comprehensive analytics and insights for AI conversations.
 
 import logging
 from collections import Counter
+from collections.abc import Callable, Generator
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any
@@ -51,7 +52,8 @@ class AIAnalyticsService:
     """Service for AI conversation analytics and insights."""
 
     def __init__(self):
-        self.session_factory = get_session
+        # session_factory is a callable that returns a context manager (contextmanager decorated function)
+        self.session_factory: Any = get_session  # any required: contextmanager return type complex
 
     async def get_conversation_metrics(
         self, user_id: int | None = None, days_back: int = 30

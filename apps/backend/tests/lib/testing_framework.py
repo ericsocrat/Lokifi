@@ -902,6 +902,7 @@ class AdvancedTestFramework:
 
         overall_success_rate = (passed_tests / total_tests * 100) if total_tests > 0 else 0
 
+        recommendations: list[str] = []  # Type narrowing: explicit list type
         report = {
             "timestamp": datetime.now().isoformat(),
             "summary": {
@@ -919,7 +920,7 @@ class AdvancedTestFramework:
                 ),
             },
             "categories": self.test_results,
-            "recommendations": [],
+            "recommendations": recommendations,
         }
 
         # Generate recommendations
@@ -931,12 +932,10 @@ class AdvancedTestFramework:
             ]
 
             if failed_categories:
-                report["recommendations"].append(
-                    f"Review failed tests in: {', '.join(failed_categories)}"
-                )
+                recommendations.append(f"Review failed tests in: {', '.join(failed_categories)}")
 
         if not self.auth_token:
-            report["recommendations"].append("Authentication system needs verification")
+            recommendations.append("Authentication system needs verification")
 
         return report
 

@@ -22,7 +22,7 @@ def sample_m_e_s_s_a_g_e_c_r_e_a_t_e():
     # TODO: Customize with realistic test data
     return MessageCreate(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -58,7 +58,7 @@ def sample_m_e_s_s_a_g_e_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return MessageResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -94,7 +94,7 @@ def sample_c_o_n_v_e_r_s_a_t_i_o_n_p_a_r_t_i_c_i_p_a_n_t_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return ConversationParticipantResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -130,7 +130,7 @@ def sample_c_o_n_v_e_r_s_a_t_i_o_n_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return ConversationResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -166,7 +166,7 @@ def sample_c_o_n_v_e_r_s_a_t_i_o_n_l_i_s_t_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return ConversationListResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -202,7 +202,7 @@ def sample_m_e_s_s_a_g_e_s_l_i_s_t_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return MessagesListResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -238,7 +238,7 @@ def sample_c_o_n_v_e_r_s_a_t_i_o_n_c_r_e_a_t_e_r_e_q_u_e_s_t():
     # TODO: Customize with realistic test data
     return ConversationCreateRequest(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -274,7 +274,7 @@ def sample_m_a_r_k_r_e_a_d_r_e_q_u_e_s_t():
     # TODO: Customize with realistic test data
     return MarkReadRequest(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -310,7 +310,7 @@ def sample_t_y_p_i_n_g_i_n_d_i_c_a_t_o_r_m_e_s_s_a_g_e():
     # TODO: Customize with realistic test data
     return TypingIndicatorMessage(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -346,7 +346,7 @@ def sample_n_e_w_m_e_s_s_a_g_e_n_o_t_i_f_i_c_a_t_i_o_n():
     # TODO: Customize with realistic test data
     return NewMessageNotification(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -382,7 +382,7 @@ def sample_m_e_s_s_a_g_e_r_e_a_d_n_o_t_i_f_i_c_a_t_i_o_n():
     # TODO: Customize with realistic test data
     return MessageReadNotification(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -418,7 +418,7 @@ def sample_w_e_b_s_o_c_k_e_t_m_e_s_s_a_g_e():
     # TODO: Customize with realistic test data
     return WebSocketMessage(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -454,7 +454,7 @@ def sample_r_a_t_e_l_i_m_i_t_e_r_r_o_r():
     # TODO: Customize with realistic test data
     return RateLimitError(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -490,7 +490,7 @@ def sample_u_s_e_r_s_t_a_t_u_s():
     # TODO: Customize with realistic test data
     return UserStatus(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 

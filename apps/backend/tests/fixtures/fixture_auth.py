@@ -22,7 +22,7 @@ def sample_u_s_e_r_r_e_g_i_s_t_e_r_r_e_q_u_e_s_t():
     # TODO: Customize with realistic test data
     return UserRegisterRequest(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -58,7 +58,7 @@ def sample_u_s_e_r_l_o_g_i_n_r_e_q_u_e_s_t():
     # TODO: Customize with realistic test data
     return UserLoginRequest(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -94,7 +94,7 @@ def sample_g_o_o_g_l_e_o_a_u_t_h_r_e_q_u_e_s_t():
     # TODO: Customize with realistic test data
     return GoogleOAuthRequest(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -130,7 +130,7 @@ def sample_r_e_f_r_e_s_h_t_o_k_e_n_r_e_q_u_e_s_t():
     # TODO: Customize with realistic test data
     return RefreshTokenRequest(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -166,7 +166,7 @@ def sample_t_o_k_e_n_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return TokenResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -202,7 +202,7 @@ def sample_u_s_e_r_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return UserResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -238,7 +238,7 @@ def sample_p_r_o_f_i_l_e_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return ProfileResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -274,7 +274,7 @@ def sample_a_u_t_h_u_s_e_r_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return AuthUserResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 
@@ -310,7 +310,7 @@ def sample_m_e_s_s_a_g_e_r_e_s_p_o_n_s_e():
     # TODO: Customize with realistic test data
     return MessageResponse(
         # Add field values here
-        # Example: id=1, name="test", created_at=datetime.now(timezone.utc)
+        # Example: id=1, name="test", created_at=datetime.now(timezone.timezone.utc)
     )
 
 

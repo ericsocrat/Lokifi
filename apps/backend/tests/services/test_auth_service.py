@@ -650,7 +650,7 @@ class TestOAuthAuthentication:
     @pytest.mark.asyncio
     async def test_create_user_from_oauth_new_user(self, mock_db_session):
         """Test creating a new user from OAuth (Google) - new user flow"""
-        from datetime import datetime, timezone
+        from datetime import datetime
 
         auth_service = AuthService(db=mock_db_session)
 

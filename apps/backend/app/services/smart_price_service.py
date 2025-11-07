@@ -3,6 +3,7 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 import httpx
 
@@ -36,7 +37,7 @@ class PriceData:
     market_cap: float | None = None
     high: float | None = None
     low: float | None = None
-    last_updated: datetime = None
+    last_updated: datetime | None = None
     source: str = "unknown"
     cached: bool = False
 

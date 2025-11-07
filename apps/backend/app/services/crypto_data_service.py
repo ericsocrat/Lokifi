@@ -53,8 +53,8 @@ class CryptoDataService:
             logger.warning(f"Cache get failed: {e}")
         return None
 
-    async def _set_cache(self, cache_key: str, data: dict[str, Any], ttl: int):
-        """Set data in cache"""
+    async def _set_cache(self, cache_key: str, data: Any, ttl: int):
+        """Set data in cache (AdvancedRedisClient handles JSON serialization)"""
         try:
             if advanced_redis_client.client:
                 await advanced_redis_client.set(cache_key, data, expire=ttl)

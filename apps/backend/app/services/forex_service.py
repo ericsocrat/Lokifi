@@ -5,11 +5,13 @@ Provides real-time forex rates for major currency pairs using
 ExchangeRate-API's latest rates endpoint.
 """
 
+import json
 import logging
 from datetime import datetime, timezone
 
 import httpx
 
+from app.core.advanced_redis_client import AdvancedRedisClient
 from app.core.redis_client import RedisClient
 
 logger = logging.getLogger(__name__)
@@ -18,7 +20,7 @@ logger = logging.getLogger(__name__)
 class ForexService:
     """Service for fetching real-time forex exchange rates"""
 
-    def __init__(self, redis_client: RedisClient = None):
+    def __init__(self, redis_client: RedisClient | AdvancedRedisClient | None = None):
         self.redis_client = redis_client
         self.api_key = "8f135e4396d9ef31264e34f0"
         self.base_url = f"https://v6.exchangerate-api.com/v6/{self.api_key}"
@@ -104,8 +106,10 @@ class ForexService:
             cache_key = f"forex:all:{limit}"
             if self.redis_client:
                 try:
-                    cached_data = await self.redis_client.get(cache_key)
-                    if cached_data:
+                    cached_json = await self.redis_client.get(cache_key)
+                    if cached_json:
+                        # Pattern: JSON deserialization from Redis (str → list[dict])
+                        cached_data = json.loads(cached_json)
                         logger.info(f"Returning cached forex data for {limit} pairs")
                         return cached_data
                 except Exception as e:
@@ -125,10 +129,12 @@ class ForexService:
                         logger.error(f"Error fetching pair {pair['base']}/{pair['quote']}: {e}")
                         continue
 
-            # Cache the results
+            # Cache the results with JSON serialization for type safety
             if self.redis_client and forex_pairs:
                 try:
-                    await self.redis_client.set(cache_key, forex_pairs, expire=self.cache_ttl)
+                    # Pattern: JSON serialization for Redis (list[dict] → str)
+                    forex_json = json.dumps(forex_pairs)
+                    await self.redis_client.set(cache_key, forex_json, ttl=self.cache_ttl)
                     logger.info(f"Cached {len(forex_pairs)} forex pairs for {self.cache_ttl}s")
                 except Exception as e:
                     logger.warning(f"Redis cache write failed: {e}")

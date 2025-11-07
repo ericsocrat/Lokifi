@@ -16,14 +16,14 @@ from app.api.routes.alerts import (
 )
 from app.api.routes.portfolio import portfolio_summary as _portfolio_summary  # reuse
 from app.services.auth import auth_handle_from_header
-from app.services.prices import fetch_ohlc
+from app.services.prices import get_ohlc as fetch_ohlc
 
 router = APIRouter()
 
 
 # ---- Tools that the assistant can call ----
 async def tool_get_price(symbol: str, timeframe: str = "1h") -> dict[str, Any]:
-    bars = fetch_ohlc(symbol=symbol, timeframe=timeframe, limit=1)
+    bars = await fetch_ohlc(symbol=symbol, timeframe=timeframe, limit=1)
     last = bars[-1]
     return {"symbol": symbol, "timeframe": timeframe, "price": float(last["close"]), "bar": last}
 

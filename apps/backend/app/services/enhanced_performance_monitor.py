@@ -62,18 +62,18 @@ class EnhancedPerformanceMonitor:
 
     def __init__(self):
         self.start_time = time.time()
-        self.response_times = deque(maxlen=1000)  # Last 1000 requests
+        self.response_times: deque[float] = deque(maxlen=1000)  # Last 1000 requests
         self.error_count = 0
         self.total_requests = 0
         self.endpoint_metrics = defaultdict(list)
-        self.system_metrics_history = deque(maxlen=100)  # Last 100 data points
+        self.system_metrics_history: deque[PerformanceMetrics] = deque(maxlen=100)  # Last 100 data points
 
         # WebSocket tracking
         self.websocket_connections = 0
         self.websocket_messages = {"sent": 0, "received": 0}
 
         # Database tracking
-        self.database_queries = deque(maxlen=100)
+        self.database_queries: deque[float] = deque(maxlen=100)
         self.database_connections = 0
 
         # Cache tracking
@@ -215,7 +215,7 @@ class EnhancedPerformanceMonitor:
             metrics = self.get_current_metrics()
 
             # Health score components (0-100 each)
-            scores = []
+            scores: list[float] = []
 
             # Response time score (lower is better)
             if metrics.average_response_time < 50:

@@ -398,9 +398,10 @@ class FollowService:
             uid = getattr(suggestion, "followee_id", None) or getattr(suggestion, "user_id", None)
             if uid is None:
                 continue
+            # uid is UUID from Profile.user_id or Follow.followee_id
             suggestions.append(
                 UserFollowStatus(
-                    user_id=uid,  # type: ignore[arg-type]
+                    user_id=uid,  # Already UUID from database columns
                     username=suggestion.username,
                     display_name=(suggestion.display_name or ""),
                     avatar_url=suggestion.avatar_url,

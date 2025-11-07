@@ -11,9 +11,9 @@ router = APIRouter(prefix="/ohlc", tags=["market"])
 def generate_mock_data(symbol: str, timeframe: str, limit: int):
     """Generate mock OHLC data when real APIs fail"""
     candles = []
-    base_price = 50000 if "BTC" in symbol else 100
+    base_price = 50000.0 if "BTC" in symbol else 100.0
     current_time = int(time.time()) - (limit * 3600)
-    current_price = base_price
+    current_price: float = base_price
 
     for i in range(limit):
         change = random.uniform(-0.02, 0.02)

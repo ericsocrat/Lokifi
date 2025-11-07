@@ -7,14 +7,15 @@ import json
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from fastapi import WebSocket, WebSocketDisconnect
+from jose import JWTError, jwt
+
 # Import core components
 from app.core.config import settings
 from app.core.redis_client import redis_client
 from app.core.redis_keys import RedisKeyManager, RedisKeyspace
 from app.utils.logger import get_logger
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
-from fastapi import WebSocket, WebSocketDisconnect
-from jose import JWTError, jwt
 
 logger = get_logger(__name__)
 
@@ -209,23 +210,21 @@ class AuthenticatedWebSocketManager:
     async def _store_connection_in_redis(self, connection_id: str, user_auth: dict[str, Any]):
         """Store connection info in Redis for multi-instance coordination"""
         try:
-            connection_key = self.redis_key_manager.build_key(
-                RedisKeyspace.WEBSOCKETS, connection_id
-            )
+            connection_key = self.redis_key_manager.websocket_connection_key(connection_id)
             user_id = user_auth["user_id"]
 
             connection_data = {
                 "user_id": user_id,
                 "username": user_auth.get("username"),
                 "connected_at": datetime.now(timezone.utc).isoformat(),
-                "instance": settings.APP_NAME or "lokifi",
+                "instance": settings.PROJECT_NAME or "lokifi",
             }
 
             # Store connection data with TTL
             await redis_client.set(connection_key, json.dumps(connection_data), ttl=3600)
 
-            # Store user connection mapping (simplified without sadd)
-            user_connections_key = self.redis_key_manager.build_key(
+            # Store user connection mapping (per-connection tracking)
+            user_connections_key = self.redis_key_manager._build_key(
                 RedisKeyspace.USERS, user_id, "connections", connection_id
             )
             await redis_client.set(user_connections_key, "1", ttl=3600)
@@ -237,10 +236,8 @@ class AuthenticatedWebSocketManager:
         """Remove connection info from Redis"""
         try:
             # Since our redis client doesn't have delete method, we'll set with very short TTL
-            connection_key = self.redis_key_manager.build_key(
-                RedisKeyspace.WEBSOCKETS, connection_id
-            )
-            user_connections_key = self.redis_key_manager.build_key(
+            connection_key = self.redis_key_manager.websocket_connection_key(connection_id)
+            user_connections_key = self.redis_key_manager._build_key(
                 RedisKeyspace.USERS, user_id, "connections", connection_id
             )
 
@@ -253,7 +250,7 @@ class AuthenticatedWebSocketManager:
 
     async def get_user_presence(self, user_id: str) -> dict[str, Any]:
         """Get user presence information"""
-        presence_key = self.redis_key_manager.build_key(RedisKeyspace.PRESENCE, user_id)
+        presence_key = self.redis_key_manager.user_presence_key(user_id)
 
         try:
             presence_data = await redis_client.get(presence_key)
@@ -268,16 +265,14 @@ class AuthenticatedWebSocketManager:
     async def update_user_presence(self, user_id: str, status: str = "online"):
         """Update user presence status"""
         try:
-            presence_key = self.redis_key_manager.build_key(RedisKeyspace.PRESENCE, user_id)
-            heartbeat_key = self.redis_key_manager.build_key(
-                RedisKeyspace.PRESENCE, user_id, "heartbeat"
-            )
+            presence_key = self.redis_key_manager.user_presence_key(user_id)
+            heartbeat_key = self.redis_key_manager.presence_heartbeat_key(user_id)
 
             presence_data = {
                 "user_id": user_id,
                 "status": status,
                 "last_seen": datetime.now(timezone.utc).isoformat(),
-                "instance": settings.APP_NAME or "lokifi",
+                "instance": settings.PROJECT_NAME or "lokifi",
             }
 
             # Store presence with TTL

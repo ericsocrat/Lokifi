@@ -654,7 +654,7 @@ class TestSendMessageCoreFlow:
                 # Provider raises error
                 mock_get_provider.side_effect = Exception("Provider unavailable")
 
-                with pytest.raises(Exception):
+                with pytest.raises(Exception, match="Provider unavailable"):
                     async for _ in ai_service.send_message(user_id, thread_id, message):
                         pass
 
@@ -892,7 +892,7 @@ class TestThreadManagement:
     @pytest.mark.asyncio
     async def test_delete_thread_unauthorized(self, ai_service):
         """Test delete_thread fails when user doesn't own thread"""
-        user_id = 100
+        _user_id = 100  # Original thread owner (not used in this test)
         thread_id = 1
         wrong_user_id = 999
 
@@ -1007,7 +1007,7 @@ class TestThreadManagement:
     @pytest.mark.asyncio
     async def test_update_thread_title_unauthorized(self, ai_service):
         """Test update_thread_title fails when user doesn't own thread"""
-        user_id = 100
+        _user_id = 100  # Original thread owner (not used in this test)
         thread_id = 1
         wrong_user_id = 999
         new_title = "Hacked Title"

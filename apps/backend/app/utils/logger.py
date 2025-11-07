@@ -19,7 +19,9 @@ import json
 import logging
 import os
 import sys
+from collections.abc import MutableMapping
 from datetime import datetime
+from typing import Any
 
 # Log levels
 DEBUG = logging.DEBUG
@@ -108,7 +110,7 @@ class LoggerAdapter(logging.LoggerAdapter):
     Custom logger adapter to support extra fields
     """
 
-    def process(self, msg: str, kwargs: dict) -> tuple[str, dict]:
+    def process(self, msg: str, kwargs: MutableMapping[str, Any]) -> tuple[str, MutableMapping[str, Any]]:
         """
         Process log message and extract extra fields
         """
@@ -175,6 +177,7 @@ def setup_logger(
     if structured is None:
         structured = is_production
 
+    formatter: logging.Formatter
     if structured:
         formatter = StructuredFormatter()
     else:

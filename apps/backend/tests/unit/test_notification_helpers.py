@@ -11,7 +11,7 @@ import pytest
 
 # Import module under test
 try:
-    from app.utils.notification_helpers import *
+    from app.utils.notification_helpers import *  # type: ignore[import-not-found]
 except ImportError as e:
     pytest.skip(f"Module import failed: {e}", allow_module_level=True)
 

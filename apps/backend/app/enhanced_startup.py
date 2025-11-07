@@ -8,18 +8,12 @@ import sys
 from contextlib import asynccontextmanager
 from typing import Any
 
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from pydantic import Field
-
-try:
-    from pydantic_settings import BaseSettings
-except ImportError:
-    # Fallback for older pydantic versions
-    from pydantic import BaseSettings
-
-import uvicorn
+from pydantic_settings import BaseSettings
 
 # Import existing components
 from app.core.database import db_manager
@@ -39,7 +33,9 @@ class EnhancedSettings(BaseSettings):
     WORKERS: int = Field(default=1, description="Number of workers")
 
     # Database
-    DATABASE_URL: str = Field(..., description="Database connection URL")
+    DATABASE_URL: str = Field(
+        default="sqlite+aiosqlite:///./lokifi.db", description="Database connection URL"
+    )
     RUN_MIGRATIONS: bool = Field(default=True, description="Run migrations at startup")
 
     # Redis
@@ -47,7 +43,7 @@ class EnhancedSettings(BaseSettings):
     REDIS_PASSWORD: str | None = Field(default=None, description="Redis password")
 
     # Security
-    JWT_SECRET_KEY: str = Field(..., description="JWT secret key")
+    JWT_SECRET_KEY: str = Field(default="change-me-in-production", description="JWT secret key")
     CORS_ORIGINS: list = Field(default=["http://localhost:3000"], description="CORS origins")
 
     # Features

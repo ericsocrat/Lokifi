@@ -7,9 +7,36 @@ These hooks integrate notification events into the existing codebase.
 import logging
 from typing import Any
 
-from app.services.notification_emitter import notification_emitter
+from app.services.notification_emitter import UserLike, notification_emitter
 
 logger = logging.getLogger(__name__)
+
+
+# ================================================================================
+# MockUser Implementation
+# ================================================================================
+# Lightweight user representation for notification integration
+
+
+class MockUser:
+    """
+    Lightweight user representation for notification integration
+
+    Used when notification hooks receive dict data from integration points
+    rather than full User model instances. Implements UserLike protocol.
+    """
+
+    def __init__(self, data: dict[str, Any]):
+        # Type-safe initialization matching UserLike protocol requirements
+        self.id: int | str = data.get("id", 0)  # Default to 0 if missing
+        self.username: str = data.get("username", "")  # Default to empty string
+        self.display_name: str | None = data.get("display_name")  # Can be None
+        self.avatar_url: str | None = data.get("avatar_url")  # Can be None
+
+
+# ================================================================================
+# Integration Hooks
+# ================================================================================
 
 
 class NotificationIntegration:
@@ -35,13 +62,6 @@ class NotificationIntegration:
         """
         try:
             # Create mock user objects (in real integration, these would be actual User objects)
-            class MockUser:
-                def __init__(self, data: dict[str, Any]):
-                    self.id = data.get("id")
-                    self.username = data.get("username")
-                    self.display_name = data.get("display_name")
-                    self.avatar_url = data.get("avatar_url")
-
             follower = MockUser(follower_user_data)
             followed = MockUser(followed_user_data)
 
@@ -69,13 +89,6 @@ class NotificationIntegration:
         """
         try:
             # Create mock user objects
-            class MockUser:
-                def __init__(self, data: dict[str, Any]):
-                    self.id = data.get("id")
-                    self.username = data.get("username")
-                    self.display_name = data.get("display_name")
-                    self.avatar_url = data.get("avatar_url")
-
             sender = MockUser(sender_data)
             recipient = MockUser(recipient_data)
 
@@ -104,13 +117,6 @@ class NotificationIntegration:
         """
         try:
             # Create mock user object
-            class MockUser:
-                def __init__(self, data: dict[str, Any]):
-                    self.id = data.get("id")
-                    self.username = data.get("username")
-                    self.display_name = data.get("display_name")
-                    self.avatar_url = data.get("avatar_url")
-
             user = MockUser(user_data)
 
             # Emit AI response notification

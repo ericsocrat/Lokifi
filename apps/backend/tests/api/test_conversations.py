@@ -139,7 +139,8 @@ def sample_message():
 @pytest.fixture
 def sample_message_create():
     """Sample MessageCreate request"""
-    return MessageCreate(content="New test message", content_type="text")
+    from app.models.conversation import ContentType
+    return MessageCreate(content="New test message", content_type=ContentType.TEXT)
 
 
 # ============================================================================
@@ -302,7 +303,7 @@ class TestMessageHandling:
 
         mock_moderation.moderate_message = AsyncMock(
             return_value=ModerationResult(
-                action=ModerationAction.ALLOW, sanitized_content=None, flagged_words=[]
+                action=ModerationAction.ALLOW, sanitized_content=None, flagged_content=[]
             )
         )
         mock_moderation_class.return_value = mock_moderation
@@ -387,7 +388,7 @@ class TestMessageHandling:
             return_value=ModerationResult(
                 action=ModerationAction.BLOCK,
                 sanitized_content=None,
-                flagged_words=["spam"],
+                flagged_content=["spam"],
             )
         )
         mock_moderation_class.return_value = mock_moderation

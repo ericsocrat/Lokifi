@@ -1,0 +1,1134 @@
+app\utils\enhanced_validation.py:13:1: error: Library stubs not installed for
+"bleach"  [import-untyped]
+    import bleach
+    ^
+app\utils\enhanced_validation.py:13:1: note: Hint: "python3 -m pip install types-bleach"
+app\utils\enhanced_validation.py: note: In class "InputSanitizer":
+app\utils\enhanced_validation.py:24:5: error: Need type annotation for
+"ALLOWED_HTML_ATTRIBUTES" (hint:
+"ALLOWED_HTML_ATTRIBUTES: dict[<type>, <type>] = ...")  [var-annotated]
+        ALLOWED_HTML_ATTRIBUTES = {}
+        ^~~~~~~~~~~~~~~~~~~~~~~
+app\services\data_service.py: note: In member "_fetch_finnhub" of class "OHLCAggregator":
+app\services\data_service.py:622:49: error: Argument "params" to "get" of
+"ClientSession" has incompatible type "dict[str, object]"; expected
+"str | Mapping[str, str | SupportsInt | float | Sequence[str | SupportsInt | float]] | Sequence[tuple[str, str | SupportsInt | float | Sequence[str | SupportsInt | float]]] | None"
+ [arg-type]
+            async with self.session.get(url, params=params) as response:
+                                                    ^~~~~~
+app\services\ai_provider.py: note: In member "stream_chat" of class "MockProvider":
+app\services\ai_provider.py:129:5: error: Return type
+"AsyncGenerator[StreamChunk, None]" of "stream_chat" incompatible with return
+type "Coroutine[Any, Any, AsyncGenerator[StreamChunk, None]]" in supertype
+"AIProvider"  [override]
+        async def stream_chat(
+        ^
+app\services\providers\openrouter_provider.py: note: In member "stream_chat" of class "OpenRouterProvider":
+app\services\providers\openrouter_provider.py:44:5: error: Return type
+"AsyncGenerator[StreamChunk, None]" of "stream_chat" incompatible with return
+type "Coroutine[Any, Any, AsyncGenerator[StreamChunk, None]]" in supertype
+"app.services.ai_provider.AIProvider"  [override]
+        async def stream_chat(
+        ^
+app\services\providers\openrouter_provider.py:84:74: error: If x = b'abc' then
+f"{x}" or "{}".format(x) produces "b'abc'", not "abc". If this is desired
+behavior, use f"{x!r}" or "{!r}".format(x). Otherwise, decode the bytes 
+[str-bytes-safe]
+    ...        f"OpenRouter API error: {response.status_code} - {error_text}"
+                                                                ^~~~~~~~~~~~
+app\services\providers\ollama_provider.py: note: In member "stream_chat" of class "OllamaProvider":
+app\services\providers\ollama_provider.py:36:5: error: Return type
+"AsyncGenerator[StreamChunk, None]" of "stream_chat" incompatible with return
+type "Coroutine[Any, Any, AsyncGenerator[StreamChunk, None]]" in supertype
+"app.services.ai_provider.AIProvider"  [override]
+        async def stream_chat(
+        ^
+app\services\providers\ollama_provider.py:86:86: error: If x = b'abc' then
+f"{x}" or "{}".format(x) produces "b'abc'", not "abc". If this is desired
+behavior, use f"{x!r}" or "{!r}".format(x). Otherwise, decode the bytes 
+[str-bytes-safe]
+    ...viderError(f"Ollama API error: {response.status_code} - {error_text}")
+                                                               ^~~~~~~~~~~~
+app\services\providers\huggingface_provider.py: note: In member "stream_chat" of class "HuggingFaceProvider":
+app\services\providers\huggingface_provider.py:42:5: error: Return type
+"AsyncGenerator[StreamChunk, None]" of "stream_chat" incompatible with return
+type "Coroutine[Any, Any, AsyncGenerator[StreamChunk, None]]" in supertype
+"app.services.ai_provider.AIProvider"  [override]
+        async def stream_chat(
+        ^
+app\services\providers\huggingface_provider.py:87:76: error: If x = b'abc' then
+f"{x}" or "{}".format(x) produces "b'abc'", not "abc". If this is desired
+behavior, use f"{x!r}" or "{!r}".format(x). Otherwise, decode the bytes 
+[str-bytes-safe]
+    ...      f"Hugging Face API error: {response.status_code} - {error_text}"
+                                                                ^~~~~~~~~~~~
+app\services\providers\huggingface_provider.py:94:17: error: Incompatible types
+in assignment (expression has type "bytes", variable has type "StreamChunk") 
+[assignment]
+                    async for chunk in response.aiter_bytes():
+                    ^
+app\services\providers\huggingface_provider.py:98:41: error: "StreamChunk" has
+no attribute "decode"  [attr-defined]
+                                chunk_str = chunk.decode("utf-8")
+                                            ^~~~~~~~~~~~
+app\services\providers\huggingface_provider.py:120:42: error: "StreamChunk" has
+no attribute "decode"  [attr-defined]
+                                text_chunk = chunk.decode("utf-8", errors=...
+                                             ^~~~~~~~~~~~
+app\utils\security_alerts.py: note: In member "_send_slack_alert" of class "SecurityAlertManager":
+app\utils\security_alerts.py:382:13: error: Value of type "Collection[str]" is
+not indexable  [index]
+                payload["attachments"][0]["fields"].append(
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\utils\security_alerts.py: note: In member "_send_discord_alert" of class "SecurityAlertManager":
+app\utils\security_alerts.py:421:13: error: "object" has no attribute "append" 
+[attr-defined]
+                embed["fields"].append({"name": "Source IP", "value": aler...
+                ^~~~~~~~~~~~~~~~~~~~~~
+app\utils\security_alerts.py:424:13: error: "object" has no attribute "append" 
+[attr-defined]
+                embed["fields"].append(
+                ^~~~~~~~~~~~~~~~~~~~~~
+app\utils\security_alerts.py: note: In member "get_alert_statistics" of class "SecurityAlertManager":
+app\utils\security_alerts.py:452:9: error: Need type annotation for
+"severity_counts" (hint: "severity_counts: dict[<type>, <type>] = ...") 
+[var-annotated]
+            severity_counts = {}
+            ^~~~~~~~~~~~~~~
+app\utils\security_alerts.py:453:9: error: Need type annotation for
+"event_type_counts" (hint: "event_type_counts: dict[<type>, <type>] = ...") 
+[var-annotated]
+            event_type_counts = {}
+            ^~~~~~~~~~~~~~~~~
+app\services\providers\alphavantage.py: note: In function "fetch_ohlc":
+app\services\providers\alphavantage.py:17:14: error: Need type annotation for
+"series"  [var-annotated]
+        series = next((v for k, v in data.items() if "Time Series" in k), ...
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\redis_client.py: note: In member "store_websocket_session" of class "RedisClient":
+app\core\redis_client.py:233:13: error: Incompatible types in "await" (actual
+type "Awaitable[int] | int", expected type "Awaitable[Any]")  [misc]
+                await self.client.hset(
+                ^
+app\core\redis_client.py: note: In member "remove_websocket_session" of class "RedisClient":
+app\core\redis_client.py:245:13: error: Incompatible types in "await" (actual
+type "Awaitable[int] | int", expected type "Awaitable[Any]")  [misc]
+                await self.client.hdel(f"websocket_sessions:{user_id}", co...
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\redis_client.py: note: In member "get_user_websocket_sessions" of class "RedisClient":
+app\core\redis_client.py:255:24: error: Incompatible types in "await" (actual
+type "Awaitable[dict[Any, Any]] | dict[Any, Any]", expected type
+"Awaitable[Any]")  [misc]
+                sessions = await self.client.hgetall(f"websocket_sessions:...
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\redis_client.py: note: In member "add_websocket_session" of class "RedisClient":
+app\core\redis_client.py:280:13: error: Incompatible types in "await" (actual
+type "Awaitable[int] | int", expected type "Awaitable[Any]")  [misc]
+                await self.client.hset(
+                ^
+app\core\redis_client.py: note: In member "get_websocket_sessions" of class "RedisClient":
+app\core\redis_client.py:292:24: error: Incompatible types in "await" (actual
+type "Awaitable[dict[Any, Any]] | dict[Any, Any]", expected type
+"Awaitable[Any]")  [misc]
+                sessions = await self.client.hgetall(f"websocket_sessions:...
+                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\database.py: note: In member "initialize" of class "DatabaseManager":
+app\core\database.py:78:44: error: Incompatible types in assignment (expression
+has type "async_sessionmaker[AsyncSession]", variable has type "None") 
+[assignment]
+                self.primary_session_factory = async_sessionmaker(
+                                               ^
+app\core\database.py:88:48: error: Incompatible types in assignment (expression
+has type "async_sessionmaker[AsyncSession]", variable has type "None") 
+[assignment]
+                    self.replica_session_factory = async_sessionmaker(
+                                                   ^
+app\core\database.py: note: In member "_test_connections" of class "DatabaseManager":
+app\core\database.py:109:17: error: Statement is unreachable  [unreachable]
+                    async with self.primary_engine.begin() as conn:
+                    ^
+app\core\database.py:120:9: error: Statement is unreachable  [unreachable]
+            if self.replica_engine:
+            ^
+app\core\database.py: note: In member "get_session" of class "DatabaseManager":
+app\core\database.py:136:13: error: Statement is unreachable  [unreachable]
+                session_factory = self.replica_session_factory
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\database.py:143:9: error: Statement is unreachable  [unreachable]
+            async with session_factory() as session:
+            ^
+app\core\database.py: note: In member "get_engine" of class "DatabaseManager":
+app\core\database.py:165:13: error: Statement is unreachable  [unreachable]
+                return self.replica_engine
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\database.py: note: In member "close" of class "DatabaseManager":
+app\core\database.py:177:13: error: Statement is unreachable  [unreachable]
+                await self.primary_engine.dispose()
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\database.py:180:13: error: Statement is unreachable  [unreachable]
+                await self.replica_engine.dispose()
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "__init__" of class "CacheMetrics":
+app\core\advanced_redis_client.py:48:31: error: Need type annotation for
+"response_times"  [var-annotated]
+            self.response_times = deque(maxlen=1000)
+                                  ^~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "__init__" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:106:32: error: Need type annotation for
+"operation_stats"  [var-annotated]
+            self.operation_stats = defaultdict(lambda: {"count": 0, "total...
+                                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\advanced_redis_client.py: note: In member "initialize" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:115:33: error: "list[str]" has no attribute
+"split"  [attr-defined]
+                        for host in settings.redis_sentinel_hosts.split(",...
+                                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "_initialize_cache_layers" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:189:23: error: Item "None" of "Redis | None"
+has no attribute "config_set"  [union-attr]
+                    await self.client.config_set("maxmemory-policy", "allk...
+                          ^~~~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "is_available" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:198:17: error: No overload variant of
+"__sub__" of "datetime" matches argument type "str"  [operator]
+                    datetime.now(UTC) - self.circuit_breaker["last_failure...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:198:17: note: Possible overload variants:
+app\core\advanced_redis_client.py:198:17: note:     def __sub__(self, datetime, /) -> timedelta
+app\core\advanced_redis_client.py:198:17: note:     def __sub__(self, timedelta, /) -> datetime
+app\core\advanced_redis_client.py:198:17: error: No overload variant of
+"__sub__" of "datetime" matches argument type "int"  [operator]
+                    datetime.now(UTC) - self.circuit_breaker["last_failure...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:198:17: error: No overload variant of
+"__sub__" of "datetime" matches argument type "None"  [operator]
+                    datetime.now(UTC) - self.circuit_breaker["last_failure...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:198:17: note: Right operand is of type "str | int | None"
+app\core\advanced_redis_client.py: note: In member "_handle_circuit_breaker_failure" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:231:9: error: Unsupported operand types for +
+("None" and "int")  [operator]
+            self.circuit_breaker["failure_count"] += 1
+            ^
+app\core\advanced_redis_client.py:231:9: note: Left operand is of type "str | int | None"
+app\core\advanced_redis_client.py:231:50: error: Unsupported operand types for
++ ("str" and "int")  [operator]
+            self.circuit_breaker["failure_count"] += 1
+                                                     ^
+app\core\advanced_redis_client.py:232:48: error: Incompatible types in
+assignment (expression has type "datetime", target has type "str | int | None") 
+[assignment]
+            self.circuit_breaker["last_failure"] = datetime.now(UTC)
+                                                   ^~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:236:13: error: Unsupported operand types for
+>= ("str" and "int")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^
+app\core\advanced_redis_client.py:236:13: error: Unsupported operand types for
+>= ("str" and "None")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^
+app\core\advanced_redis_client.py:236:13: error: Unsupported operand types for
+>= ("int" and "str")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^
+app\core\advanced_redis_client.py:236:13: error: Unsupported operand types for
+>= ("int" and "None")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^
+app\core\advanced_redis_client.py:236:13: error: Unsupported operand types for
+<= ("str" and "None")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^
+app\core\advanced_redis_client.py:236:13: error: Unsupported operand types for
+<= ("int" and "None")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^
+app\core\advanced_redis_client.py:236:13: error: Unsupported left operand type
+for >= ("None")  [operator]
+                self.circuit_breaker["failure_count"] >= self.circuit_brea...
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\advanced_redis_client.py:236:13: note: Both left and right operands are unions
+app\core\advanced_redis_client.py: note: In member "get" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:251:28: error: Item "None" of "Redis | None"
+has no attribute "get"  [union-attr]
+                result = await self.client.get(key)
+                               ^~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "set" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:292:23: error: Item "None" of "Redis | None"
+has no attribute "setex"  [union-attr]
+                    await self.client.setex(key, ttl, value)
+                          ^~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:294:23: error: Item "None" of "Redis | None"
+has no attribute "set"  [union-attr]
+                    await self.client.set(key, value)
+                          ^~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "get_with_layers" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:317:28: error: Item "None" of "Redis | None"
+has no attribute "get"  [union-attr]
+                result = await self.client.get(layered_key)
+                               ^~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:327:36: error: Item "None" of "Redis | None"
+has no attribute "get"  [union-attr]
+                        result = await self.client.get(layered_key)
+                                       ^~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "set_with_layer" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:354:19: error: Item "None" of "Redis | None"
+has no attribute "setex"  [union-attr]
+                await self.client.setex(layered_key, ttl, value)
+                      ^~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "cache_warm_batch" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:373:24: error: Item "None" of "Redis | None"
+has no attribute "pipeline"  [union-attr]
+                pipeline = self.client.pipeline()
+                           ^~~~~~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py: note: In member "invalidate_pattern" of class "AdvancedRedisClient":
+app\core\advanced_redis_client.py:407:26: error: Item "None" of "Redis | None"
+has no attribute "keys"  [union-attr]
+                keys = await self.client.keys(search_pattern)
+                             ^~~~~~~~~~~~~~~~
+app\core\advanced_redis_client.py:409:33: error: Item "None" of "Redis | None"
+has no attribute "delete"  [union-attr]
+                    deleted = await self.client.delete(*keys)
+                                    ^~~~~~~~~~~~~~~~~~
+app\services\stock_service.py: note: In member "__init__" of class "StockService":
+app\services\stock_service.py:21:52: error: Incompatible default for argument
+"redis_client" (default has type "None", argument has type "RedisClient") 
+[assignment]
+        def __init__(self, redis_client: RedisClient = None):
+                                                       ^~~~
+app\services\stock_service.py:21:52: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+app\services\stock_service.py:21:52: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+app\services\stock_service.py: note: In member "get_stocks" of class "StockService":
+app\services\stock_service.py:153:32: error: Incompatible return value type
+(got "str", expected "list[dict[Any, Any]]")  [return-value]
+                            return cached_data
+                                   ^~~~~~~~~~~
+app\services\stock_service.py:174:27: error: Unexpected keyword argument
+"expire" for "set" of "RedisClient"  [call-arg]
+                        await self.redis_client.set(cache_key, stocks, exp...
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\redis_client.py:88:5: note: "set" of "RedisClient" defined here
+app\services\stock_service.py:174:60: error: Argument 2 to "set" of
+"RedisClient" has incompatible type "list[dict[Any, Any]]"; expected "str" 
+[arg-type]
+    ...          await self.redis_client.set(cache_key, stocks, expire=self.c...
+                                                        ^~~~~~
+app\services\indices_service.py: note: In member "__init__" of class "IndicesService":
+app\services\indices_service.py:47:52: error: Incompatible default for argument
+"redis_client" (default has type "None", argument has type "RedisClient") 
+[assignment]
+        def __init__(self, redis_client: RedisClient = None):
+                                                       ^~~~
+app\services\indices_service.py:47:52: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+app\services\indices_service.py:47:52: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+app\services\historical_price_service.py: note: In member "_period_to_days" of class "HistoricalPriceService":
+app\services\historical_price_service.py:146:16: error: Incompatible return
+value type (got "object", expected "int")  [return-value]
+            return mapping.get(period, 30)
+                   ^~~~~~~~~~~~~~~~~~~~~~~
+app\services\historical_price_service.py: note: In member "_fetch_crypto_history" of class "HistoricalPriceService":
+app\services\historical_price_service.py:252:49: error: Argument "params" to
+"get" of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                resp = await client.get(url, params=params)
+                                                    ^~~~~~
+app\services\historical_price_service.py: note: In member "_fetch_stock_history" of class "HistoricalPriceService":
+app\services\historical_price_service.py:292:16: error: Non-overlapping
+equality check (left operand type: "int", right operand type: "Literal['max']") 
+[comparison-overlap]
+                if days == "max":
+                   ^~~~~~~~~~~~~
+app\services\historical_price_service.py:308:49: error: Argument "params" to
+"get" of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                resp = await client.get(url, params=params)
+                                                    ^~~~~~
+app\services\historical_price_service.py: note: In member "_fetch_crypto_ohlcv" of class "HistoricalPriceService":
+app\services\historical_price_service.py:392:49: error: Argument "params" to
+"get" of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                resp = await client.get(url, params=params)
+                                                    ^~~~~~
+app\services\historical_price_service.py: note: In member "_fetch_stock_ohlcv" of class "HistoricalPriceService":
+app\services\historical_price_service.py:426:16: error: Non-overlapping
+equality check (left operand type: "int", right operand type: "Literal['max']") 
+[comparison-overlap]
+                if days == "max":
+                   ^~~~~~~~~~~~~
+app\services\historical_price_service.py:441:49: error: Argument "params" to
+"get" of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                resp = await client.get(url, params=params)
+                                                    ^~~~~~
+app\services\forex_service.py: note: In member "__init__" of class "ForexService":
+app\services\forex_service.py:21:52: error: Incompatible default for argument
+"redis_client" (default has type "None", argument has type "RedisClient") 
+[assignment]
+        def __init__(self, redis_client: RedisClient = None):
+                                                       ^~~~
+app\services\forex_service.py:21:52: note: PEP 484 prohibits implicit Optional. Accordingly, mypy has changed its default to no_implicit_optional=True
+app\services\forex_service.py:21:52: note: Use https://github.com/hauntsaninja/no_implicit_optional to automatically upgrade your codebase
+app\services\forex_service.py:89:9: error: Need type annotation for
+"_rates_cache" (hint: "_rates_cache: dict[<type>, <type>] = ...") 
+[var-annotated]
+            self._rates_cache = {}
+            ^~~~~~~~~~~~~~~~~
+app\services\forex_service.py:90:9: error: Need type annotation for
+"_cache_timestamp" (hint: "_cache_timestamp: dict[<type>, <type>] = ...") 
+[var-annotated]
+            self._cache_timestamp = {}
+            ^~~~~~~~~~~~~~~~~~~~~
+app\services\forex_service.py: note: In member "get_forex_pairs" of class "ForexService":
+app\services\forex_service.py:110:32: error: Incompatible return value type
+(got "str", expected "list[dict[Any, Any]]")  [return-value]
+                            return cached_data
+                                   ^~~~~~~~~~~
+app\services\forex_service.py:131:27: error: Unexpected keyword argument
+"expire" for "set" of "RedisClient"  [call-arg]
+                        await self.redis_client.set(cache_key, forex_pairs...
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\core\redis_client.py:88:5: note: "set" of "RedisClient" defined here
+app\services\forex_service.py:131:60: error: Argument 2 to "set" of
+"RedisClient" has incompatible type "list[dict[Any, Any]]"; expected "str" 
+[arg-type]
+    ...          await self.redis_client.set(cache_key, forex_pairs, expire=s...
+                                                        ^~~~~~~~~~~
+app\services\database_migration.py: note: In member "check_migration_status" of class "DatabaseMigrationService":
+app\services\database_migration.py:22:5: error: Missing return statement 
+[return]
+        async def check_migration_status(self) -> dict[str, Any]:
+        ^
+app\services\database_migration.py: note: In member "run_migrations" of class "DatabaseMigrationService":
+app\services\database_migration.py:135:17: error: "object" has no attribute
+"append"  [attr-defined]
+                    results["migrations_run"].append(migration["name"])
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\database_migration.py:136:17: error: Unsupported operand types for
++ ("object" and "int")  [operator]
+                    results["total_applied"] += 1
+                    ^
+app\services\database_migration.py:138:17: error: "object" has no attribute
+"append"  [attr-defined]
+                    results["migrations_failed"].append(migration["name"])
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\crypto_discovery_service.py: note: In member "_fetch_top_cryptos" of class "CryptoDiscoveryService":
+app\services\crypto_discovery_service.py:149:13: error: Need type annotation
+for "all_cryptos" (hint: "all_cryptos: list[<type>] = ...")  [var-annotated]
+                all_cryptos = []
+                ^~~~~~~~~~~
+app\services\crypto_discovery_service.py:166:53: error: Argument "params" to
+"get" of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                    resp = await client.get(url, params=params)
+                                                        ^~~~~~
+app\services\crypto_discovery_service.py: note: In member "_search_cryptos" of class "CryptoDiscoveryService":
+app\services\crypto_discovery_service.py:294:17: error: Dict entry 3 has
+incompatible type "str": "bool"; expected "str": "str"  [dict-item]
+                    "sparkline": False,
+                    ^~~~~~~~~~~~~~~~~~
+app\services\crypto_data_service.py: note: In member "get_top_coins" of class "CryptoDataService":
+app\services\crypto_data_service.py:148:16: error: Incompatible return value
+type (got "dict[Any, Any]", expected "list[dict[Any, Any]]")  [return-value]
+            return data
+                   ^~~~
+app\services\crypto_data_service.py: note: In member "get_coin_ohlc" of class "CryptoDataService":
+app\services\crypto_data_service.py:245:42: error: Argument 2 to "_set_cache"
+of "CryptoDataService" has incompatible type "list[dict[str, Any]]"; expected
+"dict[str, Any]"  [arg-type]
+            await self._set_cache(cache_key, formatted_data, CACHE_TTL_MAR...
+                                             ^~~~~~~~~~~~~~
+app\services\ai_context_manager.py: note: In member "create_context_summary" of class "AIContextManager":
+app\services\ai_context_manager.py:179:30: error: "AIProviderManager" has no
+attribute "get_primary_provider"  [attr-defined]
+                provider = await ai_provider_manager.get_primary_provider(...
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\advanced_storage_analytics.py: note: In member "analyze_data_patterns" of class "AdvancedStorageAnalytics":
+app\services\advanced_storage_analytics.py:470:20: error: Need type annotation
+for "patterns"  [var-annotated]
+            patterns = {
+                       ^
+app\optimization\performance_optimizer.py: note: In member "analyze_query_performance" of class "DatabaseOptimizer":
+app\optimization\performance_optimizer.py:104:5: error: Missing return
+statement  [return]
+        async def analyze_query_performance(
+        ^
+app\optimization\performance_optimizer.py: note: In member "_analyze_explain_output" of class "DatabaseOptimizer":
+app\optimization\performance_optimizer.py:202:9: error: Need type annotation
+for "suggestions" (hint: "suggestions: list[<type>] = ...")  [var-annotated]
+            suggestions = []
+            ^~~~~~~~~~~
+app\optimization\performance_optimizer.py: note: In member "analyze_cache_performance" of class "CacheOptimizer":
+app\optimization\performance_optimizer.py:413:20: error: Need type annotation
+for "analysis"  [var-annotated]
+            analysis = {"overall_metrics": {}, "layer_performance": {}, "r...
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\optimization\performance_optimizer.py:423:17: error: Unsupported target for
+indexed assignment ("Collection[Any]")  [index]
+                    analysis["layer_performance"][layer] = layer_metrics
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\optimization\performance_optimizer.py: note: In member "_analyze_layer_performance" of class "CacheOptimizer":
+app\optimization\performance_optimizer.py:484:32: error: Incompatible types in
+assignment (expression has type "str", target has type "float")  [assignment]
+                metrics["error"] = str(e)
+                                   ^~~~~~
+app\optimization\performance_optimizer.py: note: In member "implement_cache_warming" of class "CacheOptimizer":
+app\optimization\performance_optimizer.py:568:25: error: Unsupported operand
+types for + ("object" and "int")  [operator]
+                            results["keys_warmed"] += 1
+                            ^
+app\optimization\performance_optimizer.py:571:21: error: "object" has no
+attribute "append"  [attr-defined]
+                        results["errors"].append(f"Failed to warm {key}: {...
+                        ^~~~~~~~~~~~~~~~~~~~~~~~
+app\optimization\performance_optimizer.py:576:13: error: "object" has no
+attribute "append"  [attr-defined]
+                results["errors"].append(f"Cache warming failed: {e!s}")
+                ^~~~~~~~~~~~~~~~~~~~~~~~
+app\optimization\performance_optimizer.py: note: In member "run_comprehensive_analysis" of class "PerformanceOptimizer":
+app\optimization\performance_optimizer.py:598:28: error: Need type annotation
+for "analysis_results"  [var-annotated]
+            analysis_results = {
+                               ^
+app\optimization\performance_optimizer.py: note: In member "implement_safe_optimizations" of class "PerformanceOptimizer":
+app\optimization\performance_optimizer.py:665:19: error: Need type annotation
+for "results"  [var-annotated]
+            results = {"optimizations_applied": [], "cache_warming_results...
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\optimization\performance_optimizer.py:678:13: error: "Collection[Any]" has
+no attribute "append"  [attr-defined]
+                results["optimizations_applied"].append("cache_warming")
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\optimization\performance_optimizer.py:684:13: error: "Collection[Any]" has
+no attribute "append"  [attr-defined]
+                results["errors"].append(str(e))
+                ^~~~~~~~~~~~~~~~~~~~~~~~
+app\tasks\maintenance.py: note: In function "weekly_compression_task":
+app\tasks\maintenance.py:120:27: error: "DataArchivalService" has no attribute
+"compress_old_messages"  [attr-defined]
+                stats = await archival_service.compress_old_messages(batch...
+                              ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\tasks\maintenance.py: note: In function "emergency_cleanup_task":
+app\tasks\maintenance.py:299:36: error: "DataArchivalService" has no attribute
+"compress_old_messages"  [attr-defined]
+                compress_stats = await archival_service.compress_old_messa...
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\tasks\maintenance.py:300:34: error: "DataArchivalService" has no attribute
+"delete_expired_conversations"  [attr-defined]
+                delete_stats = await archival_service.delete_expired_conve...
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\unified_asset_service.py: note: In member "_fetch_crypto_symbols" of class "UnifiedAssetService":
+app\services\unified_asset_service.py:92:57: error: Argument "params" to "get"
+of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                        resp = await client.get(url, params=params)
+                                                            ^~~~~~
+app\services\unified_asset_service.py:94:58: error: Argument "params" to "get"
+of "AsyncClient" has incompatible type "dict[str, object]"; expected
+"QueryParams | Mapping[str, str | int | float | bool | None | Sequence[str | int | float | bool | None]] | list[tuple[str, str | int | float | bool | None]] | tuple[tuple[str, str | int | float | bool | None], ...] | str | bytes | None"
+ [arg-type]
+                    resp = await self.client.get(url, params=params)
+                                                             ^~~~~~
+app\services\unified_asset_service.py: note: In member "get_all_assets" of class "UnifiedAssetService":
+app\services\unified_asset_service.py:234:59: error: Argument "redis_client" to
+"StockService" has incompatible type "AdvancedRedisClient"; expected
+"RedisClient"  [arg-type]
+    ...       stock_service = StockService(redis_client=advanced_redis_client...
+                                                        ^~~~~~~~~~~~~~~~~~~~~
+app\services\unified_asset_service.py:249:56: error: Argument "redis_client" to
+"IndicesService" has incompatible type "AdvancedRedisClient"; expected
+"RedisClient"  [arg-type]
+    ...          async with IndicesService(redis_client=advanced_redis_client...
+                                                        ^~~~~~~~~~~~~~~~~~~~~
+app\services\unified_asset_service.py:262:59: error: Argument "redis_client" to
+"ForexService" has incompatible type "AdvancedRedisClient"; expected
+"RedisClient"  [arg-type]
+    ...       forex_service = ForexService(redis_client=advanced_redis_client...
+                                                        ^~~~~~~~~~~~~~~~~~~~~
+app\services\j53_performance_monitor.py: note: In member "check_database_health" of class "J53PerformanceMonitor":
+app\services\j53_performance_monitor.py:143:51: error: Incompatible types in
+assignment (expression has type "dict[str, Any | int]", target has type "float")
+ [assignment]
+                    health_data["table_statistics"] = table_stats
+                                                      ^~~~~~~~~~~
+app\services\j53_performance_monitor.py:177:59: error: Incompatible types in
+assignment (expression has type "list[dict[Any, Any]]", target has type "float")
+ [assignment]
+                            health_data["index_statistics"] = [
+                                                              ^
+app\services\j53_performance_monitor.py:182:59: error: Incompatible types in
+assignment (expression has type "list[Never]", target has type "float") 
+[assignment]
+                            health_data["index_statistics"] = []
+                                                              ^~
+app\services\j53_performance_monitor.py:188:36: error: Incompatible types in
+assignment (expression has type "str", target has type "float")  [assignment]
+                health_data["error"] = str(e)
+                                       ^~~~~~
+app\services\j53_performance_monitor.py: note: In member "check_performance_metrics" of class "J53PerformanceMonitor":
+app\services\j53_performance_monitor.py:222:52: error: Incompatible types in
+assignment (expression has type "float", target has type
+"Collection[Collection[str]]")  [assignment]
+    ...          metrics["estimated_memory_usage_mb"] = estimated_memory_usag...
+                                                        ^~~~~~~~~~~~~~~~~~~~~~
+app\services\alerts.py: note: In member "_evaluate" of class "AlertEvaluator":
+app\services\alerts.py:221:13: error: Statement is unreachable  [unreachable]
+                return False, {"reason": "unknown_type"}
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_price_service.py: note: In class "PriceData":
+app\services\smart_price_service.py:39:30: error: Incompatible types in
+assignment (expression has type "None", variable has type "datetime") 
+[assignment]
+        last_updated: datetime = None
+                                 ^~~~
+app\services\smart_price_service.py: note: In member "get_batch_prices" of class "SmartPriceService":
+app\services\smart_price_service.py:232:39: error: Incompatible types in
+assignment (expression has type "PriceData | BaseException", target has type
+"PriceData")  [assignment]
+                        results[symbol] = result
+                                          ^~~~~~
+app\services\smart_price_service.py: note: In member "_fetch_batch_cryptos" of class "SmartPriceService":
+app\services\smart_price_service.py:280:26: error: Incompatible types in
+assignment (expression has type "str | None", variable has type "str") 
+[assignment]
+                    symbol = symbol_to_id.get(coin_id)
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\models\notification_models.py: note: In member "set_type_preference" of class "NotificationPreference":
+app\models\notification_models.py:230:13: error: Statement is unreachable 
+[unreachable]
+                self.type_preferences = {}
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\notification_service.py: note: In member "create_notification" of class "NotificationService":
+app\services\notification_service.py:89:5: error: Missing return statement 
+[return]
+        async def create_notification(
+        ^
+app\services\notification_service.py:111:34: error: Argument 2 to
+"_get_user_preferences" of "NotificationService" has incompatible type
+"str | UUID"; expected "str"  [arg-type]
+                            session, notification_data.user_id
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\notification_service.py: note: In member "get_user_notifications" of class "NotificationService":
+app\services\notification_service.py:197:5: error: Missing return statement 
+[return]
+        async def get_user_notifications(
+        ^
+app\services\notification_service.py: note: In member "get_unread_count" of class "NotificationService":
+app\services\notification_service.py:249:5: error: Missing return statement 
+[return]
+        async def get_unread_count(self, user_id: str | UUID) -> int:
+        ^
+app\services\notification_service.py: note: In member "mark_as_read" of class "NotificationService":
+app\services\notification_service.py:284:5: error: Missing return statement 
+[return]
+        async def mark_as_read(self, notification_id: str, user_id: str | ...
+        ^
+app\services\notification_service.py: note: In member "mark_all_as_read" of class "NotificationService":
+app\services\notification_service.py:313:5: error: Missing return statement 
+[return]
+        async def mark_all_as_read(self, user_id: str | UUID) -> int:
+        ^
+app\services\notification_service.py: note: In member "dismiss_notification" of class "NotificationService":
+app\services\notification_service.py:346:5: error: Missing return statement 
+[return]
+        async def dismiss_notification(
+        ^
+app\services\notification_service.py: note: In member "click_notification" of class "NotificationService":
+app\services\notification_service.py:377:5: error: Missing return statement 
+[return]
+        async def click_notification(
+        ^
+app\services\notification_service.py: note: In member "get_notification_stats" of class "NotificationService":
+app\services\notification_service.py:407:5: error: Missing return statement 
+[return]
+        async def get_notification_stats(self, user_id: str | UUID) -> Not...
+        ^
+app\services\notification_service.py:464:17: error: Need type annotation for
+"by_type" (hint: "by_type: dict[<type>, <type>] = ...")  [var-annotated]
+                    by_type = {}
+                    ^~~~~~~
+app\services\notification_service.py:465:17: error: Need type annotation for
+"by_priority" (hint: "by_priority: dict[<type>, <type>] = ...")  [var-annotated]
+                    by_priority = {}
+                    ^~~~~~~~~~~
+app\services\notification_service.py: note: In member "cleanup_expired_notifications" of class "NotificationService":
+app\services\notification_service.py:527:5: error: Missing return statement 
+[return]
+        async def cleanup_expired_notifications(self) -> int:
+        ^
+app\services\notification_analytics.py: note: In class "NotificationMetrics":
+app\services\notification_analytics.py:38:52: error: Incompatible types in
+assignment (expression has type "None", variable has type
+"list[dict[str, Any]]")  [assignment]
+        top_notification_types: list[dict[str, Any]] = None
+                                                       ^~~~
+app\services\notification_analytics.py: note: In member "__init__" of class "NotificationAnalytics":
+app\services\notification_analytics.py:74:32: error: Need type annotation for
+"metrics_history"  [var-annotated]
+            self.metrics_history = deque(maxlen=1000)  # Store last 1000 d...
+                                   ^~~~~~~~~~~~~~~~~~
+app\services\notification_analytics.py: note: In member "get_comprehensive_metrics" of class "NotificationAnalytics":
+app\services\notification_analytics.py:78:5: error: Missing return statement 
+[return]
+        async def get_comprehensive_metrics(
+        ^
+app\services\notification_analytics.py:198:24: error: Unsupported operand types
+for < ("int" and "Callable[[Any], int]")  [operator]
+                        if row.count > max_count:
+                           ^
+app\services\notification_analytics.py:199:37: error: Incompatible types in
+assignment (expression has type "Callable[[Any], int]", variable has type "int")
+ [assignment]
+                            max_count = row.count
+                                        ^~~~~~~~~
+app\services\notification_analytics.py: note: In member "get_user_engagement_metrics" of class "NotificationAnalytics":
+app\services\notification_analytics.py:220:5: error: Missing return statement 
+[return]
+        async def get_user_engagement_metrics(
+        ^
+app\services\notification_analytics.py:258:28: error: Unexpected keyword
+argument "avg_notifications_per_user" for "UserEngagementMetrics"; did you mean
+"average_notifications_per_user"?  [call-arg]
+                        return UserEngagementMetrics(
+                               ^
+app\services\notification_analytics.py:258:28: error: Unexpected keyword
+argument "engagement_rate" for "UserEngagementMetrics"  [call-arg]
+                        return UserEngagementMetrics(
+                               ^
+app\services\notification_analytics.py:258:28: error: Unexpected keyword
+argument "most_active_times" for "UserEngagementMetrics"  [call-arg]
+                        return UserEngagementMetrics(
+                               ^
+app\services\notification_analytics.py:258:28: error: Unexpected keyword
+argument "user_retention_7d" for "UserEngagementMetrics"  [call-arg]
+                        return UserEngagementMetrics(
+                               ^
+app\services\notification_analytics.py:259:43: error: Unsupported operand types
+for < ("int" and "None")  [operator]
+                            active_users=1 if total_notifications > 0 else...
+                                              ^
+app\services\notification_analytics.py:259:43: note: Left operand is of type "int | None"
+app\services\notification_analytics.py:261:42: error: Unsupported operand types
+for / ("int" and "None")  [operator]
+                            engagement_rate=(read_notifications / total_no...
+                                             ^
+app\services\notification_analytics.py:261:42: error: Unsupported operand types
+for / ("None" and "int")  [operator]
+                            engagement_rate=(read_notifications / total_no...
+                                             ^
+app\services\notification_analytics.py:261:42: error: Unsupported left operand
+type for / ("None")  [operator]
+                            engagement_rate=(read_notifications / total_no...
+                                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\notification_analytics.py:261:42: note: Both left and right operands are unions
+app\services\notification_analytics.py:262:28: error: Unsupported operand types
+for < ("int" and "None")  [operator]
+                            if total_notifications > 0
+                               ^
+app\services\notification_analytics.py:262:28: note: Left operand is of type "int | None"
+app\services\notification_analytics.py: note: In member "calculate_system_health_score" of class "NotificationAnalytics":
+app\services\notification_analytics.py:470:34: error: "dict[str, Any]" has no
+attribute "delivery_rate"  [attr-defined]
+                delivery_score = min(notification_metrics.delivery_rate, 1...
+                                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\notification_analytics.py:474:36: error: "dict[str, Any]" has no
+attribute "read_rate"  [attr-defined]
+                engagement_score = min(notification_metrics.read_rate, 100...
+                                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\multimodal_ai_service.py:26:13: error: Incompatible types in
+assignment (expression has type "None", variable has type Module)  [assignment]
+        Image = None
+                ^~~~
+app\services\multimodal_ai_service.py: note: In member "analyze_image_with_ai" of class "MultiModalAIService":
+app\services\multimodal_ai_service.py:112:30: error: "AIProviderManager" has no
+attribute "get_primary_provider"  [attr-defined]
+                provider = await ai_provider_manager.get_primary_provider(...
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\multimodal_ai_service.py: note: In member "analyze_document_with_ai" of class "MultiModalAIService":
+app\services\multimodal_ai_service.py:155:30: error: "AIProviderManager" has no
+attribute "get_primary_provider"  [attr-defined]
+                provider = await ai_provider_manager.get_primary_provider(...
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\multimodal_ai_service.py: note: In member "_process_image" of class "MultiModalAIService":
+app\services\multimodal_ai_service.py:235:29: error: Incompatible types in
+assignment (expression has type "Image", variable has type "ImageFile") 
+[assignment]
+                        image = image.resize(self.max_image_size, resample...
+                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\follow_service.py:403: error: Unused "type: ignore" comment 
+[unused-ignore]
+                        user_id=uid,  # type: ignore[arg-type]
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\auth.py:6:1: error: Library stubs not installed for "jose" 
+[import-untyped]
+    from jose import JWTError, jwt
+    ^
+app\routers\smart_prices.py: note: In function "get_all_assets":
+app\routers\smart_prices.py:186:20: error: Incompatible types in assignment
+(expression has type "Any | None", variable has type
+"dict[str, list[dict[Any, Any]]]")  [assignment]
+                data = cached_data
+                       ^~~~~~~~~~~
+app\routers\smart_prices.py:190:13: error: Statement is unreachable 
+[unreachable]
+                data = {}
+                ^~~~~~~~~
+app\routers\ohlc.py: note: In function "generate_mock_data":
+app\routers\ohlc.py:37:25: error: Incompatible types in assignment (expression
+has type "float", variable has type "int")  [assignment]
+            current_price = close_price
+                            ^~~~~~~~~~~
+app\routers\mock_ohlc.py: note: In function "mock_ohlc":
+app\routers\mock_ohlc.py:44:25: error: Incompatible types in assignment
+(expression has type "float", variable has type "int")  [assignment]
+            current_price = close_price
+                            ^~~~~~~~~~~
+app\routers\market_data.py: note: In function "get_market_overview":
+app\routers\market_data.py:172:5: error: Need type annotation for
+"asset_type_counts" (hint: "asset_type_counts: dict[<type>, <type>] = ...") 
+[var-annotated]
+        asset_type_counts = {}
+        ^~~~~~~~~~~~~~~~~
+app\api\deps.py:6:1: error: Library stubs not installed for "jose" 
+[import-untyped]
+    from jose import JWTError, jwt
+    ^
+app\api\routes\market.py:10:1: error: Module "app.services.prices" has no
+attribute "fetch_ohlc"; maybe "get_ohlc"?  [attr-defined]
+    from app.services.prices import fetch_ohlc
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py: note: In function "comprehensive_health_check":
+app\api\routes\health_check.py:43:15: error: No overload variant of "execute"
+of "AsyncSession" matches argument type "str"  [call-overload]
+            await db.execute("SELECT 1")
+                  ^~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:43:15: note: Possible overload variants:
+app\api\routes\health_check.py:43:15: note:     def [_T: Any] execute(self, statement: TypedReturnsRows[_T], params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, Result[_T]]
+app\api\routes\health_check.py:43:15: note:     def execute(self, statement: UpdateBase, params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, CursorResult[Any]]
+app\api\routes\health_check.py:43:15: note:     def execute(self, statement: Executable, params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, Result[Any]]
+app\api\routes\health_check.py:46:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["database"] = {
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:51:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["database"] = {"status": "unhealth...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:57:15: error: "RedisClient" has no attribute
+"ping"  [attr-defined]
+            await redis_client.ping()
+                  ^~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:60:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["redis"] = {
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:65:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["redis"] = {"status": "unhealthy",...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:71:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["websockets"] = {
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:76:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["websockets"] = {"status": "unheal...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:81:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["ai_services"] = {
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:86:9: error: Unsupported target for indexed
+assignment ("object")  [index]
+            health_status["components"]["ai_services"] = {"status": "unhea...
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py: note: In function "check_component_health":
+app\api\routes\health_check.py:109:19: error: No overload variant of "execute"
+of "AsyncSession" matches argument type "str"  [call-overload]
+                await db.execute("SELECT 1")
+                      ^~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\health_check.py:109:19: note: Possible overload variants:
+app\api\routes\health_check.py:109:19: note:     def [_T: Any] execute(self, statement: TypedReturnsRows[_T], params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, Result[_T]]
+app\api\routes\health_check.py:109:19: note:     def execute(self, statement: UpdateBase, params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, CursorResult[Any]]
+app\api\routes\health_check.py:109:19: note:     def execute(self, statement: Executable, params: Sequence[Mapping[str, Any]] | Mapping[str, Any] | None = ..., *, execution_options: _OrmKnownExecutionOptions | Mapping[str, Any] = ..., bind_arguments: dict[str, Any] | None = ..., _parent_execute_state: Any | None = ..., _add_event: Any | None = ...) -> Coroutine[Any, Any, Result[Any]]
+app\api\routes\health_check.py:124:19: error: "RedisClient" has no attribute
+"ping"  [attr-defined]
+                await redis_client.ping()
+                      ^~~~~~~~~~~~~~~~~
+app\api\routes\auth.py:8:1: error: Library stubs not installed for "jose" 
+[import-untyped]
+    from jose import JWTError, jwt
+    ^
+app\api\routes\auth.py:8:1: note: Hint: "python3 -m pip install types-python-jose"
+app\api\routes\auth.py:9:1: error: Library stubs not installed for
+"passlib.hash"  [import-untyped]
+    from passlib.hash import bcrypt
+    ^
+app\api\routes\auth.py:9:1: note: Hint: "python3 -m pip install types-passlib"
+app\api\routes\auth.py:9:1: note: (or run "mypy --install-types" to install all missing stub packages)
+app\api\routes\auth.py:9:1: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
+app\websockets\advanced_websocket_manager.py: note: In member "__init__" of class "ConnectionPool":
+app\websockets\advanced_websocket_manager.py:93:33: error: Need type annotation
+for "connection_queue"  [var-annotated]
+            self.connection_queue = deque()
+                                    ^~~~~~~
+app\websockets\advanced_websocket_manager.py: note: In member "__init__" of class "AdvancedWebSocketManager":
+app\websockets\advanced_websocket_manager.py:269:32: error: Need type
+annotation for "broadcast_queue"  [var-annotated]
+            self.broadcast_queue = asyncio.Queue()
+                                   ^~~~~~~~~~~~~~~
+app\websockets\advanced_websocket_manager.py:270:26: error: Need type
+annotation for "analytics"  [var-annotated]
+            self.analytics = {
+                             ^
+app\websockets\advanced_websocket_manager.py: note: In class "AdvancedWebSocketManager":
+app\websockets\advanced_websocket_manager.py:597:5: error: Name
+"_handle_subscribe" already defined on line 545  [no-redef]
+        async def _handle_subscribe(self, connection_id: str, data: dict[s...
+        ^
+app\websockets\advanced_websocket_manager.py:611:5: error: Name
+"_handle_join_room" already defined on line 573  [no-redef]
+        async def _handle_join_room(self, connection_id: str, data: dict[s...
+        ^
+app\services\websocket_manager.py: note: In member "broadcast_new_message" of class "ConnectionManager":
+app\services\websocket_manager.py:157:23: error: "RedisClient" has no attribute
+"publish"  [attr-defined]
+                    await self.redis_client.publish(
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\websocket_manager.py: note: In member "broadcast_typing_indicator" of class "ConnectionManager":
+app\services\websocket_manager.py:191:23: error: "RedisClient" has no attribute
+"publish"  [attr-defined]
+                    await self.redis_client.publish(
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\websocket_manager.py: note: In member "broadcast_read_receipt" of class "ConnectionManager":
+app\services\websocket_manager.py:231:23: error: "RedisClient" has no attribute
+"publish"  [attr-defined]
+                    await self.redis_client.publish(
+                          ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py: note: In member "_schedule_notification" of class "SmartNotificationProcessor":
+app\services\smart_notifications.py:139:15: error: Item "None" of
+"Redis | None" has no attribute "set"  [union-attr]
+            await redis_client.client.set(
+                  ^~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py:142:21: error: Unsupported left operand
+type for - ("None")  [operator]
+                ex=int((notification_data.scheduled_for - datetime.now(UTC...
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py:142:21: note: Left operand is of type "datetime | None"
+app\services\smart_notifications.py: note: In member "_apply_batching_strategy" of class "SmartNotificationProcessor":
+app\services\smart_notifications.py:153:26: error: "SmartNotificationProcessor"
+has no attribute "_time_based_batching"  [attr-defined]
+                return await self._time_based_batching(notification_data)
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py:155:26: error: "SmartNotificationProcessor"
+has no attribute "_count_based_batching"  [attr-defined]
+                return await self._count_based_batching(notification_data)
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py: note: In member "_record_notification_analytics" of class "SmartNotificationProcessor":
+app\services\smart_notifications.py:331:13: error: Incompatible types in
+"await" (actual type "Awaitable[int] | int | Any", expected type
+"Awaitable[Any]")  [misc]
+                await redis_client.client.lpush(analytics_key, json.dumps(...
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\smart_notifications.py:331:19: error: Item "None" of
+"Redis | None" has no attribute "lpush"  [union-attr]
+                await redis_client.client.lpush(analytics_key, json.dumps(...
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py:332:13: error: Incompatible types in
+"await" (actual type "Awaitable[str] | str | Any", expected type
+"Awaitable[Any]")  [misc]
+                await redis_client.client.ltrim(analytics_key, 0, 999)  # ...
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py:332:19: error: Item "None" of
+"Redis | None" has no attribute "ltrim"  [union-attr]
+                await redis_client.client.ltrim(analytics_key, 0, 999)  # ...
+                      ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py: note: In member "get_user_notification_preferences" of class "SmartNotificationProcessor":
+app\services\smart_notifications.py:334:5: error: Missing return statement 
+[return]
+        async def get_user_notification_preferences(self, user_id: str) ->...
+        ^
+app\services\smart_notifications.py: note: In member "__init__" of class "SmartNotificationServiceWrapper":
+app\services\smart_notifications.py:407:9: error: Need type annotation for
+"test_batches" (hint: "test_batches: list[<type>] = ...")  [var-annotated]
+            self.test_batches = []  # For testing purposes
+            ^~~~~~~~~~~~~~~~~
+app\services\smart_notifications.py: note: At top level:
+app\services\smart_notifications.py:443:30: error: Incompatible types in
+assignment (expression has type "SmartNotificationServiceWrapper", variable has
+type "SmartNotificationProcessor")  [assignment]
+    smart_notification_service = SmartNotificationServiceWrapper(smart_not...
+                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\smart_notifications.py: note: In function "send_batched_notification":
+app\services\smart_notifications.py:489:12: error: Incompatible return value
+type (got "bool | str", expected "str")  [return-value]
+        return await smart_notification_processor.process_rich_notificatio...
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\smart_notifications.py: note: In function "schedule_notification":
+app\services\smart_notifications.py:510:12: error: Incompatible return value
+type (got "bool | str", expected "str")  [return-value]
+        return await smart_notification_processor.process_rich_notificatio...
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\profile_service.py: note: In member "update_profile" of class "ProfileService":
+app\services\profile_service.py:72:17: error: Incompatible types in assignment
+(expression has type "str | None", target has type "str")  [assignment]
+                    str(profile_data.avatar_url) if profile_data.avatar_ur...
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\profile_service.py:75:40: error: Incompatible types in assignment
+(expression has type "bool", target has type "str")  [assignment]
+                update_data["is_public"] = profile_data.is_public
+                                           ^~~~~~~~~~~~~~~~~~~~~~
+app\services\profile_service.py:78:41: error: Incompatible types in assignment
+(expression has type "datetime", target has type "str")  [assignment]
+                update_data["updated_at"] = datetime.now(UTC)
+                                            ^~~~~~~~~~~~~~~~~
+app\services\profile_service.py: note: In member "update_user_settings" of class "ProfileService":
+app\services\profile_service.py:131:42: error: Incompatible types in assignment
+(expression has type "bool", target has type "str")  [assignment]
+                update_data["is_verified"] = False  # Require re-verificat...
+                                             ^~~~~
+app\services\profile_service.py:134:41: error: Incompatible types in assignment
+(expression has type "datetime", target has type "str")  [assignment]
+                update_data["updated_at"] = datetime.now(UTC)
+                                            ^~~~~~~~~~~~~~~~~
+app\services\profile_service.py:136:20: error: Incompatible types in assignment
+(expression has type "Update", variable has type "Select[tuple[User]]") 
+[assignment]
+                stmt = update(User).where(User.id == user_id).values(**upd...
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\profile_service.py: note: In member "update_notification_preferences" of class "ProfileService":
+app\services\profile_service.py:169:17: error: Incompatible types in assignment
+(expression has type "Update", variable has type
+"Select[tuple[NotificationPreference]]")  [assignment]
+                    update(NotificationPreference)
+                    ^
+app\services\profile_enhanced.py: note: In member "update_user_settings" of class "EnhancedProfileService":
+app\services\profile_enhanced.py:110:41: error: Incompatible types in
+assignment (expression has type "datetime", target has type "str")  [assignment]
+                update_data["updated_at"] = datetime.now(UTC)
+                                            ^~~~~~~~~~~~~~~~~
+app\services\profile_enhanced.py:112:20: error: Incompatible types in
+assignment (expression has type "Update", variable has type
+"Select[tuple[User]]")  [assignment]
+                stmt = update(User).where(User.id == user_id).values(**upd...
+                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\services\profile_enhanced.py: note: In member "update_notification_preferences" of class "EnhancedProfileService":
+app\services\profile_enhanced.py:162:17: error: Incompatible types in
+assignment (expression has type "Update", variable has type
+"Select[tuple[NotificationPreference]]")  [assignment]
+                    update(NotificationPreference)
+                    ^
+app\api\routes\portfolio.py:313: error: Unused "type: ignore" comment 
+[unused-ignore]
+                by_symbol[r.symbol] = {  # type: ignore
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\portfolio.py:323: error: Unused "type: ignore" comment 
+[unused-ignore]
+                by_symbol[r.symbol] = {  # type: ignore
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\portfolio.py: note: In function "portfolio_summary":
+app\api\routes\portfolio.py:327:17: error: Dict entry 3 has incompatible type
+"str": "None"; expected "str": "float"  [dict-item]
+                    "current_price": None,
+                    ^~~~~~~~~~~~~~~~~~~~~
+app\api\routes\portfolio.py:328:17: error: Dict entry 4 has incompatible type
+"str": "None"; expected "str": "float"  [dict-item]
+                    "market_value": None,
+                    ^~~~~~~~~~~~~~~~~~~~
+app\api\routes\portfolio.py:329:17: error: Dict entry 5 has incompatible type
+"str": "None"; expected "str": "float"  [dict-item]
+                    "unrealized_pl": None,
+                    ^~~~~~~~~~~~~~~~~~~~~
+app\api\routes\portfolio.py:330:17: error: Dict entry 6 has incompatible type
+"str": "None"; expected "str": "float"  [dict-item]
+                    "pl_pct": None,
+                    ^~~~~~~~~~~~~~
+app\websockets\jwt_websocket_auth.py:11:1: error: Library stubs not installed
+for "jose"  [import-untyped]
+    from jose import JWTError, jwt
+    ^
+app\services\advanced_monitoring.py: note: In member "__init__" of class "AlertManager":
+app\services\advanced_monitoring.py:89:30: error: Need type annotation for
+"alert_history"  [var-annotated]
+            self.alert_history = deque(maxlen=1000)
+                                 ^~~~~~~~~~~~~~~~~~
+app\services\advanced_monitoring.py: note: In member "__init__" of class "PerformanceAnalyzer":
+app\services\advanced_monitoring.py:159:32: error: Need type annotation for
+"metrics_history"  [var-annotated]
+            self.metrics_history = deque(maxlen=1440)  # 24 hours at 1-min...
+                                   ^~~~~~~~~~~~~~~~~~
+app\services\advanced_monitoring.py: note: In member "analyze_metrics" of class "PerformanceAnalyzer":
+app\services\advanced_monitoring.py:286:13: error: Statement is unreachable 
+[unreachable]
+                self.add_metrics(metrics)
+                ^~~~~~~~~~~~~~~~~~~~~~~~~
+app\integrations\notification_hooks.py: note: In member "on_user_followed" of class "NotificationIntegration":
+app\integrations\notification_hooks.py:49:65: error: Argument 1 to
+"emit_follow_notification" of "NotificationEventEmitter" has incompatible type
+"MockUser"; expected "User"  [arg-type]
+    ...wait notification_emitter.emit_follow_notification(follower, followed)
+                                                          ^~~~~~~~
+app\integrations\notification_hooks.py:49:75: error: Argument 2 to
+"emit_follow_notification" of "NotificationEventEmitter" has incompatible type
+"MockUser"; expected "User"  [arg-type]
+    ...wait notification_emitter.emit_follow_notification(follower, followed)
+                                                                    ^~~~~~~~
+app\integrations\notification_hooks.py: note: In member "on_dm_message_sent" of class "NotificationIntegration":
+app\integrations\notification_hooks.py:84:29: error: Argument "sender_user" to
+"emit_dm_message_received_notification" of "NotificationEventEmitter" has
+incompatible type "MockUser"; expected "User"  [arg-type]
+                    sender_user=sender,
+                                ^~~~~~
+app\integrations\notification_hooks.py:85:32: error: Argument "recipient_user"
+to "emit_dm_message_received_notification" of "NotificationEventEmitter" has
+incompatible type "MockUser"; expected "User"  [arg-type]
+                    recipient_user=recipient,
+                                   ^~~~~~~~~
+app\integrations\notification_hooks.py: note: In member "on_ai_response_completed" of class "NotificationIntegration":
+app\integrations\notification_hooks.py:118:22: error: Argument "user" to
+"emit_ai_reply_finished_notification" of "NotificationEventEmitter" has
+incompatible type "MockUser"; expected "User"  [arg-type]
+                    user=user,
+                         ^~~~
+app\api\routes\chat.py:19:1: error: Module "app.services.prices" has no
+attribute "fetch_ohlc"; maybe "get_ohlc"?  [attr-defined]
+    from app.services.prices import fetch_ohlc
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+app\api\routes\chat.py:34: error: Unused "type: ignore" comment 
+[unused-ignore]
+        return _portfolio_summary(handle=None, authorization=authorization...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\api\routes\chat.py:47: error: Unused "type: ignore" comment 
+[unused-ignore]
+        res = await _create_alert(payload, authorization=authorization)  #...
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~...
+app\routers\notifications.py: note: In function "get_notification_preferences":
+app\routers\notifications.py:367:50: error: Argument 1 to
+"NotificationPreferencesResponse" has incompatible type "**dict[str, object]";
+expected "str"  [arg-type]
+            return NotificationPreferencesResponse(**default_preferences)
+                                                     ^~~~~~~~~~~~~~~~~~~
+app\routers\notifications.py:367:50: error: Argument 1 to
+"NotificationPreferencesResponse" has incompatible type "**dict[str, object]";
+expected "bool"  [arg-type]
+            return NotificationPreferencesResponse(**default_preferences)
+                                                     ^~~~~~~~~~~~~~~~~~~
+app\routers\notifications.py:367:50: error: Argument 1 to
+"NotificationPreferencesResponse" has incompatible type "**dict[str, object]";
+expected "dict[str, Any]"  [arg-type]
+            return NotificationPreferencesResponse(**default_preferences)
+                                                     ^~~~~~~~~~~~~~~~~~~
+app\routers\notifications.py:367:50: note: "dict" is invariant -- see https://mypy.readthedocs.io/en/stable/common_issues.html#variance
+app\routers\notifications.py:367:50: note: Consider using "Mapping" instead, which is covariant in the value type
+app\routers\notifications.py:367:50: error: Argument 1 to
+"NotificationPreferencesResponse" has incompatible type "**dict[str, object]";
+expected "str | None"  [arg-type]
+            return NotificationPreferencesResponse(**default_preferences)
+                                                     ^~~~~~~~~~~~~~~~~~~
+Found 227 errors in 51 files (checked 164 source files)

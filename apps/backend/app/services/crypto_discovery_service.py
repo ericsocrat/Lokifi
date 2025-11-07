@@ -2,7 +2,9 @@
 
 import logging
 import time
+from collections.abc import Mapping
 from dataclasses import asdict, dataclass
+from typing import Any, cast
 
 import httpx
 
@@ -163,7 +165,7 @@ class CryptoDiscoveryService:
                     params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
 
                 logger.info(f"Fetching page {page}/{pages_needed} of top cryptos")
-                resp = await client.get(url, params=params)
+                resp = await client.get(url, params=cast(Mapping[str, Any], params))
                 resp.raise_for_status()
                 data = resp.json()
 

@@ -5,8 +5,10 @@ Supports multiple data sources with failover capabilities.
 
 import logging
 import os
+from collections.abc import Mapping
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import Any, cast
 
 import aiohttp
 from pydantic import BaseModel
@@ -619,7 +621,7 @@ class OHLCAggregator:
 
         if not self.session:
             raise RuntimeError("OHLCAggregator session not initialized. Call initialize() first.")
-        async with self.session.get(url, params=params) as response:
+        async with self.session.get(url, params=cast(Mapping[str, Any], params)) as response:
             if response.status != 200:
                 raise Exception(f"HTTP {response.status}")
 

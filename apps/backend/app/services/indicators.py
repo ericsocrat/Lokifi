@@ -2,7 +2,9 @@ from collections import deque
 
 
 def sma(values: list[float], period: int) -> list[float | None]:
-    out, q, s = [], deque(), 0.0
+    out: list[float | None] = []
+    q: deque[float] = deque()
+    s = 0.0
     for v in values:
         q.append(v)
         s += v
@@ -13,9 +15,9 @@ def sma(values: list[float], period: int) -> list[float | None]:
 
 
 def ema(values: list[float], period: int) -> list[float | None]:
-    out = []
+    out: list[float | None] = []
     k = 2 / (period + 1)
-    ema_prev = None
+    ema_prev: float | None = None
     for i, v in enumerate(values):
         if ema_prev is None:
             ema_prev = v
@@ -35,7 +37,7 @@ def rsi(values: list[float], period: int = 14) -> list[float | None]:
     # Wilder's smoothing
     avg_gain = 0.0
     avg_loss = 0.0
-    out = []
+    out: list[float | None] = []
     for i in range(len(values)):
         if i < period:
             out.append(None)

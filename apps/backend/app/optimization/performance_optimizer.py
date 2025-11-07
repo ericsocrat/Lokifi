@@ -551,7 +551,9 @@ class CacheOptimizer:
         """Implement intelligent cache warming for frequently accessed keys"""
         from app.core.advanced_redis_client import advanced_redis_client
 
-        results = {"keys_warmed": 0, "warming_time_ms": 0, "errors": []}
+        # Type narrowing: explicit list type for errors tracking
+        errors: list[str] = []
+        results = {"keys_warmed": 0, "warming_time_ms": 0.0, "errors": errors}
 
         start_time = time.time()
 
@@ -568,12 +570,12 @@ class CacheOptimizer:
                         results["keys_warmed"] += 1
 
                 except Exception as e:
-                    results["errors"].append(f"Failed to warm {key}: {e!s}")
+                    errors.append(f"Failed to warm {key}: {e!s}")
 
             results["warming_time_ms"] = (time.time() - start_time) * 1000
 
         except Exception as e:
-            results["errors"].append(f"Cache warming failed: {e!s}")
+            errors.append(f"Cache warming failed: {e!s}")
 
         return results
 
@@ -662,7 +664,14 @@ class PerformanceOptimizer:
         """Implement safe, low-risk optimizations automatically"""
         logger.info("Implementing safe performance optimizations")
 
-        results = {"optimizations_applied": [], "cache_warming_results": {}, "errors": []}
+        # Type narrowing: explicit list types for tracking
+        optimizations_applied: list[str] = []
+        errors: list[str] = []
+        results = {
+            "optimizations_applied": optimizations_applied,
+            "cache_warming_results": {},
+            "errors": errors,
+        }
 
         try:
             # Implement cache warming for common keys
@@ -675,13 +684,13 @@ class PerformanceOptimizer:
 
             warming_results = await self.cache_optimizer.implement_cache_warming(common_keys)
             results["cache_warming_results"] = warming_results
-            results["optimizations_applied"].append("cache_warming")
+            optimizations_applied.append("cache_warming")
 
             logger.info("Safe optimizations implemented successfully")
 
         except Exception as e:
             logger.error(f"Safe optimization implementation failed: {e}")
-            results["errors"].append(str(e))
+            errors.append(str(e))
 
         return results
 

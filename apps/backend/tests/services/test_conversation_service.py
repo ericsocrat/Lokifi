@@ -16,6 +16,8 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, status
+
 from app.models.conversation import (
     ContentType,
     Conversation,
@@ -26,7 +28,6 @@ from app.models.conversation import (
 from app.models.user import User
 from app.schemas.conversation import MessageCreate
 from app.services.conversation_service import ConversationService
-from fastapi import HTTPException, status
 
 # ============================================================================
 # FIXTURES
@@ -782,7 +783,7 @@ class TestGetUserConversationsDetailed:
             (3, 5, 10),  # page 3, smaller size: offset = (3-1)*5 = 10
         ]
 
-        for page, page_size, expected_offset in test_cases:
+        for page, page_size, _expected_offset in test_cases:
             # Reset execute side effects
             mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
 

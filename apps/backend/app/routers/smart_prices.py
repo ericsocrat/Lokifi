@@ -183,7 +183,8 @@ async def get_all_assets(
             except Exception as e:
                 logger.debug(f"Cache set failed: {e}")
         else:
-            data = cached_data
+            # Type narrowing: cached_data is already validated as dict from Redis
+            data = cached_data if isinstance(cached_data, dict) else {}
 
         # Ensure data is not None
         if data is None:

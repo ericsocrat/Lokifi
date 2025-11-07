@@ -31,7 +31,7 @@ file_handler.setLevel(logging.INFO)
 class SecurityJSONFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
-            "timestamp": datetime.fromtimestamp(record.created, UTC).isoformat(),
+            "timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),
             "level": record.levelname,
             "event_type": getattr(record, "event_type", "unknown"),
             "message": record.getMessage(),

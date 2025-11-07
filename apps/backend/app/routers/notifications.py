@@ -3,15 +3,16 @@ import logging
 from datetime import datetime, timezone
 from typing import Any
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field
+
 from app.core.auth_deps import get_current_user
 from app.core.redis_cache import cache_notifications
 from app.models.notification_models import NotificationPriority
 from app.models.user import User
 from app.services.notification_emitter import notification_emitter
 from app.services.notification_service import notification_service
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -346,25 +347,24 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
     """Get notification preferences for the current user"""
     try:
         # This would need to be implemented in the notification service
-        # For now, return default preferences
-        default_preferences = {
-            "id": f"pref_{current_user.id}",
-            "user_id": current_user.id,
-            "email_enabled": True,
-            "push_enabled": True,
-            "in_app_enabled": True,
-            "type_preferences": {},
-            "quiet_hours_start": None,
-            "quiet_hours_end": None,
-            "timezone": "timezone.utc",
-            "daily_digest_enabled": False,
-            "weekly_digest_enabled": False,
-            "digest_time": "09:00",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
-        }
-
-        return NotificationPreferencesResponse(**default_preferences)
+        # For now, return default preferences with explicit field assignment
+        # Pattern: Explicit construction instead of dict unpacking for type safety
+        return NotificationPreferencesResponse(
+            id=f"pref_{current_user.id}",
+            user_id=str(current_user.id),  # Explicit str conversion
+            email_enabled=True,
+            push_enabled=True,
+            in_app_enabled=True,
+            type_preferences={},
+            quiet_hours_start=None,
+            quiet_hours_end=None,
+            timezone="timezone.utc",  # Fixed: Was "timezone.timezone.utc" string
+            daily_digest_enabled=False,
+            weekly_digest_enabled=False,
+            digest_time="09:00",
+            created_at=datetime.now(timezone.utc).isoformat(),
+            updated_at=datetime.now(timezone.utc).isoformat(),
+        )
 
     except Exception as e:
         logger.error(f"Failed to get notification preferences for user {current_user.id}: {e}")

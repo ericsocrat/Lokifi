@@ -9,6 +9,13 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    // Fix for lucide-react 0.552.0 requiring React in CommonJS format
+    // Tell Vitest to include lucide-react for transformation
+    server: {
+      deps: {
+        inline: ['lucide-react'],
+      },
+    },
     // Suppress console output during tests (except errors)
     silent: false, // Keep false to see test failures
     reporters: process.env.CI ? ['dot'] : ['default'], // Minimal output in CI
@@ -92,6 +99,14 @@ export default defineConfig({
       '@/components': path.resolve(__dirname, './src/components'),
       '@/hooks': path.resolve(__dirname, './src/hooks'),
       '@/utils': path.resolve(__dirname, './src/utils'),
+      // Fix for lucide-react 0.552.0: Force use of ESM build instead of CJS
+      // The CJS build tries to require('react') which fails in Vitest's ESM environment
+      'lucide-react': path.resolve(
+        __dirname,
+        '../../node_modules/lucide-react/dist/esm/lucide-react.js'
+      ),
     },
+    dedupe: ['react', 'react-dom'],
+    conditions: ['import', 'module', 'default'],
   },
 });
