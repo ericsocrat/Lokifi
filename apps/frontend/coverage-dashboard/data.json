@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2025-11-08T17:38:42.584Z",
+  "generated": "2025-11-08T20:28:44.033Z",
   "git": {
     "branch": "main",
-    "commit": "d81f9e88",
+    "commit": "ab3f2961",
     "author": "ericsocrat",
-    "message": "docs: update Pattern Library with Session 79 Frontend Testing Pattern"
+    "message": "docs(session81): document RSI integration test patterns"
   },
   "current": {
     "tests": {
@@ -13,31 +13,31 @@
       "skipped": 0,
       "failing": 0,
       "total": 0,
-      "files": 183,
+      "files": 184,
       "duration": "-"
     },
     "coverage": {
-      "statements": 12.14,
-      "branches": 89.64,
-      "functions": 80.94,
-      "lines": 12.14
+      "statements": 12.52,
+      "branches": 89.9,
+      "functions": 81.06,
+      "lines": 12.52
     },
     "totals": {
       "statements": {
-        "covered": 4880,
-        "total": 40183
+        "covered": 5052,
+        "total": 40363
       },
       "branches": {
-        "covered": 1610,
-        "total": 1796
+        "covered": 1673,
+        "total": 1861
       },
       "functions": {
-        "covered": 514,
-        "total": 635
+        "covered": 518,
+        "total": 639
       },
       "lines": {
-        "covered": 4880,
-        "total": 40183
+        "covered": 5052,
+        "total": 40363
       }
     }
   },
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 12.144439190702535,
-        "branches": 89.64365256124721,
-        "functions": 80.94488188976378,
-        "lines": 12.144439190702535
+        "statements": 12.516413547060425,
+        "branches": 89.89790435249866,
+        "functions": 81.06416275430361,
+        "lines": 12.516413547060425
       },
-      "files": 183,
+      "files": 184,
       "metrics": {
-        "totalLines": 40183,
-        "coveredLines": 4880,
-        "uncoveredLines": 35303
+        "totalLines": 40363,
+        "coveredLines": 5052,
+        "uncoveredLines": 35311
       },
       "health": "critical"
     }
@@ -414,10 +414,10 @@
         "functions": "100.0"
       },
       "metrics": {
-        "totalLines": 411,
-        "uncoveredLines": 411,
+        "totalLines": 413,
+        "uncoveredLines": 413,
         "complexity": 2,
-        "impact": 419
+        "impact": 421
       },
       "priority": "HIGH",
       "reason": "No coverage"
@@ -1344,50 +1344,65 @@
         "branch": "main",
         "commit": "d81f9e88"
       }
+    },
+    {
+      "timestamp": "2025-11-08T20:28:44.033Z",
+      "coverage": {
+        "statements": 12.516413547060425,
+        "branches": 89.89790435249866,
+        "functions": 81.06416275430361,
+        "lines": 12.516413547060425
+      },
+      "tests": 0,
+      "files": 184,
+      "git": {
+        "branch": "main",
+        "commit": "ab3f2961"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.13%",
-      "value": 0.13357233461360707,
+      "text": "↑ 0.37%",
+      "value": 0.37197435635789056,
       "direction": "↑",
       "color": "green"
     },
     "branches": {
-      "text": "↑ 0.17%",
-      "value": 0.17296388737128154,
+      "text": "↑ 0.25%",
+      "value": 0.25425179125144837,
       "direction": "↑",
       "color": "green"
     },
     "functions": {
-      "text": "↑ 0.09%",
-      "value": 0.09045151001694762,
+      "text": "↑ 0.12%",
+      "value": 0.11928086453983155,
       "direction": "↑",
       "color": "green"
     },
     "lines": {
-      "text": "↑ 0.13%",
-      "value": 0.13357233461360707,
+      "text": "↑ 0.37%",
+      "value": 0.37197435635789056,
       "direction": "↑",
       "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 0.31348924177505744,
-    "branches": 0.7923012098958537,
-    "functions": -3.82333003076603,
-    "lines": 0.31348924177505744
+    "statements": 0.7754099991638217,
+    "branches": 0.5313885153945819,
+    "functions": -5.177447983951424,
+    "lines": 0.7754099991638217
   },
   "metadata": {
-    "totalRuns": 18,
+    "totalRuns": 19,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2025-11-08T17:38:42.584Z",
+    "lastRun": "2025-11-08T20:28:44.033Z",
     "bestCoverage": {
-      "statements": 12.144439190702535,
-      "branches": 89.64365256124721,
-      "functions": 80.94488188976378,
-      "lines": 12.144439190702535,
-      "timestamp": "2025-11-08T17:38:42.584Z"
+      "statements": 12.516413547060425,
+      "branches": 89.89790435249866,
+      "functions": 81.06416275430361,
+      "lines": 12.516413547060425,
+      "timestamp": "2025-11-08T20:28:44.033Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -1397,8 +1412,8 @@
     },
     "velocity": {
       "testsPerDay": "NaN",
-      "filesPerRun": "9.6",
-      "avgCoverageGain": "0.05"
+      "filesPerRun": "9.2",
+      "avgCoverageGain": "0.06"
     }
   },
   "insights": [
@@ -1422,14 +1437,14 @@
     }
   ],
   "summary": {
-    "totalFiles": 183,
+    "totalFiles": 184,
     "totalModules": 1,
     "criticalGaps": 105,
     "mediumGaps": 1,
     "lowGaps": 2,
-    "healthyFiles": 62,
+    "healthyFiles": 63,
     "criticalFiles": 117,
-    "avgComplexity": 13
+    "avgComplexity": 14
   },
   "topFiles": {
     "bestCoverage": [
@@ -1576,18 +1591,18 @@
         "functions": 23
       },
       {
+        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\PriceChart.tsx",
+        "complexity": 78,
+        "coverage": "90.2",
+        "branches": 72,
+        "functions": 6
+      },
+      {
         "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\drawStore.tsx",
         "complexity": 73,
         "coverage": "99.4",
         "branches": 53,
         "functions": 20
-      },
-      {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\PriceChart.tsx",
-        "complexity": 72,
-        "coverage": "88.8",
-        "branches": 66,
-        "functions": 6
       },
       {
         "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useMarketData.ts",

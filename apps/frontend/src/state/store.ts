@@ -29,6 +29,9 @@ export interface IndicatorSettings {
   stdChannelPeriod: number;
   stdChannelMult: number;
   rsiPeriod: number;
+  macdFastPeriod: number;
+  macdSlowPeriod: number;
+  macdSignalPeriod: number;
 }
 
 export interface AutoLabels {
@@ -55,6 +58,7 @@ export interface IndicatorFlags {
   showVWMA: boolean;
   showStdChannels: boolean;
   showRSI: boolean;
+  showMACD: boolean;
   bandFill: boolean;
 }
 
@@ -186,6 +190,7 @@ const DEFAULT_INDICATOR_FLAGS: IndicatorFlags = {
   showVWMA: false,
   showStdChannels: false,
   showRSI: false,
+  showMACD: false,
   bandFill: true,
 };
 
@@ -197,6 +202,9 @@ const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
   stdChannelPeriod: 20,
   stdChannelMult: 2,
   rsiPeriod: 14,
+  macdFastPeriod: 12,
+  macdSlowPeriod: 26,
+  macdSignalPeriod: 9,
 };
 
 const DEFAULT_AUTO_LABELS: AutoLabels = {

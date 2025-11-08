@@ -11,6 +11,7 @@ import {
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
+import { calculateMACD } from '@/services/indicators/macd';
 import { calculateRSI } from '@/services/indicators/rsi';
 import { useChartStore } from '@/state/store';
 import {
@@ -176,6 +177,7 @@ export default function PriceChart() {
       kill('_vwma');
       kill('_stdch');
       kill('_rsi');
+      kill('_macd');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -205,7 +207,8 @@ export default function PriceChart() {
         indicatorSettings.bbPeriod,
         indicatorSettings.vwmaPeriod,
         indicatorSettings.stdChannelPeriod,
-        indicatorSettings.rsiPeriod
+        indicatorSettings.rsiPeriod,
+        indicatorSettings.macdSlowPeriod + indicatorSettings.macdSignalPeriod // MACD needs slowPeriod + signalPeriod
       );
       const paddedStart = Math.max(0, startIdx - pad);
       const paddedEnd = endIdx;
@@ -350,6 +353,71 @@ export default function PriceChart() {
         overboughtLine.setData(overboughtData);
         oversoldLine.setData(oversoldData);
         (window as any)._rsi = [rsiLine, overboughtLine, oversoldLine];
+      }
+
+      // --- MACD (Moving Average Convergence Divergence)
+      if (indicators.showMACD) {
+        const macdResult = calculateMACD(
+          close,
+          indicatorSettings.macdFastPeriod,
+          indicatorSettings.macdSlowPeriod,
+          indicatorSettings.macdSignalPeriod
+        );
+
+        // Create MACD line (blue)
+        const macdLine = chart.addLineSeries({
+          color: 'rgb(33, 150, 243)', // Blue
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `MACD(${indicatorSettings.macdFastPeriod},${indicatorSettings.macdSlowPeriod},${indicatorSettings.macdSignalPeriod})`,
+        });
+
+        // Create Signal line (orange)
+        const signalLine = chart.addLineSeries({
+          color: 'rgb(255, 152, 0)', // Orange
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: 'Signal',
+        });
+
+        // Create Histogram (green/red based on value)
+        const histogramSeries = chart.addHistogramSeries({
+          priceScaleId: 'right',
+          title: 'Histogram',
+        });
+
+        // Map MACD values to visible time range
+        const vTimes = candles.slice(startIdx, endIdx + 1).map((c: Candle) => c.time as Time);
+
+        // MACD line data
+        const macdData = vTimes.map((t: Time, i: number) => ({
+          time: t,
+          value: macdResult.macd[i + (startIdx - paddedStart)] ?? NaN,
+        }));
+
+        // Signal line data
+        const signalData = vTimes.map((t: Time, i: number) => ({
+          time: t,
+          value: macdResult.signal[i + (startIdx - paddedStart)] ?? NaN,
+        }));
+
+        // Histogram data (color based on positive/negative)
+        const histogramData = vTimes.map((t: Time, i: number) => {
+          const histValue = macdResult.histogram[i + (startIdx - paddedStart)];
+          if (histValue === null || histValue === undefined || isNaN(histValue)) {
+            return { time: t, value: NaN, color: 'transparent' };
+          }
+          return {
+            time: t,
+            value: histValue,
+            color: histValue >= 0 ? 'rgba(76, 175, 80, 0.5)' : 'rgba(255, 82, 82, 0.5)', // Green or Red
+          };
+        });
+
+        macdLine.setData(downsampleLineMinMax(macdData, target));
+        signalLine.setData(downsampleLineMinMax(signalData, target));
+        histogramSeries.setData(histogramData); // Don't downsample histogram (loses color info)
+        (window as any)._macd = [macdLine, signalLine, histogramSeries];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:

@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
+import { createChart } from 'lightweight-charts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PriceChart from '../../src/components/PriceChart';
 import { useChartStore } from '../../src/state/store';
-import { createChart } from 'lightweight-charts';
 
 // Mock lightweight-charts with comprehensive API
 vi.mock('lightweight-charts', () => {
@@ -1051,6 +1051,350 @@ describe('PriceChart Component', () => {
 
           // Verify BB lines exist (multiple line series)
           expect(lineCalls.length).toBeGreaterThanOrEqual(7);
+        },
+        { timeout: 1000 }
+      );
+    });
+  });
+
+  describe('MACD Indicator Integration', () => {
+    it('should not create MACD series when showMACD is false', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false, // MACD disabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          // Get chartMock from the mock results
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+
+          // No MACD line (blue) should exist
+          const hasMACDLine = lineCalls.some((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          expect(hasMACDLine).toBe(false);
+
+          // No Signal line (orange) should exist
+          const hasSignalLine = lineCalls.some((call: any) => call[0]?.title === 'Signal');
+          expect(hasSignalLine).toBe(false);
+
+          // Only volume histogram should exist (not MACD histogram)
+          expect(histogramCalls.length).toBe(1); // Just volume
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should create MACD series with signal and histogram when showMACD is true', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: true, // MACD enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+
+          expect(lineCalls.length).toBeGreaterThan(0);
+          expect(histogramCalls.length).toBeGreaterThan(1); // Volume + MACD histogram
+
+          // Verify MACD line (blue)
+          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          expect(macdLine).toBeDefined();
+          expect(macdLine[0].lineWidth).toBe(2);
+          expect(macdLine[0].title).toContain('MACD');
+
+          // Verify Signal line (orange)
+          const signalLine = lineCalls.find((call: any) => call[0]?.title === 'Signal');
+          expect(signalLine).toBeDefined();
+          expect(signalLine[0].color).toBe('rgb(255, 152, 0)');
+          expect(signalLine[0].lineWidth).toBe(2);
+
+          // Verify Histogram series
+          const histogramSeries = histogramCalls.find((call: any) => call[0]?.title === 'Histogram');
+          expect(histogramSeries).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should use custom MACD periods from settings', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 5, // Custom periods
+          macdSlowPeriod: 13,
+          macdSignalPeriod: 5,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          expect(macdLine).toBeDefined();
+          expect(macdLine[0].title).toBe('MACD(5,13,5)'); // Verify custom periods in title
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should cleanup MACD series when toggled off', async () => {
+      // Start with MACD enabled
+      const mockStoreValue = {
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      };
+
+      (useChartStore as any).mockReturnValue(mockStoreValue);
+
+      const { rerender } = render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Verify MACD series created
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          expect(macdLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Toggle MACD off
+      const updatedStoreValue = {
+        ...mockStoreValue,
+        indicators: {
+          ...mockStoreValue.indicators,
+          showMACD: false,
+        },
+      };
+      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      rerender(<PriceChart />);
+
+      // Wait for cleanup
+      await waitFor(
+        () => {
+          // Window._macd should be cleaned up
+          expect((window as any)._macd).toBeUndefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should handle multiple indicators (MACD + RSI) simultaneously', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          showMACD: true, // Both RSI and MACD enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for all indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+
+          // RSI: 3 lines (RSI, overbought, oversold)
+          // MACD: 2 lines (MACD, Signal)
+          // Total: 5+ line series
+          expect(lineCalls.length).toBeGreaterThanOrEqual(5);
+
+          // MACD histogram + Volume histogram = 2 histogram series
+          expect(histogramCalls.length).toBe(2);
+
+          // Verify MACD line exists (blue)
+          const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
+          expect(macdLine).toBeDefined();
+
+          // Verify RSI line exists (orange) - Note: RSI is also orange like Signal, but different title
+          const rsiLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+          );
+          expect(rsiLine).toBeDefined();
+
+          // Verify Signal line exists (orange)
+          const signalLine = lineCalls.find((call: any) => call[0]?.title === 'Signal');
+          expect(signalLine).toBeDefined();
         },
         { timeout: 1000 }
       );
