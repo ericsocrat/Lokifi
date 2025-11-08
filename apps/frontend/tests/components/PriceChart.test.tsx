@@ -82,20 +82,55 @@ vi.mock('../../src/state/store', () => ({
   useChartStore: vi.fn(),
 }));
 
-// Mock SWR for data fetching
-vi.mock('swr', () => ({
-  default: vi.fn(() => ({
-    data: {
-      candles: [
-        { ts: 1000000, o: 50000, h: 51000, l: 49000, c: 50500, v: 1000 },
-        { ts: 1001000, o: 50500, h: 51500, l: 49500, c: 51000, v: 1200 },
-        { ts: 1002000, o: 51000, h: 52000, l: 50000, c: 51500, v: 1100 },
-      ],
-    },
-    error: null,
-    isLoading: false,
-    mutate: vi.fn(),
-  })),
+// Mock MarketDataAdapter with proper event emitter pattern (Session 77 AsyncMock pattern)
+let mockAdapterInstance: any = null;
+let mockAdapterListeners: Array<(event: any) => void> = [];
+
+const mockCandles = [
+  { time: 1000000, open: 50000, high: 51000, low: 49000, close: 50500, volume: 1000 },
+  { time: 1001000, open: 50500, high: 51500, low: 49500, close: 51000, volume: 1200 },
+  { time: 1002000, open: 51000, high: 52000, low: 50000, close: 51500, volume: 1100 },
+];
+
+vi.mock('../../src/lib/data/adapter', () => ({
+  MarketDataAdapter: vi.fn().mockImplementation((config) => {
+    mockAdapterInstance = {
+      // Store config for verification
+      config,
+
+      // Event emitter: on(callback) -> unsubscribe function
+      on: vi.fn((callback) => {
+        mockAdapterListeners.push(callback);
+        return () => {
+          mockAdapterListeners = mockAdapterListeners.filter((l) => l !== callback);
+        };
+      }),
+
+      // start() - Emits snapshot event with mock candles
+      start: vi.fn(async () => {
+        // Simulate async data fetch, then emit snapshot
+        await Promise.resolve();
+        setTimeout(() => {
+          mockAdapterListeners.forEach((listener) => {
+            listener({
+              type: 'snapshot',
+              candles: [...mockCandles],
+            });
+          });
+        }, 0);
+      }),
+
+      // stop() - Cleanup
+      stop: vi.fn(),
+
+      // setSymbol(symbol) - Update symbol
+      setSymbol: vi.fn(),
+
+      // setTimeframe(timeframe) - Update timeframe
+      setTimeframe: vi.fn(),
+    };
+    return mockAdapterInstance;
+  }),
 }));
 
 // Mock symbols and timeframe stores
@@ -143,65 +178,116 @@ describe('PriceChart Component', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Reset MarketDataAdapter mock state
+    mockAdapterListeners = [];
+    mockAdapterInstance = null;
+
     (useChartStore as any).mockReturnValue(mockStoreState);
   });
 
   describe('Rendering', () => {
-    it('should render without crashing', () => {
+    it('should render chart container without crashing', () => {
       const { container } = render(<PriceChart />);
+
+      // Verify chart container is rendered
       expect(container.firstChild).toBeTruthy();
+      expect(container.querySelector('.absolute.inset-0')).toBeTruthy();
     });
 
-    it('should create a chart instance on mount', async () => {
+    it('should create MarketDataAdapter and chart instance on mount', async () => {
       const { createChart } = await import('lightweight-charts');
+      const { MarketDataAdapter } = await import('../../src/lib/data/adapter');
+
       render(<PriceChart />);
 
       await waitFor(() => {
+        // Verify MarketDataAdapter created with correct config
+        expect(MarketDataAdapter).toHaveBeenCalledWith({
+          provider: 'mock',
+          symbol: 'BTCUSDT',
+          timeframe: '1h',
+        });
+
+        // Verify adapter methods called
+        expect(mockAdapterInstance.on).toHaveBeenCalled();
+        expect(mockAdapterInstance.start).toHaveBeenCalled();
+
+        // Verify chart instance created
         expect(createChart).toHaveBeenCalled();
       });
     });
 
-    it('should add candlestick series to chart', async () => {
-      const { container } = render(<PriceChart />);
+    it('should add candlestick and histogram series to chart', async () => {
+      const { createChart } = await import('lightweight-charts');
+
+      render(<PriceChart />);
 
       await waitFor(() => {
-        expect(container.firstChild).toBeTruthy();
+        const mockChart = (createChart as any).mock.results[0].value;
+
+        // Verify candlestick series added
+        expect(mockChart.addCandlestickSeries).toHaveBeenCalled();
+
+        // Verify histogram series added (for volume)
+        expect(mockChart.addHistogramSeries).toHaveBeenCalled();
       });
     });
   });
 
   describe('Data Loading', () => {
-    it('should fetch and display candle data', async () => {
-      const { container } = render(<PriceChart />);
+    it('should create adapter and subscribe to data events', async () => {
+      const { MarketDataAdapter } = await import('../../src/lib/data/adapter');
+
+      render(<PriceChart />);
 
       await waitFor(() => {
-        expect(container.firstChild).toBeTruthy();
+        // Verify MarketDataAdapter was created with correct config
+        expect(MarketDataAdapter).toHaveBeenCalledWith({
+          provider: 'mock',
+          symbol: 'BTCUSDT',
+          timeframe: '1h',
+        });
+
+        // Verify adapter.on() was called to subscribe to events
+        expect(mockAdapterInstance.on).toHaveBeenCalled();
+
+        // Verify adapter.start() was called to begin data fetch
+        expect(mockAdapterInstance.start).toHaveBeenCalled();
       });
     });
 
     it('should handle loading state', async () => {
-      const swrModule = await import('swr');
-      (swrModule.default as any).mockReturnValue({
-        data: null,
-        error: null,
-        isLoading: true,
-        mutate: vi.fn(),
+      // MarketDataAdapter mock doesn't emit events until start() is called
+      // So we can test the initial loading state before snapshot arrives
+      const { container } = render(<PriceChart />);
+
+      await waitFor(() => {
+        // Verify adapter was created and start() was called
+        expect(mockAdapterInstance).not.toBeNull();
+        expect(mockAdapterInstance.start).toHaveBeenCalled();
       });
 
-      const { container } = render(<PriceChart />);
+      // Chart should still be initialized even without data
       expect(container.firstChild).toBeTruthy();
     });
 
     it('should handle error state', async () => {
-      const swrModule = await import('swr');
-      (swrModule.default as any).mockReturnValue({
-        data: null,
-        error: new Error('Failed to fetch'),
-        isLoading: false,
-        mutate: vi.fn(),
-      });
+      // Simulate adapter start() throwing an error
+      mockAdapterInstance = null;
+      const MarketDataAdapterMock = (await import('../../src/lib/data/adapter'))
+        .MarketDataAdapter as any;
+      MarketDataAdapterMock.mockImplementationOnce(() => ({
+        on: vi.fn(() => () => {}),
+        start: vi.fn().mockRejectedValue(new Error('Failed to fetch')),
+        stop: vi.fn(),
+        setSymbol: vi.fn(),
+        setTimeframe: vi.fn(),
+      }));
 
       const { container } = render(<PriceChart />);
+
+      // Chart should still render even with error
       expect(container.firstChild).toBeTruthy();
     });
   });
@@ -398,21 +484,37 @@ describe('PriceChart Component', () => {
   describe('Performance', () => {
     it('should handle large datasets efficiently', async () => {
       const largeDataset = Array.from({ length: 1000 }, (_: any, i: any) => ({
-        ts: 1000000 + i * 60,
-        o: 50000 + Math.random() * 1000,
-        h: 51000 + Math.random() * 1000,
-        l: 49000 + Math.random() * 1000,
-        c: 50500 + Math.random() * 1000,
-        v: 1000 + Math.random() * 500,
+        time: 1000000 + i * 60,
+        open: 50000 + Math.random() * 1000,
+        high: 51000 + Math.random() * 1000,
+        low: 49000 + Math.random() * 1000,
+        close: 50500 + Math.random() * 1000,
+        volume: 1000 + Math.random() * 500,
       }));
 
-      const swrModule = await import('swr');
-      (swrModule.default as any).mockReturnValue({
-        data: { candles: largeDataset },
-        error: null,
-        isLoading: false,
-        mutate: vi.fn(),
-      });
+      // Configure MarketDataAdapter mock to emit large dataset
+      const MarketDataAdapterMock = (await import('../../src/lib/data/adapter'))
+        .MarketDataAdapter as any;
+      MarketDataAdapterMock.mockImplementationOnce((config: any) => ({
+        config,
+        on: vi.fn((callback) => {
+          mockAdapterListeners.push(callback);
+          return () => {
+            mockAdapterListeners = mockAdapterListeners.filter((l) => l !== callback);
+          };
+        }),
+        start: vi.fn(async () => {
+          await Promise.resolve();
+          setTimeout(() => {
+            mockAdapterListeners.forEach((listener) => {
+              listener({ type: 'snapshot', candles: largeDataset });
+            });
+          }, 0);
+        }),
+        stop: vi.fn(),
+        setSymbol: vi.fn(),
+        setTimeframe: vi.fn(),
+      }));
 
       const startTime = performance.now();
       const { container } = render(<PriceChart />);
