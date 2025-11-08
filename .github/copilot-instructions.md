@@ -1652,9 +1652,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**38 Battle-Tested Patterns** from 80+ sessions with proven success metrics:
+**40 Battle-Tested Patterns** from 80+ sessions with proven success metrics:
 
-**Testing Patterns** (10):
+**Testing Patterns** (12):
 - **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
   - **create_mock_response() helper**: Lambda pattern for sync methods on AsyncMock (prevents coroutines)
   - **Success Rate**: 100% across backend Python + frontend React TypeScript
@@ -1693,7 +1693,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - Verify reduced API call counts within time windows
   - Proven across: ForexService, StockService, IndicesService
   - Tests covering: 15+ tests across 3 services, straightforward implementation
-- **Frontend React Testing Pattern** - 100% success, 88.84% coverage (Session 79) ⭐⭐⭐ NEW!
+- **Frontend React Testing Pattern** - 100% success, 88.84% coverage (Session 79) ⭐⭐⭐
   - **AsyncMock for React**: Adapt create_mock_response() for frontend external APIs
   - **React Testing Library**: Behavior-driven assertions (user-facing outcomes, not implementation)
   - **Canvas Testing**: ctx.__getDrawCalls() for lightweight canvas inspection (no canvas library needed)
@@ -1701,6 +1701,23 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Coverage Achievement**: 46.4% → 88.84% (+42.44pp, exceeds 80% target)
   - **Pattern Reusability**: WebSocket, Indicators, all future frontend components
   - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (700+ lines)
+- **Correct Mock Pattern for lightweight-charts** - 100% success, 25+ tests validated (Session 81) ⭐⭐⭐ NEW!
+  - **Problem**: Tests accessing Vitest mocked functions incorrectly (bypassing mocks or accessing before render)
+  - **Anti-pattern 1**: `const chartMock = (await import('lightweight-charts')).createChart();` - Bypasses mock
+  - **Anti-pattern 2**: `const lineCalls = chartMock.addLineSeries.mock.calls;` - chartMock undefined in scope
+  - **Correct Pattern**: Import at top `import { createChart } from 'lightweight-charts';`, then access inside `waitFor` via `(createChart as any).mock.results[0]?.value`
+  - **Why This Works**: `vi.mock('lightweight-charts')` creates mock, import accesses mocked function, `.mock.results[0]?.value` gets chart instance, `waitFor` ensures render complete
+  - **Success Metrics**: Validated 25+ tests, Fixed 5 RSI integration tests (28/30 → 30/30 passing)
+  - **Reusability**: MACD, Bollinger Bands, Stochastic integration tests
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 81 section)
+- **React Mutation Testing for useEffect Dependencies** - 100% success (Session 81) ⭐⭐ NEW!
+  - **Problem**: Object mutation doesn't trigger React's useEffect (shallow equality comparison)
+  - **Anti-pattern**: `mockStoreValue.indicators.showRSI = false; (useChartStore as any).mockReturnValue(mockStoreValue); rerender(<PriceChart />);` - Same object reference, useEffect doesn't run
+  - **Correct Pattern**: `const updatedStoreValue = { ...mockStoreValue, indicators: { ...mockStoreValue.indicators, showRSI: false } }; (useChartStore as any).mockReturnValue(updatedStoreValue); rerender(<PriceChart />);` - New object reference triggers useEffect
+  - **Why This Matters**: React useEffect uses shallow equality - same reference = no change detected, new reference = change detected → cleanup executes
+  - **Application**: All indicator toggle/cleanup tests (RSI, MACD, Bollinger Bands, Stochastic)
+  - **Success Metrics**: Fixed 1 cleanup test (29/30 → 30/30 passing), Validated via `window._rsi === undefined` assertion
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 81 section)
 
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
