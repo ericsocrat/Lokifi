@@ -1652,18 +1652,29 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**38 Battle-Tested Patterns** from 79+ sessions with proven success metrics:
+**38 Battle-Tested Patterns** from 80+ sessions with proven success metrics:
 
-**Testing Patterns** (9):
+**Testing Patterns** (10):
 - **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
   - **create_mock_response() helper**: Lambda pattern for sync methods on AsyncMock (prevents coroutines)
   - **Success Rate**: 100% across backend Python + frontend React TypeScript
   - **Backend Validation** (157 tests): 26 DataArchival + 42 Crypto + 20 Forex + 22 Stock + 28 Indices + 19 News
   - **Frontend Validation** (25 tests): PriceChart component (88.84% coverage, Session 79)
   - **Universal Pattern**: Proven across 6 backend services + 1 frontend component - CROSS-STACK RECORD! 🏆
-  - **Complete Guides**: 
+  - **Complete Guides**:
     - Backend: `/docs/guides/external-api-testing-patterns.md`
     - Frontend: `/docs/guides/frontend-testing-patterns.md`
+- **Mathematical Indicator Testing Pattern** - 100% success, 24 tests proven (Session 80) ⭐⭐⭐ NEW!
+  - **Pattern**: Known inputs → Expected outputs (industry standard formulas)
+  - **Success Rate**: 100% (24/24 tests passing)
+  - **Coverage**: 100% statements, 97.43% branches (exceeds 85% target by 15pp)
+  - **Performance**: 10k prices <100ms validated
+  - **Edge Cases**: Empty arrays, insufficient data, zero denominators, invalid periods, numeric extremes
+  - **Debugging Journey**: 3 iterations (zero losses fix, test expectation fix, 100% pass rate)
+  - **Proven On**: RSI indicator (Wilder's smoothing method)
+  - **Reusability**: MACD, Bollinger Bands, Stochastic, all mathematical indicators
+  - **Anti-pattern**: Not handling zero denominators (causes incorrect indicator values)
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 80 section)
 - **Mock side_effect for Sequential Calls** - 100% success (Session 77 Phases 3-5) ⭐
   - Pattern: `mock.side_effect = [error_response, success_response]` for partial failure testing
   - Use case: Test graceful degradation when first API call fails, second succeeds
@@ -1767,7 +1778,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Log Analysis** - 75-88% time savings (10+ sessions)
 
 **Pattern Selection Guide**:
-- **Testing**: "What are you testing?" → AsyncMock, Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
+- **Testing**: "What are you testing?" → AsyncMock, Mathematical Indicator Testing, Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
 - **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
@@ -1776,7 +1787,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
-**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses create_mock_response pattern from Session 77 - proven across 138 tests")
+**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses Mathematical Indicator Testing pattern from Session 80 - proven 24/24 tests")
 
 ## Documentation References
 
