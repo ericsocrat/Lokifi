@@ -1188,7 +1188,9 @@ describe('PriceChart Component', () => {
           expect(signalLine[0].lineWidth).toBe(2);
 
           // Verify Histogram series
-          const histogramSeries = histogramCalls.find((call: any) => call[0]?.title === 'Histogram');
+          const histogramSeries = histogramCalls.find(
+            (call: any) => call[0]?.title === 'Histogram'
+          );
           expect(histogramSeries).toBeDefined();
         },
         { timeout: 1000 }
@@ -1395,6 +1397,339 @@ describe('PriceChart Component', () => {
           // Verify Signal line exists (orange)
           const signalLine = lineCalls.find((call: any) => call[0]?.title === 'Signal');
           expect(signalLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+  });
+
+  describe('Bollinger Bands Indicator Integration', () => {
+    it('should not create BB series when showBB is false', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false, // BB disabled
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          // Get chartMock from the mock results
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          // No BB lines should exist (middle=orange, upper/lower=blue)
+          const hasBBMiddle = lineCalls.some(
+            (call: any) => call[0]?.title?.includes('BB Mid') || call[0]?.title?.includes('BB Upper')
+          );
+          expect(hasBBMiddle).toBe(false);
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should create BB series (upper, middle, lower) when showBB is true', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true, // BB enabled
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          expect(lineCalls.length).toBeGreaterThan(0);
+
+          // Verify BB Middle line (orange)
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+          expect(bbMiddle[0].color).toBe('rgb(255, 152, 0)'); // Orange
+          expect(bbMiddle[0].lineWidth).toBe(2);
+          expect(bbMiddle[0].title).toContain('BB Mid(20,2)');
+
+          // Verify BB Upper line (blue)
+          const bbUpper = lineCalls.find((call: any) => call[0]?.title === 'BB Upper');
+          expect(bbUpper).toBeDefined();
+          expect(bbUpper[0].color).toBe('rgb(33, 150, 243)'); // Blue
+          expect(bbUpper[0].lineWidth).toBe(1);
+
+          // Verify BB Lower line (blue)
+          const bbLower = lineCalls.find((call: any) => call[0]?.title === 'BB Lower');
+          expect(bbLower).toBeDefined();
+          expect(bbLower[0].color).toBe('rgb(33, 150, 243)'); // Blue
+          expect(bbLower[0].lineWidth).toBe(1);
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should apply custom BB periods and multipliers', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 10, // Custom period
+          bbMult: 3, // Custom multiplier
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify custom period/multiplier reflected in title
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+          expect(bbMiddle[0].title).toContain('BB Mid(10,3)');
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should cleanup BB series when toggled off', async () => {
+      // Start with BB enabled
+      const mockStoreValue = {
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      };
+
+      (useChartStore as any).mockReturnValue(mockStoreValue);
+
+      const { rerender } = render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Verify BB series created
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Toggle BB off
+      const updatedStoreValue = {
+        ...mockStoreValue,
+        indicators: {
+          ...mockStoreValue.indicators,
+          showBB: false,
+        },
+      };
+      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      rerender(<PriceChart />);
+
+      // Wait for cleanup
+      await waitFor(
+        () => {
+          // Window._bbSeries should be cleaned up
+          expect((window as any)._bbSeries).toBeUndefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should handle multiple indicators (BB + RSI + MACD) simultaneously', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          showMACD: true, // All 3 indicators enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify BB Middle exists
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+
+          // Verify RSI exists (orange, but different title than BB middle)
+          const rsiLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+          );
+          expect(rsiLine).toBeDefined();
+
+          // Verify MACD exists (blue, but different title than BB bands)
+          const macdLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+          );
+          expect(macdLine).toBeDefined();
         },
         { timeout: 1000 }
       );

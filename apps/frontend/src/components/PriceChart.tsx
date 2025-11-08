@@ -11,6 +11,7 @@ import {
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
+import { calculateBollingerBands } from '@/services/indicators/bollinger';
 import { calculateMACD } from '@/services/indicators/macd';
 import { calculateRSI } from '@/services/indicators/rsi';
 import { useChartStore } from '@/state/store';
@@ -219,24 +220,43 @@ export default function PriceChart() {
 
       // --- Bollinger Bands
       if (indicators.showBB) {
-        const bb = bollinger(close, indicatorSettings.bbPeriod, indicatorSettings.bbMult);
-        const basis = chart.addLineSeries({ lineStyle: LineStyle.Solid, lineWidth: 1 });
-        const upper = chart.addLineSeries({ lineStyle: LineStyle.Solid, lineWidth: 1 });
-        const lower = chart.addLineSeries({ lineStyle: LineStyle.Solid, lineWidth: 1 });
+        const bbData = calculateBollingerBands(close, indicatorSettings.bbPeriod, indicatorSettings.bbMult);
+        
+        const basis = chart.addLineSeries({ 
+          color: 'rgb(255, 152, 0)', // Orange (middle band)
+          lineStyle: LineStyle.Solid, 
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `BB Mid(${indicatorSettings.bbPeriod},${indicatorSettings.bbMult})`,
+        });
+        const upper = chart.addLineSeries({ 
+          color: 'rgb(33, 150, 243)', // Blue (upper band)
+          lineStyle: LineStyle.Solid, 
+          lineWidth: 1,
+          priceScaleId: 'right',
+          title: 'BB Upper',
+        });
+        const lower = chart.addLineSeries({ 
+          color: 'rgb(33, 150, 243)', // Blue (lower band)
+          lineStyle: LineStyle.Solid, 
+          lineWidth: 1,
+          priceScaleId: 'right',
+          title: 'BB Lower',
+        });
 
         // Map back to original candle times for just the visible window (not the padding)
         const vTimes = candles.slice(startIdx, endIdx + 1).map((c: Candle) => c.time as Time);
         const baseData = vTimes.map((t: Time, i: number) => ({
           time: t,
-          value: bb.mid[i + (startIdx - paddedStart)] ?? NaN,
+          value: bbData[i + (startIdx - paddedStart)]?.middle ?? NaN,
         }));
         const upData = vTimes.map((t: Time, i: number) => ({
           time: t,
-          value: bb.upper[i + (startIdx - paddedStart)] ?? NaN,
+          value: bbData[i + (startIdx - paddedStart)]?.upper ?? NaN,
         }));
         const loData = vTimes.map((t: Time, i: number) => ({
           time: t,
-          value: bb.lower[i + (startIdx - paddedStart)] ?? NaN,
+          value: bbData[i + (startIdx - paddedStart)]?.lower ?? NaN,
         }));
 
         basis.setData(downsampleLineMinMax(baseData, target));
