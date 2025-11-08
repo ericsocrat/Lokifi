@@ -8,10 +8,10 @@ import {
   vwma,
   type Candle as IndCandle,
 } from '@/lib/charts/indicators';
-import { calculateRSI } from '@/services/indicators/rsi';
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
+import { calculateRSI } from '@/services/indicators/rsi';
 import { useChartStore } from '@/state/store';
 import {
   createChart,

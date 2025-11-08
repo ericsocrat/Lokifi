@@ -1,7 +1,8 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PriceChart from '../../src/components/PriceChart';
 import { useChartStore } from '../../src/state/store';
+import { createChart } from 'lightweight-charts';
 
 // Mock lightweight-charts with comprehensive API
 vi.mock('lightweight-charts', () => {
@@ -295,7 +296,7 @@ describe('PriceChart Component', () => {
   describe('Indicators', () => {
     it('should create Bollinger Bands line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: {
@@ -309,11 +310,11 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // Bollinger Bands creates 3 line series (upper, middle, lower)
         const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(3);
-        
+
         // Verify at least one line series was created for BB
         expect(chartMock.addLineSeries).toHaveBeenCalled();
       });
@@ -321,7 +322,7 @@ describe('PriceChart Component', () => {
 
     it('should create VWAP line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: {
@@ -335,10 +336,10 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // VWAP creates 1 line series
         expect(chartMock.addLineSeries).toHaveBeenCalled();
-        
+
         // Verify line series was created
         const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(1);
@@ -347,7 +348,7 @@ describe('PriceChart Component', () => {
 
     it('should create VWMA line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: {
@@ -361,10 +362,10 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // VWMA creates 1 line series
         expect(chartMock.addLineSeries).toHaveBeenCalled();
-        
+
         // Verify line series was created
         const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(1);
@@ -373,7 +374,7 @@ describe('PriceChart Component', () => {
 
     it('should create Standard Deviation Channels line series when enabled', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: {
@@ -387,11 +388,11 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // Std Dev Channels creates 3 line series (upper, middle, lower)
         const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(3);
-        
+
         // Verify line series was created
         expect(chartMock.addLineSeries).toHaveBeenCalled();
       });
@@ -401,7 +402,7 @@ describe('PriceChart Component', () => {
   describe('Theme Support', () => {
     it('should apply dark theme options to chart', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         theme: 'dark',
@@ -411,11 +412,11 @@ describe('PriceChart Component', () => {
 
       await waitFor(() => {
         expect(createChart).toHaveBeenCalled();
-        
+
         // Verify chart was created with layout options containing theme colors
         const createChartCalls = (createChart as any).mock.calls;
         expect(createChartCalls.length).toBeGreaterThan(0);
-        
+
         const chartOptions = createChartCalls[0][1];
         expect(chartOptions).toBeDefined();
         expect(chartOptions.layout).toBeDefined();
@@ -426,7 +427,7 @@ describe('PriceChart Component', () => {
 
     it('should apply light theme options to chart', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         theme: 'light',
@@ -436,17 +437,17 @@ describe('PriceChart Component', () => {
 
       await waitFor(() => {
         expect(createChart).toHaveBeenCalled();
-        
+
         // Verify chart was created with layout options containing theme colors
         const createChartCalls = (createChart as any).mock.calls;
         expect(createChartCalls.length).toBeGreaterThan(0);
-        
+
         const chartOptions = createChartCalls[0][1];
         expect(chartOptions).toBeDefined();
         expect(chartOptions.layout).toBeDefined();
         expect(chartOptions.layout.background).toBeDefined();
         expect(chartOptions.layout.textColor).toBeDefined();
-        
+
         // Light theme should have lighter background
         expect(chartOptions.layout.background.color).toBeDefined();
       });
@@ -454,7 +455,7 @@ describe('PriceChart Component', () => {
 
     it('should call applyOptions when theme changes', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       // Start with dark theme
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
@@ -474,7 +475,7 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // Verify applyOptions was called (theme update)
         expect(chartMock.applyOptions).toHaveBeenCalled();
       });
@@ -489,7 +490,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(() => {
         expect(createChart).toHaveBeenCalled();
-        
+
         // Verify chart instance created with resize capability
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
@@ -503,7 +504,7 @@ describe('PriceChart Component', () => {
 
       await waitFor(() => {
         expect(createChart).toHaveBeenCalled();
-        
+
         // Verify chart container exists
         const chartContainer = container.querySelector('.absolute.inset-0');
         expect(chartContainer).toBeTruthy();
@@ -528,7 +529,7 @@ describe('PriceChart Component', () => {
       // Note: In real implementation, symbol change triggers useEffect
       // which would call adapter.setSymbol. Testing this requires
       // more complex state management simulation.
-      
+
       // For now, verify adapter has setSymbol method
       expect(mockAdapterInstance.setSymbol).toBeDefined();
     });
@@ -549,7 +550,7 @@ describe('PriceChart Component', () => {
       // Note: In real implementation, timeframe change triggers useEffect
       // which would call adapter.setTimeframe. Testing this requires
       // more complex state management simulation.
-      
+
       // For now, verify adapter has setTimeframe method
       expect(mockAdapterInstance.setTimeframe).toBeDefined();
     });
@@ -573,7 +574,7 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         // Verify chart.remove was called
         expect(chartMock.remove).toHaveBeenCalled();
-        
+
         // Verify adapter.stop was called
         expect(mockAdapterInstance.stop).toHaveBeenCalled();
       });
@@ -596,7 +597,7 @@ describe('PriceChart Component', () => {
       // Note: In real implementation, unsubscribe function returned by on()
       // would be called in useEffect cleanup. Our mock tracks this via
       // mockAdapterListeners array filtering.
-      
+
       // Verify on() method was called (subscription happened)
       expect(mockAdapterInstance.on).toHaveBeenCalled();
     });
@@ -605,7 +606,7 @@ describe('PriceChart Component', () => {
   describe('Performance', () => {
     it('should handle large datasets efficiently with Level-of-Detail', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       const largeDataset = Array.from({ length: 1000 }, (_: any, i: any) => ({
         time: 1000000 + i * 60,
         open: 50000 + Math.random() * 1000,
@@ -646,17 +647,17 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         expect(createChart).toHaveBeenCalled();
       });
-      
+
       // Performance: should render quickly even with large dataset
       expect(endTime - startTime).toBeLessThan(2000);
-      
+
       // Verify chart rendered
       expect(container.firstChild).toBeTruthy();
     });
 
     it('should create all indicator series without performance issues', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         indicators: {
@@ -673,7 +674,7 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // All 4 indicators enabled = 3 BB lines + 1 VWAP + 1 VWMA + 3 Std Dev = 8 line series
         const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(6);
@@ -684,13 +685,13 @@ describe('PriceChart Component', () => {
   describe('Crosshair', () => {
     it('should create chart with crosshair capability', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       render(<PriceChart />);
 
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // Verify chart has crosshair subscription capability
         expect(chartMock.subscribeCrosshairMove).toBeDefined();
       });
@@ -702,11 +703,11 @@ describe('PriceChart Component', () => {
 
       await waitFor(() => {
         expect(createChart).toHaveBeenCalled();
-        
+
         // Verify chart has crosshair subscription capability
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock.subscribeCrosshairMove).toBeDefined();
-        
+
         // Verify component rendered
         expect(container.firstChild).toBeTruthy();
       });
@@ -716,13 +717,13 @@ describe('PriceChart Component', () => {
   describe('Volume Display', () => {
     it('should create histogram series for volume', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       render(<PriceChart />);
 
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // Verify histogram series was created for volume
         expect(chartMock.addHistogramSeries).toHaveBeenCalled();
       });
@@ -730,21 +731,329 @@ describe('PriceChart Component', () => {
 
     it('should configure volume histogram with color options', async () => {
       const { createChart } = await import('lightweight-charts');
-      
+
       render(<PriceChart />);
 
       await waitFor(() => {
         const chartMock = (createChart as any).mock.results[0]?.value;
         expect(chartMock).toBeDefined();
-        
+
         // Verify histogram series created
         expect(chartMock.addHistogramSeries).toHaveBeenCalled();
-        
+
         // Volume bars colored based on price direction is implementation detail
         // Verified by histogram series creation
         const addHistogramCalls = chartMock.addHistogramSeries.mock.calls;
         expect(addHistogramCalls.length).toBeGreaterThanOrEqual(1);
       });
+    });
+  });
+
+  describe('RSI Indicator Integration', () => {
+    it('should not create RSI series when showRSI is false', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false, // RSI disabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          // Get chartMock from the mock results
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          // Only candlestick and histogram series should be created
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          // No RSI lines should exist
+          const hasRSILine = lineCalls.some((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          expect(hasRSILine).toBe(false);
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should create RSI series with overbought/oversold lines when showRSI is true', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true, // RSI enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          expect(lineCalls.length).toBeGreaterThan(0);
+
+          // Verify RSI line (orange)
+          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          expect(rsiLine).toBeDefined();
+          expect(rsiLine[0].lineWidth).toBe(2);
+          expect(rsiLine[0].title).toContain('RSI');
+
+          // Verify overbought line (red, dashed)
+          const overboughtLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgba(255, 0, 0, 0.3)'
+          );
+          expect(overboughtLine).toBeDefined();
+          expect(overboughtLine[0].lineStyle).toBe(2); // Dashed (LineStyle.Dashed = 2)
+          expect(overboughtLine[0].title).toContain('Overbought');
+
+          // Verify oversold line (green, dashed)
+          const oversoldLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgba(0, 255, 0, 0.3)'
+          );
+          expect(oversoldLine).toBeDefined();
+          expect(oversoldLine[0].lineStyle).toBe(2); // Dashed
+          expect(oversoldLine[0].title).toContain('Oversold');
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should use custom RSI period from settings', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 7, // Custom period
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      expect(listener).toBeDefined();
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          expect(rsiLine).toBeDefined();
+          expect(rsiLine[0].title).toBe('RSI(7)'); // Verify custom period in title
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should cleanup RSI series when toggled off', async () => {
+      // Start with RSI enabled
+      const mockStoreValue = {
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+        },
+      };
+
+      (useChartStore as any).mockReturnValue(mockStoreValue);
+
+      const { rerender } = render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Verify RSI series created
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          expect(rsiLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Toggle RSI off
+      const updatedStoreValue = {
+        ...mockStoreValue,
+        indicators: {
+          ...mockStoreValue.indicators,
+          showRSI: false,
+        },
+      };
+      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      rerender(<PriceChart />);
+
+      // Wait for cleanup
+      await waitFor(
+        () => {
+          // Window._rsi should be cleaned up
+          expect((window as any)._rsi).toBeUndefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should handle multiple indicators (RSI + BB + VWAP) simultaneously', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: true,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true, // RSI + BB + VWAP
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      // Emit candles
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for all indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+          expect(lineCalls.length).toBeGreaterThan(5); // BB (3) + VWAP (1) + RSI (3) = 7+
+
+          // Verify RSI line exists
+          const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
+          expect(rsiLine).toBeDefined();
+
+          // Verify VWAP line exists (should have lineWidth 2)
+          const vwapLine = lineCalls.find((call: any) => call[0]?.lineWidth === 2);
+          expect(vwapLine).toBeDefined();
+
+          // Verify BB lines exist (multiple line series)
+          expect(lineCalls.length).toBeGreaterThanOrEqual(7);
+        },
+        { timeout: 1000 }
+      );
     });
   });
 });

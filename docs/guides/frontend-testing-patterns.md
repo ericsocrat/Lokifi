@@ -1090,30 +1090,30 @@ from app.services.crypto_data_service import CryptoDataService
 def mock_http_client():
     """Create mock HTTP client for external API calls."""
     client = AsyncMock()
-    
+
     def create_mock_response(data):
         """Helper for synchronous mock responses."""
         response = MagicMock()
         response.json = lambda: data  # Lambda for sync return
         response.status_code = 200
         return response
-    
+
     client.get.return_value = create_mock_response({
         "symbol": "BTC",
         "price": 50000.0,
         "change": 1000.0,
         "changePercent": 2.04,
     })
-    
+
     return client
 
 @pytest.mark.asyncio
 async def test_get_crypto_price_success(mock_http_client):
     """Test successful crypto price retrieval."""
     service = CryptoDataService(client=mock_http_client)
-    
+
     result = await service.get_crypto_price("BTC")
-    
+
     assert result["symbol"] == "BTC"
     assert result["price"] == 50000.0
     mock_http_client.get.assert_called_once_with("/crypto/BTC")
