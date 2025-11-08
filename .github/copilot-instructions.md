@@ -1652,14 +1652,18 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**37 Battle-Tested Patterns** from 76+ sessions with proven success metrics:
+**38 Battle-Tested Patterns** from 79+ sessions with proven success metrics:
 
-**Testing Patterns** (8):
-- **AsyncMock Pattern** - 100% success, 157 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6) ⭐⭐⭐
+**Testing Patterns** (9):
+- **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
   - **create_mock_response() helper**: Lambda pattern for sync methods on AsyncMock (prevents coroutines)
-  - **Success Rate**: 100% (26 DataArchival + 42 Crypto + 20 Forex + 22 Stock + 28 Indices + 19 News = 157 tests)
-  - **Sextuple Validation**: 6 external API services tested (DataArchivalService, CryptoDataService, ForexService, StockService, IndicesService, NewsService) - PROJECT RECORD! 🏆
-  - **Complete Guide**: `/docs/guides/external-api-testing-patterns.md`
+  - **Success Rate**: 100% across backend Python + frontend React TypeScript
+  - **Backend Validation** (157 tests): 26 DataArchival + 42 Crypto + 20 Forex + 22 Stock + 28 Indices + 19 News
+  - **Frontend Validation** (25 tests): PriceChart component (88.84% coverage, Session 79)
+  - **Universal Pattern**: Proven across 6 backend services + 1 frontend component - CROSS-STACK RECORD! 🏆
+  - **Complete Guides**: 
+    - Backend: `/docs/guides/external-api-testing-patterns.md`
+    - Frontend: `/docs/guides/frontend-testing-patterns.md`
 - **Mock side_effect for Sequential Calls** - 100% success (Session 77 Phases 3-5) ⭐
   - Pattern: `mock.side_effect = [error_response, success_response]` for partial failure testing
   - Use case: Test graceful degradation when first API call fails, second succeeds
@@ -1678,6 +1682,14 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - Verify reduced API call counts within time windows
   - Proven across: ForexService, StockService, IndicesService
   - Tests covering: 15+ tests across 3 services, straightforward implementation
+- **Frontend React Testing Pattern** - 100% success, 88.84% coverage (Session 79) ⭐⭐⭐ NEW!
+  - **AsyncMock for React**: Adapt create_mock_response() for frontend external APIs
+  - **React Testing Library**: Behavior-driven assertions (user-facing outcomes, not implementation)
+  - **Canvas Testing**: ctx.__getDrawCalls() for lightweight canvas inspection (no canvas library needed)
+  - **Debugging Iterations**: 4 iterations (Theme → Resize → Crosshair → Edge Cases) documented
+  - **Coverage Achievement**: 46.4% → 88.84% (+42.44pp, exceeds 80% target)
+  - **Pattern Reusability**: WebSocket, Indicators, all future frontend components
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (700+ lines)
 
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
@@ -1755,7 +1767,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Log Analysis** - 75-88% time savings (10+ sessions)
 
 **Pattern Selection Guide**:
-- **Testing**: "What are you testing?" → AsyncMock, Mock side_effect, Implementation Verification, 2-Tier Caching, Pure Functions, Mathematical Testing, Fixtures
+- **Testing**: "What are you testing?" → AsyncMock, Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
 - **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
@@ -1770,7 +1782,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 When suggesting code or answering questions, prefer these docs:
 - **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
-- **Pattern Library**: See "Pattern Library" section above - 37 battle-tested patterns ⭐
+- **Pattern Library**: See "Pattern Library" section above - 38 battle-tested patterns ⭐
+- **Frontend Testing Patterns**: `/docs/guides/frontend-testing-patterns.md` - Session 79 comprehensive guide (88.84% coverage achievement) ⭐⭐⭐ NEW!
+- **Backend Testing Patterns**: `/docs/guides/external-api-testing-patterns.md` - Session 77 comprehensive guide (157 tests) ⭐⭐⭐
 - **attr-defined Elimination**: `/docs/development/type-safety/attr-defined-elimination-session76.md` - 100% success rate, 4 patterns (Session 76) ⭐ NEW! 🏆
 - **arg-type Elimination**: `/docs/development/type-safety/arg-type-elimination-session75.md` - 100% success rate, 9 patterns (Session 75) ⭐ 🏆
 - **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` - 92.7% reduction (Session 74) ⭐
