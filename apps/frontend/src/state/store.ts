@@ -28,6 +28,7 @@ export interface IndicatorSettings {
   vwapAnchorIndex: number;
   stdChannelPeriod: number;
   stdChannelMult: number;
+  rsiPeriod: number;
 }
 
 export interface AutoLabels {
@@ -53,6 +54,7 @@ export interface IndicatorFlags {
   showVWAP: boolean;
   showVWMA: boolean;
   showStdChannels: boolean;
+  showRSI: boolean;
   bandFill: boolean;
 }
 
@@ -183,6 +185,7 @@ const DEFAULT_INDICATOR_FLAGS: IndicatorFlags = {
   showVWAP: false,
   showVWMA: false,
   showStdChannels: false,
+  showRSI: false,
   bandFill: true,
 };
 
@@ -193,6 +196,7 @@ const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
   vwapAnchorIndex: 0,
   stdChannelPeriod: 20,
   stdChannelMult: 2,
+  rsiPeriod: 14,
 };
 
 const DEFAULT_AUTO_LABELS: AutoLabels = {

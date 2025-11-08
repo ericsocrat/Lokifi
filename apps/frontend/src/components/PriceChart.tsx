@@ -8,6 +8,7 @@ import {
   vwma,
   type Candle as IndCandle,
 } from '@/lib/charts/indicators';
+import { calculateRSI } from '@/services/indicators/rsi';
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
@@ -174,6 +175,7 @@ export default function PriceChart() {
       kill('_vwap');
       kill('_vwma');
       kill('_stdch');
+      kill('_rsi');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -202,7 +204,8 @@ export default function PriceChart() {
       const pad = Math.max(
         indicatorSettings.bbPeriod,
         indicatorSettings.vwmaPeriod,
-        indicatorSettings.stdChannelPeriod
+        indicatorSettings.stdChannelPeriod,
+        indicatorSettings.rsiPeriod
       );
       const paddedStart = Math.max(0, startIdx - pad);
       const paddedEnd = endIdx;
@@ -303,6 +306,50 @@ export default function PriceChart() {
         up.setData(downsampleLineMinMax(upData, tgt));
         lo.setData(downsampleLineMinMax(loData, tgt));
         (window as any)._stdch = [mid, up, lo];
+      }
+
+      // --- RSI (Relative Strength Index)
+      if (indicators.showRSI) {
+        const rsiValues = calculateRSI(close, indicatorSettings.rsiPeriod);
+        const rsiLine = chart.addLineSeries({
+          color: 'rgb(255, 152, 0)', // Orange
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `RSI(${indicatorSettings.rsiPeriod})`,
+        });
+
+        // Add overbought/oversold reference lines
+        const overboughtLine = chart.addLineSeries({
+          color: 'rgba(255, 0, 0, 0.3)', // Red, semi-transparent
+          lineWidth: 1,
+          lineStyle: LineStyle.Dashed,
+          priceScaleId: 'right',
+          title: 'Overbought (70)',
+        });
+
+        const oversoldLine = chart.addLineSeries({
+          color: 'rgba(0, 255, 0, 0.3)', // Green, semi-transparent
+          lineWidth: 1,
+          lineStyle: LineStyle.Dashed,
+          priceScaleId: 'right',
+          title: 'Oversold (30)',
+        });
+
+        // Map RSI values to visible time range
+        const vTimes = candles.slice(startIdx, endIdx + 1).map((c: Candle) => c.time as Time);
+        const rsiData = vTimes.map((t: Time, i: number) => ({
+          time: t,
+          value: rsiValues[i + (startIdx - paddedStart)] ?? NaN,
+        }));
+
+        // Create horizontal lines for overbought/oversold levels
+        const overboughtData = vTimes.map((t: Time) => ({ time: t, value: 70 }));
+        const oversoldData = vTimes.map((t: Time) => ({ time: t, value: 30 }));
+
+        rsiLine.setData(downsampleLineMinMax(rsiData, target));
+        overboughtLine.setData(overboughtData);
+        oversoldLine.setData(oversoldData);
+        (window as any)._rsi = [rsiLine, overboughtLine, oversoldLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:
