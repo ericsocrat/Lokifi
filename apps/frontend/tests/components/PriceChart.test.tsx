@@ -2083,5 +2083,352 @@ describe('PriceChart Component', () => {
         { timeout: 1000 }
       );
     });
+
+    // --- ADX (Average Directional Index) Tests
+    it('should not create ADX series when showADX is false', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: false, // Disabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          expect(chartMock).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Verify no ADX series created
+      const chartMock = (createChart as any).mock.results[0]?.value;
+      const lineCalls = chartMock.addLineSeries.mock.calls;
+      const adxLine = lineCalls.find((call: any) => call[0]?.title?.includes('ADX'));
+
+      expect(adxLine).toBeUndefined();
+    });
+
+    it('should create ADX series when showADX is true', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: true, // Enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for ADX to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify ADX line exists (purple)
+          const adxLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX(14)')
+          );
+          expect(adxLine).toBeDefined();
+
+          // Verify data was set for ADX line
+          const setDataCalls = chartMock.addLineSeries.mock.results;
+          expect(setDataCalls.length).toBeGreaterThan(0);
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should use custom ADX period', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 20, // Custom period
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify custom period appears in title
+          const adxLine = lineCalls.find((call: any) => call[0]?.title?.includes('ADX(20)'));
+          expect(adxLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should clean up ADX series when disabled', async () => {
+      // Initial state with ADX enabled
+      const mockStoreValue = {
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+        },
+      };
+
+      (useChartStore as any).mockReturnValue(mockStoreValue);
+      const { rerender } = render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for ADX to be created
+      await waitFor(
+        () => {
+          expect((window as any)._adx).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Now disable ADX (create new object for React mutation)
+      const updatedStoreValue = {
+        ...mockStoreValue,
+        indicators: {
+          ...mockStoreValue.indicators,
+          showADX: false,
+        },
+      };
+      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      rerender(<PriceChart />);
+
+      // Wait for cleanup
+      await waitFor(
+        () => {
+          expect((window as any)._adx).toBeUndefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should handle multiple indicators (BB + RSI + MACD + Stochastic + ADX) simultaneously', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          showMACD: true,
+          showStochastic: true,
+          showADX: true, // All 5 indicators enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for all indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify BB Middle exists
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+
+          // Verify RSI exists
+          const rsiLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+          );
+          expect(rsiLine).toBeDefined();
+
+          // Verify MACD exists
+          const macdLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+          );
+          expect(macdLine).toBeDefined();
+
+          // Verify Stochastic %K exists
+          const stochasticK = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+          );
+          expect(stochasticK).toBeDefined();
+
+          // Verify ADX exists
+          const adxLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+          );
+          expect(adxLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
   });
 });

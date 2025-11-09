@@ -34,6 +34,7 @@ export interface IndicatorSettings {
   macdSignalPeriod: number;
   stochasticKPeriod: number;
   stochasticDPeriod: number;
+  adxPeriod: number;
 }
 
 export interface AutoLabels {
@@ -62,6 +63,7 @@ export interface IndicatorFlags {
   showRSI: boolean;
   showMACD: boolean;
   showStochastic: boolean;
+  showADX: boolean;
   bandFill: boolean;
 }
 
@@ -195,6 +197,7 @@ const DEFAULT_INDICATOR_FLAGS: IndicatorFlags = {
   showRSI: false,
   showMACD: false,
   showStochastic: false,
+  showADX: false,
   bandFill: true,
 };
 
@@ -211,6 +214,7 @@ const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
   macdSignalPeriod: 9,
   stochasticKPeriod: 14,
   stochasticDPeriod: 3,
+  adxPeriod: 14,
 };
 
 const DEFAULT_AUTO_LABELS: AutoLabels = {

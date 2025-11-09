@@ -9,6 +9,7 @@ import { calculateBollingerBands } from '@/services/indicators/bollinger';
 import { calculateMACD } from '@/services/indicators/macd';
 import { calculateRSI } from '@/services/indicators/rsi';
 import { calculateStochastic } from '@/services/indicators/stochastic';
+import { calculateADX } from '@/services/indicators/adx';
 import { useChartStore } from '@/state/store';
 import {
   createChart,
@@ -175,6 +176,7 @@ export default function PriceChart() {
       kill('_rsi');
       kill('_macd');
       kill('_stochastic');
+      kill('_adx');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -213,6 +215,7 @@ export default function PriceChart() {
       const close = slice.map((c: Candle) => c.close);
       const high = slice.map((c: Candle) => c.high);
       const low = slice.map((c: Candle) => c.low);
+      const open = slice.map((c: Candle) => c.open);
       const width = ref.current?.clientWidth || 1200;
       const target = Math.floor(width / 2.5);
 
@@ -485,6 +488,37 @@ export default function PriceChart() {
         kLine.setData(downsampleLineMinMax(kData, target));
         dLine.setData(downsampleLineMinMax(dData, target));
         (window as any)._stochastic = [kLine, dLine];
+      }
+
+      // --- ADX (Average Directional Index)
+      if (indicators.showADX) {
+        const adxResult = calculateADX(
+          high.map((h: number, i: number) => ({
+            time: candles[i + paddedStart].time,
+            open: open[i],
+            close: close[i],
+            high: h,
+            low: low[i],
+          })),
+          indicatorSettings.adxPeriod
+        );
+
+        // Create ADX line (purple/magenta)
+        const adxLine = chart.addLineSeries({
+          color: 'rgb(156, 39, 176)', // Purple
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `ADX(${indicatorSettings.adxPeriod})`,
+        });
+
+        // Map ADX values
+        const adxData = adxResult.map((a) => ({
+          time: a.time as Time,
+          value: a.adx,
+        }));
+
+        adxLine.setData(downsampleLineMinMax(adxData, target));
+        (window as any)._adx = [adxLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:
