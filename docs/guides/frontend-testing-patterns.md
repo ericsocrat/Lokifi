@@ -1243,14 +1243,14 @@ import { createChart } from 'lightweight-charts';
 await waitFor(() => {
   // Access the mocked chart instance
   const chartMock = (createChart as any).mock.results[0]?.value;
-  
+
   // Now assertions work correctly
   const lineCalls = chartMock.addLineSeries.mock.calls;
   expect(lineCalls.length).toBeGreaterThan(0);
-  
+
   // Verify RSI line series configuration
-  const rsiLineConfig = lineCalls.find(call => 
-    call[0]?.color === '#9333ea' || 
+  const rsiLineConfig = lineCalls.find(call =>
+    call[0]?.color === '#9333ea' ||
     call[0]?.title === 'RSI'
   );
   expect(rsiLineConfig).toBeDefined();
@@ -1299,7 +1299,7 @@ rerender(<PriceChart />);  // React doesn't see change!
 // ✅ GOOD - Creates new object reference, triggers useEffect
 const updatedStoreValue = {
   ...mockStoreValue,  // Spread outer object
-  indicators: { 
+  indicators: {
     ...mockStoreValue.indicators,  // Spread inner indicators object
     showRSI: false  // Update property
   }
@@ -1391,15 +1391,15 @@ vi.mock('lightweight-charts', () => ({
 // In each test
 it('should test indicator behavior', async () => {
   render(<PriceChart {...props} />);
-  
+
   await waitFor(() => {
     // Step 1: Access mocked chart instance
     const chartMock = (createChart as any).mock.results[0]?.value;
-    
+
     // Step 2: Access series methods
     const lineCalls = chartMock.addLineSeries.mock.calls;
     const histogramCalls = chartMock.addHistogramSeries.mock.calls;
-    
+
     // Step 3: Assertions
     expect(lineCalls.length).toBeGreaterThan(0);
     expect(lineCalls[0][0]).toMatchObject({
@@ -1421,29 +1421,29 @@ it('should cleanup indicator on toggle', async () => {
     indicators: { showRSI: true },
     // ... other properties
   };
-  
+
   (useChartStore as any).mockReturnValue(mockStoreValue);
-  
+
   const { rerender } = render(<PriceChart {...props} />);
-  
+
   // Initial state: indicator active
   await waitFor(() => {
     expect(window._rsi).toBeDefined();  // RSI instance exists
   });
-  
+
   // Toggle indicator OFF
   // ✅ CORRECT: Create new object reference
   const updatedStoreValue = {
     ...mockStoreValue,
-    indicators: { 
-      ...mockStoreValue.indicators, 
+    indicators: {
+      ...mockStoreValue.indicators,
       showRSI: false  // Toggle property
     }
   };
-  
+
   (useChartStore as any).mockReturnValue(updatedStoreValue);
   rerender(<PriceChart {...props} />);
-  
+
   // Verify cleanup executed
   await waitFor(() => {
     expect(window._rsi).toBeUndefined();  // Cleanup removed instance
@@ -1817,4 +1817,3 @@ useEffect(() => {
 5. ✅ Zero debugging on 2nd indicator (pattern worked perfectly!)
 
 **Bollinger Bands is NEXT** - Estimated 2-2.5 hours using proven Sessions 80-82 patterns! 🚀
-

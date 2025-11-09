@@ -1454,7 +1454,8 @@ describe('PriceChart Component', () => {
           const lineCalls = chartMock.addLineSeries.mock.calls;
           // No BB lines should exist (middle=orange, upper/lower=blue)
           const hasBBMiddle = lineCalls.some(
-            (call: any) => call[0]?.title?.includes('BB Mid') || call[0]?.title?.includes('BB Upper')
+            (call: any) =>
+              call[0]?.title?.includes('BB Mid') || call[0]?.title?.includes('BB Upper')
           );
           expect(hasBBMiddle).toBe(false);
         },
@@ -1719,8 +1720,7 @@ describe('PriceChart Component', () => {
 
           // Verify RSI exists (orange, but different title than BB middle)
           const rsiLine = lineCalls.find(
-            (call: any) =>
-              call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
           );
           expect(rsiLine).toBeDefined();
 
@@ -1730,6 +1730,355 @@ describe('PriceChart Component', () => {
               call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
           );
           expect(macdLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    // --- Stochastic Oscillator Tests
+    it('should not create Stochastic series when showStochastic is false', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false, // Disabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          expect(chartMock).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Verify no Stochastic series created
+      const chartMock = (createChart as any).mock.results[0]?.value;
+      const lineCalls = chartMock.addLineSeries.mock.calls;
+      const stochasticK = lineCalls.find((call: any) => call[0]?.title?.includes('%K'));
+      const stochasticD = lineCalls.find((call: any) => call[0]?.title?.includes('%D'));
+
+      expect(stochasticK).toBeUndefined();
+      expect(stochasticD).toBeUndefined();
+    });
+
+    it('should create Stochastic series when showStochastic is true', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: true, // Enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for Stochastic to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify %K line exists (blue)
+          const kLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K(14)')
+          );
+          expect(kLine).toBeDefined();
+
+          // Verify %D line exists (orange)
+          const dLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('%D(3)')
+          );
+          expect(dLine).toBeDefined();
+
+          // Verify data was set for both lines
+          const setDataCalls = chartMock.addLineSeries.mock.results;
+          expect(setDataCalls.length).toBeGreaterThan(0);
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should use custom Stochastic periods', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 21, // Custom period
+          stochasticDPeriod: 5, // Custom period
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify custom period appears in title
+          const kLine = lineCalls.find((call: any) => call[0]?.title?.includes('%K(21)'));
+          expect(kLine).toBeDefined();
+
+          const dLine = lineCalls.find((call: any) => call[0]?.title?.includes('%D(5)'));
+          expect(dLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should clean up Stochastic series when disabled', async () => {
+      // Initial state with Stochastic enabled
+      const mockStoreValue = {
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+        },
+      };
+
+      (useChartStore as any).mockReturnValue(mockStoreValue);
+      const { rerender } = render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for Stochastic to be created
+      await waitFor(
+        () => {
+          expect((window as any)._stochastic).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Now disable Stochastic (create new object for React mutation)
+      const updatedStoreValue = {
+        ...mockStoreValue,
+        indicators: {
+          ...mockStoreValue.indicators,
+          showStochastic: false,
+        },
+      };
+      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      rerender(<PriceChart />);
+
+      // Wait for cleanup
+      await waitFor(
+        () => {
+          expect((window as any)._stochastic).toBeUndefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should handle multiple indicators (BB + RSI + MACD + Stochastic) simultaneously', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          showMACD: true,
+          showStochastic: true, // All 4 indicators enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for all indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify BB Middle exists
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+
+          // Verify RSI exists
+          const rsiLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+          );
+          expect(rsiLine).toBeDefined();
+
+          // Verify MACD exists
+          const macdLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+          );
+          expect(macdLine).toBeDefined();
+
+          // Verify Stochastic %K exists
+          const stochasticK = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+          );
+          expect(stochasticK).toBeDefined();
+
+          // Verify Stochastic %D exists
+          const stochasticD = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('%D')
+          );
+          expect(stochasticD).toBeDefined();
         },
         { timeout: 1000 }
       );

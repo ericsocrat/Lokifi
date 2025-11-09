@@ -259,16 +259,12 @@ describe('MACD Indicator', () => {
 
     it('throws error for zero fast period', () => {
       const prices = Array(40).fill(100);
-      expect(() => calculateMACD(prices, 0, 26, 9)).toThrow(
-        'All periods must be positive numbers'
-      );
+      expect(() => calculateMACD(prices, 0, 26, 9)).toThrow('All periods must be positive numbers');
     });
 
     it('throws error for zero slow period', () => {
       const prices = Array(40).fill(100);
-      expect(() => calculateMACD(prices, 12, 0, 9)).toThrow(
-        'All periods must be positive numbers'
-      );
+      expect(() => calculateMACD(prices, 12, 0, 9)).toThrow('All periods must be positive numbers');
     });
 
     it('throws error for zero signal period', () => {

@@ -104,7 +104,11 @@ export function calculateMACD(
     throw new Error('All periods must be positive numbers');
   }
 
-  if (!Number.isFinite(fastPeriod) || !Number.isFinite(slowPeriod) || !Number.isFinite(signalPeriod)) {
+  if (
+    !Number.isFinite(fastPeriod) ||
+    !Number.isFinite(slowPeriod) ||
+    !Number.isFinite(signalPeriod)
+  ) {
     throw new Error('All periods must be finite numbers');
   }
 

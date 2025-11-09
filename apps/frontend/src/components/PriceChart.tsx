@@ -1,19 +1,14 @@
 import DataStatus from '@/components/DataStatus';
 import SymbolTfBar from '@/components/SymbolTfBar';
 import { setChart } from '@/lib/charts/chartBus';
-import {
-  bollinger,
-  stdDevChannels,
-  vwap,
-  vwma,
-  type Candle as IndCandle,
-} from '@/lib/charts/indicators';
+import { stdDevChannels, vwap, vwma, type Candle as IndCandle } from '@/lib/charts/indicators';
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
 import { calculateBollingerBands } from '@/services/indicators/bollinger';
 import { calculateMACD } from '@/services/indicators/macd';
 import { calculateRSI } from '@/services/indicators/rsi';
+import { calculateStochastic } from '@/services/indicators/stochastic';
 import { useChartStore } from '@/state/store';
 import {
   createChart,
@@ -179,6 +174,7 @@ export default function PriceChart() {
       kill('_stdch');
       kill('_rsi');
       kill('_macd');
+      kill('_stochastic');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -215,30 +211,36 @@ export default function PriceChart() {
       const paddedEnd = endIdx;
       const slice = candles.slice(paddedStart, paddedEnd + 1);
       const close = slice.map((c: Candle) => c.close);
+      const high = slice.map((c: Candle) => c.high);
+      const low = slice.map((c: Candle) => c.low);
       const width = ref.current?.clientWidth || 1200;
       const target = Math.floor(width / 2.5);
 
       // --- Bollinger Bands
       if (indicators.showBB) {
-        const bbData = calculateBollingerBands(close, indicatorSettings.bbPeriod, indicatorSettings.bbMult);
-        
-        const basis = chart.addLineSeries({ 
+        const bbData = calculateBollingerBands(
+          close,
+          indicatorSettings.bbPeriod,
+          indicatorSettings.bbMult
+        );
+
+        const basis = chart.addLineSeries({
           color: 'rgb(255, 152, 0)', // Orange (middle band)
-          lineStyle: LineStyle.Solid, 
+          lineStyle: LineStyle.Solid,
           lineWidth: 2,
           priceScaleId: 'right',
           title: `BB Mid(${indicatorSettings.bbPeriod},${indicatorSettings.bbMult})`,
         });
-        const upper = chart.addLineSeries({ 
+        const upper = chart.addLineSeries({
           color: 'rgb(33, 150, 243)', // Blue (upper band)
-          lineStyle: LineStyle.Solid, 
+          lineStyle: LineStyle.Solid,
           lineWidth: 1,
           priceScaleId: 'right',
           title: 'BB Upper',
         });
-        const lower = chart.addLineSeries({ 
+        const lower = chart.addLineSeries({
           color: 'rgb(33, 150, 243)', // Blue (lower band)
-          lineStyle: LineStyle.Solid, 
+          lineStyle: LineStyle.Solid,
           lineWidth: 1,
           priceScaleId: 'right',
           title: 'BB Lower',
@@ -438,6 +440,51 @@ export default function PriceChart() {
         signalLine.setData(downsampleLineMinMax(signalData, target));
         histogramSeries.setData(histogramData); // Don't downsample histogram (loses color info)
         (window as any)._macd = [macdLine, signalLine, histogramSeries];
+      }
+
+      // --- Stochastic Oscillator
+      if (indicators.showStochastic) {
+        const stochasticResult = calculateStochastic(
+          high.map((h: number, i: number) => ({
+            time: candles[i + paddedStart].time,
+            close: close[i],
+            high: h,
+            low: low[i],
+          })),
+          indicatorSettings.stochasticKPeriod,
+          indicatorSettings.stochasticDPeriod
+        );
+
+        // Create %K line (blue)
+        const kLine = chart.addLineSeries({
+          color: 'rgb(33, 150, 243)', // Blue
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `%K(${indicatorSettings.stochasticKPeriod})`,
+        });
+
+        // Create %D line (orange)
+        const dLine = chart.addLineSeries({
+          color: 'rgb(255, 152, 0)', // Orange
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `%D(${indicatorSettings.stochasticDPeriod})`,
+        });
+
+        // Map Stochastic values
+        const kData = stochasticResult.map((s) => ({
+          time: s.time as Time,
+          value: s.k,
+        }));
+
+        const dData = stochasticResult.map((s) => ({
+          time: s.time as Time,
+          value: s.d,
+        }));
+
+        kLine.setData(downsampleLineMinMax(kData, target));
+        dLine.setData(downsampleLineMinMax(dData, target));
+        (window as any)._stochastic = [kLine, dLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:
