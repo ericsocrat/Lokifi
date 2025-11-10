@@ -246,8 +246,8 @@ Edit `THRESHOLDS` object in `mcp-coverage-server.js`
 ## Related Documentation
 
 ### Coverage Tools
-- **[Coverage Dashboard Integration](./COVERAGE_DASHBOARD_INTEGRATION.md)** - Full dashboard setup and usage guide
-- **[Coverage Dashboard Quick Reference](./COVERAGE_DASHBOARD_QUICK_REF.md)** - One-page quick start
+- **[Coverage Dashboard Integration](./coverage-dashboard-integration.md)** - Full dashboard setup and usage guide
+- **[Coverage Dashboard Quick Reference](./coverage-dashboard-quick-ref.md)** - One-page quick start
 - **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
 - **Coverage Config**: `/config/coverage.config.json`
 

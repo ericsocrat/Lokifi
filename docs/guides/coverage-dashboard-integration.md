@@ -237,7 +237,7 @@ When everything is running correctly, you should see:
 ## See Also
 
 ### Quick References
-- **[Coverage Dashboard Quick Reference](./COVERAGE_DASHBOARD_QUICK_REF.md)** - One-page quick start guide
+- **[Coverage Dashboard Quick Reference](./coverage-dashboard-quick-ref.md)** - One-page quick start guide
 
 ### Coverage Tools
 - **[MCP Coverage Server](./mcp-coverage-server.md)** - Real-time coverage data access for AI assistants via Model Context Protocol

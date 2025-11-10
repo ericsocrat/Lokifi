@@ -45,9 +45,9 @@
   - Essential shortcuts, quick prompts, project patterns, quality checklist
   - Fast access productivity guide with cross-references to copilot-instructions.md
 
-- **[COVERAGE_DASHBOARD_INTEGRATION.md](COVERAGE_DASHBOARD_INTEGRATION.md)** - Live coverage dashboard guide (238 lines)
+- **[coverage-dashboard-integration.md](coverage-dashboard-integration.md)** - Live coverage dashboard guide (238 lines)
   - Auto-starts with dev servers on port 3002, real-time coverage metrics, trend analysis
-  - See also: [COVERAGE_DASHBOARD_QUICK_REF.md](COVERAGE_DASHBOARD_QUICK_REF.md) for one-page quick start
+  - See also: [coverage-dashboard-quick-ref.md](coverage-dashboard-quick-ref.md) for one-page quick start
 
 - **[mcp-coverage-server.md](mcp-coverage-server.md)** - Model Context Protocol coverage server (256 lines)
   - Real-time coverage data access for AI assistants, 5 tools (summary, low-coverage, trends, file-level, thresholds)

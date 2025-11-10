@@ -1909,8 +1909,8 @@ Tasks: Run Task → 🔄 Restart All Servers
 - ✅ Runs continuously in background (like dev servers)
 
 **Documentation:**
-- **Quick Reference**: `/docs/guides/COVERAGE_DASHBOARD_QUICK_REF.md`
-- **Full Guide**: `/docs/guides/COVERAGE_DASHBOARD_INTEGRATION.md`
+- **Quick Reference**: `/docs/guides/coverage-dashboard-quick-ref.md`
+- **Full Guide**: `/docs/guides/coverage-dashboard-integration.md`
 
 ### GitHub CLI (Workflow Monitoring & Health Checks)
 ```powershell

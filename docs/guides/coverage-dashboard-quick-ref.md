@@ -83,7 +83,7 @@ Tasks: Run Task → 🛑 Stop All Servers
 
 ## 📚 Full Documentation
 
-📖 **[Complete Guide](./COVERAGE_DASHBOARD_INTEGRATION.md)** - Detailed setup & features
+📖 **[Complete Guide](./coverage-dashboard-integration.md)** - Detailed setup & features
 🧪 **[Coverage Guide](./testing/coverage.md)** - Coverage standards & best practices
 🛠️ **[Test Runner](../../tools/README.md)** - Testing tools & automation
 
