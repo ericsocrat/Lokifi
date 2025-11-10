@@ -5,11 +5,12 @@ import { stdDevChannels, vwap, vwma, type Candle as IndCandle } from '@/lib/char
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
+import { calculateADX } from '@/services/indicators/adx';
 import { calculateBollingerBands } from '@/services/indicators/bollinger';
+import { calculateCCI } from '@/services/indicators/cci';
 import { calculateMACD } from '@/services/indicators/macd';
 import { calculateRSI } from '@/services/indicators/rsi';
 import { calculateStochastic } from '@/services/indicators/stochastic';
-import { calculateADX } from '@/services/indicators/adx';
 import { useChartStore } from '@/state/store';
 import {
   createChart,
@@ -177,6 +178,7 @@ export default function PriceChart() {
       kill('_macd');
       kill('_stochastic');
       kill('_adx');
+      kill('_cci');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -519,6 +521,37 @@ export default function PriceChart() {
 
         adxLine.setData(downsampleLineMinMax(adxData, target));
         (window as any)._adx = [adxLine];
+      }
+
+      // --- CCI (Commodity Channel Index)
+      if (indicators.showCCI) {
+        const cciResult = calculateCCI(
+          high.map((h: number, i: number) => ({
+            time: candles[i + paddedStart].time,
+            open: open[i],
+            close: close[i],
+            high: h,
+            low: low[i],
+          })),
+          indicatorSettings.cciPeriod
+        );
+
+        // Create CCI line (purple)
+        const cciLine = chart.addLineSeries({
+          color: 'rgb(138, 43, 226)', // Blue Violet
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `CCI(${indicatorSettings.cciPeriod})`,
+        });
+
+        // Map CCI values
+        const cciData = cciResult.map((c) => ({
+          time: c.time as Time,
+          value: c.cci,
+        }));
+
+        cciLine.setData(downsampleLineMinMax(cciData, target));
+        (window as any)._cci = [cciLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:

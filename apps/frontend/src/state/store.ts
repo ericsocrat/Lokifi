@@ -35,6 +35,7 @@ export interface IndicatorSettings {
   stochasticKPeriod: number;
   stochasticDPeriod: number;
   adxPeriod: number;
+  cciPeriod: number;
 }
 
 export interface AutoLabels {
@@ -64,6 +65,7 @@ export interface IndicatorFlags {
   showMACD: boolean;
   showStochastic: boolean;
   showADX: boolean;
+  showCCI: boolean;
   bandFill: boolean;
 }
 
@@ -198,6 +200,7 @@ const DEFAULT_INDICATOR_FLAGS: IndicatorFlags = {
   showMACD: false,
   showStochastic: false,
   showADX: false,
+  showCCI: false,
   bandFill: true,
 };
 
@@ -215,6 +218,7 @@ const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
   stochasticKPeriod: 14,
   stochasticDPeriod: 3,
   adxPeriod: 14,
+  cciPeriod: 20,
 };
 
 const DEFAULT_AUTO_LABELS: AutoLabels = {

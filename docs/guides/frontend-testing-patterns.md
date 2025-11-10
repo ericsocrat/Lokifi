@@ -1895,7 +1895,7 @@ return () => {
 it('should not create Stochastic series when showStochastic is false', async () => {
   const chartMock = (createChart as any).mock.results[0]?.value;
   const seriesCalls = chartMock?.addLineSeries?.mock?.calls || [];
-  const stochasticSeries = seriesCalls.filter(call => 
+  const stochasticSeries = seriesCalls.filter(call =>
     call[0]?.title?.includes('%K') || call[0]?.title?.includes('%D')
   );
   expect(stochasticSeries.length).toBe(0);
@@ -1906,10 +1906,10 @@ it('should not create Stochastic series when showStochastic is false', async () 
 ```typescript
 it('should create Stochastic series when showStochastic is true', async () => {
   // Verify 2 series created (%K blue + %D orange)
-  const kSeries = seriesCalls.find(call => 
+  const kSeries = seriesCalls.find(call =>
     call[0]?.title?.includes('%K') && call[0]?.color === 'rgb(33, 150, 243)'
   );
-  const dSeries = seriesCalls.find(call => 
+  const dSeries = seriesCalls.find(call =>
     call[0]?.title?.includes('%D') && call[0]?.color === 'rgb(255, 152, 0)'
   );
   expect(kSeries).toBeDefined();
@@ -1940,7 +1940,7 @@ it('should use custom Stochastic periods', async () => {
 it('should clean up Stochastic series when disabled', async () => {
   // First render with showStochastic: true
   const { rerender } = render(<PriceChart symbol="AAPL" />);
-  
+
   // Toggle off (uses React Mutation Pattern from Session 81)
   const updatedStoreValue = {
     ...mockStoreValue,
@@ -1948,7 +1948,7 @@ it('should clean up Stochastic series when disabled', async () => {
   };
   (useChartStore as any).mockReturnValue(updatedStoreValue);
   rerender(<PriceChart symbol="AAPL" />);
-  
+
   // Verify cleanup executed
   await waitFor(() => {
     expect(window._stochastic).toBeUndefined();
@@ -1970,7 +1970,7 @@ it('should handle multiple indicators (BB + RSI + MACD + Stochastic)', async () 
       showStochastic: true
     }
   };
-  
+
   // Verify 11 total series created:
   // - BB: 3 (upper, middle, lower)
   // - RSI: 1
@@ -2168,19 +2168,19 @@ if (showADX) {
     { high, low, close, open },
     adxPeriod
   );
-  
+
   // Render purple ADX line
   const adxSeries = chart.addLineSeries({
     color: '#9b59b6',
     lineWidth: 2,
     title: `ADX(${adxPeriod})`,
   });
-  
+
   adxSeries.setData(adxData.map((d) => ({
     time: d.time,
     value: d.adx,
   })));
-  
+
   window._adx = adxSeries;
 }
 
@@ -2200,7 +2200,7 @@ const cleanupADX = () => {
 it('should not display ADX when showADX is false', async () => {
   mockStoreValue.indicators.showADX = false;
   render(<PriceChart {...defaultProps} />);
-  
+
   await waitFor(() => {
     expect(window._adx).toBeUndefined();
   });
@@ -2212,7 +2212,7 @@ it('should not display ADX when showADX is false', async () => {
 it('should display ADX when showADX is true', async () => {
   mockStoreValue.indicators.showADX = true;
   render(<PriceChart {...defaultProps} />);
-  
+
   await waitFor(() => {
     const adxSeries = window._adx;
     expect(adxSeries).toBeDefined();
@@ -2227,7 +2227,7 @@ it('should use custom ADX period', async () => {
   mockStoreValue.indicators.showADX = true;
   mockStoreValue.indicatorSettings.adxPeriod = 20;
   render(<PriceChart {...defaultProps} />);
-  
+
   await waitFor(() => {
     expect(window._adx.options().title).toBe('ADX(20)');
   });
@@ -2238,12 +2238,12 @@ it('should use custom ADX period', async () => {
 ```typescript
 it('should cleanup ADX series when toggled off', async () => {
   const { rerender } = render(<PriceChart {...defaultProps} />);
-  
+
   // Enable ADX
   mockStoreValue.indicators.showADX = true;
   rerender(<PriceChart {...defaultProps} />);
   await waitFor(() => expect(window._adx).toBeDefined());
-  
+
   // Disable ADX
   mockStoreValue.indicators.showADX = false;
   rerender(<PriceChart {...defaultProps} />);
@@ -2261,9 +2261,9 @@ it('should display all 5 indicators simultaneously', async () => {
     showStochastic: true,
     showADX: true,
   };
-  
+
   render(<PriceChart {...defaultProps} />);
-  
+
   await waitFor(() => {
     expect(window._bbSeries).toBeDefined(); // BB (3 bands)
     expect(window._rsi).toBeDefined(); // RSI (1 line)
@@ -2474,4 +2474,3 @@ it('should display all 5 indicators simultaneously', async () => {
 - **ROI**: Infinite (pattern reusable forever with efficiency gains)
 
 **Next Indicators Ready**: ADX, CCI, Williams %R, Ultimate Oscillator, Aroon, Parabolic SAR - Estimated 2-2.5 hours each using proven pattern! 🚀
-

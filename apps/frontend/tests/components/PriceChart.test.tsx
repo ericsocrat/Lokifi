@@ -2068,15 +2068,13 @@ describe('PriceChart Component', () => {
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify Stochastic %D exists
           const stochasticD = lineCalls.find(
-            (call: any) =>
-              call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('%D')
+            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('%D')
           );
           expect(stochasticD).toBeDefined();
         },
@@ -2415,17 +2413,376 @@ describe('PriceChart Component', () => {
 
           // Verify Stochastic %K exists
           const stochasticK = lineCalls.find(
-            (call: any) =>
-              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
           );
           expect(stochasticK).toBeDefined();
 
           // Verify ADX exists
           const adxLine = lineCalls.find(
-            (call: any) =>
-              call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+            (call: any) => call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
           );
           expect(adxLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    // --- CCI (Commodity Channel Index) Tests
+    it('should not create CCI series when showCCI is false', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: false,
+          showCCI: false, // Disabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+          cciPeriod: 20,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          expect(chartMock).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Verify no CCI series created
+      const chartMock = (createChart as any).mock.results[0]?.value;
+      const lineCalls = chartMock.addLineSeries.mock.calls;
+      const cciLine = lineCalls.find((call: any) => call[0]?.title?.includes('CCI'));
+
+      expect(cciLine).toBeUndefined();
+    });
+
+    it('should create CCI series when showCCI is true', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: false,
+          showCCI: true, // Enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+          cciPeriod: 20,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for CCI to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify CCI line exists (blue-violet)
+          const cciLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(138, 43, 226)' && call[0]?.title?.includes('CCI(20)')
+          );
+          expect(cciLine).toBeDefined();
+
+          // Verify data was set for CCI line
+          const setDataCalls = chartMock.addLineSeries.mock.results;
+          expect(setDataCalls.length).toBeGreaterThan(0);
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should use custom CCI period', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: false,
+          showCCI: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+          cciPeriod: 30, // Custom period
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify custom period appears in title
+          const cciLine = lineCalls.find((call: any) => call[0]?.title?.includes('CCI(30)'));
+          expect(cciLine).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should clean up CCI series when disabled', async () => {
+      // Initial state with CCI enabled
+      const mockStoreValue = {
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: false,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: false,
+          showMACD: false,
+          showStochastic: false,
+          showADX: false,
+          showCCI: true,
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+          cciPeriod: 20,
+        },
+      };
+
+      (useChartStore as any).mockReturnValue(mockStoreValue);
+      const { rerender } = render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for CCI to be created
+      await waitFor(
+        () => {
+          expect((window as any)._cci).toBeDefined();
+        },
+        { timeout: 1000 }
+      );
+
+      // Now disable CCI (create new object for React mutation)
+      const updatedStoreValue = {
+        ...mockStoreValue,
+        indicators: {
+          ...mockStoreValue.indicators,
+          showCCI: false,
+        },
+      };
+      (useChartStore as any).mockReturnValue(updatedStoreValue);
+      rerender(<PriceChart />);
+
+      // Wait for cleanup
+      await waitFor(
+        () => {
+          expect((window as any)._cci).toBeUndefined();
+        },
+        { timeout: 1000 }
+      );
+    });
+
+    it('should handle multiple indicators (BB + RSI + MACD + Stochastic + ADX + CCI) simultaneously', async () => {
+      (useChartStore as any).mockReturnValue({
+        theme: 'dark',
+        symbol: 'BTCUSD',
+        timeframe: '1h',
+        indicators: {
+          showBB: true,
+          showVWAP: false,
+          showVWMA: false,
+          showStdChannels: false,
+          showRSI: true,
+          showMACD: true,
+          showStochastic: true,
+          showADX: true,
+          showCCI: true, // All 6 indicators enabled
+          bandFill: false,
+        },
+        indicatorSettings: {
+          bbPeriod: 20,
+          bbMult: 2,
+          vwmaPeriod: 20,
+          vwapAnchorIndex: 0,
+          stdChannelPeriod: 20,
+          stdChannelMult: 2,
+          rsiPeriod: 14,
+          macdFastPeriod: 12,
+          macdSlowPeriod: 26,
+          macdSignalPeriod: 9,
+          stochasticKPeriod: 14,
+          stochasticDPeriod: 3,
+          adxPeriod: 14,
+          cciPeriod: 20,
+        },
+      });
+
+      render(<PriceChart />);
+
+      await waitFor(
+        () => {
+          expect(mockAdapterInstance).not.toBeNull();
+        },
+        { timeout: 1000 }
+      );
+
+      const listener = mockAdapterListeners[mockAdapterListeners.length - 1];
+      listener({ type: 'snapshot', candles: mockCandles });
+
+      // Wait for all indicators to process
+      await waitFor(
+        () => {
+          const chartMock = (createChart as any).mock.results[0]?.value;
+          const lineCalls = chartMock.addLineSeries.mock.calls;
+
+          // Verify BB Middle exists
+          const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
+          expect(bbMiddle).toBeDefined();
+
+          // Verify RSI exists
+          const rsiLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(255, 152, 0)' && call[0]?.title?.includes('RSI')
+          );
+          expect(rsiLine).toBeDefined();
+
+          // Verify MACD exists
+          const macdLine = lineCalls.find(
+            (call: any) =>
+              call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('MACD')
+          );
+          expect(macdLine).toBeDefined();
+
+          // Verify Stochastic %K exists
+          const stochasticK = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(33, 150, 243)' && call[0]?.title?.includes('%K')
+          );
+          expect(stochasticK).toBeDefined();
+
+          // Verify ADX exists
+          const adxLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(156, 39, 176)' && call[0]?.title?.includes('ADX')
+          );
+          expect(adxLine).toBeDefined();
+
+          // Verify CCI exists
+          const cciLine = lineCalls.find(
+            (call: any) => call[0]?.color === 'rgb(138, 43, 226)' && call[0]?.title?.includes('CCI')
+          );
+          expect(cciLine).toBeDefined();
         },
         { timeout: 1000 }
       );

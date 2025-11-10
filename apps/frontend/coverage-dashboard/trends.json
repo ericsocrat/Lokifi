@@ -292,5 +292,20 @@
       "branch": "main",
       "commit": "ab3f2961"
     }
+  },
+  {
+    "timestamp": "2025-11-09T13:13:18.410Z",
+    "coverage": {
+      "statements": 13.465778256822302,
+      "branches": 90.2619871478003,
+      "functions": 81.49847094801224,
+      "lines": 13.465778256822302
+    },
+    "tests": 0,
+    "files": 187,
+    "git": {
+      "branch": "main",
+      "commit": "ee4589f6"
+    }
   }
 ]
