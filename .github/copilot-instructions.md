@@ -1652,9 +1652,9 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**47 Battle-Tested Patterns** from 89+ sessions with proven success metrics:
+**40 Battle-Tested Patterns** from 89+ sessions with proven success metrics:
 
-**Testing Patterns** (19):
+**Testing Patterns** (12):
 - **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
 - **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
   - **create_mock_response() helper**: Lambda pattern for sync methods on AsyncMock (prevents coroutines)
@@ -1665,17 +1665,10 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Complete Guides**:
     - Backend: `/docs/guides/external-api-testing-patterns.md`
     - Frontend: `/docs/guides/frontend-testing-patterns.md`
-- **Mathematical Indicator Testing Pattern** - 100% success, 24 tests proven (Session 80) ⭐⭐⭐ NEW!
-  - **Pattern**: Known inputs → Expected outputs (industry standard formulas)
-  - **Success Rate**: 100% (24/24 tests passing)
-  - **Coverage**: 100% statements, 97.43% branches (exceeds 85% target by 15pp)
-  - **Performance**: 10k prices <100ms validated
-  - **Edge Cases**: Empty arrays, insufficient data, zero denominators, invalid periods, numeric extremes
-  - **Debugging Journey**: 3 iterations (zero losses fix, test expectation fix, 100% pass rate)
-  - **Proven On**: RSI indicator (Wilder's smoothing method)
-  - **Reusability**: MACD, Bollinger Bands, Stochastic, all mathematical indicators
-  - **Anti-pattern**: Not handling zero denominators (causes incorrect indicator values)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 80 section)
+- **Mathematical Indicator Testing Pattern** - Known inputs → Expected outputs, 100% coverage, 9/9 indicators proven (Sessions 80-89) ⭐⭐⭐
+  - **Approach**: Industry formulas + edge cases (empty data, zero denominators, invalid periods)
+  - **Proven**: RSI, MACD, BB, Stochastic, ADX, CCI, Williams %R, OBV, A/D Line (all 100% pass rate)
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Sessions 80-89)
 - **Mock side_effect for Sequential Calls** - 100% success (Session 77 Phases 3-5) ⭐
   - Pattern: `mock.side_effect = [error_response, success_response]` for partial failure testing
   - Use case: Test graceful degradation when first API call fails, second succeeds
@@ -1719,120 +1712,34 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Application**: All indicator toggle/cleanup tests (RSI, MACD, Bollinger Bands, Stochastic)
   - **Success Metrics**: Fixed 1 cleanup test (29/30 → 30/30 passing), Validated via `window._rsi === undefined` assertion
   - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 81 section)
-- **Multi-Indicator Integration Pattern** - 100% success, 44 tests proven (Session 82) ⭐⭐⭐ NEW!
-  - **Pattern**: Multiple technical indicators coexisting in same chart component
-  - **Success Rate**: 100% (44/44 tests passing, 95.74% coverage)
-  - **Implementation**: 3-series rendering (MACD blue, Signal orange, Histogram green/red)
-  - **Conditional Styling**: Histogram color changes based on value (positive=green, negative=red)
-  - **Cleanup Validation**: Verified kill('_macd') prevents memory leaks on indicator toggle
-  - **Multi-Indicator Coexistence**: RSI + MACD + BB tested simultaneously without conflicts
-  - **Debugging Journey**: 1 cleanup bug caught early (missing kill('_macd')), fixed before commit
-  - **Proven On**: MACD indicator (3 series: MACD line, Signal line, Histogram)
-  - **Reusability**: All multi-series indicators (Bollinger Bands 3-band, Stochastic %K/%D)
-  - **Pattern Validation**: 2/3 indicators complete (RSI → MACD), validates mathematical testing approach
-  - **Performance**: 10k prices <7ms (99.3% faster than 100ms target)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 82 section - to be added)
-  - **Test Categories**: Basic calculation (5), Custom periods (6), Edge cases (10), Interpretation (8), Latest values (5), Performance (5)
-- **Stochastic Oscillator Pattern** - 100% success, 44 tests proven (Session 84) ⭐⭐⭐ 🏆
-  - **Pattern**: %K/%D momentum oscillator with crossover signals
-  - **Success Rate**: 100% (44/44 tests passing, 100% coverage)
-  - **Algorithm**: %K = (Close - Low14) / (High14 - Low14) × 100, %D = SMA(%K, 3)
-  - **Implementation**: 2-series rendering (%K blue, %D orange)
-  - **Edge Cases**: Empty arrays, insufficient data, invalid periods, zero range (flat prices)
-  - **Interpretation**: Overbought (>80), Oversold (<20), Bullish/Bearish crossovers
-  - **Debugging Journey**: 1 iteration (test expectation fix: 50 → 66.67 - learned Stochastic uses full period range)
-  - **Proven On**: Stochastic Oscillator (2 series: %K fast, %D slow)
-  - **Reusability**: All oscillator-type indicators (Williams %R, CCI)
-  - **Pattern Validation**: **4/4 indicators complete** (RSI → MACD → BB → Stochastic) **🏆 UNIVERSAL APPLICABILITY PROVEN**
-  - **Efficiency**: 1 iteration (vs 3-4 expected) - **43%+ time savings** from pattern reuse
-  - **Performance**: 10k prices <10ms (99% faster than 100ms target)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 84 section)
-  - **Test Categories**: Basic calculation (6), Custom periods (6), Edge cases (11), Interpretation (8), Latest values (4), Performance (5)
-  - **Achievement**: Validates mathematical indicator testing pattern across ALL indicator types (trend, volatility, momentum)
-- **ADX (Average Directional Index) Pattern** - 100% success, 38 tests proven (Session 85) ⭐⭐⭐ NEW! 🏆
-  - **Pattern**: Trend strength indicator with Wilder's smoothing (TR → DM → Smoothing → DI → DX → ADX)
-  - **Success Rate**: 100% (38/38 tests passing, 100% coverage - 2nd indicator to achieve this!)
-  - **Algorithm**: 5-step process (True Range → Directional Movement → Wilder's Smoothing → Directional Indicators → DX → ADX)
-  - **Implementation**: 1-series rendering (ADX line purple)
-  - **Edge Cases**: Empty arrays, insufficient data (< 2×period), invalid periods (< 2), zero TR, zero DI sum
-  - **Interpretation**: 5 strength levels (Very Weak <20, Weak 20-25, Strong 25-50, Very Strong 50-75, Extreme >75)
-  - **Debugging Journey**: 1 iteration (2 test fixes: oscillating prices for variance + result array time vs input array time)
-  - **Proven On**: ADX (1 series: trend strength indicator)
-  - **Reusability**: All Wilder's smoothing indicators (DMI, ADX variants)
-  - **Pattern Validation**: **5/5 indicators complete** (RSI → MACD → BB → Stochastic → ADX) **🏆 UNIVERSAL APPLICABILITY PROVEN**
-  - **Efficiency**: 1 iteration (vs 3-4 expected) - **38-50% faster than baseline** (FASTEST implementation!)
-  - **Performance**: 10k prices <500ms (validated)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 85 section)
-  - **Test Categories**: Basic calculation (6), Custom periods (6), Edge cases (11), Interpretation (8), Latest values (4), Performance (5)
-  - **Achievement**: **5/5 indicators proven** - validates pattern across ALL mathematical indicator types 🎉
-- **CCI (Commodity Channel Index) Pattern** - 100% success, 47 tests proven (Session 86) ⭐⭐⭐ 🏆
-  - **Pattern**: Momentum oscillator measuring deviation from average price (TP → SMA → Mean Deviation → CCI)
-  - **Success Rate**: 100% (47/47 tests passing, 94.28% coverage - exceeds 80% target)
-  - **Algorithm**: 4-step process (Typical Price → SMA(TP) → Mean Deviation → CCI = (TP - SMA) / (0.015 × MD))
-  - **Implementation**: 1-series rendering (CCI line blue-violet)
-  - **Edge Cases**: Empty arrays, insufficient data (<period), invalid periods (<2), zero mean deviation (flat prices), extreme movements
-  - **Interpretation**: 9 signal levels (Extreme Overbought >200, Strong Overbought 100-200, Moderate Bullish 50-100, Weak Bullish 0-50, Neutral 0, Weak Bearish -50-0, Moderate Bearish -100--50, Strong Oversold -200--100, Extreme Oversold <-200)
-  - **Debugging Journey**: 1 iteration (test fix: oscillating prices for variance test - 3rd occurrence of same pattern)
-  - **Proven On**: CCI (1 series: momentum oscillator)
-  - **Reusability**: All mean deviation indicators (Aroon, Williams %R)
-  - **Pattern Validation**: **6/6 indicators complete** (RSI → MACD → BB → Stochastic → ADX → CCI) **🏆 UNIVERSAL APPLICABILITY PROVEN**
-  - **Efficiency**: 1 iteration (consistent with Sessions 82, 84, 85) - **66% fewer iterations** vs baseline
-  - **Performance**: 1k prices ~2ms (98% faster), 10k prices ~17ms (96.6% faster than 500ms target)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 86 section - to be added)
-  - **Test Categories**: Basic calculation (6), Custom periods (6), Edge cases (11), CCI interpretation (15), Latest values (4), Performance (5)
-  - **Achievement**: **6/6 indicators proven** - validates pattern across ALL mathematical indicator types (trend, volatility, momentum) 🎉
-- **Williams %R Pattern** - 100% success, 41 tests proven (Session 87) ⭐⭐⭐ 🏆 NEW! 🚀
-  - **Pattern**: Momentum oscillator (inverted Stochastic) measuring overbought/oversold conditions
-  - **Success Rate**: 100% (41/41 tests passing, **100% coverage** - 3rd indicator with perfect coverage!)
-  - **Algorithm**: %R = (Highest High - Close) / (Highest High - Lowest Low) × -100 (range: 0 to -100, inverted from Stochastic)
-  - **Implementation**: 1-series rendering (Williams %R line purple)
-  - **Edge Cases**: Empty arrays, insufficient data (<period), invalid periods (<2), zero range (flat prices → -50 neutral), extreme volatility
-  - **Interpretation**: 7 signal levels (Extreme Overbought -10 to 0, Overbought -20 to -10, Neutral High -40 to -20, Neutral -60 to -40, Neutral Low -80 to -60, Oversold -90 to -80, Extreme Oversold -100 to -90)
-  - **Debugging Journey**: 1 iteration (JavaScript -0 vs 0 quirk - fixed with Math.abs() in <2 min)
-  - **Proven On**: Williams %R (1 series: momentum oscillator, inverted range)
-  - **Reusability**: All inverted range indicators (Ultimate Oscillator, Aroon Oscillator)
-  - **Pattern Validation**: **7/7 indicators complete** (RSI → MACD → BB → Stochastic → ADX → CCI → Williams %R) **🏆 INFINITE SCALABILITY PROVEN! 🚀**
-  - **Efficiency**: 1 iteration (60% faster than estimate) - **Fastest session ever!** (30 min vs 75 min estimate for Phases 1-3)
-  - **Performance**: 1k prices <2ms (98% faster), 10k prices <25ms (95% faster than 500ms target)
-  - **Integration**: 60/60 PriceChart tests passing (55 existing + 5 new Williams %R), all 7 indicators coexist
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 87 section - to be added)
-  - **Test Categories**: Basic calculation (6), Custom periods (6), Edge cases (11), Williams %R interpretation (9), Latest values (4), Performance (5)
-  - **Achievement**: **7/7 indicators proven** - validates pattern BEYOND 6/6 threshold, proves infinite scalability! 🎉🚀
-- **OBV (On-Balance Volume) Pattern** - 100% success, 43 tests proven (Session 88) ⭐⭐⭐ 🏆 NEW!
-  - **Pattern**: Cumulative volume-based momentum indicator (unbounded growth)
-  - **Success Rate**: 100% (38/38 service tests + 5/5 integration tests passing, 97.64% coverage)
-  - **Algorithm**: If close > prev → OBV += volume, if close < prev → OBV -= volume, if close = prev → OBV unchanged
-  - **Implementation**: 1-series rendering (OBV line teal/cyan)
-  - **Edge Cases**: Empty arrays, missing volume (error thrown), negative OBV (allowed), flat prices (OBV unchanged)
-  - **Interpretation**: Direction (bullish/bearish/neutral), Strength (strong >3x/moderate 1-3x/weak <1x avg volume), Divergence (bullish price↓ OBV↑, bearish price↑ OBV↓)
-  - **Debugging Journey**: 4 iterations (percentage-based → normalized by avg volume → divergence test data → threshold calibration)
-  - **Key Learning**: Cumulative indicators need **normalized thresholds** (divide by avg volume), not percentage-based
-  - **Proven On**: OBV (1 series: cumulative volume indicator)
-  - **Reusability**: All cumulative indicators (A/D Line, CMF, Money Flow)
-  - **Pattern Validation**: **8/8 indicators complete** (RSI → MACD → BB → Stochastic → ADX → CCI → Williams %R → OBV) **🏆 INFINITE SCALABILITY PROVEN FOR CUMULATIVE! 🚀**
-  - **Efficiency**: 47 min (within 45-60 min budget, on target despite 4 iterations for cumulative complexity)
-  - **Performance**: 1k prices <100ms, 10k prices ~15ms (97% faster than 500ms target)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 88 section - to be added)
-  - **Test Categories**: Basic calculation (5), Volume variations (4), Edge cases (10), OBV interpretation (10), Latest values (5), Performance (5)
-  - **Achievement**: **8/8 indicators proven** - validates pattern for ALL indicator types (bounded, multi-series, cumulative)! 🎉🚀
-- **A/D Line (Accumulation/Distribution) Pattern** - 100% success, 46 tests proven (Session 89) ⭐⭐⭐ 🏆 NEW! 🚀
-  - **Pattern**: Cumulative volume-weighted momentum indicator (Close Location Value weighted)
-  - **Success Rate**: 100% (41/41 service tests + 5/5 integration tests passing, 97.8% coverage)
-  - **Algorithm**: CLV = ((Close - Low) - (High - Close)) / (High - Low), MFV = CLV × Volume, AD = Previous AD + MFV
-  - **Implementation**: 1-series rendering (A/D Line indigo)
-  - **Edge Cases**: Empty arrays, missing volume (error thrown), flat prices (zero CLV), insufficient data, boundary conditions
-  - **Interpretation**: Direction (accumulation/distribution/neutral), Strength (strong >3x/moderate 1-3x/weak <1x avg volume), Divergence (bullish price↓ AD↑, bearish price↑ AD↓)
-  - **Debugging Journey**: 4 iterations (CLV precision fixes, boundary conditions, test data construction, threshold calibration)
-  - **Key Learning**: CLV ranges -1 to +1 (vs OBV binary ±volume), requires precise boundary handling for non-uniform data
-  - **Proven On**: A/D Line (1 series: cumulative volume-weighted indicator)
-  - **Reusability**: All CLV-based indicators (CMF - Chaikin Money Flow, Money Flow Index)
-  - **Pattern Validation**: **9/9 indicators complete** (RSI → MACD → BB → Stochastic → ADX → CCI → Williams %R → OBV → A/D Line) **🏆 INFINITE SCALABILITY PROVEN! 🚀**
-  - **Efficiency**: 85 min total (Phases 1-5), consistent with cumulative indicator complexity (4 debugging iterations expected)
-  - **Performance**: 1k prices <100ms, 10k prices <500ms validated
-  - **Color Selection**: Indigo rgb(99, 102, 241) - resolved conflict with ADX/Williams %R (both purple)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 89 section - to be added)
-  - **Test Categories**: Basic calculation (5), Volume variations (4), Edge cases (11), A/D interpretation (11), Latest values (5), Performance (5)
-  - **Achievement**: **9/9 indicators proven** - validates pattern for ALL indicator types INCLUDING 2nd cumulative! 🎉🚀
+- **Multi-Indicator Integration Pattern** - Multiple indicators coexisting, cleanup validation, 100% success (Session 82) ⭐⭐⭐
+  - **Key**: Verify kill('_indicator') prevents memory leaks on toggle, test multi-series simultaneously
+  - **Proven**: MACD (3-series), Bollinger Bands, Stochastic - no conflicts across 9 indicators
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 82)
+- **Stochastic Oscillator Pattern** - %K/%D momentum oscillator, 100% coverage, 4/4 validation (Session 84) 🏆
+  - **Algorithm**: %K = (C - L14) / (H14 - L14) × 100, %D = SMA(%K, 3)
+  - **Learning**: Uses full period range (not just close), 43% faster via pattern reuse
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 84)
+- **ADX (Average Directional Index) Pattern** - Trend strength w/ Wilder's smoothing, 100% coverage, 5/5 validation (Session 85) 🏆
+  - **Algorithm**: TR → DM → Wilder's Smoothing → DI → DX → ADX (5-step process)
+  - **Learning**: Requires 2×period data, fastest implementation (38-50% faster than baseline)
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 85)
+- **CCI (Commodity Channel Index) Pattern** - Mean deviation momentum oscillator, 94.28% coverage, 6/6 validation (Session 86) 🏆
+  - **Algorithm**: CCI = (TP - SMA(TP)) / (0.015 × MeanDeviation)
+  - **Learning**: Handle zero mean deviation (flat prices), 66% fewer iterations vs baseline
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 86)
+- **Williams %R Pattern** - Inverted Stochastic (-100 to 0), 100% coverage, 7/7 INFINITE SCALABILITY (Session 87) 🚀
+  - **Algorithm**: %R = (HH - C) / (HH - LL) × -100 (inverted from Stochastic)
+  - **Learning**: JavaScript -0 vs 0 quirk (use Math.abs()), fastest session (60% faster than estimate)
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 87)
+- **OBV (On-Balance Volume) Pattern** - Cumulative volume momentum, 97.64% coverage, 8/8 validation (Session 88) 🏆
+  - **Algorithm**: OBV += volume if C > Cₚᵣₑᵥ, OBV -= volume if C < Cₚᵣₑᵥ, unchanged if C = Cₚᵣₑᵥ
+  - **Learning**: Cumulative indicators need **normalized thresholds** (÷ avg volume), NOT percentage-based
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 88)
+- **A/D Line (Accumulation/Distribution) Pattern** - CLV-weighted cumulative, 97.8% coverage, 9/9 INFINITE SCALABILITY (Session 89) 🚀
+  - **Algorithm**: CLV = ((C-L)-(H-C))/(H-L), MFV = CLV × Vol, AD = Σ MFV (CLV range: -1 to +1)
+  - **Learning**: CLV ≠ OBV binary (requires precise boundary handling), normalized thresholds (÷ avg volume)
+  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 89)
 
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
@@ -1910,7 +1817,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 - **Log Analysis** - 75-88% time savings (10+ sessions)
 
 **Pattern Selection Guide**:
-- **Testing**: "What are you testing?" → AsyncMock, Mathematical Indicator Testing, A/D Line Pattern, OBV Pattern, Williams %R Pattern, CCI Pattern, ADX Pattern, Stochastic Oscillator, Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
+- **Testing**: "What are you testing?" → AsyncMock, Mathematical Indicator Testing (9 indicators proven), Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
 - **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
@@ -1919,7 +1826,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
-**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses A/D Line pattern from Session 89 - proven 46/46 tests, 9/9 indicators complete, infinite scalability proven! 🚀")
+**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses Mathematical Indicator Testing pattern - proven 9/9 indicators, infinite scalability")
 
 ## Documentation References
 
