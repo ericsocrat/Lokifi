@@ -2764,13 +2764,13 @@ if (showADLine) {
     volume: d.volume,
     time: d.time
   })));
-  
+
   const adLineSeries = chart.addLineSeries({
     color: 'rgb(99, 102, 241)', // Indigo (avoids purple conflict)
     lineWidth: 2,
     title: 'A/D Line'
   });
-  
+
   adLineSeries.setData(adLineData);
   (window as any)._adLine = adLineSeries;
 }
@@ -2799,12 +2799,12 @@ if ((window as any)._adLine) {
 it('should not render A/D Line when showADLine is false', async () => {
   mockStoreValue.indicators.showADLine = false;
   render(<PriceChart />);
-  
+
   await waitFor(() => {
     const chartMock = (createChart as any).mock.results[0]?.value;
     expect(chartMock).toBeDefined();
   });
-  
+
   const chartMock = (createChart as any).mock.results[0]?.value;
   expect(chartMock.addLineSeries).not.toHaveBeenCalledWith(
     expect.objectContaining({
@@ -2820,12 +2820,12 @@ it('should not render A/D Line when showADLine is false', async () => {
 it('should render A/D Line when showADLine is true', async () => {
   mockStoreValue.indicators.showADLine = true;
   render(<PriceChart />);
-  
+
   await waitFor(() => {
     const chartMock = (createChart as any).mock.results[0]?.value;
     const calls = chartMock.addLineSeries.mock.calls;
-    const adLineCall = calls.find((call: any) => 
-      call[0]?.color === 'rgb(99, 102, 241)' && 
+    const adLineCall = calls.find((call: any) =>
+      call[0]?.color === 'rgb(99, 102, 241)' &&
       call[0]?.title === 'A/D Line'
     );
     expect(adLineCall).toBeDefined();
@@ -2838,11 +2838,11 @@ it('should render A/D Line when showADLine is true', async () => {
 it('should cleanup A/D Line series when toggled off', async () => {
   mockStoreValue.indicators.showADLine = true;
   const { rerender } = render(<PriceChart />);
-  
+
   await waitFor(() => {
     expect((window as any)._adLine).toBeDefined();
   });
-  
+
   const updatedStoreValue = {
     ...mockStoreValue,
     indicators: {
@@ -2852,7 +2852,7 @@ it('should cleanup A/D Line series when toggled off', async () => {
   };
   (useChartStore as any).mockReturnValue(updatedStoreValue);
   rerender(<PriceChart />);
-  
+
   await waitFor(() => {
     expect((window as any)._adLine).toBeUndefined();
   });
@@ -2873,15 +2873,15 @@ it('should render all 9 indicators simultaneously without conflicts', async () =
     showOBV: true,
     showADLine: true // 9th indicator
   };
-  
+
   render(<PriceChart />);
-  
+
   await waitFor(() => {
     const chartMock = (createChart as any).mock.results[0]?.value;
     const calls = chartMock.addLineSeries.mock.calls;
-    
+
     // Color-based assertions (avoid count conflicts)
-    const adLineCall = calls.find((c: any) => 
+    const adLineCall = calls.find((c: any) =>
       c[0]?.color === 'rgb(99, 102, 241)' && c[0]?.title === 'A/D Line'
     );
     expect(adLineCall).toBeDefined();
@@ -3023,3 +3023,28 @@ it('should render all 9 indicators simultaneously without conflicts', async () =
 **Next Indicators Ready**: MFI (Money Flow Index), CMF (Chaikin Money Flow), ATR (Average True Range), Aroon, Parabolic SAR - Estimated 45-85 min each using proven pattern! 🚀
 
 **Session 89 Achievement**: **9/9 INFINITE SCALABILITY PROVEN!** - Pattern validated BEYOND 6/6 universal threshold, proving infinite reusability across ALL mathematical indicator types! 🎉🏆
+
+---
+
+## See Also
+
+### Pattern Library (Quick Reference)
+
+For quick pattern lookup and success metrics, see the **Pattern Library**:
+
+- **[Testing Patterns](../../architecture/patterns/testing/)** - 14 comprehensive testing patterns
+  - [AsyncMock Pattern](../../architecture/patterns/testing/asyncmock-pattern.md) - 100% success across backend + frontend
+  - [Mathematical Testing](../../architecture/patterns/testing/mathematical-testing.md) - 9/9 indicators proven
+  - [Pure Function Testing](../../architecture/patterns/testing/pure-function-testing.md) - Quick wins
+  - [Test Fixture Design](../../architecture/patterns/testing/fixture-design.md) - DRY principles
+
+### Related Guides
+
+- **[Backend Testing Patterns](./external-api-testing-patterns.md)** - Backend AsyncMock patterns (157 tests, Sessions 77-78)
+- **[Quick Start Guide](../quick-start.md)** - Project setup and testing workflows
+- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project standards (40+ patterns indexed)
+
+### Documentation Index
+
+- **[Documentation Home](../README.md)** - Complete documentation index
+- **[Pattern Library README](../../architecture/patterns/README.md)** - 44 patterns with navigation by category, difficulty, and time

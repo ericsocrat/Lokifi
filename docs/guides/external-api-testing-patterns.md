@@ -1133,3 +1133,34 @@ test_forex_service.py (550 lines)
 **Sessions**:
 - Phase 2: CryptoDataService (November 7, 2025, Commit: 07b79cd6)
 - Phase 3: ForexService (November 7, 2025, Commit: 11f43310)
+
+---
+
+## See Also
+
+### Pattern Library (Quick Reference)
+
+For quick pattern lookup and success metrics, see the **Pattern Library**:
+
+- **[Testing Patterns](../../architecture/patterns/testing/)** - 14 comprehensive testing patterns
+  - [AsyncMock Pattern](../../architecture/patterns/testing/asyncmock-pattern.md) - 100% success across 6 backend services
+  - [Pure Function Testing](../../architecture/patterns/testing/pure-function-testing.md) - Quick wins (5-15 min)
+  - [Test Fixture Design](../../architecture/patterns/testing/fixture-design.md) - DRY principles
+
+### Related Guides
+
+- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Frontend AsyncMock + Mathematical Indicator Testing (121 tests, 9 indicators, Sessions 79-89)
+- **[Quick Start Guide](../quick-start.md)** - Project setup and testing workflows
+- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project standards (40+ patterns indexed)
+
+### Documentation Index
+
+- **[Documentation Home](../README.md)** - Complete documentation index
+- **[Pattern Library README](../../architecture/patterns/README.md)** - 44 patterns with navigation by category, difficulty, and time
+
+### Session Archives
+
+Historical context and detailed session notes:
+
+- **[Session 77 Archive](../../plans/.archive/sessions/session-77-backend-test-coverage-campaign.md)** - Complete backend testing campaign (6 services, 157 tests, Sessions 77 Phases 1-6)
+- **[Session 67 Archive](../../plans/.archive/sessions/session-67-pr-review-and-dependency-fixes.md)** - datetime.utcnow() migration pattern
