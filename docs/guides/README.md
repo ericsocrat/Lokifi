@@ -1,9 +1,9 @@
 # Guides Directory
 
-**Last Updated:** October 27, 2025
-**Status:** 🎉 RESTRUCTURED - Organized into clear categories
-**Active Files:** 12 (2 core + 10 in subfolders)
-**Structure:** Professional subfolder organization
+**Last Updated:** November 11, 2025
+**Status:** 🎉 WORLD-CLASS - Three-tier documentation + comprehensive guides
+**Active Files:** 17 (2 core + 10 subfolders + 5 comprehensive guides)
+**Structure:** Professional three-tier organization with cross-references
 
 ---
 
@@ -20,6 +20,38 @@
   - **Consolidates**: PULL_REQUEST_GUIDE.md, MANUAL_PR_INSTRUCTIONS.md, CHECK_PRS.md, PRE_MERGE_CHECKLIST.md
   - PR creation, automated checks, code review, troubleshooting, best practices
   - **Everything you need for successful PRs!**
+
+---
+
+## 🌟 Comprehensive Guides (Deep-Dive Tutorials)
+
+**Production-ready guides with battle-tested patterns:**
+
+### Testing Patterns
+- **[frontend-testing-patterns.md](frontend-testing-patterns.md)** - Session 79-89 comprehensive guide (3,026 lines, 88.84% coverage achievement)
+  - AsyncMock pattern for React, Mathematical Indicator Testing (9 indicators proven), Canvas testing, WebSocket testing
+  - 100% success rate across 121 frontend tests, cross-referenced with Pattern Library
+
+- **[external-api-testing-patterns.md](external-api-testing-patterns.md)** - Session 77 backend testing guide (1,136 lines, 94.5% avg coverage)
+  - create_mock_response() helper, async context managers, rate limiting, cache validation
+  - Proven across 6 services (DataArchival, Crypto, Forex, Stock, Indices, News), 157 tests total
+
+- **[backend-coverage-best-practices.md](backend-coverage-best-practices.md)** - Session 69 coverage patterns (470 lines)
+  - Branch coverage configuration, smart exclusions (11 patterns), AsyncMock for pytest
+  - 23.02% → 97% coverage achievements, industry-standard practices
+
+### Development Tools
+- **[copilot-usage.md](copilot-usage.md)** - GitHub Copilot quick reference (186 lines)
+  - Essential shortcuts, quick prompts, project patterns, quality checklist
+  - Fast access productivity guide with cross-references to copilot-instructions.md
+
+- **[COVERAGE_DASHBOARD_INTEGRATION.md](COVERAGE_DASHBOARD_INTEGRATION.md)** - Live coverage dashboard guide (238 lines)
+  - Auto-starts with dev servers on port 3002, real-time coverage metrics, trend analysis
+  - See also: [COVERAGE_DASHBOARD_QUICK_REF.md](COVERAGE_DASHBOARD_QUICK_REF.md) for one-page quick start
+
+- **[mcp-coverage-server.md](mcp-coverage-server.md)** - Model Context Protocol coverage server (256 lines)
+  - Real-time coverage data access for AI assistants, 5 tools (summary, low-coverage, trends, file-level, thresholds)
+  - Integrated with VS Code Copilot, query coverage without running tests
 
 ---
 
@@ -70,6 +102,9 @@ Project structure and optimization:
 - ✅ VISUAL_REGRESSION_BASELINES.md → TESTING_GUIDE.md
 - ✅ QUICK_REFERENCE.md → DEVELOPER_WORKFLOW.md
 - ✅ AUTOMATION_GUIDE.md → DEVELOPER_WORKFLOW.md
+
+**Phase 3 (Session 89 - Guide Optimization - November 11, 2025):**
+- ✅ FRONTEND_BUNDLE_ANALYSIS.md → `/docs/plans/.archive/analysis/frontend-bundle-analysis-2025-11-03.md` (historical performance baseline)
 
 ---
 

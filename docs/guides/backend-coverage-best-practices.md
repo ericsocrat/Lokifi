@@ -467,3 +467,25 @@ def my_function(obj: "ExpensiveClass") -> None:
 **Impact**: High - Better coverage quality, fewer false negatives
 **Reusability**: High - Apply to all Python projects with pytest
 **Maintainability**: Low - Configuration-based, no code changes needed
+
+---
+
+## See Also
+
+### Testing Pattern Library
+- **[Pattern Library - Testing Patterns](../architecture/patterns/README.md#testing-patterns)** - 14 testing patterns including AsyncMock, Pure Function, Fixture Design
+- **[Branch Coverage Pattern](../architecture/patterns/testing/)** - Comprehensive branch coverage configuration
+
+### Related Testing Guides
+- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Session 79-89 comprehensive guide (3,026 lines)
+- **[External API Testing Patterns](./external-api-testing-patterns.md)** - Session 77 backend testing guide (1,136 lines)
+- **[Coverage Dashboard](./COVERAGE_DASHBOARD_INTEGRATION.md)** - Live coverage metrics and monitoring
+
+### Coverage Tools
+- **[MCP Coverage Server](./mcp-coverage-server.md)** - Real-time coverage data access via Model Context Protocol
+- **[Coverage Dashboard Quick Reference](./COVERAGE_DASHBOARD_QUICK_REF.md)** - Quick setup and usage guide
+
+### Documentation Index
+- **[Documentation Home](../README.md)** - Complete documentation index
+- **[Development Guides](./README.md)** - All development guides overview
+- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project conventions and patterns

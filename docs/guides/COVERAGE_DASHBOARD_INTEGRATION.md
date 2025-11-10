@@ -234,4 +234,24 @@ When everything is running correctly, you should see:
 
 ---
 
+## See Also
+
+### Quick References
+- **[Coverage Dashboard Quick Reference](./COVERAGE_DASHBOARD_QUICK_REF.md)** - One-page quick start guide
+
+### Coverage Tools
+- **[MCP Coverage Server](./mcp-coverage-server.md)** - Real-time coverage data access for AI assistants via Model Context Protocol
+- **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
+
+### Testing Guides
+- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing (Sessions 79-89)
+- **[External API Testing Patterns](./external-api-testing-patterns.md)** - Backend Python/FastAPI testing (Session 77)
+
+### Documentation Index
+- **[Documentation Home](../README.md)** - Complete documentation index
+- **[Development Guides](./README.md)** - All development guides overview
+- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project conventions and testing standards
+
+---
+
 **🌟 Pro Tip:** Bookmark http://localhost:3002 in your browser so you can quickly check coverage metrics while developing!

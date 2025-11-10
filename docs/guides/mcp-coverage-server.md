@@ -243,9 +243,25 @@ Edit `THRESHOLDS` object in `mcp-coverage-server.js`
 
 ## Related Documentation
 
-- **Coverage Dashboard**: `/docs/guides/COVERAGE_DASHBOARD_INTEGRATION.md`
-- **Testing Guide**: `/docs/guides/overview.md`
+## Related Documentation
+
+### Coverage Tools
+- **[Coverage Dashboard Integration](./COVERAGE_DASHBOARD_INTEGRATION.md)** - Full dashboard setup and usage guide
+- **[Coverage Dashboard Quick Reference](./COVERAGE_DASHBOARD_QUICK_REF.md)** - One-page quick start
+- **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
 - **Coverage Config**: `/config/coverage.config.json`
+
+### Testing Guides
+- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing (Sessions 79-89)
+- **[External API Testing Patterns](./external-api-testing-patterns.md)** - Backend Python/FastAPI testing (Session 77)
+- **Testing Guide**: `/docs/guides/overview.md`
+
+### Documentation Index
+- **[Documentation Home](../README.md)** - Complete documentation index
+- **[Development Guides](./README.md)** - All development guides overview
+- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project conventions and testing standards
+
+### External Resources
 - **MCP Specification**: https://modelcontextprotocol.io/
 
 ---
