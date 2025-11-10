@@ -1,19 +1,19 @@
 /**
  * CCI (Commodity Channel Index) Indicator Service
- * 
+ *
  * The Commodity Channel Index (CCI) is a momentum-based oscillator used to help
  * determine when an investment vehicle is reaching a condition of being overbought
  * or oversold.
- * 
+ *
  * Formula:
  * 1. Typical Price (TP) = (High + Low + Close) / 3
  * 2. SMA of TP = Sum of TP over period / period
  * 3. Mean Deviation = Sum of |TP - SMA| over period / period
  * 4. CCI = (TP - SMA) / (0.015 × Mean Deviation)
- * 
+ *
  * The constant 0.015 ensures that approximately 70-80% of CCI values fall
  * between -100 and +100.
- * 
+ *
  * @module services/indicators/cci
  */
 
@@ -57,22 +57,18 @@ function calculateSMA(values: number[], period: number): number[] {
  * Calculate Mean Deviation
  * Mean Deviation = Sum of |TP - SMA| over period / period
  */
-function calculateMeanDeviation(
-  typicalPrices: number[],
-  sma: number[],
-  period: number
-): number[] {
+function calculateMeanDeviation(typicalPrices: number[], sma: number[], period: number): number[] {
   if (typicalPrices.length < period || sma.length === 0) {
     return [];
   }
 
   const meanDeviations: number[] = [];
-  
+
   for (let i = 0; i < sma.length; i++) {
     const startIdx = i; // SMA already accounts for the period offset
     const slice = typicalPrices.slice(startIdx, startIdx + period);
     const currentSMA = sma[i];
-    
+
     const deviationSum = slice.reduce((acc, tp) => acc + Math.abs(tp - currentSMA), 0);
     meanDeviations.push(deviationSum / period);
   }
@@ -82,11 +78,11 @@ function calculateMeanDeviation(
 
 /**
  * Calculate CCI (Commodity Channel Index)
- * 
+ *
  * @param prices - Array of OHLC price data
  * @param period - Period for calculation (default: 20)
  * @returns Array of CCI data points
- * 
+ *
  * @example
  * ```typescript
  * const prices = [
@@ -112,7 +108,7 @@ export function calculateCCI(prices: OHLCPrice[], period: number = 20): CCIData[
   }
 
   // Step 1: Calculate Typical Price (TP) = (High + Low + Close) / 3
-  const typicalPrices = prices.map(p => (p.high + p.low + p.close) / 3);
+  const typicalPrices = prices.map((p) => (p.high + p.low + p.close) / 3);
 
   // Step 2: Calculate SMA of Typical Price
   const sma = calculateSMA(typicalPrices, period);
@@ -148,7 +144,7 @@ export function calculateCCI(prices: OHLCPrice[], period: number = 20): CCIData[
 
     cciData.push({
       time: prices[currentTPIndex].time,
-      cci: Number(cci.toFixed(2))
+      cci: Number(cci.toFixed(2)),
     });
   }
 
@@ -157,17 +153,17 @@ export function calculateCCI(prices: OHLCPrice[], period: number = 20): CCIData[
 
 /**
  * Interpret CCI value
- * 
+ *
  * Standard interpretation:
  * - Above +100: Overbought (potential reversal down)
  * - Above +200: Extremely overbought
  * - Below -100: Oversold (potential reversal up)
  * - Below -200: Extremely oversold
  * - Between -100 and +100: Neutral range
- * 
+ *
  * @param cciValue - CCI value to interpret
  * @returns Interpretation object with signal, strength, and description
- * 
+ *
  * @example
  * ```typescript
  * const interpretation = interpretCCI(150);
@@ -184,7 +180,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'overbought',
       strength: 'extreme',
-      description: 'Extremely overbought - Strong bearish reversal potential'
+      description: 'Extremely overbought - Strong bearish reversal potential',
     };
   }
 
@@ -192,7 +188,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'oversold',
       strength: 'extreme',
-      description: 'Extremely oversold - Strong bullish reversal potential'
+      description: 'Extremely oversold - Strong bullish reversal potential',
     };
   }
 
@@ -201,7 +197,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'overbought',
       strength: 'strong',
-      description: 'Overbought - Bearish reversal potential'
+      description: 'Overbought - Bearish reversal potential',
     };
   }
 
@@ -209,7 +205,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'oversold',
       strength: 'strong',
-      description: 'Oversold - Bullish reversal potential'
+      description: 'Oversold - Bullish reversal potential',
     };
   }
 
@@ -218,7 +214,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'bullish',
       strength: 'moderate',
-      description: 'Moderate bullish momentum'
+      description: 'Moderate bullish momentum',
     };
   }
 
@@ -226,7 +222,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'bearish',
       strength: 'moderate',
-      description: 'Moderate bearish momentum'
+      description: 'Moderate bearish momentum',
     };
   }
 
@@ -235,7 +231,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'bullish',
       strength: 'weak',
-      description: 'Weak bullish momentum'
+      description: 'Weak bullish momentum',
     };
   }
 
@@ -243,7 +239,7 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
     return {
       signal: 'bearish',
       strength: 'weak',
-      description: 'Weak bearish momentum'
+      description: 'Weak bearish momentum',
     };
   }
 
@@ -251,16 +247,16 @@ export function interpretCCI(cciValue: number): CCIInterpretation {
   return {
     signal: 'neutral',
     strength: 'weak',
-    description: 'Neutral - No directional bias'
+    description: 'Neutral - No directional bias',
   };
 }
 
 /**
  * Get the latest CCI value
- * 
+ *
  * @param cciData - Array of CCI data
  * @returns Latest CCI data point or null if array is empty
- * 
+ *
  * @example
  * ```typescript
  * const latest = getLatestCCI(cciData);

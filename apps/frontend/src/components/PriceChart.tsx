@@ -11,6 +11,7 @@ import { calculateCCI } from '@/services/indicators/cci';
 import { calculateMACD } from '@/services/indicators/macd';
 import { calculateRSI } from '@/services/indicators/rsi';
 import { calculateStochastic } from '@/services/indicators/stochastic';
+import { calculateWilliamsR } from '@/services/indicators/williams-r';
 import { useChartStore } from '@/state/store';
 import {
   createChart,
@@ -179,6 +180,7 @@ export default function PriceChart() {
       kill('_stochastic');
       kill('_adx');
       kill('_cci');
+      kill('_williamsR');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -552,6 +554,36 @@ export default function PriceChart() {
 
         cciLine.setData(downsampleLineMinMax(cciData, target));
         (window as any)._cci = [cciLine];
+      }
+
+      // --- Williams %R
+      if (indicators.showWilliamsR) {
+        const williamsRResult = calculateWilliamsR(
+          high.map((h: number, i: number) => ({
+            time: candles[i + paddedStart].time,
+            close: close[i],
+            high: h,
+            low: low[i],
+          })),
+          indicatorSettings.williamsRPeriod
+        );
+
+        // Create Williams %R line (purple)
+        const williamsRLine = chart.addLineSeries({
+          color: 'rgb(147, 51, 234)', // Purple
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: `Williams %R(${indicatorSettings.williamsRPeriod})`,
+        });
+
+        // Map Williams %R values
+        const williamsRData = williamsRResult.map((w) => ({
+          time: w.time as Time,
+          value: w.value,
+        }));
+
+        williamsRLine.setData(downsampleLineMinMax(williamsRData, target));
+        (window as any)._williamsR = [williamsRLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:
