@@ -5,6 +5,7 @@ import { stdDevChannels, vwap, vwma, type Candle as IndCandle } from '@/lib/char
 import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
+import { calculateADLine } from '@/services/indicators/ad-line';
 import { calculateADX } from '@/services/indicators/adx';
 import { calculateBollingerBands } from '@/services/indicators/bollinger';
 import { calculateCCI } from '@/services/indicators/cci';
@@ -183,6 +184,7 @@ export default function PriceChart() {
       kill('_cci');
       kill('_williamsR');
       kill('_obv');
+      kill('_adLine');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -618,6 +620,38 @@ export default function PriceChart() {
 
         obvLine.setData(downsampleLineMinMax(obvData, target));
         (window as any)._obv = [obvLine];
+      }
+
+      // --- A/D Line (Accumulation/Distribution)
+      if (indicators.showADLine) {
+        const volume = slice.map((c: Candle) => c.volume ?? 0);
+        const adLineResult = calculateADLine(
+          high.map((h: number, i: number) => ({
+            time: candles[i + paddedStart].time,
+            open: open[i],
+            high: h,
+            low: low[i],
+            close: close[i],
+            volume: volume[i],
+          }))
+        );
+
+        // Create A/D Line (indigo)
+        const adLine = chart.addLineSeries({
+          color: 'rgb(99, 102, 241)', // Indigo
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: 'A/D Line',
+        });
+
+        // Map A/D Line values
+        const adLineData = adLineResult.map((ad) => ({
+          time: ad.time as Time,
+          value: ad.value,
+        }));
+
+        adLine.setData(downsampleLineMinMax(adLineData, target));
+        (window as any)._adLine = [adLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:
