@@ -68,6 +68,7 @@ export interface IndicatorFlags {
   showADX: boolean;
   showCCI: boolean;
   showWilliamsR: boolean;
+  showOBV: boolean;
   bandFill: boolean;
 }
 
@@ -204,6 +205,7 @@ const DEFAULT_INDICATOR_FLAGS: IndicatorFlags = {
   showADX: false,
   showCCI: false,
   showWilliamsR: false,
+  showOBV: false,
   bandFill: true,
 };
 

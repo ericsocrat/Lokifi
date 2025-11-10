@@ -9,6 +9,7 @@ import { calculateADX } from '@/services/indicators/adx';
 import { calculateBollingerBands } from '@/services/indicators/bollinger';
 import { calculateCCI } from '@/services/indicators/cci';
 import { calculateMACD } from '@/services/indicators/macd';
+import { calculateOBV } from '@/services/indicators/obv';
 import { calculateRSI } from '@/services/indicators/rsi';
 import { calculateStochastic } from '@/services/indicators/stochastic';
 import { calculateWilliamsR } from '@/services/indicators/williams-r';
@@ -181,6 +182,7 @@ export default function PriceChart() {
       kill('_adx');
       kill('_cci');
       kill('_williamsR');
+      kill('_obv');
 
       // Compute window bounds
       const vr = chart.timeScale().getVisibleRange();
@@ -584,6 +586,38 @@ export default function PriceChart() {
 
         williamsRLine.setData(downsampleLineMinMax(williamsRData, target));
         (window as any)._williamsR = [williamsRLine];
+      }
+
+      // --- OBV (On-Balance Volume)
+      if (indicators.showOBV) {
+        const volume = slice.map((c: Candle) => c.volume ?? 0);
+        const obvResult = calculateOBV(
+          high.map((h: number, i: number) => ({
+            time: candles[i + paddedStart].time,
+            open: open[i],
+            high: h,
+            low: low[i],
+            close: close[i],
+            volume: volume[i],
+          }))
+        );
+
+        // Create OBV line (teal/cyan)
+        const obvLine = chart.addLineSeries({
+          color: 'rgb(6, 182, 212)', // Teal/Cyan
+          lineWidth: 2,
+          priceScaleId: 'right',
+          title: 'OBV',
+        });
+
+        // Map OBV values
+        const obvData = obvResult.map((obv) => ({
+          time: obv.time as Time,
+          value: obv.value,
+        }));
+
+        obvLine.setData(downsampleLineMinMax(obvData, target));
+        (window as any)._obv = [obvLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:
