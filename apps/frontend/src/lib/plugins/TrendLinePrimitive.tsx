@@ -1,20 +1,20 @@
 /**
  * TrendLine Primitive - Based on TradingView's official lightweight-charts example
  * Source: https://github.com/tradingview/lightweight-charts/tree/master/plugin-examples/src/plugins/trend-line
- * 
+ *
  * This implementation uses the Primitives API to draw trendlines with proper
  * price/time coordinate conversion, ensuring lines anchor correctly to chart data.
  */
 
 import {
-  ISeriesPrimitive,
-  SeriesAttachedParameter,
-  Time,
   AutoscaleInfo,
-  Logical,
-  ISeriesApi,
   IChartApi,
+  ISeriesApi,
+  ISeriesPrimitive,
+  Logical,
+  SeriesAttachedParameter,
   SeriesType,
+  Time,
 } from 'lightweight-charts';
 
 interface TrendLinePoint {
@@ -101,16 +101,10 @@ class TrendLinePaneRenderer {
     });
   }
 
-  private _drawLabel(
-    scope: any,
-    text: string,
-    x: number,
-    y: number,
-    left: boolean
-  ) {
+  private _drawLabel(scope: any, text: string, x: number, y: number, left: boolean) {
     const ctx = scope.context;
     ctx.font = `${14 * scope.verticalPixelRatio}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial`;
-    
+
     const offset = 5 * scope.horizontalPixelRatio;
     const textMetrics = ctx.measureText(text);
     const textWidth = textMetrics.width;
@@ -186,11 +180,7 @@ export class TrendLinePrimitive implements ISeriesPrimitive<Time> {
   private _maxPrice: number;
   private _requestUpdate?: () => void;
 
-  constructor(
-    p1: TrendLinePoint,
-    p2: TrendLinePoint,
-    options?: Partial<TrendLineOptions>
-  ) {
+  constructor(p1: TrendLinePoint, p2: TrendLinePoint, options?: Partial<TrendLineOptions>) {
     this._p1 = p1;
     this._p2 = p2;
     this._minPrice = Math.min(p1.price, p2.price);

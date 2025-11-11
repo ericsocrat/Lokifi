@@ -1,12 +1,12 @@
 'use client';
-import { DrawingTool, Point, useDrawingStore, DrawingObject } from '@/lib/stores/drawingStore';
+import { FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
+import { RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
+import { TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
+import { DrawingObject, Point, useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import { TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
-import { RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
-import { FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
-import { BarData, IChartApi, ISeriesApi, Time, ISeriesPrimitive } from 'lightweight-charts';
+import { BarData, IChartApi, ISeriesApi, ISeriesPrimitive, Time } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -192,21 +192,24 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   }, [height, chartData]);
 
   // Convert mouse event to price/time coordinates
-  const getChartCoordinates = useCallback((e: React.MouseEvent): { time: Time; price: number } | null => {
-    if (!chartRef.current || !seriesRef.current || !chartContainerRef.current) return null;
+  const getChartCoordinates = useCallback(
+    (e: React.MouseEvent): { time: Time; price: number } | null => {
+      if (!chartRef.current || !seriesRef.current || !chartContainerRef.current) return null;
 
-    const rect = chartContainerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+      const rect = chartContainerRef.current.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
 
-    const timeScale = chartRef.current.timeScale();
-    const time = timeScale.coordinateToTime(x);
-    const price = seriesRef.current.coordinateToPrice(y);
+      const timeScale = chartRef.current.timeScale();
+      const time = timeScale.coordinateToTime(x);
+      const price = seriesRef.current.coordinateToPrice(y);
 
-    if (time === null || price === null) return null;
+      if (time === null || price === null) return null;
 
-    return { time, price };
-  }, []);
+      return { time, price };
+    },
+    []
+  );
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -290,7 +293,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
           case 'vline':
             primitive = new TrendLinePrimitive(
               { time: obj.points[0].time as Time, price: obj.points[0].price! },
-              { time: obj.points[obj.points.length - 1].time as Time, price: obj.points[obj.points.length - 1].price! },
+              {
+                time: obj.points[obj.points.length - 1].time as Time,
+                price: obj.points[obj.points.length - 1].price!,
+              },
               {
                 lineColor: obj.style.color,
                 lineWidth: obj.style.lineWidth,
@@ -313,7 +319,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
           case 'fibonacciRetracement':
             primitive = new FibonacciPrimitive(
               { time: obj.points[0].time as Time, price: obj.points[0].price! },
-              { time: obj.points[obj.points.length - 1].time as Time, price: obj.points[obj.points.length - 1].price! },
+              {
+                time: obj.points[obj.points.length - 1].time as Time,
+                price: obj.points[obj.points.length - 1].price!,
+              },
               {
                 lineColor: obj.style.color,
                 lineWidth: obj.style.lineWidth,
@@ -346,7 +355,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         seriesRef.current?.detachPrimitive(primitive);
       });
       primitivesRef.current.clear();
-      
+
       resizeObserverRef.current?.disconnect();
       chartRef.current?.remove();
     };
@@ -435,7 +444,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       <div className="relative">
         <div
           ref={chartContainerRef}
-          style={{ 
+          style={{
             height: `${height - 40}px`,
             cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
           }}

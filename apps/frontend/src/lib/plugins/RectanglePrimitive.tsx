@@ -1,19 +1,19 @@
 /**
  * Rectangle Drawing Primitive - Based on TradingView's official example
  * Source: https://github.com/tradingview/lightweight-charts/tree/master/plugin-examples/src/plugins/rectangle-drawing-tool
- * 
+ *
  * Draws rectangles on the chart with proper price/time anchoring
  */
 
 import {
-  ISeriesPrimitive,
-  SeriesAttachedParameter,
-  Time,
   AutoscaleInfo,
-  Logical,
-  ISeriesApi,
   IChartApi,
+  ISeriesApi,
+  ISeriesPrimitive,
+  Logical,
+  SeriesAttachedParameter,
   SeriesType,
+  Time,
 } from 'lightweight-charts';
 
 interface RectanglePoint {
@@ -72,10 +72,7 @@ class RectanglePaneRenderer {
       const height = y2 - y1;
 
       // Draw fill
-      ctx.fillStyle = this._hexToRgba(
-        this._options.fillColor,
-        this._options.fillOpacity
-      );
+      ctx.fillStyle = this._hexToRgba(this._options.fillColor, this._options.fillOpacity);
       ctx.fillRect(x1, y1, width, height);
 
       // Draw border
@@ -143,11 +140,7 @@ export class RectanglePrimitive implements ISeriesPrimitive<Time> {
   private _maxPrice: number;
   private _requestUpdate?: () => void;
 
-  constructor(
-    p1: RectanglePoint,
-    p2: RectanglePoint,
-    options?: Partial<RectangleOptions>
-  ) {
+  constructor(p1: RectanglePoint, p2: RectanglePoint, options?: Partial<RectangleOptions>) {
     this._p1 = p1;
     this._p2 = p2;
     this._minPrice = Math.min(p1.price, p2.price);

@@ -1,7 +1,7 @@
 'use client';
+import type { Time } from 'lightweight-charts';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Time } from 'lightweight-charts';
 
 export type DrawingTool =
   | 'cursor'
@@ -118,6 +118,30 @@ interface DrawingState {
 
 const generateId = () => `drawing_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+/**
+ * Migration Helper: Check if drawing object has valid time/price coordinates.
+ * Legacy drawings (Session 91 and earlier) only have x/y pixel coordinates.
+ * New drawings (Session 92+) use time/price coordinates for TradingView Primitives API.
+ * 
+ * @param obj - Drawing object to check
+ * @returns true if object has valid time/price coordinates, false if legacy pixel-only
+ */
+const hasValidPrimitiveCoordinates = (obj: DrawingObject): boolean => {
+  if (!obj.points || obj.points.length === 0) return false;
+  
+  // Check if all points have time/price coordinates (not just x/y pixels)
+  return obj.points.every((point) => point.time !== undefined && point.price !== undefined);
+};
+
+/**
+ * Migration Note: Legacy drawings with only x/y coordinates cannot be rendered
+ * with Primitives API (requires time/price anchoring). These drawings will be
+ * visible in the Objects panel but won't render on chart until migrated.
+ * 
+ * Future enhancement: Add migration UI to convert pixel coordinates to price/time
+ * by prompting user to re-anchor drawing points on chart.
+ */
+
 const DEFAULT_STYLE = {
   color: '#60a5fa',
   lineWidth: 2,
@@ -159,6 +183,11 @@ export const useDrawingStore = create<DrawingState>()(
         const { activeTool } = get();
         if (activeTool === 'cursor') return;
 
+        // Validate that we have price/time coordinates (preferred for Primitives API)
+        if (point.time === undefined || point.price === undefined) {
+          console.warn('startDrawing called without time/price coordinates. Drawing may not work correctly.');
+        }
+
         const newDrawing: Partial<DrawingObject> = {
           type: activeTool,
           paneId,
@@ -177,6 +206,11 @@ export const useDrawingStore = create<DrawingState>()(
         const { currentDrawing, isDrawing } = get();
         if (!isDrawing || !currentDrawing) return;
 
+        // Validate that we have price/time coordinates (preferred for Primitives API)
+        if (point.time === undefined || point.price === undefined) {
+          console.warn('addPoint called without time/price coordinates. Drawing may not work correctly.');
+        }
+
         set({
           currentDrawing: {
             ...currentDrawing,
@@ -189,12 +223,24 @@ export const useDrawingStore = create<DrawingState>()(
         const { currentDrawing, isDrawing, addObject } = get();
         if (!isDrawing || !currentDrawing) return;
 
+        // Validate that we have the required data
         if (
           currentDrawing.type &&
           currentDrawing.paneId &&
           currentDrawing.points &&
           currentDrawing.points.length > 0
         ) {
+          // Validate that all points have time/price coordinates (required for Primitives API)
+          const hasValidCoordinates = currentDrawing.points.every(
+            (p) => p.time !== undefined && p.price !== undefined
+          );
+
+          if (!hasValidCoordinates) {
+            console.error('finishDrawing: Some points missing time/price coordinates. Cannot create primitive.');
+            get().cancelDrawing();
+            return;
+          }
+
           const objectId = addObject({
             type: currentDrawing.type,
             paneId: currentDrawing.paneId,

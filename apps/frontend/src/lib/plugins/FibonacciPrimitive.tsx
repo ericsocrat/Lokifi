@@ -5,14 +5,14 @@
  */
 
 import {
-  ISeriesPrimitive,
-  SeriesAttachedParameter,
-  Time,
   AutoscaleInfo,
-  Logical,
-  ISeriesApi,
   IChartApi,
+  ISeriesApi,
+  ISeriesPrimitive,
+  Logical,
+  SeriesAttachedParameter,
   SeriesType,
+  Time,
 } from 'lightweight-charts';
 
 interface FibPoint {
@@ -206,11 +206,7 @@ export class FibonacciPrimitive implements ISeriesPrimitive<Time> {
   private _maxPrice: number;
   private _requestUpdate?: () => void;
 
-  constructor(
-    p1: FibPoint,
-    p2: FibPoint,
-    options?: Partial<FibonacciOptions>
-  ) {
+  constructor(p1: FibPoint, p2: FibPoint, options?: Partial<FibonacciOptions>) {
     this._p1 = p1;
     this._p2 = p2;
     this._minPrice = Math.min(p1.price, p2.price);
