@@ -173,6 +173,7 @@ export interface ChartState {
     value: IndicatorSettings[K]
   ) => void;
   resetIndicatorSettings: () => void;
+  applyPreset: (presetName: string) => void;
 
   // settings
   setDrawingSettings: (s: Partial<ChartState['drawingSettings']>) => void;
@@ -236,6 +237,52 @@ const DEFAULT_INDICATOR_SETTINGS: IndicatorSettings = {
   adxPeriod: 14,
   cciPeriod: 20,
   williamsRPeriod: 14,
+};
+
+// Preset configurations for different trading strategies
+export const INDICATOR_PRESETS: Record<string, Partial<IndicatorSettings>> = {
+  'day-trading': {
+    // Quick signals, short periods for intraday trading
+    rsiPeriod: 9,
+    macdFastPeriod: 8,
+    macdSlowPeriod: 17,
+    macdSignalPeriod: 9,
+    bbPeriod: 12,
+    bbMult: 2,
+    stochasticKPeriod: 9,
+    stochasticDPeriod: 3,
+    adxPeriod: 9,
+    cciPeriod: 14,
+    williamsRPeriod: 9,
+  },
+  'swing-trading': {
+    // Balanced periods for medium-term trades (default settings)
+    rsiPeriod: 14,
+    macdFastPeriod: 12,
+    macdSlowPeriod: 26,
+    macdSignalPeriod: 9,
+    bbPeriod: 20,
+    bbMult: 2,
+    stochasticKPeriod: 14,
+    stochasticDPeriod: 3,
+    adxPeriod: 14,
+    cciPeriod: 20,
+    williamsRPeriod: 14,
+  },
+  'position-trading': {
+    // Long-term trends, longer periods for position trades
+    rsiPeriod: 21,
+    macdFastPeriod: 19,
+    macdSlowPeriod: 39,
+    macdSignalPeriod: 9,
+    bbPeriod: 30,
+    bbMult: 2.5,
+    stochasticKPeriod: 21,
+    stochasticDPeriod: 5,
+    adxPeriod: 21,
+    cciPeriod: 30,
+    williamsRPeriod: 21,
+  },
 };
 
 const DEFAULT_AUTO_LABELS: AutoLabels = {
@@ -608,6 +655,15 @@ export const useChartStore = create<ChartState>()(
 
       resetIndicatorSettings: () => {
         set({ indicatorSettings: { ...DEFAULT_INDICATOR_SETTINGS } });
+      },
+
+      applyPreset: (presetName: string) => {
+        const preset = INDICATOR_PRESETS[presetName];
+        if (preset) {
+          set({
+            indicatorSettings: { ...get().indicatorSettings, ...preset },
+          });
+        }
       },
 
       setDrawingSettings: (s: Partial<typeof DEFAULT_DRAFT>) =>

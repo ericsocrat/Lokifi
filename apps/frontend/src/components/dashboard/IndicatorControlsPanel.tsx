@@ -1,4 +1,4 @@
-import { useChartStore } from '@/state/store';
+import { useChartStore, INDICATOR_PRESETS } from '@/state/store';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import React from 'react';
 
@@ -21,9 +21,10 @@ const CONFIRM_RESET_ALL_KEY = 'lokifi_confirm_reset_all_indicators';
 const CONFIRM_RESET_INDIVIDUAL_KEY = 'lokifi_confirm_reset_individual_indicator';
 
 export default function IndicatorControlsPanel() {
-  const { indicators, indicatorSettings, updateIndicatorSetting, resetIndicatorSettings } =
+  const { indicators, indicatorSettings, updateIndicatorSetting, resetIndicatorSettings, applyPreset } =
     useChartStore();
   const [isExpanded, setIsExpanded] = React.useState(false);
+  const [selectedPreset, setSelectedPreset] = React.useState<string>('');
   
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = React.useState<{
@@ -109,6 +110,28 @@ export default function IndicatorControlsPanel() {
     }
   };
 
+  // Handle preset application with confirmation
+  const handleApplyPreset = () => {
+    if (!selectedPreset) return;
+
+    const presetNames: Record<string, string> = {
+      'day-trading': 'Day Trading',
+      'swing-trading': 'Swing Trading',
+      'position-trading': 'Position Trading',
+    };
+
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Apply Preset Configuration',
+      message: `Apply ${presetNames[selectedPreset]} preset? This will update all indicator settings.`,
+      onConfirm: () => {
+        applyPreset(selectedPreset);
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+      },
+      showDontAskAgain: false,
+    });
+  };
+
   return (
     <>
       <div className="rounded-2xl border border-white/15 p-3 space-y-3">
@@ -130,6 +153,28 @@ export default function IndicatorControlsPanel() {
               {isExpanded ? '▼ Collapse' : '▶ Expand'}
             </button>
           </div>
+        </div>
+
+        {/* Preset Selector */}
+        <div className="flex gap-2">
+          <select
+            className="flex-1 px-2 py-1.5 text-xs rounded border border-white/15 bg-neutral-800 hover:bg-neutral-700 transition-colors"
+            value={selectedPreset}
+            onChange={(e) => setSelectedPreset(e.target.value)}
+          >
+            <option value="">Select Trading Preset...</option>
+            <option value="day-trading">📈 Day Trading (Quick Signals)</option>
+            <option value="swing-trading">📊 Swing Trading (Balanced)</option>
+            <option value="position-trading">📉 Position Trading (Long-term)</option>
+          </select>
+          <button
+            className="px-3 py-1.5 text-xs rounded border border-white/15 bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleApplyPreset}
+            disabled={!selectedPreset}
+            title={selectedPreset ? 'Apply selected preset' : 'Select a preset first'}
+          >
+            Apply
+          </button>
         </div>
 
       {/* Collapsible Content */}
