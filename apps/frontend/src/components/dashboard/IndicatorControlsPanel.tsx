@@ -3,7 +3,7 @@ import React from 'react';
 
 /**
  * IndicatorControlsPanel - UI for customizing indicator periods and settings
- * 
+ *
  * Provides user-facing controls for all 9 indicators:
  * - RSI: period (5-50, default 14)
  * - MACD: fast/slow/signal periods (defaults 12/26/9)

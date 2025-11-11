@@ -80,6 +80,10 @@ export interface ChartState {
   theme: 'light' | 'dark';
   indicators: IndicatorFlags;
 
+  // UI state
+  indicatorControlsPanelVisible: boolean;
+  toggleIndicatorControlsPanel: () => void;
+
   // indicator methods
   toggleIndicator: (key: keyof IndicatorFlags) => void;
 
@@ -249,6 +253,9 @@ export const useChartStore = create<ChartState>()(
       timeframe: '1h',
       theme: 'dark',
 
+      // UI state
+      indicatorControlsPanelVisible: false,
+
       drawings: [],
       selection: new Set<string>(),
 
@@ -300,6 +307,10 @@ export const useChartStore = create<ChartState>()(
       setSymbol: (sym: string) => set({ symbol: sym }),
       setTimeframe: (tf: string) => set({ timeframe: tf }),
       setAll: (state: Partial<ChartState>) => set(state),
+
+      // UI methods
+      toggleIndicatorControlsPanel: () =>
+        set({ indicatorControlsPanelVisible: !get().indicatorControlsPanelVisible }),
 
       // Indicator methods
       toggleIndicator: (key: keyof IndicatorFlags) => {
