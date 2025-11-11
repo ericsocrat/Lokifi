@@ -1,4 +1,8 @@
 'use client';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
+import { symbolStore } from '@/lib/stores/symbolStore';
+import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { BarChart3, Grid, Layout, Maximize2, Minimize2, TrendingUp } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ChartHeader from '../components/ChartHeader';
@@ -6,10 +10,6 @@ import { DrawingChart } from '../components/DrawingChart';
 import { DrawingToolbar } from '../components/DrawingToolbar';
 import { ObjectTree } from '../components/ObjectTree';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
-import { usePaneStore } from '@/lib/stores/paneStore';
-import { symbolStore } from '@/lib/stores/symbolStore';
-import { timeframeStore } from '@/lib/stores/timeframeStore';
 
 export const TradingWorkspace: React.FC = () => {
   const [isDrawingToolbarCollapsed, setIsDrawingToolbarCollapsed] = useState(false);
@@ -89,9 +89,9 @@ export const TradingWorkspace: React.FC = () => {
   }, []);
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-gray-900 flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-gray-900 flex flex-col">
       {/* Enhanced Chart Header with Stats */}
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="bg-gray-800 border-b border-gray-700 flex-shrink-0">
         <ChartHeader />
 
         {/* Workspace Stats Bar */}
@@ -242,4 +242,3 @@ export const TradingWorkspace: React.FC = () => {
     </div>
   );
 };
-

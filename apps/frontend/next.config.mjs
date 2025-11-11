@@ -8,7 +8,7 @@ const withBundleAnalyzer = bundleAnalyzer({
 const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
-  reactStrictMode: true,
+  reactStrictMode: false, // Temporarily disabled - causes chart duplication
   experimental: {
     forceSwcTransforms: false,
   },

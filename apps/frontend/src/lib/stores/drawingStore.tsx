@@ -1,6 +1,7 @@
 'use client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { Time } from 'lightweight-charts';
 
 export type DrawingTool =
   | 'cursor'
@@ -19,9 +20,11 @@ export type DrawingTool =
   | 'textNote';
 
 export interface Point {
-  x: number;
-  y: number;
-  time?: string | number;
+  // Legacy pixel coordinates (deprecated, for migration only)
+  x?: number;
+  y?: number;
+  // New price/time coordinates (preferred)
+  time?: Time | string | number;
   price?: number;
 }
 
@@ -272,11 +275,11 @@ export const useDrawingStore = create<DrawingState>()(
         const original = objects.find((obj: DrawingObject) => obj.id === id);
         if (!original) return '';
 
-        // Offset the duplicate slightly
+        // Offset the duplicate slightly (for pixel-based coordinates only)
         const offsetPoints = original.points.map((point: Point) => ({
           ...point,
-          x: point.x + 10,
-          y: point.y + 10,
+          x: point.x !== undefined ? point.x + 10 : undefined,
+          y: point.y !== undefined ? point.y + 10 : undefined,
         }));
 
         return addObject({
@@ -300,13 +303,15 @@ export const useDrawingStore = create<DrawingState>()(
         y2: number;
         paneId: string;
       }) => {
-        // For now, just select the first object found in the rectangle
+        // For now, just select the first object found in the rectangle (pixel-based coordinates only)
         const { objects } = get();
         const objectInRect = objects.find(
           (obj: DrawingObject) =>
             obj.paneId === rect.paneId &&
             obj.points.some(
               (point: Point) =>
+                point.x !== undefined &&
+                point.y !== undefined &&
                 point.x >= Math.min(rect.x1, rect.x2) &&
                 point.x <= Math.max(rect.x1, rect.x2) &&
                 point.y >= Math.min(rect.y1, rect.y2) &&
@@ -323,7 +328,7 @@ export const useDrawingStore = create<DrawingState>()(
         set({ selectedObjectId: null });
       },
 
-      // Transform
+      // Transform (pixel-based coordinates only)
       moveObject: (id: string, deltaX: number, deltaY: number) => {
         set((state) => ({
           objects: state.objects.map((obj: DrawingObject) =>
@@ -332,8 +337,8 @@ export const useDrawingStore = create<DrawingState>()(
                   ...obj,
                   points: obj.points.map((point: Point) => ({
                     ...point,
-                    x: point.x + deltaX,
-                    y: point.y + deltaY,
+                    x: point.x !== undefined ? point.x + deltaX : undefined,
+                    y: point.y !== undefined ? point.y + deltaY : undefined,
                   })),
                   properties: {
                     ...obj.properties,

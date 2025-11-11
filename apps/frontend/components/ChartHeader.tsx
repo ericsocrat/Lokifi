@@ -1,10 +1,11 @@
 'use client';
-import { useAuth } from '@/src/components/AuthProvider';
-import { BarChart3, Layers, Settings, User } from 'lucide-react';
-import { useState } from 'react';
 import { indicatorStore } from '@/lib/stores/indicatorStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { AuthModal } from '@/src/components/AuthModal';
+import { useAuth } from '@/src/components/AuthProvider';
+import { BarChart3, Layers, RotateCcw, Settings, User } from 'lucide-react';
+import { useState } from 'react';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
 
@@ -21,17 +22,7 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
 
   // Use actual auth state from AuthProvider
   const { user, loading } = useAuth();
-  // TEMPORARY: Force show button for debugging
-  const isLoggedIn = false; // !!user;
-
-  // Debug logging
-  console.log('🔍 ChartHeader Debug:', {
-    user,
-    loading,
-    isLoggedIn,
-    shouldShowButton: !isLoggedIn,
-    timestamp: new Date().toISOString(),
-  });
+  const isLoggedIn = !!user;
 
   const activeIndicatorCount = Object.values(indicators.flags).filter(Boolean).length;
 
@@ -96,6 +87,21 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
             <span>Settings</span>
           </button>
 
+          {/* Reset Chart Layout Button */}
+          <button
+            onClick={() => {
+              const { resetPanes } = usePaneStore.getState();
+              resetPanes();
+              localStorage.removeItem('lokifi-panes');
+              window.location.reload();
+            }}
+            title="Reset to Single Chart"
+            className="flex items-center gap-2 px-4 py-2 bg-red-600/20 hover:bg-red-600/30 border border-red-600/50 hover:border-red-600 rounded-xl text-red-400 hover:text-red-300 transition-colors"
+          >
+            <RotateCcw size={18} />
+            <span>Reset Layout</span>
+          </button>
+
           {/* Quick Toggle Buttons */}
           <div className="flex items-center gap-1 pl-2 border-l border-neutral-700">
             <button
@@ -136,9 +142,11 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
 
       {/* Auth Modal */}
       {isAuthModalOpen && (
-        <AuthModal initialMode={authModalTab === 'login' ? 'login' : 'register'} onClose={() => setIsAuthModalOpen(false)} />
+        <AuthModal
+          initialMode={authModalTab === 'login' ? 'login' : 'register'}
+          onClose={() => setIsAuthModalOpen(false)}
+        />
       )}
     </>
   );
 }
-

@@ -1,5 +1,5 @@
-import { useChartStore, INDICATOR_PRESETS } from '@/state/store';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
+import { useChartStore } from '@/state/store';
 import React from 'react';
 
 /**
@@ -21,11 +21,17 @@ const CONFIRM_RESET_ALL_KEY = 'lokifi_confirm_reset_all_indicators';
 const CONFIRM_RESET_INDIVIDUAL_KEY = 'lokifi_confirm_reset_individual_indicator';
 
 export default function IndicatorControlsPanel() {
-  const { indicators, indicatorSettings, updateIndicatorSetting, resetIndicatorSettings, applyPreset, toggleIndicatorControlsPanel } =
-    useChartStore();
+  const {
+    indicators,
+    indicatorSettings,
+    updateIndicatorSetting,
+    resetIndicatorSettings,
+    applyPreset,
+    toggleIndicatorControlsPanel,
+  } = useChartStore();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [selectedPreset, setSelectedPreset] = React.useState<string>('');
-  
+
   // Confirmation dialog state
   const [confirmDialog, setConfirmDialog] = React.useState<{
     isOpen: boolean;
@@ -53,7 +59,7 @@ export default function IndicatorControlsPanel() {
   const handleReset = () => {
     // Check if user has disabled this confirmation
     const skipConfirm = localStorage.getItem(CONFIRM_RESET_ALL_KEY) === 'false';
-    
+
     if (skipConfirm) {
       resetIndicatorSettings();
       return;
@@ -63,7 +69,8 @@ export default function IndicatorControlsPanel() {
     setConfirmDialog({
       isOpen: true,
       title: 'Reset All Indicators',
-      message: 'This will reset all indicator settings to their default values. This action cannot be undone.',
+      message:
+        'This will reset all indicator settings to their default values. This action cannot be undone.',
       onConfirm: () => {
         resetIndicatorSettings();
         setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
@@ -77,7 +84,7 @@ export default function IndicatorControlsPanel() {
   const handleResetIndividual = (settingKeys: string[], indicatorName: string) => {
     // Check if user has disabled this confirmation
     const skipConfirm = localStorage.getItem(CONFIRM_RESET_INDIVIDUAL_KEY) === 'false';
-    
+
     if (skipConfirm) {
       settingKeys.forEach((key) => {
         const defaultValue = getDefaultValue(key as keyof typeof indicatorSettings);
@@ -209,169 +216,169 @@ export default function IndicatorControlsPanel() {
           </button>
         </div>
 
-      {/* Collapsible Content */}
-      {isExpanded && (
-        <div className="space-y-4">
-          {/* RSI Settings */}
-          {indicators.showRSI && (
-            <IndicatorControl
-              label="RSI Period"
-              value={indicatorSettings.rsiPeriod}
-              onChange={(v) => handleChange('rsiPeriod', v)}
-              min={5}
-              max={50}
-              defaultValue={14}
-              description="Relative Strength Index lookback period"
-            />
-          )}
-
-          {/* MACD Settings */}
-          {indicators.showMACD && (
-            <div className="space-y-2">
-              <div className="text-xs font-semibold opacity-80">MACD Settings</div>
+        {/* Collapsible Content */}
+        {isExpanded && (
+          <div className="space-y-4">
+            {/* RSI Settings */}
+            {indicators.showRSI && (
               <IndicatorControl
-                label="Fast Period"
-                value={indicatorSettings.macdFastPeriod}
-                onChange={(v) => handleChange('macdFastPeriod', v)}
-                min={3}
-                max={50}
-                defaultValue={12}
-              />
-              <IndicatorControl
-                label="Slow Period"
-                value={indicatorSettings.macdSlowPeriod}
-                onChange={(v) => handleChange('macdSlowPeriod', v)}
-                min={10}
-                max={100}
-                defaultValue={26}
-              />
-              <IndicatorControl
-                label="Signal Period"
-                value={indicatorSettings.macdSignalPeriod}
-                onChange={(v) => handleChange('macdSignalPeriod', v)}
-                min={3}
-                max={30}
-                defaultValue={9}
-              />
-            </div>
-          )}
-
-          {/* Bollinger Bands Settings */}
-          {indicators.showBB && (
-            <div className="space-y-2">
-              <div className="text-xs font-semibold opacity-80">Bollinger Bands Settings</div>
-              <IndicatorControl
-                label="Period"
-                value={indicatorSettings.bbPeriod}
-                onChange={(v) => handleChange('bbPeriod', v)}
+                label="RSI Period"
+                value={indicatorSettings.rsiPeriod}
+                onChange={(v) => handleChange('rsiPeriod', v)}
                 min={5}
-                max={100}
-                defaultValue={20}
-              />
-              <IndicatorControl
-                label="Std Deviation"
-                value={indicatorSettings.bbMult}
-                onChange={(v) => handleChange('bbMult', v)}
-                min={1}
-                max={5}
-                step={0.1}
-                defaultValue={2}
-              />
-            </div>
-          )}
-
-          {/* Stochastic Settings */}
-          {indicators.showStochastic && (
-            <div className="space-y-2">
-              <div className="text-xs font-semibold opacity-80">Stochastic Settings</div>
-              <IndicatorControl
-                label="%K Period"
-                value={indicatorSettings.stochasticKPeriod}
-                onChange={(v) => handleChange('stochasticKPeriod', v)}
-                min={3}
                 max={50}
                 defaultValue={14}
+                description="Relative Strength Index lookback period"
               />
-              <IndicatorControl
-                label="%D Period"
-                value={indicatorSettings.stochasticDPeriod}
-                onChange={(v) => handleChange('stochasticDPeriod', v)}
-                min={1}
-                max={20}
-                defaultValue={3}
-              />
-            </div>
-          )}
+            )}
 
-          {/* ADX Settings */}
-          {indicators.showADX && (
-            <IndicatorControl
-              label="ADX Period"
-              value={indicatorSettings.adxPeriod}
-              onChange={(v) => handleChange('adxPeriod', v)}
-              min={5}
-              max={50}
-              defaultValue={14}
-              description="Average Directional Index lookback period"
-            />
-          )}
-
-          {/* CCI Settings */}
-          {indicators.showCCI && (
-            <IndicatorControl
-              label="CCI Period"
-              value={indicatorSettings.cciPeriod}
-              onChange={(v) => handleChange('cciPeriod', v)}
-              min={5}
-              max={50}
-              defaultValue={20}
-              description="Commodity Channel Index lookback period"
-            />
-          )}
-
-          {/* Williams %R Settings */}
-          {indicators.showWilliamsR && (
-            <IndicatorControl
-              label="Williams %R Period"
-              value={indicatorSettings.williamsRPeriod}
-              onChange={(v) => handleChange('williamsRPeriod', v)}
-              min={5}
-              max={50}
-              defaultValue={14}
-              description="Williams %R lookback period"
-            />
-          )}
-
-          {/* OBV - No Settings (Cumulative) */}
-          {indicators.showOBV && (
-            <div className="text-xs opacity-60 italic">
-              OBV (On-Balance Volume) - No configurable settings
-            </div>
-          )}
-
-          {/* A/D Line - No Settings (Cumulative) */}
-          {indicators.showADLine && (
-            <div className="text-xs opacity-60 italic">
-              A/D Line (Accumulation/Distribution) - No configurable settings
-            </div>
-          )}
-
-          {/* No indicators active message */}
-          {!indicators.showRSI &&
-            !indicators.showMACD &&
-            !indicators.showBB &&
-            !indicators.showStochastic &&
-            !indicators.showADX &&
-            !indicators.showCCI &&
-            !indicators.showWilliamsR &&
-            !indicators.showOBV &&
-            !indicators.showADLine && (
-              <div className="text-xs opacity-60 text-center py-4">
-                No indicators active. Toggle indicators to customize settings.
+            {/* MACD Settings */}
+            {indicators.showMACD && (
+              <div className="space-y-2">
+                <div className="text-xs font-semibold opacity-80">MACD Settings</div>
+                <IndicatorControl
+                  label="Fast Period"
+                  value={indicatorSettings.macdFastPeriod}
+                  onChange={(v) => handleChange('macdFastPeriod', v)}
+                  min={3}
+                  max={50}
+                  defaultValue={12}
+                />
+                <IndicatorControl
+                  label="Slow Period"
+                  value={indicatorSettings.macdSlowPeriod}
+                  onChange={(v) => handleChange('macdSlowPeriod', v)}
+                  min={10}
+                  max={100}
+                  defaultValue={26}
+                />
+                <IndicatorControl
+                  label="Signal Period"
+                  value={indicatorSettings.macdSignalPeriod}
+                  onChange={(v) => handleChange('macdSignalPeriod', v)}
+                  min={3}
+                  max={30}
+                  defaultValue={9}
+                />
               </div>
             )}
-        </div>
-      )}
+
+            {/* Bollinger Bands Settings */}
+            {indicators.showBB && (
+              <div className="space-y-2">
+                <div className="text-xs font-semibold opacity-80">Bollinger Bands Settings</div>
+                <IndicatorControl
+                  label="Period"
+                  value={indicatorSettings.bbPeriod}
+                  onChange={(v) => handleChange('bbPeriod', v)}
+                  min={5}
+                  max={100}
+                  defaultValue={20}
+                />
+                <IndicatorControl
+                  label="Std Deviation"
+                  value={indicatorSettings.bbMult}
+                  onChange={(v) => handleChange('bbMult', v)}
+                  min={1}
+                  max={5}
+                  step={0.1}
+                  defaultValue={2}
+                />
+              </div>
+            )}
+
+            {/* Stochastic Settings */}
+            {indicators.showStochastic && (
+              <div className="space-y-2">
+                <div className="text-xs font-semibold opacity-80">Stochastic Settings</div>
+                <IndicatorControl
+                  label="%K Period"
+                  value={indicatorSettings.stochasticKPeriod}
+                  onChange={(v) => handleChange('stochasticKPeriod', v)}
+                  min={3}
+                  max={50}
+                  defaultValue={14}
+                />
+                <IndicatorControl
+                  label="%D Period"
+                  value={indicatorSettings.stochasticDPeriod}
+                  onChange={(v) => handleChange('stochasticDPeriod', v)}
+                  min={1}
+                  max={20}
+                  defaultValue={3}
+                />
+              </div>
+            )}
+
+            {/* ADX Settings */}
+            {indicators.showADX && (
+              <IndicatorControl
+                label="ADX Period"
+                value={indicatorSettings.adxPeriod}
+                onChange={(v) => handleChange('adxPeriod', v)}
+                min={5}
+                max={50}
+                defaultValue={14}
+                description="Average Directional Index lookback period"
+              />
+            )}
+
+            {/* CCI Settings */}
+            {indicators.showCCI && (
+              <IndicatorControl
+                label="CCI Period"
+                value={indicatorSettings.cciPeriod}
+                onChange={(v) => handleChange('cciPeriod', v)}
+                min={5}
+                max={50}
+                defaultValue={20}
+                description="Commodity Channel Index lookback period"
+              />
+            )}
+
+            {/* Williams %R Settings */}
+            {indicators.showWilliamsR && (
+              <IndicatorControl
+                label="Williams %R Period"
+                value={indicatorSettings.williamsRPeriod}
+                onChange={(v) => handleChange('williamsRPeriod', v)}
+                min={5}
+                max={50}
+                defaultValue={14}
+                description="Williams %R lookback period"
+              />
+            )}
+
+            {/* OBV - No Settings (Cumulative) */}
+            {indicators.showOBV && (
+              <div className="text-xs opacity-60 italic">
+                OBV (On-Balance Volume) - No configurable settings
+              </div>
+            )}
+
+            {/* A/D Line - No Settings (Cumulative) */}
+            {indicators.showADLine && (
+              <div className="text-xs opacity-60 italic">
+                A/D Line (Accumulation/Distribution) - No configurable settings
+              </div>
+            )}
+
+            {/* No indicators active message */}
+            {!indicators.showRSI &&
+              !indicators.showMACD &&
+              !indicators.showBB &&
+              !indicators.showStochastic &&
+              !indicators.showADX &&
+              !indicators.showCCI &&
+              !indicators.showWilliamsR &&
+              !indicators.showOBV &&
+              !indicators.showADLine && (
+                <div className="text-xs opacity-60 text-center py-4">
+                  No indicators active. Toggle indicators to customize settings.
+                </div>
+              )}
+          </div>
+        )}
 
         {/* Keyboard Shortcuts Help */}
         <div className="mt-3 pt-3 border-t border-white/10">

@@ -1,9 +1,12 @@
 'use client';
-import { Point, useDrawingStore } from '@/lib/stores/drawingStore';
+import { DrawingTool, Point, useDrawingStore, DrawingObject } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import { BarData, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
+import { RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
+import { FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
+import { BarData, IChartApi, ISeriesApi, Time, ISeriesPrimitive } from 'lightweight-charts';
 import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -59,7 +62,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
+  const primitivesRef = useRef<Map<string, ISeriesPrimitive<Time>>>(new Map());
 
   const symbol = symbolStore.get();
   const timeframe = timeframeStore.get();
@@ -73,22 +76,62 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     addPoint,
     finishDrawing,
     getObjectsByPane,
+    objects, // Subscribe to objects array to trigger re-renders
   } = useDrawingStore();
 
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
+  const [chartData, setChartData] = useState<BarData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Mock data - same as previous charts
-  const mockData: BarData[] = [
-    { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
-    { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
-    { time: '2024-01-03', open: 108, high: 112, low: 102, close: 110 },
-    { time: '2024-01-04', open: 110, high: 118, low: 108, close: 115 },
-    { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 },
-  ];
+  // Fetch real OHLC data
+  useEffect(() => {
+    const fetchOHLCData = async () => {
+      try {
+        setIsLoading(true);
+        const url = `http://localhost:8000/api/api/v1/ohlc/${symbol}?timeframe=${timeframe}&limit=100`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch OHLC data');
+        }
+
+        const result = await response.json();
+
+        // Transform API data to lightweight-charts format
+        // Note: Yahoo Finance returns BTC price divided by 1000, so multiply by 1000
+        const priceMultiplier = symbol.includes('BTC') ? 1000 : 1;
+
+        const transformedData: BarData[] = result.data.map((candle: any) => ({
+          time: candle.timestamp.split('T')[0], // Convert ISO to YYYY-MM-DD
+          open: candle.open * priceMultiplier,
+          high: candle.high * priceMultiplier,
+          low: candle.low * priceMultiplier,
+          close: candle.close * priceMultiplier,
+        }));
+
+        setChartData(transformedData);
+      } catch (error) {
+        console.error('Failed to fetch OHLC data:', error);
+        // Fallback to mock data if API fails
+        setChartData([
+          { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
+          { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
+          { time: '2024-01-03', open: 108, high: 112, low: 102, close: 110 },
+          { time: '2024-01-04', open: 110, high: 118, low: 108, close: 115 },
+          { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchOHLCData();
+  }, [symbol, timeframe]);
 
   const initializeChart = useCallback(async () => {
-    if (!chartContainerRef.current) return;
+    if (!chartContainerRef.current || chartData.length === 0) return;
 
     try {
       const { createChart } = await import('lightweight-charts');
@@ -124,7 +167,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         wickDownColor: '#ef4444',
       });
 
-      candlestickSeries.setData(mockData);
+      candlestickSeries.setData(chartData);
 
       chartRef.current = chart;
       seriesRef.current = candlestickSeries;
@@ -137,7 +180,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
               width: chartContainerRef.current.clientWidth,
               height: height - 40,
             });
-            updateDrawingCanvas();
           }
         });
 
@@ -147,28 +189,23 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       console.error('Failed to initialize chart:', error);
       throw error;
     }
-  }, [height, mockData]);
+  }, [height, chartData]);
 
-  const updateDrawingCanvas = useCallback(() => {
-    if (!drawingCanvasRef.current || !chartContainerRef.current) return;
-
-    const canvas = drawingCanvasRef.current;
-    const container = chartContainerRef.current;
-
-    canvas.width = container.clientWidth;
-    canvas.height = height - 40;
-    canvas.style.width = `${container.clientWidth}px`;
-    canvas.style.height = `${height - 40}px`;
-  }, [height]);
-
-  const getMousePosition = useCallback((e: React.MouseEvent): Point => {
-    if (!chartContainerRef.current) return { x: 0, y: 0 };
+  // Convert mouse event to price/time coordinates
+  const getChartCoordinates = useCallback((e: React.MouseEvent): { time: Time; price: number } | null => {
+    if (!chartRef.current || !seriesRef.current || !chartContainerRef.current) return null;
 
     const rect = chartContainerRef.current.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    };
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const timeScale = chartRef.current.timeScale();
+    const time = timeScale.coordinateToTime(x);
+    const price = seriesRef.current.coordinateToPrice(y);
+
+    if (time === null || price === null) return null;
+
+    return { time, price };
   }, []);
 
   const handleMouseDown = useCallback(
@@ -176,7 +213,11 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       if (!isVisible || activeTool === 'cursor') return;
 
       setIsMouseDown(true);
-      const point = getMousePosition(e);
+      const coords = getChartCoordinates(e);
+      if (!coords) return;
+
+      // Convert to Point format (will be updated to use time/price in store later)
+      const point: Point = { x: 0, y: 0, time: coords.time, price: coords.price };
 
       if (!isDrawing) {
         startDrawing(paneId, point);
@@ -184,7 +225,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         addPoint(point);
       }
     },
-    [isVisible, activeTool, isDrawing, paneId, startDrawing, addPoint, getMousePosition]
+    [isVisible, activeTool, isDrawing, paneId, startDrawing, addPoint, getChartCoordinates]
   );
 
   const handleMouseMove = useCallback(
@@ -215,87 +256,110 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     }
   }, [isDrawing, finishDrawing]);
 
-  const drawObjects = useCallback(() => {
-    if (!drawingCanvasRef.current) return;
+  // Attach drawing primitives to chart
+  useEffect(() => {
+    if (!seriesRef.current || !chartRef.current) return;
 
-    const canvas = drawingCanvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw existing objects for this pane
     const paneObjects = getObjectsByPane(paneId);
 
-    paneObjects.forEach(
-      (obj: {
-        id: string;
-        points: { x: number; y: number }[];
-        properties: { visible: boolean };
-        style: { color: string; lineWidth: number; lineStyle: string };
-      }) => {
-        if (!obj.properties.visible) return;
-
-        ctx.strokeStyle = obj.style.color;
-        ctx.lineWidth = obj.style.lineWidth;
-        ctx.setLineDash(obj.style.lineStyle === 'dashed' ? [5, 5] : []);
-
-        // Simple line drawing for now
-        if (obj.points.length >= 2) {
-          ctx.beginPath();
-          ctx.moveTo(obj.points[0].x, obj.points[0].y);
-
-          obj.points.slice(1).forEach((point: { x: number; y: number }) => {
-            ctx.lineTo(point.x, point.y);
-          });
-
-          ctx.stroke();
-
-          // Highlight selected object
-          if (obj.id === selectedObjectId) {
-            ctx.strokeStyle = '#60a5fa';
-            ctx.lineWidth = obj.style.lineWidth + 2;
-            ctx.setLineDash([]);
-            ctx.stroke();
-          }
-        }
+    // Remove primitives that no longer exist
+    primitivesRef.current.forEach((primitive, id) => {
+      const objectExists = paneObjects.some((obj: { id: string }) => obj.id === id);
+      if (!objectExists) {
+        seriesRef.current?.detachPrimitive(primitive);
+        primitivesRef.current.delete(id);
       }
-    );
+    });
 
-    // Draw current drawing in progress
-    if (currentDrawing && currentDrawing.points && currentDrawing.points.length > 0) {
-      ctx.strokeStyle = currentDrawing.style?.color || '#60a5fa';
-      ctx.lineWidth = currentDrawing.style?.lineWidth || 2;
-      ctx.setLineDash([3, 3]); // Dashed line for drawing in progress
+    // Add or update primitives for existing objects
+    paneObjects.forEach((obj: DrawingObject) => {
+      if (!obj.properties.visible || obj.points.length < 2) return;
 
-      ctx.beginPath();
-      ctx.moveTo(currentDrawing.points[0].x, currentDrawing.points[0].y);
+      // Skip if already attached
+      if (primitivesRef.current.has(obj.id)) return;
 
-      currentDrawing.points.slice(1).forEach((point: { x: number; y: number }) => {
-        ctx.lineTo(point.x, point.y);
-      });
+      // Only create primitives for objects with time/price data
+      if (!obj.points[0].time || obj.points[0].price === undefined) return;
 
-      ctx.stroke();
-    }
-  }, [paneId, getObjectsByPane, selectedObjectId, currentDrawing]);
+      let primitive: ISeriesPrimitive<Time> | null = null;
+
+      try {
+        switch (obj.type) {
+          case 'trendline':
+          case 'hline':
+          case 'vline':
+            primitive = new TrendLinePrimitive(
+              { time: obj.points[0].time as Time, price: obj.points[0].price! },
+              { time: obj.points[obj.points.length - 1].time as Time, price: obj.points[obj.points.length - 1].price! },
+              {
+                lineColor: obj.style.color,
+                lineWidth: obj.style.lineWidth,
+              }
+            );
+            break;
+
+          case 'rectangle':
+            primitive = new RectanglePrimitive(
+              { time: obj.points[0].time as Time, price: obj.points[0].price! },
+              { time: obj.points[1].time as Time, price: obj.points[1].price! },
+              {
+                fillColor: obj.style.color,
+                borderColor: obj.style.color,
+                fillOpacity: 0.2,
+              }
+            );
+            break;
+
+          case 'fibonacciRetracement':
+            primitive = new FibonacciPrimitive(
+              { time: obj.points[0].time as Time, price: obj.points[0].price! },
+              { time: obj.points[obj.points.length - 1].time as Time, price: obj.points[obj.points.length - 1].price! },
+              {
+                lineColor: obj.style.color,
+                lineWidth: obj.style.lineWidth,
+              }
+            );
+            break;
+        }
+
+        if (primitive && seriesRef.current) {
+          seriesRef.current.attachPrimitive(primitive);
+          primitivesRef.current.set(obj.id, primitive);
+        }
+      } catch (error) {
+        console.error(`Failed to create primitive for ${obj.type}:`, error);
+      }
+    });
+
+    // Request chart update
+    chartRef.current?.timeScale().fitContent();
+  }, [paneId, getObjectsByPane, objects]);
 
   useEffect(() => {
     if (isVisible) {
       initializeChart();
-      updateDrawingCanvas();
     }
 
     return () => {
+      // Cleanup primitives
+      primitivesRef.current.forEach((primitive) => {
+        seriesRef.current?.detachPrimitive(primitive);
+      });
+      primitivesRef.current.clear();
+      
       resizeObserverRef.current?.disconnect();
       chartRef.current?.remove();
     };
-  }, [initializeChart, updateDrawingCanvas, isVisible]);
+  }, [initializeChart, isVisible]);
 
-  // Redraw objects when they change
+  // Update chart height when height changes
   useEffect(() => {
-    drawObjects();
-  }, [drawObjects]);
+    if (isVisible && chartRef.current && chartContainerRef.current) {
+      chartRef.current.applyOptions({
+        height: height - 40,
+      });
+    }
+  }, [height, isVisible]);
 
   const handleResize = useCallback(
     (e: React.MouseEvent) => {
@@ -367,22 +431,15 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         </div>
       </div>
 
-      {/* Chart Container with Drawing Layer */}
+      {/* Chart Container with Drawing Support */}
       <div className="relative">
         <div
           ref={chartContainerRef}
-          style={{ height: `${height - 40}px` }}
-          className="relative bg-gray-900"
-        />
-
-        {/* Drawing Canvas Overlay */}
-        <canvas
-          ref={drawingCanvasRef}
-          className="absolute top-0 left-0 cursor-crosshair pointer-events-auto"
-          style={{
-            zIndex: 10,
+          style={{ 
+            height: `${height - 40}px`,
             cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
           }}
+          className="relative bg-gray-900"
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}

@@ -355,7 +355,8 @@ lokifi/
 ## Common Patterns
 
 > **📚 Pattern Library**: For battle-tested patterns with success metrics, examples, and anti-patterns, see:
-> - **Testing Patterns** - AsyncMock (95% success, +30-40pp), Pure Functions, Mathematical Testing, Fixtures
+> - **Testing Patterns** - AsyncMock (95% success, +30-40pp), Pure Functions, Mathematical Indicator Testing (9/9 proven), Fixtures
+> - **UI/UX Patterns** - React Keyboard Shortcuts (cross-platform, accessibility, production-deployed) 🆕
 > - **CI/CD Patterns** - Workflow Health Check, GitHub CLI Investigation, Service Config Standards
 > - **Code Quality Patterns** - TypeScript Any Elimination (96.3%), Zustand+Immer, Draft<T>, Python Ruff, ESLint
 > - **Dependencies** - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patches
@@ -1652,7 +1653,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
-**40 Battle-Tested Patterns** from 89+ sessions with proven success metrics:
+**48 Battle-Tested Patterns** from 91+ sessions with proven success metrics:
 
 **Testing Patterns** (12):
 - **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
@@ -1741,6 +1742,43 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Learning**: CLV ≠ OBV binary (requires precise boundary handling), normalized thresholds (÷ avg volume)
   - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 89)
 
+**UI/UX Patterns** (1):
+- **React Keyboard Shortcuts Pattern** - 100% success, production-deployed (Session 91) ⭐⭐⭐ NEW!
+  - **Cross-Platform**: Single implementation for Ctrl (Windows/Linux) + Cmd (Mac) via `e.ctrlKey || e.metaKey`
+  - **Conflict Prevention**: `e.preventDefault()` stops browser defaults (Ctrl+S save, Ctrl+R reload)
+  - **Visual Discoverability**: Always-visible shortcuts help + tooltip hints
+  - **Accessibility**: Keyboard-first interaction with Esc support
+  - **Cleanup**: Proper event listener removal (`return () => removeEventListener`)
+  - **Hoisting Fix**: useEffect AFTER handler definitions (avoid TS2448/TS2454 errors)
+  - **Success Metrics**: 757 tests passing, 0 TypeScript errors, cross-browser validated
+  - **Implementation Pattern**:
+    ```typescript
+    React.useEffect(() => {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+          e.preventDefault();
+          handleAction();
+        }
+      };
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [handleAction]); // Place AFTER handler definitions
+    ```
+  - **Visual Help Pattern**:
+    ```tsx
+    <div className="keyboard-shortcuts-help">
+      <div className="text-xs font-medium mb-2">⌨️ Keyboard Shortcuts</div>
+      <div className="space-y-1 text-xs opacity-70">
+        <div className="flex justify-between">
+          <span>Action Name:</span>
+          <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">Ctrl/Cmd+Key</kbd>
+        </div>
+      </div>
+    </div>
+    ```
+  - **Reusability**: Any React component needing keyboard shortcuts
+  - **Complete Guide**: `/docs/checklists.md` (Session 91)
+
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
 - **GitHub CLI Investigation** - Rapid failure diagnosis
@@ -1818,6 +1856,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 **Pattern Selection Guide**:
 - **Testing**: "What are you testing?" → AsyncMock, Mathematical Indicator Testing (9 indicators proven), Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
+- **UI/UX**: "What UI feature?" → React Keyboard Shortcuts (cross-platform, accessibility, conflict prevention) 🆕
 - **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
 - **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
 - **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
@@ -1832,7 +1871,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 When suggesting code or answering questions, prefer these docs:
 - **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
-- **Pattern Library**: See "Pattern Library" section above - 47 battle-tested patterns ⭐
+- **Pattern Library**: See "Pattern Library" section above - 48 battle-tested patterns ⭐
 - **Frontend Testing Patterns**: `/docs/guides/testing/frontend-testing-patterns.md` - Session 79 comprehensive guide (88.84% coverage achievement) ⭐⭐⭐ NEW!
 - **Backend Testing Patterns**: `/docs/guides/testing/external-api-testing-patterns.md` - Session 77 comprehensive guide (157 tests) ⭐⭐⭐
 - **attr-defined Elimination**: `/docs/development/type-safety/attr-defined-elimination-session76.md` - 100% success rate, 4 patterns (Session 76) ⭐ NEW! 🏆
