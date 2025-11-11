@@ -1663,12 +1663,12 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Frontend Validation** (25 tests): PriceChart component (88.84% coverage, Session 79)
   - **Universal Pattern**: Proven across 6 backend services + 1 frontend component - CROSS-STACK RECORD! 🏆
   - **Complete Guides**:
-    - Backend: `/docs/guides/external-api-testing-patterns.md`
-    - Frontend: `/docs/guides/frontend-testing-patterns.md`
+    - Backend: `/docs/guides/testing/external-api-testing-patterns.md`
+    - Frontend: `/docs/guides/testing/frontend-testing-patterns.md`
 - **Mathematical Indicator Testing Pattern** - Known inputs → Expected outputs, 100% coverage, 9/9 indicators proven (Sessions 80-89) ⭐⭐⭐
   - **Approach**: Industry formulas + edge cases (empty data, zero denominators, invalid periods)
   - **Proven**: RSI, MACD, BB, Stochastic, ADX, CCI, Williams %R, OBV, A/D Line (all 100% pass rate)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Sessions 80-89)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Sessions 80-89)
 - **Mock side_effect for Sequential Calls** - 100% success (Session 77 Phases 3-5) ⭐
   - Pattern: `mock.side_effect = [error_response, success_response]` for partial failure testing
   - Use case: Test graceful degradation when first API call fails, second succeeds
@@ -1694,7 +1694,7 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Debugging Iterations**: 4 iterations (Theme → Resize → Crosshair → Edge Cases) documented
   - **Coverage Achievement**: 46.4% → 88.84% (+42.44pp, exceeds 80% target)
   - **Pattern Reusability**: WebSocket, Indicators, all future frontend components
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (700+ lines)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (700+ lines)
 - **Correct Mock Pattern for lightweight-charts** - 100% success, 25+ tests validated (Session 81) ⭐⭐⭐ NEW!
   - **Problem**: Tests accessing Vitest mocked functions incorrectly (bypassing mocks or accessing before render)
   - **Anti-pattern 1**: `const chartMock = (await import('lightweight-charts')).createChart();` - Bypasses mock
@@ -1703,43 +1703,43 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
   - **Why This Works**: `vi.mock('lightweight-charts')` creates mock, import accesses mocked function, `.mock.results[0]?.value` gets chart instance, `waitFor` ensures render complete
   - **Success Metrics**: Validated 25+ tests, Fixed 5 RSI integration tests (28/30 → 30/30 passing)
   - **Reusability**: MACD, Bollinger Bands, Stochastic integration tests
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 81 section)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 81 section)
 - **React Mutation Testing for useEffect Dependencies** - 100% success (Session 81) ⭐⭐ NEW!
   - **Problem**: Object mutation doesn't trigger React's useEffect (shallow equality comparison)
   - **Anti-pattern**: `mockStoreValue.indicators.showRSI = false; (useChartStore as any).mockReturnValue(mockStoreValue); rerender(<PriceChart />);` - Same object reference, useEffect doesn't run
-  - **Correct Pattern**: `const updatedStoreValue = { ...mockStoreValue, indicators: { ...mockStoreValue.indicators, showRSI: false } }; (useChartStore as any).mockReturnValue(updatedStoreValue); rerender(<PriceChart />);` - New object reference triggers useEffect
+  - **Correct Pattern**: `const updatedStoreValue = { ...mockStoreValue, indicators: { ...mockStoreValue.indicators, showRSI = false } }; (useChartStore as any).mockReturnValue(updatedStoreValue); rerender(<PriceChart />);` - New object reference triggers useEffect
   - **Why This Matters**: React useEffect uses shallow equality - same reference = no change detected, new reference = change detected → cleanup executes
   - **Application**: All indicator toggle/cleanup tests (RSI, MACD, Bollinger Bands, Stochastic)
   - **Success Metrics**: Fixed 1 cleanup test (29/30 → 30/30 passing), Validated via `window._rsi === undefined` assertion
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 81 section)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 81 section)
 - **Multi-Indicator Integration Pattern** - Multiple indicators coexisting, cleanup validation, 100% success (Session 82) ⭐⭐⭐
   - **Key**: Verify kill('_indicator') prevents memory leaks on toggle, test multi-series simultaneously
   - **Proven**: MACD (3-series), Bollinger Bands, Stochastic - no conflicts across 9 indicators
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 82)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 82)
 - **Stochastic Oscillator Pattern** - %K/%D momentum oscillator, 100% coverage, 4/4 validation (Session 84) 🏆
   - **Algorithm**: %K = (C - L14) / (H14 - L14) × 100, %D = SMA(%K, 3)
   - **Learning**: Uses full period range (not just close), 43% faster via pattern reuse
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 84)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 84)
 - **ADX (Average Directional Index) Pattern** - Trend strength w/ Wilder's smoothing, 100% coverage, 5/5 validation (Session 85) 🏆
   - **Algorithm**: TR → DM → Wilder's Smoothing → DI → DX → ADX (5-step process)
   - **Learning**: Requires 2×period data, fastest implementation (38-50% faster than baseline)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 85)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 85)
 - **CCI (Commodity Channel Index) Pattern** - Mean deviation momentum oscillator, 94.28% coverage, 6/6 validation (Session 86) 🏆
   - **Algorithm**: CCI = (TP - SMA(TP)) / (0.015 × MeanDeviation)
   - **Learning**: Handle zero mean deviation (flat prices), 66% fewer iterations vs baseline
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 86)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 86)
 - **Williams %R Pattern** - Inverted Stochastic (-100 to 0), 100% coverage, 7/7 INFINITE SCALABILITY (Session 87) 🚀
   - **Algorithm**: %R = (HH - C) / (HH - LL) × -100 (inverted from Stochastic)
   - **Learning**: JavaScript -0 vs 0 quirk (use Math.abs()), fastest session (60% faster than estimate)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 87)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 87)
 - **OBV (On-Balance Volume) Pattern** - Cumulative volume momentum, 97.64% coverage, 8/8 validation (Session 88) 🏆
   - **Algorithm**: OBV += volume if C > Cₚᵣₑᵥ, OBV -= volume if C < Cₚᵣₑᵥ, unchanged if C = Cₚᵣₑᵥ
   - **Learning**: Cumulative indicators need **normalized thresholds** (÷ avg volume), NOT percentage-based
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 88)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 88)
 - **A/D Line (Accumulation/Distribution) Pattern** - CLV-weighted cumulative, 97.8% coverage, 9/9 INFINITE SCALABILITY (Session 89) 🚀
   - **Algorithm**: CLV = ((C-L)-(H-C))/(H-L), MFV = CLV × Vol, AD = Σ MFV (CLV range: -1 to +1)
   - **Learning**: CLV ≠ OBV binary (requires precise boundary handling), normalized thresholds (÷ avg volume)
-  - **Complete Guide**: `/docs/guides/frontend-testing-patterns.md` (Session 89)
+  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 89)
 
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
@@ -1833,17 +1833,17 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 When suggesting code or answering questions, prefer these docs:
 - **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
 - **Pattern Library**: See "Pattern Library" section above - 47 battle-tested patterns ⭐
-- **Frontend Testing Patterns**: `/docs/guides/frontend-testing-patterns.md` - Session 79 comprehensive guide (88.84% coverage achievement) ⭐⭐⭐ NEW!
-- **Backend Testing Patterns**: `/docs/guides/external-api-testing-patterns.md` - Session 77 comprehensive guide (157 tests) ⭐⭐⭐
+- **Frontend Testing Patterns**: `/docs/guides/testing/frontend-testing-patterns.md` - Session 79 comprehensive guide (88.84% coverage achievement) ⭐⭐⭐ NEW!
+- **Backend Testing Patterns**: `/docs/guides/testing/external-api-testing-patterns.md` - Session 77 comprehensive guide (157 tests) ⭐⭐⭐
 - **attr-defined Elimination**: `/docs/development/type-safety/attr-defined-elimination-session76.md` - 100% success rate, 4 patterns (Session 76) ⭐ NEW! 🏆
 - **arg-type Elimination**: `/docs/development/type-safety/arg-type-elimination-session75.md` - 100% success rate, 9 patterns (Session 75) ⭐ 🏆
 - **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` - 92.7% reduction (Session 74) ⭐
-- **Cascading Type Fixes**: `/docs/development/cascading-type-fixes.md` - 52.8% error reduction pattern (Session 73) ⭐
+- **Cascading Type Fixes**: `/docs/development/type-safety/cascading-type-fixes.md` - 52.8% error reduction pattern (Session 73) ⭐
 - **MyPy Analysis**: `/docs/development/mypy-error-analysis-session73.md` - Comprehensive breakdown ⭐
 - **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
 - **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
-- **Backend Testing Best Practices**: `/docs/guides/backend-coverage-best-practices.md` - Branch coverage, smart exclusions, AsyncMock patterns (Session 69) ⭐
+- **Backend Testing Best Practices**: `/docs/guides/testing/backend-coverage-best-practices.md` - Branch coverage, smart exclusions, AsyncMock patterns (Session 69) ⭐
 - **Standards**: `/docs/guides/standards.md` - Code style and conventions
 - **Code Quality**: `/docs/guides/overview.md` - Quality tools and automation
 - **Architecture**: `/docs/guides/structure.md` - Project structure
@@ -1909,8 +1909,8 @@ Tasks: Run Task → 🔄 Restart All Servers
 - ✅ Runs continuously in background (like dev servers)
 
 **Documentation:**
-- **Quick Reference**: `/docs/guides/coverage-dashboard-quick-ref.md`
-- **Full Guide**: `/docs/guides/coverage-dashboard-integration.md`
+- **Quick Reference**: `/docs/development/tooling/coverage-dashboard-quick-ref.md`
+- **Full Guide**: `/docs/development/tooling/coverage-dashboard-integration.md`
 
 ### GitHub CLI (Workflow Monitoring & Health Checks)
 ```powershell
@@ -2167,7 +2167,7 @@ The Lokifi Coverage MCP Server provides instant access to test coverage metrics 
 
 **Location**: `/tools/mcp-coverage-server.js`
 **Data Source**: `/apps/frontend/coverage-dashboard/data.json`
-**Documentation**: `/docs/guides/mcp-coverage-server.md`
+**Documentation**: `/docs/development/tooling/mcp-coverage-server.md`
 
 **VS Code Settings** (already configured in `.vscode/settings.json`):
 ```json
@@ -2240,7 +2240,7 @@ npm run test:coverage
 2. Check Node.js version: `node --version` (≥18.0.0 required)
 3. Verify installation: `cd tools && npm list @modelcontextprotocol/sdk`
 
-**See full documentation**: `/docs/guides/mcp-coverage-server.md`
+**See full documentation**: `/docs/development/tooling/mcp-coverage-server.md`
 
 ## Tips for Best Results
 

@@ -2,26 +2,33 @@
 
 > **Complete guides for deploying Lokifi to production**
 
-## 📚 Documentation Files
+## 📚 Documentation Structure
 
-### Quick Start
-- **[QUICK_DEPLOY.md](QUICK_DEPLOY.md)** - 3-step deployment guide for experienced users
+```
+deployment/
+├── README.md                     # This file - Overview and navigation
+├── quick-start.md               # 3-step deployment guide for experienced users
+├── production.md                # Complete deployment checklist with security
+└── dns.md                       # Step-by-step DNS configuration
+```
 
-### Detailed Guides
-- **[PRODUCTION_DEPLOYMENT_CHECKLIST.md](PRODUCTION_DEPLOYMENT_CHECKLIST.md)** - Complete deployment checklist with prerequisites, security, and verification steps
-- **[DNS_CONFIGURATION_GUIDE.md](DNS_CONFIGURATION_GUIDE.md)** - Step-by-step DNS configuration for www.lokifi.com
+## 🎯 Quick Links
 
-## 🎯 Deployment Order
+- **[quick-start.md](./quick-start.md)** - Fast deployment for experienced users
+- **[production.md](./production.md)** - Complete production deployment checklist
+- **[dns.md](./dns.md)** - DNS configuration for www.lokifi.com
+
+## 🚀 Deployment Order
 
 ### 1. Pre-Deployment Preparation
-1. Review `PRODUCTION_DEPLOYMENT_CHECKLIST.md` - Complete all prerequisites
-2. Configure DNS records using `DNS_CONFIGURATION_GUIDE.md`
+1. Review [`production.md`](./production.md) - Complete all prerequisites
+2. Configure DNS records using [`dns.md`](./dns.md)
 3. Ensure `.env` file is configured in `infra/docker/`
 
 ### 2. Deployment
 Follow one of these guides:
-- **Quick**: Use `QUICK_DEPLOY.md` if you're experienced
-- **Detailed**: Use `PRODUCTION_DEPLOYMENT_CHECKLIST.md` for first-time deployment
+- **Quick**: Use [`quick-start.md`](./quick-start.md) if you're experienced
+- **Detailed**: Use [`production.md`](./production.md) for first-time deployment
 
 ### 3. Post-Deployment
 Verify all services are running:
@@ -49,15 +56,18 @@ lokifi/
 │   ├── docker-compose.prod-minimal.yml # Minimal production (cloud DB)
 │   └── LOCAL_DEVELOPMENT.md          # Local dev guide
 └── docs/deployment/                  # YOU ARE HERE
-    ├── README.md                     # This file
-    ├── QUICK_DEPLOY.md
-    ├── PRODUCTION_DEPLOYMENT_CHECKLIST.md
-    └── DNS_CONFIGURATION_GUIDE.md
+    ├── README.md                     # This file - Overview and navigation
+    ├── quick-start.md               # Quick deployment guide
+    ├── production.md                # Complete production checklist
+    └── dns.md                       # DNS configuration
 ```
 
 ## 🚀 Related Documentation
 
 - **[Local Development](../../infra/docker/LOCAL_DEVELOPMENT.md)** - Running Lokifi locally
+- **[CI/CD Workflow Guide](../ci-cd/guides/workflow-guide.md)** - Continuous integration and deployment
+
+**Last Updated**: November 11, 2025
 - **[CI/CD Guides](../ci-cd/)** - GitHub Actions and automation
 - **[Security](../security/)** - Security best practices
 - **[Environment Configuration](../security/environment.md)** - Environment variables

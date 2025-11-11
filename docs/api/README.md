@@ -6,19 +6,18 @@
 
 ```
 api/
-├── guides/             # API usage guides
-│   ├── overview.md
-│   └── reference.md
-├── endpoints/          # Endpoint-specific documentation
+├── overview.md         # Complete API guide with endpoints
+├── reference.md        # Comprehensive API reference
+├── endpoints/          # Endpoint-specific documentation (future)
 │   └── .gitkeep
-└── schemas/            # Request/response schemas
+└── schemas/            # Request/response schemas (future)
     └── .gitkeep
 ```
 
 ## 📚 Quick Links
 
-- **API Documentation**: [guides/overview.md](guides/overview.md)
-- **API Reference**: [guides/reference.md](guides/reference.md)
+- **API Documentation**: [overview.md](overview.md)
+- **API Reference**: [reference.md](reference.md)
 
 ## 🎯 What's Here
 

@@ -1,19 +1,19 @@
 /**
  * On-Balance Volume (OBV) Indicator Service
- * 
+ *
  * OBV is a volume-based momentum indicator that measures buying and selling pressure
  * by adding volume on up days and subtracting volume on down days.
- * 
+ *
  * Algorithm:
  * - If close > previous close: OBV = Previous OBV + Volume
  * - If close < previous close: OBV = Previous OBV - Volume
  * - If close = previous close: OBV = Previous OBV (unchanged)
- * 
+ *
  * Interpretation:
  * - Rising OBV: Bullish volume pressure (accumulation)
  * - Falling OBV: Bearish volume pressure (distribution)
  * - OBV divergence from price: Potential trend reversal signal
- * 
+ *
  * @see https://www.investopedia.com/terms/o/onbalancevolume.asp
  */
 
@@ -39,10 +39,10 @@ export interface OBVTrend {
 
 /**
  * Calculate On-Balance Volume (OBV)
- * 
+ *
  * @param prices - Array of OHLCV price data (requires volume)
  * @returns Array of OBV data points
- * 
+ *
  * @example
  * ```typescript
  * const prices = [
@@ -50,7 +50,7 @@ export interface OBVTrend {
  *   { time: 2, open: 103, high: 108, low: 102, close: 106, volume: 1500 },
  *   { time: 3, open: 106, high: 107, low: 104, close: 104, volume: 800 }
  * ];
- * 
+ *
  * const obv = calculateOBV(prices);
  * // Result:
  * // [
@@ -103,12 +103,12 @@ export function calculateOBV(prices: OHLCVPrice[]): OBVData[] {
 
 /**
  * Interpret OBV trend and divergence
- * 
+ *
  * @param obvData - Array of OBV data points
  * @param prices - Array of OHLCV price data for divergence analysis
  * @param lookback - Number of periods to analyze for trend (default: 10)
  * @returns OBV trend interpretation
- * 
+ *
  * @example
  * ```typescript
  * const trend = interpretOBV(obvData, prices, 10);
@@ -127,11 +127,11 @@ export function interpretOBV(
   // Analyze OBV trend over lookback period
   const recentOBV = obvData.slice(-lookback);
   const recentPrices = prices.slice(-lookback);
-  
+
   const firstOBV = recentOBV[0].value;
   const lastOBV = recentOBV[recentOBV.length - 1].value;
   const obvChange = lastOBV - firstOBV;
-  
+
   // Calculate average volume for normalization
   const avgVolume = recentPrices.reduce((sum, p) => sum + p.volume, 0) / recentPrices.length;
   const normalizedOBVChange = Math.abs(obvChange / avgVolume);
@@ -174,11 +174,11 @@ export function interpretOBV(
 
 /**
  * Get the latest OBV value and interpretation
- * 
+ *
  * @param prices - Array of OHLCV price data
  * @param lookback - Number of periods for trend analysis (default: 10)
  * @returns Latest OBV value with interpretation, or null if insufficient data
- * 
+ *
  * @example
  * ```typescript
  * const latest = getLatestOBV(prices, 10);

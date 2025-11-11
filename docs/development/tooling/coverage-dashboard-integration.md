@@ -241,16 +241,16 @@ When everything is running correctly, you should see:
 
 ### Coverage Tools
 - **[MCP Coverage Server](./mcp-coverage-server.md)** - Real-time coverage data access for AI assistants via Model Context Protocol
-- **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
+- **[Backend Coverage Best Practices](../../guides/testing/backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
 
 ### Testing Guides
-- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing (Sessions 79-89)
-- **[External API Testing Patterns](./external-api-testing-patterns.md)** - Backend Python/FastAPI testing (Session 77)
+- **[Frontend Testing Patterns](../../guides/testing/frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing (Sessions 79-89)
+- **[External API Testing Patterns](../../guides/testing/external-api-testing-patterns.md)** - Backend Python/FastAPI testing (Session 77)
 
 ### Documentation Index
-- **[Documentation Home](../README.md)** - Complete documentation index
-- **[Development Guides](./README.md)** - All development guides overview
-- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project conventions and testing standards
+- **[Documentation Home](../../README.md)** - Complete documentation index
+- **[Development Guides](../../guides/README.md)** - All development guides overview
+- **[Copilot Instructions](../../../.github/copilot-instructions.md)** - Project conventions and testing standards
 
 ---
 

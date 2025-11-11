@@ -10,11 +10,11 @@
 
 **Choose your path**:
 
-- 🆕 **First time here?** → [guides/CI_CD_GUIDE.md](./guides/CI_CD_GUIDE.md) - Beginner-friendly explanation
+- 🆕 **First time here?** → [guides/workflow-guide.md](./guides/workflow-guide.md) - Beginner-friendly CI/CD explanation
 - 🐛 **Workflow failed?** → [Troubleshooting](#troubleshooting) - Common issues and fixes
-- ⚡ **Performance question?** → [guides/PERFORMANCE_GUIDE.md](./guides/PERFORMANCE_GUIDE.md) - Metrics and optimizations
-- 🔄 **Adding new workflow?** → [guides/CI_CD_GUIDE.md](./guides/CI_CD_GUIDE.md) - How-to section
-- 🔐 **Security concerns?** → [guides/PERFORMANCE_GUIDE.md](./guides/PERFORMANCE_GUIDE.md) - Security improvements section
+- ⚡ **Performance question?** → [guides/performance.md](./guides/performance.md) - Metrics and optimizations
+- 🔄 **Adding new workflow?** → [guides/workflow-guide.md](./guides/workflow-guide.md) - How-to section
+- 🔐 **Security concerns?** → [guides/performance.md](./guides/performance.md) - Security improvements section
 
 ---
 
@@ -22,12 +22,12 @@
 
 | Task | Documentation | Quick Link |
 |------|---------------|------------|
-| **View workflow logs** | guides/CI_CD_GUIDE.md | [Where to See CI/CD](./guides/CI_CD_GUIDE.md#where-to-see-cicd-in-action) |
-| **Trigger workflow manually** | guides/CI_CD_GUIDE.md | [Common Tasks](./guides/CI_CD_GUIDE.md#common-tasks) |
-| **Fix failed workflow** | guides/CI_CD_GUIDE.md | [Troubleshooting](./guides/CI_CD_GUIDE.md#troubleshooting) |
-| **Emergency rollback** | operational/ROLLBACK_PROCEDURES.md | [2-minute rollback](./operational/ROLLBACK_PROCEDURES.md) |
-| **Update dependencies** | dependencies/DEPENDENCY_MANAGEMENT.md | [Dependabot config](./dependencies/DEPENDENCY_MANAGEMENT.md) |
-| **Check performance** | guides/PERFORMANCE_GUIDE.md | [Metrics dashboard](./guides/PERFORMANCE_GUIDE.md) |
+| **View workflow logs** | guides/workflow-guide.md | [Where to See CI/CD](./guides/workflow-guide.md#where-to-see-cicd-in-action) |
+| **Trigger workflow manually** | guides/workflow-guide.md | [Common Tasks](./guides/workflow-guide.md#common-tasks) |
+| **Fix failed workflow** | guides/workflow-guide.md | [Troubleshooting](./guides/workflow-guide.md#troubleshooting) |
+| **Emergency rollback** | operational/rollback.md | [2-minute rollback](./operational/rollback.md) |
+| **Update dependencies** | dependencies/management.md | [Dependabot config](./dependencies/management.md) |
+| **Check performance** | guides/performance.md | [Metrics dashboard](./guides/performance.md) |
 
 ---
 
@@ -37,8 +37,8 @@
 
 | Document | Purpose | Audience |
 |----------|---------|----------|
-| [**guides/CI_CD_GUIDE.md**](./guides/CI_CD_GUIDE.md) | Complete CI/CD guide - what it is, how it works, common tasks | Everyone (start here!) |
-| [**guides/PERFORMANCE_GUIDE.md**](./guides/PERFORMANCE_GUIDE.md) | Performance metrics, optimizations, cost savings, future plans | Developers, DevOps |
+| [**guides/workflow-guide.md**](./guides/workflow-guide.md) | Complete CI/CD guide - what it is, how workflows work, common tasks | Everyone (start here!) |
+| [**guides/performance.md**](./guides/performance.md) | Performance metrics, optimizations, cost savings, future plans | Developers, DevOps |
 
 ### 📊 Current State & Analysis
 
@@ -70,24 +70,24 @@
 docs/ci-cd/
 ├── README.md (navigation index)
 ├── guides/ (2 files)
-│   ├── CI_CD_GUIDE.md (beginner-friendly, comprehensive)
-│   └── PERFORMANCE_GUIDE.md (metrics, optimizations, cost analysis)
+│   ├── workflow-guide.md (beginner-friendly CI/CD workflows)
+│   └── performance.md (metrics, optimizations, cost analysis)
 ├── workflows/ (2 files)
-│   ├── WORKFLOW_OPTIMIZATION_COMPLETE.md (Sessions 8-10 results)
-│   └── FOLLOW_UP_ACTIONS.md (pending improvements)
+│   ├── optimization.md (Sessions 8-10 results)
+│   └── follow-up.md (pending improvements)
 ├── dependencies/ (2 files)
-│   ├── DEPENDABOT_ACTION_PLAN.md (active dependency crisis management)
-│   └── DEPENDENCY_MANAGEMENT.md (Dependabot best practices)
+│   ├── management.md (Dependabot best practices)
+│   └── renovate-evaluation.md (Renovate migration)
 ├── operational/ (2 files)
-│   ├── ROLLBACK_PROCEDURES.md (emergency recovery)
-│   └── LINTING_AUDIT.md (linting configuration reference)
+│   ├── rollback.md (emergency recovery)
+│   └── linting.md (linting configuration reference)
 ├── testing/
-│   └── CROSS_BROWSER_STRATEGY.md (cross-browser testing strategy)
+│   └── cross-browser.md (cross-browser testing strategy)
 ├── notifications/
-│   └── SLACK_NOTIFICATIONS_SETUP.md (Slack integration guide)
-└── .archive/ (19+ files)
-    ├── SESSIONS_8-10_HISTORY.md (consolidated historical record)
-    ├── SESSION_10_EXTENDED_SUMMARY.md (superseded)
+│   ├── slack.md (workflow failure notifications)
+│   └── slack-pr-notifications.md (PR lifecycle notifications)
+└── .archive/ (19+ files - historical documents)
+```
     ├── WORKFLOW_OPTIMIZATION_CELEBRATION.md (superseded)
     └── ... (historical documents)
 ```
@@ -104,7 +104,7 @@ docs/ci-cd/
 
 | Category | Count | Reason |
 |----------|-------|--------|
-| Consolidated explanation docs | 3 | Merged into CI_CD_GUIDE.md |
+| Consolidated explanation docs | 3 | Merged into workflow-guide.md |
 | Outdated guides | 3 | Migration complete, issues resolved |
 | Obsolete analysis docs | 4 | Reference archived workflows |
 | Archive index | 1 | Explains what's archived and why |
@@ -112,7 +112,7 @@ docs/ci-cd/
 **See archived files**: [docs/ci-cd/.archive/](./.archive/)
 
 **Key Archived Documents**:
-- CI_CD_EXPLAINED_SIMPLE.md, CI_CD_WHERE_TO_LOOK.md, CICD_VS_UNIT_TESTS_EXPLAINED.md → Consolidated into CI_CD_GUIDE.md
+- CI_CD_EXPLAINED_SIMPLE.md, CI_CD_WHERE_TO_LOOK.md, CICD_VS_UNIT_TESTS_EXPLAINED.md → Consolidated into workflow-guide.md
 - CURRENT_WORKFLOW_STATE.md, PERFORMANCE_BASELINE.md, TEST_WORKFLOW_ANALYSIS.md, CI_CD_OPTIMIZATION_STRATEGY.md → Reference archived workflows
 - WORKFLOW_MIGRATION_GUIDE.md, GITHUB_ACTIONS_BILLING_ISSUE.md, HOW_TO_VIEW_GITHUB_ACTIONS_LOGS.md → Obsolete/resolved
 
@@ -182,12 +182,12 @@ gh run view <run-id> --log             # View logs
 
 | Problem | Solution | Details |
 |---------|----------|---------|
-| **Workflow failing** | Check [CI_CD_GUIDE.md](./CI_CD_GUIDE.md#troubleshooting) | Step-by-step debugging guide |
+| **Workflow failing** | Check [workflow-guide.md](./guides/workflow-guide.md#troubleshooting) | Step-by-step debugging guide |
 | **ESLint errors** | `cd apps/frontend && npm run lint -- --fix` | Auto-fix linting issues |
 | **TypeScript errors** | `cd apps/frontend && npm run type-check` | Check type errors |
 | **Backend tests failing** | `cd apps/backend && pytest -v` | Run tests with verbose output |
-| **Coverage dropped** | See [COVERAGE_BASELINE.md](../guides/COVERAGE_BASELINE.md) | Coverage improvement guide |
-| **Workflows too slow** | Check [OPTIMIZATION_SUMMARY.md](./OPTIMIZATION_SUMMARY.md) | Already optimized to 3 min |
+| **Coverage dropped** | See [coverage.md](../guides/testing/coverage.md) | Coverage improvement guide |
+| **Workflows too slow** | Check [optimization.md](./workflows/optimization.md) | Already optimized to 3 min |
 
 ### Debug Workflow Locally
 ```bash
@@ -212,7 +212,7 @@ pytest -v                              # Run tests
 ## 🎯 Quick Start Guides
 
 ### For New Developers
-1. **Read**: [/CI_CD_GUIDE.md$4](.//CI_CD_GUIDE.md) - Complete overview
+1. **Read**: [workflow-guide.md](./guides/workflow-guide.md) - Complete CI/CD overview
 2. **Setup**: `.\tools\setup-precommit-hooks.ps1` - Install quality gates
 3. **Test**: `.\tools\test-runner.ps1 -Smart` - Run tests on your changes
 4. **Monitor**: https://github.com/ericsocrat/Lokifi/actions - Watch workflows
@@ -250,7 +250,7 @@ pytest -v                              # Run tests
 - `stale.yml` - 🧹 Stale issue management
 - `workflow-summary.yml` - 📊 Execution summaries
 
-See [CI_CD_GUIDE.md](./CI_CD_GUIDE.md#how-our-workflows-work) for detailed workflow descriptions.
+See [workflow-guide.md](./guides/workflow-guide.md#how-our-workflows-work) for detailed workflow descriptions.
 
 ---
 
@@ -295,11 +295,11 @@ See [CI_CD_GUIDE.md](./CI_CD_GUIDE.md#how-our-workflows-work) for detailed workf
 
 ## ❓ Need Help?
 
-1. **Check [/CI_CD_GUIDE.md$4](.//CI_CD_GUIDE.md)** - Comprehensive troubleshooting section
+1. **Check [workflow-guide.md](./guides/workflow-guide.md)** - Comprehensive troubleshooting section
 2. **Review workflow logs** - https://github.com/ericsocrat/Lokifi/actions
 3. **Search existing issues** - GitHub issue tracker
 4. **Create new issue** - Provide workflow run URL and error logs
 
 ---
 
-**Last Updated**: October 23, 2025 | **Maintainer**: CI/CD Team | **Status**: ✅ Current
+**Last Updated**: November 11, 2025 | **Maintainer**: CI/CD Team | **Status**: ✅ Current

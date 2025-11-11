@@ -23,23 +23,29 @@ System architecture, design patterns, and technical structure:
 
 ### 🔧 [Development](./development/)
 Developer experience, workflows, and tooling:
-- [`setup/workflow.md`](./development/setup/workflow.md) ⭐ - Complete setup & daily workflows
-- [`tooling/`](./development/tooling/) - Tools and automation (future)
+- [`setup/DEVELOPER_WORKFLOW.md`](./development/setup/DEVELOPER_WORKFLOW.md) ⭐ - Complete setup & daily workflows
+- [`tooling/coverage-dashboard-integration.md`](./development/tooling/coverage-dashboard-integration.md) - Live coverage dashboard
+- [`tooling/coverage-dashboard-quick-ref.md`](./development/tooling/coverage-dashboard-quick-ref.md) - Coverage quick reference
+- [`tooling/copilot-usage.md`](./development/tooling/copilot-usage.md) - GitHub Copilot shortcuts & best practices
+- [`tooling/mcp-coverage-server.md`](./development/tooling/mcp-coverage-server.md) - Model Context Protocol coverage server
+- [`type-safety/cascading-type-fixes.md`](./development/type-safety/cascading-type-fixes.md) - Cascading type fix patterns
 - [`practices/`](./development/practices/) - Best practices (future)
 
 ### 📖 [Guides](./guides/)
 Frontend/backend development guides (**NEW STRUCTURE**):
-- [`copilot-usage.md`](./guides/copilot-usage.md) 📌 - GitHub Copilot shortcuts & best practices
+- [`testing/frontend-testing-patterns.md`](./guides/testing/frontend-testing-patterns.md) 📌 - React/TypeScript testing (Sessions 79-89)
+- [`testing/external-api-testing-patterns.md`](./guides/testing/external-api-testing-patterns.md) 📌 - Python/FastAPI testing (Session 77)
+- [`testing/backend-coverage-best-practices.md`](./guides/testing/backend-coverage-best-practices.md) 📌 - Branch coverage & exclusions
 - [`frontend/`](./guides/frontend/) - Next.js, React, Zustand, TailwindCSS (future)
 - [`backend/`](./guides/backend/) - FastAPI, PostgreSQL, Redis
-- [`testing/`](./guides/testing/) - Testing strategies (3 guides)
+- [`testing/`](./guides/testing/) - Testing strategies (3+ guides)
 - [`quality/`](./guides/quality/) - Code quality standards (2 guides)
 - [`pull-requests/`](./guides/pull-requests/) - PR workflow ⭐
 
 ### 🧪 [Testing & Quality](./guides/)
 Testing strategies and quality assurance:
 - [`testing/overview.md`](./guides/testing/overview.md) - Complete testing strategies
-- [`testing/integration.md`](./guides/testing/integration.md) - Integration testing
+- [`testing/overview.md`](./guides/testing/overview.md) - Complete testing guide (includes integration testing)
 - [`quality/overview.md`](./guides/quality/overview.md) - Quality standards and automation
 - [`quality/standards.md`](./guides/quality/standards.md) - Coding conventions
 - [`testing/coverage.md`](./guides/testing/coverage.md) - Test coverage tracking
@@ -53,7 +59,7 @@ Pull requests, optimization, and architecture:
 
 ### 🚀 [CI/CD & Workflows](./ci-cd/)
 Continuous integration and deployment documentation **(RESTRUCTURED)**:
-- [`guides/overview.md`](./ci-cd/guides/overview.md) - Complete CI/CD guide
+- [`guides/workflow-guide.md`](./ci-cd/guides/workflow-guide.md) - Complete CI/CD guide
 - [`guides/performance.md`](./ci-cd/guides/performance.md) - Performance optimization
 - [`workflows/optimization.md`](./ci-cd/workflows/optimization.md) - Workflow optimization (Sessions 8-10)
 - [`dependencies/renovate-evaluation.md`](./ci-cd/dependencies/renovate-evaluation.md) - Renovate bot migration (Session 29)
@@ -62,7 +68,8 @@ Continuous integration and deployment documentation **(RESTRUCTURED)**:
 
 ### 📡 [API Documentation](./api/)
 RESTful API documentation and schemas:
-- [`guides/`](./api/guides/) - API documentation and reference (2 guides)
+- [`overview.md`](./api/overview.md) - Complete API guide with endpoints
+- [`reference.md`](./api/reference.md) - Comprehensive API reference
 - [`endpoints/`](./api/endpoints/) - Endpoint-specific docs (future)
 - [`schemas/`](./api/schemas/) - Request/response schemas (future)
 
@@ -93,7 +100,9 @@ Sprint history and historical project planning:
 
 ### 🚢 [Deployment](./deployment/)
 Production deployment guides and procedures:
-- [`guides/`](./deployment/guides/) - Deployment guides (3 guides)
+- [`dns.md`](./deployment/dns.md) - DNS and domain configuration
+- [`production.md`](./deployment/production.md) - Production deployment checklist
+- [`quick-start.md`](./deployment/quick-start.md) - Quick deployment guide
 - [`environments/`](./deployment/environments/) - Environment configs (future)
 - [`infrastructure/`](./deployment/infrastructure/) - Infrastructure-as-code (future)
 
@@ -113,14 +122,14 @@ Problem solving and debugging (future):
 
 ### For DevOps Engineers
 1. Review **[`quick-start.md`](./quick-start.md)** - All service management
-2. Check [`ci-cd/guides/overview.md`](./ci-cd/guides/overview.md) - CI/CD pipelines
+2. Check [`ci-cd/guides/workflow-guide.md`](./ci-cd/guides/workflow-guide.md) - CI/CD pipelines
 3. Read [`guides/backend/database/`](./guides/backend/database/) - PostgreSQL & Redis setup
-4. Review [`deployment/guides/`](./deployment/guides/) - Deployment procedures
+4. Review [`deployment/production.md`](./deployment/production.md) - Production deployment
 5. Check [`security/README.md`](./security/README.md) - Security setup
 
 ### For QA/Testers
 1. Review [`guides/testing/overview.md`](./guides/testing/overview.md) - Complete testing guide
-2. Check [`guides/testing/integration.md`](./guides/testing/integration.md) - Integration testing
+2. Check [`guides/testing/overview.md`](./guides/testing/overview.md) - Complete testing guide (includes integration testing)
 3. Review [`guides/quality/overview.md`](./guides/quality/overview.md) - Quality standards
 4. See [`ci-cd/testing/`](./ci-cd/testing/) - CI/CD testing strategies
 

@@ -479,11 +479,11 @@ def my_function(obj: "ExpensiveClass") -> None:
 ### Related Testing Guides
 - **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Session 79-89 comprehensive guide (3,026 lines)
 - **[External API Testing Patterns](./external-api-testing-patterns.md)** - Session 77 backend testing guide (1,136 lines)
-- **[Coverage Dashboard](./coverage-dashboard-integration.md)** - Live coverage metrics and monitoring
+- **[Coverage Dashboard](../../development/tooling/coverage-dashboard-integration.md)** - Live coverage metrics and monitoring
 
 ### Coverage Tools
-- **[MCP Coverage Server](./mcp-coverage-server.md)** - Real-time coverage data access via Model Context Protocol
-- **[Coverage Dashboard Quick Reference](./coverage-dashboard-quick-ref.md)** - Quick setup and usage guide
+- **[MCP Coverage Server](../../development/tooling/mcp-coverage-server.md)** - Real-time coverage data access via Model Context Protocol
+- **[Coverage Dashboard Quick Reference](../../development/tooling/coverage-dashboard-quick-ref.md)** - Quick setup and usage guide
 
 ### Documentation Index
 - **[Documentation Home](../README.md)** - Complete documentation index

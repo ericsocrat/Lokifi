@@ -183,14 +183,16 @@ Before accepting suggestions:
 
 ### Project Documentation
 - **[Copilot Instructions](../../.github/copilot-instructions.md)** - Complete project patterns, conventions, and quality standards
-- **[Pattern Library](../architecture/patterns/README.md)** - 44 battle-tested patterns from 89+ sessions
-- **[Documentation Home](../README.md)** - Complete documentation index
-- **[Development Guides](./README.md)** - All development guides overview
+### Project Documentation
+- **[Copilot Instructions](../../../.github/copilot-instructions.md)** - Complete project patterns, conventions, and quality standards
+- **[Pattern Library](../../architecture/patterns/README.md)** - 44 battle-tested patterns from 89+ sessions
+- **[Documentation Home](../../README.md)** - Complete documentation index
+- **[Development Guides](../../guides/README.md)** - All development guides overview
 
 ### Testing & Quality
-- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing guide
-- **[Backend Testing Patterns](./external-api-testing-patterns.md)** - Python/FastAPI testing patterns
-- **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions
+- **[Frontend Testing Patterns](../../guides/testing/frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing guide
+- **[Backend Testing Patterns](../../guides/testing/external-api-testing-patterns.md)** - Python/FastAPI testing patterns
+- **[Backend Coverage Best Practices](../../guides/testing/backend-coverage-best-practices.md)** - Branch coverage and smart exclusions
 
 ---
 

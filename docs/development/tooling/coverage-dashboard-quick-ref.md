@@ -84,19 +84,19 @@ Tasks: Run Task → 🛑 Stop All Servers
 ## 📚 Full Documentation
 
 📖 **[Complete Guide](./coverage-dashboard-integration.md)** - Detailed setup & features
-🧪 **[Coverage Guide](./testing/coverage.md)** - Coverage standards & best practices
-🛠️ **[Test Runner](../../tools/README.md)** - Testing tools & automation
+🧪 **[Coverage Guide](../../guides/testing/coverage.md)** - Coverage standards & best practices
+🛠️ **[Test Runner](../../../tools/README.md)** - Testing tools & automation
 
 ### Additional Resources
 - **[MCP Coverage Server](./mcp-coverage-server.md)** - Real-time coverage data via Model Context Protocol
-- **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions
-- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing guide
-- **[External API Testing Patterns](./external-api-testing-patterns.md)** - Backend Python/FastAPI testing patterns
+- **[Backend Coverage Best Practices](../../guides/testing/backend-coverage-best-practices.md)** - Branch coverage and smart exclusions
+- **[Frontend Testing Patterns](../../guides/testing/frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing guide
+- **[External API Testing Patterns](../../guides/testing/external-api-testing-patterns.md)** - Backend Python/FastAPI testing patterns
 
 ### Documentation Index
-- **[Documentation Home](../README.md)** - Complete documentation index
-- **[Development Guides](./README.md)** - All development guides overview
-- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project conventions and standards
+- **[Documentation Home](../../README.md)** - Complete documentation index
+- **[Development Guides](../../guides/README.md)** - All development guides overview
+- **[Copilot Instructions](../../../.github/copilot-instructions.md)** - Project conventions and standards
 
 ---
 

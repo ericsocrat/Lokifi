@@ -1,6 +1,6 @@
 /**
  * Williams %R Indicator Service Tests
- * 
+ *
  * Comprehensive test suite covering:
  * - Basic Williams %R calculation
  * - Custom periods
@@ -8,20 +8,18 @@
  * - Interpretation signals (7 levels)
  * - Latest value with interpretation
  * - Performance benchmarks
- * 
+ *
  * Pattern: Mathematical Indicator Testing (Session 80-86 proven pattern)
  * Expected Coverage: 94-100% (world-class standard)
  */
 
-import { describe, it, expect } from 'vitest';
 import {
   calculateWilliamsR,
-  interpretWilliamsR,
   getLatestWilliamsR,
+  interpretWilliamsR,
   type OHLCPrice,
-  type WilliamsRData,
-  type WilliamsRInterpretation
 } from '@/services/indicators/williams-r';
+import { describe, expect, it } from 'vitest';
 
 describe('Williams %R Indicator', () => {
   // Test data factory
@@ -30,7 +28,7 @@ describe('Williams %R Indicator', () => {
       time: i + 1,
       high: basePrice + Math.sin(i * 0.1) * 10 + 5,
       low: basePrice + Math.sin(i * 0.1) * 10 - 5,
-      close: basePrice + Math.sin(i * 0.1) * 10
+      close: basePrice + Math.sin(i * 0.1) * 10,
     }));
   };
 
@@ -52,14 +50,14 @@ describe('Williams %R Indicator', () => {
         { time: 2, high: 115, low: 105, close: 110 },
         { time: 3, high: 120, low: 110, close: 115 },
         { time: 4, high: 118, low: 108, close: 112 },
-        { time: 5, high: 116, low: 106, close: 111 }
+        { time: 5, high: 116, low: 106, close: 111 },
       ];
 
       const result = calculateWilliamsR(prices, 5);
 
       expect(result).toHaveLength(1);
       expect(result[0].time).toBe(5);
-      
+
       // Calculation for period 5:
       // Highest High: 120, Lowest Low: 100, Close: 111
       // %R = (120 - 111) / (120 - 100) × -100 = -45
@@ -70,7 +68,7 @@ describe('Williams %R Indicator', () => {
       const prices = createPrices(50);
       const result = calculateWilliamsR(prices, 14);
 
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBeGreaterThanOrEqual(-100);
         expect(point.value).toBeLessThanOrEqual(0);
       });
@@ -98,7 +96,7 @@ describe('Williams %R Indicator', () => {
       // Price at highest high (overbought)
       const overbought: OHLCPrice[] = [
         { time: 1, high: 100, low: 90, close: 95 },
-        { time: 2, high: 110, low: 100, close: 110 } // Close at highest high
+        { time: 2, high: 110, low: 100, close: 110 }, // Close at highest high
       ];
 
       const resultOverbought = calculateWilliamsR(overbought, 2);
@@ -107,7 +105,7 @@ describe('Williams %R Indicator', () => {
       // Price at lowest low (oversold)
       const oversold: OHLCPrice[] = [
         { time: 1, high: 110, low: 100, close: 105 },
-        { time: 2, high: 110, low: 90, close: 90 } // Close at lowest low
+        { time: 2, high: 110, low: 90, close: 90 }, // Close at lowest low
       ];
 
       const resultOversold = calculateWilliamsR(oversold, 2);
@@ -146,7 +144,7 @@ describe('Williams %R Indicator', () => {
       const result21 = calculateWilliamsR(prices, 21);
 
       // Same timestamp (21), but different values due to period
-      const value14 = result14.find(r => r.time === 21)?.value;
+      const value14 = result14.find((r) => r.time === 21)?.value;
       const value21 = result21[0].value; // First value at time 21
 
       expect(value14).toBeDefined();
@@ -159,7 +157,7 @@ describe('Williams %R Indicator', () => {
       const result = calculateWilliamsR(prices, 2);
 
       expect(result).toHaveLength(9);
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBeGreaterThanOrEqual(-100);
         expect(point.value).toBeLessThanOrEqual(0);
       });
@@ -215,14 +213,14 @@ describe('Williams %R Indicator', () => {
         time: i + 1,
         high: 100,
         low: 100,
-        close: 100
+        close: 100,
       }));
 
       const result = calculateWilliamsR(flatPrices, 14);
 
       expect(result).toHaveLength(7);
       // When range is zero, should return neutral value -50
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBe(-50);
       });
     });
@@ -232,13 +230,13 @@ describe('Williams %R Indicator', () => {
         time: i + 1,
         high: 100 + (i % 2 === 0 ? 50 : 0),
         low: 50 + (i % 2 === 0 ? 0 : 50),
-        close: 75
+        close: 75,
       }));
 
       const result = calculateWilliamsR(volatilePrices, 14);
 
       expect(result.length).toBeGreaterThan(0);
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBeGreaterThanOrEqual(-100);
         expect(point.value).toBeLessThanOrEqual(0);
       });
@@ -249,13 +247,13 @@ describe('Williams %R Indicator', () => {
         time: i + 1,
         high: 100.001 + i * 0.001,
         low: 99.999 + i * 0.001,
-        close: 100 + i * 0.001
+        close: 100 + i * 0.001,
       }));
 
       const result = calculateWilliamsR(decimalPrices, 14);
 
       expect(result.length).toBeGreaterThan(0);
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(typeof point.value).toBe('number');
         expect(isNaN(point.value)).toBe(false);
       });
@@ -266,13 +264,13 @@ describe('Williams %R Indicator', () => {
         time: i + 1,
         high: 1000000 + i * 1000,
         low: 999000 + i * 1000,
-        close: 999500 + i * 1000
+        close: 999500 + i * 1000,
       }));
 
       const result = calculateWilliamsR(largePrices, 14);
 
       expect(result.length).toBeGreaterThan(0);
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBeGreaterThanOrEqual(-100);
         expect(point.value).toBeLessThanOrEqual(0);
       });
@@ -283,15 +281,15 @@ describe('Williams %R Indicator', () => {
         time: i + 1,
         high: 100 + (i % 2 === 0 ? 10 : -10),
         low: 90 + (i % 2 === 0 ? 10 : -10),
-        close: 95 + (i % 2 === 0 ? 10 : -10)
+        close: 95 + (i % 2 === 0 ? 10 : -10),
       }));
 
       const result = calculateWilliamsR(oscillatingPrices, 14);
 
       expect(result.length).toBeGreaterThan(0);
-      
+
       // Values should vary (not all the same)
-      const uniqueValues = new Set(result.map(r => r.value));
+      const uniqueValues = new Set(result.map((r) => r.value));
       expect(uniqueValues.size).toBeGreaterThan(1);
     });
   });
@@ -359,8 +357,8 @@ describe('Williams %R Indicator', () => {
 
     it('should include value in interpretation', () => {
       const testValues = [-5, -15, -30, -50, -70, -85, -95];
-      
-      testValues.forEach(value => {
+
+      testValues.forEach((value) => {
         const interpretation = interpretWilliamsR(value);
         expect(interpretation.value).toBe(value);
       });
@@ -412,7 +410,7 @@ describe('Williams %R Indicator', () => {
         time: i + 1,
         high: 110 - i,
         low: 100 - i,
-        close: 100 - i // Close near lowest low
+        close: 100 - i, // Close near lowest low
       }));
 
       const latest = getLatestWilliamsR(oversoldPrices, 14);
@@ -426,7 +424,7 @@ describe('Williams %R Indicator', () => {
   describe('Performance', () => {
     it('should calculate Williams %R for 1000 prices in under 100ms', () => {
       const prices = createPrices(1000);
-      
+
       const start = performance.now();
       calculateWilliamsR(prices, 14);
       const duration = performance.now() - start;
@@ -436,7 +434,7 @@ describe('Williams %R Indicator', () => {
 
     it('should calculate Williams %R for 10000 prices in under 500ms', () => {
       const prices = createPrices(10000);
-      
+
       const start = performance.now();
       calculateWilliamsR(prices, 14);
       const duration = performance.now() - start;
@@ -447,9 +445,9 @@ describe('Williams %R Indicator', () => {
     it('should handle multiple period calculations efficiently', () => {
       const prices = createPrices(1000);
       const periods = [7, 14, 21, 28];
-      
+
       const start = performance.now();
-      periods.forEach(period => {
+      periods.forEach((period) => {
         calculateWilliamsR(prices, period);
       });
       const duration = performance.now() - start;
@@ -459,7 +457,7 @@ describe('Williams %R Indicator', () => {
 
     it('should handle very long period calculation efficiently', () => {
       const prices = createPrices(1000);
-      
+
       const start = performance.now();
       calculateWilliamsR(prices, 200);
       const duration = performance.now() - start;
@@ -472,9 +470,9 @@ describe('Williams %R Indicator', () => {
       const result = calculateWilliamsR(prices, 14);
 
       expect(result.length).toBe(4987); // 5000 - 14 + 1
-      
+
       // Verify values are within valid range
-      result.forEach(point => {
+      result.forEach((point) => {
         expect(point.value).toBeGreaterThanOrEqual(-100);
         expect(point.value).toBeLessThanOrEqual(0);
       });

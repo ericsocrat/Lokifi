@@ -491,5 +491,220 @@ If you have questions about testing:
 
 ---
 
-**Last Updated**: October 10, 2025
+## Integration Testing
+
+Integration tests verify that all services (backend, frontend, database, Redis) work together correctly in a Docker environment.
+
+### Quick Start - Running Integration Tests Locally
+
+```bash
+# 1. Start services
+docker compose -f infra/docker/docker-compose.yml up -d
+
+# 2. Wait for services to be ready
+curl http://localhost:8000/api/health  # Backend
+curl http://localhost:3000/            # Frontend
+
+# 3. Run tests
+npm ci --legacy-peer-deps
+# Backend: pytest apps/backend/tests/integration/
+# Frontend: npm test -- integration
+
+# 4. Stop services
+docker compose -f infra/docker/docker-compose.yml down -v
+```
+
+### Docker Services Configuration
+
+**Services Included:**
+1. **PostgreSQL** - Database (port 5432)
+2. **Redis** - Cache/Queue (port 6379)
+3. **Backend** - FastAPI (port 8000)
+4. **Frontend** - Next.js (port 3000)
+
+**Startup Sequence:**
+1. PostgreSQL starts (~5 seconds)
+2. Redis starts (~3 seconds)
+3. Backend starts (~10 seconds) - Connects to database/Redis, runs migrations
+4. Frontend starts (~15 seconds) - Builds Next.js, starts server
+
+**Total startup time:** ~30-40 seconds
+
+### Health Endpoints
+
+**Backend Health Check:**
+- **URL:** `http://localhost:8000/api/health`
+- **Expected Response:**
+  ```json
+  {
+    "ok": true
+  }
+  ```
+
+**Frontend Health Check:**
+- **URL:** `http://localhost:3000/`
+- **Expected:** 200 OK (renders page)
+
+### CI/CD Automation
+
+**Workflow File:** `.github/workflows/integration-ci.yml`
+
+**Triggers:**
+- Push to `main`
+- Pull requests to `main`
+
+**Steps:**
+1. Build Docker images
+2. Start services
+3. Wait for health checks
+4. Run integration tests
+5. Show logs on failure
+6. Cleanup
+
+**Duration:** ~5-8 minutes
+
+### Troubleshooting Integration Tests
+
+#### Services Won't Start
+```bash
+# Check service status
+docker compose -f infra/docker/docker-compose.yml ps
+
+# View logs
+docker compose -f infra/docker/docker-compose.yml logs
+
+# Restart services
+docker compose -f infra/docker/docker-compose.yml restart
+```
+
+#### Health Checks Failing
+```bash
+# Test backend directly
+docker exec -it lokifi-backend-dev curl http://localhost:8000/api/health
+
+# Check backend logs
+docker compose -f infra/docker/docker-compose.yml logs backend
+```
+
+#### Port Conflicts
+```bash
+# Check what's using ports
+netstat -ano | findstr "8000"  # Backend
+netstat -ano | findstr "3000"  # Frontend
+netstat -ano | findstr "5432"  # PostgreSQL
+netstat -ano | findstr "6379"  # Redis
+
+# Kill processes or change ports in docker-compose.yml
+```
+
+#### Database Connection Issues
+```bash
+# Test database connection
+docker exec -it lokifi-postgres-dev psql -U lokifi -d lokifi_db -c "SELECT 1;"
+
+# Check database logs
+docker compose -f infra/docker/docker-compose.yml logs postgres
+```
+
+### Common Docker Commands
+
+```bash
+# Start services
+docker compose -f infra/docker/docker-compose.yml up -d
+
+# Stop services
+docker compose -f infra/docker/docker-compose.yml down
+
+# Stop and remove volumes (clean slate)
+docker compose -f infra/docker/docker-compose.yml down -v
+
+# View logs (all services)
+docker compose -f infra/docker/docker-compose.yml logs -f
+
+# View specific service logs
+docker compose -f infra/docker/docker-compose.yml logs backend -f
+
+# Rebuild images
+docker compose -f infra/docker/docker-compose.yml build --no-cache
+
+# Restart a service
+docker compose -f infra/docker/docker-compose.yml restart backend
+
+# Execute command in container
+docker exec -it lokifi-backend-dev bash
+```
+
+### Integration Testing Checklist
+
+Before pushing changes:
+
+- [ ] Services start successfully
+- [ ] Health endpoints return 200
+- [ ] Backend can connect to database
+- [ ] Backend can connect to Redis
+- [ ] Frontend can reach backend
+- [ ] Integration tests pass
+- [ ] Services shut down cleanly
+
+### Success Criteria
+
+Integration tests are passing when:
+
+✅ All services start within timeout (90s)
+✅ Health endpoints return 200
+✅ No error logs in services
+✅ Tests complete successfully
+✅ Services shut down cleanly
+
+### Environment Differences
+
+| Environment | Purpose | Dockerfile | Port |
+|-------------|---------|------------|------|
+| Development | Local dev with hot reload | Dockerfile.dev | Default |
+| Integration | Automation testing | Dockerfile | Default |
+| Production | Deployed application | Dockerfile.prod | Configured |
+
+### Known Issues
+
+1. **First build takes longer** - Docker layer caching helps subsequent builds
+2. **Port conflicts** - Stop other local services if needed
+3. **Volume permissions** - May need to adjust on some systems
+
+---
+
+## Related Documentation
+
+### Testing Patterns & Best Practices
+- [Frontend Testing Patterns](./frontend-testing-patterns.md) - AsyncMock for React, Mathematical Indicator Testing (9 indicators proven)
+- [Backend Testing Patterns](./external-api-testing-patterns.md) - External API mocking, AsyncMock for Python (157 tests proven)
+- [Backend Coverage Best Practices](./backend-coverage-best-practices.md) - Branch coverage, smart exclusions, pytest patterns
+- [Coverage Baseline](./coverage.md) - Coverage thresholds and tracking
+
+### Development Tools
+- [Coverage Dashboard](../../development/tooling/coverage-dashboard-integration.md) - Real-time coverage metrics
+- [MCP Coverage Server](../../development/tooling/mcp-coverage-server.md) - AI-powered coverage insights
+- [Quick Reference](../../development/tooling/coverage-dashboard-quick-ref.md) - Coverage dashboard shortcuts
+
+### Infrastructure & Setup
+- [Developer Workflow](../../development/setup/workflow.md) - Complete development setup
+- [Docker Configuration](../../../infra/docker/docker-compose.yml) - Local development services
+- [Environment Setup](../../security/environment.md) - Environment variables configuration
+- [Database Guide](../backend/database/postgresql.md) - PostgreSQL configuration
+- [Cache Guide](../backend/database/redis.md) - Redis configuration
+
+### API & Architecture
+- [API Reference](../../api/reference.md) - Complete API endpoint documentation
+- [API Overview](../../api/overview.md) - API design and conventions
+- [Architecture Structure](../../architecture/structure.md) - Project structure and organization
+
+### CI/CD & Quality
+- [CI/CD Guide](../../ci-cd/guides/workflow-guide.md) - Complete CI/CD pipeline explanation
+- [Performance Guide](../../ci-cd/guides/performance.md) - CI/CD performance metrics and optimizations
+- [Quality Standards](../quality/standards.md) - Code quality requirements
+- [Quality Overview](../quality/overview.md) - Quality tooling and automation
+
+---
+
+**Last Updated**: November 11, 2025
+**Status**: ✅ Consolidated from overview.md + integration.md
 **Maintainer**: Development Team

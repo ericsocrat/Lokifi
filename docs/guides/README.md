@@ -1,9 +1,9 @@
 # Guides Directory
 
 **Last Updated:** November 11, 2025
-**Status:** 🎉 WORLD-CLASS - Three-tier documentation + comprehensive guides
-**Active Files:** 17 (2 core + 10 subfolders + 5 comprehensive guides)
-**Structure:** Professional three-tier organization with cross-references
+**Status:** 🎉 WORLD-CLASS - Reorganized testing patterns + development tools
+**Active Files:** 11 (2 core + 9 subfolders)
+**Structure:** Professional category-based organization with clear semantic grouping
 
 ---
 
@@ -23,45 +23,29 @@
 
 ---
 
-## 🌟 Comprehensive Guides (Deep-Dive Tutorials)
+## 📂 Organized by Category
 
-**Production-ready guides with battle-tested patterns:**
+### 🧪 [`testing/`](testing/) - Testing Patterns & Best Practices
 
-### Testing Patterns
-- **[frontend-testing-patterns.md](frontend-testing-patterns.md)** - Session 79-89 comprehensive guide (3,026 lines, 88.84% coverage achievement)
+**Production-ready testing guides with battle-tested patterns:**
+
+- **[frontend-testing-patterns.md](testing/frontend-testing-patterns.md)** - Session 79-89 comprehensive guide (3,026 lines, 88.84% coverage achievement)
   - AsyncMock pattern for React, Mathematical Indicator Testing (9 indicators proven), Canvas testing, WebSocket testing
   - 100% success rate across 121 frontend tests, cross-referenced with Pattern Library
 
-- **[external-api-testing-patterns.md](external-api-testing-patterns.md)** - Session 77 backend testing guide (1,136 lines, 94.5% avg coverage)
+- **[external-api-testing-patterns.md](testing/external-api-testing-patterns.md)** - Session 77 backend testing guide (1,136 lines, 94.5% avg coverage)
   - create_mock_response() helper, async context managers, rate limiting, cache validation
   - Proven across 6 services (DataArchival, Crypto, Forex, Stock, Indices, News), 157 tests total
 
-- **[backend-coverage-best-practices.md](backend-coverage-best-practices.md)** - Session 69 coverage patterns (470 lines)
+- **[backend-coverage-best-practices.md](testing/backend-coverage-best-practices.md)** - Session 69 coverage patterns (492 lines)
   - Branch coverage configuration, smart exclusions (11 patterns), AsyncMock for pytest
   - 23.02% → 97% coverage achievements, industry-standard practices
 
-### Development Tools
-- **[copilot-usage.md](copilot-usage.md)** - GitHub Copilot quick reference (186 lines)
-  - Essential shortcuts, quick prompts, project patterns, quality checklist
-  - Fast access productivity guide with cross-references to copilot-instructions.md
+- **[overview.md](testing/overview.md)** - Complete testing guide (consolidated from TESTING_GUIDE.md + integration.md)
+  - Test organization, naming conventions, test types (unit/integration/E2E), Docker setup, CI/CD automation
+  - Integration testing quick start, Docker troubleshooting, health endpoints, best practices
 
-- **[coverage-dashboard-integration.md](coverage-dashboard-integration.md)** - Live coverage dashboard guide (238 lines)
-  - Auto-starts with dev servers on port 3002, real-time coverage metrics, trend analysis
-  - See also: [coverage-dashboard-quick-ref.md](coverage-dashboard-quick-ref.md) for one-page quick start
-
-- **[mcp-coverage-server.md](mcp-coverage-server.md)** - Model Context Protocol coverage server (256 lines)
-  - Real-time coverage data access for AI assistants, 5 tools (summary, low-coverage, trends, file-level, thresholds)
-  - Integrated with VS Code Copilot, query coverage without running tests
-
----
-
-## 📂 Organized by Category
-
-### 🧪 [`testing/`](testing/)
-Testing strategies and quality assurance:
-- **[TESTING_GUIDE.md](testing/TESTING_GUIDE.md)** - Comprehensive testing strategies and best practices
-- **[INTEGRATION_TESTS_GUIDE.md](testing/INTEGRATION_TESTS_GUIDE.md)** - Integration testing guide
-- **[COVERAGE_BASELINE.md](testing/COVERAGE_BASELINE.md)** - Test coverage baseline and targets
+- **[coverage.md](testing/coverage.md)** - Test coverage baseline and targets
 
 ### 💎 [`quality/`](quality/)
 Code quality standards and tools:

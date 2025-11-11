@@ -248,18 +248,18 @@ Edit `THRESHOLDS` object in `mcp-coverage-server.js`
 ### Coverage Tools
 - **[Coverage Dashboard Integration](./coverage-dashboard-integration.md)** - Full dashboard setup and usage guide
 - **[Coverage Dashboard Quick Reference](./coverage-dashboard-quick-ref.md)** - One-page quick start
-- **[Backend Coverage Best Practices](./backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
+- **[Backend Coverage Best Practices](../../guides/testing/backend-coverage-best-practices.md)** - Branch coverage and smart exclusions (Session 69)
 - **Coverage Config**: `/config/coverage.config.json`
 
 ### Testing Guides
-- **[Frontend Testing Patterns](./frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing (Sessions 79-89)
-- **[External API Testing Patterns](./external-api-testing-patterns.md)** - Backend Python/FastAPI testing (Session 77)
+- **[Frontend Testing Patterns](../../guides/testing/frontend-testing-patterns.md)** - Comprehensive React/TypeScript testing (Sessions 79-89)
+- **[External API Testing Patterns](../../guides/testing/external-api-testing-patterns.md)** - Backend Python/FastAPI testing (Session 77)
 - **Testing Guide**: `/docs/guides/overview.md`
 
 ### Documentation Index
-- **[Documentation Home](../README.md)** - Complete documentation index
-- **[Development Guides](./README.md)** - All development guides overview
-- **[Copilot Instructions](../../.github/copilot-instructions.md)** - Project conventions and testing standards
+- **[Documentation Home](../../README.md)** - Complete documentation index
+- **[Development Guides](../../guides/README.md)** - All development guides overview
+- **[Copilot Instructions](../../../.github/copilot-instructions.md)** - Project conventions and testing standards
 
 ### External Resources
 - **MCP Specification**: https://modelcontextprotocol.io/

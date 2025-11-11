@@ -1,12 +1,10 @@
-import { describe, it, expect } from 'vitest';
 import {
   calculateOBV,
-  interpretOBV,
   getLatestOBV,
+  interpretOBV,
   type OHLCVPrice,
-  type OBVData,
-  type OBVTrend,
 } from '@/services/indicators/obv';
+import { describe, expect, it } from 'vitest';
 
 describe('OBV Indicator Service', () => {
   // Test data setup
@@ -263,7 +261,9 @@ describe('OBV Indicator Service', () => {
 
     describe('OBV Interpretation', () => {
       it('should identify bullish trend (rising OBV)', () => {
-        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) => createPrice(i + 1, 100 + i, 1000 + i * 100));
+        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) =>
+          createPrice(i + 1, 100 + i, 1000 + i * 100)
+        );
 
         const obvData = calculateOBV(prices);
         const trend = interpretOBV(obvData, prices, 10);
@@ -272,7 +272,9 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should identify bearish trend (falling OBV)', () => {
-        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) => createPrice(i + 1, 115 - i, 1000 + i * 100));
+        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) =>
+          createPrice(i + 1, 115 - i, 1000 + i * 100)
+        );
 
         const obvData = calculateOBV(prices);
         const trend = interpretOBV(obvData, prices, 10);
@@ -281,7 +283,9 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should identify neutral trend (flat OBV)', () => {
-        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) => createPrice(i + 1, 100, 1000)); // All same price
+        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) =>
+          createPrice(i + 1, 100, 1000)
+        ); // All same price
 
         const obvData = calculateOBV(prices);
         const trend = interpretOBV(obvData, prices, 10);
@@ -349,16 +353,16 @@ describe('OBV Indicator Service', () => {
         // This happens when small price declines have low volume, but rallies have high volume
         // indicating accumulation (smart money buying dips)
         const prices: OHLCVPrice[] = [
-          createPrice(1, 110, 1000),  // Start
-          createPrice(2, 108, 500),   // Down -2, low volume: OBV = 1000 - 500 = 500
-          createPrice(3, 111, 2000),  // Up +3, high volume: OBV = 500 + 2000 = 2500
-          createPrice(4, 109, 600),   // Down -2, low volume: OBV = 2500 - 600 = 1900
-          createPrice(5, 112, 2200),  // Up +3, high volume: OBV = 1900 + 2200 = 4100
-          createPrice(6, 110, 700),   // Down -2, low volume: OBV = 4100 - 700 = 3400
-          createPrice(7, 113, 2400),  // Up +3, high volume: OBV = 3400 + 2400 = 5800
-          createPrice(8, 111, 800),   // Down -2, low volume: OBV = 5800 - 800 = 5000
-          createPrice(9, 114, 2600),  // Up +3, high volume: OBV = 5000 + 2600 = 7600
-          createPrice(10, 109, 900),  // Down -5, low volume: OBV = 7600 - 900 = 6700
+          createPrice(1, 110, 1000), // Start
+          createPrice(2, 108, 500), // Down -2, low volume: OBV = 1000 - 500 = 500
+          createPrice(3, 111, 2000), // Up +3, high volume: OBV = 500 + 2000 = 2500
+          createPrice(4, 109, 600), // Down -2, low volume: OBV = 2500 - 600 = 1900
+          createPrice(5, 112, 2200), // Up +3, high volume: OBV = 1900 + 2200 = 4100
+          createPrice(6, 110, 700), // Down -2, low volume: OBV = 4100 - 700 = 3400
+          createPrice(7, 113, 2400), // Up +3, high volume: OBV = 3400 + 2400 = 5800
+          createPrice(8, 111, 800), // Down -2, low volume: OBV = 5800 - 800 = 5000
+          createPrice(9, 114, 2600), // Up +3, high volume: OBV = 5000 + 2600 = 7600
+          createPrice(10, 109, 900), // Down -5, low volume: OBV = 7600 - 900 = 6700
         ];
         // Net price: 110 → 109 (down -1)
         // Net OBV: 1000 → 6700 (up +5700) = Bullish divergence!
@@ -374,16 +378,16 @@ describe('OBV Indicator Service', () => {
         // This happens when small price gains have low volume, but selloffs have high volume
         // indicating distribution (smart money selling rallies)
         const prices: OHLCVPrice[] = [
-          createPrice(1, 100, 6700),  // Start (high OBV)
-          createPrice(2, 102, 900),   // Up +2, low volume: OBV = 6700 + 900 = 7600
-          createPrice(3, 99, 2600),   // Down -3, high volume: OBV = 7600 - 2600 = 5000
-          createPrice(4, 101, 800),   // Up +2, low volume: OBV = 5000 + 800 = 5800
-          createPrice(5, 98, 2400),   // Down -3, high volume: OBV = 5800 - 2400 = 3400
-          createPrice(6, 100, 700),   // Up +2, low volume: OBV = 3400 + 700 = 4100
-          createPrice(7, 97, 2200),   // Down -3, high volume: OBV = 4100 - 2200 = 1900
-          createPrice(8, 99, 600),    // Up +2, low volume: OBV = 1900 + 600 = 2500
-          createPrice(9, 96, 2000),   // Down -3, high volume: OBV = 2500 - 2000 = 500
-          createPrice(10, 101, 500),  // Up +5, low volume: OBV = 500 + 500 = 1000
+          createPrice(1, 100, 6700), // Start (high OBV)
+          createPrice(2, 102, 900), // Up +2, low volume: OBV = 6700 + 900 = 7600
+          createPrice(3, 99, 2600), // Down -3, high volume: OBV = 7600 - 2600 = 5000
+          createPrice(4, 101, 800), // Up +2, low volume: OBV = 5000 + 800 = 5800
+          createPrice(5, 98, 2400), // Down -3, high volume: OBV = 5800 - 2400 = 3400
+          createPrice(6, 100, 700), // Up +2, low volume: OBV = 3400 + 700 = 4100
+          createPrice(7, 97, 2200), // Down -3, high volume: OBV = 4100 - 2200 = 1900
+          createPrice(8, 99, 600), // Up +2, low volume: OBV = 1900 + 600 = 2500
+          createPrice(9, 96, 2000), // Down -3, high volume: OBV = 2500 - 2000 = 500
+          createPrice(10, 101, 500), // Up +5, low volume: OBV = 500 + 500 = 1000
         ];
         // Net price: 100 → 101 (up +1)
         // Net OBV: 6700 → 1000 (down -5700) = Bearish divergence!
@@ -395,7 +399,9 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should detect no divergence (price and OBV aligned)', () => {
-        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) => createPrice(i + 1, 100 + i, 1000 + i * 100));
+        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) =>
+          createPrice(i + 1, 100 + i, 1000 + i * 100)
+        );
 
         const obvData = calculateOBV(prices);
         const trend = interpretOBV(obvData, prices, 10);
@@ -417,7 +423,9 @@ describe('OBV Indicator Service', () => {
 
     describe('getLatestOBV', () => {
       it('should return latest OBV value and trend', () => {
-        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) => createPrice(i + 1, 100 + i, 1000 + i * 100));
+        const prices: OHLCVPrice[] = Array.from({ length: 15 }, (_, i) =>
+          createPrice(i + 1, 100 + i, 1000 + i * 100)
+        );
 
         const latest = getLatestOBV(prices, 10);
 
@@ -443,7 +451,9 @@ describe('OBV Indicator Service', () => {
       });
 
       it('should use custom lookback period', () => {
-        const prices: OHLCVPrice[] = Array.from({ length: 20 }, (_, i) => createPrice(i + 1, 100 + i, 1000 + i * 100));
+        const prices: OHLCVPrice[] = Array.from({ length: 20 }, (_, i) =>
+          createPrice(i + 1, 100 + i, 1000 + i * 100)
+        );
 
         const latest = getLatestOBV(prices, 15); // Custom lookback
 
@@ -516,7 +526,13 @@ describe('OBV Indicator Service', () => {
 
         // Simulate 100 real-time updates
         for (let i = 0; i < 100; i++) {
-          prices.push(createPrice(prices.length + 1, 100 + Math.sin(i / 10) * 10, 1000 + Math.cos(i / 10) * 500));
+          prices.push(
+            createPrice(
+              prices.length + 1,
+              100 + Math.sin(i / 10) * 10,
+              1000 + Math.cos(i / 10) * 500
+            )
+          );
           calculateOBV(prices);
         }
 

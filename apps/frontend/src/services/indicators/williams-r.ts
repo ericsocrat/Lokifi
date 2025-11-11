@@ -1,22 +1,22 @@
 /**
  * Williams %R Indicator Service
- * 
+ *
  * Williams %R is a momentum oscillator that measures overbought/oversold levels.
  * Similar to Stochastic but plotted on a scale from 0 to -100.
- * 
+ *
  * Formula: %R = (Highest High - Close) / (Highest High - Lowest Low) × -100
- * 
+ *
  * Key Characteristics:
  * - Range: 0 to -100
  * - Overbought: -20 to 0 (potential sell signal)
  * - Oversold: -80 to -100 (potential buy signal)
  * - Default Period: 14 (commonly used)
- * 
+ *
  * Interpretation:
  * - Values above -20: Overbought (consider selling)
  * - Values below -80: Oversold (consider buying)
  * - Crossings of -50: Momentum shift
- * 
+ *
  * @see https://www.investopedia.com/terms/w/williamsr.asp
  */
 
@@ -33,18 +33,25 @@ export interface WilliamsRData {
 }
 
 export interface WilliamsRInterpretation {
-  signal: 'extreme-overbought' | 'overbought' | 'neutral-high' | 'neutral' | 'neutral-low' | 'oversold' | 'extreme-oversold';
+  signal:
+    | 'extreme-overbought'
+    | 'overbought'
+    | 'neutral-high'
+    | 'neutral'
+    | 'neutral-low'
+    | 'oversold'
+    | 'extreme-oversold';
   description: string;
   value: number;
 }
 
 /**
  * Calculate Williams %R for a given period
- * 
+ *
  * @param prices - Array of OHLC price data
  * @param period - Lookback period (default: 14)
  * @returns Array of Williams %R values
- * 
+ *
  * @example
  * ```typescript
  * const prices = [
@@ -56,10 +63,7 @@ export interface WilliamsRInterpretation {
  * // Returns: [{ time: 14, value: -25.5 }, ...]
  * ```
  */
-export function calculateWilliamsR(
-  prices: OHLCPrice[],
-  period: number = 14
-): WilliamsRData[] {
+export function calculateWilliamsR(prices: OHLCPrice[], period: number = 14): WilliamsRData[] {
   // Validation
   if (!prices || prices.length === 0) {
     return [];
@@ -78,16 +82,16 @@ export function calculateWilliamsR(
   // Calculate Williams %R for each valid window
   for (let i = period - 1; i < prices.length; i++) {
     const window = prices.slice(i - period + 1, i + 1);
-    
+
     // Find highest high and lowest low in the period
-    const highestHigh = Math.max(...window.map(p => p.high));
-    const lowestLow = Math.min(...window.map(p => p.low));
+    const highestHigh = Math.max(...window.map((p) => p.high));
+    const lowestLow = Math.min(...window.map((p) => p.low));
     const currentClose = prices[i].close;
 
     // Calculate Williams %R
     // Formula: %R = (Highest High - Close) / (Highest High - Lowest Low) × -100
     const range = highestHigh - lowestLow;
-    
+
     // Handle zero range (flat prices)
     let value: number;
     if (range === 0) {
@@ -98,7 +102,7 @@ export function calculateWilliamsR(
 
     williamsR.push({
       time: prices[i].time,
-      value: value
+      value: value,
     });
   }
 
@@ -107,10 +111,10 @@ export function calculateWilliamsR(
 
 /**
  * Interpret Williams %R value to provide trading signals
- * 
+ *
  * @param value - Williams %R value (0 to -100)
  * @returns Interpretation with signal, description, and value
- * 
+ *
  * @example
  * ```typescript
  * const interpretation = interpretWilliamsR(-85);
@@ -127,7 +131,7 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
     return {
       signal: 'extreme-overbought',
       description: 'Extreme Overbought - Strong sell signal, price likely to reverse',
-      value
+      value,
     };
   }
 
@@ -136,7 +140,7 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
     return {
       signal: 'overbought',
       description: 'Overbought - Consider selling, upward momentum may be exhausted',
-      value
+      value,
     };
   }
 
@@ -145,7 +149,7 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
     return {
       signal: 'neutral-high',
       description: 'Neutral (High) - Price above midpoint, bullish bias',
-      value
+      value,
     };
   }
 
@@ -154,7 +158,7 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
     return {
       signal: 'neutral',
       description: 'Neutral - Price near midpoint, no clear directional bias',
-      value
+      value,
     };
   }
 
@@ -163,7 +167,7 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
     return {
       signal: 'neutral-low',
       description: 'Neutral (Low) - Price below midpoint, bearish bias',
-      value
+      value,
     };
   }
 
@@ -172,7 +176,7 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
     return {
       signal: 'oversold',
       description: 'Oversold - Consider buying, downward momentum may be exhausted',
-      value
+      value,
     };
   }
 
@@ -180,17 +184,17 @@ export function interpretWilliamsR(value: number): WilliamsRInterpretation {
   return {
     signal: 'extreme-oversold',
     description: 'Extreme Oversold - Strong buy signal, price likely to bounce',
-    value
+    value,
   };
 }
 
 /**
  * Get the latest Williams %R value with interpretation
- * 
+ *
  * @param prices - Array of OHLC price data
  * @param period - Lookback period (default: 14)
  * @returns Latest Williams %R data with interpretation, or null if insufficient data
- * 
+ *
  * @example
  * ```typescript
  * const latest = getLatestWilliamsR(prices, 14);
@@ -219,6 +223,6 @@ export function getLatestWilliamsR(
     time: latest.time,
     value: latest.value,
     signal: interpretation.signal,
-    description: interpretation.description
+    description: interpretation.description,
   };
 }

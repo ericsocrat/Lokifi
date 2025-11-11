@@ -59,13 +59,13 @@ npm run dev
 .\test-api.ps1
 
 # Manual API testing
-# See api/guides/overview.md for complete endpoint reference
+# See api/overview.md for complete endpoint reference
 curl http://localhost:8000/api/v1/health  # Health check
 ```
 
 **📖 For complete API examples and documentation:**
-- [`api/guides/overview.md`](api/guides/overview.md) - Complete API guide with all endpoints
-- [`api/guides/reference.md`](api/guides/reference.md) - Comprehensive API reference
+- [`api/overview.md`](api/overview.md) - Complete API guide with all endpoints
+- [`api/reference.md`](api/reference.md) - Comprehensive API reference
 
 ## Code Quality Checks
 ```powershell
@@ -182,11 +182,11 @@ docker compose ps
 - **`architecture/structure.md`** - File organization guide
 
 ### Technical Guides
-- **`api/guides/reference.md`** - Complete API documentation
+- **`api/reference.md`** - Complete API documentation
 - **`guides/testing/overview.md`** - Testing strategies and examples
 - **`guides/pull-requests/workflow.md`** - Complete PR workflow ⭐
 - **`security/README.md`** - Security configuration guide
-- **`ci-cd/guides/overview.md`** - CI/CD pipelines and automation
+- **`ci-cd/guides/workflow-guide.md`** - CI/CD pipelines and automation
 
 ### Configuration Files
 - **`apps/frontend/package.json`** - Frontend dependencies and scripts
@@ -241,7 +241,7 @@ pytest --cov          # Backend
 
 **📖 For complete testing documentation:**
 - [`guides/testing/overview.md`](guides/testing/overview.md) - Complete testing strategies and commands
-- [`guides/testing/integration.md`](guides/testing/integration.md) - Integration testing guide
+- [`guides/testing/overview.md`](guides/testing/overview.md) - Complete testing guide (includes integration testing)
 
 ---
 
