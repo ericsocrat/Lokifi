@@ -21,7 +21,7 @@ const CONFIRM_RESET_ALL_KEY = 'lokifi_confirm_reset_all_indicators';
 const CONFIRM_RESET_INDIVIDUAL_KEY = 'lokifi_confirm_reset_individual_indicator';
 
 export default function IndicatorControlsPanel() {
-  const { indicators, indicatorSettings, updateIndicatorSetting, resetIndicatorSettings, applyPreset } =
+  const { indicators, indicatorSettings, updateIndicatorSetting, resetIndicatorSettings, applyPreset, toggleIndicatorControlsPanel } =
     useChartStore();
   const [isExpanded, setIsExpanded] = React.useState(false);
   const [selectedPreset, setSelectedPreset] = React.useState<string>('');
@@ -132,6 +132,37 @@ export default function IndicatorControlsPanel() {
     });
   };
 
+  // Keyboard shortcuts - attached after all handlers are defined
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + R: Reset all indicator settings
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        handleReset();
+        return;
+      }
+
+      // Ctrl/Cmd + S: Apply selected preset
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        if (selectedPreset) {
+          handleApplyPreset();
+        }
+        return;
+      }
+
+      // Ctrl/Cmd + I: Toggle indicator panel visibility
+      if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+        e.preventDefault();
+        toggleIndicatorControlsPanel();
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedPreset, handleReset, handleApplyPreset, toggleIndicatorControlsPanel]);
+
   return (
     <>
       <div className="rounded-2xl border border-white/15 p-3 space-y-3">
@@ -142,7 +173,7 @@ export default function IndicatorControlsPanel() {
             <button
               className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10 transition-colors"
               onClick={handleReset}
-              title="Reset all settings to defaults"
+              title="Reset all settings to defaults (Ctrl/Cmd+R)"
             >
               Reset All
             </button>
@@ -161,6 +192,7 @@ export default function IndicatorControlsPanel() {
             className="flex-1 px-2 py-1.5 text-xs rounded border border-white/15 bg-neutral-800 hover:bg-neutral-700 transition-colors"
             value={selectedPreset}
             onChange={(e) => setSelectedPreset(e.target.value)}
+            title="Select a trading strategy preset"
           >
             <option value="">Select Trading Preset...</option>
             <option value="day-trading">📈 Day Trading (Quick Signals)</option>
@@ -171,7 +203,7 @@ export default function IndicatorControlsPanel() {
             className="px-3 py-1.5 text-xs rounded border border-white/15 bg-blue-600 hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={handleApplyPreset}
             disabled={!selectedPreset}
-            title={selectedPreset ? 'Apply selected preset' : 'Select a preset first'}
+            title={selectedPreset ? 'Apply selected preset (Ctrl/Cmd+S)' : 'Select a preset first'}
           >
             Apply
           </button>
@@ -340,6 +372,29 @@ export default function IndicatorControlsPanel() {
             )}
         </div>
       )}
+
+        {/* Keyboard Shortcuts Help */}
+        <div className="mt-3 pt-3 border-t border-white/10">
+          <div className="text-xs font-medium mb-2">⌨️ Keyboard Shortcuts</div>
+          <div className="space-y-1 text-xs opacity-70">
+            <div className="flex justify-between">
+              <span>Reset All Settings:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">Ctrl/Cmd+R</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Apply Preset:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">Ctrl/Cmd+S</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Toggle Panel:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">Ctrl/Cmd+I</kbd>
+            </div>
+            <div className="flex justify-between">
+              <span>Close Dialogs:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">Esc</kbd>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Confirmation Dialog */}
