@@ -1,4 +1,5 @@
 import { useChartStore } from '@/state/store';
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import React from 'react';
 
 /**
@@ -15,10 +16,30 @@ import React from 'react';
  * - OBV: no settings (cumulative)
  * - A/D Line: no settings (cumulative)
  */
+// LocalStorage keys for confirmation preferences
+const CONFIRM_RESET_ALL_KEY = 'lokifi_confirm_reset_all_indicators';
+const CONFIRM_RESET_INDIVIDUAL_KEY = 'lokifi_confirm_reset_individual_indicator';
+
 export default function IndicatorControlsPanel() {
   const { indicators, indicatorSettings, updateIndicatorSetting, resetIndicatorSettings } =
     useChartStore();
   const [isExpanded, setIsExpanded] = React.useState(false);
+  
+  // Confirmation dialog state
+  const [confirmDialog, setConfirmDialog] = React.useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    showDontAskAgain: boolean;
+    storageKey?: string;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    showDontAskAgain: false,
+  });
 
   // Handle input change with validation
   const handleChange = (key: keyof typeof indicatorSettings, value: number) => {
@@ -29,32 +50,87 @@ export default function IndicatorControlsPanel() {
 
   // Reset all settings to defaults
   const handleReset = () => {
-    if (confirm('Reset all indicator settings to defaults?')) {
+    // Check if user has disabled this confirmation
+    const skipConfirm = localStorage.getItem(CONFIRM_RESET_ALL_KEY) === 'false';
+    
+    if (skipConfirm) {
       resetIndicatorSettings();
+      return;
+    }
+
+    // Show confirmation dialog
+    setConfirmDialog({
+      isOpen: true,
+      title: 'Reset All Indicators',
+      message: 'This will reset all indicator settings to their default values. This action cannot be undone.',
+      onConfirm: () => {
+        resetIndicatorSettings();
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+      },
+      showDontAskAgain: true,
+      storageKey: CONFIRM_RESET_ALL_KEY,
+    });
+  };
+
+  // Reset individual indicator to default
+  const handleResetIndividual = (settingKeys: string[], indicatorName: string) => {
+    // Check if user has disabled this confirmation
+    const skipConfirm = localStorage.getItem(CONFIRM_RESET_INDIVIDUAL_KEY) === 'false';
+    
+    if (skipConfirm) {
+      settingKeys.forEach((key) => {
+        const defaultValue = getDefaultValue(key as keyof typeof indicatorSettings);
+        updateIndicatorSetting(key as keyof typeof indicatorSettings, defaultValue);
+      });
+      return;
+    }
+
+    // Show confirmation dialog
+    setConfirmDialog({
+      isOpen: true,
+      title: `Reset ${indicatorName}`,
+      message: `This will reset ${indicatorName} settings to default values. This action cannot be undone.`,
+      onConfirm: () => {
+        settingKeys.forEach((key) => {
+          const defaultValue = getDefaultValue(key as keyof typeof indicatorSettings);
+          updateIndicatorSetting(key as keyof typeof indicatorSettings, defaultValue);
+        });
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+      },
+      showDontAskAgain: true,
+      storageKey: CONFIRM_RESET_INDIVIDUAL_KEY,
+    });
+  };
+
+  // Handle "don't ask again" checkbox
+  const handleDontAskAgainChange = (checked: boolean) => {
+    if (confirmDialog.storageKey) {
+      localStorage.setItem(confirmDialog.storageKey, checked ? 'false' : 'true');
     }
   };
 
   return (
-    <div className="rounded-2xl border border-white/15 p-3 space-y-3">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="font-semibold text-sm">Indicator Settings</div>
-        <div className="flex gap-2">
-          <button
-            className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10 transition-colors"
-            onClick={handleReset}
-            title="Reset all settings to defaults"
-          >
-            Reset All
-          </button>
-          <button
-            className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10 transition-colors"
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {isExpanded ? '▼ Collapse' : '▶ Expand'}
-          </button>
+    <>
+      <div className="rounded-2xl border border-white/15 p-3 space-y-3">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="font-semibold text-sm">Indicator Settings</div>
+          <div className="flex gap-2">
+            <button
+              className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10 transition-colors"
+              onClick={handleReset}
+              title="Reset all settings to defaults"
+            >
+              Reset All
+            </button>
+            <button
+              className="px-2 py-1 text-xs rounded border border-white/15 hover:bg-white/10 transition-colors"
+              onClick={() => setIsExpanded(!isExpanded)}
+            >
+              {isExpanded ? '▼ Collapse' : '▶ Expand'}
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Collapsible Content */}
       {isExpanded && (
@@ -219,7 +295,21 @@ export default function IndicatorControlsPanel() {
             )}
         </div>
       )}
-    </div>
+      </div>
+
+      {/* Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={confirmDialog.isOpen}
+        onClose={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmDialog.onConfirm}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        confirmText="Reset"
+        cancelText="Cancel"
+        showDontAskAgain={confirmDialog.showDontAskAgain}
+        onDontAskAgainChange={handleDontAskAgainChange}
+      />
+    </>
   );
 }
 
@@ -328,4 +418,25 @@ function validateSetting(key: string, value: number): number {
   if (!validation) return value;
 
   return Math.min(Math.max(value, validation.min), validation.max);
+}
+
+/**
+ * Get default value for a specific indicator setting
+ */
+function getDefaultValue(key: string): number {
+  const defaults: Record<string, number> = {
+    rsiPeriod: 14,
+    macdFastPeriod: 12,
+    macdSlowPeriod: 26,
+    macdSignalPeriod: 9,
+    bbPeriod: 20,
+    bbMult: 2,
+    stochasticKPeriod: 14,
+    stochasticDPeriod: 3,
+    adxPeriod: 14,
+    cciPeriod: 20,
+    williamsRPeriod: 14,
+  };
+
+  return defaults[key] ?? 14; // Default fallback
 }
