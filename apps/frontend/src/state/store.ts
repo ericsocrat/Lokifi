@@ -164,6 +164,11 @@ export interface ChartState {
 
   // indicator actions
   updateIndicatorSettings: (settings: Partial<IndicatorSettings>) => void;
+  updateIndicatorSetting: <K extends keyof IndicatorSettings>(
+    key: K,
+    value: IndicatorSettings[K]
+  ) => void;
+  resetIndicatorSettings: () => void;
 
   // settings
   setDrawingSettings: (s: Partial<ChartState['drawingSettings']>) => void;
@@ -579,6 +584,19 @@ export const useChartStore = create<ChartState>()(
         set({
           indicatorSettings: { ...get().indicatorSettings, ...settings },
         });
+      },
+
+      updateIndicatorSetting: <K extends keyof IndicatorSettings>(
+        key: K,
+        value: IndicatorSettings[K]
+      ) => {
+        set({
+          indicatorSettings: { ...get().indicatorSettings, [key]: value },
+        });
+      },
+
+      resetIndicatorSettings: () => {
+        set({ indicatorSettings: { ...DEFAULT_INDICATOR_SETTINGS } });
       },
 
       setDrawingSettings: (s: Partial<typeof DEFAULT_DRAFT>) =>

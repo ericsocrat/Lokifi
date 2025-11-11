@@ -2699,7 +2699,7 @@ export function calculateOBV(prices: CandleData[]): OBVResult[] {
   // If close > prev: OBV += volume (buying pressure)
   // If close < prev: OBV -= volume (selling pressure)
   // If close = prev: OBV unchanged (neutral)
-  
+
   // Range: Unbounded (-∞ to +∞)
   // Interpretation: Trend confirmation via divergence detection
 }
@@ -2818,7 +2818,7 @@ export function calculateADLine(prices: CandleData[]): ADLineResult[] {
   // CLV = ((Close - Low) - (High - Close)) / (High - Low)
   // Money Flow Volume (MFV) = CLV × Volume
   // AD Line = Previous AD + MFV
-  
+
   // CLV Range: -1 (close at low) to +1 (close at high), 0 (midpoint)
   // AD Line Range: Unbounded (-∞ to +∞)
   // Interpretation: Buying/selling pressure, divergence detection
