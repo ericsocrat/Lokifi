@@ -2,7 +2,7 @@
 
 /**
  * MCP Servers Validation Script
- * 
+ *
  * Tests all 4 MCP servers to ensure they're working correctly.
  * Validates 8 Session 93 tools plus existing tools.
  */
@@ -39,9 +39,9 @@ const SERVERS = [
 
 async function testServer(server) {
   console.log(`\n📦 Testing ${server.name}...`);
-  
+
   const serverPath = path.join(__dirname, server.script);
-  
+
   return new Promise((resolve) => {
     const proc = spawn('node', [serverPath], {
       stdio: ['pipe', 'pipe', 'pipe'],
@@ -79,7 +79,7 @@ async function testServer(server) {
     // Wait for response or timeout
     timeout = setTimeout(() => {
       proc.kill();
-      
+
       if (stdout.includes('"result"')) {
         console.log(`  ✅ Server responds to initialize`);
         console.log(`  ✅ Tools available: ${server.tools.join(', ')}`);
@@ -99,26 +99,26 @@ async function testServer(server) {
 async function main() {
   console.log('🔍 MCP Servers Validation');
   console.log('='.repeat(50));
-  
+
   const results = [];
-  
+
   for (const server of SERVERS) {
     const result = await testServer(server);
     results.push(result);
   }
-  
+
   console.log('\n' + '='.repeat(50));
   console.log('📊 Validation Summary:');
   console.log('='.repeat(50));
-  
+
   const successful = results.filter(r => r.success).length;
   const failed = results.filter(r => !r.success).length;
-  
+
   console.log(`\n✅ Successful: ${successful}/${SERVERS.length}`);
   if (failed > 0) {
     console.log(`❌ Failed: ${failed}/${SERVERS.length}`);
   }
-  
+
   console.log('\n📋 Session 93 Tools Status:');
   console.log('  Pattern Library:');
   console.log('    ✓ compare_patterns');
@@ -132,14 +132,14 @@ async function main() {
   console.log('  Coverage:');
   console.log('    ✓ get_coverage_by_category');
   console.log('    ✓ suggest_test_priorities');
-  
+
   console.log('\n💡 Usage in Copilot Chat:');
   console.log('  - "Compare AsyncMock vs Pure Functions patterns"');
   console.log('  - "What docs changed in last 7 days?"');
   console.log('  - "Show commits that modified portfolioStore.tsx"');
   console.log('  - "Show coverage by directory"');
   console.log('  - "Prioritize my testing work"');
-  
+
   console.log('\n✅ All MCP servers are properly configured!');
   console.log('   MCP servers run in background - use in Copilot Chat.');
 }

@@ -14,8 +14,6 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
-
 from app.api.routes.monitoring import (
     get_active_connections,
     get_alerts,
@@ -32,7 +30,7 @@ from app.api.routes.monitoring import (
     stop_monitoring,
     websocket_load_test,
 )
-
+from fastapi import HTTPException
 
 # ============================================================================
 # Fixtures
@@ -359,9 +357,7 @@ class TestInvalidateCachePattern:
             mock_client.invalidate_pattern = AsyncMock(return_value=15)
 
             # Act
-            result = await invalidate_cache_pattern(
-                pattern="user:*", current_user=mock_admin_user
-            )
+            result = await invalidate_cache_pattern(pattern="user:*", current_user=mock_admin_user)
 
             # Assert
             assert result["status"] == "success"
@@ -649,9 +645,7 @@ class TestWebSocketLoadTest:
         assert result["data"]["results"]["connections_established"] == 100
 
     @pytest.mark.asyncio
-    async def test_non_admin_cannot_run_load_test(
-        self, mock_regular_user: dict[str, Any]
-    ) -> None:
+    async def test_non_admin_cannot_run_load_test(self, mock_regular_user: dict[str, Any]) -> None:
         """Should deny non-admin access to load testing"""
         # Act & Assert
         with pytest.raises(HTTPException) as exc_info:
@@ -670,9 +664,7 @@ class TestMonitoringIntegration:
     """Integration tests for monitoring endpoints"""
 
     @pytest.mark.asyncio
-    async def test_health_to_metrics_workflow(
-        self, mock_dashboard_data: dict[str, Any]
-    ) -> None:
+    async def test_health_to_metrics_workflow(self, mock_dashboard_data: dict[str, Any]) -> None:
         """Should successfully get health then metrics"""
         # Arrange
         with patch("app.api.routes.monitoring.monitoring_system") as mock_system:
@@ -687,18 +679,16 @@ class TestMonitoringIntegration:
             assert metrics["data"]["current_metrics"]["cpu_usage"] == 45.2
 
     @pytest.mark.asyncio
-    async def test_admin_workflow_cache_and_alerts(
-        self, mock_admin_user: dict[str, Any]
-    ) -> None:
+    async def test_admin_workflow_cache_and_alerts(self, mock_admin_user: dict[str, Any]) -> None:
         """Should allow admin to manage cache and view alerts"""
         # Arrange
         mock_alert_manager = MagicMock()
         mock_alert_manager.active_alerts = {}
         mock_alert_manager.alert_history = []
 
-        with patch(
-            "app.api.routes.monitoring.advanced_redis_client"
-        ) as mock_client, patch("app.api.routes.monitoring.monitoring_system") as mock_system:
+        with patch("app.api.routes.monitoring.advanced_redis_client") as mock_client, patch(
+            "app.api.routes.monitoring.monitoring_system"
+        ) as mock_system:
             mock_client.invalidate_pattern = AsyncMock(return_value=10)
             mock_system.alert_manager = mock_alert_manager
 
@@ -740,9 +730,7 @@ class TestMonitoringEdgeCases:
             assert len(result["data"]["alerts"]) == 0
 
     @pytest.mark.asyncio
-    async def test_handles_zero_cache_invalidations(
-        self, mock_admin_user: dict[str, Any]
-    ) -> None:
+    async def test_handles_zero_cache_invalidations(self, mock_admin_user: dict[str, Any]) -> None:
         """Should handle zero cache invalidations"""
         # Arrange
         with patch("app.api.routes.monitoring.advanced_redis_client") as mock_client:
