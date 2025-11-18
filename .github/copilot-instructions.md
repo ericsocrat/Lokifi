@@ -1984,261 +1984,68 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 ## 📊 MCP Coverage Server
 
-**Status**: ✅ Active - Real-time coverage data access via Model Context Protocol
+> **⚡ REAL-TIME COVERAGE**: Query test coverage metrics instantly without running tests via MCP.
 
-The Lokifi Coverage MCP Server provides instant access to test coverage metrics without running tests. It connects directly to the coverage dashboard data and provides 5 intelligent tools for coverage analysis.
+**Status**: ✅ Active - 5 tools for coverage analysis
 
-### Available Coverage Tools
+**Quick MCP Queries**:
+- "What's my test coverage?" - Overall metrics + threshold status
+- "Which files need more tests?" - Top 20 low-coverage files
+- "Show coverage trends" - Historical comparison
+- "Coverage for portfolioStore" - Line-by-line analysis
+- "Am I ready to merge?" - Threshold validation
 
-**1. get_coverage_summary** - Quick coverage overview
-- **Query**: "What's my current test coverage?"
-- **Returns**: Overall metrics, test counts, threshold status
-- **Use Case**: Quick coverage check before commits
+**Coverage Tools** (5):
+1. **get_coverage_summary** - Quick overview (metrics, test counts, thresholds)
+2. **get_low_coverage_files** - Find testing priorities (sorted by coverage %)
+3. **get_coverage_trends** - Track improvements over time
+4. **get_file_coverage** - Detailed file analysis (uncovered lines)
+5. **check_coverage_thresholds** - Pre-merge validation (pass/fail)
 
-**2. get_low_coverage_files** - Find files needing tests
-- **Query**: "Which files have low coverage?" or "Show files below 80% coverage"
-- **Returns**: Top 20 files with lowest coverage, sorted by statements
-- **Use Case**: Prioritize testing efforts, identify gaps
+**Benefits**:
+- Query coverage without running tests (saves 30-60 seconds)
+- Pre-commit validation without CI wait
+- Data-driven test suggestions
+- Track progress automatically
 
-**3. get_coverage_trends** - Track coverage over time
-- **Query**: "Has coverage improved?" or "Show coverage trends"
-- **Returns**: Current vs historical comparison, trend direction
-- **Use Case**: Track progress, validate improvements
-
-**4. get_file_coverage** - Detailed file analysis
-- **Query**: "Show coverage for portfolioStore" or "Coverage for dashboard/PriceChart"
-- **Returns**: Line-by-line coverage with uncovered line numbers
-- **Use Case**: Focus testing on specific components
-
-**5. check_coverage_thresholds** - Validate goals
-- **Query**: "Are we meeting coverage thresholds?" or "Can I merge this PR?"
-- **Returns**: Pass/fail status for each metric (statements, branches, functions, lines)
-- **Use Case**: Pre-merge validation, CI gate checks
-
-### Configuration
-
-**Location**: `/tools/mcp-coverage-server.js`
-**Data Source**: `/apps/frontend/coverage-dashboard/data.json`
-**Documentation**: `/docs/development/tooling/mcp-coverage-server.md`
-
-**VS Code Settings** (already configured in `.vscode/settings.json`):
-```json
-{
-  "github.copilot.chat.mcpServers": {
-    "lokifi-coverage": {
-      "command": "node",
-      "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
-    }
-  }
-}
-```
-
-### Usage Examples
-
-**Example 1: Quick Coverage Check**
-```
-User: "What's my test coverage?"
-Copilot: [Uses get_coverage_summary MCP tool]
-Response: "Frontend: 11.72%, Backend: 30.75%, Overall: 19.31%
-✅ Frontend passing 10% threshold
-⚠️ Overall below 20% threshold"
-```
-
-**Example 2: Find Testing Priorities**
-```
-User: "Which components need more tests?"
-Copilot: [Uses get_low_coverage_files with threshold 80]
-Response: "Top 5 files needing tests:
-1. portfolioStore.tsx - 45% coverage
-2. PriceChart.tsx - 52% coverage
-3. aiStore.tsx - 58% coverage
-..."
-```
-
-**Example 3: Pre-Merge Validation**
-```
-User: "Am I ready to merge?"
-Copilot: [Uses check_coverage_thresholds]
-Response: "✅ All frontend thresholds met:
-- Statements: 11.72% (≥10%) ✓
-- Branches: 89.36% (≥10%) ✓
-- Functions: 80.63% (≥10%) ✓"
-```
-
-### Benefits
-
-**For Developers**:
-- ✅ Query coverage without running tests (saves 30-60 seconds per query)
-- ✅ Instant file-level analysis for targeted testing
-- ✅ Pre-commit validation without CI wait times
-- ✅ Track trends to measure improvement
-
-**For AI Assistants**:
-- ✅ Context-aware coverage recommendations
-- ✅ Data-driven test suggestions
-- ✅ Automatic threshold validation
-- ✅ Intelligent file prioritization
-
-### Troubleshooting
-
-**"Coverage data not found"**:
-```powershell
-cd apps/frontend
-npm run test:coverage
-```
-
-**MCP Server not responding**:
-1. Restart VS Code (Reload Window)
-2. Check Node.js version: `node --version` (≥18.0.0 required)
-3. Verify installation: `cd tools && npm list @modelcontextprotocol/sdk`
-
-**See full documentation**: `/docs/development/tooling/mcp-coverage-server.md`
+**Documentation**: `/tools/mcp-coverage-server.js` | `/docs/development/tooling/mcp-coverage-server.md`
 
 ## 🤖 MCP Tooling Ecosystem
 
-**Status**: ✅ 4 Active MCP Servers - 17 Tools for Enhanced AI Context
+> **⚡ 4 ACTIVE MCP SERVERS**: 17 tools provide instant access to patterns, docs, git history, and coverage.
 
-Lokifi has a comprehensive Model Context Protocol (MCP) ecosystem that provides AI assistants with instant access to project knowledge, patterns, documentation, and history.
+**Status**: ✅ Production-Ready - Node.js v18.0.0+ required
 
-### Available MCP Servers
+**MCP Servers** (4 servers, 17 tools):
+1. **Pattern Library** - 37 patterns from `/docs/architecture/patterns/` (4 tools)
+2. **Documentation Search** - 109 markdown files indexed (4 tools)
+3. **Git History** - 883+ commits searchable (4 tools)
+4. **Coverage** - Real-time test metrics (5 tools)
 
-**1. Pattern Library MCP Server** - Query battle-tested patterns
-- **Location**: `/tools/mcp-pattern-library-server.js`
-- **Data Source**: `.github/copilot-instructions.md` (48+ patterns from 91+ sessions)
-- **Documentation**: `/docs/development/tooling/mcp-pattern-library.md`
-- **Tools**: 4 (search_patterns, get_pattern_details, list_categories, get_success_metrics)
+**Quick Example Queries**:
+- Patterns: "Show me the AsyncMock pattern" | "List testing patterns"
+- Docs: "Search docs for deployment" | "Show testing best practices"
+- Git: "What was done in Session 75?" | "Search commits for 'MCP'"
+- Coverage: "What's my coverage?" | "Which files need tests?"
 
-**2. Documentation Search MCP Server** - Search all project docs
-- **Location**: `/tools/mcp-docs-search-server.js`
-- **Data Source**: `docs/` directory (109 markdown files across 12 categories)
-- **Documentation**: `/docs/development/tooling/mcp-docs-search.md`
-- **Tools**: 4 (search_docs, get_doc_content, list_docs_by_category, search_checklists)
+**Benefits**:
+- ✅ Instant access - No manual file searching
+- ✅ Context-aware - AI knows project patterns/conventions
+- ✅ Session recovery - Recover lost chat context via git history
+- ✅ Data-driven - Coverage metrics inform test suggestions
 
-**3. Git History & Context MCP Server** - Recover lost chat context
-- **Location**: `/tools/mcp-git-history-server.js`
-- **Data Source**: Git repository (883 commits with searchable history)
-- **Documentation**: `/docs/development/tooling/mcp-git-history.md`
-- **Tools**: 4 (search_commits, get_commit_details, find_session_work, analyze_sprint_progress)
+**Configuration**: `.vscode/settings.json` (gitignored) - See `/docs/development/tooling/` for setup guides
 
-**4. Coverage MCP Server** - Real-time test coverage metrics
-- **Location**: `/tools/mcp-coverage-server.js`
-- **Data Source**: `apps/frontend/coverage-dashboard/data.json`
-- **Documentation**: `/docs/development/tooling/mcp-coverage-server.md`
-- **Tools**: 5 (get_coverage_summary, get_low_coverage_files, get_coverage_trends, get_file_coverage, check_coverage_thresholds)
+**Troubleshooting**:
+- **Not responding**: Restart VS Code (MCP servers initialize on startup)
+- **Node.js**: Verify `node --version` ≥18.0.0
+- **SDK**: Check `cd tools && npm list @modelcontextprotocol/sdk`
 
-### Quick Start Examples
-
-**Pattern Library Queries**:
-```
-"Show me the AsyncMock pattern"
-"What patterns are available for testing?"
-"Get success metrics for the Zustand+Immer pattern"
-"List all code quality patterns"
-```
-
-**Documentation Search Queries**:
-```
-"Search docs for deployment checklist"
-"Show me the testing best practices"
-"What's in the security documentation?"
-"Find checklists related to pre-commit"
-```
-
-**Git History Queries**:
-```
-"What was done in Session 75?"
-"Search commits for 'MCP server implementation'"
-"Show me recent work on frontend testing"
-"Analyze progress on Sprint 2 type safety goals"
-```
-
-**Coverage Queries**:
-```
-"What's my current test coverage?"
-"Which files need more tests?"
-"Am I ready to merge this PR?"
-"Show coverage trends over time"
-```
-
-### Benefits of MCP Ecosystem
-
-**For AI Assistants**:
-- ✅ **Instant Pattern Access** - Query 48+ proven patterns without searching files
-- ✅ **Documentation Intelligence** - Search across 109 docs in milliseconds
-- ✅ **Historical Context** - Recover lost chat history via commit messages
-- ✅ **Data-Driven Testing** - Coverage metrics inform test suggestions
-- ✅ **Zero Manual Search** - All tools provide structured, searchable data
-
-**For Developers**:
-- ✅ **Faster Development** - AI knows project patterns and conventions
-- ✅ **Better Suggestions** - Context-aware recommendations based on proven patterns
-- ✅ **Session Recovery** - Lost chat context recovered via git history search
-- ✅ **Quality Assurance** - AI validates against established patterns and coverage thresholds
-
-### Configuration
-
-**VS Code Settings** (`.vscode/settings.json` - gitignored):
-```json
-{
-  "github.copilot.chat.mcpServers": {
-    "lokifi-patterns": {
-      "command": "node",
-      "args": ["${workspaceFolder}/tools/mcp-pattern-library-server.js"]
-    },
-    "lokifi-docs": {
-      "command": "node",
-      "args": ["${workspaceFolder}/tools/mcp-docs-search-server.js"]
-    },
-    "lokifi-git": {
-      "command": "node",
-      "args": ["${workspaceFolder}/tools/mcp-git-history-server.js"]
-    },
-    "lokifi-coverage": {
-      "command": "node",
-      "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
-    }
-  }
-}
-```
-
-**Setup Requirements**:
-- Node.js v18.0.0 or higher
-- `@modelcontextprotocol/sdk@1.21.1` (installed in `tools/node_modules`)
-- VS Code restart required after configuration changes
-
-### Troubleshooting
-
-**MCP Servers not responding**:
-1. Restart VS Code (Reload Window) - MCP servers only initialize on startup
-2. Check Node.js version: `node --version`
-3. Verify SDK installation: `cd tools && npm list @modelcontextprotocol/sdk`
-4. Check `.vscode/settings.json` configuration (file is gitignored)
-
-**Data source errors**:
-- Pattern Library: Verify `.github/copilot-instructions.md` exists with Pattern Library section
-- Documentation: Ensure `docs/` directory contains markdown files
-- Git History: Confirm git repository is initialized (`git log` works)
-- Coverage: Generate coverage data with `cd apps/frontend && npm run test:coverage`
-
-**Performance optimization**:
-- MCP servers cache parsed data in memory
-- Pattern Library: Re-parses on each query (fast, <100ms)
-- Documentation: Indexes files on startup (fast, <500ms for 109 files)
-- Git History: Executes git commands fresh (moderate, 100-300ms depending on query)
-- Coverage: Reads JSON file (fast, <50ms)
-
-### Implementation Metrics
-
-**Development Time**: ~2 hours (vs estimated 9-12 hours - 5-6x faster)
-**Total MCP Tools**: 17 (4 servers with 4-5 tools each)
-**Data Sources**: 4 (copilot-instructions.md, docs/, git repo, coverage data)
-**Validation**: ✅ All servers syntax validated, data sources verified, function tested
-
-**Success Rate**: 100% validation across:
-- 133 patterns detected in Pattern Library
-- 109 documentation files indexed
-- 883 commits accessible via git log
-- 13.47% frontend coverage data loaded
+**Documentation**:
+- Pattern Library: `/docs/development/tooling/mcp-pattern-library.md`
+- Docs Search: `/docs/development/tooling/mcp-docs-search.md`
+- Git History: `/docs/development/tooling/mcp-git-history.md`
+- Coverage: `/docs/development/tooling/mcp-coverage-server.md`
 
 ## Tips for Best Results
 
