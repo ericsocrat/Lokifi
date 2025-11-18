@@ -1651,248 +1651,118 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 ## 📚 Pattern Library
 
+> **💡 MCP Integration**: Full pattern details available via Pattern Library MCP Server. Query: "Show me the [pattern name] pattern" or "Get success metrics for [pattern]"
+
 **When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
 
 **48 Battle-Tested Patterns** from 91+ sessions with proven success metrics:
 
-**Testing Patterns** (12):
-- **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
-- **AsyncMock Pattern** - 100% success, 182 tests proven (Sessions 30, 62, 63, 66, 77 Phases 1-6, 79) ⭐⭐⭐
-  - **create_mock_response() helper**: Lambda pattern for sync methods on AsyncMock (prevents coroutines)
-  - **Success Rate**: 100% across backend Python + frontend React TypeScript
-  - **Backend Validation** (157 tests): 26 DataArchival + 42 Crypto + 20 Forex + 22 Stock + 28 Indices + 19 News
-  - **Frontend Validation** (25 tests): PriceChart component (88.84% coverage, Session 79)
-  - **Universal Pattern**: Proven across 6 backend services + 1 frontend component - CROSS-STACK RECORD! 🏆
-  - **Complete Guides**:
-    - Backend: `/docs/guides/testing/external-api-testing-patterns.md`
-    - Frontend: `/docs/guides/testing/frontend-testing-patterns.md`
-- **Mathematical Indicator Testing Pattern** - Known inputs → Expected outputs, 100% coverage, 9/9 indicators proven (Sessions 80-89) ⭐⭐⭐
-  - **Approach**: Industry formulas + edge cases (empty data, zero denominators, invalid periods)
-  - **Proven**: RSI, MACD, BB, Stochastic, ADX, CCI, Williams %R, OBV, A/D Line (all 100% pass rate)
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Sessions 80-89)
-- **Mock side_effect for Sequential Calls** - 100% success (Session 77 Phases 3-5) ⭐
-  - Pattern: `mock.side_effect = [error_response, success_response]` for partial failure testing
-  - Use case: Test graceful degradation when first API call fails, second succeeds
-  - Proven across: ForexService (partial failures), IndicesService (provider cascade)
-  - Success rate: Multiple tests across 3 services, 100% effectiveness
-- **Implementation Verification Pattern** - 100% success (Session 77 Phases 3-5) ⭐
-  - Always verify actual implementation details before writing tests (don't assume)
-  - Examples: Currency pairs (50 actual vs 93 assumed), stock symbols (50), global indices (15)
-  - Tests fixed: 5+ across 3 services, saves ~10-15 minutes debugging per service
-- **Branch Coverage + Smart Exclusions** - 100% success, 15min implementation (Session 69)
-- **Pure Function Testing** - 100% success, <15 min implementation
-- **Mathematical Testing** - 33 tests, 100% coverage (Session 66)
+**Testing Patterns** (17):
+- **AsyncMock Pattern** - 100% success, 182 tests (157 backend + 25 frontend) ⭐⭐⭐ CROSS-STACK RECORD! 🏆
+- **Mathematical Indicator Testing** - 9/9 indicators, 100% coverage, infinite scalability ⭐⭐⭐
+- **Mock side_effect for Sequential Calls** - Partial failure testing, 100% success ⭐
+- **Implementation Verification Pattern** - Verify before assuming, saves 10-15 min/service ⭐
+- **Branch Coverage + Smart Exclusions** - 15min implementation, 100% success
+- **Pure Function Testing** - <15 min implementation, 100% success
+- **Mathematical Testing** - 33 tests, 100% coverage
 - **Fixture Design** - Reusable test data patterns
-- **2-Tier Caching Validation** - 100% success (Session 77 Phases 3-5) ⭐
-  - Pattern: Test both Redis cache (30s TTL) + internal cache (5min) separately
-  - Verify reduced API call counts within time windows
-  - Proven across: ForexService, StockService, IndicesService
-  - Tests covering: 15+ tests across 3 services, straightforward implementation
-- **Frontend React Testing Pattern** - 100% success, 88.84% coverage (Session 79) ⭐⭐⭐
-  - **AsyncMock for React**: Adapt create_mock_response() for frontend external APIs
-  - **React Testing Library**: Behavior-driven assertions (user-facing outcomes, not implementation)
-  - **Canvas Testing**: ctx.__getDrawCalls() for lightweight canvas inspection (no canvas library needed)
-  - **Debugging Iterations**: 4 iterations (Theme → Resize → Crosshair → Edge Cases) documented
-  - **Coverage Achievement**: 46.4% → 88.84% (+42.44pp, exceeds 80% target)
-  - **Pattern Reusability**: WebSocket, Indicators, all future frontend components
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (700+ lines)
-- **Correct Mock Pattern for lightweight-charts** - 100% success, 25+ tests validated (Session 81) ⭐⭐⭐ NEW!
-  - **Problem**: Tests accessing Vitest mocked functions incorrectly (bypassing mocks or accessing before render)
-  - **Anti-pattern 1**: `const chartMock = (await import('lightweight-charts')).createChart();` - Bypasses mock
-  - **Anti-pattern 2**: `const lineCalls = chartMock.addLineSeries.mock.calls;` - chartMock undefined in scope
-  - **Correct Pattern**: Import at top `import { createChart } from 'lightweight-charts';`, then access inside `waitFor` via `(createChart as any).mock.results[0]?.value`
-  - **Why This Works**: `vi.mock('lightweight-charts')` creates mock, import accesses mocked function, `.mock.results[0]?.value` gets chart instance, `waitFor` ensures render complete
-  - **Success Metrics**: Validated 25+ tests, Fixed 5 RSI integration tests (28/30 → 30/30 passing)
-  - **Reusability**: MACD, Bollinger Bands, Stochastic integration tests
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 81 section)
-- **React Mutation Testing for useEffect Dependencies** - 100% success (Session 81) ⭐⭐ NEW!
-  - **Problem**: Object mutation doesn't trigger React's useEffect (shallow equality comparison)
-  - **Anti-pattern**: `mockStoreValue.indicators.showRSI = false; (useChartStore as any).mockReturnValue(mockStoreValue); rerender(<PriceChart />);` - Same object reference, useEffect doesn't run
-  - **Correct Pattern**: `const updatedStoreValue = { ...mockStoreValue, indicators: { ...mockStoreValue.indicators, showRSI = false } }; (useChartStore as any).mockReturnValue(updatedStoreValue); rerender(<PriceChart />);` - New object reference triggers useEffect
-  - **Why This Matters**: React useEffect uses shallow equality - same reference = no change detected, new reference = change detected → cleanup executes
-  - **Application**: All indicator toggle/cleanup tests (RSI, MACD, Bollinger Bands, Stochastic)
-  - **Success Metrics**: Fixed 1 cleanup test (29/30 → 30/30 passing), Validated via `window._rsi === undefined` assertion
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 81 section)
-- **Multi-Indicator Integration Pattern** - Multiple indicators coexisting, cleanup validation, 100% success (Session 82) ⭐⭐⭐
-  - **Key**: Verify kill('_indicator') prevents memory leaks on toggle, test multi-series simultaneously
-  - **Proven**: MACD (3-series), Bollinger Bands, Stochastic - no conflicts across 9 indicators
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 82)
-- **Stochastic Oscillator Pattern** - %K/%D momentum oscillator, 100% coverage, 4/4 validation (Session 84) 🏆
-  - **Algorithm**: %K = (C - L14) / (H14 - L14) × 100, %D = SMA(%K, 3)
-  - **Learning**: Uses full period range (not just close), 43% faster via pattern reuse
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 84)
-- **ADX (Average Directional Index) Pattern** - Trend strength w/ Wilder's smoothing, 100% coverage, 5/5 validation (Session 85) 🏆
-  - **Algorithm**: TR → DM → Wilder's Smoothing → DI → DX → ADX (5-step process)
-  - **Learning**: Requires 2×period data, fastest implementation (38-50% faster than baseline)
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 85)
-- **CCI (Commodity Channel Index) Pattern** - Mean deviation momentum oscillator, 94.28% coverage, 6/6 validation (Session 86) 🏆
-  - **Algorithm**: CCI = (TP - SMA(TP)) / (0.015 × MeanDeviation)
-  - **Learning**: Handle zero mean deviation (flat prices), 66% fewer iterations vs baseline
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 86)
-- **Williams %R Pattern** - Inverted Stochastic (-100 to 0), 100% coverage, 7/7 INFINITE SCALABILITY (Session 87) 🚀
-  - **Algorithm**: %R = (HH - C) / (HH - LL) × -100 (inverted from Stochastic)
-  - **Learning**: JavaScript -0 vs 0 quirk (use Math.abs()), fastest session (60% faster than estimate)
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 87)
-- **OBV (On-Balance Volume) Pattern** - Cumulative volume momentum, 97.64% coverage, 8/8 validation (Session 88) 🏆
-  - **Algorithm**: OBV += volume if C > Cₚᵣₑᵥ, OBV -= volume if C < Cₚᵣₑᵥ, unchanged if C = Cₚᵣₑᵥ
-  - **Learning**: Cumulative indicators need **normalized thresholds** (÷ avg volume), NOT percentage-based
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 88)
-- **A/D Line (Accumulation/Distribution) Pattern** - CLV-weighted cumulative, 97.8% coverage, 9/9 INFINITE SCALABILITY (Session 89) 🚀
-  - **Algorithm**: CLV = ((C-L)-(H-C))/(H-L), MFV = CLV × Vol, AD = Σ MFV (CLV range: -1 to +1)
-  - **Learning**: CLV ≠ OBV binary (requires precise boundary handling), normalized thresholds (÷ avg volume)
-  - **Complete Guide**: `/docs/guides/testing/frontend-testing-patterns.md` (Session 89)
+- **2-Tier Caching Validation** - Redis + internal cache, 100% success ⭐
+- **Frontend React Testing** - 88.84% coverage (+42.44pp), behavior-driven ⭐⭐⭐
+- **Correct Mock Pattern for lightweight-charts** - 25+ tests validated, Vitest mocking ⭐⭐⭐
+- **React Mutation Testing for useEffect** - Shallow equality fix, 100% success ⭐⭐
+- **Multi-Indicator Integration** - Memory leak prevention, 9 indicators ⭐⭐⭐
+- **Stochastic Oscillator** - 100% coverage, 43% faster 🏆
+- **ADX (Directional Index)** - Wilder's smoothing, 38-50% faster 🏆
+- **CCI (Commodity Channel Index)** - 94.28% coverage, 66% fewer iterations 🏆
+- **Williams %R, OBV, A/D Line** - All 100% coverage, infinite scalability 🚀
 
 **UI/UX Patterns** (1):
-- **React Keyboard Shortcuts Pattern** - 100% success, production-deployed (Session 91) ⭐⭐⭐ NEW!
-  - **Cross-Platform**: Single implementation for Ctrl (Windows/Linux) + Cmd (Mac) via `e.ctrlKey || e.metaKey`
-  - **Conflict Prevention**: `e.preventDefault()` stops browser defaults (Ctrl+S save, Ctrl+R reload)
-  - **Visual Discoverability**: Always-visible shortcuts help + tooltip hints
-  - **Accessibility**: Keyboard-first interaction with Esc support
-  - **Cleanup**: Proper event listener removal (`return () => removeEventListener`)
-  - **Hoisting Fix**: useEffect AFTER handler definitions (avoid TS2448/TS2454 errors)
-  - **Success Metrics**: 757 tests passing, 0 TypeScript errors, cross-browser validated
-  - **Implementation Pattern**:
-    ```typescript
-    React.useEffect(() => {
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
-          e.preventDefault();
-          handleAction();
-        }
-      };
-      window.addEventListener('keydown', handleKeyDown);
-      return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [handleAction]); // Place AFTER handler definitions
-    ```
-  - **Visual Help Pattern**:
-    ```tsx
-    <div className="keyboard-shortcuts-help">
-      <div className="text-xs font-medium mb-2">⌨️ Keyboard Shortcuts</div>
-      <div className="space-y-1 text-xs opacity-70">
-        <div className="flex justify-between">
-          <span>Action Name:</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-white/10 font-mono">Ctrl/Cmd+Key</kbd>
-        </div>
-      </div>
-    </div>
-    ```
-  - **Reusability**: Any React component needing keyboard shortcuts
-  - **Complete Guide**: `/docs/checklists.md` (Session 91)
+- **React Keyboard Shortcuts** - Cross-platform, accessibility, conflict prevention ⭐⭐⭐
 
 **CI/CD Patterns** (4):
 - **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
 - **GitHub CLI Investigation** - Rapid failure diagnosis
 - **Service Config Standards** - PostgreSQL/Redis consistency
-- **Working Directory Context** - Path management (Session 33)
+- **Working Directory Context** - Path management
 
 **Code Quality Patterns** (11):
-- **Assignment Error Patterns** - 92.7% error reduction (41→3), 5 patterns (Session 74) ⭐
-- **Cascading Type Fixes** - 52.8% error reduction, 136 errors/hour (Session 73) ⭐
-- **TypeScript Any Elimination** - 96.3% improvement, Sprint 2 (Sessions 42-51)
+- **Assignment Error Patterns** - 92.7% reduction (41→3 errors) ⭐
+- **Cascading Type Fixes** - 52.8% reduction, 136 errors/hour ⭐
+- **TypeScript Any Elimination** - 96.3% improvement, Sprint 2
 - **Zustand + Immer Pattern** - 100% success, 10 stores
 - **Draft<T> Mutations** - Type-safe Immer usage
-- **Python Ruff Compliance** - 367→0 violations (Session 52)
-- **ESLint Quality Campaign** - 15.1% reduction (Sessions 53-59)
-- **Type Narrowing (Extract → Annotate → Use)** - 100% success, 15 errors (Session 76) ⭐ NEW!
-- **Import Aliasing for Backward Compatibility** - 100% success, 2 errors (Session 76) ⭐ NEW!
-- **Variable Shadowing Resolution** - 100% success, 2 errors (Session 76) ⭐ NEW!
-- **Root Cause Over Workarounds** - 100% success after 4 failed iterations (Session 76) ⭐ NEW!
+- **Python Ruff Compliance** - 367→0 violations
+- **ESLint Quality Campaign** - 15.1% reduction
+- **Type Narrowing (Extract → Annotate → Use)** - 100% success ⭐
+- **Import Aliasing for Backward Compatibility** - 100% success ⭐
+- **Variable Shadowing Resolution** - Type-descriptive naming ⭐
+- **Root Cause Over Workarounds** - Question assumptions first ⭐
 
-**Type Safety - arg-type Elimination (Session 75)** (9 patterns) ⭐ NEW! 🏆:
-- **Type Narrowing** - Explicit annotations for conditional flows (6 errors fixed)
-- **Union Types** - Flexible dependency injection Union[Type1, Type2] (6 errors fixed)
-- **Protocol-Based Typing** - Structural typing for mocks/integration (5 errors fixed)
-- **Explicit Pydantic Construction** - Direct field assignment (4 errors fixed)
-- **JSON Serialization** - Trust layer abstractions with Any (2 errors fixed)
-- **UUID Conversions** - Explicit str(uuid) or UUID(str) (1 error fixed)
-- **Type Assertions - cast()** - 100% success rate! (12 errors fixed across 2 phases) ⭐⭐⭐
-  - Test fixtures: `cast(HttpUrl, "https://...")` for Pydantic
-  - HTTP clients: `cast(Mapping[str, Any], params)` for httpx/aiohttp
-  - Highest single pattern success in Session 75
-- **Flexible Signatures** - Use Any when serialization handled downstream (1 error fixed)
-- **HTTP Client Type Hints** - Universal cast pattern for API calls (8 errors fixed) ⭐⭐⭐
-  - Works for httpx.AsyncClient, aiohttp.ClientSession
-  - Handles pagination, API keys, branching logic
-  - Fastest pattern: Low effort, high success rate
-- **Complete Documentation**: `/docs/development/type-safety/arg-type-elimination-session75.md`
-- **Achievement**: 29→0 arg-type errors (100% success rate, category eliminated!) 🏆
-
-**Type Safety - attr-defined Elimination (Session 76)** (4 patterns) ⭐ NEW! 🏆:
-- **Type Narrowing (Extract → Annotate → Use)** - 100% success, 15 errors (Phase 1)
-  - Dict/list access: Extract → Annotate → Use
-  - Optional removal: Conditional type narrowing after guards
-  - Method chaining: Explicit types where mypy loses track
-- **Cascading Auto-Resolution** - 12 errors auto-fixed through type propagation (Phase 2)
-  - Type narrowing triggers cascading type inference
-  - Downstream errors disappear automatically
-  - Zero manual work required (bonus discovery!)
-- **Import Aliasing** - Backward compatibility for renamed functions (Phase 3)
-  - Pattern: `from module import new_name as old_name`
-  - Maintains existing call sites unchanged
-- **Variable Shadowing Resolution** - Type-descriptive naming (Phase 3)
-  - Pattern: `byte_chunk` vs `message_chunk` (not just `chunk`)
-  - One variable name = one type per scope
-- **Root Cause Over Workarounds** - Question assumptions, investigate (Phase 3)
-  - Red flag: Multiple cast() calls or complex type annotations
-  - Solution: Check type definitions, verify data format
-  - Result: Simple fix after questioning assumption
-- **Complete Documentation**: `/docs/development/type-safety/attr-defined-elimination-session76.md`
-- **Achievement**: 63→0 app code attr-defined errors (100% app code success, 4-iteration debugging journey!) 🏆
+**Type Safety Patterns** (13):
+- **arg-type Elimination** - 29→0 errors, 9 patterns, category eliminated! 🏆
+  - Type Narrowing, Union Types, Protocol-Based Typing, Type Assertions (cast)
+  - HTTP Client Type Hints, Pydantic Construction, UUID Conversions
+- **attr-defined Elimination** - 63→0 app code errors, 4 patterns 🏆
+  - Extract → Annotate → Use, Cascading Auto-Resolution, Import Aliasing
 
 **Dependencies Patterns** (4):
-- **Conflict Resolution** - Session 30 Werkzeug/openapi-core
+- **Conflict Resolution** - Werkzeug/openapi-core
 - **Pin vs Replace Decision** - 4 options with time estimates
-- **Renovate Migration** - Dependabot→Renovate (Session 29)
+- **Renovate Migration** - Dependabot→Renovate
 - **Security Patch Evaluation** - CVE triage workflow
 
 **Python Patterns** (3):
-- **Python 3.10 Compatibility** - 60 files, 8 functions (Session 66)
+- **Python 3.10 Compatibility** - 60 files, 8 functions
 - **UTC Import Pattern** - datetime.timezone fixes
 - **Lambda UTC Import** - AWS Lambda timezone handling
 
 **Debugging Patterns** (2):
-- **Root Cause Analysis** - 100% success, Session 33 (7 failures→2 fixes)
+- **Root Cause Analysis** - 100% success (7 failures→2 fixes)
 - **Log Analysis** - 75-88% time savings (10+ sessions)
 
 **Pattern Selection Guide**:
-- **Testing**: "What are you testing?" → AsyncMock, Mathematical Indicator Testing (9 indicators proven), Mock side_effect, Implementation Verification, 2-Tier Caching, Frontend React Testing, Pure Functions, Mathematical Testing, Fixtures
-- **UI/UX**: "What UI feature?" → React Keyboard Shortcuts (cross-platform, accessibility, conflict prevention) 🆕
-- **Debugging**: "What type of failure?" → Root Cause Analysis, Log Analysis, GitHub CLI Investigation
-- **Dependencies**: "What dependency issue?" → Conflict Resolution, Pin vs Replace, Renovate, Security Patches
-- **Code Quality**: "What code quality issue?" → Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
-- **Type Safety (Python)**: "What type error?" → arg-type Elimination (Session 75) - 9 patterns, attr-defined Elimination (Session 76) - 4 patterns
-- **Python**: "What Python issue?" → Python 3.10 Compatibility, UTC Import, Lambda UTC, Assignment Error Patterns
+- **Testing**: AsyncMock (182 tests), Mathematical Indicator Testing (9 indicators), Mock side_effect, 2-Tier Caching, Frontend React Testing
+- **UI/UX**: React Keyboard Shortcuts (cross-platform, accessibility)
+- **Debugging**: Root Cause Analysis, Log Analysis, GitHub CLI Investigation
+- **Dependencies**: Conflict Resolution, Pin vs Replace, Renovate, Security Patches
+- **Code Quality**: Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
+- **Type Safety (Python)**: arg-type Elimination (9 patterns), attr-defined Elimination (4 patterns)
+- **Python**: Python 3.10 Compatibility, UTC Import, Lambda UTC
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
-**When writing code**: Reference specific patterns in commit messages and documentation (e.g., "Uses Mathematical Indicator Testing pattern - proven 9/9 indicators, infinite scalability")
+**For Full Pattern Details**: Query Pattern Library MCP Server with "Show me the [pattern name] pattern" to get complete code examples, anti-patterns, troubleshooting, and session references.
 
 ## Documentation References
 
-When suggesting code or answering questions, prefer these docs:
-- **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives (Pre-merge, Security, Renovate, Performance, Testing, Deployment, Maintenance, CI/CD debugging) ⭐⭐⭐
-- **Pattern Library**: See "Pattern Library" section above - 48 battle-tested patterns ⭐
-- **Frontend Testing Patterns**: `/docs/guides/testing/frontend-testing-patterns.md` - Session 79 comprehensive guide (88.84% coverage achievement) ⭐⭐⭐ NEW!
-- **Backend Testing Patterns**: `/docs/guides/testing/external-api-testing-patterns.md` - Session 77 comprehensive guide (157 tests) ⭐⭐⭐
-- **attr-defined Elimination**: `/docs/development/type-safety/attr-defined-elimination-session76.md` - 100% success rate, 4 patterns (Session 76) ⭐ NEW! 🏆
-- **arg-type Elimination**: `/docs/development/type-safety/arg-type-elimination-session75.md` - 100% success rate, 9 patterns (Session 75) ⭐ 🏆
-- **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` - 92.7% reduction (Session 74) ⭐
-- **Cascading Type Fixes**: `/docs/development/type-safety/cascading-type-fixes.md` - 52.8% error reduction pattern (Session 73) ⭐
-- **MyPy Analysis**: `/docs/development/mypy-error-analysis-session73.md` - Comprehensive breakdown ⭐
-- **Core Workflow**: `/docs/guides/workflow.md` - Complete setup & daily workflows ⭐
-- **Pull Requests**: `/docs/guides/workflow.md` - Complete PR workflow ⭐
+> **💡 MCP Integration**: All documentation searchable via Documentation Search MCP Server. Query: "Search docs for [topic]" or "Show me the [guide name]"
+
+**Quick Access Documentation** (Most Frequently Referenced):
+- **Process Checklists + Current Focus**: `/docs/checklists.md` - ALL repeatable workflows + active sprint objectives ⭐⭐⭐
+- **Pattern Library**: See "Pattern Library" section above - Use MCP for full details ⭐
+- **Frontend Testing Patterns**: `/docs/guides/testing/frontend-testing-patterns.md` - Session 79 comprehensive guide ⭐⭐⭐
+- **Backend Testing Patterns**: `/docs/guides/testing/external-api-testing-patterns.md` - Session 77 comprehensive guide ⭐⭐⭐
+
+**Type Safety Documentation**:
+- **attr-defined Elimination**: `/docs/development/type-safety/attr-defined-elimination-session76.md` ⭐ 🏆
+- **arg-type Elimination**: `/docs/development/type-safety/arg-type-elimination-session75.md` ⭐ 🏆
+- **Assignment Error Patterns**: `/docs/development/assignment-error-patterns-session74.md` ⭐
+- **Cascading Type Fixes**: `/docs/development/type-safety/cascading-type-fixes.md` ⭐
+- **MyPy Analysis**: `/docs/development/mypy-error-analysis-session73.md` ⭐
+
+**Core Guides** (Use MCP for search):
+- **Workflow**: `/docs/guides/workflow.md` - Setup, daily workflows, PR process
 - **Testing**: `/docs/guides/overview.md` - Comprehensive testing guide
-- **Backend Testing Best Practices**: `/docs/guides/testing/backend-coverage-best-practices.md` - Branch coverage, smart exclusions, AsyncMock patterns (Session 69) ⭐
 - **Standards**: `/docs/guides/standards.md` - Code style and conventions
-- **Code Quality**: `/docs/guides/overview.md` - Quality tools and automation
 - **Architecture**: `/docs/guides/structure.md` - Project structure
-- **CI/CD Optimization**: `/docs/ci-cd/optimization.md` - Complete workflow optimization (Sessions 8-10)
-- **CI/CD Guide**: `/docs/ci-cd/overview.md` - Pipeline documentation
-- **Renovate Bot**: `/docs/ci-cd/dependencies/renovate-evaluation.md` - Dependency management (Session 29)
+
+**CI/CD & Deployment** (Use MCP for search):
+- **CI/CD Optimization**: `/docs/ci-cd/optimization.md` - Workflow optimization
+- **Renovate Bot**: `/docs/ci-cd/dependencies/renovate-evaluation.md` - Dependency management
 - **Deployment**: `/docs/deployment/README.md` - Production deployment guides
-- **Local Development**: `/infra/docker/LOCAL_DEVELOPMENT.md` - Docker local setup
 - **DNS Configuration**: `/docs/deployment/dns.md` - Domain setup
-- **Documentation Index**: `/docs/README.md` - Complete documentation index ⭐
+
+**Complete Documentation Index**: `/docs/README.md` - Use MCP to search across all 109+ files ⭐
 
 ## Common Commands
 
