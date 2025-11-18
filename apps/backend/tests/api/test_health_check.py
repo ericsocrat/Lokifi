@@ -13,16 +13,14 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.api.routes.health_check import (
     check_component_health,
     comprehensive_health_check,
     get_performance_metrics,
     get_redis_client,
 )
-
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # Fixtures
@@ -88,9 +86,7 @@ class TestComprehensiveHealthCheck:
     ) -> None:
         """Should return healthy status when all components are working"""
         # Arrange
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {
                 "total_requests": 100,
                 "avg_response_time": 50.0,
@@ -128,9 +124,7 @@ class TestComprehensiveHealthCheck:
         """Should return degraded status when database fails"""
         # Arrange
         mock_db_session.execute.side_effect = Exception("Database connection failed")
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act
@@ -154,9 +148,7 @@ class TestComprehensiveHealthCheck:
         """Should return degraded status when Redis fails"""
         # Arrange
         mock_redis_client.ping.side_effect = Exception("Redis connection timeout")
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act
@@ -181,9 +173,7 @@ class TestComprehensiveHealthCheck:
         # Arrange
         mock_db_session.execute.side_effect = Exception("DB error")
         mock_redis_client.ping.side_effect = Exception("Redis error")
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act
@@ -207,9 +197,7 @@ class TestComprehensiveHealthCheck:
             "avg_response_time": 75.3,
             "error_rate": 0.01,
         }
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = mock_metrics
 
             # Act
@@ -227,9 +215,7 @@ class TestComprehensiveHealthCheck:
     ) -> None:
         """Should measure and include response times for each component"""
         # Arrange
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act
@@ -251,9 +237,7 @@ class TestComprehensiveHealthCheck:
     ) -> None:
         """Should include accurate timestamp in response"""
         # Arrange
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             before_time = time.time()
@@ -286,9 +270,7 @@ class TestGetPerformanceMetrics:
             "error_rate": 0.03,
             "uptime_seconds": 172800,
         }
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = mock_metrics
 
             # Act
@@ -302,9 +284,7 @@ class TestGetPerformanceMetrics:
     async def test_empty_metrics(self) -> None:
         """Should handle empty metrics gracefully"""
         # Arrange
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act
@@ -483,9 +463,7 @@ class TestHealthCheckIntegration:
     ) -> None:
         """Should return consistent results between comprehensive and component checks"""
         # Arrange
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act - Get comprehensive health
@@ -519,9 +497,7 @@ class TestHealthCheckIntegration:
     ) -> None:
         """Should handle multiple consecutive health checks without issues"""
         # Arrange
-        with patch(
-            "app.api.routes.health_check.performance_metrics"
-        ) as mock_perf:
+        with patch("app.api.routes.health_check.performance_metrics") as mock_perf:
             mock_perf.get_summary.return_value = {}
 
             # Act - Call health check 3 times
@@ -535,10 +511,7 @@ class TestHealthCheckIntegration:
             # Assert - All should be healthy
             for result in results:
                 assert result["status"] == "healthy"
-                assert all(
-                    comp["status"] == "healthy"
-                    for comp in result["components"].values()
-                )
+                assert all(comp["status"] == "healthy" for comp in result["components"].values())
 
             # Assert - Database and Redis called 3 times each
             assert mock_db_session.execute.call_count == 3

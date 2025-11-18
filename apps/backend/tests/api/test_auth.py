@@ -15,9 +15,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
 import pytest
-from fastapi import HTTPException
-from jose import jwt
-
 from app.api.routes.auth import (
     JWT_ALG,
     JWT_SECRET,
@@ -31,6 +28,8 @@ from app.api.routes.auth import (
     me,
     register,
 )
+from fastapi import HTTPException
+from jose import jwt
 
 
 class TestUserByHandle:
@@ -172,7 +171,10 @@ class TestRegisterEndpoint:
         mock_db.execute.return_value = mock_result
 
         payload = RegisterPayload(
-            handle="newuser", password="password123", avatar_url="https://example.com/avatar.jpg", bio="Test bio"
+            handle="newuser",
+            password="password123",
+            avatar_url="https://example.com/avatar.jpg",
+            bio="Test bio",
         )
 
         result = register(payload)

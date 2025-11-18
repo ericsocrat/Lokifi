@@ -13,8 +13,6 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, Request
-
 from app.api.routes.cache import (
     cache_health_check,
     cache_statistics,
@@ -22,7 +20,7 @@ from app.api.routes.cache import (
     clear_cache_pattern,
     warm_cache_endpoint,
 )
-
+from fastapi import HTTPException, Request
 
 # ============================================================================
 # Fixtures
