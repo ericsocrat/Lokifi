@@ -1651,87 +1651,30 @@ gh run view <run-id> --repo ericsocrat/Lokifi --log-failed | Select-String -Patt
 
 ## 📚 Pattern Library
 
-> **💡 MCP Integration**: Full pattern details available via Pattern Library MCP Server. Query: "Show me the [pattern name] pattern" or "Get success metrics for [pattern]"
+> **⚡ ACCESS PATTERNS VIA MCP**: Use Pattern Library MCP Server for instant access to 37+ battle-tested patterns. All pattern details, code examples, anti-patterns, and success metrics available on-demand.
 
-**When to use**: Facing a problem you've solved before? Check the pattern library FIRST before reinventing solutions.
+**Pattern Library Location**: `/docs/architecture/patterns/` (single source of truth)
 
-**48 Battle-Tested Patterns** from 91+ sessions with proven success metrics:
+**Quick MCP Queries**:
+- "Show me the AsyncMock pattern" - Get full pattern with code examples
+- "List all testing patterns" - See 14 testing patterns
+- "Get success metrics" - View overall success rates and top patterns
+- "Search patterns for [keyword]" - Find relevant patterns by topic
 
-**Testing Patterns** (17):
-- **AsyncMock Pattern** - 100% success, 182 tests (157 backend + 25 frontend) ⭐⭐⭐ CROSS-STACK RECORD! 🏆
-- **Mathematical Indicator Testing** - 9/9 indicators, 100% coverage, infinite scalability ⭐⭐⭐
-- **Mock side_effect for Sequential Calls** - Partial failure testing, 100% success ⭐
-- **Implementation Verification Pattern** - Verify before assuming, saves 10-15 min/service ⭐
-- **Branch Coverage + Smart Exclusions** - 15min implementation, 100% success
-- **Pure Function Testing** - <15 min implementation, 100% success
-- **Mathematical Testing** - 33 tests, 100% coverage
-- **Fixture Design** - Reusable test data patterns
-- **2-Tier Caching Validation** - Redis + internal cache, 100% success ⭐
-- **Frontend React Testing** - 88.84% coverage (+42.44pp), behavior-driven ⭐⭐⭐
-- **Correct Mock Pattern for lightweight-charts** - 25+ tests validated, Vitest mocking ⭐⭐⭐
-- **React Mutation Testing for useEffect** - Shallow equality fix, 100% success ⭐⭐
-- **Multi-Indicator Integration** - Memory leak prevention, 9 indicators ⭐⭐⭐
-- **Stochastic Oscillator** - 100% coverage, 43% faster 🏆
-- **ADX (Directional Index)** - Wilder's smoothing, 38-50% faster 🏆
-- **CCI (Commodity Channel Index)** - 94.28% coverage, 66% fewer iterations 🏆
-- **Williams %R, OBV, A/D Line** - All 100% coverage, infinite scalability 🚀
-
-**UI/UX Patterns** (1):
-- **React Keyboard Shortcuts** - Cross-platform, accessibility, conflict prevention ⭐⭐⭐
-
-**CI/CD Patterns** (4):
-- **Workflow Health Check** - GitHub CLI investigation (10+ sessions)
-- **GitHub CLI Investigation** - Rapid failure diagnosis
-- **Service Config Standards** - PostgreSQL/Redis consistency
-- **Working Directory Context** - Path management
-
-**Code Quality Patterns** (11):
-- **Assignment Error Patterns** - 92.7% reduction (41→3 errors) ⭐
-- **Cascading Type Fixes** - 52.8% reduction, 136 errors/hour ⭐
-- **TypeScript Any Elimination** - 96.3% improvement, Sprint 2
-- **Zustand + Immer Pattern** - 100% success, 10 stores
-- **Draft<T> Mutations** - Type-safe Immer usage
-- **Python Ruff Compliance** - 367→0 violations
-- **ESLint Quality Campaign** - 15.1% reduction
-- **Type Narrowing (Extract → Annotate → Use)** - 100% success ⭐
-- **Import Aliasing for Backward Compatibility** - 100% success ⭐
-- **Variable Shadowing Resolution** - Type-descriptive naming ⭐
-- **Root Cause Over Workarounds** - Question assumptions first ⭐
-
-**Type Safety Patterns** (13):
-- **arg-type Elimination** - 29→0 errors, 9 patterns, category eliminated! 🏆
-  - Type Narrowing, Union Types, Protocol-Based Typing, Type Assertions (cast)
-  - HTTP Client Type Hints, Pydantic Construction, UUID Conversions
-- **attr-defined Elimination** - 63→0 app code errors, 4 patterns 🏆
-  - Extract → Annotate → Use, Cascading Auto-Resolution, Import Aliasing
-
-**Dependencies Patterns** (4):
-- **Conflict Resolution** - Werkzeug/openapi-core
-- **Pin vs Replace Decision** - 4 options with time estimates
-- **Renovate Migration** - Dependabot→Renovate
-- **Security Patch Evaluation** - CVE triage workflow
-
-**Python Patterns** (3):
-- **Python 3.10 Compatibility** - 60 files, 8 functions
-- **UTC Import Pattern** - datetime.timezone fixes
-- **Lambda UTC Import** - AWS Lambda timezone handling
-
-**Debugging Patterns** (2):
-- **Root Cause Analysis** - 100% success (7 failures→2 fixes)
-- **Log Analysis** - 75-88% time savings (10+ sessions)
-
-**Pattern Selection Guide**:
-- **Testing**: AsyncMock (182 tests), Mathematical Indicator Testing (9 indicators), Mock side_effect, 2-Tier Caching, Frontend React Testing
-- **UI/UX**: React Keyboard Shortcuts (cross-platform, accessibility)
-- **Debugging**: Root Cause Analysis, Log Analysis, GitHub CLI Investigation
-- **Dependencies**: Conflict Resolution, Pin vs Replace, Renovate, Security Patches
-- **Code Quality**: Assignment Error Patterns, Cascading Type Fixes, TypeScript Any, Zustand+Immer, Python Ruff, ESLint
-- **Type Safety (Python)**: arg-type Elimination (9 patterns), attr-defined Elimination (4 patterns)
-- **Python**: Python 3.10 Compatibility, UTC Import, Lambda UTC
+**Pattern Categories** (37 patterns across 7 categories):
+- **Testing** (14) - AsyncMock, Mathematical Indicator Testing, Mock side_effect, 2-Tier Caching, Frontend React Testing, Pure Functions, Fixtures, Branch Coverage
+- **CI/CD** (4) - Workflow Health Check, GitHub CLI Investigation, Service Config Standards, Working Directory Context
+- **Code Quality** (5) - Zustand+Immer, TypeScript Any Elimination, Draft<T> Mutations, Python Ruff, ESLint Quality
+- **Dependencies** (4) - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patch Evaluation
+- **Python** (7) - arg-type Elimination, attr-defined Elimination, Assignment Errors, Python 3.10 Compatibility, UTC Imports
+- **Debugging** (2) - Root Cause Analysis, Log Analysis
+- **Security** (2) - Secure Logging, Security Implementation
 
 **Success Metrics**: 96% average success rate, 500+ percentage points coverage gained, 100+ hours saved
 
-**For Full Pattern Details**: Query Pattern Library MCP Server with "Show me the [pattern name] pattern" to get complete code examples, anti-patterns, troubleshooting, and session references.
+**Pattern Documentation**: See `/docs/architecture/patterns/README.md` for complete index with difficulty ratings, success rates, impact levels, and decision trees.
+
+**Note**: Full pattern details (Problem, Context, Solution, Examples, Anti-Patterns, References) available via MCP - no need to search files manually!
 
 ## Documentation References
 

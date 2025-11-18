@@ -25,8 +25,8 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema,
+    CallToolRequestSchema,
+    ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import fs from 'fs';
 import path from 'path';
@@ -35,143 +35,158 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Path to copilot instructions (contains all patterns)
-const INSTRUCTIONS_PATH = path.join(
+// Path to pattern library directory (single source of truth)
+const PATTERNS_DIR = path.join(
   __dirname,
-  '../.github/copilot-instructions.md'
+  '../docs/architecture/patterns'
 );
 
 /**
- * Read copilot instructions file
+ * Find all pattern markdown files in the patterns directory
  */
-function readInstructions() {
+function findPatternFiles() {
   try {
-    if (!fs.existsSync(INSTRUCTIONS_PATH)) {
+    if (!fs.existsSync(PATTERNS_DIR)) {
       return {
-        error: 'Copilot instructions not found',
-        path: INSTRUCTIONS_PATH,
+        error: 'Pattern directory not found',
+        path: PATTERNS_DIR,
       };
     }
 
-    return fs.readFileSync(INSTRUCTIONS_PATH, 'utf-8');
+    const files = [];
+
+    // Scan all subdirectories (testing/, ci-cd/, code-quality/, etc.)
+    const categories = fs.readdirSync(PATTERNS_DIR, { withFileTypes: true })
+      .filter(dirent => dirent.isDirectory())
+      .map(dirent => dirent.name);
+
+    for (const category of categories) {
+      const categoryPath = path.join(PATTERNS_DIR, category);
+      const categoryFiles = fs.readdirSync(categoryPath)
+        .filter(file => file.endsWith('.md'))
+        .map(file => ({
+          path: path.join(categoryPath, file),
+          category,
+          filename: file,
+        }));
+
+      files.push(...categoryFiles);
+    }
+
+    return files;
   } catch (error) {
     return {
-      error: `Failed to read instructions: ${error.message}`,
-      path: INSTRUCTIONS_PATH,
+      error: `Failed to find pattern files: ${error.message}`,
+      path: PATTERNS_DIR,
     };
   }
 }
 
 /**
- * Extract pattern library section from instructions
+ * Parse pattern metadata from markdown file content
  */
-function getPatternLibrarySection() {
-  const content = readInstructions();
-  if (content.error) return content;
+function parsePatternMetadata(content, category, filename) {
+  const lines = content.split('\n');
 
-  const patternLibraryMatch = content.match(
-    /## 📚 Pattern Library[\s\S]*?(?=\n## |$)/
-  );
+  // Extract title (first H1 heading)
+  const titleMatch = content.match(/^# (.+)$/m);
+  const title = titleMatch ? titleMatch[1] : filename.replace('.md', '');
 
-  if (!patternLibraryMatch) {
-    return { error: 'Pattern Library section not found in instructions' };
+  // Extract metadata from the front matter section
+  const metadata = {
+    title,
+    category,
+    filename,
+    difficulty: null,
+    successRate: null,
+    impact: null,
+    timeInvestment: null,
+    sessionsUsed: null,
+  };
+
+  // Parse metadata lines (look for **Key**: Value pattern)
+  for (const line of lines.slice(0, 20)) { // Check first 20 lines for metadata
+    if (line.includes('**Difficulty**:')) {
+      metadata.difficulty = line.split(':')[1].trim();
+    }
+    if (line.includes('**Success Rate**:')) {
+      const match = line.match(/(\d+%)/);
+      metadata.successRate = match ? match[1] : line.split(':')[1].trim();
+    }
+    if (line.includes('**Impact**:')) {
+      metadata.impact = line.split(':')[1].trim();
+    }
+    if (line.includes('**Time Investment**:')) {
+      metadata.timeInvestment = line.split(':')[1].trim();
+    }
+    if (line.includes('**Sessions Used**:')) {
+      metadata.sessionsUsed = line.split(':')[1].trim();
+    }
   }
 
-  return patternLibraryMatch[0];
+  // Extract short description (first paragraph after ## Problem or similar)
+  const problemMatch = content.match(/## Problem\s+([\s\S]+?)(?=\n##|$)/);
+  const contextMatch = content.match(/## Context\s+([\s\S]+?)(?=\n##|$)/);
+  const description = problemMatch
+    ? problemMatch[1].trim().split('\n')[0]
+    : contextMatch
+      ? contextMatch[1].trim().split('\n')[0]
+      : 'Pattern description not available';
+
+  metadata.description = description.substring(0, 200); // Limit to 200 chars
+
+  return metadata;
 }
 
 /**
- * Parse all patterns from the Pattern Library section
+ * Get all patterns with metadata
  */
-function parseAllPatterns() {
-  const section = getPatternLibrarySection();
-  if (section.error) return section;
+function getAllPatterns() {
+  const files = findPatternFiles();
+  if (files.error) return files;
 
-  // Extract pattern categories
-  const categories = [];
-  const categoryRegex = /\*\*(.+?) Patterns\*\* \((\d+)\):/g;
-  let match;
-
-  while ((match = categoryRegex.exec(section)) !== null) {
-    categories.push({
-      name: match[1],
-      count: parseInt(match[2]),
-    });
-  }
-
-  // Extract individual patterns (look for bullet points with pattern names)
   const patterns = [];
-  const patternRegex =
-    /- \*\*(.+?)\*\* - (.+?)(?=\n  - |\n- \*\*|\n\n\*\*|$)/gs;
 
-  while ((match = patternRegex.exec(section)) !== null) {
-    const name = match[1].trim();
-    const description = match[2].trim();
+  for (const file of files) {
+    try {
+      const content = fs.readFileSync(file.path, 'utf-8');
+      const metadata = parsePatternMetadata(content, file.category, file.filename);
 
-    // Extract success metrics from description
-    const successMatch = description.match(/(\d+%)/);
-    const sessionMatch = description.match(/Session[s]? (\d+[-,\s\d]*)/);
-    const starsMatch = description.match(/(⭐+)/);
-
-    patterns.push({
-      name,
-      description,
-      success: successMatch ? successMatch[1] : null,
-      sessions: sessionMatch ? sessionMatch[1] : null,
-      priority: starsMatch ? starsMatch[1].length : 0,
-    });
+      patterns.push({
+        ...metadata,
+        path: file.path,
+      });
+    } catch (error) {
+      console.error(`Failed to parse ${file.path}:`, error.message);
+    }
   }
 
-  return {
-    categories,
-    patterns,
-    totalPatterns: patterns.length,
-    totalCategories: categories.length,
-  };
+  return patterns;
 }
 
 /**
  * Search patterns by keyword or category
  */
 function searchPatterns(query = '', category = null) {
-  const data = parseAllPatterns();
-  if (data.error) return data;
+  const patterns = getAllPatterns();
+  if (patterns.error) return patterns;
 
   const queryLower = query.toLowerCase();
-  let results = data.patterns;
+  let results = patterns;
 
   // Filter by category if specified
   if (category) {
     const categoryLower = category.toLowerCase();
-    const section = getPatternLibrarySection();
-
-    // Find patterns in the specified category section
-    const categorySection = section.match(
-      new RegExp(
-        `\\*\\*${category}[^*]*?Patterns\\*\\*[\\s\\S]*?(?=\\n\\*\\*[A-Z]|$)`,
-        'i'
-      )
-    );
-
-    if (categorySection) {
-      const categoryPatternNames = [];
-      const patternRegex = /- \*\*(.+?)\*\*/g;
-      let match;
-
-      while ((match = patternRegex.exec(categorySection[0])) !== null) {
-        categoryPatternNames.push(match[1].trim());
-      }
-
-      results = results.filter((p) => categoryPatternNames.includes(p.name));
-    }
+    results = results.filter((p) => p.category.toLowerCase() === categoryLower);
   }
 
   // Filter by search query
   if (query) {
     results = results.filter(
       (p) =>
-        p.name.toLowerCase().includes(queryLower) ||
-        p.description.toLowerCase().includes(queryLower)
+        p.title.toLowerCase().includes(queryLower) ||
+        p.description.toLowerCase().includes(queryLower) ||
+        p.category.toLowerCase().includes(queryLower)
     );
   }
 
@@ -179,7 +194,15 @@ function searchPatterns(query = '', category = null) {
     query,
     category,
     count: results.length,
-    patterns: results,
+    patterns: results.map(p => ({
+      title: p.title,
+      category: p.category,
+      difficulty: p.difficulty,
+      successRate: p.successRate,
+      impact: p.impact,
+      description: p.description,
+      filename: p.filename,
+    })),
   };
 }
 
@@ -187,110 +210,102 @@ function searchPatterns(query = '', category = null) {
  * Get detailed information about a specific pattern
  */
 function getPatternDetails(patternName) {
-  const section = getPatternLibrarySection();
-  if (section.error) return section;
+  const patterns = getAllPatterns();
+  if (patterns.error) return patterns;
 
   const patternNameLower = patternName.toLowerCase();
 
-  // Find the pattern section (includes sub-bullets with details)
-  const patternRegex = new RegExp(
-    `- \\*\\*${patternName}[^*]*?\\*\\* - [\\s\\S]*?(?=\\n- \\*\\*|\\n\\n\\*\\*|$)`,
-    'i'
+  // Find exact match (by title or filename)
+  let pattern = patterns.find(
+    (p) =>
+      p.title.toLowerCase() === patternNameLower ||
+      p.filename.toLowerCase() === patternNameLower.replace(/\s+/g, '-') + '.md'
   );
 
-  const match = section.match(patternRegex);
-
-  if (!match) {
-    // Try fuzzy search
-    const allPatterns = parseAllPatterns();
-    if (allPatterns.error) return allPatterns;
-
-    const fuzzyMatch = allPatterns.patterns.find((p) =>
-      p.name.toLowerCase().includes(patternNameLower)
+  // Try fuzzy match if exact match not found
+  if (!pattern) {
+    pattern = patterns.find((p) =>
+      p.title.toLowerCase().includes(patternNameLower)
     );
+  }
 
-    if (fuzzyMatch) {
-      return {
-        message: `Pattern "${patternName}" not found. Did you mean "${fuzzyMatch.name}"?`,
-        suggestion: fuzzyMatch.name,
-      };
-    }
+  if (!pattern) {
+    // Suggest similar patterns
+    const suggestions = patterns
+      .filter((p) => {
+        const words = patternNameLower.split(/\s+/);
+        return words.some(word => p.title.toLowerCase().includes(word));
+      })
+      .slice(0, 3)
+      .map(p => p.title);
 
     return {
       error: `Pattern "${patternName}" not found`,
-      suggestion: 'Use search_patterns to find available patterns',
+      suggestions: suggestions.length > 0 ? suggestions : null,
+      hint: 'Use search_patterns to find available patterns',
     };
   }
 
-  // Extract pattern details
-  const patternText = match[0];
-  const lines = patternText.split('\n');
+  // Read full pattern content
+  try {
+    const content = fs.readFileSync(pattern.path, 'utf-8');
 
-  // Parse main description and sub-points
-  const mainLine = lines[0];
-  const name = mainLine.match(/- \*\*(.+?)\*\*/)[1];
-  const description = mainLine.match(/\*\* - (.+)/)[1];
-
-  // Extract sub-points (indented bullets)
-  const details = lines
-    .slice(1)
-    .filter((line) => line.trim().startsWith('-'))
-    .map((line) => line.trim().substring(2));
-
-  // Extract code examples if any
-  const codeBlocks = [];
-  const codeRegex = /```[\s\S]*?```/g;
-  let codeMatch;
-
-  while ((codeMatch = codeRegex.exec(patternText)) !== null) {
-    codeBlocks.push(codeMatch[0]);
+    return {
+      title: pattern.title,
+      category: pattern.category,
+      metadata: {
+        difficulty: pattern.difficulty,
+        successRate: pattern.successRate,
+        impact: pattern.impact,
+        timeInvestment: pattern.timeInvestment,
+        sessionsUsed: pattern.sessionsUsed,
+      },
+      fullContent: content,
+      path: pattern.path.replace(/\\/g, '/'), // Normalize path for display
+    };
+  } catch (error) {
+    return {
+      error: `Failed to read pattern file: ${error.message}`,
+      pattern: pattern.title,
+    };
   }
-
-  // Extract references to documentation
-  const docMatch = patternText.match(/\*\*Complete Guide\*\*: `(.+?)`/);
-  const guideMatch = patternText.match(/\*\*Complete Documentation\*\*: `(.+?)`/);
-
-  return {
-    name,
-    description,
-    details,
-    codeExamples: codeBlocks,
-    documentation: docMatch ? docMatch[1] : guideMatch ? guideMatch[1] : null,
-    fullText: patternText,
-  };
 }
 
 /**
  * List all pattern categories
  */
 function listCategories() {
-  const section = getPatternLibrarySection();
-  if (section.error) return section;
+  const files = findPatternFiles();
+  if (files.error) return files;
 
-  const categories = [];
-  const categoryRegex = /\*\*(.+?) Patterns\*\* \((\d+)\):/g;
-  let match;
+  // Group patterns by category
+  const categoryMap = new Map();
 
-  while ((match = categoryRegex.exec(section)) !== null) {
-    categories.push({
-      name: match[1],
-      count: parseInt(match[2]),
-    });
+  for (const file of files) {
+    if (!categoryMap.has(file.category)) {
+      categoryMap.set(file.category, []);
+    }
+    categoryMap.get(file.category).push(file.filename);
   }
 
-  // Extract total pattern count from header
-  const headerMatch = section.match(/\*\*(\d+) Battle-Tested Patterns\*\*/);
-  const totalPatterns = headerMatch ? parseInt(headerMatch[1]) : 0;
+  // Convert to array with counts
+  const categories = Array.from(categoryMap.entries()).map(([name, files]) => ({
+    name,
+    count: files.length,
+    patterns: files.map(f => f.replace('.md', '')),
+  }));
 
-  const sessionsMatch = section.match(/from (\d+)\+ sessions/);
-  const totalSessions = sessionsMatch ? sessionsMatch[1] : '91+';
+  // Sort by count (descending)
+  categories.sort((a, b) => b.count - a.count);
+
+  const totalPatterns = files.length;
+  const totalCategories = categories.length;
 
   return {
     categories,
-    totalCategories: categories.length,
+    totalCategories,
     totalPatterns,
-    totalSessions,
-    summary: `${totalPatterns} patterns across ${categories.length} categories from ${totalSessions} sessions`,
+    summary: `${totalPatterns} patterns across ${totalCategories} categories`,
   };
 }
 
@@ -298,37 +313,63 @@ function listCategories() {
  * Get success metrics and statistics
  */
 function getSuccessMetrics() {
-  const data = parseAllPatterns();
-  if (data.error) return data;
+  const patterns = getAllPatterns();
+  if (patterns.error) return patterns;
 
   // Calculate statistics
-  const patternsWithSuccess = data.patterns.filter((p) => p.success);
-  const highPriority = data.patterns.filter((p) => p.priority >= 3);
-  const mediumPriority = data.patterns.filter((p) => p.priority === 2);
-  const lowPriority = data.patterns.filter((p) => p.priority === 1);
+  const patternsWithSuccess = patterns.filter((p) => p.successRate);
 
-  // Extract overall success rate from pattern library intro
-  const section = getPatternLibrarySection();
-  const metricsMatch = section.match(
-    /\*\*Success Metrics\*\*: (.+?)(?=\n|$)/
+  // Parse success rates and calculate average
+  const successRates = patternsWithSuccess
+    .map(p => {
+      const match = p.successRate?.match(/(\d+)%/);
+      return match ? parseInt(match[1]) : null;
+    })
+    .filter(rate => rate !== null);
+
+  const averageSuccess = successRates.length > 0
+    ? Math.round(successRates.reduce((a, b) => a + b, 0) / successRates.length)
+    : null;
+
+  // Group by category
+  const categoryStats = {};
+  for (const pattern of patterns) {
+    if (!categoryStats[pattern.category]) {
+      categoryStats[pattern.category] = 0;
+    }
+    categoryStats[pattern.category]++;
+  }
+
+  // Find high-impact patterns
+  const highImpact = patterns.filter(p =>
+    p.impact?.includes('High') || p.impact?.includes('🎯')
   );
 
   return {
-    totalPatterns: data.totalPatterns,
-    totalCategories: data.totalCategories,
+    totalPatterns: patterns.length,
     patternsWithMetrics: patternsWithSuccess.length,
-    priorityBreakdown: {
-      high: highPriority.length,
-      medium: mediumPriority.length,
-      low: lowPriority.length,
-      none: data.totalPatterns - highPriority.length - mediumPriority.length - lowPriority.length,
-    },
-    topPatterns: highPriority.slice(0, 10).map((p) => ({
-      name: p.name,
-      priority: '⭐'.repeat(p.priority),
-      success: p.success,
+    averageSuccessRate: averageSuccess ? `${averageSuccess}%` : 'N/A',
+    categoryBreakdown: categoryStats,
+    highImpactPatterns: highImpact.map(p => ({
+      title: p.title,
+      category: p.category,
+      successRate: p.successRate,
+      impact: p.impact,
     })),
-    overallMetrics: metricsMatch ? metricsMatch[1] : null,
+    topPatterns: patterns
+      .filter(p => p.successRate)
+      .sort((a, b) => {
+        const aRate = parseInt(a.successRate?.match(/(\d+)%/)?.[1] || '0');
+        const bRate = parseInt(b.successRate?.match(/(\d+)%/)?.[1] || '0');
+        return bRate - aRate;
+      })
+      .slice(0, 10)
+      .map(p => ({
+        title: p.title,
+        category: p.category,
+        successRate: p.successRate,
+        impact: p.impact,
+      })),
   };
 }
 
@@ -476,7 +517,13 @@ async function main() {
 
   // Log to stderr (stdout is for MCP protocol)
   console.error('Lokifi Pattern Library MCP Server running');
-  console.error(`Instructions path: ${INSTRUCTIONS_PATH}`);
+  console.error(`Pattern directory: ${PATTERNS_DIR}`);
+
+  // Log pattern count
+  const files = findPatternFiles();
+  if (!files.error) {
+    console.error(`Loaded ${files.length} patterns from ${new Set(files.map(f => f.category)).size} categories`);
+  }
 }
 
 main().catch((error) => {
