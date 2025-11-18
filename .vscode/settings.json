@@ -767,6 +767,18 @@
     "lokifi-coverage": {
       "command": "node",
       "args": ["${workspaceFolder}/tools/mcp-coverage-server.js"]
+    },
+    "lokifi-patterns": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-pattern-library-server.js"]
+    },
+    "lokifi-docs": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-docs-search-server.js"]
+    },
+    "lokifi-git": {
+      "command": "node",
+      "args": ["${workspaceFolder}/tools/mcp-git-history-server.js"]
     }
   }
 }
