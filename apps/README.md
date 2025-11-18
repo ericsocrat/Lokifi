@@ -8,7 +8,7 @@ This directory contains all application code for the Lokifi platform.
 
 ### 1. **Backend** (`backend/`)
 - **Type**: REST API + WebSocket Server
-- **Technology**: FastAPI (Python 3.11+)
+- **Technology**: FastAPI (Python 3.13.9)
 - **Purpose**: Core business logic, data management, real-time updates
 - **Port**: 8000
 - **Status**: ✅ Production Ready

@@ -141,7 +141,7 @@
 - **Testing**: Vitest 3.2.4, Testing Library, Playwright
 
 ### Backend Stack
-- **Framework**: FastAPI (Python 3.11+)
+- **Framework**: FastAPI (Python 3.13.9)
 - **Database**: PostgreSQL with SQLAlchemy
 - **Cache**: Redis
 - **Testing**: Pytest with coverage
@@ -733,7 +733,7 @@ Test-Path "apps/frontend/src/components"
 
 ✅ **Tech stack and versions**:
 - Frontend: Next.js 15.1.3 (App Router), React 19, TypeScript, Vitest 3.2.4
-- Backend: FastAPI, Python 3.11+, Pytest
+- Backend: FastAPI, Python 3.13.9, Pytest
 - State: Zustand for global state (NOT Redux, NOT Context API)
 - Styling: TailwindCSS 3.4.17 + shadcn/ui (NOT CSS modules, NOT styled-components)
 
@@ -903,7 +903,7 @@ cd apps/backend
 ./venv/Scripts/Activate.ps1  # Windows
 source venv/bin/activate      # Linux/Mac
 
-# 2. Type checking (Python 3.11+ type hints)
+# 2. Type checking (Python 3.13.9 type hints)
 # (No explicit command - pytest validates types)
 
 # 3. Linting (Ruff for fast linting)

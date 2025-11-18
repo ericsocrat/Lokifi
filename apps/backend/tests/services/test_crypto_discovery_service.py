@@ -18,14 +18,12 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import httpx
 import pytest
-
 from app.services.crypto_discovery_service import (
     CryptoAsset,
     CryptoDiscoveryService,
     CryptoMetrics,
     crypto_metrics,
 )
-
 
 # ============================================================================
 # Fixtures
@@ -369,9 +367,7 @@ class TestGetTopCryptos:
         with patch.object(
             crypto_service, "_fetch_top_cryptos", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = [
-                CryptoAsset(**sample_coingecko_response[0])
-            ]
+            mock_fetch.return_value = [CryptoAsset(**sample_coingecko_response[0])]
 
             cryptos = await crypto_service.get_top_cryptos(limit=1, force_refresh=True)
 
@@ -391,9 +387,7 @@ class TestGetTopCryptos:
         with patch.object(
             crypto_service, "_fetch_top_cryptos", new_callable=AsyncMock
         ) as mock_fetch:
-            expected_cryptos = [
-                CryptoAsset(**coin) for coin in sample_coingecko_response
-            ]
+            expected_cryptos = [CryptoAsset(**coin) for coin in sample_coingecko_response]
             mock_fetch.return_value = expected_cryptos
 
             cryptos = await crypto_service.get_top_cryptos(limit=2)
@@ -446,9 +440,7 @@ class TestFetchTopCryptos:
     """Test _fetch_top_cryptos internal method."""
 
     @pytest.mark.asyncio
-    async def test_fetch_top_cryptos_success(
-        self, crypto_service, sample_coingecko_response
-    ):
+    async def test_fetch_top_cryptos_success(self, crypto_service, sample_coingecko_response):
         """Test successful crypto fetching from API."""
         mock_client = AsyncMock()
         mock_response = Mock()
@@ -468,7 +460,7 @@ class TestFetchTopCryptos:
     async def test_fetch_top_cryptos_pagination(self, crypto_service):
         """Test pagination when limit > 250."""
         mock_client = AsyncMock()
-        
+
         # Create 300 mock coins
         page1_coins = [
             {
@@ -485,7 +477,7 @@ class TestFetchTopCryptos:
             }
             for i in range(1, 251)
         ]
-        
+
         page2_coins = [
             {
                 "id": f"coin-{i}",
@@ -506,7 +498,7 @@ class TestFetchTopCryptos:
             Mock(json=Mock(return_value=page1_coins), raise_for_status=Mock()),
             Mock(json=Mock(return_value=page2_coins), raise_for_status=Mock()),
         ]
-        
+
         mock_client.get = AsyncMock(side_effect=mock_responses)
 
         cryptos = await crypto_service._fetch_top_cryptos(mock_client, limit=300)
@@ -519,7 +511,7 @@ class TestFetchTopCryptos:
     async def test_fetch_top_cryptos_parsing_error(self, crypto_service):
         """Test handling of coin parsing errors."""
         mock_client = AsyncMock()
-        
+
         # One valid coin, one invalid (missing required fields)
         coins = [
             {
@@ -538,7 +530,7 @@ class TestFetchTopCryptos:
                 "symbol": "eth",  # Missing 'id' and 'name' - should fail parsing
             },
         ]
-        
+
         mock_response = Mock()
         mock_response.json.return_value = coins
         mock_response.raise_for_status = Mock()
@@ -565,7 +557,7 @@ class TestFetchTopCryptos:
     async def test_fetch_top_cryptos_with_api_key(self, mock_settings, crypto_service):
         """Test API key is included in request when configured."""
         mock_settings.COINGECKO_KEY = "test-api-key"
-        
+
         mock_client = AsyncMock()
         mock_response = Mock()
         mock_response.json.return_value = []
@@ -654,7 +646,7 @@ class TestSearchCryptos:
                 "image": "https://example.com/bitcoin.png",
             }
         ]
-        
+
         mock_redis.get = AsyncMock(return_value=cached_results)
 
         results = await crypto_service.search_cryptos("bitcoin", limit=50)
@@ -670,9 +662,7 @@ class TestSearchCryptos:
         mock_redis.get = AsyncMock(return_value=None)  # Cache miss
         mock_redis.set = AsyncMock()
 
-        with patch.object(
-            crypto_service, "_search_cryptos", new_callable=AsyncMock
-        ) as mock_search:
+        with patch.object(crypto_service, "_search_cryptos", new_callable=AsyncMock) as mock_search:
             mock_search.return_value = [
                 CryptoAsset(
                     id="ethereum",
@@ -714,9 +704,7 @@ class TestSearchCryptos:
         mock_redis.get = AsyncMock(return_value=None)
         mock_redis.set = AsyncMock()
 
-        with patch.object(
-            crypto_service, "_search_cryptos", new_callable=AsyncMock
-        ) as mock_search:
+        with patch.object(crypto_service, "_search_cryptos", new_callable=AsyncMock) as mock_search:
             mock_search.return_value = []
 
             results = await crypto_service.search_cryptos("nonexistent", limit=50)
@@ -736,7 +724,7 @@ class TestInternalSearchCryptos:
     async def test_search_cryptos_success(self, crypto_service):
         """Test successful crypto search."""
         mock_client = AsyncMock()
-        
+
         # Mock search response
         search_response = Mock()
         search_response.json.return_value = {
@@ -746,7 +734,7 @@ class TestInternalSearchCryptos:
             ]
         }
         search_response.raise_for_status = Mock()
-        
+
         # Mock market data response
         market_response = Mock()
         market_response.json.return_value = [
@@ -764,7 +752,7 @@ class TestInternalSearchCryptos:
             }
         ]
         market_response.raise_for_status = Mock()
-        
+
         mock_client.get = AsyncMock(side_effect=[search_response, market_response])
 
         results = await crypto_service._search_cryptos(mock_client, "bitcoin", limit=50)
@@ -776,11 +764,11 @@ class TestInternalSearchCryptos:
     async def test_search_cryptos_no_coins(self, crypto_service):
         """Test search with no matching coins."""
         mock_client = AsyncMock()
-        
+
         search_response = Mock()
         search_response.json.return_value = {"coins": []}
         search_response.raise_for_status = Mock()
-        
+
         mock_client.get = AsyncMock(return_value=search_response)
 
         results = await crypto_service._search_cryptos(mock_client, "nonexistent", limit=50)
@@ -853,15 +841,13 @@ class TestEdgeCases:
             mock_client.get = AsyncMock(return_value=mock_response)
             mock_client.__aenter__ = AsyncMock(return_value=mock_client)
             mock_client.__aexit__ = AsyncMock()
-            
+
             mock_client_class.return_value = mock_client
 
             with patch.object(
                 crypto_service, "_get_cached", new_callable=AsyncMock, return_value=None
             ):
-                with patch.object(
-                    crypto_service, "_set_cache", new_callable=AsyncMock
-                ):
+                with patch.object(crypto_service, "_set_cache", new_callable=AsyncMock):
                     cryptos = await crypto_service.get_top_cryptos(limit=2)
 
             # Should create temporary client
@@ -871,7 +857,7 @@ class TestEdgeCases:
     async def test_crypto_asset_missing_optional_fields(self, crypto_service):
         """Test CryptoAsset handles missing optional fields with .get()."""
         mock_client = AsyncMock()
-        
+
         # Coin data with missing optional fields
         coins = [
             {
@@ -881,7 +867,7 @@ class TestEdgeCases:
                 # Missing: market_cap_rank, current_price, etc.
             }
         ]
-        
+
         mock_response = Mock()
         mock_response.json.return_value = coins
         mock_response.raise_for_status = Mock()
@@ -910,6 +896,6 @@ class TestEdgeCases:
             price_change_percentage_24h=2.35,
             image="",
         )
-        
+
         # The .upper() happens during parsing, not in dataclass
         assert crypto.symbol == "btc"  # Dataclass stores as-is

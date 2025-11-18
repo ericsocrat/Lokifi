@@ -11,14 +11,12 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
-
 from app.core.config import Settings
 from app.services.data_archival_service import (
     ArchivalStats,
     DataArchivalService,
     StorageMetrics,
 )
-
 
 # ============================================================================
 # Fixtures
@@ -153,8 +151,12 @@ class TestDataclasses:
         assert sample_storage_metrics.ai_threads_size_mb == 10.2
         assert sample_storage_metrics.ai_messages_size_mb == 140.3
         assert sample_storage_metrics.ai_messages_archive_size_mb == 25.8
-        assert sample_storage_metrics.oldest_message_date == datetime(2024, 1, 1, tzinfo=timezone.utc)
-        assert sample_storage_metrics.newest_message_date == datetime(2024, 11, 18, tzinfo=timezone.utc)
+        assert sample_storage_metrics.oldest_message_date == datetime(
+            2024, 1, 1, tzinfo=timezone.utc
+        )
+        assert sample_storage_metrics.newest_message_date == datetime(
+            2024, 11, 18, tzinfo=timezone.utc
+        )
         assert sample_storage_metrics.total_threads == 10450
         assert sample_storage_metrics.total_messages == 143800
         assert sample_storage_metrics.archived_messages == 26420
@@ -296,6 +298,7 @@ class TestGetStorageMetrics:
     @patch("app.services.data_archival_service.logger")
     async def test_get_storage_metrics_database_error(self, mock_logger, mock_db_manager, service):
         """Test storage metrics with database error."""
+
         # Mock session to raise exception
         async def mock_get_session(read_only=True):
             raise Exception("Database connection failed")
@@ -319,9 +322,7 @@ class TestGetStorageMetrics:
         """Test storage metrics logs information correctly."""
         # Mock session
         mock_session = MagicMock()
-        mock_session.scalar = AsyncMock(
-            side_effect=[1000, 5000, None, None, 0]
-        )
+        mock_session.scalar = AsyncMock(side_effect=[1000, 5000, None, None, 0])
 
         async def mock_get_session(read_only=True):
             yield mock_session
@@ -393,6 +394,7 @@ class TestCreateArchiveTable:
     @patch("app.services.data_archival_service.logger")
     async def test_create_archive_table_error(self, mock_logger, mock_db_manager, service):
         """Test archive table creation with database error."""
+
         # Mock session to raise exception
         async def mock_get_session(read_only=False):
             raise Exception("Permission denied")
@@ -618,9 +620,7 @@ class TestVacuumDatabase:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_vacuum_database_postgresql(
-        self, mock_logger, mock_db_manager, service_postgres
-    ):
+    async def test_vacuum_database_postgresql(self, mock_logger, mock_db_manager, service_postgres):
         """Test vacuum for PostgreSQL database."""
         # Mock session
         mock_session = MagicMock()
@@ -643,6 +643,7 @@ class TestVacuumDatabase:
     @patch("app.services.data_archival_service.logger")
     async def test_vacuum_database_error(self, mock_logger, mock_db_manager, service):
         """Test vacuum with database error."""
+
         # Mock session to raise exception
         async def mock_get_session(read_only=False):
             raise Exception("VACUUM failed")
@@ -696,9 +697,7 @@ class TestRunFullMaintenance:
     async def test_run_full_maintenance_logging(self, mock_logger, service):
         """Test full maintenance logs correctly."""
         # Mock all service methods
-        with patch.object(
-            service, "archive_old_conversations", return_value=ArchivalStats()
-        ):
+        with patch.object(service, "archive_old_conversations", return_value=ArchivalStats()):
             with patch.object(service, "vacuum_database", new_callable=AsyncMock):
                 with patch.object(
                     service, "get_storage_metrics", return_value=StorageMetrics(total_size_mb=150.5)
@@ -732,12 +731,8 @@ class TestRunFullMaintenance:
     async def test_run_full_maintenance_vacuum_error(self, mock_logger, service):
         """Test full maintenance with vacuum error."""
         # Mock archive success, vacuum error
-        with patch.object(
-            service, "archive_old_conversations", return_value=ArchivalStats()
-        ):
-            with patch.object(
-                service, "vacuum_database", side_effect=Exception("Vacuum failed")
-            ):
+        with patch.object(service, "archive_old_conversations", return_value=ArchivalStats()):
+            with patch.object(service, "vacuum_database", side_effect=Exception("Vacuum failed")):
                 # Execute and verify exception
                 with pytest.raises(Exception) as exc_info:
                     await service.run_full_maintenance()
@@ -750,9 +745,7 @@ class TestRunFullMaintenance:
     async def test_run_full_maintenance_metrics_error(self, mock_logger, service):
         """Test full maintenance continues despite metrics error."""
         # Mock archive and vacuum success, metrics error
-        with patch.object(
-            service, "archive_old_conversations", return_value=ArchivalStats()
-        ):
+        with patch.object(service, "archive_old_conversations", return_value=ArchivalStats()):
             with patch.object(service, "vacuum_database", new_callable=AsyncMock):
                 with patch.object(
                     service, "get_storage_metrics", side_effect=Exception("Metrics failed")
@@ -872,9 +865,7 @@ class TestSizeCalculations:
         mock_session = MagicMock()
         threads = 1024  # Exactly 1024 threads
         messages = 1024  # Exactly 1024 messages
-        mock_session.scalar = AsyncMock(
-            side_effect=[threads, messages, None, None, 0]
-        )
+        mock_session.scalar = AsyncMock(side_effect=[threads, messages, None, None, 0])
 
         async def mock_get_session(read_only=True):
             yield mock_session
@@ -899,9 +890,7 @@ class TestSizeCalculations:
         mock_session = MagicMock()
         threads = 1000000  # 1 million threads
         messages = 10000000  # 10 million messages
-        mock_session.scalar = AsyncMock(
-            side_effect=[threads, messages, None, None, 0]
-        )
+        mock_session.scalar = AsyncMock(side_effect=[threads, messages, None, None, 0])
 
         async def mock_get_session(read_only=True):
             yield mock_session

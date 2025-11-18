@@ -11,9 +11,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, status
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.models.follow import Follow
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
@@ -29,7 +26,8 @@ from app.schemas.profile import (
     UserSettingsUpdateRequest,
 )
 from app.services.profile_enhanced import EnhancedProfileService
-
+from fastapi import HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # Fixtures
@@ -272,9 +270,7 @@ class TestUpdateProfile:
 
         # Mock get_profile_by_user_id and get_profile_by_username
         with patch.object(service, "get_profile_by_user_id", return_value=sample_profile):
-            with patch.object(
-                service, "get_profile_by_username", return_value=existing_profile
-            ):
+            with patch.object(service, "get_profile_by_username", return_value=existing_profile):
                 # Execute and verify exception
                 with pytest.raises(HTTPException) as exc_info:
                     await service.update_profile(sample_user_id, update_request)
@@ -357,7 +353,9 @@ class TestUpdateUserSettings:
     """Test user settings update functionality."""
 
     @pytest.mark.asyncio
-    async def test_update_user_settings_success(self, service, mock_db, sample_user_id, sample_user):
+    async def test_update_user_settings_success(
+        self, service, mock_db, sample_user_id, sample_user
+    ):
         """Test successful user settings update."""
         # Setup
         settings_request = UserSettingsUpdateRequest(
@@ -763,9 +761,7 @@ class TestSearchProfiles:
         # Mock FollowService
         mock_follow_service = MagicMock()
         mock_follow_service.batch_follow_status = AsyncMock(
-            return_value={
-                sample_profile.user_id: {"is_following": True, "is_follower": False}
-            }
+            return_value={sample_profile.user_id: {"is_following": True, "is_follower": False}}
         )
         mock_follow_service_class.return_value = mock_follow_service
 

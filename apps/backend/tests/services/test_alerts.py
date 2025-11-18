@@ -18,9 +18,7 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from app.services.alerts import Alert, AlertEvaluator, AlertStore, SSEHub
-
 
 # ============================================================================
 # Fixtures
@@ -179,7 +177,7 @@ class TestAlertStore:
 
         assert result.id == sample_price_threshold_alert.id
         assert sample_price_threshold_alert.id in alert_store._alerts
-        
+
         # Verify persisted
         data = json.loads(temp_alert_path.read_text())
         assert sample_price_threshold_alert.id in data
@@ -194,7 +192,7 @@ class TestAlertStore:
 
         assert result is True
         assert sample_price_threshold_alert.id not in alert_store._alerts
-        
+
         # Verify persisted
         data = json.loads(temp_alert_path.read_text())
         assert sample_price_threshold_alert.id not in data
@@ -235,7 +233,7 @@ class TestAlertStore:
         assert result is not None
         assert result.active is False
         assert alert_store._alerts[sample_price_threshold_alert.id].active is False
-        
+
         # Verify persisted
         data = json.loads(temp_alert_path.read_text())
         assert data[sample_price_threshold_alert.id]["active"] is False
@@ -321,12 +319,12 @@ class TestSSEHub:
     async def test_broadcast_handles_full_queue(self, sse_hub: SSEHub) -> None:
         """Test broadcast gracefully handles full queues."""
         queue = await sse_hub.register()
-        
+
         # Fill queue to capacity (default asyncio.Queue has no limit, so create limited one)
         limited_queue = asyncio.Queue(maxsize=2)
         sse_hub._clients.clear()
         sse_hub._clients.add(limited_queue)
-        
+
         # Fill queue
         await limited_queue.put("item1")
         await limited_queue.put("item2")

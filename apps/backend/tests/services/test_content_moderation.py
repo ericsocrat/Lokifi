@@ -9,7 +9,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import MagicMock, patch
 
 import pytest
-
 from app.services.content_moderation import (
     ContentModerator,
     ModerationCategory,
@@ -19,7 +18,6 @@ from app.services.content_moderation import (
     moderate_ai_input,
     moderate_ai_output,
 )
-
 
 # ============================================================================
 # FIXTURES

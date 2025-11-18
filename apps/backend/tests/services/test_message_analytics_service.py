@@ -15,13 +15,11 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
-
 from app.services.message_analytics_service import (
     ConversationAnalytics,
     MessageAnalyticsService,
     UserMessageStats,
 )
-
 
 # ============================================================================
 # Fixtures
@@ -182,7 +180,7 @@ class TestGetUserMessageStats:
         """Test getting complete user message statistics."""
         # Mock total messages count
         mock_db_session.execute = AsyncMock()
-        
+
         # Mock sequence of query results
         execute_results = [
             # Total messages
@@ -196,12 +194,10 @@ class TestGetUserMessageStats:
             # Username
             Mock(scalar=Mock(return_value="test_user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         assert isinstance(stats, UserMessageStats)
         assert stats.user_id == sample_user_id
@@ -229,12 +225,10 @@ class TestGetUserMessageStats:
             # Username
             Mock(scalar=Mock(return_value="new_user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         assert stats.total_messages == 0
         assert stats.total_conversations == 0
@@ -254,12 +248,10 @@ class TestGetUserMessageStats:
             Mock(first=Mock(return_value=(9,))),
             Mock(scalar=Mock(return_value="user123")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=7
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=7)
 
         assert stats.total_messages == 50
         assert stats.total_conversations == 5
@@ -277,12 +269,10 @@ class TestGetUserMessageStats:
             Mock(first=Mock(return_value=(18,))),
             Mock(scalar=Mock(return_value=None)),  # Username not found
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         assert stats.username == "Unknown"
 
@@ -293,17 +283,15 @@ class TestGetUserMessageStats:
         """Test average calculation with zero conversations."""
         execute_results = [
             Mock(scalar=Mock(return_value=100)),  # Messages
-            Mock(scalar=Mock(return_value=0)),    # Zero conversations
+            Mock(scalar=Mock(return_value=0)),  # Zero conversations
             Mock(first=Mock(return_value=None)),
             Mock(first=Mock(return_value=None)),
             Mock(scalar=Mock(return_value="test_user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         # Should use max(total_conversations, 1) to avoid division by zero
         assert stats.avg_messages_per_conversation == 100.0
@@ -330,17 +318,25 @@ class TestGetConversationAnalytics:
             # Total participants
             Mock(scalar=Mock(return_value=5)),
             # Messages by day
-            Mock(all=Mock(return_value=[
-                (datetime(2025, 11, 18).date(), 50),
-                (datetime(2025, 11, 17).date(), 50),
-            ])),
+            Mock(
+                all=Mock(
+                    return_value=[
+                        (datetime(2025, 11, 18).date(), 50),
+                        (datetime(2025, 11, 17).date(), 50),
+                    ]
+                )
+            ),
             # Messages by user
-            Mock(all=Mock(return_value=[
-                ("user1", 60),
-                ("user2", 40),
-            ])),
+            Mock(
+                all=Mock(
+                    return_value=[
+                        ("user1", 60),
+                        ("user2", 40),
+                    ]
+                )
+            ),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         analytics = await analytics_service.get_conversation_analytics(
@@ -363,9 +359,7 @@ class TestGetConversationAnalytics:
     ):
         """Test analytics returns None when user is not a participant."""
         # Mock participant verification returning None
-        mock_db_session.execute.return_value = Mock(
-            scalar_one_or_none=Mock(return_value=None)
-        )
+        mock_db_session.execute.return_value = Mock(scalar_one_or_none=Mock(return_value=None))
 
         analytics = await analytics_service.get_conversation_analytics(
             conversation_id=sample_conversation_id,
@@ -392,7 +386,7 @@ class TestGetConversationAnalytics:
             # Messages by user
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         analytics = await analytics_service.get_conversation_analytics(
@@ -417,7 +411,7 @@ class TestGetConversationAnalytics:
             Mock(all=Mock(return_value=[(datetime(2025, 11, 18).date(), 25)])),
             Mock(all=Mock(return_value=[("user1", 25)])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         analytics = await analytics_service.get_conversation_analytics(
@@ -440,7 +434,7 @@ class TestGetConversationAnalytics:
             Mock(all=Mock(return_value=[])),
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         analytics = await analytics_service.get_conversation_analytics(
@@ -463,9 +457,7 @@ class TestGetPlatformStatistics:
     """Test get_platform_statistics method."""
 
     @pytest.mark.asyncio
-    async def test_get_platform_statistics_complete(
-        self, analytics_service, mock_db_session
-    ):
+    async def test_get_platform_statistics_complete(self, analytics_service, mock_db_session):
         """Test getting complete platform statistics."""
         execute_results = [
             # Total messages
@@ -475,13 +467,17 @@ class TestGetPlatformStatistics:
             # Total conversations
             Mock(scalar=Mock(return_value=1000)),
             # Messages by type
-            Mock(all=Mock(return_value=[
-                ("text", 8000),
-                ("image", 1500),
-                ("file", 500),
-            ])),
+            Mock(
+                all=Mock(
+                    return_value=[
+                        ("text", 8000),
+                        ("image", 1500),
+                        ("file", 500),
+                    ]
+                )
+            ),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         stats = await analytics_service.get_platform_statistics()
@@ -497,17 +493,15 @@ class TestGetPlatformStatistics:
         assert "generated_at" in stats
 
     @pytest.mark.asyncio
-    async def test_get_platform_statistics_no_activity(
-        self, analytics_service, mock_db_session
-    ):
+    async def test_get_platform_statistics_no_activity(self, analytics_service, mock_db_session):
         """Test platform statistics with no activity."""
         execute_results = [
             Mock(scalar=Mock(return_value=0)),  # No messages
             Mock(scalar=Mock(return_value=0)),  # No active users
             Mock(scalar=Mock(return_value=0)),  # No conversations
-            Mock(all=Mock(return_value=[])),    # No message types
+            Mock(all=Mock(return_value=[])),  # No message types
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         stats = await analytics_service.get_platform_statistics()
@@ -527,11 +521,11 @@ class TestGetPlatformStatistics:
         """Test platform statistics handles zero users/conversations."""
         execute_results = [
             Mock(scalar=Mock(return_value=100)),  # Messages exist
-            Mock(scalar=Mock(return_value=0)),    # Zero active users
-            Mock(scalar=Mock(return_value=0)),    # Zero conversations
+            Mock(scalar=Mock(return_value=0)),  # Zero active users
+            Mock(scalar=Mock(return_value=0)),  # Zero conversations
             Mock(all=Mock(return_value=[("text", 100)])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         stats = await analytics_service.get_platform_statistics()
@@ -551,7 +545,7 @@ class TestGetPlatformStatistics:
             Mock(scalar=Mock(return_value=5)),
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         stats = await analytics_service.get_platform_statistics()
@@ -577,12 +571,14 @@ class TestGetTrendingConversations:
         conv_id_1 = uuid.uuid4()
         conv_id_2 = uuid.uuid4()
         last_activity = datetime.now(timezone.utc)
-        
+
         mock_db_session.execute.return_value = Mock(
-            all=Mock(return_value=[
-                (conv_id_1, 50, last_activity),
-                (conv_id_2, 30, last_activity - timedelta(hours=1)),
-            ])
+            all=Mock(
+                return_value=[
+                    (conv_id_1, 50, last_activity),
+                    (conv_id_2, 30, last_activity - timedelta(hours=1)),
+                ]
+            )
         )
 
         trending = await analytics_service.get_trending_conversations(
@@ -614,11 +610,8 @@ class TestGetTrendingConversations:
     ):
         """Test trending conversations with custom limit."""
         # Create 5 trending conversations
-        trending_data = [
-            (uuid.uuid4(), 40 - (i * 5), datetime.now(timezone.utc))
-            for i in range(5)
-        ]
-        
+        trending_data = [(uuid.uuid4(), 40 - (i * 5), datetime.now(timezone.utc)) for i in range(5)]
+
         mock_db_session.execute.return_value = Mock(all=Mock(return_value=trending_data))
 
         trending = await analytics_service.get_trending_conversations(
@@ -636,12 +629,14 @@ class TestGetTrendingConversations:
         conv_id_high = uuid.uuid4()
         conv_id_low = uuid.uuid4()
         now = datetime.now(timezone.utc)
-        
+
         mock_db_session.execute.return_value = Mock(
-            all=Mock(return_value=[
-                (conv_id_high, 100, now),  # Higher message count first
-                (conv_id_low, 10, now),
-            ])
+            all=Mock(
+                return_value=[
+                    (conv_id_high, 100, now),  # Higher message count first
+                    (conv_id_low, 10, now),
+                ]
+            )
         )
 
         trending = await analytics_service.get_trending_conversations(
@@ -658,11 +653,13 @@ class TestGetTrendingConversations:
         """Test trending conversations include ISO format timestamps."""
         conv_id = uuid.uuid4()
         last_activity = datetime.now(timezone.utc)
-        
+
         mock_db_session.execute.return_value = Mock(
-            all=Mock(return_value=[
-                (conv_id, 50, last_activity),
-            ])
+            all=Mock(
+                return_value=[
+                    (conv_id, 50, last_activity),
+                ]
+            )
         )
 
         trending = await analytics_service.get_trending_conversations(
@@ -693,12 +690,10 @@ class TestEdgeCasesAndErrorHandling:
             Mock(first=Mock(return_value=None)),
             Mock(scalar=Mock(return_value="user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         # Should default to 0 when None
         assert stats.total_messages == 0
@@ -716,7 +711,7 @@ class TestEdgeCasesAndErrorHandling:
             Mock(all=Mock(return_value=[])),
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         analytics = await analytics_service.get_conversation_analytics(
@@ -729,9 +724,7 @@ class TestEdgeCasesAndErrorHandling:
         assert analytics.total_participants == 0
 
     @pytest.mark.asyncio
-    async def test_platform_stats_null_scalars(
-        self, analytics_service, mock_db_session
-    ):
+    async def test_platform_stats_null_scalars(self, analytics_service, mock_db_session):
         """Test platform statistics when database returns None."""
         execute_results = [
             Mock(scalar=Mock(return_value=None)),
@@ -739,7 +732,7 @@ class TestEdgeCasesAndErrorHandling:
             Mock(scalar=Mock(return_value=None)),
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         stats = await analytics_service.get_platform_statistics()
@@ -760,12 +753,10 @@ class TestEdgeCasesAndErrorHandling:
             Mock(first=Mock(return_value=(12,))),
             Mock(scalar=Mock(return_value="user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         # Should strip whitespace
         assert stats.most_active_day == "Wednesday"
@@ -782,12 +773,10 @@ class TestEdgeCasesAndErrorHandling:
             Mock(first=Mock(return_value=(23.0,))),  # Float hour
             Mock(scalar=Mock(return_value="user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(
-            user_id=sample_user_id, days_back=30
-        )
+        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
 
         # Should convert to int
         assert isinstance(stats.most_active_hour, int)
@@ -799,11 +788,13 @@ class TestEdgeCasesAndErrorHandling:
     ):
         """Test conversation IDs are converted to strings in trending results."""
         conv_id = uuid.uuid4()
-        
+
         mock_db_session.execute.return_value = Mock(
-            all=Mock(return_value=[
-                (conv_id, 25, datetime.now(timezone.utc)),
-            ])
+            all=Mock(
+                return_value=[
+                    (conv_id, 25, datetime.now(timezone.utc)),
+                ]
+            )
         )
 
         trending = await analytics_service.get_trending_conversations(
@@ -823,13 +814,17 @@ class TestEdgeCasesAndErrorHandling:
             Mock(scalar_one_or_none=Mock(return_value=Mock())),
             Mock(scalar=Mock(return_value=50)),
             Mock(scalar=Mock(return_value=3)),
-            Mock(all=Mock(return_value=[
-                (datetime(2025, 11, 18).date(), 30),
-                (datetime(2025, 11, 17).date(), 20),
-            ])),
+            Mock(
+                all=Mock(
+                    return_value=[
+                        (datetime(2025, 11, 18).date(), 30),
+                        (datetime(2025, 11, 17).date(), 20),
+                    ]
+                )
+            ),
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         analytics = await analytics_service.get_conversation_analytics(
@@ -863,7 +858,7 @@ class TestTimeBasedCalculations:
             Mock(first=Mock(return_value=None)),
             Mock(scalar=Mock(return_value="user")),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         await analytics_service.get_user_message_stats(
@@ -875,9 +870,7 @@ class TestTimeBasedCalculations:
         assert mock_db_session.execute.call_count == 5
 
     @pytest.mark.asyncio
-    async def test_platform_stats_uses_30_day_period(
-        self, analytics_service, mock_db_session
-    ):
+    async def test_platform_stats_uses_30_day_period(self, analytics_service, mock_db_session):
         """Test platform statistics uses 30-day period."""
         execute_results = [
             Mock(scalar=Mock(return_value=1000)),
@@ -885,7 +878,7 @@ class TestTimeBasedCalculations:
             Mock(scalar=Mock(return_value=50)),
             Mock(all=Mock(return_value=[])),
         ]
-        
+
         mock_db_session.execute.side_effect = execute_results
 
         stats = await analytics_service.get_platform_statistics()
@@ -899,9 +892,7 @@ class TestTimeBasedCalculations:
         """Test trending conversations uses 24-hour activity window."""
         mock_db_session.execute.return_value = Mock(all=Mock(return_value=[]))
 
-        await analytics_service.get_trending_conversations(
-            user_id=sample_user_id, limit=10
-        )
+        await analytics_service.get_trending_conversations(user_id=sample_user_id, limit=10)
 
         # Verify execute was called (query uses 24-hour window)
         assert mock_db_session.execute.called

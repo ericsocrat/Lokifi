@@ -123,7 +123,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
     defaults:
       run:
         working-directory: apps/backend
@@ -187,10 +187,10 @@ jobs:
           REDIS_URL: redis://localhost:6379/0
           LOKIFI_JWT_SECRET: test-jwt-secret-for-coverage
           JWT_SECRET_KEY: test-jwt-key-for-coverage
-        continue-on-error: ${{ matrix.python-version != '3.11' }} # Only fail on primary version
+        continue-on-error: ${{ matrix.python-version != '3.13' }} # Only fail on primary version
 
       - name: Upload coverage artifact
-        if: matrix.python-version == '3.11'
+        if: matrix.python-version == '3.13'
         uses: actions/upload-artifact@v4
         with:
           name: backend-coverage-python-${{ matrix.python-version }}
@@ -201,9 +201,9 @@ jobs:
           compression-level: 9
 
       - name: 📊 Coverage summary
-        if: matrix.python-version == '3.11'
+        if: matrix.python-version == '3.13'
         run: |
-          echo "## 📊 Backend Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          echo "### 🐍 Backend Coverage Details" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ -f coverage.json ]; then
             python -c "import json; data = json.load(open('coverage.json')); total = data['totals']; print('| Metric | Coverage |'); print('|--------|----------|'); print(f\"| Lines | {total['percent_covered']:.2f}% |\"); print(f\"| Statements | {total['num_statements']} / {total['covered_lines']} |\")" >> $GITHUB_STEP_SUMMARY
@@ -240,7 +240,7 @@ jobs:
           echo "| Component | Status | Matrix |" >> $GITHUB_STEP_SUMMARY
           echo "|-----------|--------|--------|" >> $GITHUB_STEP_SUMMARY
           echo "| Frontend | ${{ needs.frontend-coverage.result }} | Node 18, 20, 22 |" >> $GITHUB_STEP_SUMMARY
-          echo "| Backend | ${{ needs.backend-coverage.result }} | Python 3.10, 3.11, 3.12 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Backend | ${{ needs.backend-coverage.result }} | Python 3.11, 3.12, 3.13 |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Expected Time**: ~4-6 minutes (matrix parallel execution)" >> $GITHUB_STEP_SUMMARY
           echo "**Coverage Threshold**: Frontend 10%, Backend 25%" >> $GITHUB_STEP_SUMMARY

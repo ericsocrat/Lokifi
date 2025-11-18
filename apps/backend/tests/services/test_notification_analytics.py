@@ -9,7 +9,6 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from app.services.notification_analytics import (
     NotificationAnalytics,
     NotificationMetrics,
@@ -17,7 +16,6 @@ from app.services.notification_analytics import (
     UserEngagementMetrics,
     notification_analytics,
 )
-
 
 # ============================================================================
 # FIXTURES
@@ -156,7 +154,10 @@ class TestUserEngagementMetricsDataclass:
     def test_user_engagement_custom_values(self):
         """Test UserEngagementMetrics with custom values."""
         metrics = UserEngagementMetrics(
-            active_users=500, highly_engaged_users=350, unresponsive_users=50, average_notifications_per_user=12.5
+            active_users=500,
+            highly_engaged_users=350,
+            unresponsive_users=50,
+            average_notifications_per_user=12.5,
         )
         assert metrics.active_users == 500
         assert metrics.highly_engaged_users == 350
@@ -270,7 +271,9 @@ class TestSystemPerformanceMetrics:
         analytics.performance_counters["total_requests"] = 100
         analytics.performance_counters["errors"] = 2
 
-        with patch("app.services.notification_analytics.redis_client.is_available", return_value=True):
+        with patch(
+            "app.services.notification_analytics.redis_client.is_available", return_value=True
+        ):
             metrics = await analytics.get_system_performance_metrics()
 
         assert isinstance(metrics, SystemPerformanceMetrics)
@@ -281,7 +284,9 @@ class TestSystemPerformanceMetrics:
     @pytest.mark.asyncio
     async def test_system_performance_empty_timing_data(self, analytics):
         """Test system performance with no timing data."""
-        with patch("app.services.notification_analytics.redis_client.is_available", return_value=False):
+        with patch(
+            "app.services.notification_analytics.redis_client.is_available", return_value=False
+        ):
             metrics = await analytics.get_system_performance_metrics()
 
         assert metrics.average_delivery_time_ms == 0.0
@@ -290,7 +295,9 @@ class TestSystemPerformanceMetrics:
     @pytest.mark.asyncio
     async def test_system_performance_redis_unavailable(self, analytics):
         """Test system performance when Redis unavailable."""
-        with patch("app.services.notification_analytics.redis_client.is_available", return_value=False):
+        with patch(
+            "app.services.notification_analytics.redis_client.is_available", return_value=False
+        ):
             metrics = await analytics.get_system_performance_metrics()
 
         assert isinstance(metrics, SystemPerformanceMetrics)
@@ -301,7 +308,8 @@ class TestSystemPerformanceMetrics:
         """Test system performance error handling."""
         # Simulate exception in is_available
         with patch(
-            "app.services.notification_analytics.redis_client.is_available", side_effect=Exception("Redis error")
+            "app.services.notification_analytics.redis_client.is_available",
+            side_effect=Exception("Redis error"),
         ):
             metrics = await analytics.get_system_performance_metrics()
 
@@ -328,9 +336,13 @@ class TestHealthScoreCalculation:
                 return_value={"delivery_rate": 95.0, "read_rate": 80.0, "engagement_rate": 50.0},
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics(error_rate=1.0)
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(error_rate=1.0),
             ),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=True),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=True
+            ),
         ):
             score = await analytics.calculate_system_health_score()
 
@@ -347,9 +359,13 @@ class TestHealthScoreCalculation:
                 return_value={"delivery_rate": 100.0, "read_rate": 100.0, "engagement_rate": 100.0},
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics(error_rate=0.0)
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(error_rate=0.0),
             ),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=True),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=True
+            ),
         ):
             score = await analytics.calculate_system_health_score()
 
@@ -366,9 +382,13 @@ class TestHealthScoreCalculation:
                 return_value={"delivery_rate": 95.0, "read_rate": 80.0, "engagement_rate": 50.0},
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics(error_rate=1.0)
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(error_rate=1.0),
             ),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=False),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=False
+            ),
         ):
             score = await analytics.calculate_system_health_score()
 
@@ -379,7 +399,9 @@ class TestHealthScoreCalculation:
     async def test_health_score_error_handling(self, analytics):
         """Test health score error handling."""
         # Simulate exception
-        with patch.object(analytics, "get_comprehensive_metrics", side_effect=Exception("Database error")):
+        with patch.object(
+            analytics, "get_comprehensive_metrics", side_effect=Exception("Database error")
+        ):
             score = await analytics.calculate_system_health_score()
 
         # Should return 0.0 on error
@@ -399,9 +421,15 @@ class TestGetDashboardData:
         """Test dashboard data has correct structure."""
         with (
             patch.object(analytics, "get_comprehensive_metrics", return_value={}),
-            patch.object(analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()),
-            patch.object(analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=True),
+            patch.object(
+                analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()
+            ),
+            patch.object(
+                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+            ),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=True
+            ),
             patch.object(analytics, "calculate_system_health_score", return_value=85.5),
         ):
             data = await analytics.get_dashboard_data(days=7)
@@ -420,9 +448,15 @@ class TestGetDashboardData:
         """Test dashboard data with custom period."""
         with (
             patch.object(analytics, "get_comprehensive_metrics", return_value={}),
-            patch.object(analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()),
-            patch.object(analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=True),
+            patch.object(
+                analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()
+            ),
+            patch.object(
+                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+            ),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=True
+            ),
             patch.object(analytics, "calculate_system_health_score", return_value=85.5),
         ):
             data = await analytics.get_dashboard_data(days=30)
@@ -433,7 +467,9 @@ class TestGetDashboardData:
     async def test_get_dashboard_data_error_handling(self, analytics):
         """Test dashboard data error handling."""
         # Simulate exception
-        with patch.object(analytics, "get_comprehensive_metrics", side_effect=Exception("Database error")):
+        with patch.object(
+            analytics, "get_comprehensive_metrics", side_effect=Exception("Database error")
+        ):
             data = await analytics.get_dashboard_data()
 
         # Should return error data
@@ -445,9 +481,15 @@ class TestGetDashboardData:
         """Test dashboard includes Redis status."""
         with (
             patch.object(analytics, "get_comprehensive_metrics", return_value={}),
-            patch.object(analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()),
-            patch.object(analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=False),
+            patch.object(
+                analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()
+            ),
+            patch.object(
+                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+            ),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=False
+            ),
             patch.object(analytics, "calculate_system_health_score", return_value=75.0),
         ):
             data = await analytics.get_dashboard_data()
@@ -484,10 +526,16 @@ class TestConcurrentMetricsCollection:
             return SystemPerformanceMetrics()
 
         with (
-            patch.object(analytics, "get_comprehensive_metrics", side_effect=mock_comprehensive_metrics),
+            patch.object(
+                analytics, "get_comprehensive_metrics", side_effect=mock_comprehensive_metrics
+            ),
             patch.object(analytics, "get_user_engagement_metrics", side_effect=mock_user_metrics),
-            patch.object(analytics, "get_system_performance_metrics", side_effect=mock_system_metrics),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=True),
+            patch.object(
+                analytics, "get_system_performance_metrics", side_effect=mock_system_metrics
+            ),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=True
+            ),
             patch.object(analytics, "calculate_system_health_score", return_value=85.0),
         ):
             await analytics.get_dashboard_data()
@@ -543,8 +591,12 @@ class TestEdgeCasesAndErrorHandling:
                     "read_rate": 0.0,
                 },
             ),
-            patch.object(analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()),
-            patch("app.services.notification_analytics.redis_client.is_available", return_value=True),
+            patch.object(
+                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+            ),
+            patch(
+                "app.services.notification_analytics.redis_client.is_available", return_value=True
+            ),
         ):
             score = await analytics.calculate_system_health_score()
 

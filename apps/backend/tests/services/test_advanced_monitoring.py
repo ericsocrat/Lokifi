@@ -12,7 +12,6 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-
 from app.services.advanced_monitoring import (
     AdvancedMonitoringSystem,
     AlertManager,
@@ -21,7 +20,6 @@ from app.services.advanced_monitoring import (
     SystemMetrics,
     get_monitoring_system,
 )
-
 
 # ============================================================================
 # Fixtures
@@ -259,6 +257,7 @@ class TestAlertManager:
     @pytest.mark.asyncio
     async def test_evaluate_rules_exception_handling(self, alert_manager):
         """Test rule evaluation handles exceptions gracefully."""
+
         # Add rule that raises exception
         def bad_condition(m):
             raise ValueError("Intentional error")
@@ -295,6 +294,7 @@ class TestAlertManager:
     @pytest.mark.asyncio
     async def test_trigger_alert_channel_exception(self, alert_manager):
         """Test alert handles notification channel exceptions."""
+
         # Add channel that raises exception
         async def bad_channel(alert):
             raise Exception("Channel error")
@@ -670,6 +670,7 @@ class TestAdvancedMonitoringSystem:
     @patch("app.services.advanced_monitoring.db_manager")
     async def test_check_database_health_unhealthy(self, mock_db_manager, monitoring_system):
         """Test database health check when unhealthy."""
+
         # Mock session to raise exception
         async def mock_get_session(read_only=True):
             raise Exception("Connection failed")
@@ -852,9 +853,7 @@ class TestAdvancedMonitoringSystem:
 
         # Mock health checks
         for service in monitoring_system.health_checks:
-            monitoring_system.health_checks[service] = AsyncMock(
-                return_value={"status": "healthy"}
-            )
+            monitoring_system.health_checks[service] = AsyncMock(return_value={"status": "healthy"})
 
         # Execute
         dashboard = await monitoring_system.get_dashboard_data()
@@ -872,7 +871,9 @@ class TestAdvancedMonitoringSystem:
         """Test dashboard data shows degraded status when services unhealthy."""
         # Mock one service as unhealthy
         monitoring_system.health_checks = {
-            "database": AsyncMock(return_value={"status": "unhealthy", "error": "Connection failed"}),
+            "database": AsyncMock(
+                return_value={"status": "unhealthy", "error": "Connection failed"}
+            ),
             "redis": AsyncMock(return_value={"status": "healthy"}),
         }
 
