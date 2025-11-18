@@ -9,6 +9,10 @@
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "labels": ["dependencies", "renovate"],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "squash",
+  "platformAutomerge": true,
 
   "packageRules": [
     {
@@ -51,8 +55,19 @@
       "matchUpdateTypes": ["patch"],
       "matchCurrentVersion": "!/^0/",
       "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
       "minimumReleaseAge": "0 days",
       "prPriority": 10
+    },
+    {
+      "description": "Minor updates (auto-merge after 1 day)",
+      "matchUpdateTypes": ["minor"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true,
+      "minimumReleaseAge": "1 day",
+      "prPriority": 5
     },
     {
       "description": "Major updates (require manual review)",
