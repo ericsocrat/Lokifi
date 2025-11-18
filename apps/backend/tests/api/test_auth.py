@@ -246,7 +246,7 @@ class TestLoginEndpoint:
     def test_successful_login(self, mock_get_session):
         """Should return valid token on successful login."""
         from argon2 import PasswordHasher
-        
+
         # Mock database session
         mock_db = Mock()
         mock_db.__enter__ = Mock(return_value=mock_db)
@@ -256,7 +256,7 @@ class TestLoginEndpoint:
         # Create real Argon2 hash for testing
         ph = PasswordHasher()
         real_hash = ph.hash("correct_password")
-        
+
         # Mock existing user with real password hash
         mock_user = Mock(handle="testuser", password_hash=real_hash)
         mock_result = Mock()
@@ -302,7 +302,7 @@ class TestLoginEndpoint:
     def test_wrong_password_raises_401(self, mock_get_session):
         """Should raise 401 Unauthorized when password is incorrect."""
         from argon2 import PasswordHasher
-        
+
         # Mock database session
         mock_db = Mock()
         mock_db.__enter__ = Mock(return_value=mock_db)
@@ -312,7 +312,7 @@ class TestLoginEndpoint:
         # Create real Argon2 hash for correct password
         ph = PasswordHasher()
         real_hash = ph.hash("correct_password")
-        
+
         # Mock existing user with real hash
         mock_user = Mock(handle="testuser", password_hash=real_hash)
         mock_result = Mock()
@@ -434,7 +434,7 @@ class TestAuthIntegration:
     def test_complete_register_login_me_flow(self, mock_get_session):
         """Should handle complete auth flow: register → login → /me."""
         from argon2 import PasswordHasher
-        
+
         # Mock database session
         mock_db = Mock()
         mock_db.__enter__ = Mock(return_value=mock_db)
@@ -458,7 +458,7 @@ class TestAuthIntegration:
         # Step 2: Login (user exists now with real Argon2 hash)
         ph = PasswordHasher()
         real_hash = ph.hash("password123")
-        
+
         created_at = datetime.now(timezone.utc)
         mock_user = Mock(
             handle="integrationuser",

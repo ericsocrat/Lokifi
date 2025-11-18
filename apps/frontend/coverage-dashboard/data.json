@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2025-11-09T13:13:18.410Z",
+  "generated": "2025-11-18T16:26:22.192Z",
   "git": {
     "branch": "main",
-    "commit": "ee4589f6",
+    "commit": "fa622039",
     "author": "ericsocrat",
-    "message": "docs(session84): Complete Session 84 documentation - 4/4 indicators proven"
+    "message": "fix(backend): migrate auth from passlib.bcrypt to Argon2, fix monitoring tests"
   },
   "current": {
     "tests": {
@@ -13,31 +13,31 @@
       "skipped": 0,
       "failing": 0,
       "total": 0,
-      "files": 187,
+      "files": 196,
       "duration": "-"
     },
     "coverage": {
-      "statements": 13.47,
-      "branches": 90.26,
-      "functions": 81.5,
-      "lines": 13.47
+      "statements": 14.1,
+      "branches": 90.33,
+      "functions": 81.04,
+      "lines": 14.1
     },
     "totals": {
       "statements": {
-        "covered": 5497,
-        "total": 40822
+        "covered": 6041,
+        "total": 42841
       },
       "branches": {
-        "covered": 1826,
-        "total": 2023
+        "covered": 2009,
+        "total": 2224
       },
       "functions": {
-        "covered": 533,
-        "total": 654
+        "covered": 547,
+        "total": 675
       },
       "lines": {
-        "covered": 5497,
-        "total": 40822
+        "covered": 6041,
+        "total": 42841
       }
     }
   },
@@ -47,24 +47,24 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 13.465778256822302,
-        "branches": 90.2619871478003,
-        "functions": 81.49847094801224,
-        "lines": 13.465778256822302
+        "statements": 14.100978035059871,
+        "branches": 90.33273381294964,
+        "functions": 81.03703703703704,
+        "lines": 14.100978035059871
       },
-      "files": 187,
+      "files": 196,
       "metrics": {
-        "totalLines": 40822,
-        "coveredLines": 5497,
-        "uncoveredLines": 35325
+        "totalLines": 42841,
+        "coveredLines": 6041,
+        "uncoveredLines": 36800
       },
       "health": "critical"
     }
   ],
   "gaps": [
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\data\\generated-market-data.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\data\\generated-market-data.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\data\\generated-market-data.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\data\\generated-market-data.ts",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -81,8 +81,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\monitoringStore.tsx",
       "coverage": 12.9,
       "details": {
         "lines": "12.9",
@@ -99,8 +99,8 @@
       "reason": "Critical - Very low coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\performanceStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\performanceStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\performanceStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\performanceStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -117,8 +117,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\observabilityStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -135,8 +135,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\environmentManagementStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -153,8 +153,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\configurationSyncStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -171,8 +171,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\mobileA11yStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\mobileA11yStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\mobileA11yStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\mobileA11yStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -189,8 +189,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\integrationTestingStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -207,8 +207,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\socialStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\socialStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\socialStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\socialStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -225,8 +225,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\paperTradingStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -243,8 +243,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\progressiveDeploymentStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\progressiveDeploymentStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\progressiveDeploymentStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\progressiveDeploymentStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -261,8 +261,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\rollbackStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -279,8 +279,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingLayer.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -297,8 +297,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\backtesterStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\backtesterStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\backtesterStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\backtesterStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -315,8 +315,26 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\templatesStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\templatesStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\state\\store.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\state\\store.ts",
+      "coverage": 0,
+      "details": {
+        "lines": "0.0",
+        "branches": "100.0",
+        "functions": "100.0"
+      },
+      "metrics": {
+        "totalLines": 491,
+        "uncoveredLines": 491,
+        "complexity": 2,
+        "impact": 501
+      },
+      "priority": "HIGH",
+      "reason": "No coverage"
+    },
+    {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\templatesStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\templatesStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -333,8 +351,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\services\\marketData.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\services\\marketData.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\marketData.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\marketData.ts",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -351,8 +369,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AuthModal.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AuthModal.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AuthModal.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AuthModal.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -369,8 +387,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationCenter.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationCenter.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationCenter.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationCenter.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -387,8 +405,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -405,8 +423,26 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\state\\store.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\state\\store.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\dashboard\\IndicatorControlsPanel.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\dashboard\\IndicatorControlsPanel.tsx",
+      "coverage": 0,
+      "details": {
+        "lines": "0.0",
+        "branches": "0.0",
+        "functions": "0.0"
+      },
+      "metrics": {
+        "totalLines": 411,
+        "uncoveredLines": 411,
+        "complexity": 2,
+        "impact": 419
+      },
+      "priority": "HIGH",
+      "reason": "No coverage"
+    },
+    {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -414,35 +450,17 @@
         "functions": "100.0"
       },
       "metrics": {
-        "totalLines": 420,
-        "uncoveredLines": 420,
+        "totalLines": 403,
+        "uncoveredLines": 403,
         "complexity": 2,
-        "impact": 428
+        "impact": 411
       },
       "priority": "HIGH",
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "100.0",
-        "functions": "100.0"
-      },
-      "metrics": {
-        "totalLines": 345,
-        "uncoveredLines": 345,
-        "complexity": 2,
-        "impact": 352
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\WatchlistPanel.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\WatchlistPanel.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\WatchlistPanel.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\WatchlistPanel.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -459,8 +477,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\corporateActionsStore.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\corporateActionsStore.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\corporateActionsStore.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\corporateActionsStore.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -477,8 +495,26 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useNotifications.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useNotifications.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\IndicatorSettingsDrawer.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\IndicatorSettingsDrawer.tsx",
+      "coverage": 0,
+      "details": {
+        "lines": "0.0",
+        "branches": "0.0",
+        "functions": "0.0"
+      },
+      "metrics": {
+        "totalLines": 323,
+        "uncoveredLines": 323,
+        "complexity": 2,
+        "impact": 329
+      },
+      "priority": "HIGH",
+      "reason": "No coverage"
+    },
+    {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useNotifications.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useNotifications.ts",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -495,8 +531,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\portfolio\\AddAssetModal.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\portfolio\\AddAssetModal.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\portfolio\\AddAssetModal.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\portfolio\\AddAssetModal.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -513,8 +549,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useBackendPrices.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useBackendPrices.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useBackendPrices.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useBackendPrices.ts",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -531,8 +567,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\services\\backendPriceService.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\services\\backendPriceService.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\backendPriceService.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\backendPriceService.ts",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -549,8 +585,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -567,8 +603,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -576,17 +612,17 @@
         "functions": "100.0"
       },
       "metrics": {
-        "totalLines": 246,
-        "uncoveredLines": 246,
+        "totalLines": 248,
+        "uncoveredLines": 248,
         "complexity": 2,
-        "impact": 251
+        "impact": 253
       },
       "priority": "HIGH",
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -603,8 +639,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\utils\\assetIcons.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\utils\\assetIcons.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\utils\\assetIcons.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\utils\\assetIcons.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -621,8 +657,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\layout\\GlobalLayout.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\layout\\GlobalLayout.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\layout\\GlobalLayout.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\layout\\GlobalLayout.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -639,8 +675,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -657,8 +693,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ObjectTree.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ObjectTree.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ObjectTree.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ObjectTree.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -675,8 +711,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\MultiPaneChart.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\MultiPaneChart.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\MultiPaneChart.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\MultiPaneChart.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -693,8 +729,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationBell.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationBell.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationBell.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\NotificationBell.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -711,8 +747,26 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\TradingWorkspace.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\TradingWorkspace.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\FibonacciPrimitive.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\FibonacciPrimitive.tsx",
+      "coverage": 0,
+      "details": {
+        "lines": "0.0",
+        "branches": "100.0",
+        "functions": "100.0"
+      },
+      "metrics": {
+        "totalLines": 201,
+        "uncoveredLines": 201,
+        "complexity": 2,
+        "impact": 205
+      },
+      "priority": "HIGH",
+      "reason": "No coverage"
+    },
+    {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\TradingWorkspace.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\TradingWorkspace.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -729,8 +783,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingSettingsPanel.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingSettingsPanel.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingSettingsPanel.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingSettingsPanel.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -747,8 +801,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\WebSocketConnection.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\WebSocketConnection.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\WebSocketConnection.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\WebSocketConnection.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -765,8 +819,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -783,8 +837,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ObjectInspector.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ObjectInspector.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ObjectInspector.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ObjectInspector.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -801,8 +855,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\pluginSDK.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\pluginSDK.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\TrendLinePrimitive.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\TrendLinePrimitive.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -819,8 +873,26 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertModal.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertModal.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\pluginSDK.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\pluginSDK.ts",
+      "coverage": 0,
+      "details": {
+        "lines": "0.0",
+        "branches": "100.0",
+        "functions": "100.0"
+      },
+      "metrics": {
+        "totalLines": 179,
+        "uncoveredLines": 179,
+        "complexity": 2,
+        "impact": 183
+      },
+      "priority": "HIGH",
+      "reason": "No coverage"
+    },
+    {
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertModal.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertModal.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -837,8 +909,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\drawings.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\drawings.ts",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\drawings.ts",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\drawings.ts",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -855,8 +927,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -873,8 +945,8 @@
       "reason": "No coverage"
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertsPanel.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertsPanel.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\RectanglePrimitive.tsx",
+      "fullPath": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\plugins\\RectanglePrimitive.tsx",
       "coverage": 0,
       "details": {
         "lines": "0.0",
@@ -882,82 +954,10 @@
         "functions": "100.0"
       },
       "metrics": {
-        "totalLines": 132,
-        "uncoveredLines": 132,
+        "totalLines": 143,
+        "uncoveredLines": 143,
         "complexity": 2,
-        "impact": 135
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorSettingsDrawer.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorSettingsDrawer.tsx",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "100.0",
-        "functions": "100.0"
-      },
-      "metrics": {
-        "totalLines": 127,
-        "uncoveredLines": 127,
-        "complexity": 2,
-        "impact": 130
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\PluginSettingsDrawer.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\PluginSettingsDrawer.tsx",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "100.0",
-        "functions": "100.0"
-      },
-      "metrics": {
-        "totalLines": 118,
-        "uncoveredLines": 118,
-        "complexity": 2,
-        "impact": 120
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\report.ts",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\report.ts",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "0.0",
-        "functions": "0.0"
-      },
-      "metrics": {
-        "totalLines": 118,
-        "uncoveredLines": 118,
-        "complexity": 2,
-        "impact": 120
-      },
-      "priority": "HIGH",
-      "reason": "No coverage"
-    },
-    {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\LeftDock.tsx",
-      "fullPath": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\LeftDock.tsx",
-      "coverage": 0,
-      "details": {
-        "lines": "0.0",
-        "branches": "100.0",
-        "functions": "100.0"
-      },
-      "metrics": {
-        "totalLines": 116,
-        "uncoveredLines": 116,
-        "complexity": 2,
-        "impact": 118
+        "impact": 146
       },
       "priority": "HIGH",
       "reason": "No coverage"
@@ -965,17 +965,17 @@
   ],
   "recommendations": [
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartHeader.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartHeader.tsx",
       "priority": "HIGH",
-      "reason": "High impact file with 103 lines and 0.0% coverage",
+      "reason": "High impact file with 108 lines and 0.0% coverage",
       "actions": [
-        "Add 83 lines of test coverage",
+        "Add 87 lines of test coverage",
         "Focus on 0 untested functions",
         "Cover 0 untested branches"
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 431 lines and 0.0% coverage",
       "actions": [
@@ -985,7 +985,7 @@
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 148 lines and 0.0% coverage",
       "actions": [
@@ -995,17 +995,17 @@
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
       "priority": "HIGH",
-      "reason": "High impact file with 345 lines and 0.0% coverage",
+      "reason": "High impact file with 403 lines and 0.0% coverage",
       "actions": [
-        "Add 276 lines of test coverage",
+        "Add 323 lines of test coverage",
         "Focus on 0 untested functions",
         "Cover 0 untested branches"
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 259 lines and 0.0% coverage",
       "actions": [
@@ -1015,7 +1015,7 @@
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 232 lines and 0.0% coverage",
       "actions": [
@@ -1025,17 +1025,17 @@
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedSymbolPicker.tsx",
       "priority": "HIGH",
-      "reason": "High impact file with 246 lines and 0.0% coverage",
+      "reason": "High impact file with 248 lines and 0.0% coverage",
       "actions": [
-        "Add 197 lines of test coverage",
+        "Add 199 lines of test coverage",
         "Focus on 0 untested functions",
         "Cover 0 untested branches"
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\GlobalHeader.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 224 lines and 0.0% coverage",
       "actions": [
@@ -1045,7 +1045,7 @@
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorModalV2.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 184 lines and 0.0% coverage",
       "actions": [
@@ -1055,7 +1055,7 @@
       ]
     },
     {
-      "file": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorSettingsDrawer.tsx",
+      "file": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\IndicatorSettingsDrawer.tsx",
       "priority": "HIGH",
       "reason": "High impact file with 127 lines and 0.0% coverage",
       "actions": [
@@ -1374,50 +1374,65 @@
         "branch": "main",
         "commit": "ee4589f6"
       }
+    },
+    {
+      "timestamp": "2025-11-18T16:26:22.192Z",
+      "coverage": {
+        "statements": 14.100978035059871,
+        "branches": 90.33273381294964,
+        "functions": 81.03703703703704,
+        "lines": 14.100978035059871
+      },
+      "tests": 0,
+      "files": 196,
+      "git": {
+        "branch": "main",
+        "commit": "fa622039"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.95%",
-      "value": 0.9493647097618769,
+      "text": "↑ 0.64%",
+      "value": 0.6351997782375687,
       "direction": "↑",
       "color": "green"
     },
     "branches": {
-      "text": "↑ 0.36%",
-      "value": 0.3640827953016412,
+      "text": "↑ 0.07%",
+      "value": 0.07074666514934336,
       "direction": "↑",
       "color": "green"
     },
     "functions": {
-      "text": "↑ 0.43%",
-      "value": 0.43430819370863105,
-      "direction": "↑",
-      "color": "green"
+      "text": "↓ 0.46%",
+      "value": -0.46143391097520237,
+      "direction": "↓",
+      "color": "red"
     },
     "lines": {
-      "text": "↑ 0.95%",
-      "value": 0.9493647097618769,
+      "text": "↑ 0.64%",
+      "value": 0.6351997782375687,
       "direction": "↑",
       "color": "green"
     }
   },
   "weeklyTrend": {
-    "statements": 1.7247747089256986,
-    "branches": 0.8954713106962231,
-    "functions": -4.743139790242793,
-    "lines": 1.7247747089256986
+    "statements": 2.3786450340628615,
+    "branches": 0.972268696670568,
+    "functions": 0.4021164021164054,
+    "lines": 2.3786450340628615
   },
   "metadata": {
-    "totalRuns": 20,
+    "totalRuns": 21,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2025-11-09T13:13:18.410Z",
+    "lastRun": "2025-11-18T16:26:22.192Z",
     "bestCoverage": {
-      "statements": 13.465778256822302,
-      "branches": 90.2619871478003,
-      "functions": 81.49847094801224,
-      "lines": 13.465778256822302,
-      "timestamp": "2025-11-09T13:13:18.410Z"
+      "statements": 14.100978035059871,
+      "branches": 90.33273381294964,
+      "functions": 81.03703703703704,
+      "lines": 14.100978035059871,
+      "timestamp": "2025-11-18T16:26:22.192Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -1428,7 +1443,7 @@
     "velocity": {
       "testsPerDay": "NaN",
       "filesPerRun": "8.9",
-      "avgCoverageGain": "0.11"
+      "avgCoverageGain": "0.13"
     }
   },
   "insights": [
@@ -1452,125 +1467,125 @@
     }
   ],
   "summary": {
-    "totalFiles": 187,
+    "totalFiles": 196,
     "totalModules": 1,
-    "criticalGaps": 105,
+    "criticalGaps": 110,
     "mediumGaps": 1,
     "lowGaps": 2,
-    "healthyFiles": 66,
-    "criticalFiles": 117,
-    "avgComplexity": 14
+    "healthyFiles": 70,
+    "criticalFiles": 122,
+    "avgComplexity": 15
   },
   "topFiles": {
     "bestCoverage": [
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertPortal.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AlertPortal.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AuthProvider.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\AuthProvider.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DataStatus.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DataStatus.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingSettings.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\DrawingSettings.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\LabelsLayer.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\LabelsLayer.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\PluginManager.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\PluginManager.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ProjectBar.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ProjectBar.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ReactQueryProvider.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ReactQueryProvider.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ReportPortal.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\ReportPortal.tsx",
         "coverage": "100.0",
         "health": "good"
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\SelectionToolbar.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\SelectionToolbar.tsx",
         "coverage": "100.0",
         "health": "good"
       }
     ],
     "worstCoverage": [
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartErrorBoundary.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartErrorBoundary.tsx",
         "coverage": "0.0",
         "uncovered": 40,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartHeader.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartHeader.tsx",
         "coverage": "0.0",
-        "uncovered": 103,
+        "uncovered": 108,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartLoadingState.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartLoadingState.tsx",
         "coverage": "0.0",
         "uncovered": 14,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartPanelV2.tsx",
         "coverage": "0.0",
         "uncovered": 431,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ChartSidebar.tsx",
         "coverage": "0.0",
         "uncovered": 148,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\ContextMenu.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\ContextMenu.tsx",
         "coverage": "0.0",
         "uncovered": 18,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\CopilotChat.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\CopilotChat.tsx",
         "coverage": "0.0",
         "uncovered": 72,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingChart.tsx",
         "coverage": "0.0",
-        "uncovered": 345,
+        "uncovered": 403,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\DrawingToolbar.tsx",
         "coverage": "0.0",
         "uncovered": 259,
         "complexity": 2
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\components\\EnhancedChart.tsx",
         "coverage": "0.0",
         "uncovered": 232,
         "complexity": 2
@@ -1578,73 +1593,73 @@
     ],
     "mostComplex": [
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\data\\adapter.ts",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\components\\PriceChart.tsx",
+        "complexity": 117,
+        "coverage": "92.1",
+        "branches": 111,
+        "functions": 6
+      },
+      {
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\data\\adapter.ts",
         "complexity": 117,
         "coverage": "90.0",
         "branches": 95,
         "functions": 22
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\drawingStore.tsx",
-        "complexity": 101,
-        "coverage": "97.8",
-        "branches": 71,
-        "functions": 30
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\drawingStore.tsx",
+        "complexity": 113,
+        "coverage": "95.1",
+        "branches": 82,
+        "functions": 31
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\alertsStore.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\alertsStore.tsx",
         "complexity": 96,
         "coverage": "38.3",
         "branches": 63,
         "functions": 33
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\watchlistStore.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\watchlistStore.tsx",
         "complexity": 96,
         "coverage": "59.9",
         "branches": 73,
         "functions": 23
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\components\\PriceChart.tsx",
-        "complexity": 95,
-        "coverage": "91.1",
-        "branches": 89,
-        "functions": 6
-      },
-      {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\drawStore.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\drawStore.tsx",
         "complexity": 73,
         "coverage": "99.4",
         "branches": 53,
         "functions": 20
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useMarketData.ts",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\hooks\\useMarketData.ts",
         "complexity": 70,
         "coverage": "97.8",
         "branches": 60,
         "functions": 10
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\svg.ts",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\utils\\svg.ts",
         "complexity": 70,
         "coverage": "97.9",
         "branches": 55,
         "functions": 15
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\multiChartStore.tsx",
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\multiChartStore.tsx",
         "complexity": 68,
         "coverage": "60.9",
         "branches": 52,
         "functions": 16
       },
       {
-        "path": "C:\\Users\\USER\\Desktop\\lokifi\\apps\\frontend\\src\\services\\indicators\\adx.ts",
-        "complexity": 65,
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\services\\indicators\\adx.ts",
+        "complexity": 67,
         "coverage": "100.0",
-        "branches": 59,
+        "branches": 61,
         "functions": 6
       }
     ]

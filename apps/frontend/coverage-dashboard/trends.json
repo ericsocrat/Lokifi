@@ -307,5 +307,20 @@
       "branch": "main",
       "commit": "ee4589f6"
     }
+  },
+  {
+    "timestamp": "2025-11-18T16:26:22.192Z",
+    "coverage": {
+      "statements": 14.100978035059871,
+      "branches": 90.33273381294964,
+      "functions": 81.03703703703704,
+      "lines": 14.100978035059871
+    },
+    "tests": 0,
+    "files": 196,
+    "git": {
+      "branch": "main",
+      "commit": "fa622039"
+    }
   }
 ]

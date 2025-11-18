@@ -162,7 +162,7 @@ async def get_alerts(
     current_user: dict = Depends(get_current_user),
 ):
     """Get system alerts
-    
+
     Args:
         active_only: Show only active alerts (default: False)
         limit: Maximum number of alerts (default: 100, min: 1, max: 1000)
