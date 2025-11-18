@@ -148,13 +148,16 @@
 - ✅ TypeScript validation: 0 errors ✅
 - ✅ Build: Successful (7.4s) ✅
 
-**Phase 4: Testing & Validation** (~15 min):
-- ⏳ Test trendline creation (2-point drawing)
-- ⏳ Test rectangle creation (drag corners)
-- ⏳ Test Fibonacci retracement (start/end points)
-- ⏳ Test persistence (refresh browser)
-- ⏳ Test zoom/pan anchoring
-- ⏳ Validate all 12 existing drawings migrate correctly
+**Phase 4: Testing & Validation** (~15 min - IN PROGRESS):
+- ⏳ Test trendline creation (2-point drawing with time/price)
+- ⏳ Test rectangle creation (drag corners with time/price)
+- ⏳ Test Fibonacci retracement (start/end points with time/price)
+- ⏳ Verify primitives render on chart (attached successfully)
+- ⏳ Test persistence (refresh browser, drawings reload)
+- ⏳ Test zoom/pan anchoring (price-level anchored)
+- ⏳ Validate legacy drawings behavior (Objects panel only, no render)
+- ⏳ Console validation (no errors, warnings OK for legacy data)
+- ⏳ Manual testing checklist completion
 
 **Session 91 Preservation** (100% KEEP):
 - ✅ **9 Mathematical Indicators**: RSI, MACD, BB, Stochastic, ADX, CCI, Williams %R, OBV, A/D Line

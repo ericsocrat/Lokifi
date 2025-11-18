@@ -89,7 +89,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     const fetchOHLCData = async () => {
       try {
         setIsLoading(true);
-        const url = `http://localhost:8000/api/api/v1/ohlc/${symbol}?timeframe=${timeframe}&limit=100`;
+        const url = `http://localhost:8000/api/v1/ohlc/${symbol}?timeframe=${timeframe}&limit=100`;
 
         const response = await fetch(url);
 

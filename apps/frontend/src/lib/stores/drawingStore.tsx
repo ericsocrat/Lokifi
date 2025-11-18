@@ -122,13 +122,13 @@ const generateId = () => `drawing_${Date.now()}_${Math.random().toString(36).sub
  * Migration Helper: Check if drawing object has valid time/price coordinates.
  * Legacy drawings (Session 91 and earlier) only have x/y pixel coordinates.
  * New drawings (Session 92+) use time/price coordinates for TradingView Primitives API.
- * 
+ *
  * @param obj - Drawing object to check
  * @returns true if object has valid time/price coordinates, false if legacy pixel-only
  */
 const hasValidPrimitiveCoordinates = (obj: DrawingObject): boolean => {
   if (!obj.points || obj.points.length === 0) return false;
-  
+
   // Check if all points have time/price coordinates (not just x/y pixels)
   return obj.points.every((point) => point.time !== undefined && point.price !== undefined);
 };
@@ -137,7 +137,7 @@ const hasValidPrimitiveCoordinates = (obj: DrawingObject): boolean => {
  * Migration Note: Legacy drawings with only x/y coordinates cannot be rendered
  * with Primitives API (requires time/price anchoring). These drawings will be
  * visible in the Objects panel but won't render on chart until migrated.
- * 
+ *
  * Future enhancement: Add migration UI to convert pixel coordinates to price/time
  * by prompting user to re-anchor drawing points on chart.
  */
@@ -185,7 +185,9 @@ export const useDrawingStore = create<DrawingState>()(
 
         // Validate that we have price/time coordinates (preferred for Primitives API)
         if (point.time === undefined || point.price === undefined) {
-          console.warn('startDrawing called without time/price coordinates. Drawing may not work correctly.');
+          console.warn(
+            'startDrawing called without time/price coordinates. Drawing may not work correctly.'
+          );
         }
 
         const newDrawing: Partial<DrawingObject> = {
@@ -208,7 +210,9 @@ export const useDrawingStore = create<DrawingState>()(
 
         // Validate that we have price/time coordinates (preferred for Primitives API)
         if (point.time === undefined || point.price === undefined) {
-          console.warn('addPoint called without time/price coordinates. Drawing may not work correctly.');
+          console.warn(
+            'addPoint called without time/price coordinates. Drawing may not work correctly.'
+          );
         }
 
         set({
@@ -236,7 +240,9 @@ export const useDrawingStore = create<DrawingState>()(
           );
 
           if (!hasValidCoordinates) {
-            console.error('finishDrawing: Some points missing time/price coordinates. Cannot create primitive.');
+            console.error(
+              'finishDrawing: Some points missing time/price coordinates. Cannot create primitive.'
+            );
             get().cancelDrawing();
             return;
           }

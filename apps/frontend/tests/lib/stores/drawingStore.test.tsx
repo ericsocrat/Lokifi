@@ -171,7 +171,7 @@ describe('DrawingStore', () => {
 
       act(() => {
         result.current.setActiveTool('hline');
-        result.current.startDrawing('pane-1', { x: 100, y: 200 });
+        result.current.startDrawing('pane-1', { x: 100, y: 200, time: 1234567890, price: 50000 });
         result.current.finishDrawing();
       });
 
@@ -188,7 +188,7 @@ describe('DrawingStore', () => {
 
       act(() => {
         result.current.setActiveTool('vline');
-        result.current.startDrawing('pane-1', { x: 100, y: 200 });
+        result.current.startDrawing('pane-1', { x: 100, y: 200, time: 1234567890, price: 50000 });
         result.current.finishDrawing();
       });
 

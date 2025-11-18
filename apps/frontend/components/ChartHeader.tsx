@@ -1,20 +1,19 @@
 'use client';
 import { indicatorStore } from '@/lib/stores/indicatorStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
-import { timeframeStore } from '@/lib/stores/timeframeStore';
 import { AuthModal } from '@/src/components/AuthModal';
 import { useAuth } from '@/src/components/AuthProvider';
 import { BarChart3, Layers, RotateCcw, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
+import TimeframePicker from './TimeframePicker';
 
 interface ChartHeaderProps {
   onOpenObjectTree?: () => void;
 }
 
 export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
-  const [timeframe] = useState(timeframeStore.get());
   const [isIndicatorModalOpen, setIsIndicatorModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('login');
@@ -32,12 +31,10 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
         {/* Left: Symbol Picker and Timeframe */}
         <div className="flex items-center gap-4">
           <EnhancedSymbolPicker />
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-1 bg-neutral-800 text-electric text-sm rounded-lg font-medium">
-              {timeframe}
-            </span>
+          <TimeframePicker />
+          <div className="hidden lg:block text-sm text-neutral-400">
+            Professional Trading Platform
           </div>
-          <div className="text-sm text-neutral-400">Professional Trading Platform</div>
         </div>
 
         {/* Right: Action Buttons */}

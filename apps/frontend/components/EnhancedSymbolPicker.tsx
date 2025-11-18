@@ -1,7 +1,7 @@
 'use client';
+import { symbolStore } from '@/lib/stores/symbolStore';
 import { DollarSign, Globe, Search, TrendingUp, Zap } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { symbolStore } from '@/lib/stores/symbolStore';
 
 interface Symbol {
   symbol: string;
@@ -86,7 +86,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
   const loadPopularSymbols = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/v1/symbols/popular?limit=20');
+      const response = await fetch('http://localhost:8000/api/v1/symbols/popular?limit=20');
       if (response.ok) {
         const data = await response.json();
         setPopularSymbols(data);
@@ -142,7 +142,7 @@ export const EnhancedSymbolPicker: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/v1/symbols/search?q=${encodeURIComponent(query)}&limit=20`
+        `http://localhost:8000/api/v1/symbols/search?q=${encodeURIComponent(query)}&limit=20`
       );
       if (response.ok) {
         const data = await response.json();
@@ -188,7 +188,9 @@ export const EnhancedSymbolPicker: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className={`flex-shrink-0 ${ASSET_TYPE_COLORS[symbol.asset_type as keyof typeof ASSET_TYPE_COLORS]}`}>
+                <div
+                  className={`flex-shrink-0 ${ASSET_TYPE_COLORS[symbol.asset_type as keyof typeof ASSET_TYPE_COLORS]}`}
+                >
                   {ASSET_TYPE_ICONS[symbol.asset_type as keyof typeof ASSET_TYPE_ICONS]}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -249,7 +251,9 @@ export const EnhancedSymbolPicker: React.FC = () => {
                 type="text"
                 placeholder="Search symbols..."
                 value={searchQuery}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setSearchQuery(e.target.value)
+                }
                 className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-md border border-gray-600 focus:border-blue-500 focus:outline-none"
               />
             </div>
@@ -297,4 +301,3 @@ export const EnhancedSymbolPicker: React.FC = () => {
     </div>
   );
 };
-

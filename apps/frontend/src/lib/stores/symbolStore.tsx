@@ -1,6 +1,6 @@
 type Listener = (sym: string) => void;
 
-let _symbol = "BTCUSD";
+let _symbol = 'BTCUSD';
 const listeners = new Set<Listener>();
 
 export const symbolStore = {
@@ -11,6 +11,11 @@ export const symbolStore = {
   },
   subscribe: (l: Listener) => {
     listeners.add(l);
-    return () => listeners.delete(l);
-  }
+    return () => {
+      listeners.delete(l);
+    };
+  },
+  setSymbol: (s: string) => {
+    symbolStore.set(s);
+  },
 };
