@@ -407,8 +407,6 @@ export const useStore = create<Store>((set, get) => ({
 }));
 ```
 
-**Note**: For complex state mutations, see the **Zustand + Immer pattern** for `Draft<T>` usage.
-
 ### Backend Route Pattern
 ```python
 from fastapi import APIRouter, Depends
@@ -513,59 +511,7 @@ function process(data: any) { ... }  // NO - define proper interface!
 const items: any[] = [...];  // NO - use proper Item[] type!
 ```
 
-**Zustand + Immer Store Pattern** (Proven in Sprint 2 & 3):
-
-> **📚 Production Pattern**: See Pattern Library section for the **Zustand+Immer Pattern** - Complete pattern with Draft<T> usage for type-safe mutations (100% success rate, 10 stores)
-
-```typescript
-import { create } from 'zustand';
-import { immer } from 'zustand/middleware/immer';
-import type { Draft } from 'immer';
-
-interface StoreState {
-  items: Item[];
-  count: number;
-}
-
-interface StoreActions {
-  addItem: (item: Omit<Item, 'id' | 'createdAt'>) => void;
-  updateItem: (id: string, updates: Partial<Item>) => void;
-  deleteItem: (id: string) => void;
-}
-
-export const useStore = create<StoreState & StoreActions>()(
-  immer((set) => ({
-    // State
-    items: [],
-    count: 0,
-
-    // Actions (use Draft<StoreState> for mutations)
-    addItem: (item) =>
-      set((draft: Draft<StoreState>) => {  // ✅ Use draft, not state
-        draft.items.push({ ...item, id: uuid(), createdAt: new Date() });
-        draft.count++;
-      }),
-
-    updateItem: (id, updates) =>
-      set((draft: Draft<StoreState>) => {
-        const item = draft.items.find((i) => i.id === id);
-        if (item) Object.assign(item, updates);
-      }),
-
-    deleteItem: (id) =>
-      set((draft: Draft<StoreState>) => {
-        draft.items = draft.items.filter((i) => i.id !== id);
-        draft.count--;
-      }),
-  }))
-);
-
-// Common pitfall: Don't use state. inside set() with Immer
-// ❌ BAD: set((state) => { state.items.push(...) })  // Won't work with Immer!
-// ✅ GOOD: set((draft: Draft<State>) => { draft.items.push(...) })
-```
-
-**Note**: For complete pattern with anti-patterns and troubleshooting, see the Zustand+Immer pattern in the Pattern Library.
+**Zustand + Immer Store Pattern**: For type-safe state mutations with `Draft<T>`, see **Zustand+Immer Pattern** via Pattern Library MCP.
 
 **React Event Handler Types** (Common patterns):
 ```typescript
@@ -707,8 +653,6 @@ npm run build
 - 🔧 Fix errors immediately while context is fresh
 - 📝 Document what went wrong and prevention strategy
 - ✅ Re-run validation until all steps pass
-
-**Reference**: See `/docs/guides/VALIDATION_SUMMARY_SESSIONS_18-21.md` for detailed examples of validation errors and fixes.
 
 ### When Writing Tests
 1. **Test behavior, not implementation** - Focus on user-facing outcomes
@@ -991,14 +935,6 @@ pytest --cov
 3. **Test** → Only if logic changed (not for pure type work)
 4. **Build** → Verify production readiness
 5. **Commit** → Only after ALL checks pass
-
-**Session Complete Criteria** (from "CRITICAL: Pre-Commit Validation"):
-- [ ] All type checks pass (`npm run typecheck` or `ruff check`)
-- [ ] All linters pass (ESLint, Ruff, actionlint)
-- [ ] All tests pass (if logic changed)
-- [ ] Build succeeds (`npm run build` or Docker build)
-- [ ] Documentation updated (todo list, checklists.md "Current Focus" if sprint objectives changed)
-- [ ] Commit message follows conventions (Git commit is source of truth for history)
 
 ### 6. Change Communication & Integration (COORDINATE WITH TEAM)
 
