@@ -160,6 +160,85 @@ Get overall success metrics and top patterns.
 }
 ```
 
+### 5. `compare_patterns` 🆕
+Compare 2 or more patterns side-by-side.
+
+**Example Queries**:
+- "Compare AsyncMock vs Pure Functions"
+- "Show me differences between TypeScript Any Elimination and Cascading Type Fixes"
+- "Compare testing patterns: AsyncMock, Mathematical Indicator, Frontend React Testing"
+
+**Parameters**:
+- `patternNames` (required): Array of 2+ pattern names
+
+**Returns**:
+```json
+{
+  "comparison": [
+    {
+      "name": "AsyncMock Pattern",
+      "problem": "Testing external API calls without actual network requests",
+      "solution": "create_mock_response() helper with lambda pattern",
+      "whenToUse": "Backend/frontend testing, API mocking, isolated unit tests",
+      "useCase": "182 tests across DataArchival, Crypto, CryptoPanic, FMP, NewsAPI"
+    },
+    {
+      "name": "Pure Functions Pattern",
+      "problem": "Complex logic tangled with state management",
+      "solution": "Extract calculations to pure functions with proper types",
+      "whenToUse": "Mathematical computations, data transformations, testable logic"
+    }
+  ]
+}
+```
+
+### 6. `get_pattern_recommendations` 🆕
+Get AI-powered pattern recommendations based on your problem.
+
+**Example Queries**:
+- "Recommend patterns for API testing"
+- "What patterns help with type safety?"
+- "Suggest patterns for performance optimization"
+
+**Parameters**:
+- `problemDescription` (required): Description of your problem
+- `maxResults` (optional): Number of recommendations (default: 5)
+
+**Returns**:
+```json
+{
+  "query": "API testing",
+  "recommendations": [
+    {
+      "name": "AsyncMock Pattern",
+      "relevanceScore": 95,
+      "priority": "⭐⭐⭐",
+      "success": "100%",
+      "reason": "High relevance for API testing, proven success across 182 tests"
+    },
+    {
+      "name": "External API Testing Pattern",
+      "relevanceScore": 88,
+      "priority": "⭐⭐⭐",
+      "success": "88%",
+      "reason": "Specialized for external API testing with comprehensive examples"
+    }
+  ]
+}
+```
+    "none": 15
+  },
+  "topPatterns": [
+    {
+      "name": "AsyncMock Pattern",
+      "priority": "⭐⭐⭐",
+      "success": "100%"
+    }
+  ],
+  "overallMetrics": "96% average success rate, 500+ percentage points coverage gained, 100+ hours saved"
+}
+```
+
 ## Usage Examples
 
 ### Example 1: Find Testing Patterns

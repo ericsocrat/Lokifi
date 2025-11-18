@@ -1863,7 +1863,7 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 
 > **⚡ REAL-TIME COVERAGE**: Query test coverage metrics instantly without running tests via MCP.
 
-**Status**: ✅ Active - 5 tools for coverage analysis
+**Status**: ✅ Active - 7 tools for coverage analysis 🆕 +2
 
 **Quick MCP Queries**:
 - "What's my test coverage?" - Overall metrics + threshold status
@@ -1871,39 +1871,43 @@ Lokifi uses custom Copilot Tool Sets to automatically execute project-specific c
 - "Show coverage trends" - Historical comparison
 - "Coverage for portfolioStore" - Line-by-line analysis
 - "Am I ready to merge?" - Threshold validation
+- "Show coverage by directory" 🆕 - Category breakdown (components/, lib/stores/, hooks/)
+- "Prioritize my testing work" 🆕 - Smart recommendations with scoring
 
-**Coverage Tools** (5):
+**Coverage Tools** (7):
 1. **get_coverage_summary** - Quick overview (metrics, test counts, thresholds)
 2. **get_low_coverage_files** - Find testing priorities (sorted by coverage %)
 3. **get_coverage_trends** - Track improvements over time
 4. **get_file_coverage** - Detailed file analysis (uncovered lines)
 5. **check_coverage_thresholds** - Pre-merge validation (pass/fail)
+6. **get_coverage_by_category** 🆕 - Group by directory, identify weak areas
+7. **suggest_test_priorities** 🆕 - Multi-factor scoring (coverage + complexity + criticality)
 
 **Benefits**:
 - Query coverage without running tests (saves 30-60 seconds)
 - Pre-commit validation without CI wait
-- Data-driven test suggestions
-- Track progress automatically
+- Data-driven test suggestions with smart prioritization 🆕
+- Track progress automatically by category 🆕
 
 **Documentation**: `/tools/mcp-coverage-server.js` | `/docs/development/tooling/mcp-coverage-server.md`
 
 ## 🤖 MCP Tooling Ecosystem
 
-> **⚡ 4 ACTIVE MCP SERVERS**: 17 tools provide instant access to patterns, docs, git history, and coverage.
+> **⚡ 4 ACTIVE MCP SERVERS**: 25 tools provide instant access to patterns, docs, git history, and coverage.
 
 **Status**: ✅ Production-Ready - Node.js v18.0.0+ required
 
-**MCP Servers** (4 servers, 17 tools):
-1. **Pattern Library** - 37 patterns from `/docs/architecture/patterns/` (4 tools)
-2. **Documentation Search** - 109 markdown files indexed (4 tools)
-3. **Git History** - 883+ commits searchable (4 tools)
-4. **Coverage** - Real-time test metrics (5 tools)
+**MCP Servers** (4 servers, 25 tools):
+1. **Pattern Library** - 37 patterns from `/docs/architecture/patterns/` (6 tools) 🆕 +2
+2. **Documentation Search** - 109 markdown files indexed (6 tools) 🆕 +2
+3. **Git History** - 883+ commits searchable (6 tools) 🆕 +2
+4. **Coverage** - Real-time test metrics (7 tools) 🆕 +2
 
 **Quick Example Queries**:
-- Patterns: "Show me the AsyncMock pattern" | "List testing patterns"
-- Docs: "Search docs for deployment" | "Show testing best practices"
-- Git: "What was done in Session 75?" | "Search commits for 'MCP'"
-- Coverage: "What's my coverage?" | "Which files need tests?"
+- Patterns: "Show me the AsyncMock pattern" | "List testing patterns" | "Compare AsyncMock vs Pure Functions" 🆕 | "Recommend patterns for API testing" 🆕
+- Docs: "Search docs for deployment" | "Show testing best practices" | "What changed in the last 7 days?" 🆕 | "Find docs related to mcp-coverage-server.md" 🆕
+- Git: "What was done in Session 75?" | "Search commits for 'MCP'" | "Show commits that modified portfolioStore.tsx" 🆕 | "Compare main vs feature/mcp-enhancements" 🆕
+- Coverage: "What's my coverage?" | "Which files need tests?" | "Show coverage by directory" 🆕 | "Prioritize my testing work" 🆕
 
 **Benefits**:
 - ✅ Instant access - No manual file searching

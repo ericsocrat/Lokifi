@@ -101,6 +101,93 @@ Check if coverage meets configured thresholds.
 
 **Returns**: Pass/fail status for each metric
 
+### 6. `get_coverage_by_category` 🆕
+Group coverage metrics by directory/category.
+
+**Example Query**: "Show coverage by directory"
+
+**Returns**:
+```json
+{
+  "categories": [
+    {
+      "category": "components",
+      "fileCount": 15,
+      "totalStatements": 2500,
+      "coveredStatements": 1200,
+      "coverage": 48.0
+    },
+    {
+      "category": "lib/stores",
+      "fileCount": 8,
+      "totalStatements": 1800,
+      "coveredStatements": 1650,
+      "coverage": 91.67
+    },
+    {
+      "category": "hooks",
+      "fileCount": 5,
+      "totalStatements": 800,
+      "coveredStatements": 320,
+      "coverage": 40.0
+    }
+  ],
+  "weakestCategory": {
+    "name": "hooks",
+    "coverage": 40.0
+  },
+  "strongestCategory": {
+    "name": "lib/stores",
+    "coverage": 91.67
+  }
+}
+```
+
+### 7. `suggest_test_priorities` 🆕
+Get smart, prioritized testing recommendations based on multi-factor scoring.
+
+**Example Query**: "Prioritize my testing work"
+
+**Parameters**:
+- `maxResults` (optional): Number of files to return (default: 10)
+
+**Returns**:
+```json
+{
+  "priorities": [
+    {
+      "file": "src/components/dashboard/PriceChart.tsx",
+      "coverage": 22.5,
+      "uncoveredLines": 85,
+      "score": 172,
+      "reasons": [
+        "Low coverage (22.5%)",
+        "High complexity (85 uncovered lines)",
+        "Large file with <50% coverage"
+      ]
+    },
+    {
+      "file": "src/lib/stores/portfolioStore.tsx",
+      "coverage": 0,
+      "uncoveredLines": 120,
+      "score": 280,
+      "reasons": [
+        "Zero coverage - untested file!",
+        "Critical path (lib/stores)",
+        "High complexity (120 uncovered lines)"
+      ]
+    }
+  ]
+}
+```
+
+**Scoring Algorithm**:
+- Low coverage: `(100 - coverage) * 2` (0-200 points)
+- Complexity: `uncoveredLines * 0.5`
+- Large files: +30 bonus if >100 lines and <50% coverage
+- Critical paths: +20 bonus for `stores/`, `api/`, `core/`
+- Zero coverage: +100 bonus for completely untested files
+
 ## Configuration
 
 ### Coverage Thresholds

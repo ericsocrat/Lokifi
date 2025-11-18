@@ -169,6 +169,72 @@ Search checklists.md for process workflows.
 }
 ```
 
+### 5. `get_recent_docs` 🆕
+Find documentation files modified in the last N days.
+
+**Example Queries**:
+- "What docs changed in the last 7 days?"
+- "Show recent documentation updates"
+- "Find recently modified testing docs"
+
+**Parameters**:
+- `days` (optional): Number of days to look back (default: 30)
+- `category` (optional): Filter by category (e.g., "testing", "guides")
+
+**Returns**:
+```json
+{
+  "days": 7,
+  "category": null,
+  "count": 5,
+  "recentDocs": [
+    {
+      "file": "development/tooling/mcp-coverage-server.md",
+      "category": "development",
+      "modifiedDate": "2025-01-15T10:30:00.000Z",
+      "daysAgo": 2,
+      "path": "c:\\...\\docs\\development\\tooling\\mcp-coverage-server.md"
+    }
+  ]
+}
+```
+
+### 6. `find_related_docs` 🆕
+Discover documentation related to a specific file.
+
+**Example Queries**:
+- "Find docs related to mcp-coverage-server.md"
+- "What other testing guides are related to overview.md?"
+- "Show related deployment documentation"
+
+**Parameters**:
+- `filePath` (required): File path or name to find related docs for
+- `maxResults` (optional): Number of related docs to return (default: 10)
+
+**Returns**:
+```json
+{
+  "sourceFile": "development/tooling/mcp-coverage-server.md",
+  "count": 8,
+  "relatedDocs": [
+    {
+      "file": "testing/overview.md",
+      "category": "testing",
+      "relevanceScore": 85,
+      "reason": "Same category + 5 cross-links + keyword matches: coverage, testing, vitest",
+      "path": "c:\\...\\docs\\testing\\overview.md"
+    },
+    {
+      "file": "development/tooling/mcp-pattern-library.md",
+      "category": "development",
+      "relevanceScore": 72,
+      "reason": "Cross-links + keyword matches: mcp, tooling",
+      "path": "c:\\...\\docs\\development\\tooling\\mcp-pattern-library.md"
+    }
+  ]
+}
+```
+
 ## Usage Examples
 
 ### Example 1: Find Deployment Guides

@@ -54,6 +54,37 @@ const DOC_CATEGORIES = [
   'plans',
 ];
 
+// In-memory cache for docs metadata
+let docsCache = null;
+let cacheTimestamp = null;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Enhanced error helper
+ */
+function createError(message, context = {}) {
+  return {
+    error: message,
+    ...context,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Get cached docs or load fresh
+ */
+function getCachedDocs() {
+  const now = Date.now();
+  if (docsCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_TTL) {
+    return docsCache;
+  }
+
+  const docs = findMarkdownFiles(DOCS_ROOT);
+  docsCache = docs;
+  cacheTimestamp = now;
+  return docs;
+}
+
 /**
  * Recursively find all markdown files in a directory
  */
@@ -102,14 +133,14 @@ function readFileContent(filePath) {
  */
 function searchDocs(query, category = null) {
   if (!query || query.trim() === '') {
-    return {
-      error: 'Query parameter is required',
+    return createError('Query parameter is required', {
       suggestion: 'Provide a search keyword or topic',
-    };
+      examples: ['deployment', 'testing patterns', 'CI/CD'],
+    });
   }
 
   const queryLower = query.toLowerCase();
-  const allFiles = findMarkdownFiles(DOCS_ROOT);
+  const allFiles = getCachedDocs();
 
   // Filter by category if specified
   let filesToSearch = allFiles;
@@ -179,13 +210,12 @@ function searchDocs(query, category = null) {
  */
 function getDocContent(filePath) {
   if (!filePath) {
-    return {
-      error: 'filePath parameter is required',
+    return createError('filePath parameter is required', {
       suggestion: 'Provide a file path (can be relative or partial)',
-    };
+    });
   }
 
-  const allFiles = findMarkdownFiles(DOCS_ROOT);
+  const allFiles = getCachedDocs();
 
   // Try exact match first
   let targetFile = allFiles.find((f) => f.relativePath === filePath);
@@ -201,13 +231,10 @@ function getDocContent(filePath) {
   }
 
   if (!targetFile) {
-    return {
-      error: `File not found: ${filePath}`,
+    return createError(`File not found: ${filePath}`, {
       suggestion: 'Use search_docs or list_docs_by_category to find files',
-      availableFiles: allFiles
-        .slice(0, 10)
-        .map((f) => f.relativePath),
-    };
+      availableFiles: allFiles.slice(0, 10).map((f) => f.relativePath),
+    });
   }
 
   const content = readFileContent(targetFile.path);
@@ -240,7 +267,7 @@ function getDocContent(filePath) {
  * List all documentation files by category
  */
 function listDocsByCategory(category = null) {
-  const allFiles = findMarkdownFiles(DOCS_ROOT);
+  const allFiles = getCachedDocs();
 
   // Group by category
   const grouped = {};
@@ -270,10 +297,10 @@ function listDocsByCategory(category = null) {
         files: grouped[matchingCategory],
       };
     } else {
-      return {
-        error: `Category not found: ${category}`,
+      return createError(`Category not found: ${category}`, {
         availableCategories: Object.keys(grouped),
-      };
+        suggestion: 'Use one of the available categories',
+      });
     }
   }
 
@@ -290,16 +317,170 @@ function listDocsByCategory(category = null) {
 }
 
 /**
+ * Get recently modified documentation files
+ */
+function getRecentDocs(days = 30, category = null) {
+  const allFiles = getCachedDocs();
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - days);
+
+  // Filter by modification time
+  const recentFiles = allFiles
+    .map((file) => {
+      try {
+        const stats = fs.statSync(file.path);
+        return {
+          ...file,
+          modifiedAt: stats.mtime,
+          modifiedDaysAgo: Math.floor(
+            (Date.now() - stats.mtime.getTime()) / (1000 * 60 * 60 * 24)
+          ),
+        };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((file) => file && file.modifiedAt >= cutoffDate);
+
+  // Filter by category if specified
+  let results = recentFiles;
+  if (category) {
+    const categoryLower = category.toLowerCase();
+    results = recentFiles.filter((f) =>
+      f.category.toLowerCase().includes(categoryLower)
+    );
+  }
+
+  // Sort by modification time (newest first)
+  results.sort((a, b) => b.modifiedAt - a.modifiedAt);
+
+  return {
+    days,
+    category: category || 'all',
+    cutoffDate: cutoffDate.toISOString(),
+    count: results.length,
+    recentDocs: results.map((f) => ({
+      file: f.relativePath,
+      category: f.category,
+      modifiedAt: f.modifiedAt.toISOString(),
+      modifiedDaysAgo: f.modifiedDaysAgo,
+    })),
+  };
+}
+
+/**
+ * Find related documentation by analyzing content
+ */
+function findRelatedDocs(filePath, maxResults = 10) {
+  if (!filePath) {
+    return createError('filePath parameter is required', {
+      suggestion: 'Provide a file path to find related docs',
+    });
+  }
+
+  const allFiles = getCachedDocs();
+
+  // Find the source file
+  const pathLower = filePath.toLowerCase();
+  const sourceFile = allFiles.find(
+    (f) =>
+      f.relativePath.toLowerCase() === pathLower ||
+      f.relativePath.toLowerCase().includes(pathLower) ||
+      f.name.toLowerCase().includes(pathLower)
+  );
+
+  if (!sourceFile) {
+    return createError(`File not found: ${filePath}`, {
+      suggestion: 'Use list_docs_by_category to find available files',
+      availableFiles: allFiles.slice(0, 10).map((f) => f.relativePath),
+    });
+  }
+
+  const sourceContent = readFileContent(sourceFile.path);
+  if (!sourceContent) {
+    return createError(`Failed to read source file`, {
+      path: sourceFile.path,
+    });
+  }
+
+  // Extract keywords from source (headings, bold text, links)
+  const headings = sourceContent.match(/^#+\s+(.+)$/gm) || [];
+  const links = sourceContent.match(/\[([^\]]+)\]\([^)]+\)/g) || [];
+  const keywords = new Set();
+
+  headings.forEach((h) => {
+    const text = h.replace(/^#+\s+/, '').toLowerCase();
+    text.split(/\s+/).forEach((word) => {
+      if (word.length > 3) keywords.add(word);
+    });
+  });
+
+  // Score other files by relevance
+  const scored = [];
+
+  allFiles.forEach((file) => {
+    if (file.path === sourceFile.path) return; // Skip self
+
+    let score = 0;
+
+    // Same category bonus
+    if (file.category === sourceFile.category) score += 10;
+
+    const content = readFileContent(file.path);
+    if (content) {
+      const contentLower = content.toLowerCase();
+
+      // Check for cross-links
+      if (
+        content.includes(sourceFile.name) ||
+        sourceContent.includes(file.name)
+      ) {
+        score += 15;
+      }
+
+      // Keyword matches
+      keywords.forEach((keyword) => {
+        if (contentLower.includes(keyword)) score += 2;
+      });
+
+      // Extract title for display
+      const titleMatch = content.match(/^#\s+(.+)$/m);
+      const title = titleMatch ? titleMatch[1] : file.name;
+
+      if (score > 0) {
+        scored.push({ file, score, title });
+      }
+    }
+  });
+
+  // Sort by score (highest first)
+  scored.sort((a, b) => b.score - a.score);
+
+  const related = scored.slice(0, maxResults).map((s) => ({
+    file: s.file.relativePath,
+    title: s.title,
+    category: s.file.category,
+    relevanceScore: s.score,
+  }));
+
+  return {
+    sourceFile: sourceFile.relativePath,
+    relatedCount: related.length,
+    relatedDocs: related,
+  };
+}
+
+/**
  * Search checklists.md for process workflows
  */
 function searchChecklists(query = '') {
   const checklistsPath = path.join(DOCS_ROOT, 'checklists.md');
 
   if (!fs.existsSync(checklistsPath)) {
-    return {
-      error: 'checklists.md not found',
+    return createError('checklists.md not found', {
       path: checklistsPath,
-    };
+      suggestion: 'Ensure /docs/checklists.md exists',
+    });
   }
 
   const content = readFileContent(checklistsPath);
@@ -446,6 +627,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'get_recent_docs',
+        description:
+          'Get documentation files modified within the last N days. Useful for tracking updates and finding latest guides.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            days: {
+              type: 'number',
+              description: 'Number of days to look back (default 30)',
+              default: 30,
+            },
+            category: {
+              type: 'string',
+              description: 'Filter by category (optional)',
+            },
+          },
+        },
+      },
+      {
+        name: 'find_related_docs',
+        description:
+          'Find documentation files related to a given file by analyzing cross-links, shared keywords, and categories.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            filePath: {
+              type: 'string',
+              description:
+                'Source file path (full or partial)',
+            },
+            maxResults: {
+              type: 'number',
+              description: 'Maximum number of related docs to return (default 10)',
+              default: 10,
+            },
+          },
+          required: ['filePath'],
+        },
+      },
     ],
   };
 });
@@ -474,8 +695,31 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = searchChecklists(args?.query || '');
         break;
 
+      case 'get_recent_docs':
+        result = getRecentDocs(args?.days || 30, args?.category || null);
+        break;
+
+      case 'find_related_docs':
+        if (!args?.filePath) {
+          result = createError('filePath argument is required', {
+            suggestion: 'Provide a file path',
+          });
+        } else {
+          result = findRelatedDocs(args.filePath, args?.maxResults || 10);
+        }
+        break;
+
       default:
-        result = { error: `Unknown tool: ${name}` };
+        result = createError(`Unknown tool: ${name}`, {
+          availableTools: [
+            'search_docs',
+            'get_doc_content',
+            'list_docs_by_category',
+            'search_checklists',
+            'get_recent_docs',
+            'find_related_docs',
+          ],
+        });
     }
 
     return {

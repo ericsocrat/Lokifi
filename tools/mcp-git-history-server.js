@@ -39,6 +39,17 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.join(__dirname, '..');
 
 /**
+ * Enhanced error helper
+ */
+function createError(message, context = {}) {
+  return {
+    error: message,
+    ...context,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
  * Execute git command safely
  */
 function executeGit(command, options = {}) {
@@ -51,10 +62,11 @@ function executeGit(command, options = {}) {
     });
     return result.trim();
   } catch (error) {
-    return {
-      error: `Git command failed: ${error.message}`,
+    return createError('Git command failed', {
       command: `git ${command}`,
-    };
+      details: error.message,
+      suggestion: 'Ensure git is installed and repository is valid',
+    });
   }
 }
 
@@ -170,10 +182,10 @@ function searchCommits(query, author = null, since = null, until = null, limit =
  */
 function getCommitDetails(commitHash) {
   if (!commitHash) {
-    return {
-      error: 'commitHash parameter is required',
+    return createError('commitHash parameter is required', {
       suggestion: 'Provide a commit hash (full or short)',
-    };
+      examples: ['abc1234', 'a1b2c3d4e5f6'],
+    });
   }
 
   // Get commit info
@@ -237,10 +249,10 @@ function getCommitDetails(commitHash) {
  */
 function findSessionWork(sessionNumber) {
   if (!sessionNumber) {
-    return {
-      error: 'sessionNumber parameter is required',
+    return createError('sessionNumber parameter is required', {
       suggestion: 'Provide a session number (e.g., 75, 91)',
-    };
+      examples: [75, 91, 92],
+    });
   }
 
   // Search for commits mentioning the session
@@ -276,6 +288,162 @@ function findSessionWork(sessionNumber) {
     summary: unique.length > 0
       ? `Found ${unique.length} commits for Session ${sessionNumber}`
       : `No commits found for Session ${sessionNumber}`,
+  };
+}
+
+/**
+ * Find commits affecting a specific file or path
+ */
+function findCommitsByFile(filePath, limit = 50) {
+  if (!filePath || filePath.trim() === '') {
+    return createError('filePath parameter is required', {
+      suggestion: 'Provide a file path or pattern',
+      examples: [
+        'apps/frontend/src/lib/stores/portfolioStore.tsx',
+        'tools/mcp-*.js',
+        '*.md',
+      ],
+    });
+  }
+
+  // Get commits affecting the file
+  const logCommand = `log --all --follow --format="%H%n%an <%ae>%n%ai%n%s%n%b%n" -n ${limit} -- "${filePath}"`;
+  const logResult = executeGit(logCommand);
+  if (logResult.error) return logResult;
+
+  // Parse commits
+  const commits = [];
+  const lines = logResult.split('\n');
+  let currentCommit = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.match(/^[0-9a-f]{40}$/)) {
+      if (currentCommit) commits.push(currentCommit);
+      currentCommit = {
+        hash: line,
+        shortHash: line.substring(0, 7),
+      };
+    } else if (currentCommit && !currentCommit.author) {
+      currentCommit.author = line;
+    } else if (currentCommit && !currentCommit.date) {
+      currentCommit.date = line;
+    } else if (currentCommit && !currentCommit.message) {
+      currentCommit.message = line;
+    } else if (currentCommit && line.trim()) {
+      currentCommit.body = currentCommit.body
+        ? `${currentCommit.body}\n${line}`
+        : line;
+    }
+  }
+
+  if (currentCommit) commits.push(currentCommit);
+
+  // Get detailed changes for each commit
+  const detailedCommits = commits.map((commit) => {
+    const diffCommand = `show ${commit.hash} --stat --format="" -- "${filePath}"`;
+    const diff = executeGit(diffCommand);
+
+    return {
+      ...commit,
+      changes: diff.error ? null : diff,
+    };
+  });
+
+  return {
+    filePath,
+    commitCount: detailedCommits.length,
+    commits: detailedCommits,
+    summary:
+      detailedCommits.length > 0
+        ? `Found ${detailedCommits.length} commits affecting ${filePath}`
+        : `No commits found for ${filePath}`,
+  };
+}
+
+/**
+ * Compare commits between two branches
+ */
+function compareBranches(baseBranch = 'main', compareBranch = 'HEAD') {
+  if (!baseBranch || !compareBranch) {
+    return createError('Both baseBranch and compareBranch are required', {
+      suggestion: 'Provide branch names to compare',
+      examples: ['main vs feature/new-ui', 'develop vs staging'],
+    });
+  }
+
+  // Verify branches exist
+  const branchCheck = executeGit(
+    `rev-parse --verify ${baseBranch} ${compareBranch}`
+  );
+  if (branchCheck.error) {
+    return createError('One or both branches do not exist', {
+      baseBranch,
+      compareBranch,
+      details: branchCheck.error,
+      suggestion: 'Check branch names with: git branch -a',
+    });
+  }
+
+  // Get commits unique to compareBranch (ahead)
+  const aheadCommand = `log ${baseBranch}..${compareBranch} --format="%H%n%an <%ae>%n%ai%n%s%n%b%n" --no-merges`;
+  const aheadResult = executeGit(aheadCommand);
+
+  // Get commits unique to baseBranch (behind)
+  const behindCommand = `log ${compareBranch}..${baseBranch} --format="%H%n%an <%ae>%n%ai%n%s%n%b%n" --no-merges`;
+  const behindResult = executeGit(behindCommand);
+
+  // Parse ahead commits
+  const parseCommits = (output) => {
+    if (output.error) return [];
+    const commits = [];
+    const lines = output.split('\n');
+    let currentCommit = null;
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      if (line.match(/^[0-9a-f]{40}$/)) {
+        if (currentCommit) commits.push(currentCommit);
+        currentCommit = { hash: line, shortHash: line.substring(0, 7) };
+      } else if (currentCommit && !currentCommit.author) {
+        currentCommit.author = line;
+      } else if (currentCommit && !currentCommit.date) {
+        currentCommit.date = line;
+      } else if (currentCommit && !currentCommit.message) {
+        currentCommit.message = line;
+      } else if (currentCommit && line.trim()) {
+        currentCommit.body = currentCommit.body
+          ? `${currentCommit.body}\n${line}`
+          : line;
+      }
+    }
+
+    if (currentCommit) commits.push(currentCommit);
+    return commits;
+  };
+
+  const aheadCommits = parseCommits(aheadResult);
+  const behindCommits = parseCommits(behindResult);
+
+  // Get file changes summary
+  const diffStatsCommand = `diff --stat ${baseBranch}...${compareBranch}`;
+  const diffStats = executeGit(diffStatsCommand);
+
+  return {
+    baseBranch,
+    compareBranch,
+    ahead: {
+      count: aheadCommits.length,
+      commits: aheadCommits,
+    },
+    behind: {
+      count: behindCommits.length,
+      commits: behindCommits,
+    },
+    fileChanges: diffStats.error ? null : diffStats,
+    summary: `${compareBranch} is ${aheadCommits.length} commits ahead and ${behindCommits.length} commits behind ${baseBranch}`,
   };
 }
 
@@ -439,6 +607,48 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: 'find_commits_by_file',
+        description:
+          'Get commit history for a specific file or path pattern. Tracks file evolution and shows who changed what.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            filePath: {
+              type: 'string',
+              description:
+                'File path or pattern (e.g., "portfolioStore.tsx", "tools/*.js")',
+            },
+            limit: {
+              type: 'number',
+              description: 'Maximum number of commits to return (default 50)',
+              default: 50,
+            },
+          },
+          required: ['filePath'],
+        },
+      },
+      {
+        name: 'compare_branches',
+        description:
+          'Compare commits between two branches to see ahead/behind status and file changes. Useful for PR review.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            baseBranch: {
+              type: 'string',
+              description: 'Base branch name (e.g., "main", "develop")',
+              default: 'main',
+            },
+            compareBranch: {
+              type: 'string',
+              description:
+                'Branch to compare (e.g., "feature/new-ui", "HEAD")',
+              default: 'HEAD',
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -476,8 +686,34 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         );
         break;
 
+      case 'find_commits_by_file':
+        if (!args?.filePath) {
+          result = createError('filePath argument is required', {
+            suggestion: 'Provide a file path or pattern',
+          });
+        } else {
+          result = findCommitsByFile(args.filePath, args?.limit || 50);
+        }
+        break;
+
+      case 'compare_branches':
+        result = compareBranches(
+          args?.baseBranch || 'main',
+          args?.compareBranch || 'HEAD'
+        );
+        break;
+
       default:
-        result = { error: `Unknown tool: ${name}` };
+        result = createError(`Unknown tool: ${name}`, {
+          availableTools: [
+            'search_commits',
+            'get_commit_details',
+            'find_session_work',
+            'analyze_sprint_progress',
+            'find_commits_by_file',
+            'compare_branches',
+          ],
+        });
     }
 
     return {

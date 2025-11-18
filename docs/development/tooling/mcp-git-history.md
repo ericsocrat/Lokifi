@@ -168,6 +168,79 @@ Analyze development progress over a time period.
 }
 ```
 
+### 5. `find_commits_by_file` 🆕
+Get commit history for a specific file.
+
+**Example Queries**:
+- "Show commits that modified portfolioStore.tsx"
+- "What's the history of test-runner.ps1?"
+- "Find all changes to mcp-coverage-server.js"
+
+**Parameters**:
+- `filePath` (required): File path (full or partial, relative to repo root)
+- `limit` (optional): Maximum commits to return (default: 50)
+
+**Returns**:
+```json
+{
+  "file": "apps/frontend/src/lib/stores/portfolioStore.tsx",
+  "commitCount": 12,
+  "commits": [
+    {
+      "hash": "abc1234567890...",
+      "shortHash": "abc1234",
+      "author": "Eric Socrat <eric@example.com>",
+      "date": "2024-11-18 10:30:00 -0500",
+      "message": "feat(types): portfolioStore.tsx type-safe (150 any → 5 acceptable)",
+      "changes": "1 file changed, 250 insertions(+), 180 deletions(-)"
+    }
+  ]
+}
+```
+
+### 6. `compare_branches` 🆕
+Compare two branches to see differences (useful for PR review).
+
+**Example Queries**:
+- "Compare main vs feature/mcp-enhancements"
+- "Show differences between main and my current branch"
+- "What commits are on feature branch but not main?"
+
+**Parameters**:
+- `baseBranch` (optional): Base branch to compare against (default: "main")
+- `compareBranch` (optional): Branch to compare (default: "HEAD" - current branch)
+
+**Returns**:
+```json
+{
+  "baseBranch": "main",
+  "compareBranch": "feature/mcp-enhancements",
+  "ahead": 8,
+  "behind": 2,
+  "uniqueCommits": {
+    "onCompare": [
+      {
+        "hash": "def456...",
+        "shortHash": "def456",
+        "author": "Eric Socrat",
+        "date": "2025-01-15 14:30:00",
+        "message": "feat(mcp): add compare_patterns tool"
+      }
+    ],
+    "onBase": [
+      {
+        "hash": "xyz789...",
+        "shortHash": "xyz789",
+        "author": "Eric Socrat",
+        "date": "2025-01-14 10:00:00",
+        "message": "fix: typo in README"
+      }
+    ]
+  },
+  "fileChanges": "12 files changed, 850 insertions(+), 120 deletions(-)"
+}
+```
+
 ## Usage Examples
 
 ### Example 1: Find Session Work

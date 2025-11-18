@@ -41,16 +41,57 @@ const PATTERNS_DIR = path.join(
   '../docs/architecture/patterns'
 );
 
+// In-memory cache for parsed patterns
+let patternCache = null;
+let cacheTimestamp = null;
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+/**
+ * Enhanced error helper
+ */
+function createError(message, context = {}) {
+  return {
+    error: message,
+    ...context,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+/**
+ * Invalidate pattern cache
+ */
+function invalidateCache() {
+  patternCache = null;
+  cacheTimestamp = null;
+}
+
+/**
+ * Get cached patterns or load fresh
+ */
+function getCachedPatterns() {
+  const now = Date.now();
+  if (patternCache && cacheTimestamp && (now - cacheTimestamp) < CACHE_TTL) {
+    return patternCache;
+  }
+
+  const patterns = getAllPatterns();
+  if (!patterns.error) {
+    patternCache = patterns;
+    cacheTimestamp = now;
+  }
+  return patterns;
+}
+
 /**
  * Find all pattern markdown files in the patterns directory
  */
 function findPatternFiles() {
   try {
     if (!fs.existsSync(PATTERNS_DIR)) {
-      return {
-        error: 'Pattern directory not found',
+      return createError('Pattern directory not found', {
         path: PATTERNS_DIR,
-      };
+        suggestion: 'Ensure /docs/architecture/patterns/ exists',
+      });
     }
 
     const files = [];
@@ -75,10 +116,11 @@ function findPatternFiles() {
 
     return files;
   } catch (error) {
-    return {
-      error: `Failed to find pattern files: ${error.message}`,
+    return createError('Failed to find pattern files', {
       path: PATTERNS_DIR,
-    };
+      details: error.message,
+      suggestion: 'Check directory permissions and structure',
+    });
   }
 }
 
@@ -168,7 +210,7 @@ function getAllPatterns() {
  * Search patterns by keyword or category
  */
 function searchPatterns(query = '', category = null) {
-  const patterns = getAllPatterns();
+  const patterns = getCachedPatterns();
   if (patterns.error) return patterns;
 
   const queryLower = query.toLowerCase();
@@ -210,7 +252,7 @@ function searchPatterns(query = '', category = null) {
  * Get detailed information about a specific pattern
  */
 function getPatternDetails(patternName) {
-  const patterns = getAllPatterns();
+  const patterns = getCachedPatterns();
   if (patterns.error) return patterns;
 
   const patternNameLower = patternName.toLowerCase();
@@ -239,11 +281,11 @@ function getPatternDetails(patternName) {
       .slice(0, 3)
       .map(p => p.title);
 
-    return {
-      error: `Pattern "${patternName}" not found`,
+    return createError(`Pattern "${patternName}" not found`, {
       suggestions: suggestions.length > 0 ? suggestions : null,
       hint: 'Use search_patterns to find available patterns',
-    };
+      availableCategories: [...new Set(patterns.map(p => p.category))],
+    });
   }
 
   // Read full pattern content
@@ -264,10 +306,11 @@ function getPatternDetails(patternName) {
       path: pattern.path.replace(/\\/g, '/'), // Normalize path for display
     };
   } catch (error) {
-    return {
-      error: `Failed to read pattern file: ${error.message}`,
+    return createError('Failed to read pattern file', {
       pattern: pattern.title,
-    };
+      details: error.message,
+      suggestion: 'Check file permissions',
+    });
   }
 }
 
@@ -306,6 +349,179 @@ function listCategories() {
     totalCategories,
     totalPatterns,
     summary: `${totalPatterns} patterns across ${totalCategories} categories`,
+  };
+}
+
+/**
+ * Compare multiple patterns side-by-side
+ */
+function comparePatterns(patternNames) {
+  if (!patternNames || !Array.isArray(patternNames) || patternNames.length < 2) {
+    return createError('At least 2 pattern names required for comparison', {
+      received: patternNames,
+      suggestion: 'Provide array with 2+ pattern names',
+      example: '["AsyncMock Pattern", "Fixtures Pattern"]',
+    });
+  }
+
+  const patterns = getCachedPatterns();
+  if (patterns.error) return patterns;
+
+  const foundPatterns = [];
+  const notFound = [];
+
+  patternNames.forEach((name) => {
+    const nameLower = name.toLowerCase();
+    const pattern = patterns.find(
+      (p) =>
+        p.title.toLowerCase() === nameLower ||
+        p.filename.toLowerCase() === nameLower.replace(/\s+/g, '-') + '.md'
+    );
+
+    if (pattern) {
+      // Load full content for comparison
+      try {
+        const content = fs.readFileSync(pattern.path, 'utf-8');
+        foundPatterns.push({ ...pattern, fullContent: content });
+      } catch (error) {
+        foundPatterns.push({ ...pattern, fullContent: null });
+      }
+    } else {
+      notFound.push(name);
+    }
+  });
+
+  if (notFound.length > 0) {
+    return createError('Some patterns not found', {
+      notFound,
+      found: foundPatterns.map((p) => p.title),
+      suggestion: 'Use search_patterns to find correct pattern names',
+    });
+  }
+
+  // Extract comparison sections
+  const comparison = {
+    patterns: foundPatterns.map((p) => ({
+      title: p.title,
+      category: p.category,
+      difficulty: p.difficulty,
+      successRate: p.successRate,
+      impact: p.impact,
+      timeInvestment: p.timeInvestment,
+    })),
+    useCases: {},
+    whenToUse: {},
+    strengths: {},
+    weaknesses: {},
+  };
+
+  // Parse comparison data from full content
+  foundPatterns.forEach((pattern) => {
+    if (pattern.fullContent) {
+      // Extract "When to Use" section
+      const whenMatch = pattern.fullContent.match(
+        /## When to Use[\s\S]+?(?=\n##|$)/
+      );
+      if (whenMatch) {
+        comparison.whenToUse[pattern.title] = whenMatch[0]
+          .replace('## When to Use', '')
+          .trim()
+          .substring(0, 500);
+      }
+
+      // Extract problem/context for use cases
+      const problemMatch = pattern.fullContent.match(
+        /## Problem[\s\S]+?(?=\n##|$)/
+      );
+      if (problemMatch) {
+        comparison.useCases[pattern.title] = problemMatch[0]
+          .replace('## Problem', '')
+          .trim()
+          .substring(0, 300);
+      }
+    }
+  });
+
+  return {
+    comparisonCount: foundPatterns.length,
+    comparison,
+    recommendation:
+      'Consider combining patterns for comprehensive solution',
+  };
+}
+
+/**
+ * Get pattern recommendations based on problem description
+ */
+function getPatternRecommendations(problemDescription, maxResults = 5) {
+  if (!problemDescription || problemDescription.trim() === '') {
+    return createError('Problem description is required', {
+      suggestion: 'Describe your use case (e.g., "testing async API calls")',
+      examples: [
+        'testing external API calls',
+        'state management with complex updates',
+        'fixing TypeScript type errors',
+      ],
+    });
+  }
+
+  const patterns = getCachedPatterns();
+  if (patterns.error) return patterns;
+
+  const keywords = problemDescription.toLowerCase().split(/\s+/);
+  const scored = [];
+
+  patterns.forEach((pattern) => {
+    let score = 0;
+    const searchableText = `
+      ${pattern.title}
+      ${pattern.description}
+      ${pattern.category}
+    `.toLowerCase();
+
+    // Score based on keyword matches
+    keywords.forEach((keyword) => {
+      if (keyword.length < 3) return; // Skip short words
+
+      if (pattern.title.toLowerCase().includes(keyword)) score += 10;
+      if (pattern.description.toLowerCase().includes(keyword)) score += 5;
+      if (pattern.category.toLowerCase().includes(keyword)) score += 3;
+    });
+
+    // Boost high-impact patterns
+    if (pattern.impact?.includes('High')) score += 2;
+    if (pattern.successRate) {
+      const rate = parseInt(pattern.successRate.match(/(\d+)%/)?.[1] || '0');
+      score += Math.floor(rate / 20); // 0-5 points based on success rate
+    }
+
+    if (score > 0) {
+      scored.push({ pattern, score });
+    }
+  });
+
+  // Sort by score (highest first)
+  scored.sort((a, b) => b.score - a.score);
+
+  const recommendations = scored.slice(0, maxResults).map((s) => ({
+    title: s.pattern.title,
+    category: s.pattern.category,
+    relevanceScore: s.score,
+    difficulty: s.pattern.difficulty,
+    successRate: s.pattern.successRate,
+    impact: s.pattern.impact,
+    description: s.pattern.description,
+    filename: s.pattern.filename,
+  }));
+
+  return {
+    query: problemDescription,
+    totalMatches: scored.length,
+    recommendations,
+    suggestion:
+      scored.length === 0
+        ? 'Try broader keywords or search by category'
+        : 'Review top recommendations and use get_pattern_details for full info',
   };
 }
 
@@ -445,6 +661,46 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           properties: {},
         },
       },
+      {
+        name: 'compare_patterns',
+        description:
+          'Compare multiple patterns side-by-side to understand differences, use cases, and when to use each.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            patternNames: {
+              type: 'array',
+              description:
+                'Array of pattern names to compare (minimum 2)',
+              items: {
+                type: 'string',
+              },
+            },
+          },
+          required: ['patternNames'],
+        },
+      },
+      {
+        name: 'get_pattern_recommendations',
+        description:
+          'Get pattern recommendations based on a problem description. AI-powered suggestions ranked by relevance.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            problemDescription: {
+              type: 'string',
+              description:
+                'Describe your use case or problem (e.g., "testing async API calls")',
+            },
+            maxResults: {
+              type: 'number',
+              description: 'Maximum number of recommendations (default 5)',
+              default: 5,
+            },
+          },
+          required: ['problemDescription'],
+        },
+      },
     ],
   };
 });
@@ -477,8 +733,40 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         result = getSuccessMetrics();
         break;
 
+      case 'compare_patterns':
+        if (!args?.patternNames) {
+          result = createError('patternNames argument is required', {
+            suggestion: 'Provide array with 2+ pattern names',
+          });
+        } else {
+          result = comparePatterns(args.patternNames);
+        }
+        break;
+
+      case 'get_pattern_recommendations':
+        if (!args?.problemDescription) {
+          result = createError('problemDescription argument is required', {
+            suggestion: 'Describe your use case or problem',
+          });
+        } else {
+          result = getPatternRecommendations(
+            args.problemDescription,
+            args?.maxResults || 5
+          );
+        }
+        break;
+
       default:
-        result = { error: `Unknown tool: ${name}` };
+        result = createError(`Unknown tool: ${name}`, {
+          availableTools: [
+            'search_patterns',
+            'get_pattern_details',
+            'list_categories',
+            'get_success_metrics',
+            'compare_patterns',
+            'get_pattern_recommendations',
+          ],
+        });
     }
 
     return {
