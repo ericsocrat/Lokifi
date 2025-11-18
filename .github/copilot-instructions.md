@@ -24,31 +24,14 @@
 - Don't wait to be asked - suggest improvements when you see them
 
 ### 3. Documentation Standards
-- **Ensure all effective patterns are documented comprehensively**:
-  - Debugging journeys with iteration counts and lessons learned
-  - Reusable solutions with complete code examples
-  - Best practices with anti-patterns and common pitfalls
-  - Success metrics (coverage gains, test counts, time savings)
-- **Update two locations**:
-  - Pattern Library in `.github/copilot-instructions.md` (reference + metrics)
-  - Detailed guides in relevant `docs/` folder (complete examples)
-- **Documentation quality checklist**:
-  - ✅ Clear problem statement and context
-  - ✅ Complete solution with code examples
-  - ✅ Anti-patterns and common mistakes
-  - ✅ Success metrics and reusability assessment
-  - ✅ References to related patterns or documents
+- **Document effective patterns in `/docs/architecture/patterns/`** (accessed via Pattern Library MCP)
+- **Update guides in `/docs/guides/`** for comprehensive implementation examples
+- **Quality checklist**: Clear problem, solution with examples, anti-patterns, success metrics, references
 
 ### 4. Guidance and Checklists
-- **Use `.github/copilot-instructions.md` and `docs/checklists.md` as primary references**:
-  - Check `checklists.md` FIRST for ANY workflow question
-  - Reference specific checklist sections in responses
-  - Follow established patterns from Pattern Library
-  - Adhere to world-class quality standards outlined in these documents
-- **Before suggesting new approaches**:
-  - Search existing documentation for proven solutions
-  - Check Pattern Library for similar problems
-  - Verify alignment with project conventions
+- **Check `/docs/checklists.md` FIRST** for ANY workflow question
+- **Use Pattern Library MCP** to search proven solutions before suggesting new approaches
+- **Reference specific checklist sections** in responses for world-class quality standards
 
 ### 5. Quality-First Philosophy
 - **Prioritize systematic, thorough work over speed**:
@@ -100,16 +83,8 @@
   - Celebrate wins with metrics
 
 ### 9. Iterative Improvements
-- **After completing a task**:
-  - Review results for further refinement opportunities
-  - Identify follow-up actions or enhancements
-  - Update documentation with lessons learned
-  - Add discovered patterns to Pattern Library
-- **Continuously improve**:
-  - Codebase (refactoring, optimization)
-  - Documentation (clarity, completeness)
-  - Processes (efficiency, quality gates)
-  - Test coverage (new cases, edge scenarios)
+- **After completing a task**: Review for refinements, identify follow-ups, update docs, add patterns to `/docs/architecture/patterns/`
+- **Continuously improve**: Codebase (refactoring), documentation (clarity), processes (efficiency), test coverage (edge cases)
 
 ### 10. Focus on Impact
 - **Prioritize tasks that deliver measurable improvements**:
@@ -355,13 +330,13 @@ lokifi/
 ## Common Patterns
 
 > **📚 Pattern Library**: For battle-tested patterns with success metrics, examples, and anti-patterns, see:
-> - **Testing Patterns** - AsyncMock (95% success, +30-40pp), Pure Functions, Mathematical Indicator Testing (9/9 proven), Fixtures
-> - **UI/UX Patterns** - React Keyboard Shortcuts (cross-platform, accessibility, production-deployed) 🆕
+> - **Testing Patterns** - AsyncMock, Pure Functions, Mathematical Indicator Testing, Fixtures
+> - **UI/UX Patterns** - React Keyboard Shortcuts
 > - **CI/CD Patterns** - Workflow Health Check, GitHub CLI Investigation, Service Config Standards
-> - **Code Quality Patterns** - TypeScript Any Elimination (96.3%), Zustand+Immer, Draft<T>, Python Ruff, ESLint
+> - **Code Quality Patterns** - TypeScript Any Elimination, Zustand+Immer, Draft<T>, Python Ruff, ESLint
 > - **Dependencies** - Conflict Resolution, Pin vs Replace, Renovate Migration, Security Patches
 > - **Python Patterns** - Python 3.10 Compatibility, UTC Import, Lambda UTC
-> - **Debugging Patterns** - Root Cause Analysis (100% success), Log Analysis (75-88% time savings)
+> - **Debugging Patterns** - Root Cause Analysis, Log Analysis
 
 ### Quick Code Templates (For Copilot Generation)
 
@@ -386,8 +361,6 @@ export const ComponentName: FC<Props> = ({ prop1, prop2 }) => {
 ```
 
 ### Zustand Store Pattern (Basic)
-
-> **📚 Production Pattern**: See Pattern Library section for the **Zustand+Immer Pattern** - Complete pattern with Draft<T> usage for type-safe mutations (100% success rate, 10 stores)
 
 ```typescript
 import { create } from 'zustand';
@@ -454,8 +427,6 @@ async def get_endpoint(
 ```
 
 ### Test Pattern (Frontend)
-
-> **📚 Production Pattern**: See Pattern Library section for the **AsyncMock Pattern** - Comprehensive async testing pattern (95% success, 4 sessions, +30-40pp coverage)
 
 ```typescript
 import { describe, it, expect, vi } from 'vitest';
@@ -676,7 +647,7 @@ async function fetchData() {  // Returns Promise<any>
 
 **⚠️ NEVER claim "session complete" without running ALL validation steps below:**
 
-**For TypeScript/Frontend Work** (Sessions 15-24 pattern):
+**For TypeScript/Frontend Work**:
 
 ```powershell
 # Step 1: TypeScript type checking (catches type errors build misses)
@@ -699,7 +670,7 @@ npm run build
 # Step 5: Only AFTER all pass → commit and report success
 ```
 
-**Why This Matters** (Lesson from Sprint 2 Validation):
+**Why This Matters**:
 - ❌ `npm run build` **SKIPS** type validation (`Skipping validation of types`)
 - ✅ `npm run typecheck` is the **ONLY** way to catch real type errors
 - 🐛 Sprint 2 discovered 18 hidden errors in "completed" stores
@@ -730,22 +701,6 @@ npm run build
 - [ ] `npm run build` succeeds
 - [ ] All acceptable `any` types documented inline with `// any required for: <reason>`
 - [ ] Commit message includes validation confirmation
-
-**Template for Session Completion**:
-
-```markdown
-## ✅ Session X Complete
-
-**Validation Results**:
-- ✅ Store-specific typecheck: 0 errors
-- ✅ Full typecheck: Passed (only expected Zustand v5 error)
-- ✅ Build: Successful
-- ✅ Acceptable any: X documented (list reasons)
-
-**Metrics**: X lines, Y any → Z acceptable (N% improvement)
-**Time**: ~N minutes
-**Commit**: <hash>
-```
 
 **If Validation Fails**:
 - ❌ DO NOT claim session complete
