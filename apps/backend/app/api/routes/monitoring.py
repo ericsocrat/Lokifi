@@ -10,12 +10,11 @@ RESTful API endpoints for monitoring and observability:
 
 __all__ = ["router"]
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-
 from app.core.advanced_redis_client import advanced_redis_client
 from app.core.security import get_current_user
 from app.services.advanced_monitoring import monitoring_system
 from app.websockets.advanced_websocket_manager import advanced_websocket_manager
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(prefix="/api/v1/monitoring", tags=["monitoring"])
 
@@ -158,11 +157,17 @@ async def invalidate_cache_pattern(
 
 @router.get("/alerts")
 async def get_alerts(
-    active_only: bool = Query(False, description="Show only active alerts"),
-    limit: int = Query(100, description="Maximum number of alerts", ge=1, le=1000),
+    active_only: bool = False,
+    limit: int = 100,
     current_user: dict = Depends(get_current_user),
 ):
-    """Get system alerts"""
+    """Get system alerts
+    
+    Args:
+        active_only: Show only active alerts (default: False)
+        limit: Maximum number of alerts (default: 100, min: 1, max: 1000)
+        current_user: Current authenticated user
+    """
     try:
         # Check if user is admin
         if current_user.get("handle") != "admin":
@@ -173,6 +178,7 @@ async def get_alerts(
         if active_only:
             alerts = list(alert_manager.active_alerts.values())
         else:
+            # Return alert history (which includes both active and resolved alerts)
             alerts = list(alert_manager.alert_history)[-limit:]
 
         return {

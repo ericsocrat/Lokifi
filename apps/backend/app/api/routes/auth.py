@@ -4,9 +4,10 @@ __all__ = ["router"]
 
 from datetime import datetime, timedelta, timezone
 
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 from fastapi import APIRouter, Header, HTTPException
 from jose import JWTError, jwt
-from passlib.hash import bcrypt
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -17,6 +18,9 @@ from app.db.models import User
 
 router = APIRouter()
 init_db()
+
+# Password hasher instance (Argon2)
+ph = PasswordHasher()
 
 # Get JWT configuration from settings
 settings = get_settings()
@@ -72,7 +76,7 @@ def register(payload: RegisterPayload):
         existing = _user_by_handle(db, payload.handle)
         if existing:
             raise HTTPException(status_code=409, detail="Handle already exists")
-        pw_hash = bcrypt.hash(payload.password)
+        pw_hash = ph.hash(payload.password)
         u = User(
             handle=payload.handle,
             password_hash=pw_hash,
@@ -88,9 +92,13 @@ def register(payload: RegisterPayload):
 def login(payload: LoginPayload):
     with get_session() as db:
         u = _user_by_handle(db, payload.handle)
-        if not u or not u.password_hash or not bcrypt.verify(payload.password, u.password_hash):
+        if not u or not u.password_hash:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-        return _issue_token(u.handle)
+        try:
+            ph.verify(u.password_hash, payload.password)
+            return _issue_token(u.handle)
+        except VerifyMismatchError:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
 
 
 @router.get("/auth/me")

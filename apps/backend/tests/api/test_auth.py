@@ -225,7 +225,7 @@ class TestRegisterEndpoint:
         mock_result.scalar_one_or_none.return_value = None
         mock_db.execute.return_value = mock_result
 
-        payload = RegisterPayload(handle="newuser", password="plaintext_password")
+        payload = RegisterPayload(handle="newuser", password="password123")
 
         register(payload)
 
@@ -235,31 +235,33 @@ class TestRegisterEndpoint:
 
         # Password hash should not be plaintext
         assert user.password_hash != "plaintext_password"
-        # Should be bcrypt hash (starts with $2b$)
-        assert user.password_hash.startswith("$2b$")
+        # Should be Argon2 hash (starts with $argon2id$)
+        assert user.password_hash.startswith("$argon2id$")
 
 
 class TestLoginEndpoint:
     """Tests for POST /auth/login endpoint."""
 
     @patch("app.api.routes.auth.get_session")
-    @patch("app.api.routes.auth.bcrypt.verify")
-    def test_successful_login(self, mock_verify, mock_get_session):
+    def test_successful_login(self, mock_get_session):
         """Should return valid token on successful login."""
+        from argon2 import PasswordHasher
+        
         # Mock database session
         mock_db = Mock()
         mock_db.__enter__ = Mock(return_value=mock_db)
         mock_db.__exit__ = Mock(return_value=None)
         mock_get_session.return_value = mock_db
 
-        # Mock existing user with password
-        mock_user = Mock(handle="testuser", password_hash="hashed_password")
+        # Create real Argon2 hash for testing
+        ph = PasswordHasher()
+        real_hash = ph.hash("correct_password")
+        
+        # Mock existing user with real password hash
+        mock_user = Mock(handle="testuser", password_hash=real_hash)
         mock_result = Mock()
         mock_result.scalar_one_or_none.return_value = mock_user
         mock_db.execute.return_value = mock_result
-
-        # Mock password verification success
-        mock_verify.return_value = True
 
         payload = LoginPayload(handle="testuser", password="correct_password")
 
@@ -297,24 +299,27 @@ class TestLoginEndpoint:
         assert "Invalid credentials" in exc_info.value.detail
 
     @patch("app.api.routes.auth.get_session")
-    @patch("app.api.routes.auth.bcrypt.verify")
-    def test_wrong_password_raises_401(self, mock_verify, mock_get_session):
+    def test_wrong_password_raises_401(self, mock_get_session):
         """Should raise 401 Unauthorized when password is incorrect."""
+        from argon2 import PasswordHasher
+        
         # Mock database session
         mock_db = Mock()
         mock_db.__enter__ = Mock(return_value=mock_db)
         mock_db.__exit__ = Mock(return_value=None)
         mock_get_session.return_value = mock_db
 
-        # Mock existing user
-        mock_user = Mock(handle="testuser", password_hash="hashed_password")
+        # Create real Argon2 hash for correct password
+        ph = PasswordHasher()
+        real_hash = ph.hash("correct_password")
+        
+        # Mock existing user with real hash
+        mock_user = Mock(handle="testuser", password_hash=real_hash)
         mock_result = Mock()
         mock_result.scalar_one_or_none.return_value = mock_user
         mock_db.execute.return_value = mock_result
 
-        # Mock password verification failure
-        mock_verify.return_value = False
-
+        # Try to login with wrong password
         payload = LoginPayload(handle="testuser", password="wrong_password")
 
         with pytest.raises(HTTPException) as exc_info:
@@ -426,9 +431,10 @@ class TestAuthIntegration:
     """Integration tests for complete authentication flows."""
 
     @patch("app.api.routes.auth.get_session")
-    @patch("app.api.routes.auth.bcrypt.verify")
-    def test_complete_register_login_me_flow(self, mock_verify, mock_get_session):
+    def test_complete_register_login_me_flow(self, mock_get_session):
         """Should handle complete auth flow: register → login → /me."""
+        from argon2 import PasswordHasher
+        
         # Mock database session
         mock_db = Mock()
         mock_db.__enter__ = Mock(return_value=mock_db)
@@ -449,17 +455,19 @@ class TestAuthIntegration:
         register_result = register(register_payload)
         assert register_result.access_token is not None
 
-        # Step 2: Login (user exists now)
+        # Step 2: Login (user exists now with real Argon2 hash)
+        ph = PasswordHasher()
+        real_hash = ph.hash("password123")
+        
         created_at = datetime.now(timezone.utc)
         mock_user = Mock(
             handle="integrationuser",
-            password_hash="hashed_password",
+            password_hash=real_hash,
             avatar_url="https://example.com/avatar.jpg",
             bio="Integration test user",
             created_at=created_at,
         )
         mock_result.scalar_one_or_none.return_value = mock_user
-        mock_verify.return_value = True
 
         login_payload = LoginPayload(handle="integrationuser", password="password123")
         login_result = login(login_payload)

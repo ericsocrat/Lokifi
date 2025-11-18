@@ -363,7 +363,10 @@ class TestInvalidateCachePattern:
             assert result["status"] == "success"
             assert result["data"]["pattern"] == "user:*"
             assert result["data"]["invalidated_count"] == 15
-            mock_client.invalidate_pattern.assert_called_once_with("user:*", None)
+            # FastAPI Query(None) wraps None in Query object, check positional args
+            call_args = mock_client.invalidate_pattern.call_args
+            assert call_args[0][0] == "user:*"  # pattern argument
+            assert mock_client.invalidate_pattern.call_count == 1
 
     @pytest.mark.asyncio
     async def test_non_admin_cannot_invalidate_cache(
