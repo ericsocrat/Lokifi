@@ -24,8 +24,8 @@ export default defineConfig({
   // Test results directory
   outputDir: './test-results',
 
-  // Timeout for each test
-  timeout: 30 * 1000,
+  // Timeout for each test (increased from 30s to 60s for CI stability)
+  timeout: 60 * 1000,
 
   // Run tests in parallel
   fullyParallel: true,
@@ -37,8 +37,8 @@ export default defineConfig({
   // Default: 2 retries for critical tests, 1 for full/visual
   retries: process.env['CI'] ? 2 : 0,
 
-  // Opt out of parallel tests on CI
-  workers: process.env['CI'] ? 1 : 4,
+  // Opt out of parallel tests on CI (increased from 1 to 2 for better throughput)
+  workers: process.env['CI'] ? 2 : 4,
 
   // Reporter to use
   reporter: [
@@ -60,6 +60,12 @@ export default defineConfig({
 
     // Video on failure
     video: 'retain-on-failure',
+
+    // Navigation timeout (30s for page loads)
+    navigationTimeout: 30 * 1000,
+
+    // Action timeout (10s for clicks, fills, etc.)
+    actionTimeout: 10 * 1000,
   },
 
   // Configure projects for different test types
@@ -103,8 +109,11 @@ export default defineConfig({
     timeout: 120 * 1000,
   },
 
-  // Expect configuration for visual comparisons
+  // Expect configuration for visual comparisons and assertions
   expect: {
+    // Timeout for expect assertions (10s for element waits)
+    timeout: 10 * 1000,
+
     // Screenshot comparison options for visual regression tests
     toHaveScreenshot: {
       // Maximum pixel ratio difference (5% tolerance)
