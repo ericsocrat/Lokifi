@@ -25,7 +25,7 @@ def client():
 
 @pytest.fixture
 def mock_db_session():
-    """Mock database session for service tests"""
+    """Mock database session for service tests (sync version)"""
     session = AsyncMock()
     session.add = Mock()
     session.commit = AsyncMock()
@@ -35,6 +35,25 @@ def mock_db_session():
     session.close = AsyncMock()
     session.execute = AsyncMock()
     return session
+
+
+@pytest_asyncio.fixture
+async def async_mock_db_session():
+    """
+    Mock database session for async tests (pytest 9.x compatible).
+    
+    Use this fixture for tests decorated with @pytest.mark.asyncio
+    that need a mock database session.
+    """
+    session = AsyncMock()
+    session.add = Mock()
+    session.commit = AsyncMock()
+    session.flush = AsyncMock()
+    session.refresh = AsyncMock()
+    session.rollback = AsyncMock()
+    session.close = AsyncMock()
+    session.execute = AsyncMock()
+    yield session
 
 
 @pytest.fixture

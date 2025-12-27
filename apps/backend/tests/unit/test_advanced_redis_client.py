@@ -71,7 +71,7 @@ class TestadvancedredisclientIntegration:
     """Integration tests for advanced_redis_client"""
 
     @pytest.mark.asyncio
-    async def test_integration_scenario(self, mock_db_session):
+    async def test_integration_scenario(self, async_mock_db_session):
         """Test integration with dependencies"""
         # TODO: Add integration test
         pass

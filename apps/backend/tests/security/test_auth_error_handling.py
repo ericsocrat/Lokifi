@@ -26,7 +26,7 @@ class TestRegistrationErrorHandling:
     """Test /register endpoint error handling (Session 26 patterns)"""
 
     @pytest.mark.asyncio
-    async def test_registration_generic_error_on_exception(self, mock_db_session):
+    async def test_registration_generic_error_on_exception(self, async_mock_db_session):
         """
         Test that registration returns generic error message on unexpected exceptions.
         OWASP A05:2021: No information disclosure to client.
@@ -49,7 +49,7 @@ class TestRegistrationErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
 
-                await register(user_data, mock_db_session)
+                await register(user_data, async_mock_db_session)
 
             # Verify generic error message (no details exposed)
             assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -61,7 +61,7 @@ class TestRegistrationErrorHandling:
             assert "timeout" not in exc_info.value.detail.lower()
 
     @pytest.mark.asyncio
-    async def test_registration_logs_full_error_details(self, mock_db_session, caplog):
+    async def test_registration_logs_full_error_details(self, async_mock_db_session, caplog):
         """
         Test that registration logs full error details internally.
         Verifies exc_info=True captures stack trace for debugging.
@@ -84,7 +84,7 @@ class TestRegistrationErrorHandling:
                 try:
                     from app.routers.auth import register
 
-                    await register(user_data, mock_db_session)
+                    await register(user_data, async_mock_db_session)
                 except HTTPException:
                     pass  # Expected
 
@@ -101,7 +101,7 @@ class TestRegistrationErrorHandling:
                 assert log_record.exc_info is not None
 
     @pytest.mark.asyncio
-    async def test_registration_reraises_http_exceptions(self, mock_db_session):
+    async def test_registration_reraises_http_exceptions(self, async_mock_db_session):
         """
         Test that HTTP exceptions (validation errors) are re-raised as-is.
         Session 26 pattern: Validation errors should bubble up unchanged.
@@ -125,14 +125,14 @@ class TestRegistrationErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
 
-                await register(user_data, mock_db_session)
+                await register(user_data, async_mock_db_session)
 
             # Verify original HTTPException is preserved
             assert exc_info.value.status_code == status.HTTP_409_CONFLICT
             assert exc_info.value.detail == "User already exists"
 
     @pytest.mark.asyncio
-    async def test_registration_no_stack_trace_in_response(self, mock_db_session):
+    async def test_registration_no_stack_trace_in_response(self, async_mock_db_session):
         """
         Test that stack traces are NEVER included in HTTP responses.
         OWASP A05:2021: Information disclosure prevention.
@@ -163,7 +163,7 @@ class TestRegistrationErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
 
-                await register(user_data, mock_db_session)
+                await register(user_data, async_mock_db_session)
 
             # Assert: No file paths, line numbers, or stack trace in response
             response_detail = exc_info.value.detail
@@ -178,7 +178,7 @@ class TestLoginErrorHandling:
     """Test /login endpoint error handling (Session 26 patterns)"""
 
     @pytest.mark.asyncio
-    async def test_login_generic_error_on_exception(self, mock_db_session):
+    async def test_login_generic_error_on_exception(self, async_mock_db_session):
         """
         Test that login returns generic error message on unexpected exceptions.
         OWASP A05:2021: No information disclosure to client.
@@ -195,7 +195,7 @@ class TestLoginErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import login
 
-                await login(login_data, mock_db_session)
+                await login(login_data, async_mock_db_session)
 
             # Verify generic error message
             assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -207,7 +207,7 @@ class TestLoginErrorHandling:
             assert "connection" not in exc_info.value.detail.lower()
 
     @pytest.mark.asyncio
-    async def test_login_logs_identifier_context(self, mock_db_session, caplog):
+    async def test_login_logs_identifier_context(self, async_mock_db_session, caplog):
         """
         Test that login logs email for debugging context.
         Session 26 pattern: Log context without exposing passwords.
@@ -225,7 +225,7 @@ class TestLoginErrorHandling:
                 try:
                     from app.routers.auth import login
 
-                    await login(login_data, mock_db_session)
+                    await login(login_data, async_mock_db_session)
                 except HTTPException:
                     pass
 
@@ -241,7 +241,7 @@ class TestLoginErrorHandling:
                 assert "password" not in str(log_record.__dict__).lower()
 
     @pytest.mark.asyncio
-    async def test_login_reraises_invalid_credentials(self, mock_db_session):
+    async def test_login_reraises_invalid_credentials(self, async_mock_db_session):
         """
         Test that login re-raises HTTPException for invalid credentials.
         Session 26 pattern: Validation errors bubble up unchanged.
@@ -259,14 +259,14 @@ class TestLoginErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import login
 
-                await login(login_data, mock_db_session)
+                await login(login_data, async_mock_db_session)
 
             # Verify original exception preserved
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
             assert exc_info.value.detail == "Invalid credentials"
 
     @pytest.mark.asyncio
-    async def test_login_no_timing_attack_info(self, mock_db_session):
+    async def test_login_no_timing_attack_info(self, async_mock_db_session):
         """
         Test that login errors don't leak timing information.
         Security best practice: Same error for "user not found" vs "wrong password".
@@ -287,7 +287,7 @@ class TestLoginErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import login
 
-                await login(login_data, mock_db_session)
+                await login(login_data, async_mock_db_session)
 
             # Verify no "user not found" specific message
             assert "not found" not in exc_info.value.detail.lower()
@@ -299,7 +299,7 @@ class TestGoogleOAuthErrorHandling:
     """Test /google endpoint error handling (Session 26 patterns)"""
 
     @pytest.mark.asyncio
-    async def test_google_oauth_generic_error_on_unexpected_exception(self, mock_db_session):
+    async def test_google_oauth_generic_error_on_unexpected_exception(self, async_mock_db_session):
         """
         Test that Google OAuth returns generic error on unexpected exceptions.
         OWASP A05:2021: No information disclosure to client.
@@ -336,7 +336,7 @@ class TestGoogleOAuthErrorHandling:
                     with pytest.raises(HTTPException) as exc_info:
                         from app.routers.auth import google_oauth
 
-                        await google_oauth(oauth_data, mock_db_session)
+                        await google_oauth(oauth_data, async_mock_db_session)
 
                     # Verify generic error message for unexpected exceptions
                     assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -347,7 +347,7 @@ class TestGoogleOAuthErrorHandling:
                     assert "database error" not in exc_info.value.detail.lower()
 
     @pytest.mark.asyncio
-    async def test_google_oauth_401_on_invalid_token(self, mock_db_session):
+    async def test_google_oauth_401_on_invalid_token(self, async_mock_db_session):
         """
         Test that Google OAuth returns 401 for invalid tokens.
         Session 26 pattern: Token validation errors get 401, not 500.
@@ -368,14 +368,14 @@ class TestGoogleOAuthErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import google_oauth
 
-                await google_oauth(oauth_data, mock_db_session)
+                await google_oauth(oauth_data, async_mock_db_session)
 
             # Verify 401 status code for validation error
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
             assert "Google token verification failed" in exc_info.value.detail
 
     @pytest.mark.asyncio
-    async def test_google_oauth_logs_token_prefix_only(self, mock_db_session, caplog):
+    async def test_google_oauth_logs_token_prefix_only(self, async_mock_db_session, caplog):
         """
         Test that Google OAuth logs token prefix (not full token).
         Security best practice: Don't log sensitive credentials.
@@ -395,7 +395,7 @@ class TestGoogleOAuthErrorHandling:
                 try:
                     from app.routers.auth import google_oauth
 
-                    await google_oauth(oauth_data, mock_db_session)
+                    await google_oauth(oauth_data, async_mock_db_session)
                 except HTTPException:
                     pass
 
@@ -409,7 +409,7 @@ class TestGoogleOAuthErrorHandling:
                 # But full JWT should never appear
 
     @pytest.mark.asyncio
-    async def test_google_oauth_reraises_validation_errors(self, mock_db_session):
+    async def test_google_oauth_reraises_validation_errors(self, async_mock_db_session):
         """
         Test that Google OAuth raises 401 for validation errors.
         Implementation: Validation errors return 401 UNAUTHORIZED.
@@ -430,7 +430,7 @@ class TestGoogleOAuthErrorHandling:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import google_oauth
 
-                await google_oauth(oauth_data, mock_db_session)
+                await google_oauth(oauth_data, async_mock_db_session)
 
             # Verify 401 status code (actual implementation behavior)
             assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
@@ -441,7 +441,7 @@ class TestOWASPCompliance:
     """Test OWASP A05:2021 Security Misconfiguration compliance"""
 
     @pytest.mark.asyncio
-    async def test_no_traceback_format_exc_in_responses(self, mock_db_session):
+    async def test_no_traceback_format_exc_in_responses(self, async_mock_db_session):
         """
         Critical: Verify traceback.format_exc() is NEVER used in responses.
         Session 26 fix: Replaced with logger.error(exc_info=True).
@@ -465,7 +465,7 @@ class TestOWASPCompliance:
             with pytest.raises(HTTPException) as exc_info:
                 from app.routers.auth import register
 
-                await register(user_data, mock_db_session)
+                await register(user_data, async_mock_db_session)
 
             # Assert: Response detail is generic, not traceback
             detail = exc_info.value.detail
@@ -497,7 +497,7 @@ class TestOWASPCompliance:
         assert "exc_info=True" in source
 
     @pytest.mark.asyncio
-    async def test_generic_errors_dont_expose_internals(self, mock_db_session):
+    async def test_generic_errors_dont_expose_internals(self, async_mock_db_session):
         """
         Test that all auth endpoint errors use generic messages.
         OWASP A05:2021: No information disclosure about system internals.
@@ -526,22 +526,11 @@ class TestOWASPCompliance:
                 with pytest.raises(HTTPException) as exc_info:
                     from app.routers.auth import register
 
-                    await register(user_data, mock_db_session)
+                    await register(user_data, async_mock_db_session)
 
                 # Assert: Generic message, no internal details
                 assert internal_error not in exc_info.value.detail
                 assert "Internal server error" in exc_info.value.detail
 
 
-# Pytest fixtures
-@pytest.fixture
-async def mock_db_session():
-    """Mock database session for testing"""
-    session = AsyncMock(spec=AsyncSession)
-    return session
-
-
-@pytest.fixture
-def caplog(caplog):
-    """Pytest caplog fixture for capturing log output"""
-    return caplog
+# Note: async_mock_db_session fixture is provided by conftest.py (pytest 9.x compatible)
