@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2025-11-18T16:26:22.192Z",
+  "generated": "2025-12-28T01:51:34.736Z",
   "git": {
     "branch": "main",
-    "commit": "fa622039",
+    "commit": "e666ae2b",
     "author": "ericsocrat",
-    "message": "fix(backend): migrate auth from passlib.bcrypt to Argon2, fix monitoring tests"
+    "message": "chore(deps): upgrade backend packages"
   },
   "current": {
     "tests": {
@@ -1389,44 +1389,59 @@
         "branch": "main",
         "commit": "fa622039"
       }
+    },
+    {
+      "timestamp": "2025-12-28T01:51:34.736Z",
+      "coverage": {
+        "statements": 14.100978035059871,
+        "branches": 90.33273381294964,
+        "functions": 81.03703703703704,
+        "lines": 14.100978035059871
+      },
+      "tests": 0,
+      "files": 196,
+      "git": {
+        "branch": "main",
+        "commit": "e666ae2b"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.64%",
-      "value": 0.6351997782375687,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "branches": {
-      "text": "↑ 0.07%",
-      "value": 0.07074666514934336,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "functions": {
-      "text": "↓ 0.46%",
-      "value": -0.46143391097520237,
-      "direction": "↓",
-      "color": "red"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "lines": {
-      "text": "↑ 0.64%",
-      "value": 0.6351997782375687,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     }
   },
   "weeklyTrend": {
-    "statements": 2.3786450340628615,
-    "branches": 0.972268696670568,
-    "functions": 0.4021164021164054,
-    "lines": 2.3786450340628615
+    "statements": 2.0901111789709432,
+    "branches": 0.8620451390737145,
+    "functions": 0.18260665729020786,
+    "lines": 2.0901111789709432
   },
   "metadata": {
-    "totalRuns": 21,
+    "totalRuns": 22,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2025-11-18T16:26:22.192Z",
+    "lastRun": "2025-12-28T01:51:34.736Z",
     "bestCoverage": {
       "statements": 14.100978035059871,
       "branches": 90.33273381294964,
@@ -1442,8 +1457,8 @@
     },
     "velocity": {
       "testsPerDay": "NaN",
-      "filesPerRun": "8.9",
-      "avgCoverageGain": "0.13"
+      "filesPerRun": "8.5",
+      "avgCoverageGain": "0.12"
     }
   },
   "insights": [
