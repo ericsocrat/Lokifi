@@ -6,10 +6,6 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from fastapi import HTTPException, status
-from sqlalchemy import and_, delete, func, or_, select, update
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.models.follow import Follow
 from app.models.notification_models import NotificationPreference
 from app.models.profile import Profile
@@ -24,6 +20,9 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
+from fastapi import HTTPException, status
+from sqlalchemy import and_, delete, func, or_, select, update
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class EnhancedProfileService:
@@ -375,32 +374,36 @@ class EnhancedProfileService:
                 "updated_at": user.updated_at.isoformat(),
                 "last_login": user.last_login.isoformat() if user.last_login else None,
             },
-            "profile": {
-                "id": str(profile.id),
-                "username": profile.username,
-                "display_name": profile.display_name,
-                "bio": profile.bio,
-                "avatar_url": profile.avatar_url,
-                "is_public": profile.is_public,
-                "created_at": profile.created_at.isoformat(),
-                "updated_at": profile.updated_at.isoformat(),
-            }
-            if profile
-            else None,
-            "notification_preferences": {
-                "email_enabled": prefs.email_enabled,
-                "email_follows": prefs.email_follows,
-                "email_messages": prefs.email_messages,
-                "email_ai_responses": prefs.email_ai_responses,
-                "email_system": prefs.email_system,
-                "push_enabled": prefs.push_enabled,
-                "push_follows": prefs.push_follows,
-                "push_messages": prefs.push_messages,
-                "push_ai_responses": prefs.push_ai_responses,
-                "push_system": prefs.push_system,
-            }
-            if prefs
-            else None,
+            "profile": (
+                {
+                    "id": str(profile.id),
+                    "username": profile.username,
+                    "display_name": profile.display_name,
+                    "bio": profile.bio,
+                    "avatar_url": profile.avatar_url,
+                    "is_public": profile.is_public,
+                    "created_at": profile.created_at.isoformat(),
+                    "updated_at": profile.updated_at.isoformat(),
+                }
+                if profile
+                else None
+            ),
+            "notification_preferences": (
+                {
+                    "email_enabled": prefs.email_enabled,
+                    "email_follows": prefs.email_follows,
+                    "email_messages": prefs.email_messages,
+                    "email_ai_responses": prefs.email_ai_responses,
+                    "email_system": prefs.email_system,
+                    "push_enabled": prefs.push_enabled,
+                    "push_follows": prefs.push_follows,
+                    "push_messages": prefs.push_messages,
+                    "push_ai_responses": prefs.push_ai_responses,
+                    "push_system": prefs.push_system,
+                }
+                if prefs
+                else None
+            ),
             "following": [str(f.following_id) for f in following],
             "followers": [str(f.follower_id) for f in followers],
             "stats": {"follower_count": len(followers), "following_count": len(following)},

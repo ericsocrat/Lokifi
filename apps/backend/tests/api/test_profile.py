@@ -18,9 +18,6 @@ from typing import cast
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from fastapi import HTTPException, status
-from pydantic import HttpUrl
-
 from app.routers.profile import (
     delete_account,
     get_my_profile,
@@ -43,6 +40,8 @@ from app.schemas.profile import (
     UserSettingsResponse,
     UserSettingsUpdateRequest,
 )
+from fastapi import HTTPException, status
+from pydantic import HttpUrl
 
 # ============================================================================
 # FIXTURES

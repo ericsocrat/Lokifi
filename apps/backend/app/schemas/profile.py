@@ -8,6 +8,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, HttpUrl
 
+
 # Profile request schemas
 class ProfileUpdateRequest(BaseModel):
     """Profile update request schema."""
