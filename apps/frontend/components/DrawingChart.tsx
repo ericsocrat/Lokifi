@@ -233,25 +233,41 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!isMouseDown || !isDrawing) return;
+      if (!isMouseDown || !isDrawing || !currentDrawing) return;
 
-      // const point = getMousePosition(e);
-      // For tools that need continuous updates (like rectangles), update the current drawing
-      // This would typically update a preview of the shape being drawn
+      // For tools that need continuous updates (like rectangles), update the preview
+      const coords = getChartCoordinates(e);
+      if (!coords) return;
+
+      // Update the current drawing's second point for preview
+      // This allows real-time feedback while dragging
+      const previewPoint: Point = { x: 0, y: 0, time: coords.time, price: coords.price };
+
+      // For two-point tools, we want to show a preview with the current mouse position
+      // The actual second point will be added on mouseUp
+      // TODO: Implement preview rendering (requires additional state or primitive updates)
     },
-    [isMouseDown, isDrawing]
+    [isMouseDown, isDrawing, currentDrawing, getChartCoordinates]
   );
 
-  const handleMouseUp = useCallback(() => {
-    setIsMouseDown(false);
+  const handleMouseUp = useCallback(
+    (e: React.MouseEvent) => {
+      setIsMouseDown(false);
 
-    if (isDrawing && activeTool !== 'cursor') {
-      // For most tools, finish drawing on mouse up
-      if (['rectangle', 'circle', 'trendline', 'hline', 'vline'].includes(activeTool)) {
-        finishDrawing();
+      if (isDrawing && activeTool !== 'cursor') {
+        // For two-point drawing tools, add the second point and finish
+        if (['rectangle', 'circle', 'trendline', 'hline', 'vline'].includes(activeTool)) {
+          const coords = getChartCoordinates(e);
+          if (coords) {
+            const point: Point = { x: 0, y: 0, time: coords.time, price: coords.price };
+            addPoint(point);
+          }
+          finishDrawing();
+        }
       }
-    }
-  }, [isDrawing, activeTool, finishDrawing]);
+    },
+    [isDrawing, activeTool, finishDrawing, getChartCoordinates, addPoint]
+  );
 
   const handleDoubleClick = useCallback(() => {
     if (isDrawing) {

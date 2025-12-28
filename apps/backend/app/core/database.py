@@ -4,6 +4,7 @@ import re
 from collections.abc import AsyncGenerator
 from typing import Optional
 
+from app.core.config import Settings, settings
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -12,8 +13,6 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
-
-from app.core.config import Settings, settings
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +59,8 @@ class DatabaseManager:
 
             # For asyncpg, don't use QueuePool - use NullPool or default AsyncAdaptedQueuePool
             # QueuePool is for sync engines only
+            # SSL configuration: None for local Docker, 'require' for production
+            ssl_mode = None if not self.settings.DATABASE_SSL_REQUIRED else "require"
             return create_async_engine(
                 database_url,
                 poolclass=None,  # Use default AsyncAdaptedQueuePool for async engines
@@ -69,8 +70,7 @@ class DatabaseManager:
                 pool_recycle=self.settings.DATABASE_POOL_RECYCLE,
                 pool_pre_ping=True,
                 echo=False,
-                # For asyncpg, connect_args should be minimal
-                # server_settings are handled differently in asyncpg
+                connect_args={"ssl": ssl_mode},
             )
 
     async def initialize(self):
