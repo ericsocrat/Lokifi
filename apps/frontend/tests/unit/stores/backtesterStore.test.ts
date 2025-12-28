@@ -1,7 +1,11 @@
 /**
  * @vitest-environment jsdom
  */
-import type { BacktestTrade, StrategyCondition } from '@/lib/stores/backtesterStore';
+import type {
+  BacktestTrade,
+  StrategyCondition,
+  TradingStrategy,
+} from '@/lib/stores/backtesterStore';
 import { calculatePerformanceMetrics, useBacktesterStore } from '@/lib/stores/backtesterStore';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -120,7 +124,7 @@ describe('BacktesterStore', () => {
       const id = createStrategy(createTestStrategy());
 
       const { strategies } = useBacktesterStore.getState();
-      const strategy = strategies.find((s) => s.id === id);
+      const strategy = strategies.find((s: TradingStrategy) => s.id === id);
 
       expect(strategy?.createdAt).toBeInstanceOf(Date);
       expect(strategy?.updatedAt).toBeInstanceOf(Date);
@@ -141,7 +145,7 @@ describe('BacktesterStore', () => {
       });
 
       const { strategies } = useBacktesterStore.getState();
-      const strategy = strategies.find((s) => s.id === id);
+      const strategy = strategies.find((s: TradingStrategy) => s.id === id);
 
       expect(strategy?.name).toBe('Updated Strategy');
       expect(strategy?.description).toBe('Updated description');
@@ -184,8 +188,8 @@ describe('BacktesterStore', () => {
       const { strategies } = useBacktesterStore.getState();
       expect(strategies).toHaveLength(2);
 
-      const original = strategies.find((s) => s.id === originalId);
-      const duplicate = strategies.find((s) => s.id === duplicateId);
+      const original = strategies.find((s: TradingStrategy) => s.id === originalId);
+      const duplicate = strategies.find((s: TradingStrategy) => s.id === duplicateId);
 
       expect(original?.name).toBe('Test Strategy');
       // Duplicate should have a different ID
@@ -216,8 +220,8 @@ describe('BacktesterStore', () => {
       });
 
       const { strategies } = useBacktesterStore.getState();
-      const firstStrategy = strategies.find((s) => s.id === id);
-      const secondStrategy = strategies.find((s) => s.id === id2);
+      const firstStrategy = strategies.find((s: TradingStrategy) => s.id === id);
+      const secondStrategy = strategies.find((s: TradingStrategy) => s.id === id2);
 
       // Manually set to first
       setActiveStrategy(firstStrategy!);
@@ -265,7 +269,7 @@ describe('BacktesterStore', () => {
       addCondition(strategyId, 'entry', condition);
 
       const { strategies } = useBacktesterStore.getState();
-      const strategy = strategies.find((s) => s.id === strategyId);
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
 
       expect(strategy?.config.entryConditions).toHaveLength(1);
       expect(strategy?.config.entryConditions[0].type).toBe('indicator');
@@ -288,7 +292,7 @@ describe('BacktesterStore', () => {
       addCondition(strategyId, 'exit', condition);
 
       const { strategies } = useBacktesterStore.getState();
-      const strategy = strategies.find((s) => s.id === strategyId);
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
 
       expect(strategy?.config.exitConditions).toHaveLength(1);
       expect(strategy?.config.exitConditions[0].type).toBe('price');
@@ -308,7 +312,7 @@ describe('BacktesterStore', () => {
       });
 
       const { strategies } = useBacktesterStore.getState();
-      const conditionId = strategies.find((s) => s.id === strategyId)?.config.entryConditions[0].id;
+      const conditionId = strategies.find((s: TradingStrategy) => s.id === strategyId)?.config.entryConditions[0].id;
 
       updateCondition(strategyId, 'entry', conditionId!, {
         indicatorValue: 25,
@@ -317,7 +321,7 @@ describe('BacktesterStore', () => {
 
       const updatedStrategy = useBacktesterStore
         .getState()
-        .strategies.find((s) => s.id === strategyId);
+        .strategies.find((s: TradingStrategy) => s.id === strategyId);
       expect(updatedStrategy?.config.entryConditions[0].indicatorValue).toBe(25);
       expect(updatedStrategy?.config.entryConditions[0].indicatorPeriod).toBe(21);
     });
@@ -330,13 +334,13 @@ describe('BacktesterStore', () => {
       addCondition(strategyId, 'entry', { type: 'indicator', indicatorType: 'rsi' });
       addCondition(strategyId, 'entry', { type: 'volume', volumeOperator: 'spike' });
 
-      let strategy = useBacktesterStore.getState().strategies.find((s) => s.id === strategyId);
+      let strategy = useBacktesterStore.getState().strategies.find((s: TradingStrategy) => s.id === strategyId);
       expect(strategy?.config.entryConditions).toHaveLength(2);
 
       const conditionToRemove = strategy?.config.entryConditions[0].id;
       removeCondition(strategyId, 'entry', conditionToRemove!);
 
-      strategy = useBacktesterStore.getState().strategies.find((s) => s.id === strategyId);
+      strategy = useBacktesterStore.getState().strategies.find((s: TradingStrategy) => s.id === strategyId);
       expect(strategy?.config.entryConditions).toHaveLength(1);
       expect(strategy?.config.entryConditions[0].type).toBe('volume');
     });

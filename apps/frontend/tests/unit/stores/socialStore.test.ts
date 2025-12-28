@@ -56,10 +56,17 @@ class MockWebSocket {
 vi.stubGlobal('WebSocket', MockWebSocket);
 
 // Import store after mocks
+import type {
+  SocialPost,
+  SocialUser,
+  CopyTrading,
+  Notification,
+} from '@/lib/stores/socialStore';
 import { useSocialStore } from '@/lib/stores/socialStore';
 
 // Mock fetch - defined after import but before tests
-let mockFetch: ReturnType<typeof vi.spyOn>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mockFetch: ReturnType<typeof vi.spyOn<any, any>>;
 
 // Test data factories
 const createMockUser = (overrides = {}) => ({
@@ -706,7 +713,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const updatedPost = state.feed.find((p) => p.id === 'post-1');
+        const updatedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(updatedPost?.content).toBe('Updated content');
       });
 
@@ -729,7 +736,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const post = state.feed.find((p) => p.id === 'post-1');
+        const post = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(post?.content).toBe('Original content');
         expect(state.error).toBe('Failed to update post');
       });
@@ -801,7 +808,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const likedPost = state.feed.find((p) => p.id === 'post-1');
+        const likedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(likedPost?.likes).toBe(11);
         expect(likedPost?.isLiked).toBe(true);
       });
@@ -822,7 +829,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const rollbackPost = state.feed.find((p) => p.id === 'post-1');
+        const rollbackPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(rollbackPost?.likes).toBe(10);
         expect(rollbackPost?.isLiked).toBe(false);
       });
@@ -845,7 +852,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const unlikedPost = state.feed.find((p) => p.id === 'post-1');
+        const unlikedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(unlikedPost?.likes).toBe(9);
         expect(unlikedPost?.isLiked).toBe(false);
       });
@@ -868,7 +875,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const bookmarkedPost = state.feed.find((p) => p.id === 'post-1');
+        const bookmarkedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(bookmarkedPost?.isBookmarked).toBe(true);
       });
     });
@@ -890,7 +897,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const unbookmarkedPost = state.feed.find((p) => p.id === 'post-1');
+        const unbookmarkedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(unbookmarkedPost?.isBookmarked).toBe(false);
       });
     });
@@ -912,7 +919,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const sharedPost = state.feed.find((p) => p.id === 'post-1');
+        const sharedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(sharedPost?.shares).toBe(6);
       });
     });
@@ -944,7 +951,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const updatedPost = state.feed.find((p) => p.id === 'post-1');
+        const updatedPost = state.feed.find((p: SocialPost) => p.id === 'post-1');
         expect(updatedPost?.comments).toBe(6);
       });
 
@@ -1143,8 +1150,8 @@ describe('socialStore', () => {
         // Should unfollow when blocking
         expect(state.following.has('user-2')).toBe(false);
         // Should filter out blocked user's posts from feed
-        expect(state.feed.find((p) => p.authorId === 'user-2')).toBeUndefined();
-        expect(state.feed.find((p) => p.authorId === 'user-3')).toBeDefined();
+        expect(state.feed.find((p: SocialPost) => p.authorId === 'user-2')).toBeUndefined();
+        expect(state.feed.find((p: SocialPost) => p.authorId === 'user-3')).toBeDefined();
       });
     });
 
@@ -1384,7 +1391,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const updated = state.copyTradingPositions.find((ct) => ct.id === 'copy-1');
+        const updated = state.copyTradingPositions.find((ct: CopyTrading) => ct.id === 'copy-1');
         expect(updated?.settings.riskMultiplier).toBe(0.5);
       });
     });
@@ -1469,7 +1476,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const updated = state.notifications.find((n) => n.id === 'notification-1');
+        const updated = state.notifications.find((n: Notification) => n.id === 'notification-1');
         expect(updated?.isRead).toBe(true);
       });
 
@@ -1489,7 +1496,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        const n = state.notifications.find((n) => n.id === 'notification-1');
+        const n = state.notifications.find((n: Notification) => n.id === 'notification-1');
         expect(n?.isRead).toBe(false);
         expect(state.error).toBe('Failed to mark notification as read');
       });
@@ -1516,7 +1523,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        expect(state.notifications.every((n) => n.isRead)).toBe(true);
+        expect(state.notifications.every((n: Notification) => n.isRead)).toBe(true);
       });
 
       it('should rollback all on failure', async () => {
@@ -1538,7 +1545,7 @@ describe('socialStore', () => {
         });
 
         const state = useSocialStore.getState();
-        expect(state.notifications.every((n) => !n.isRead)).toBe(true);
+        expect(state.notifications.every((n: Notification) => !n.isRead)).toBe(true);
       });
     });
   });
