@@ -55,12 +55,12 @@
     "pdf-lib": "^1.17.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "swr": "^2.3.0",
+    "swr": "^2.3.8",
     "web-vitals": "^5.1.0",
     "y-websocket": "^2.0.4",
-    "yjs": "^13.6.20",
+    "yjs": "^13.6.28",
     "zod": "^3.24.1",
-    "zustand": "^5.0.1"
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@axe-core/cli": "^4.11.0",
@@ -68,7 +68,7 @@
     "@axe-core/react": "^4.11.0",
     "@lhci/cli": "^0.15.0",
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
-    "@next/bundle-analyzer": "^16.0.1",
+    "@next/bundle-analyzer": "^16.1.1",
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
@@ -80,7 +80,7 @@
     "@vitest/coverage-v8": "^3.2.4",
     "autoprefixer": "^10.4.23",
     "eslint": "^9.39.2",
-    "eslint-config-next": "^15.1.0",
+    "eslint-config-next": "^15.5.9",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-security": "^3.0.1",
     "husky": "^9.1.7",
@@ -90,12 +90,12 @@
     "msw": "^2.12.7",
     "postcss": "^8.5.1",
     "prettier": "^3.7.4",
-    "rimraf": "^6.0.1",
+    "rimraf": "^6.1.2",
     "supertest": "^7.1.4",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.7.2",
     "vitest": "^3.2.4",
-    "wait-on": "^9.0.1"
+    "wait-on": "^9.0.3"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
