@@ -177,15 +177,15 @@ describe('BacktesterStore', () => {
       const originalId = createStrategy(createTestStrategy());
 
       // Small delay to ensure different timestamp for ID
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       const duplicateId = duplicateStrategy(originalId, 'Duplicate Strategy');
 
       const { strategies } = useBacktesterStore.getState();
       expect(strategies).toHaveLength(2);
 
-      const original = strategies.find(s => s.id === originalId);
-      const duplicate = strategies.find(s => s.id === duplicateId);
+      const original = strategies.find((s) => s.id === originalId);
+      const duplicate = strategies.find((s) => s.id === duplicateId);
 
       expect(original?.name).toBe('Test Strategy');
       // Duplicate should have a different ID
