@@ -3,10 +3,10 @@ Pydantic schemas for profile and user settings.
 """
 
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, HttpUrl
-
 
 # Profile request schemas
 class ProfileUpdateRequest(BaseModel):
@@ -33,15 +33,15 @@ class NotificationPreferencesUpdateRequest(BaseModel):
     """Notification preferences update request schema."""
 
     email_enabled: bool | None = None
-    email_follows: bool | None = None
-    email_messages: bool | None = None
-    email_ai_responses: bool | None = None
-    email_system: bool | None = None
     push_enabled: bool | None = None
-    push_follows: bool | None = None
-    push_messages: bool | None = None
-    push_ai_responses: bool | None = None
-    push_system: bool | None = None
+    in_app_enabled: bool | None = None
+    type_preferences: dict[str, Any] | None = None
+    quiet_hours_start: str | None = None
+    quiet_hours_end: str | None = None
+    timezone: str | None = None
+    daily_digest_enabled: bool | None = None
+    weekly_digest_enabled: bool | None = None
+    digest_time: str | None = None
 
 
 # Response schemas
@@ -86,15 +86,15 @@ class NotificationPreferencesResponse(BaseModel):
     id: UUID
     user_id: UUID
     email_enabled: bool
-    email_follows: bool
-    email_messages: bool
-    email_ai_responses: bool
-    email_system: bool
     push_enabled: bool
-    push_follows: bool
-    push_messages: bool
-    push_ai_responses: bool
-    push_system: bool
+    in_app_enabled: bool
+    type_preferences: dict[str, Any] | None = None
+    quiet_hours_start: str | None = None
+    quiet_hours_end: str | None = None
+    timezone: str = "UTC"
+    daily_digest_enabled: bool = False
+    weekly_digest_enabled: bool = False
+    digest_time: str = "09:00"
     created_at: datetime
     updated_at: datetime
 

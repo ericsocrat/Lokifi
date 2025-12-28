@@ -128,7 +128,20 @@ class EnhancedProfileService:
 
         if not prefs:
             # Create default preferences if they don't exist
-            prefs = NotificationPreference(id=uuid.uuid4(), user_id=user_id)
+            prefs = NotificationPreference(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                email_enabled=True,
+                push_enabled=True,
+                in_app_enabled=True,
+                type_preferences={},
+                timezone="UTC",
+                daily_digest_enabled=False,
+                weekly_digest_enabled=False,
+                digest_time="09:00",
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            )
             self.db.add(prefs)
             await self.db.commit()
 
@@ -144,8 +157,21 @@ class EnhancedProfileService:
         prefs = result.scalar_one_or_none()
 
         if not prefs:
-            # Create new preferences if they don't exist
-            prefs = NotificationPreference(id=uuid.uuid4(), user_id=user_id)
+            # Create new preferences if they don't exist with defaults
+            prefs = NotificationPreference(
+                id=uuid.uuid4(),
+                user_id=user_id,
+                email_enabled=True,
+                push_enabled=True,
+                in_app_enabled=True,
+                type_preferences={},
+                timezone="UTC",
+                daily_digest_enabled=False,
+                weekly_digest_enabled=False,
+                digest_time="09:00",
+                created_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
+            )
             self.db.add(prefs)
             await self.db.flush()
 
