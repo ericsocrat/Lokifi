@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["18", "20", "22"]
+        node-version: ["22"]
     defaults:
       run:
         working-directory: apps/frontend
@@ -239,8 +239,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Component | Status | Matrix |" >> $GITHUB_STEP_SUMMARY
           echo "|-----------|--------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Frontend | ${{ needs.frontend-coverage.result }} | Node 18, 20, 22 |" >> $GITHUB_STEP_SUMMARY
+          echo "| Frontend | ${{ needs.frontend-coverage.result }} | Node 22 |" >> $GITHUB_STEP_SUMMARY
           echo "| Backend | ${{ needs.backend-coverage.result }} | Python 3.11, 3.12, 3.13 |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Expected Time**: ~4-6 minutes (matrix parallel execution)" >> $GITHUB_STEP_SUMMARY
+          echo "**Expected Time**: ~3-5 minutes (single Node version)" >> $GITHUB_STEP_SUMMARY
           echo "**Coverage Threshold**: Frontend 10%, Backend 25%" >> $GITHUB_STEP_SUMMARY
