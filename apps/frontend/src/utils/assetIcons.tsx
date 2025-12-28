@@ -265,7 +265,7 @@ export function AssetIcon({ symbol, type, size = 32, className = '' }: AssetIcon
       width={size}
       height={size}
       className={`rounded-full object-cover ${className}`}
-      onError={(e) => {
+      onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
         // Fallback to initials avatar on error
         const target = e.target as HTMLImageElement;
         target.src = `https://ui-avatars.com/api/?name=${symbol}&background=667eea&color=fff&bold=true&size=${size * 2}`;
