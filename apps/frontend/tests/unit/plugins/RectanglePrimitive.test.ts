@@ -5,12 +5,9 @@
  * Tests the TradingView Primitives API implementation for rectangles
  */
 
-import {
-  RectanglePrimitive,
-  RectangleOptions,
-} from '@/lib/plugins/RectanglePrimitive';
+import { RectangleOptions, RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
 import { Time } from 'lightweight-charts';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock time values (UNIX timestamps for TradingView)
 const mockTime1 = 1704067200 as Time; // 2024-01-01 00:00:00 UTC
@@ -207,10 +204,7 @@ describe('RectanglePrimitive', () => {
         requestUpdate: vi.fn(),
       });
 
-      primitive.updatePoints(
-        { time: mockTime1, price: 50 },
-        { time: mockTime2, price: 200 }
-      );
+      primitive.updatePoints({ time: mockTime1, price: 50 }, { time: mockTime2, price: 200 });
 
       expect((primitive as any)._minPrice).toBe(50);
       expect((primitive as any)._maxPrice).toBe(200);

@@ -6,13 +6,13 @@
  * Latest values, and Performance.
  */
 
-import { describe, it, expect } from 'vitest';
 import {
   calculateStochastic,
-  interpretStochastic,
   getLatestStochastic,
+  interpretStochastic,
   type StochasticData,
 } from '@/services/indicators/stochastic';
+import { describe, expect, it } from 'vitest';
 
 describe('Stochastic Oscillator Indicator', () => {
   // Test data: 20 price points with known ranges
@@ -434,7 +434,7 @@ describe('Stochastic Oscillator Indicator', () => {
     it('should handle interpretation efficiently (1000 calls)', () => {
       const start = performance.now();
       for (let i = 0; i < 1000; i++) {
-        interpretStochastic(50 + i % 50, 50 + (i + 1) % 50, 50 + (i - 1) % 50, 50 + i % 50);
+        interpretStochastic(50 + (i % 50), 50 + ((i + 1) % 50), 50 + ((i - 1) % 50), 50 + (i % 50));
       }
       const duration = performance.now() - start;
 

@@ -5,12 +5,9 @@
  * Tests the TradingView Primitives API implementation for Fibonacci retracement
  */
 
-import {
-  FibonacciPrimitive,
-  FibonacciOptions,
-} from '@/lib/plugins/FibonacciPrimitive';
+import { FibonacciOptions, FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
 import { Time } from 'lightweight-charts';
-import { describe, expect, it, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock time values (UNIX timestamps for TradingView)
 const mockTime1 = 1704067200 as Time; // 2024-01-01 00:00:00 UTC
@@ -221,10 +218,7 @@ describe('FibonacciPrimitive', () => {
         requestUpdate: vi.fn(),
       });
 
-      primitive.updatePoints(
-        { time: mockTime1, price: 50 },
-        { time: mockTime2, price: 250 }
-      );
+      primitive.updatePoints({ time: mockTime1, price: 50 }, { time: mockTime2, price: 250 });
 
       expect((primitive as any)._minPrice).toBe(50);
       expect((primitive as any)._maxPrice).toBe(250);
