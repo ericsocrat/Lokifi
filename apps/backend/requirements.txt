@@ -41,7 +41,7 @@ docker==7.1.0
 ecdsa==0.19.1
 email-validator==2.3.0
 Faker==39.0.0
-fastapi==0.127.1
+fastapi==0.128.0
 filelock==3.20.1
 fqdn==1.5.1
 frozenlist==1.8.0
@@ -163,6 +163,6 @@ wcwidth==0.2.14
 webcolors==25.10.0
 webencodings==0.5.1
 websockets==15.0.1
-Werkzeug<3.1.3  # Pinned: openapi-core 0.19.5 incompatible with Werkzeug >=3.1.3 (Session 30)
+Werkzeug==3.1.4  # Updated: openapi-core compatibility fixed
 wheel==0.45.1
 yarl==1.22.0
