@@ -56,12 +56,7 @@ class MockWebSocket {
 vi.stubGlobal('WebSocket', MockWebSocket);
 
 // Import store after mocks
-import type {
-  SocialPost,
-  SocialUser,
-  CopyTrading,
-  Notification,
-} from '@/lib/stores/socialStore';
+import type { CopyTrading, Notification, SocialPost } from '@/lib/stores/socialStore';
 import { useSocialStore } from '@/lib/stores/socialStore';
 
 // Mock fetch - defined after import but before tests

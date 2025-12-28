@@ -312,7 +312,8 @@ describe('BacktesterStore', () => {
       });
 
       const { strategies } = useBacktesterStore.getState();
-      const conditionId = strategies.find((s: TradingStrategy) => s.id === strategyId)?.config.entryConditions[0].id;
+      const conditionId = strategies.find((s: TradingStrategy) => s.id === strategyId)?.config
+        .entryConditions[0].id;
 
       updateCondition(strategyId, 'entry', conditionId!, {
         indicatorValue: 25,
@@ -334,13 +335,17 @@ describe('BacktesterStore', () => {
       addCondition(strategyId, 'entry', { type: 'indicator', indicatorType: 'rsi' });
       addCondition(strategyId, 'entry', { type: 'volume', volumeOperator: 'spike' });
 
-      let strategy = useBacktesterStore.getState().strategies.find((s: TradingStrategy) => s.id === strategyId);
+      let strategy = useBacktesterStore
+        .getState()
+        .strategies.find((s: TradingStrategy) => s.id === strategyId);
       expect(strategy?.config.entryConditions).toHaveLength(2);
 
       const conditionToRemove = strategy?.config.entryConditions[0].id;
       removeCondition(strategyId, 'entry', conditionToRemove!);
 
-      strategy = useBacktesterStore.getState().strategies.find((s: TradingStrategy) => s.id === strategyId);
+      strategy = useBacktesterStore
+        .getState()
+        .strategies.find((s: TradingStrategy) => s.id === strategyId);
       expect(strategy?.config.entryConditions).toHaveLength(1);
       expect(strategy?.config.entryConditions[0].type).toBe('volume');
     });
