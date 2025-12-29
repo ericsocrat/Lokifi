@@ -1,4 +1,6 @@
 'use client';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { usePaneStore } from '@/lib/stores/paneStore';
 import {
   ChevronDown,
   ChevronRight,
@@ -11,8 +13,6 @@ import {
   Unlock,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { useDrawingStore } from '@/lib/stores/drawingStore';
-import { usePaneStore } from '@/lib/stores/paneStore';
 
 interface ObjectTreeProps {
   isCollapsed?: boolean;
@@ -102,17 +102,17 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="w-12 bg-gray-800 border-l border-gray-700 flex flex-col items-center py-4">
+      <div className="w-12 bg-[#1e222d] border-l border-[#2a2e39] flex flex-col items-center py-4">
         <button
           onClick={onToggleCollapse}
-          className="w-8 h-8 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center mb-4"
+          className="w-8 h-8 bg-[#2a2e39] hover:bg-[#363a45] rounded flex items-center justify-center mb-4"
           title="Expand Object Tree"
         >
-          <Layers className="w-4 h-4 text-gray-300" />
+          <Layers className="w-4 h-4 text-[#787b86]" />
         </button>
 
         {/* Show object count when collapsed */}
-        <div className="w-8 h-6 bg-gray-700 rounded text-xs text-gray-300 flex items-center justify-center">
+        <div className="w-8 h-6 bg-[#2a2e39] rounded text-xs text-[#787b86] flex items-center justify-center">
           {objects.length}
         </div>
       </div>
@@ -120,22 +120,22 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
   }
 
   return (
-    <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
+    <div className="w-64 bg-[#1e222d] border-l border-[#2a2e39] flex flex-col">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
+      <div className="px-3 py-2 border-b border-[#2a2e39] flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-gray-400" />
-          <h2 className="text-sm font-semibold text-white">Objects</h2>
-          <span className="text-xs text-gray-500 bg-gray-700 px-2 py-1 rounded">
+          <Layers className="w-4 h-4 text-[#787b86]" />
+          <h2 className="text-sm font-medium text-[#d1d4dc]">Objects</h2>
+          <span className="text-xs text-[#787b86] bg-[#2a2e39] px-1.5 py-0.5 rounded">
             {objects.length}
           </span>
         </div>
         <button
           onClick={onToggleCollapse}
-          className="w-6 h-6 bg-gray-700 hover:bg-gray-600 rounded flex items-center justify-center"
+          className="w-6 h-6 hover:bg-[#2a2e39] rounded flex items-center justify-center"
           title="Collapse Object Tree"
         >
-          <ChevronRight className="w-3 h-3 text-gray-300" />
+          <ChevronRight className="w-3 h-3 text-[#787b86]" />
         </button>
       </div>
 
@@ -146,21 +146,21 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
           const isExpanded = expandedPanes.has(pane.id);
 
           return (
-            <div key={pane.id} className="border-b border-gray-700/50 last:border-b-0">
+            <div key={pane.id} className="border-b border-[#2a2e39]/50 last:border-b-0">
               {/* Pane Header */}
               <button
                 onClick={() => togglePaneExpansion(pane.id)}
-                className="w-full px-4 py-2 flex items-center gap-2 hover:bg-gray-700/50 transition-colors"
+                className="w-full px-3 py-2 flex items-center gap-2 hover:bg-[#2a2e39]/50 transition-colors"
               >
                 {isExpanded ? (
-                  <ChevronDown className="w-3 h-3 text-gray-400" />
+                  <ChevronDown className="w-3 h-3 text-[#787b86]" />
                 ) : (
-                  <ChevronRight className="w-3 h-3 text-gray-400" />
+                  <ChevronRight className="w-3 h-3 text-[#787b86]" />
                 )}
-                <span className="text-sm font-medium text-gray-300">
+                <span className="text-sm text-[#d1d4dc]">
                   {pane.type === 'price' ? 'Price Chart' : 'Indicators'}
                 </span>
-                <span className="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded ml-auto">
+                <span className="text-xs text-[#787b86] bg-[#2a2e39] px-1.5 py-0.5 rounded ml-auto">
                   {paneObjects.length}
                 </span>
               </button>
@@ -169,70 +169,84 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
               {isExpanded && (
                 <div className="pb-2">
                   {paneObjects.length === 0 ? (
-                    <div className="px-8 py-4 text-xs text-gray-500 italic">No drawing objects</div>
+                    <div className="px-8 py-3 text-xs text-[#787b86] italic">
+                      No drawing objects
+                    </div>
                   ) : (
                     paneObjects
-                      .sort((a: { properties: { zIndex: number } }, b: { properties: { zIndex: number } }) => b.properties.zIndex - a.properties.zIndex)
-                      .map((object: { id: string; type: string; properties: { name: string; locked: boolean; visible: boolean }; style: { color: string } }) => (
-                        <div
-                          key={object.id}
-                          className={`mx-2 mb-1 rounded-md transition-colors ${
-                            selectedObjectId === object.id
-                              ? 'bg-blue-600/20 border border-blue-600/50'
-                              : 'hover:bg-gray-700/50 border border-transparent'
-                          }`}
-                          onClick={() => handleObjectSelect(object.id)}
-                          onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, object.id)}
-                        >
-                          <div className="px-3 py-2 flex items-center gap-2">
-                            {/* Object Type Icon */}
-                            <div className="w-4 h-4 flex items-center justify-center">
-                              <div
-                                className="w-2 h-2 rounded-full"
-                                style={{ backgroundColor: object.style.color }}
-                              />
-                            </div>
+                      .sort(
+                        (
+                          a: { properties: { zIndex: number } },
+                          b: { properties: { zIndex: number } }
+                        ) => b.properties.zIndex - a.properties.zIndex
+                      )
+                      .map(
+                        (object: {
+                          id: string;
+                          type: string;
+                          properties: { name: string; locked: boolean; visible: boolean };
+                          style: { color: string };
+                        }) => (
+                          <div
+                            key={object.id}
+                            className={`mx-2 mb-0.5 rounded transition-colors ${
+                              selectedObjectId === object.id
+                                ? 'bg-[#2962ff]/20 border border-[#2962ff]/50'
+                                : 'hover:bg-[#2a2e39]/50 border border-transparent'
+                            }`}
+                            onClick={() => handleObjectSelect(object.id)}
+                            onContextMenu={(e: React.MouseEvent) => handleContextMenu(e, object.id)}
+                          >
+                            <div className="px-2 py-1.5 flex items-center gap-2">
+                              {/* Object Type Icon */}
+                              <div className="w-3 h-3 flex items-center justify-center">
+                                <div
+                                  className="w-2 h-2 rounded-full"
+                                  style={{ backgroundColor: object.style.color }}
+                                />
+                              </div>
 
-                            {/* Object Name */}
-                            <span className="flex-1 text-sm text-gray-300 truncate">
-                              {object.properties.name}
-                            </span>
+                              {/* Object Name */}
+                              <span className="flex-1 text-xs text-[#d1d4dc] truncate">
+                                {object.properties.name}
+                              </span>
 
-                            {/* Object Controls */}
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={(e: React.MouseEvent) => {
-                                  e.stopPropagation();
-                                  handleToggleVisibility(object.id, object.properties.visible);
-                                }}
-                                className="w-5 h-5 hover:bg-gray-600 rounded flex items-center justify-center"
-                                title={object.properties.visible ? 'Hide' : 'Show'}
-                              >
-                                {object.properties.visible ? (
-                                  <Eye className="w-3 h-3 text-gray-400" />
-                                ) : (
-                                  <EyeOff className="w-3 h-3 text-gray-500" />
-                                )}
-                              </button>
+                              {/* Object Controls */}
+                              <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
+                                <button
+                                  onClick={(e: React.MouseEvent) => {
+                                    e.stopPropagation();
+                                    handleToggleVisibility(object.id, object.properties.visible);
+                                  }}
+                                  className="w-5 h-5 hover:bg-[#363a45] rounded flex items-center justify-center"
+                                  title={object.properties.visible ? 'Hide' : 'Show'}
+                                >
+                                  {object.properties.visible ? (
+                                    <Eye className="w-3 h-3 text-[#787b86]" />
+                                  ) : (
+                                    <EyeOff className="w-3 h-3 text-[#787b86]/50" />
+                                  )}
+                                </button>
 
-                              <button
-                                onClick={(e: React.MouseEvent) => {
-                                  e.stopPropagation();
-                                  handleToggleLock(object.id, object.properties.locked);
-                                }}
-                                className="w-5 h-5 hover:bg-gray-600 rounded flex items-center justify-center"
-                                title={object.properties.locked ? 'Unlock' : 'Lock'}
-                              >
-                                {object.properties.locked ? (
-                                  <Lock className="w-3 h-3 text-gray-400" />
-                                ) : (
-                                  <Unlock className="w-3 h-3 text-gray-500" />
-                                )}
-                              </button>
+                                <button
+                                  onClick={(e: React.MouseEvent) => {
+                                    e.stopPropagation();
+                                    handleToggleLock(object.id, object.properties.locked);
+                                  }}
+                                  className="w-5 h-5 hover:bg-[#363a45] rounded flex items-center justify-center"
+                                  title={object.properties.locked ? 'Unlock' : 'Lock'}
+                                >
+                                  {object.properties.locked ? (
+                                    <Lock className="w-3 h-3 text-[#787b86]" />
+                                  ) : (
+                                    <Unlock className="w-3 h-3 text-[#787b86]/50" />
+                                  )}
+                                </button>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))
+                        )
+                      )
                   )}
                 </div>
               )}
@@ -241,10 +255,10 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
         })}
 
         {objects.length === 0 && (
-          <div className="p-8 text-center text-gray-500">
-            <Layers className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p className="text-sm">No drawing objects yet</p>
-            <p className="text-xs mt-1">Select a drawing tool to get started</p>
+          <div className="p-6 text-center text-[#787b86]">
+            <Layers className="w-10 h-10 mx-auto mb-3 opacity-50" />
+            <p className="text-sm">No drawing objects</p>
+            <p className="text-xs mt-1 opacity-70">Select a tool to draw</p>
           </div>
         )}
       </div>
@@ -252,7 +266,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-2 z-50"
+          className="fixed bg-[#1e222d] border border-[#2a2e39] rounded-lg shadow-xl py-1 z-50 min-w-[160px]"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
@@ -261,36 +275,30 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
         >
           <button
             onClick={() => handleDuplicate(contextMenu.objectId)}
-            className="w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-[#d1d4dc] hover:bg-[#2a2e39] flex items-center gap-2"
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="w-4 h-4 text-[#787b86]" />
             Duplicate
           </button>
 
-          <div className="px-4 py-1">
-            <div className="border-b border-gray-700"></div>
-          </div>
+          <div className="h-px bg-[#2a2e39] my-1" />
 
-          <div className="px-4 py-2 text-xs text-gray-500 uppercase tracking-wide">
-            Move to Pane
-          </div>
+          <div className="px-3 py-1 text-xs text-[#787b86] uppercase tracking-wide">Move to</div>
           {panes.map((pane: { id: string; type: string }) => (
             <button
               key={pane.id}
               onClick={() => handleMoveToPane(contextMenu.objectId, pane.id)}
-              className="w-full px-6 py-1 text-left text-sm text-gray-300 hover:bg-gray-700"
+              className="w-full px-5 py-1.5 text-left text-sm text-[#d1d4dc] hover:bg-[#2a2e39]"
             >
               {pane.type === 'price' ? 'Price Chart' : 'Indicators'}
             </button>
           ))}
 
-          <div className="px-4 py-1">
-            <div className="border-b border-gray-700"></div>
-          </div>
+          <div className="h-px bg-[#2a2e39] my-1" />
 
           <button
             onClick={() => handleDelete(contextMenu.objectId)}
-            className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2"
+            className="w-full px-3 py-2 text-left text-sm text-[#f23645] hover:bg-[#f23645]/10 flex items-center gap-2"
           >
             <Trash2 className="w-4 h-4" />
             Delete
@@ -300,4 +308,3 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     </div>
   );
 };
-

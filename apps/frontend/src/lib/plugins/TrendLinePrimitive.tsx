@@ -40,7 +40,7 @@ export interface TrendLineOptions {
 const defaultOptions: TrendLineOptions = {
   lineColor: '#2962FF',
   lineWidth: 2,
-  showLabels: true,
+  showLabels: false, // Labels only on hover
   labelBackgroundColor: 'rgba(255, 255, 255, 0.85)',
   labelTextColor: '#000000',
   extendLeft: false,
@@ -139,6 +139,13 @@ class TrendLinePaneView {
   }
 
   update() {
+    // Ensure chart and series are attached
+    if (!this._source._series || !this._source._chart) {
+      this._p1 = { x: null, y: null };
+      this._p2 = { x: null, y: null };
+      return;
+    }
+
     const series = this._source._series;
     const timeScale = this._source._chart.timeScale();
 

@@ -37,7 +37,7 @@ export interface FibonacciOptions {
 const defaultOptions: FibonacciOptions = {
   lineColor: '#787B86',
   lineWidth: 1,
-  showLabels: true,
+  showLabels: false, // Labels only on hover
   labelBackgroundColor: 'rgba(255, 255, 255, 0.85)',
   labelTextColor: '#000000',
   levels: [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1.0],
@@ -166,6 +166,13 @@ class FibonacciPaneView {
   }
 
   update() {
+    // Ensure chart and series are attached
+    if (!this._source._series || !this._source._chart) {
+      this._p1 = { x: null, y: null };
+      this._p2 = { x: null, y: null };
+      return;
+    }
+
     const series = this._source._series;
     const timeScale = this._source._chart.timeScale();
 

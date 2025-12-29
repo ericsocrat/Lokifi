@@ -3,7 +3,7 @@ import { useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import { BarChart3, Grid, Layout, Maximize2, Minimize2, TrendingUp } from 'lucide-react';
+import { Maximize2, Minimize2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ChartHeader from '../components/ChartHeader';
 import { DrawingChart } from '../components/DrawingChart';
@@ -12,19 +12,17 @@ import { ObjectTree } from '../components/ObjectTree';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 
 export const TradingWorkspace: React.FC = () => {
-  const [isDrawingToolbarCollapsed, setIsDrawingToolbarCollapsed] = useState(false);
   const [isObjectTreeCollapsed, setIsObjectTreeCollapsed] = useState(false);
-  const [showGrid, setShowGrid] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [workspaceStats, setWorkspaceStats] = useState({
     totalObjects: 0,
     totalPanes: 0,
     activeIndicators: 0,
     currentSymbol: 'BTCUSD',
-    currentTimeframe: '1D',
+    currentTimeframe: '1h',
   });
 
-  const { objects, activeTool } = useDrawingStore();
+  const { objects } = useDrawingStore();
   const { panes } = usePaneStore();
 
   // Enable keyboard shortcuts
@@ -43,7 +41,6 @@ export const TradingWorkspace: React.FC = () => {
 
   const toggleFullscreen = async () => {
     try {
-      // Check if fullscreen API is supported
       if (!document.documentElement.requestFullscreen) {
         console.warn('Fullscreen API not supported');
         return;
@@ -69,7 +66,6 @@ export const TradingWorkspace: React.FC = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
 
-    // Add event listeners for different browsers
     const events = [
       'fullscreenchange',
       'webkitfullscreenchange',
@@ -89,121 +85,43 @@ export const TradingWorkspace: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 flex flex-col">
-      {/* Enhanced Chart Header with Stats */}
-      <div className="bg-gray-800 border-b border-gray-700 flex-shrink-0">
+    <div className="min-h-screen bg-[#131722] flex flex-col">
+      {/* Chart Header - Clean TradingView style */}
+      <div className="bg-[#1e222d] border-b border-[#2a2e39] flex-shrink-0">
         <ChartHeader />
 
-        {/* Workspace Stats Bar */}
-        <div className="px-4 py-2 bg-gray-850 border-t border-gray-700/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6 text-xs">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="w-3 h-3 text-blue-400" />
-                <span className="text-gray-400">Panes:</span>
-                <span className="text-white font-mono">{workspaceStats.totalPanes}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <TrendingUp className="w-3 h-3 text-green-400" />
-                <span className="text-gray-400">Indicators:</span>
-                <span className="text-white font-mono">{workspaceStats.activeIndicators}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Layout className="w-3 h-3 text-purple-400" />
-                <span className="text-gray-400">Objects:</span>
-                <span className="text-white font-mono">{workspaceStats.totalObjects}</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                <span className="text-gray-400">Tool:</span>
-                <span className="text-blue-300 font-medium capitalize">
-                  {activeTool.replace(/([A-Z])/g, ' $1').trim()}
-                </span>
-              </div>
-            </div>
-
-            {/* Workspace Controls */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setShowGrid(!showGrid)}
-                className={`px-2 py-1 rounded text-xs transition-colors ${
-                  showGrid
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-                title="Toggle Grid"
-              >
-                <Grid className="w-3 h-3" />
-              </button>
-
-              <button
-                onClick={toggleFullscreen}
-                className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
-                title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
-              >
-                {isFullscreen ? (
-                  <Minimize2 className="w-3 h-3" />
-                ) : (
-                  <Maximize2 className="w-3 h-3" />
-                )}
-              </button>
-            </div>
-          </div>
+        {/* Minimal toolbar */}
+        <div className="px-3 py-1.5 flex items-center justify-end">
+          <button
+            onClick={toggleFullscreen}
+            className="p-1.5 text-[#787b86] hover:text-white hover:bg-[#2a2e39] rounded transition-colors"
+            title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+          >
+            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+          </button>
         </div>
       </div>
 
       {/* Main Workspace Area */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left: Drawing Tools Sidebar */}
-        <div
-          className={`flex-shrink-0 transition-all duration-300 ${
-            isDrawingToolbarCollapsed ? 'w-12' : 'w-64'
-          }`}
-        >
-          <DrawingToolbar
-            isCollapsed={isDrawingToolbarCollapsed}
-            onToggleCollapse={() => setIsDrawingToolbarCollapsed(!isDrawingToolbarCollapsed)}
-          />
+        {/* Left: Drawing Tools Sidebar - Always narrow TradingView style */}
+        <div className="flex-shrink-0 w-12">
+          <DrawingToolbar />
         </div>
 
         {/* Center: Chart Area */}
-        <div className="flex-1 relative min-w-0">
-          {/* Grid Overlay */}
-          {showGrid && (
-            <div
-              className="absolute inset-0 pointer-events-none opacity-10 z-0"
-              style={{
-                backgroundImage: `
-                  linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                  linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)
-                `,
-                backgroundSize: '20px 20px',
-              }}
-            />
-          )}
-
+        <div className="flex-1 relative min-w-0 bg-[#131722]">
           {/* Chart Component */}
           <div className="relative z-10 h-full">
             <DrawingChart />
           </div>
 
-          {/* Chart Overlay Info */}
-          <div className="absolute top-4 left-4 z-20">
-            <div className="bg-black/50 backdrop-blur-sm border border-gray-700/50 rounded-lg px-3 py-2">
-              <div className="text-xs text-gray-300">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                  <span className="font-mono font-bold text-white">
-                    {workspaceStats.currentSymbol}
-                  </span>
-                  <span className="text-gray-400">•</span>
-                  <span>{workspaceStats.currentTimeframe}</span>
-                </div>
-                <div className="text-gray-400">Professional Trading Platform</div>
-              </div>
+          {/* Chart Overlay Info - TradingView style */}
+          <div className="absolute top-3 left-3 z-20">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-semibold text-white">{workspaceStats.currentSymbol}</span>
+              <span className="text-[#787b86]">•</span>
+              <span className="text-[#787b86]">{workspaceStats.currentTimeframe}</span>
             </div>
           </div>
         </div>
@@ -211,7 +129,7 @@ export const TradingWorkspace: React.FC = () => {
         {/* Right: Object Tree Sidebar */}
         <div
           className={`flex-shrink-0 transition-all duration-300 ${
-            isObjectTreeCollapsed ? 'w-12' : 'w-80'
+            isObjectTreeCollapsed ? 'w-12' : 'w-64'
           }`}
         >
           <ObjectTree
@@ -221,22 +139,13 @@ export const TradingWorkspace: React.FC = () => {
         </div>
       </div>
 
-      {/* Status Bar */}
-      <div className="h-6 bg-gray-800 border-t border-gray-700 px-4 flex items-center justify-between text-xs">
-        <div className="flex items-center gap-4 text-gray-400">
-          <span>Ready</span>
-          <span>•</span>
-          <span>WebGL Accelerated</span>
-          <span>•</span>
-          <span className="text-green-400">Connected</span>
+      {/* Status Bar - Minimal TradingView style */}
+      <div className="h-6 bg-[#1e222d] border-t border-[#2a2e39] px-3 flex items-center justify-between text-xs text-[#787b86]">
+        <div className="flex items-center gap-3">
+          <span className="text-[#26a69a]">● Connected</span>
         </div>
-
-        <div className="flex items-center gap-4 text-gray-400">
-          <span>FPS: 60</span>
-          <span>•</span>
-          <span>Latency: 12ms</span>
-          <span>•</span>
-          <span className="font-mono">v2.0.0</span>
+        <div className="flex items-center gap-3">
+          <span>Objects: {workspaceStats.totalObjects}</span>
         </div>
       </div>
     </div>

@@ -105,6 +105,13 @@ class RectanglePaneView {
   }
 
   update() {
+    // Ensure chart and series are attached
+    if (!this._source._series || !this._source._chart) {
+      this._p1 = { x: null, y: null };
+      this._p2 = { x: null, y: null };
+      return;
+    }
+
     const series = this._source._series;
     const timeScale = this._source._chart.timeScale();
 

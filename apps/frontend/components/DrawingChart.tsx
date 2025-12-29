@@ -6,8 +6,14 @@ import { DrawingObject, Point, useDrawingStore } from '@/lib/stores/drawingStore
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import { BarData, IChartApi, ISeriesApi, ISeriesPrimitive, Time } from 'lightweight-charts';
-import { Eye, EyeOff, GripVertical, Lock, Unlock } from 'lucide-react';
+import {
+  BarData,
+  IChartApi,
+  ISeriesApi,
+  ISeriesPrimitive,
+  Time,
+  UTCTimestamp,
+} from 'lightweight-charts';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
@@ -66,7 +72,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   const symbol = symbolStore.get();
   const timeframe = timeframeStore.get();
-  const { togglePaneVisibility, togglePaneLock } = usePaneStore();
   const {
     activeTool,
     isDrawing,
@@ -79,17 +84,16 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     objects, // Subscribe to objects array to trigger re-renders
   } = useDrawingStore();
 
-  const [isDragging, setIsDragging] = useState(false);
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [chartData, setChartData] = useState<BarData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch real OHLC data
+  // Fetch OHLC data from mock endpoint
   useEffect(() => {
     const fetchOHLCData = async () => {
       try {
         setIsLoading(true);
-        const url = `http://localhost:8000/api/v1/ohlc/${symbol}?timeframe=${timeframe}&limit=100`;
+        const url = `http://localhost:8000/api/mock/ohlc?symbol=${symbol}&timeframe=${timeframe}&limit=100`;
 
         const response = await fetch(url);
 
@@ -99,17 +103,18 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
         const result = await response.json();
 
-        // Transform API data to lightweight-charts format
-        // Note: Yahoo Finance returns BTC price divided by 1000, so multiply by 1000
-        const priceMultiplier = symbol.includes('BTC') ? 1000 : 1;
-
-        const transformedData: BarData[] = result.data.map((candle: any) => ({
-          time: candle.timestamp.split('T')[0], // Convert ISO to YYYY-MM-DD
-          open: candle.open * priceMultiplier,
-          high: candle.high * priceMultiplier,
-          low: candle.low * priceMultiplier,
-          close: candle.close * priceMultiplier,
-        }));
+        // Transform mock API data to lightweight-charts format
+        // Mock endpoint returns: { symbol, timeframe, candles: [{ ts, o, h, l, c, v }] }
+        // Use Unix timestamp in seconds (lightweight-charts accepts both date strings and timestamps)
+        const transformedData: BarData[] = result.candles.map(
+          (candle: { ts: number; o: number; h: number; l: number; c: number }) => ({
+            time: Math.floor(candle.ts / 1000) as UTCTimestamp, // Convert ms to seconds
+            open: candle.o,
+            high: candle.h,
+            low: candle.l,
+            close: candle.c,
+          })
+        );
 
         setChartData(transformedData);
       } catch (error) {
@@ -138,23 +143,37 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
-        height: height - 40, // Account for drawing canvas
+        height: height, // Full height - no header
         layout: {
-          background: { color: '#1a1a1a' },
-          textColor: '#d1d5db',
+          background: { color: '#131722' },
+          textColor: '#787b86',
         },
         grid: {
-          vertLines: { color: '#374151' },
-          horzLines: { color: '#374151' },
+          vertLines: { color: '#1e222d' },
+          horzLines: { color: '#1e222d' },
         },
         crosshair: {
           mode: 0,
+          vertLine: {
+            color: '#2962ff',
+            width: 1,
+            style: 2,
+            labelBackgroundColor: '#2962ff',
+          },
+          horzLine: {
+            color: '#2962ff',
+            width: 1,
+            style: 2,
+            labelBackgroundColor: '#2962ff',
+          },
         },
         rightPriceScale: {
-          borderColor: '#374151',
+          borderColor: '#2a2e39',
         },
         timeScale: {
-          borderColor: '#374151',
+          borderColor: '#2a2e39',
+          timeVisible: true,
+          secondsVisible: false,
         },
       });
 
@@ -178,7 +197,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
           if (chartRef.current && chartContainerRef.current) {
             chartRef.current.applyOptions({
               width: chartContainerRef.current.clientWidth,
-              height: height - 40,
+              height: height,
             });
           }
         });
@@ -386,103 +405,25 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     }
   }, [height, isVisible]);
 
-  const handleResize = useCallback(
-    (e: React.MouseEvent) => {
-      if (isLocked) return;
-
-      setIsDragging(true);
-      const startY = e.clientY;
-      const startHeight = height;
-
-      const handleMouseMove = (e: MouseEvent) => {
-        const deltaY = e.clientY - startY;
-        const newHeight = Math.max(150, Math.min(800, startHeight + deltaY));
-        onHeightChange(paneId, newHeight);
-      };
-
-      const handleMouseUp = () => {
-        setIsDragging(false);
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    },
-    [isLocked, height, paneId, onHeightChange]
-  );
-
   if (!isVisible) {
-    return (
-      <div className="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
-        <div className="text-sm text-gray-400">
-          {paneId.includes('price') ? 'Price Chart' : `Indicator Pane`} (Hidden)
-        </div>
-        <button
-          onClick={() => togglePaneVisibility(paneId)}
-          className="text-gray-400 hover:text-white transition-colors"
-        >
-          <Eye className="w-4 h-4" />
-        </button>
-      </div>
-    );
+    return null; // Hidden panes don't render at all - TradingView style
   }
 
   return (
-    <div className="relative border-b border-gray-700">
-      {/* Pane Header */}
-      <div className="h-8 bg-gray-800 border-b border-gray-700 flex items-center justify-between px-3">
-        <div className="flex items-center gap-2">
-          <div className="text-sm font-medium text-white">
-            {paneId.includes('price') ? `${symbol} - ${timeframe}` : 'Indicators'}
-          </div>
-          {indicators.length > 0 && (
-            <div className="text-xs text-gray-400">({indicators.join(', ')})</div>
-          )}
-        </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => togglePaneVisibility(paneId)}
-            className="text-gray-400 hover:text-white transition-colors p-1"
-          >
-            {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={() => togglePaneLock(paneId)}
-            className="text-gray-400 hover:text-white transition-colors p-1"
-          >
-            {isLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Chart Container with Drawing Support */}
-      <div className="relative">
-        <div
-          ref={chartContainerRef}
-          style={{
-            height: `${height - 40}px`,
-            cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
-          }}
-          className="relative bg-gray-900"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onDoubleClick={handleDoubleClick}
-        />
-      </div>
-
-      {/* Resize Handle */}
-      {!isLocked && (
-        <div
-          onMouseDown={handleResize}
-          className={`absolute bottom-0 left-0 right-0 h-2 cursor-row-resize hover:bg-blue-500/20 transition-colors flex items-center justify-center ${
-            isDragging ? 'bg-blue-500/30' : ''
-          }`}
-        >
-          <GripVertical className="w-4 h-4 text-gray-500" />
-        </div>
-      )}
+    <div className="relative h-full">
+      {/* Chart Container with Drawing Support - Full height, no header */}
+      <div
+        ref={chartContainerRef}
+        style={{
+          height: '100%',
+          cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
+        }}
+        className="relative bg-[#131722]"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onDoubleClick={handleDoubleClick}
+      />
     </div>
   );
 };
@@ -508,32 +449,27 @@ export const DrawingChart: React.FC = () => {
     };
   }, []);
 
+  // Get the main price pane - TradingView only shows one main chart
+  const pricePane = panes.find((p: { type: string }) => p.type === 'price') || panes[0];
+
   return (
     <ChartErrorBoundary>
       <div
         ref={containerRef}
         data-testid="chart-container"
-        className="w-full h-full bg-gray-900 overflow-hidden"
+        className="w-full h-full bg-[#131722] overflow-hidden"
         style={{ minWidth: MIN_CHART_WIDTH }}
       >
-        {panes.map(
-          (pane: {
-            id: string;
-            height: number;
-            visible: boolean;
-            locked: boolean;
-            indicators: string[];
-          }) => (
-            <DrawingPaneComponent
-              key={pane.id}
-              paneId={pane.id}
-              height={pane.height}
-              isVisible={pane.visible}
-              isLocked={pane.locked}
-              indicators={pane.indicators}
-              onHeightChange={updatePaneHeight}
-            />
-          )
+        {pricePane && (
+          <DrawingPaneComponent
+            key={pricePane.id}
+            paneId={pricePane.id}
+            height={containerRef.current?.clientHeight || 600}
+            isVisible={pricePane.visible}
+            isLocked={pricePane.locked}
+            indicators={pricePane.indicators}
+            onHeightChange={updatePaneHeight}
+          />
         )}
       </div>
     </ChartErrorBoundary>
