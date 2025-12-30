@@ -58,18 +58,19 @@ jobs:
               );
 
               if (!welcomeExists) {
+                const labelList = labels.map(l => '`' + l + '`').join(', ');
                 const comment = `👋 Thanks for your contribution!
 
-                🏷️ **Auto-applied labels**: ${labels.map(l => \`\`${l}\`\`).join(', ')}
+🏷️ **Auto-applied labels**: ${labelList}
 
-                These labels help determine which CI/CD workflows will run:
-                - \`frontend\`: Triggers frontend-specific tests
-                - \`backend\`: Triggers backend-specific tests
-                - \`e2e-full\`: Runs full E2E test suite (all browsers)
-                - \`visual-regression\`: Runs visual regression tests
-                - \`performance\`: Runs performance tests
+These labels help determine which CI/CD workflows will run:
+- \`frontend\`: Triggers frontend-specific tests
+- \`backend\`: Triggers backend-specific tests
+- \`e2e-full\`: Runs full E2E test suite (all browsers)
+- \`visual-regression\`: Runs visual regression tests
+- \`performance\`: Runs performance tests
 
-                Labels are automatically updated when you push new commits.`;
+Labels are automatically updated when you push new commits.`;
 
                 await github.rest.issues.createComment({
                   issue_number: context.issue.number,
