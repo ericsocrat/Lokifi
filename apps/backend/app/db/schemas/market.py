@@ -9,7 +9,7 @@ class Candle(BaseModel):
     ts: int
     o: float
     h: float
-    low: float
+    l: float
     c: float
     v: float
 

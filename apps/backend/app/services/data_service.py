@@ -392,17 +392,33 @@ class OHLCAggregator:
 
     async def initialize(self):
         """Initialize HTTP session and providers"""
-        # Lazily create a single shared aiohttp session
-        self.session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=30))
+        # Lazily create a single shared aiohttp session with proper headers
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "application/json",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+        self.session = aiohttp.ClientSession(
+            timeout=aiohttp.ClientTimeout(total=30), headers=headers
+        )
 
         # Configure default providers (loaded from environment)
+        # Yahoo Finance is free and most reliable - put it first
         self.providers = [
+            DataProviderConfig(
+                provider=DataProvider.YAHOO_FINANCE,
+                api_key="",  # No API key needed
+                base_url="https://query1.finance.yahoo.com/v7/finance/chart",
+                rate_limit=100,
+                priority=1,  # Yahoo first - it's free and reliable
+                enabled=True,
+            ),
             DataProviderConfig(
                 provider=DataProvider.ALPHA_VANTAGE,
                 api_key=os.getenv("ALPHAVANTAGE_KEY", "demo"),
                 base_url="https://www.alphavantage.co/query",
                 rate_limit=5,
-                priority=1,
+                priority=2,
                 enabled=True,
             ),
             DataProviderConfig(
@@ -410,14 +426,6 @@ class OHLCAggregator:
                 api_key=os.getenv("FINNHUB_KEY", "demo"),
                 base_url="https://finnhub.io/api/v1",
                 rate_limit=60,
-                priority=2,
-                enabled=True,
-            ),
-            DataProviderConfig(
-                provider=DataProvider.YAHOO_FINANCE,
-                api_key="",  # No API key needed
-                base_url="https://query1.finance.yahoo.com/v7/finance/chart",
-                rate_limit=100,
                 priority=3,
                 enabled=True,
             ),
@@ -501,9 +509,48 @@ class OHLCAggregator:
         interval = self._convert_timeframe_yahoo(timeframe)
         url = f"{config.base_url}/{symbol}"
 
+        # Determine range based on timeframe and limit
+        # Yahoo Finance accepts: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max
+        if timeframe in ("1m", "5m", "15m", "30m"):
+            range_str = "1d"  # Intraday data (Yahoo limits to 7 days max for minute data)
+        elif timeframe in ("1h", "4h"):
+            # For hourly data, calculate range based on requested limit
+            # 24 candles/day for 1h, 6 candles/day for 4h
+            candles_per_day = 24 if timeframe == "1h" else 6
+            days_needed = (limit // candles_per_day) + 1
+            if days_needed <= 5:
+                range_str = "5d"
+            elif days_needed <= 30:
+                range_str = "1mo"
+            elif days_needed <= 90:
+                range_str = "3mo"
+            elif days_needed <= 180:
+                range_str = "6mo"
+            elif days_needed <= 365:
+                range_str = "1y"
+            elif days_needed <= 730:
+                range_str = "2y"
+            else:
+                range_str = "max"  # Get all available history
+        elif timeframe in ("1d", "1D"):
+            if limit <= 30:
+                range_str = "1mo"
+            elif limit <= 90:
+                range_str = "3mo"
+            elif limit <= 180:
+                range_str = "6mo"
+            elif limit <= 365:
+                range_str = "1y"
+            elif limit <= 730:
+                range_str = "2y"
+            else:
+                range_str = "max"
+        else:
+            range_str = "max"
+
         params = {
             "interval": interval,
-            "range": f"{limit}d" if timeframe == "1D" else "1mo",
+            "range": range_str,
             "includePrePost": "false",
         }
 
@@ -698,7 +745,9 @@ class OHLCAggregator:
             "15m": "15m",
             "30m": "30m",
             "1h": "1h",
+            "1d": "1d",
             "1D": "1d",
+            "1w": "1wk",
             "1W": "1wk",
             "1M": "1mo",
         }
@@ -723,7 +772,10 @@ class OHLCAggregator:
             "15m": "15",
             "30m": "30",
             "1h": "60",
+            "4h": "240",
+            "1d": "D",
             "1D": "D",
+            "1w": "W",
             "1W": "W",
             "1M": "M",
         }
