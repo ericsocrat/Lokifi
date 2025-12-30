@@ -1,14 +1,19 @@
 import type { Drawing } from '@/lib/utils/drawings';
-import { describeDrawing } from '@/lib/utils/labels';
+import { describeDrawing, type LabelConfig } from '@/lib/utils/labels';
 import { useChartStore } from '@/state/store';
 import React from 'react';
+
+/** Extended config that includes enabled flag for UI toggle */
+interface ExtendedLabelConfig extends LabelConfig {
+  enabled: boolean;
+}
 
 export default function LabelsLayer() {
   const s = useChartStore();
   const [drawings, setDrawings] = React.useState(s.drawings);
   React.useEffect(() => useChartStore.subscribe((st) => setDrawings(st.drawings)), []);
 
-  const cfg = s.autoLabels || {
+  const cfg: ExtendedLabelConfig = s.autoLabels || {
     showValue: true,
     showPercent: true,
     showAngle: true,

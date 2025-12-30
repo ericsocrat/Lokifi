@@ -158,9 +158,9 @@ jobs:
           echo "## 🧹 Stale Bot Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Configuration**:" >> $GITHUB_STEP_SUMMARY
-          echo "- Issues: Stale after 60 days, close after 7 days" >> $GITHUB_STEP_SUMMARY
-          echo "- PRs: Stale after 45 days, close after 7 days" >> $GITHUB_STEP_SUMMARY
-          echo "- Exempt labels: pinned, security, work-in-progress" >> $GITHUB_STEP_SUMMARY
+          echo "- Issues: Stale after 60 days, close after 14 days" >> $GITHUB_STEP_SUMMARY
+          echo "- PRs: Stale after 45 days, close after 14 days" >> $GITHUB_STEP_SUMMARY
+          echo "- Exempt labels: pinned, security, work-in-progress, hotfix, urgent" >> $GITHUB_STEP_SUMMARY
           echo "- Exempt assignees: ericsocrat" >> $GITHUB_STEP_SUMMARY
           echo "- Exempt milestones: All" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

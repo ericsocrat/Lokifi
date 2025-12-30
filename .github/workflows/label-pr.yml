@@ -1,20 +1,11 @@
 name: 🏷️ Auto-Label PRs
 
-# Automatic PR labeling workflow
-# Purpose: Auto-label PRs based on changed files for smart workflow execution
-# Runs on: PR open, synchronize (new commits)
-# Strategy: Uses labeler.yml config for file-based rules
-
 on:
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+    types: [opened, synchronize, reopened]
 
-# Cancel in-progress runs for same PR
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  group: label-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
@@ -23,74 +14,63 @@ permissions:
 
 jobs:
   label:
-    name: 🏷️ Label Pull Request
+    name: 🏷️ Label PR
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 2
     steps:
-      - name: 📥 Checkout repository
+      - name: 📥 Checkout
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: false
 
       - name: 🏷️ Apply labels
+        id: labeler
         uses: actions/labeler@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/labeler.yml
           sync-labels: true
 
-      - name: 📝 Comment on first-time PR
+      - name: 📝 Welcome comment
         if: github.event.action == 'opened'
         uses: actions/github-script@v7
         with:
           script: |
-            const labels = context.payload.pull_request.labels.map(l => l.name);
+            // Fetch fresh labels after labeler action
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            const labels = pr.labels.map(l => l.name);
+            if (labels.length === 0) return;
 
-            if (labels.length > 0) {
-              // Check if welcome comment already exists (prevent duplicates on reopen)
-              const { data: comments } = await github.rest.issues.listComments({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number
-              });
+            // Skip if welcome comment exists
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 10
+            });
+            if (comments.some(c => c.user?.type === 'Bot' && c.body?.includes('Auto-applied labels'))) return;
 
-              const welcomeExists = comments.some(comment =>
-                comment.user.type === 'Bot' &&
-                comment.body.includes('Thanks for your contribution!')
-              );
+            const labelList = labels.map(l => '\u0060' + l + '\u0060').join(', ');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '👋 Thanks for your contribution!',
+                '',
+                '🏷️ **Auto-applied labels**: ' + labelList,
+                '',
+                'Labels determine which CI workflows run. They update automatically with new commits.'
+              ].join('\n')
+            });
 
-              if (!welcomeExists) {
-                const labelList = labels.map(l => '\u0060' + l + '\u0060').join(', ');
-                const lines = [
-                  '👋 Thanks for your contribution!',
-                  '',
-                  '🏷️ **Auto-applied labels**: ' + labelList,
-                  '',
-                  'These labels help determine which CI/CD workflows will run:',
-                  '- \u0060frontend\u0060: Triggers frontend-specific tests',
-                  '- \u0060backend\u0060: Triggers backend-specific tests',
-                  '- \u0060e2e-full\u0060: Runs full E2E test suite (all browsers)',
-                  '- \u0060visual-regression\u0060: Runs visual regression tests',
-                  '- \u0060performance\u0060: Runs performance tests',
-                  '',
-                  'Labels are automatically updated when you push new commits.'
-                ];
-                const comment = lines.join('\n');
-
-                await github.rest.issues.createComment({
-                  issue_number: context.issue.number,
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  body: comment
-                });
-              }
-            }
-
-      - name: 📊 Generate summary
+      - name: 📊 Summary
         run: |
-          echo "## 🏷️ PR Labels Applied" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Labels help optimize CI/CD execution by running only relevant workflows." >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**How it works**:" >> $GITHUB_STEP_SUMMARY
-          echo "- Labels are auto-applied based on changed files" >> $GITHUB_STEP_SUMMARY
-          echo "- Workflows use labels for conditional execution" >> $GITHUB_STEP_SUMMARY
-          echo "- Updates automatically when new commits are pushed" >> $GITHUB_STEP_SUMMARY
+          cat << 'EOF' >> $GITHUB_STEP_SUMMARY
+          ## 🏷️ PR Labels
+          Labels auto-applied based on changed files. Workflows use labels for conditional execution.
+          EOF

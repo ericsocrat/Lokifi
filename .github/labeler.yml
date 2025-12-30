@@ -1,151 +1,142 @@
 # Automatic PR Labeling Configuration
-# This file defines rules for automatically labeling pull requests based on changed files
-# Used by actions/labeler action in label-pr.yml workflow
+# Used by actions/labeler@v5 in label-pr.yml workflow
+# Docs: https://github.com/actions/labeler#common-examples
 
-# Frontend changes
+# Application labels
 frontend:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/frontend/**/*"
-          - "package.json"
-          - "package-lock.json"
+          - "apps/frontend/**"
 
-# Backend changes
 backend:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/backend/**/*"
+          - "apps/backend/**"
+
+mobile:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/mobile/**"
+
+admin:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "apps/admin/**"
 
 # CI/CD changes
 ci-cd:
   - changed-files:
       - any-glob-to-any-file:
-          - ".github/workflows/**/*"
-          - ".github/actions/**/*"
+          - ".github/**"
 
-# Documentation changes
+# Documentation
 documentation:
   - changed-files:
       - any-glob-to-any-file:
-          - "docs/**/*"
+          - "docs/**"
           - "**/*.md"
-          - "README.md"
 
-# Dependency changes
+# Dependencies (package managers)
 dependencies:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/frontend/package.json"
-          - "apps/frontend/package-lock.json"
-          - "apps/backend/requirements.txt"
-          - "apps/backend/requirements-dev.txt"
+          - "**/package.json"
+          - "**/package-lock.json"
+          - "**/requirements*.txt"
+          - "**/pyproject.toml"
+          - "renovate.json"
 
-# Infrastructure changes
+# Infrastructure & DevOps
 infrastructure:
   - changed-files:
       - any-glob-to-any-file:
-          - "infra/**/*"
-          - "apps/docker-compose*.yml"
+          - "infra/**"
+          - "**/docker-compose*.yml"
           - "**/Dockerfile*"
+          - "**/.env.example"
 
-# Testing changes
+# Testing
 testing:
   - changed-files:
       - any-glob-to-any-file:
-          - "**/tests/**/*"
-          - "**/*.test.ts"
-          - "**/*.test.tsx"
-          - "**/*.spec.ts"
+          - "**/tests/**"
+          - "**/*.test.{ts,tsx}"
+          - "**/*.spec.{ts,tsx}"
           - "**/test_*.py"
-          - "apps/frontend/playwright.config.ts"
-          - "apps/backend/pytest.ini"
+          - "**/conftest.py"
+          - "**/vitest.config.*"
+          - "**/playwright.config.*"
+          - "**/pytest.ini"
 
-# Configuration changes
+# Configuration files
 configuration:
   - changed-files:
       - any-glob-to-any-file:
-          - "**/*.config.js"
-          - "**/*.config.ts"
-          - "**/*.config.mjs"
-          - "**/*.toml"
-          - "**/*.ini"
+          - "**/*.config.{js,ts,mjs,cjs}"
+          - "**/tsconfig*.json"
           - "**/.eslintrc*"
-          - "**/tsconfig.json"
+          - "**/.prettierrc*"
+          - "**/tailwind.config.*"
+          - "config/**"
 
-# Security changes
+# Security-related changes
 security:
   - changed-files:
       - any-glob-to-any-file:
-          - ".github/workflows/*security*.yml"
-          - "**/security/**/*"
-          - "docs/security/**/*"
+          - "**/security/**"
+          - "**/*security*.yml"
+          - "**/SECURITY.md"
 
-# Hotfix changes (critical security or production fixes)
-# Auto-labeled for security-related files
-# Can also be applied manually for urgent production fixes
-# Exempt from stale bot auto-closure
+# Hotfix (security patches, critical fixes)
 hotfix:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/*/SECURITY.md"
+          - "**/security/patches/**"
           - ".github/workflows/security.yml"
-          - "**/security/patches/**/*"
 
-# Urgent label (manual only)
-# No auto-labeling rules - applied manually by maintainers
-# Used for time-sensitive PRs requiring immediate review
-# Exempt from stale bot auto-closure
-# Examples: critical bug fixes, urgent feature requests, production issues
-# Note: This is a placeholder - label must be applied manually via GitHub UI
-# urgent:
-#   - Manual only
-
-# Performance changes
+# Performance
 performance:
   - changed-files:
       - any-glob-to-any-file:
-          - "**/performance/**/*"
-          - "infra/performance-tests/**/*"
+          - "**/performance/**"
 
-# Database changes
+# Database & Models
 database:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/backend/alembic/**/*"
-          - "apps/backend/app/models/**/*"
-          - "**/migrations/**/*"
+          - "**/alembic/**"
+          - "**/migrations/**"
+          - "**/models/**"
+          - "**/schemas/**"
 
-# API changes
+# API routes
 api:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/backend/app/api/**/*"
-          - "apps/backend/app/routers/**/*"
-          - "docs/api/**/*"
+          - "apps/backend/app/api/**"
+          - "apps/backend/app/routers/**"
+          - "docs/api/**"
 
-# UI/Components changes
+# UI Components
 ui:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/frontend/components/**/*"
-          - "apps/frontend/app/**/*"
-          - "apps/frontend/styles/**/*"
+          - "apps/frontend/src/components/**"
+          - "apps/frontend/src/app/**"
+          - "**/*.css"
+          - "**/*.scss"
 
-# E2E test related (for triggering full E2E suite)
+# E2E tests (triggers full browser suite)
 e2e-full:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/frontend/tests/e2e/**/*"
-          - "apps/frontend/playwright.config.ts"
+          - "**/tests/e2e/**"
+          - "**/playwright.config.*"
 
-# Visual regression related (for triggering visual tests)
-# Automatically labels PRs that modify visual test files or UI components
-# Linux baselines can be generated via workflow_dispatch:
-#   Actions → E2E Tests → Run workflow → test_suite: visual, update_snapshots: true
+# Visual regression tests
 visual-regression:
   - changed-files:
       - any-glob-to-any-file:
-          - "apps/frontend/tests/visual/**/*"
-          - "apps/frontend/components/**/*"
-          - "apps/frontend/app/**/*.(tsx|css|scss)"
-          - "apps/frontend/styles/**/*"
+          - "**/tests/visual/**"
+          - "apps/frontend/src/components/**"
+          - "apps/frontend/src/app/**/*.tsx"

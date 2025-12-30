@@ -46,8 +46,6 @@ jobs:
               - '.github/workflows/coverage.yml'
             backend:
               - 'apps/backend/**'
-              - 'apps/backend/requirements.txt'
-              - 'apps/backend/requirements-dev.txt'
               - '.github/workflows/coverage.yml'
 
   # Frontend Coverage with Matrix Testing
