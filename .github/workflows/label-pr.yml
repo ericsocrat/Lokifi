@@ -54,23 +54,26 @@ jobs:
 
               const welcomeExists = comments.some(comment =>
                 comment.user.type === 'Bot' &&
-                comment.body.includes('👋 Thanks for your contribution!')
+                comment.body.includes('Thanks for your contribution!')
               );
 
               if (!welcomeExists) {
-                const labelList = labels.map(l => '`' + l + '`').join(', ');
-                const comment = `👋 Thanks for your contribution!
-
-🏷️ **Auto-applied labels**: ${labelList}
-
-These labels help determine which CI/CD workflows will run:
-- \`frontend\`: Triggers frontend-specific tests
-- \`backend\`: Triggers backend-specific tests
-- \`e2e-full\`: Runs full E2E test suite (all browsers)
-- \`visual-regression\`: Runs visual regression tests
-- \`performance\`: Runs performance tests
-
-Labels are automatically updated when you push new commits.`;
+                const labelList = labels.map(l => '\u0060' + l + '\u0060').join(', ');
+                const lines = [
+                  '👋 Thanks for your contribution!',
+                  '',
+                  '🏷️ **Auto-applied labels**: ' + labelList,
+                  '',
+                  'These labels help determine which CI/CD workflows will run:',
+                  '- \u0060frontend\u0060: Triggers frontend-specific tests',
+                  '- \u0060backend\u0060: Triggers backend-specific tests',
+                  '- \u0060e2e-full\u0060: Runs full E2E test suite (all browsers)',
+                  '- \u0060visual-regression\u0060: Runs visual regression tests',
+                  '- \u0060performance\u0060: Runs performance tests',
+                  '',
+                  'Labels are automatically updated when you push new commits.'
+                ];
+                const comment = lines.join('\n');
 
                 await github.rest.issues.createComment({
                   issue_number: context.issue.number,
