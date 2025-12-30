@@ -32,6 +32,7 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
     setObjectProperties,
     moveObjectToPane,
     getObjectsByPane,
+    clearAllObjects,
   } = useDrawingStore();
 
   const { panes } = usePaneStore();
@@ -130,13 +131,28 @@ export const ObjectTree: React.FC<ObjectTreeProps> = ({
             {objects.length}
           </span>
         </div>
-        <button
-          onClick={onToggleCollapse}
-          className="w-6 h-6 hover:bg-[#2a2e39] rounded flex items-center justify-center"
-          title="Collapse Object Tree"
-        >
-          <ChevronRight className="w-3 h-3 text-[#787b86]" />
-        </button>
+        <div className="flex items-center gap-1">
+          {objects.length > 0 && (
+            <button
+              onClick={() => {
+                if (confirm('Delete all drawing objects?')) {
+                  clearAllObjects();
+                }
+              }}
+              className="w-6 h-6 hover:bg-red-500/20 rounded flex items-center justify-center"
+              title="Clear All Objects"
+            >
+              <Trash2 className="w-3 h-3 text-red-400" />
+            </button>
+          )}
+          <button
+            onClick={onToggleCollapse}
+            className="w-6 h-6 hover:bg-[#2a2e39] rounded flex items-center justify-center"
+            title="Collapse Object Tree"
+          >
+            <ChevronRight className="w-3 h-3 text-[#787b86]" />
+          </button>
+        </div>
       </div>
 
       {/* Object Tree */}

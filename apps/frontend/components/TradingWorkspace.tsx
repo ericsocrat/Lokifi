@@ -85,7 +85,7 @@ export const TradingWorkspace: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#131722] flex flex-col">
+    <div className="h-screen bg-[#131722] flex flex-col overflow-hidden">
       {/* Chart Header - Clean TradingView style */}
       <div className="bg-[#1e222d] border-b border-[#2a2e39] flex-shrink-0">
         <ChartHeader />

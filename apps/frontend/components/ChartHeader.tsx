@@ -2,8 +2,7 @@
 import { indicatorStore } from '@/lib/stores/indicatorStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { AuthModal } from '@/src/components/AuthModal';
-import { useAuth } from '@/src/components/AuthProvider';
-import { BarChart3, Layers, RotateCcw, Settings, User } from 'lucide-react';
+import { BarChart3, Layers, RotateCcw, Settings } from 'lucide-react';
 import { useState } from 'react';
 import { EnhancedSymbolPicker } from './EnhancedSymbolPicker';
 import { IndicatorModal } from './IndicatorModalV2';
@@ -18,10 +17,6 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('login');
   const [indicators] = useState(indicatorStore.get());
-
-  // Use actual auth state from AuthProvider
-  const { user, loading } = useAuth();
-  const isLoggedIn = !!user;
 
   const activeIndicatorCount = Object.values(indicators.flags).filter(Boolean).length;
 
@@ -39,22 +34,6 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
 
         {/* Right: Action Buttons */}
         <div className="flex items-center gap-3">
-          {/* Auth Button - Always visible for debugging */}
-          <button
-            onClick={() => {
-              console.log('Auth button clicked!');
-              setAuthModalTab('login');
-              setIsAuthModalOpen(true);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-neutral-600 rounded-xl text-white transition-colors"
-            style={{ display: !isLoggedIn ? 'flex' : 'none' }}
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-              <User size={18} className="text-white" />
-            </div>
-            <span className="text-sm font-medium">Log In / Sign Up</span>
-          </button>
-
           {/* Indicators Button */}
           <button
             onClick={() => setIsIndicatorModalOpen(true)}

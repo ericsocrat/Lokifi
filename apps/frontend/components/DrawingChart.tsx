@@ -1,23 +1,14 @@
 'use client';
-import { FibonacciPrimitive } from '@/lib/plugins/FibonacciPrimitive';
-import { RectanglePrimitive } from '@/lib/plugins/RectanglePrimitive';
-import { TrendLinePrimitive } from '@/lib/plugins/TrendLinePrimitive';
-import { DrawingObject, Point, useDrawingStore } from '@/lib/stores/drawingStore';
+import { Point, useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import {
-  BarData,
-  IChartApi,
-  ISeriesApi,
-  ISeriesPrimitive,
-  Time,
-  UTCTimestamp,
-} from 'lightweight-charts';
+import { BarData, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
+import { DrawingOverlay } from './DrawingOverlay';
 
 // Chart component with proper hook usage
 const ChartContainer = ({
@@ -38,7 +29,7 @@ const ChartContainer = ({
 // Dynamic import with loading state
 const Chart = dynamic(
   () =>
-    import('lightweight-charts').then((mod: unknown) => ({
+    import('lightweight-charts').then(() => ({
       default: ChartContainer,
     })),
   {
@@ -60,55 +51,65 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
   paneId,
   height,
   isVisible,
-  isLocked,
-  indicators,
-  onHeightChange,
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
   const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const primitivesRef = useRef<Map<string, ISeriesPrimitive<Time>>>(new Map());
 
-  const symbol = symbolStore.get();
-  const timeframe = timeframeStore.get();
+  // Subscribe to symbol and timeframe stores reactively
+  const symbol = useSyncExternalStore(symbolStore.subscribe, symbolStore.get, symbolStore.get);
+  const timeframe = useSyncExternalStore(
+    timeframeStore.subscribe,
+    timeframeStore.get,
+    timeframeStore.get
+  );
   const {
     activeTool,
     isDrawing,
     currentDrawing,
-    selectedObjectId,
     startDrawing,
-    addPoint,
+    updateCurrentDrawingPoint,
     finishDrawing,
-    getObjectsByPane,
-    objects, // Subscribe to objects array to trigger re-renders
   } = useDrawingStore();
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [chartData, setChartData] = useState<BarData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [chartReady, setChartReady] = useState(false);
 
-  // Fetch OHLC data from mock endpoint
+  // Fetch OHLC data from real API endpoint
   useEffect(() => {
     const fetchOHLCData = async () => {
       try {
         setIsLoading(true);
-        const url = `http://localhost:8000/api/mock/ohlc?symbol=${symbol}&timeframe=${timeframe}&limit=100`;
-
+        // Use the real OHLC endpoint which fetches from Yahoo Finance (free, no API key needed)
+        // Use NEXT_PUBLIC_API_BASE (without version) since ohlc endpoint is at /api/ohlc
+        // Request 500 candles for better history (about 3 weeks of hourly data, or 2 years of daily)
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
+        const url = `${apiBase}/ohlc?symbol=${symbol}&timeframe=${timeframe}&limit=500`;
+        console.log('[DrawingChart] Fetching OHLC data from:', url);
         const response = await fetch(url);
 
         if (!response.ok) {
+          console.error(
+            '[DrawingChart] API response not ok:',
+            response.status,
+            response.statusText
+          );
           throw new Error('Failed to fetch OHLC data');
         }
 
         const result = await response.json();
-
-        // Transform mock API data to lightweight-charts format
-        // Mock endpoint returns: { symbol, timeframe, candles: [{ ts, o, h, l, c, v }] }
-        // Use Unix timestamp in seconds (lightweight-charts accepts both date strings and timestamps)
+        console.log(
+          '[DrawingChart] Received',
+          result.candles?.length,
+          'candles, first price:',
+          result.candles?.[0]?.c
+        );
         const transformedData: BarData[] = result.candles.map(
           (candle: { ts: number; o: number; h: number; l: number; c: number }) => ({
-            time: Math.floor(candle.ts / 1000) as UTCTimestamp, // Convert ms to seconds
+            time: Math.floor(candle.ts / 1000) as UTCTimestamp,
             open: candle.o,
             high: candle.h,
             low: candle.l,
@@ -119,13 +120,10 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         setChartData(transformedData);
       } catch (error) {
         console.error('Failed to fetch OHLC data:', error);
-        // Fallback to mock data if API fails
         setChartData([
           { time: '2024-01-01', open: 100, high: 110, low: 95, close: 105 },
           { time: '2024-01-02', open: 105, high: 115, low: 100, close: 108 },
           { time: '2024-01-03', open: 108, high: 112, low: 102, close: 110 },
-          { time: '2024-01-04', open: 110, high: 118, low: 108, close: 115 },
-          { time: '2024-01-05', open: 115, high: 120, low: 110, close: 118 },
         ]);
       } finally {
         setIsLoading(false);
@@ -135,6 +133,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     fetchOHLCData();
   }, [symbol, timeframe]);
 
+  // Initialize chart
   const initializeChart = useCallback(async () => {
     if (!chartContainerRef.current || chartData.length === 0) return;
 
@@ -143,7 +142,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
-        height: height, // Full height - no header
+        height: height,
         layout: {
           background: { color: '#131722' },
           textColor: '#787b86',
@@ -167,14 +166,15 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
             labelBackgroundColor: '#2962ff',
           },
         },
-        rightPriceScale: {
-          borderColor: '#2a2e39',
-        },
+        rightPriceScale: { borderColor: '#2a2e39' },
         timeScale: {
           borderColor: '#2a2e39',
           timeVisible: true,
           secondsVisible: false,
         },
+        // Explicitly enable scroll and scale interactions by default (cursor tool is default)
+        handleScroll: true,
+        handleScale: true,
       });
 
       const candlestickSeries = chart.addCandlestickSeries({
@@ -201,7 +201,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
             });
           }
         });
-
         resizeObserverRef.current.observe(chartContainerRef.current);
       }
     } catch (error) {
@@ -209,6 +208,17 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       throw error;
     }
   }, [height, chartData]);
+
+  // Disable chart interactions when drawing tool is active
+  // Also re-apply when chart becomes ready (after timeframe change)
+  useEffect(() => {
+    if (!chartRef.current || !chartReady) return;
+    const shouldDisableInteractions = activeTool !== 'cursor';
+    chartRef.current.applyOptions({
+      handleScroll: !shouldDisableInteractions,
+      handleScale: !shouldDisableInteractions,
+    });
+  }, [activeTool, chartReady]);
 
   // Convert mouse event to price/time coordinates
   const getChartCoordinates = useCallback(
@@ -224,206 +234,159 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
       const price = seriesRef.current.coordinateToPrice(y);
 
       if (time === null || price === null) return null;
-
       return { time, price };
     },
     []
   );
 
+  // Mouse handlers for drawing
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
       if (!isVisible || activeTool === 'cursor') return;
+
+      e.preventDefault();
+      e.stopPropagation();
 
       setIsMouseDown(true);
       const coords = getChartCoordinates(e);
       if (!coords) return;
 
-      // Convert to Point format (will be updated to use time/price in store later)
-      const point: Point = { x: 0, y: 0, time: coords.time, price: coords.price };
+      const point: Point = { time: coords.time, price: coords.price };
 
       if (!isDrawing) {
         startDrawing(paneId, point);
-      } else {
-        addPoint(point);
+
+        // Single-click tools finish immediately
+        if (['hline', 'vline'].includes(activeTool)) {
+          setTimeout(() => finishDrawing(), 0);
+        }
       }
     },
-    [isVisible, activeTool, isDrawing, paneId, startDrawing, addPoint, getChartCoordinates]
+    [isVisible, activeTool, isDrawing, paneId, startDrawing, getChartCoordinates, finishDrawing]
   );
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
       if (!isMouseDown || !isDrawing || !currentDrawing) return;
+      if (['hline', 'vline'].includes(activeTool)) return;
 
-      // For tools that need continuous updates (like rectangles), update the preview
+      e.preventDefault();
+      e.stopPropagation();
+
       const coords = getChartCoordinates(e);
       if (!coords) return;
 
-      // Update the current drawing's second point for preview
-      // This allows real-time feedback while dragging
-      const previewPoint: Point = { x: 0, y: 0, time: coords.time, price: coords.price };
-
-      // For two-point tools, we want to show a preview with the current mouse position
-      // The actual second point will be added on mouseUp
-      // TODO: Implement preview rendering (requires additional state or primitive updates)
+      const point: Point = { time: coords.time, price: coords.price };
+      updateCurrentDrawingPoint(1, point);
     },
-    [isMouseDown, isDrawing, currentDrawing, getChartCoordinates]
+    [
+      isMouseDown,
+      isDrawing,
+      currentDrawing,
+      activeTool,
+      getChartCoordinates,
+      updateCurrentDrawingPoint,
+    ]
   );
 
   const handleMouseUp = useCallback(
     (e: React.MouseEvent) => {
+      const wasMouseDown = isMouseDown;
       setIsMouseDown(false);
 
-      if (isDrawing && activeTool !== 'cursor') {
-        // For two-point drawing tools, add the second point and finish
-        if (['rectangle', 'circle', 'trendline', 'hline', 'vline'].includes(activeTool)) {
-          const coords = getChartCoordinates(e);
-          if (coords) {
-            const point: Point = { x: 0, y: 0, time: coords.time, price: coords.price };
-            addPoint(point);
-          }
-          finishDrawing();
+      if (activeTool !== 'cursor') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      if (!wasMouseDown || !isDrawing || activeTool === 'cursor') return;
+      if (['hline', 'vline'].includes(activeTool)) return;
+
+      // Finalize two-point drawing tools (all tools except single-click ones)
+      const twoPointTools = [
+        'rectangle',
+        'circle',
+        'trendline',
+        'arrow',
+        'fibonacciRetracement',
+        'fibonacciExtension',
+        'parallelChannel',
+        'pitchfork',
+        'textNote',
+      ];
+      if (twoPointTools.includes(activeTool)) {
+        const coords = getChartCoordinates(e);
+        if (coords) {
+          updateCurrentDrawingPoint(1, { time: coords.time, price: coords.price });
         }
+        finishDrawing();
       }
     },
-    [isDrawing, activeTool, finishDrawing, getChartCoordinates, addPoint]
+    [
+      isMouseDown,
+      isDrawing,
+      activeTool,
+      finishDrawing,
+      getChartCoordinates,
+      updateCurrentDrawingPoint,
+    ]
   );
 
-  const handleDoubleClick = useCallback(() => {
-    if (isDrawing) {
-      finishDrawing();
-    }
-  }, [isDrawing, finishDrawing]);
-
-  // Attach drawing primitives to chart
+  // Initialize chart when data is ready
   useEffect(() => {
-    if (!seriesRef.current || !chartRef.current) return;
-
-    const paneObjects = getObjectsByPane(paneId);
-
-    // Remove primitives that no longer exist
-    primitivesRef.current.forEach((primitive, id) => {
-      const objectExists = paneObjects.some((obj: { id: string }) => obj.id === id);
-      if (!objectExists) {
-        seriesRef.current?.detachPrimitive(primitive);
-        primitivesRef.current.delete(id);
-      }
-    });
-
-    // Add or update primitives for existing objects
-    paneObjects.forEach((obj: DrawingObject) => {
-      if (!obj.properties.visible || obj.points.length < 2) return;
-
-      // Skip if already attached
-      if (primitivesRef.current.has(obj.id)) return;
-
-      // Only create primitives for objects with time/price data
-      if (!obj.points[0].time || obj.points[0].price === undefined) return;
-
-      let primitive: ISeriesPrimitive<Time> | null = null;
-
-      try {
-        switch (obj.type) {
-          case 'trendline':
-          case 'hline':
-          case 'vline':
-            primitive = new TrendLinePrimitive(
-              { time: obj.points[0].time as Time, price: obj.points[0].price! },
-              {
-                time: obj.points[obj.points.length - 1].time as Time,
-                price: obj.points[obj.points.length - 1].price!,
-              },
-              {
-                lineColor: obj.style.color,
-                lineWidth: obj.style.lineWidth,
-              }
-            );
-            break;
-
-          case 'rectangle':
-            primitive = new RectanglePrimitive(
-              { time: obj.points[0].time as Time, price: obj.points[0].price! },
-              { time: obj.points[1].time as Time, price: obj.points[1].price! },
-              {
-                fillColor: obj.style.color,
-                borderColor: obj.style.color,
-                fillOpacity: 0.2,
-              }
-            );
-            break;
-
-          case 'fibonacciRetracement':
-            primitive = new FibonacciPrimitive(
-              { time: obj.points[0].time as Time, price: obj.points[0].price! },
-              {
-                time: obj.points[obj.points.length - 1].time as Time,
-                price: obj.points[obj.points.length - 1].price!,
-              },
-              {
-                lineColor: obj.style.color,
-                lineWidth: obj.style.lineWidth,
-              }
-            );
-            break;
-        }
-
-        if (primitive && seriesRef.current) {
-          seriesRef.current.attachPrimitive(primitive);
-          primitivesRef.current.set(obj.id, primitive);
-        }
-      } catch (error) {
-        console.error(`Failed to create primitive for ${obj.type}:`, error);
-      }
-    });
-
-    // Request chart update
-    chartRef.current?.timeScale().fitContent();
-  }, [paneId, getObjectsByPane, objects]);
-
-  useEffect(() => {
-    if (isVisible) {
-      initializeChart();
+    if (isVisible && chartData.length > 0) {
+      initializeChart().then(() => setChartReady(true));
     }
 
     return () => {
-      // Cleanup primitives
-      primitivesRef.current.forEach((primitive) => {
-        seriesRef.current?.detachPrimitive(primitive);
-      });
-      primitivesRef.current.clear();
-
+      setChartReady(false);
       resizeObserverRef.current?.disconnect();
       chartRef.current?.remove();
+      chartRef.current = null;
+      seriesRef.current = null;
     };
-  }, [initializeChart, isVisible]);
+  }, [initializeChart, isVisible, chartData]); // Use chartData directly to trigger on data changes
 
-  // Update chart height when height changes
+  // Update chart height
   useEffect(() => {
     if (isVisible && chartRef.current && chartContainerRef.current) {
-      chartRef.current.applyOptions({
-        height: height - 40,
-      });
+      chartRef.current.applyOptions({ height: height });
     }
   }, [height, isVisible]);
 
-  if (!isVisible) {
-    return null; // Hidden panes don't render at all - TradingView style
-  }
+  if (!isVisible) return null;
 
   return (
     <div className="relative h-full">
-      {/* Chart Container with Drawing Support - Full height, no header */}
+      {/* Chart Container */}
       <div
         ref={chartContainerRef}
         style={{
           height: '100%',
-          cursor: activeTool === 'cursor' ? 'default' : 'crosshair',
+          cursor: activeTool === 'cursor' ? 'grab' : 'crosshair',
+          touchAction: 'auto',
+          userSelect: 'none',
         }}
         className="relative bg-[#131722]"
+        // Always attach handlers - they check activeTool internally and return early for cursor mode
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onDoubleClick={handleDoubleClick}
+        onMouseLeave={handleMouseUp}
       />
+
+      {/* Canvas Overlay for Drawings */}
+      {chartReady && (
+        <DrawingOverlay
+          chartRef={chartRef}
+          seriesRef={seriesRef}
+          containerRef={chartContainerRef}
+          paneId={paneId}
+          isDrawing={isDrawing}
+          currentDrawing={currentDrawing}
+          chartDataLength={chartData.length}
+        />
+      )}
     </div>
   );
 };
@@ -443,13 +406,9 @@ export const DrawingChart: React.FC = () => {
 
     updateDimensions();
     window.addEventListener('resize', updateDimensions);
-
-    return () => {
-      window.removeEventListener('resize', updateDimensions);
-    };
+    return () => window.removeEventListener('resize', updateDimensions);
   }, []);
 
-  // Get the main price pane - TradingView only shows one main chart
   const pricePane = panes.find((p: { type: string }) => p.type === 'price') || panes[0];
 
   return (

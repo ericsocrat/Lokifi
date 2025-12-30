@@ -72,6 +72,7 @@ interface DrawingState {
   setActiveTool: (tool: DrawingTool) => void;
   startDrawing: (paneId: string, point: Point) => void;
   addPoint: (point: Point) => void;
+  updateCurrentDrawingPoint: (pointIndex: number, point: Point) => void;
   finishDrawing: () => void;
   cancelDrawing: () => void;
 
@@ -219,6 +220,27 @@ export const useDrawingStore = create<DrawingState>()(
           currentDrawing: {
             ...currentDrawing,
             points: [...(currentDrawing.points || []), point],
+          },
+        });
+      },
+
+      updateCurrentDrawingPoint: (pointIndex: number, point: Point) => {
+        const { currentDrawing, isDrawing } = get();
+        if (!isDrawing || !currentDrawing || !currentDrawing.points) return;
+
+        const newPoints = [...currentDrawing.points];
+
+        // If the point index doesn't exist yet, add it
+        if (pointIndex >= newPoints.length) {
+          newPoints.push(point);
+        } else {
+          newPoints[pointIndex] = point;
+        }
+
+        set({
+          currentDrawing: {
+            ...currentDrawing,
+            points: newPoints,
           },
         });
       },
