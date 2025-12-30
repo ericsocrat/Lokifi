@@ -21,6 +21,7 @@ pnpm-debug.log*
 # (apps/backend/ and apps/frontend/), not at project root
 .coverage
 coverage.json
+coverage.xml
 htmlcov/
 .pytest_cache/
 .vitest/
