@@ -11,7 +11,7 @@
       "name": "🔧 Python: FastAPI Server",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/backend/.venv/Scripts/uvicorn.exe",
+      "module": "uvicorn",
       "args": [
         "app.main:app",
         "--host",
@@ -21,9 +21,9 @@
         "--reload"
       ],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceFolder}/apps/backend",
       "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
+        "PYTHONPATH": "${workspaceFolder}/apps/backend"
       },
       "justMyCode": false,
       "preLaunchTask": "🔴 Start Redis Server (Docker)"
@@ -34,9 +34,9 @@
       "request": "launch",
       "program": "${file}",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceFolder}/apps/backend",
       "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
+        "PYTHONPATH": "${workspaceFolder}/apps/backend"
       },
       "justMyCode": true
     },
@@ -52,9 +52,9 @@
         "--tb=short"
       ],
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend",
+      "cwd": "${workspaceFolder}/apps/backend",
       "env": {
-        "PYTHONPATH": "${workspaceFolder}/backend"
+        "PYTHONPATH": "${workspaceFolder}/apps/backend"
       },
       "justMyCode": false
     },
@@ -62,9 +62,9 @@
       "name": "🗄️ Python: Database Tests",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/backend/database_management_suite.py",
+      "program": "${workspaceFolder}/apps/backend/database_management_suite.py",
       "console": "integratedTerminal",
-      "cwd": "${workspaceFolder}/backend"
+      "cwd": "${workspaceFolder}/apps/backend"
     },
 
     // ===== JAVASCRIPT/FRONTEND DEBUGGING =====

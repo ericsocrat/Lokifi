@@ -51,6 +51,17 @@
     "wix.vscode-import-cost", // Display import sizes
     "christian-kohler.path-intellisense", // Path autocomplete
     "gruntfuggly.todo-tree", // TODO/FIXME tracker
+    "formulahendry.auto-rename-tag", // Auto rename paired tags
+    "steoates.autoimport", // Auto import suggestions
+
+    // ===== POWERSHELL =====
+    "ms-vscode.powershell", // PowerShell language support
+
+    // ===== GITHUB =====
+    "github.vscode-github-actions", // GitHub Actions workflow support
+    "github.copilot", // AI pair programmer
+    "github.copilot-chat", // AI chat assistant
+    "github.vscode-pull-request-github", // PR management
 
     // ===== MARKDOWN =====
     "yzhang.markdown-all-in-one", // Markdown editing

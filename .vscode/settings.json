@@ -2,7 +2,7 @@
   // ============================================
   // LOKIFI WORKSPACE SETTINGS - FULLY OPTIMIZED
   // Optimized for: Next.js 15 + FastAPI + Vitest + Pytest
-  // Last Updated: October 22, 2025
+  // Last Updated: December 30, 2025
   // Optimization Level: Production-Ready ⭐
   // ============================================
 
@@ -168,7 +168,8 @@
   "typescript.updateImportsOnFileMove.enabled": "always",
   "javascript.updateImportsOnFileMove.enabled": "always",
   "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.tsdk": "apps/frontend/node_modules/typescript/lib",
+  // TypeScript hoisted to root node_modules due to npm workspaces
+  "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "javascript.suggest.autoImports": true,
   "typescript.suggest.autoImports": true,
@@ -225,8 +226,21 @@
     "apps/backend/tests"
   ],
   "python.languageServer": "Pylance",
-  "python.linting.enabled": false,
   "python.analysis.indexing": false,
+  "python.analysis.exclude": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/htmlcov/**",
+    "**/venv/**",
+    "**/.venv/**",
+    "**/site-packages/**",
+    "**/apps/frontend/**",
+    "**/apps/admin/**",
+    "**/apps/mobile/**",
+    "**/infra/**",
+    "**/tools/**"
+  ],
   "isort.args": ["--profile", "black"],
   "black-formatter.args": ["--line-length", "100"],
 
@@ -246,9 +260,10 @@
   "powershell.codeFormatting.trimWhitespaceAroundPipe": true,
   "powershell.codeFormatting.addWhitespaceAroundPipe": true,
 
-  // ===== VITEST (NEW!) =====
+  // ===== VITEST =====
   "vitest.enable": true,
-  "vitest.commandLine": "npm run test",
+  "vitest.workspaceFolder": "${workspaceFolder}/apps/frontend",
+  "vitest.commandLine": "npx vitest",
   "vitest.include": ["**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
   "vitest.exclude": [
     "**/node_modules/**",
@@ -260,29 +275,29 @@
   "vitest.showFailMessages": true,
   "vitest.watchOnStartup": "openTesting",
 
-  // ===== PLAYWRIGHT (NEW!) =====
+  // ===== PLAYWRIGHT =====
   "playwright.reuseBrowser": false,
   "playwright.showTrace": true,
 
-  // ===== COVERAGE GUTTERS (NEW!) =====
+  // ===== COVERAGE GUTTERS =====
   "coverage-gutters.coverageFileNames": [
-    "coverage/lcov.info",
-    "coverage/coverage.json",
-    "apps/frontend/coverage/lcov.info"
+    "apps/frontend/coverage/lcov.info",
+    "apps/frontend/coverage/coverage-final.json",
+    "apps/backend/htmlcov/coverage.json"
   ],
   "coverage-gutters.showLineCoverage": true,
   "coverage-gutters.showRulerCoverage": true,
   "coverage-gutters.highlightdark": "rgba(16, 185, 129, 0.15)",
   "coverage-gutters.highlightlight": "rgba(16, 185, 129, 0.15)",
 
-  // ===== CONSOLE NINJA (NEW!) =====
+  // ===== CONSOLE NINJA =====
   "console-ninja.featureSet": "Community",
   "console-ninja.toolsToEnableSupportAutomaticallyFor": {
     "live-server-extension": true,
     "live-preview-extension": true
   },
 
-  // ===== IMPORT COST (NEW!) =====
+  // ===== IMPORT COST =====
   "importCost.bundleSizeDecoration": "both",
   "importCost.showCalculatingDecoration": true,
   "importCost.smallPackageSize": 50,
@@ -711,6 +726,21 @@
   // ===== PATH INTELLISENSE =====
   "path-intellisense.autoSlashAfterDirectory": true,
   "path-intellisense.extensionOnImport": true,
+  "path-intellisense.mappings": {
+    "@": "${workspaceFolder}/apps/frontend",
+    "@/components": "${workspaceFolder}/apps/frontend/components",
+    "@/lib": "${workspaceFolder}/apps/frontend/lib",
+    "@/hooks": "${workspaceFolder}/apps/frontend/hooks",
+    "@/app": "${workspaceFolder}/apps/frontend/app"
+  },
+
+  // ===== NPM INTELLISENSE =====
+  "npm-intellisense.importES6": true,
+  "npm-intellisense.importQuotes": "'",
+  "npm-intellisense.importLinebreak": ";",
+  "npm-intellisense.importDeclarationType": "const",
+  "npm-intellisense.scanDevDependencies": true,
+  "npm-intellisense.showBuildInLibs": true,
 
   // ===== MARKDOWN =====
   "[markdown]": {
@@ -742,6 +772,48 @@
   "versionlens.pip.caching.duration": 3600,
   "versionlens.suggestions.showPrerelease": false,
   "workbench.editor.tabActionLocation": "right",
+
+  // ===== AUTO RENAME TAG =====
+  "auto-rename-tag.activationOnLanguage": [
+    "html",
+    "xml",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+
+  // ===== AUTO IMPORT =====
+  "autoimport.filesToScan": "**/*.{ts,tsx,js,jsx}",
+  "autoimport.showNotifications": false,
+  "autoimport.doubleQuotes": false,
+  "autoimport.spaceBetweenBraces": true,
+  "autoimport.autoComplete": true,
+
+  // ===== PRETTY TS ERRORS =====
+  "prettyTsErrors.showLineNumbers": true,
+  "prettyTsErrors.showLinksInError": true,
+
+  // ===== GIT GRAPH =====
+  "git-graph.repository.fetchAndPrune": true,
+  "git-graph.repository.fetchAndPruneTags": true,
+  "git-graph.date.format": "Relative",
+  "git-graph.commitDetailsView.autoCenter": true,
+
+  // ===== REST CLIENT =====
+  "rest-client.enableTelemetry": false,
+  "rest-client.previewResponseInUntitledDocument": false,
+  "rest-client.environmentVariables": {
+    "$shared": {},
+    "development": {
+      "baseUrl": "http://localhost:8000",
+      "apiUrl": "http://localhost:8000/api/v1"
+    },
+    "production": {
+      "baseUrl": "https://api.www.lokifi.com",
+      "apiUrl": "https://api.www.lokifi.com/api/v1"
+    }
+  },
 
   // Use .github/copilot-instructions.md for project-specific instructions
   "github.copilot.chat.codeGeneration.useInstructionFiles": true,
