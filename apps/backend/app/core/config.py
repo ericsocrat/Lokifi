@@ -22,7 +22,9 @@ class Settings(BaseSettings):
     DATABASE_MAX_OVERFLOW: int = Field(default=10, alias="DATABASE_MAX_OVERFLOW")
     DATABASE_POOL_TIMEOUT: int = Field(default=30, alias="DATABASE_POOL_TIMEOUT")
     DATABASE_POOL_RECYCLE: int = Field(default=3600, alias="DATABASE_POOL_RECYCLE")
-    DATABASE_SSL_REQUIRED: bool = Field(default=False, alias="DATABASE_SSL_REQUIRED")  # True for production
+    DATABASE_SSL_REQUIRED: bool = Field(
+        default=False, alias="DATABASE_SSL_REQUIRED"
+    )  # True for production
 
     # Storage and Archival Settings
     ENABLE_DATA_ARCHIVAL: bool = Field(default=False, alias="ENABLE_DATA_ARCHIVAL")

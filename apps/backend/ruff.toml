@@ -1,9 +1,11 @@
 ﻿line-length = 100
-target-version = "py311"
+target-version = "py313"
 exclude = [
   ".venv",
+  "venv",
   "__pycache__",
   "data",
+  "alembic/versions",
 ]
 
 [lint]
@@ -17,6 +19,9 @@ select = [
   "A",    # flake8-builtins (shadowing built-ins)
   "RUF",  # Ruff-specific rules
   "PERF", # Performance anti-patterns
+  "C4",   # flake8-comprehensions (better comprehensions)
+  "SIM",  # flake8-simplify (code simplification)
+  "PTH",  # flake8-use-pathlib (prefer pathlib)
 ]
 ignore = [
   "E203",   # Whitespace before ':'
@@ -48,7 +53,19 @@ ignore = [
   "S324",   # hashlib-insecure-hash-function (2 - md5 for non-security caching)
   "B026",   # star-arg-unpacking-after-keyword-arg (1 - StreamingResponse pattern)
   "S608",   # hardcoded-sql-expression (1 - parameterized query false positive)
+  # New rule ignores for added lint categories
+  "PTH123", # open() vs Path.open() - gradual migration
+  "SIM108", # ternary operator preference - readability choice
 ]
 
 [lint.mccabe]
 max-complexity = 10  # Flag complex functions
+
+[lint.isort]
+known-first-party = ["app"]
+force-single-line = false
+combine-as-imports = true
+
+[lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "S106"]  # Allow assert and test passwords in tests
+"alembic/**/*.py" = ["F401"]  # Allow unused imports in migrations
