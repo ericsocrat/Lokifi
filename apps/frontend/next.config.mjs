@@ -9,12 +9,34 @@ const nextConfig = {
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   reactStrictMode: false, // Temporarily disabled - causes chart duplication
+
+  // Performance optimizations
+  compress: true,
+  poweredByHeader: false, // Security: Remove X-Powered-By header
+
   experimental: {
     forceSwcTransforms: false,
   },
+
   // Fix for Docker builds - ensure output tracing works correctly
   outputFileTracingRoot: process.env.DOCKER_BUILD ? undefined : process.cwd(),
   output: 'standalone',
+
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        ],
+      },
+    ];
+  },
+
   webpack: (config, { dev, isServer }) => {
     // Configure hot reloading
     config.watchOptions = {
