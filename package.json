@@ -8,9 +8,21 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
+    "dev": "npm run dev:frontend",
+    "dev:frontend": "cd apps/frontend && npm run dev",
+    "dev:backend": "cd apps/backend && uvicorn app.main:app --reload",
+    "build": "cd apps/frontend && npm run build",
+    "lint": "cd apps/frontend && npm run lint",
+    "lint:backend": "cd apps/backend && ruff check .",
+    "typecheck": "cd apps/frontend && npm run typecheck",
+    "test": "npm run test:all",
     "test:frontend": "cd apps/frontend && npm test",
     "test:backend": "cd apps/backend && pytest",
-    "test:all": "npm run test:frontend && npm run test:backend"
+    "test:all": "npm run test:frontend && npm run test:backend",
+    "test:coverage": "cd apps/frontend && npm run test:coverage",
+    "clean": "npm run clean:frontend && npm run clean:backend",
+    "clean:frontend": "cd apps/frontend && rm -rf .next node_modules",
+    "clean:backend": "cd apps/backend && rm -rf __pycache__ .pytest_cache .ruff_cache"
   },
   "workspaces": [
     "apps/frontend",

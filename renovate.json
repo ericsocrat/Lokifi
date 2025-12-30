@@ -43,11 +43,44 @@
       "matchPackageNames": [
         "vitest",
         "@vitest/ui",
+        "@vitest/coverage-v8",
         "playwright",
         "@playwright/test",
         "pytest",
-        "pytest-cov"
+        "pytest-cov",
+        "pytest-asyncio",
+        "@testing-library/react",
+        "@testing-library/jest-dom",
+        "@testing-library/user-event"
       ]
+    },
+    {
+      "description": "Linting & Formatting (group together)",
+      "groupName": "Linting tools",
+      "matchPackageNames": [
+        "eslint",
+        "eslint-config-next",
+        "prettier",
+        "@typescript-eslint/parser",
+        "@typescript-eslint/eslint-plugin",
+        "ruff",
+        "black",
+        "mypy"
+      ],
+      "automerge": true,
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "TypeScript ecosystem",
+      "groupName": "TypeScript",
+      "matchPackageNames": [
+        "typescript",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "automerge": true,
+      "minimumReleaseAge": "7 days"
     },
     {
       "description": "Security patches (auto-merge immediately)",

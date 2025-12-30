@@ -139,12 +139,15 @@
 - **State**: Zustand for global state
 - **Charts**: Recharts for data visualization
 - **Testing**: Vitest 3.2.4, Testing Library, Playwright
+- **Node.js**: v22 LTS (specified in `.nvmrc`)
 
 ### Backend Stack
 - **Framework**: FastAPI (Python 3.13.9)
 - **Database**: PostgreSQL with SQLAlchemy
 - **Cache**: Redis
-- **Testing**: Pytest with coverage
+- **Testing**: Pytest with coverage, asyncio_mode=auto
+- **Type Checking**: MyPy with pydantic & sqlalchemy plugins
+- **Linting**: Ruff (target: py313)
 
 ### Infrastructure & Deployment
 - **Containerization**: Docker & Docker Compose
@@ -165,12 +168,19 @@
 - Use `const` for all variables unless mutation needed
 - Named exports over default exports
 - File naming: `kebab-case.ts` for utilities, `PascalCase.tsx` for components
+- **ESLint Rules**:
+  - `no-unused-vars`: Warn (prefix with `_` to intentionally mark unused)
+  - `consistent-type-imports`: Use `import type` for type-only imports
+  - `no-console`: Warn (allows `console.warn` and `console.error`)
+  - `prefer-const`: Enforced for variables never reassigned
 
 ### Python
 - Type hints required for all functions
 - Use Black for formatting (line length: 88)
 - Follow PEP 8 conventions
 - Docstrings for all public functions
+- **Ruff Config**: Target Python 3.13, rules include E, F, W, I, C4, SIM, PTH
+- **MyPy Plugins**: pydantic.mypy, sqlalchemy.ext.mypy.plugin enabled
 
 ### Testing Conventions
 - **Frontend**: Vitest with `describe()` > `it()` structure
@@ -1204,6 +1214,11 @@ For **Bug Fixes**:
 - **Sanitize all user inputs** - Especially before API calls
 - **Use environment variables** - Never hardcode API keys or secrets
 - **Validate on both frontend and backend** - Defense in depth
+- **Security Headers** (configured in `next.config.mjs`):
+  - `X-Content-Type-Options: nosniff` - Prevents MIME-type sniffing
+  - `X-Frame-Options: DENY` - Prevents clickjacking
+  - `X-XSS-Protection: 1; mode=block` - Legacy XSS protection
+  - `Referrer-Policy: strict-origin-when-cross-origin` - Controls referrer info
 
 **Security Anti-Patterns to Avoid:**
 ```typescript
@@ -1699,7 +1714,25 @@ npm run test         # Run Vitest tests
 npm run test:ui      # Vitest UI
 npm run test:coverage # Coverage report
 npm run lint         # ESLint check
+npm run typecheck    # TypeScript type checking (tsc --noEmit)
 npm run build        # Production build
+```
+
+### Root Workspace Scripts (Convenience Commands)
+```bash
+# From project root - run these without changing directories
+npm run dev          # Start frontend dev server
+npm run dev:frontend # Alias: frontend dev server
+npm run dev:backend  # Start backend with uvicorn
+npm run build        # Build frontend for production
+npm run lint         # Lint frontend
+npm run lint:backend # Lint backend with ruff
+npm run typecheck    # TypeScript typecheck
+npm run test         # Run frontend tests
+npm run test:coverage # Frontend tests with coverage
+npm run clean        # Clean all build artifacts
+npm run clean:frontend # Clean frontend (.next, node_modules)
+npm run clean:backend  # Clean backend (__pycache__, venv)
 ```
 
 ### Backend
@@ -1709,6 +1742,8 @@ pytest                         # Run tests
 pytest --cov                   # With coverage
 black .                        # Format code
 ruff check                     # Lint code
+ruff check --fix               # Auto-fix lint issues
+mypy .                         # Type checking with plugins
 ```
 
 ## Extension Integration
