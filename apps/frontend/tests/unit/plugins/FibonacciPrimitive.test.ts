@@ -67,7 +67,7 @@ describe('FibonacciPrimitive', () => {
 
       expect(primitive._options.lineColor).toBeDefined();
       expect(primitive._options.lineWidth).toBeDefined();
-      expect(primitive._options.showLabels).toBe(true);
+      expect(primitive._options.showLabels).toBe(false); // Default: labels only on hover
       expect(primitive._options.labelBackgroundColor).toBeDefined();
       expect(primitive._options.labelTextColor).toBeDefined();
     });

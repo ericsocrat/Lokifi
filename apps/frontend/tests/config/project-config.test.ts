@@ -58,7 +58,8 @@ describe('Project Configuration Files', () => {
       expect(existsSync(nvmrcPath)).toBe(true);
 
       const content = readFileSync(nvmrcPath, 'utf-8').trim();
-      expect(content).toMatch(/^\d+\.\d+\.\d+$/);
+      // Accept both major-only (22) and full version (22.x.x) formats
+      expect(content).toMatch(/^\d+(\.\d+\.\d+)?$/);
     });
 
     it('should match package.json engines requirement', () => {
