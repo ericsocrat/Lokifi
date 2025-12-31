@@ -16,7 +16,7 @@ export function useAsset(symbol: string): MarketAsset | undefined {
   const [asset, setAsset] = useState<MarketAsset | undefined>(() => marketData.getAsset(symbol));
 
   useEffect(() => {
-    const unsubscribe = marketData.subscribe((assets: any) => {
+    const unsubscribe = marketData.subscribe((assets: Map<string, MarketAsset>) => {
       const updated = assets.get(symbol.toUpperCase());
       setAsset(updated);
     });
@@ -34,9 +34,9 @@ export function useAssets(symbols: string[]): Map<string, MarketAsset> {
   const [assets, setAssets] = useState<Map<string, MarketAsset>>(new Map());
 
   useEffect(() => {
-    const unsubscribe = marketData.subscribe((allAssets: any) => {
+    const unsubscribe = marketData.subscribe((allAssets: Map<string, MarketAsset>) => {
       const filtered = new Map<string, MarketAsset>();
-      symbols.forEach((symbol: any) => {
+      symbols.forEach((symbol: string) => {
         const asset = allAssets.get(symbol.toUpperCase());
         if (asset) {
           filtered.set(symbol.toUpperCase(), asset);

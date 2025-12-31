@@ -289,7 +289,7 @@ export function useWebSocketPrices(options: UseWebSocketPricesOptions = {}) {
     }
 
     // Setup price update listener
-    const unsubscribeCallback = wsRef.current.onPriceUpdate((update: any) => {
+    const unsubscribeCallback = wsRef.current.onPriceUpdate((update: PriceUpdate) => {
       setPrices((prev) => ({ ...prev, ...update }));
     });
 

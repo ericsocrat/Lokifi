@@ -122,9 +122,12 @@ export default function NotificationPreferencesPage() {
     const newPrefs = { ...preferences };
 
     if (keys.length === 1) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any required: dynamic path accessor pattern
       (newPrefs as any)[keys[0]] = value;
     } else if (keys.length === 2) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any required: dynamic path accessor pattern
       (newPrefs as any)[keys[0]] = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any required: dynamic path accessor pattern
         ...(newPrefs as any)[keys[0]],
         [keys[1]]: value
       };
