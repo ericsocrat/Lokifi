@@ -65,6 +65,7 @@ docker-compose*.yml @ericsocrat
 /.github/CODEOWNERS @ericsocrat
 /.github/dependabot.yml @ericsocrat
 /.github/labeler.yml @ericsocrat
+/.github/labels.yml @ericsocrat
 
 # ========================================
 # Documentation

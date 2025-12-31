@@ -1,0 +1,165 @@
+# GitHub Labels Configuration
+# ===========================================
+# This file defines all labels used by the Lokifi repository.
+# Labels are auto-applied by labeler.yml + label-pr.yml workflow.
+#
+# To sync labels with GitHub: Use actions/labeler or manually create
+# See: https://github.com/marketplace/actions/label-sync
+#
+# Cross-references:
+# - labeler.yml: Defines auto-labeling rules for PR files
+# - label-pr.yml: Workflow that applies labels + size labels
+# - stale.yml: Uses 'stale' and 'wontfix' labels
+# ===========================================
+
+# ===========================================
+# Application Labels (by app folder)
+# ===========================================
+- name: frontend
+  color: "61dafb"
+  description: "Changes to apps/frontend (Next.js)"
+
+- name: backend
+  color: "3776ab"
+  description: "Changes to apps/backend (FastAPI)"
+
+- name: mobile
+  color: "00d084"
+  description: "Changes to apps/mobile (React Native)"
+
+- name: admin
+  color: "9b59b6"
+  description: "Changes to apps/admin dashboard"
+
+# ===========================================
+# Size Labels (applied by pr-size-labeler)
+# ===========================================
+- name: size/XS
+  color: "3CB371"
+  description: "Extra small PR (<10 lines changed)"
+
+- name: size/S
+  color: "90EE90"
+  description: "Small PR (<100 lines changed)"
+
+- name: size/M
+  color: "FFD700"
+  description: "Medium PR (<500 lines changed)"
+
+- name: size/L
+  color: "FFA500"
+  description: "Large PR (<1000 lines changed)"
+
+- name: size/XL
+  color: "FF4500"
+  description: "Extra large PR (1000+ lines) - consider splitting"
+
+# ===========================================
+# Change Type Labels
+# ===========================================
+- name: ci-cd
+  color: "0e8a16"
+  description: "CI/CD pipeline and workflow changes"
+
+- name: documentation
+  color: "0075ca"
+  description: "Documentation updates"
+
+- name: dependencies
+  color: "0366d6"
+  description: "Dependency updates (npm, pip, renovate)"
+
+- name: infrastructure
+  color: "d4c5f9"
+  description: "Infrastructure & DevOps (Docker, deployment)"
+
+- name: testing
+  color: "fbca04"
+  description: "Test files and testing configuration"
+
+- name: configuration
+  color: "c5def5"
+  description: "Configuration files (tsconfig, eslint, etc.)"
+
+- name: security
+  color: "d73a4a"
+  description: "Security-related changes"
+
+- name: hotfix
+  color: "b60205"
+  description: "Critical security patches or urgent fixes"
+
+- name: performance
+  color: "7057ff"
+  description: "Performance improvements"
+
+# ===========================================
+# Scope Labels
+# ===========================================
+- name: database
+  color: "006b75"
+  description: "Database models, migrations, schemas"
+
+- name: api
+  color: "1d76db"
+  description: "API routes and endpoints"
+
+- name: ui
+  color: "e99695"
+  description: "UI components and styling"
+
+# ===========================================
+# Test-Related Labels
+# ===========================================
+- name: e2e-full
+  color: "bfd4f2"
+  description: "E2E/Playwright tests affected"
+
+- name: visual-regression
+  color: "d4c5f9"
+  description: "Visual regression tests needed"
+
+# ===========================================
+# Workflow Labels (stale.yml, etc.)
+# ===========================================
+- name: stale
+  color: "ededed"
+  description: "Marked stale due to inactivity (30 days)"
+
+- name: wontfix
+  color: "ffffff"
+  description: "Exempt from stale bot - intentionally left open"
+
+# ===========================================
+# PR Status Labels
+# ===========================================
+- name: needs-review
+  color: "fbca04"
+  description: "Ready for code review"
+
+- name: work-in-progress
+  color: "e4e669"
+  description: "Work in progress - not ready for review"
+
+- name: blocked
+  color: "d93f0b"
+  description: "Blocked by external dependency or issue"
+
+# ===========================================
+# Priority Labels
+# ===========================================
+- name: priority/critical
+  color: "b60205"
+  description: "Critical priority - needs immediate attention"
+
+- name: priority/high
+  color: "d93f0b"
+  description: "High priority"
+
+- name: priority/medium
+  color: "fbca04"
+  description: "Medium priority"
+
+- name: priority/low
+  color: "0e8a16"
+  description: "Low priority"

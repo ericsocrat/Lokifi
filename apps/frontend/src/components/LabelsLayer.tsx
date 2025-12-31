@@ -1,11 +1,7 @@
 import type { Drawing } from '@/lib/utils/drawings';
-import {
-  describeDrawing,
-  DEFAULT_LABEL_CONFIG,
-  type LabelConfig,
-} from '@/lib/utils/labels';
+import { DEFAULT_LABEL_CONFIG, describeDrawing, type LabelConfig } from '@/lib/utils/labels';
 import { useChartStore } from '@/state/store';
-import React, { useMemo, useSyncExternalStore } from 'react';
+import { useMemo, useSyncExternalStore } from 'react';
 
 /** Extended config that includes enabled flag for UI toggle */
 interface ExtendedLabelConfig extends LabelConfig {
@@ -60,7 +56,10 @@ export default function LabelsLayer() {
     return drawings
       .map((d: Drawing) => {
         // Check layer visibility using O(1) map lookup
-        const layer = (d.layerId ? layerMap.get(d.layerId) : undefined) || { visible: true, opacity: 1 };
+        const layer = (d.layerId ? layerMap.get(d.layerId) : undefined) || {
+          visible: true,
+          opacity: 1,
+        };
         if (!layer.visible || (layer.opacity ?? 1) === 0) return null;
 
         const info = describeDrawing(d, cfg);

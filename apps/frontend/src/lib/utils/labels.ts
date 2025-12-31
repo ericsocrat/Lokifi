@@ -31,7 +31,13 @@ export const DEFAULT_LABEL_CONFIG: LabelConfig = {
 
 /** Drawing kinds that support labels */
 export const SUPPORTED_DRAWING_KINDS = [
-  'hline', 'vline', 'trendline', 'ray', 'arrow', 'rect', 'ruler'
+  'hline',
+  'vline',
+  'trendline',
+  'ray',
+  'arrow',
+  'rect',
+  'ruler',
 ] as const;
 
 type LabelHandler = (d: Drawing, cfg: LabelConfig) => LabelResult | null;
