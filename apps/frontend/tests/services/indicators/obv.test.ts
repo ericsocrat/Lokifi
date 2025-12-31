@@ -501,7 +501,8 @@ describe('OBV Indicator Service', () => {
         const duration = performance.now() - start;
 
         expect(trend).toBeDefined();
-        expect(duration).toBeLessThan(10); // Should complete in <10ms
+        // Allow 50ms tolerance for CI/container environments, GC pauses, and JIT warm-up
+        expect(duration).toBeLessThan(50);
       });
 
       it('should handle getLatestOBV efficiently', () => {
