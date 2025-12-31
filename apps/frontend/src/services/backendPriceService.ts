@@ -501,9 +501,11 @@ export function getWebSocketService(): WebSocketPriceService {
 // EXPORTS
 // ============================================================================
 
-export default {
+const backendPriceService = {
   HistoricalDataService,
   CryptoDiscoveryService,
   WebSocketPriceService,
   getWebSocketService,
 };
+
+export default backendPriceService;

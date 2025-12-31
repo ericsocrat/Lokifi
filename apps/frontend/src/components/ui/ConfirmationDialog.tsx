@@ -74,7 +74,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
               onChange={(e) => setDontAskAgain(e.target.checked)}
               className="w-4 h-4 rounded border-white/15 bg-neutral-700 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 cursor-pointer"
             />
-            <span className="text-sm text-neutral-400">Don't ask me again</span>
+            <span className="text-sm text-neutral-400">Don&apos;t ask me again</span>
           </label>
         )}
 

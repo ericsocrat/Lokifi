@@ -14,7 +14,7 @@
 > - **CI/CD**: 100% pass rate (35/35 workflows) ✅
 > - **Type Safety**: 96.3% (64 acceptable any types) ✅
 > - **Backend Quality**: 0 Ruff violations ✅
-> - **ESLint**: 287 warnings (all documented as acceptable) ✅
+> - **ESLint**: 309 warnings (306 intentional any, 3 minor) ✅
 > - **Test Coverage**: Frontend 11.61% ✅, Backend 30.75%
 > - **Pre-commit Hooks**: Active (quality + security gates) ✅
 
@@ -22,9 +22,65 @@
 
 ## 🎯 Current Focus (Sprint 8 - Frontend Development)
 
-**Status:** ✅ **Session 94 COMPLETE - CI Fix & Issue Cleanup** (Cache path fix + actionlint shellcheck fix + closed issues)
+**Status:** ✅ **Session 95 COMPLETE - Linting Cleanup Sprint** (ESLint + Prettier + Console.log cleanup)
 
-**Previous:** ✅ **Session 93 COMPLETE - Repository Health Audit** (Workflow standardization, all 12 workflows audited)
+**Previous:** ✅ **Session 94 COMPLETE - CI Fix & Issue Cleanup** (Cache path fix + actionlint shellcheck fix + closed issues)
+
+### 🎉 Session 95: Linting Cleanup Sprint - COMPLETE
+
+**Status:** ✅ **COMPLETE** - 6 incremental commits systematically cleaning up linting issues
+
+**Achievement**: **COMPREHENSIVE CODE QUALITY CLEANUP** - ESLint auto-fixes, RUF012 mutable defaults, TypeScript hooks, Prettier formatting, unused vars, and console.log cleanup
+
+**Commits This Session** (6 total):
+| Commit | Description | Files | Details |
+|--------|-------------|-------|---------|
+| `587097e7` | ESLint auto-fixes | Multiple | Auto-fixable issues across codebase |
+| `d31086b8` | RUF012 mutable class defaults | 19 files | 60 violations fixed (mutable defaults → factory) |
+| `12fb2546` | TypeScript any types (hooks) | Hooks | Fixed useAuth/useTheme type safety |
+| `4da8c3d7` | Prettier formatting | 58 files | 155 formatting issues resolved |
+| `0fd313fd` | ESLint unused vars | 37 files | 64 no-unused-vars warnings fixed |
+| `d83cb339` | Console.log cleanup | 10 files | 63 no-console warnings → 0 |
+
+**Console.log Cleanup Details** (Final Commit):
+- **ESLint Overrides Added**: Legitimate logging files excluded from no-console rule:
+  - `src/lib/logger.ts` - Centralized logging utility
+  - `src/lib/stores/monitoringStore.tsx` - Performance monitoring
+  - `src/services/WebSocketService.ts` - Connection debugging
+- **Debug Logs Removed**: Production components cleaned (AuthProvider, AuthModal, apiFetch, charts)
+- **Placeholders Converted**: `console.log` in stubs → `// TODO:` comments for future WebSocket implementation
+- **Test Updates**: `marketDataStore.test.tsx` updated to not expect console.log output
+
+**Key Pattern - Console.log Cleanup Strategy**:
+```typescript
+// ❌ BAD - Debug log in production code
+subscribeToSymbol: (symbol: string, timeframe: string) => {
+  console.log(`Subscribing to ${symbol} with ${timeframe}`);
+},
+
+// ✅ GOOD - TODO comment for future implementation
+subscribeToSymbol: (_symbol: string, _timeframe: string) => {
+  // TODO: Implement WebSocket subscription when backend is ready
+},
+```
+
+**Remaining Warnings** (Documented & Intentional):
+- **306 `no-explicit-any`**: Generic/variadic patterns - Low priority, can address incrementally
+- **3 Minor**: consistent-type-imports (1), no-anonymous-default-export (1), no-unescaped-entities (1)
+- **Backend F403/F405**: 174 import star violations - Future sprint refactor
+
+**Quality Gates Passed**:
+- ✅ TypeScript: 0 errors
+- ✅ Tests: 3003 passing, 65 skipped
+- ✅ Build: Production-ready
+- ✅ Pre-commit hooks: All passing
+
+**Next Steps** (Deferred):
+- Review Renovate PRs (#95, #96, #99, #102) after CI stability
+- Incrementally address remaining any types as part of feature work
+- Backend import star refactor in dedicated sprint
+
+---
 
 ### 🎉 Session 94: CI Fix & Issue Cleanup - COMPLETE
 

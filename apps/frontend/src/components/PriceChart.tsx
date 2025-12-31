@@ -25,6 +25,7 @@ import {
   downsampleLineMinMax,
   sliceByTimeWindow,
   timeToSec,
+  type Candle as LodCandle,
 } from '@/lib/utils/lod';
 
 type Series = ISeriesApi<'Candlestick'>;
@@ -689,7 +690,7 @@ export default function PriceChart() {
                 : new Date(String(c.time)).getTime() / 1000,
       }));
       view = sliceByTimeWindow(
-        allWithNumTime as unknown as import('@/utils/lod').Candle[],
+        allWithNumTime as unknown as LodCandle[],
         fromSec,
         toSec
       ) as unknown as Candle[];
