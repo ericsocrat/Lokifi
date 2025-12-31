@@ -944,7 +944,7 @@ function shouldEvaluateAlert(alert: Alert): boolean {
   return true;
 }
 
-async function evaluateAlertCondition(alert: Alert): Promise<boolean> {
+async function evaluateAlertCondition(_alert: Alert): Promise<boolean> {
   // This would be implemented with actual market data
   // For now, return false to prevent accidental executions
   return false;

@@ -127,7 +127,7 @@ const generateId = () => `drawing_${Date.now()}_${Math.random().toString(36).sub
  * @param obj - Drawing object to check
  * @returns true if object has valid time/price coordinates, false if legacy pixel-only
  */
-const hasValidPrimitiveCoordinates = (obj: DrawingObject): boolean => {
+const _hasValidPrimitiveCoordinates = (obj: DrawingObject): boolean => {
   if (!obj.points || obj.points.length === 0) return false;
 
   // Check if all points have time/price coordinates (not just x/y pixels)

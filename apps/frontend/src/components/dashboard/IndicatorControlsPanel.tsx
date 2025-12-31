@@ -81,7 +81,7 @@ export default function IndicatorControlsPanel() {
   };
 
   // Reset individual indicator to default
-  const handleResetIndividual = (settingKeys: string[], indicatorName: string) => {
+  const _handleResetIndividual = (settingKeys: string[], indicatorName: string) => {
     // Check if user has disabled this confirmation
     const skipConfirm = localStorage.getItem(CONFIRM_RESET_INDIVIDUAL_KEY) === 'false';
 

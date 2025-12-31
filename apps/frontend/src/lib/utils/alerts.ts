@@ -88,19 +88,19 @@ export async function createAlert(
   } as Alert; // any required: Generic object construction for discriminated union
 }
 
-export async function toggleAlert(id: string, enabled: boolean): Promise<boolean> {
+export async function toggleAlert(_id: string, _enabled: boolean): Promise<boolean> {
   // TODO: wire to backend
   return true;
 }
 
-export async function deleteAlert(id: string): Promise<boolean> {
+export async function deleteAlert(_id: string): Promise<boolean> {
   // TODO: wire to backend
   return true;
 }
 
 // --- SSE-like subscription stub (returns unsubscribe) ---
 
-export function subscribeAlerts(cb: (ev: AlertEvent) => void, withPast?: boolean): () => void {
+export function subscribeAlerts(_cb: (ev: AlertEvent) => void, _withPast?: boolean): () => void {
   // Demo ticker; replace with real EventSource/WebSocket later
   let stopped = false;
   const tick = () => {

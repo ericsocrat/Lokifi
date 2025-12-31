@@ -21,7 +21,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import type { NotificationData} from '../src/hooks/useNotifications';
+import type { NotificationData } from '../src/hooks/useNotifications';
 import { useNotifications } from '../src/hooks/useNotifications';
 
 type FilterType = 'all' | 'unread' | 'read' | 'dismissed';
@@ -69,7 +69,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
     clearAllNotifications,
     refreshNotifications,
     loadMore,
-    getStats,
+    getStats: _getStats,
   } = useNotifications();
 
   // Filter and sort notifications
@@ -246,7 +246,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <label className="block text-xs text-neutral-400 mb-2">Status</label>
               <select
                 value={filter}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFilter(e.target.value as FilterType)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setFilter(e.target.value as FilterType)
+                }
                 className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-sm text-white"
               >
                 <option value="all">All</option>
@@ -261,7 +263,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <label className="block text-xs text-neutral-400 mb-2">Type</label>
               <select
                 value={typeFilter}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTypeFilter(e.target.value as NotificationType)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setTypeFilter(e.target.value as NotificationType)
+                }
                 className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-sm text-white"
               >
                 <option value="all">All Types</option>
@@ -278,7 +282,9 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
               <label className="block text-xs text-neutral-400 mb-2">Sort by</label>
               <select
                 value={sortBy}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSortBy(e.target.value as SortType)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                  setSortBy(e.target.value as SortType)
+                }
                 className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-sm text-white"
               >
                 <option value="newest">Newest first</option>

@@ -735,15 +735,15 @@ export const useChartStore = create<ChartState>()(
   (useChartStore as any).getState || (() => (useChartStore as any)());
 (useChartStore as any).setState = (patch: Partial<ChartState>) => {
   const cur = (useChartStore as any).getState();
-  (useChartStore as any)((s: ChartState) => ({ ...cur, ...patch }));
+  (useChartStore as any)((_s: ChartState) => ({ ...cur, ...patch }));
 };
 (useChartStore as any).subscribe = (cb: (s: ChartState) => void) => {
   let prev = (useChartStore as any).getState();
-  const unsub = (useChartStore as any)((s: ChartState) => {
-    if (s !== prev) {
-      prev = s;
+  const unsub = (useChartStore as any)((_s: ChartState) => {
+    if (_s !== prev) {
+      prev = _s;
       try {
-        cb(s);
+        cb(_s);
       } catch {}
     }
   });

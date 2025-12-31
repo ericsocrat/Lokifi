@@ -38,8 +38,8 @@ export default function DashboardPage() {
   const [allocations, setAllocations] = useState<AllocationItem[]>([]);
   const [topHoldings, setTopHoldings] = useState<TopHolding[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>('1d');
-  const [netWorthData, setNetWorthData] = useState({ value: 0, change: 0, changePercent: 0 });
-  const { darkMode, setDarkMode } = usePreferences();
+  const [_netWorthData, setNetWorthData] = useState({ value: 0, change: 0, changePercent: 0 });
+  const { darkMode: _darkMode, setDarkMode: _setDarkMode } = usePreferences();
 
   // Get live portfolio data from master market data service
   const portfolio = loadPortfolio();
@@ -542,7 +542,7 @@ export default function DashboardPage() {
                         <div
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: item.color }}
-                         />
+                        />
                         <span className="text-sm text-gray-700">{item.name}</span>
                       </div>
                       <div className="text-right">

@@ -3,7 +3,7 @@ import { useChartStore } from '@/state/store';
 import React from 'react';
 
 export default function PluginManager() {
-  const s = useChartStore();
+  const _s = useChartStore();
   const [, force] = React.useReducer((x) => x + 1, 0);
   const plugins = listPlugins();
 

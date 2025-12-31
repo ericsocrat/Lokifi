@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { Navbar } from '../../../src/components/Navbar';
 import { authToken } from '../../../src/lib/api/auth';
 
-interface Profile {
+interface _Profile {
   id: string;
   username: string;
   display_name: string;

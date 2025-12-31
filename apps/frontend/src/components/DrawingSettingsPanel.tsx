@@ -26,7 +26,7 @@ export default function DrawingSettingsPanel() {
   const resetHK = useChartStore((s) => s.resetHotkeys);
 
   const ding = React.useRef<number>(0);
-  const saved = (msg = 'Saved') => {
+  const saved = (_msg = 'Saved') => {
     const now = Date.now();
     if (now - ding.current > 250) {
       try {

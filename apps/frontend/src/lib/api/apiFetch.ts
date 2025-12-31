@@ -40,7 +40,7 @@ export async function apiFetch(input: string, init: RequestInit = {}) {
         const errorData = JSON.parse(text);
         const errorMessage = errorData.detail || text || res.statusText;
         throw new Error(errorMessage);
-      } catch (parseError) {
+      } catch (_parseError) {
         // If JSON parse fails, use raw text
         throw new Error(text || res.statusText);
       }

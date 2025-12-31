@@ -219,7 +219,7 @@ function getTimeframeMilliseconds(timeframe: string): number {
 
 // Hook for auto-refreshing data
 export function useAutoRefresh() {
-  const { autoRefresh, refreshInterval, fetchOHLCData } = useMarketDataStore();
+  const { autoRefresh, refreshInterval, fetchOHLCData: _fetchOHLCData } = useMarketDataStore();
 
   React.useEffect(() => {
     if (!autoRefresh) return;

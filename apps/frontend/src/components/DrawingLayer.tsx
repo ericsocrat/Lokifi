@@ -1,8 +1,6 @@
 import ContextMenu from '@/components/ContextMenu';
 import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/charts/chartMap';
-import type {
-  Drawing,
-  DrawingStyle} from '@/lib/utils/drawings';
+import type { Drawing, DrawingStyle } from '@/lib/utils/drawings';
 import {
   createDrawing,
   drawParallelChannel,
@@ -16,7 +14,7 @@ import React from 'react';
 type Point = { x: number; y: number };
 type Menu = { open: boolean; x: number; y: number };
 
-const HANDLE_R = 4;
+const _HANDLE_R = 4;
 const HIT_PAD = 6;
 
 export default function DrawingLayer() {
@@ -29,7 +27,7 @@ export default function DrawingLayer() {
   const [hoverId, setHoverId] = React.useState<string | null>(null);
   const [dragId, setDragId] = React.useState<string | null>(null);
 
-  const [alertModalOpen, setAlertModalOpen] = React.useState(false); // reserved
+  const [_alertModalOpen, _setAlertModalOpen] = React.useState(false); // reserved
   const [menu, setMenu] = React.useState<Menu>({ open: false, x: 0, y: 0 });
 
   // ✅ missing marquee state (was referenced but not declared)

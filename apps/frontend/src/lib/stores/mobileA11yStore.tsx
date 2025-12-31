@@ -1030,7 +1030,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
 
             // Store recognition instance for later cleanup
             (window as any).__voiceRecognition = recognition;
-          } catch (error) {
+          } catch (_error) {
             throw new Error('Failed to start voice recognition');
           }
         },

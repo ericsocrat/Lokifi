@@ -4,9 +4,7 @@ import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { useToast } from '@/src/components/dashboard/ToastProvider';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
-import type {
-  PortfolioSection,
-  Asset as StorageAsset} from '@/src/lib/data/portfolioStorage';
+import type { PortfolioSection, Asset as StorageAsset } from '@/src/lib/data/portfolioStorage';
 import {
   loadPortfolio,
   addAssets as storageAddAssets,
@@ -93,27 +91,27 @@ const AddAssetModal = dynamic(() => import('@/src/components/portfolio/AddAssetM
 });
 
 function PortfolioPageContent() {
-  const router = useRouter();
+  const _router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [connectingBanks, setConnectingBanks] = useState<ConnectingBank[]>([]);
   const [sections, setSections] = useState<PortfolioSection[]>([]);
   const toast = useToast();
-  const [modal, setModal] = useState<AddAssetModalState>({
+  const [_modal, _setModal] = useState<AddAssetModalState>({
     show: false,
     step: 'stocks',
     selectedItems: [],
   });
-  const [shares, setShares] = useState<{ [key: string]: string }>({});
-  const { darkMode, setDarkMode } = usePreferences();
+  const [_shares, _setShares] = useState<{ [key: string]: string }>({});
+  const { darkMode: _darkMode, setDarkMode: _setDarkMode } = usePreferences();
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [showAddAssetModal, setShowAddAssetModal] = useState(false);
 
   // New state for advanced features
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
-  const [sortBy, setSortBy] = useState<'value' | 'change' | 'name' | 'symbol'>('value');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [filterCategory, setFilterCategory] = useState<string>('all');
+  const [sortBy, _setSortBy] = useState<'value' | 'change' | 'name' | 'symbol'>('value');
+  const [_sortOrder, _setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [_filterCategory, _setFilterCategory] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>(
     '1D'
@@ -179,7 +177,7 @@ function PortfolioPageContent() {
     setShowAddAssetModal(true);
   };
 
-  const handleAddAssets = (assets: SelectedAsset[], category: string) => {
+  const handleAddAssets = (assets: SelectedAsset[], _category: string) => {
     const items: Asset[] = assets.map((asset: SelectedAsset) => ({
       id: `${asset.symbol}-${Date.now()}-${Math.random()}`,
       name: asset.name || asset.symbol,
@@ -260,7 +258,7 @@ function PortfolioPageContent() {
       });
   };
 
-  const getFirstName = () => {
+  const _getFirstName = () => {
     if (user?.name) {
       return user.name.split(' ')[0];
     }
@@ -295,7 +293,7 @@ function PortfolioPageContent() {
                     backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
                     backgroundSize: '32px 32px',
                   }}
-                 />
+                />
               </div>
 
               <div className="relative z-10">

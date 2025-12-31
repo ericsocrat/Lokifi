@@ -1,23 +1,25 @@
-import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts'
-import type { Candle } from '@/lib/charts/indicators'
+import type { Candle } from '@/lib/charts/indicators';
+import type { IChartApi, ISeriesApi } from 'lightweight-charts';
 
 type ChartCtx = {
-  chart: IChartApi | null
-  series: ISeriesApi<'Candlestick'> | null
-  candles: Candle[]
-}
+  chart: IChartApi | null;
+  series: ISeriesApi<'Candlestick'> | null;
+  candles: Candle[];
+};
 
-let ctx: ChartCtx = { chart: null, series: null, candles: [] }
-let listeners: Array<() => void> = []
+let ctx: ChartCtx = { chart: null, series: null, candles: [] };
+let listeners: Array<() => void> = [];
 
 export function setChart(next: ChartCtx) {
-  ctx = next
-  listeners.forEach((fn: any) => fn())
+  ctx = next;
+  listeners.forEach((fn: any) => fn());
 }
 export function getChart(): ChartCtx {
-  return ctx
+  return ctx;
 }
 export function onChartChange(fn: () => void) {
-  listeners.push(fn)
-  return () => { listeners = listeners.filter((f: any) => f !== fn) }
+  listeners.push(fn);
+  return () => {
+    listeners = listeners.filter((f: any) => f !== fn);
+  };
 }

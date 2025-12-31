@@ -50,11 +50,11 @@ function AssetDetailContent() {
   const symbol = typeof params.symbol === 'string' ? params.symbol.toUpperCase() : '';
 
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<TimeFrame>('30d');
-  const [showAddModal, setShowAddModal] = useState(false);
+  const [_showAddModal, _setShowAddModal] = useState(false);
   const [isInWatchlist, setIsInWatchlist] = useState(false);
 
   // Fetch real crypto data from backend
-  const { cryptos, loading: cryptosLoading, error: cryptosError } = useTopCryptos(250);
+  const { cryptos, loading: cryptosLoading, error: _cryptosError } = useTopCryptos(250);
 
   // Map timeframe to API period
   const periodMap: Record<TimeFrame, '1d' | '1w' | '1m' | '3m' | '6m' | '1y' | '5y' | 'all'> = {

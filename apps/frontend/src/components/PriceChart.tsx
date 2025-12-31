@@ -15,16 +15,8 @@ import { calculateRSI } from '@/services/indicators/rsi';
 import { calculateStochastic } from '@/services/indicators/stochastic';
 import { calculateWilliamsR } from '@/services/indicators/williams-r';
 import { useChartStore } from '@/state/store';
-import type {
-  IChartApi,
-  ISeriesApi,
-  ITimeScaleApi,
-  Time} from 'lightweight-charts';
-import {
-  createChart,
-  LineStyle,
-  type TimeRangeChangeEventHandler,
-} from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, ITimeScaleApi, Time } from 'lightweight-charts';
+import { createChart, LineStyle, type TimeRangeChangeEventHandler } from 'lightweight-charts';
 import React from 'react';
 
 import {
@@ -286,7 +278,7 @@ export default function PriceChart() {
       // --- VWAP (respect anchored index; shift relative to padded slice)
       if (indicators.showVWAP) {
         const anchorAbs = indicatorSettings.vwapAnchorIndex ?? 0;
-        const anchorRel = Math.max(0, anchorAbs - paddedStart);
+        const _anchorRel = Math.max(0, anchorAbs - paddedStart);
         const typical = slice.map((c: Candle) => (c.high + c.low + c.close) / 3);
         const volume = slice.map((c: Candle) => c.volume);
         const v = vwap(typical, volume);

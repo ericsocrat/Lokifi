@@ -1022,7 +1022,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
       },
 
       // Test Execution
-      runTestSuite: async (suiteId, environment, options) => {
+      runTestSuite: async (suiteId, environment, _options) => {
         if (!FLAGS.integrationTesting) return '';
 
         const suite = get().testSuites.find((s) => s.id === suiteId);
@@ -1185,7 +1185,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
         }
       },
 
-      runTestCase: async (suiteId, testCaseId, environment) => {
+      runTestCase: async (suiteId, testCaseId, _environment) => {
         if (!FLAGS.integrationTesting) throw new Error('Integration testing not enabled');
 
         const suite = get().testSuites.find((s) => s.id === suiteId);

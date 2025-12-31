@@ -933,7 +933,7 @@ export const useProgressiveDeploymentStore = create<
         });
       },
 
-      runHealthCheck: async (deploymentId: string, checkId: string) => {
+      runHealthCheck: async (_deploymentId: string, _checkId: string) => {
         if (!FLAGS.progressiveDeployment) return false;
 
         // Simulate health check

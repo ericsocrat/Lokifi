@@ -751,7 +751,7 @@ export const useRollbackStore = create<RollbackStore>()(
           });
 
           return isValid;
-        } catch (error) {
+        } catch (_error) {
           set((draft: Draft<RollbackStore>) => {
             const s = draft.snapshots.find((s) => s.id === snapshotId);
             if (s) {

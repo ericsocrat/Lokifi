@@ -1,6 +1,6 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
 import { useMarketDataStore } from '@/lib/stores/marketDataStore';
+import { useEffect, useRef, useState } from 'react';
 
 interface WebSocketConnectionProps {
   enabled?: boolean;
@@ -20,7 +20,7 @@ export default function WebSocketConnection({
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttempts = useRef(0);
 
-  const { fetchOHLCData } = useMarketDataStore();
+  const { fetchOHLCData: _fetchOHLCData } = useMarketDataStore();
 
   // Simulated WebSocket connection for demo
   useEffect(() => {
@@ -242,4 +242,3 @@ export function useWebSocketData(symbol: string, enabled: boolean = true) {
 
   return { data, isConnected };
 }
-

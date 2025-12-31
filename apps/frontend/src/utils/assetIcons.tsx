@@ -156,7 +156,7 @@ function getCoinGeckoImageId(coinId: string): number {
  */
 export function getStockIcon(symbol: string): string {
   // Use Logo.dev for company logos
-  const cleanSymbol = symbol.replace('.', '-').toLowerCase();
+  const _cleanSymbol = symbol.replace('.', '-').toLowerCase();
 
   // Special cases for better logos
   const specialLogos: Record<string, string> = {

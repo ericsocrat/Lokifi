@@ -1637,14 +1637,14 @@ async function runBenchmarkOperations(config: PerformanceBenchmark['testConfig']
   const durations: number[] = [];
 
   for (let i = 0; i < config.operations.length; i++) {
-    const operation = config.operations[i];
+    const _operation = config.operations[i];
     const opStartTime = performance.now();
 
     try {
       // Simulate operation - in real implementation would execute actual operations
       await new Promise((resolve) => setTimeout(resolve, Math.random() * 10));
       operationCount++;
-    } catch (error) {
+    } catch (_error) {
       errorCount++;
     }
 
@@ -1768,7 +1768,7 @@ export const useUnreadAlertsCount = () =>
   usePerformanceStore((draft: Draft<PerformanceStore>) => draft.unreadAlerts);
 
 export const useBudgetStatus = () =>
-  usePerformanceStore((draft: Draft<PerformanceStore>) => {
+  usePerformanceStore((_draft: Draft<PerformanceStore>) => {
     const store = usePerformanceStore.getState();
     return store.checkBudget();
   });

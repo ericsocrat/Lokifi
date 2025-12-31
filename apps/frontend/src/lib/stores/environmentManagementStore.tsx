@@ -1277,7 +1277,7 @@ export const useEnvironmentManagementStore = create<EnvironmentManagementStore>(
         });
       },
 
-      runSyncJob: async (jobId: string, dryRun = false) => {
+      runSyncJob: async (jobId: string, _dryRun = false) => {
         if (!FLAGS.environmentManagement) throw new Error('Environment management not enabled');
 
         const job = get().syncJobs.find((j) => j.id === jobId);

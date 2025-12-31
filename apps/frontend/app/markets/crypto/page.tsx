@@ -41,7 +41,7 @@ function MarketsPageContent() {
   const {
     cryptos: allCryptos,
     loading: cryptosLoading,
-    error: cryptosError,
+    error: _cryptosError,
     refetch,
   } = useTopCryptos(300);
   const { results: searchResults, loading: searchLoading } = useCryptoSearch(searchQuery, 300);

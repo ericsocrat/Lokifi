@@ -229,7 +229,7 @@ const defaultExportOptions: ExportOptions = {
 export const useTemplatesStore = create<TemplatesState & TemplatesActions>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
-    immer<TemplatesState & TemplatesActions>((set, get, store) => ({
+    immer<TemplatesState & TemplatesActions>((set, get, _store) => ({
       // Initial State
       templates: [],
       templatesByUser: new Map(),

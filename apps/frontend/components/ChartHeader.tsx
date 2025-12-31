@@ -15,7 +15,7 @@ interface ChartHeaderProps {
 export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
   const [isIndicatorModalOpen, setIsIndicatorModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [authModalTab, setAuthModalTab] = useState<'login' | 'signup'>('login');
+  const [authModalTab, _setAuthModalTab] = useState<'login' | 'signup'>('login');
   const [indicators] = useState(indicatorStore.get());
 
   const activeIndicatorCount = Object.values(indicators.flags).filter(Boolean).length;

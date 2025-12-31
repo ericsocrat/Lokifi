@@ -1,5 +1,5 @@
 'use client';
-import type { Point} from '@/lib/stores/drawingStore';
+import type { Point } from '@/lib/stores/drawingStore';
 import { useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
@@ -28,7 +28,7 @@ const ChartContainer = ({
 };
 
 // Dynamic import with loading state
-const Chart = dynamic(
+const _Chart = dynamic(
   () =>
     import('lightweight-charts').then(() => ({
       default: ChartContainer,
@@ -76,7 +76,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
 
   const [isMouseDown, setIsMouseDown] = useState(false);
   const [chartData, setChartData] = useState<BarData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [_isLoading, setIsLoading] = useState(true);
   const [chartReady, setChartReady] = useState(false);
 
   // Fetch OHLC data from real API endpoint

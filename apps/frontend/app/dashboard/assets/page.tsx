@@ -4,9 +4,7 @@ import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { ProfileDropdown } from '@/src/components/dashboard/ProfileDropdown';
 import { useToast } from '@/src/components/dashboard/ToastProvider';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
-import type {
-  Asset as PortfolioAsset,
-  PortfolioSection} from '@/src/lib/data/portfolioStorage';
+import type { Asset as PortfolioAsset, PortfolioSection } from '@/src/lib/data/portfolioStorage';
 import {
   loadPortfolio,
   addAssets as storageAddAssets,
@@ -119,7 +117,7 @@ export default function AssetsPage() {
     router.push('/dashboard/add-assets');
   };
 
-  const handleDone = () => {
+  const _handleDone = () => {
     const items = modal.selectedItems.map((item: Asset) => ({
       id: Math.random().toString(36).substring(2, 9),
       name: item.name,

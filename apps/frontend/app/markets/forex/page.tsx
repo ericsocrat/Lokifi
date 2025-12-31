@@ -56,7 +56,7 @@ function ForexPageContent() {
     return sorted;
   }, [allPairs, sortField, sortDirection]);
 
-  const handleSort = (field: SortField) => {
+  const _handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -65,7 +65,7 @@ function ForexPageContent() {
     }
   };
 
-  const getSortIcon = (field: SortField) => {
+  const _getSortIcon = (field: SortField) => {
     if (sortField !== field) return <ArrowUpDown className="w-4 h-4 opacity-50" />;
     return sortDirection === 'asc' ? (
       <TrendingUp className="w-4 h-4 text-blue-500" />

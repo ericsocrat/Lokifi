@@ -1,11 +1,11 @@
 /**
  * Backend Price Service - Integration with Tasks 6-8
- * 
+ *
  * This service connects the frontend to the new backend features:
  * - Task 6: Historical Price Data & OHLCV
  * - Task 7: Expanded Crypto Support (300+ cryptos)
  * - Task 8: WebSocket Real-Time Updates
- * 
+ *
  * Created: October 6, 2025
  */
 
@@ -128,14 +128,12 @@ export class HistoricalDataService {
     period: '1d' | '1w' | '1m' | '3m' | '6m' | '1y' | '5y' | 'all' = '1m'
   ): Promise<HistoricalPriceResponse> {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/prices/${symbol}/history?period=${period}`
-      );
-      
+      const response = await fetch(`${API_BASE_URL}/prices/${symbol}/history?period=${period}`);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error(`Failed to fetch history for ${symbol}:`, error);
@@ -158,11 +156,11 @@ export class HistoricalDataService {
       const response = await fetch(
         `${API_BASE_URL}/prices/${symbol}/ohlcv?period=${period}&resolution=${resolution}`
       );
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error(`Failed to fetch OHLCV for ${symbol}:`, error);
@@ -178,7 +176,7 @@ export class HistoricalDataService {
     period: string = '1m'
   ): Promise<Map<string, HistoricalPriceResponse>> {
     const results = new Map<string, HistoricalPriceResponse>();
-    
+
     await Promise.all(
       symbols.map(async (symbol) => {
         try {
@@ -189,7 +187,7 @@ export class HistoricalDataService {
         }
       })
     );
-    
+
     return results;
   }
 }
@@ -205,14 +203,12 @@ export class CryptoDiscoveryService {
    */
   static async getTopCryptos(limit: number = 100): Promise<CryptoListResponse> {
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/prices/crypto/top?limit=${limit}`
-      );
-      
+      const response = await fetch(`${API_BASE_URL}/prices/crypto/top?limit=${limit}`);
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error('Failed to fetch top cryptos:', error);
@@ -229,11 +225,11 @@ export class CryptoDiscoveryService {
       const response = await fetch(
         `${API_BASE_URL}/prices/crypto/search?q=${encodeURIComponent(query)}`
       );
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       return await response.json();
     } catch (error) {
       console.error(`Failed to search cryptos with query "${query}":`, error);
@@ -248,11 +244,11 @@ export class CryptoDiscoveryService {
   static async getSymbolMapping(): Promise<{ [symbol: string]: string }> {
     try {
       const response = await fetch(`${API_BASE_URL}/prices/crypto/mapping`);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       return data.mapping || {};
     } catch (error) {
@@ -299,12 +295,12 @@ export class WebSocketPriceService {
           console.log('✅ WebSocket connected');
           this.isConnecting = false;
           this.reconnectAttempts = 0;
-          
+
           // Resubscribe to previous subscriptions
           if (this.subscriptions.size > 0) {
             this.subscribe(Array.from(this.subscriptions));
           }
-          
+
           resolve();
         };
 
@@ -386,10 +382,12 @@ export class WebSocketPriceService {
 
     symbols.forEach((s) => this.subscriptions.add(s));
 
-    this.ws.send(JSON.stringify({
-      action: 'subscribe',
-      symbols: symbols
-    }));
+    this.ws.send(
+      JSON.stringify({
+        action: 'subscribe',
+        symbols: symbols,
+      })
+    );
   }
 
   /**
@@ -402,22 +400,24 @@ export class WebSocketPriceService {
 
     symbols.forEach((s) => this.subscriptions.delete(s));
 
-    this.ws.send(JSON.stringify({
-      action: 'unsubscribe',
-      symbols: symbols
-    }));
+    this.ws.send(
+      JSON.stringify({
+        action: 'unsubscribe',
+        symbols: symbols,
+      })
+    );
   }
 
   /**
    * Add a callback for price updates
    */
   onPriceUpdate(callback: (data: PriceUpdate) => void): () => void {
-    const id = Math.random().toString(36);
-    
+    const _id = Math.random().toString(36);
+
     if (!this.subscribers.has('global')) {
       this.subscribers.set('global', new Set());
     }
-    
+
     this.subscribers.get('global')!.add(callback);
 
     // Return unsubscribe function
@@ -450,7 +450,9 @@ export class WebSocketPriceService {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-    console.log(`Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`);
+    console.log(
+      `Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})...`
+    );
 
     setTimeout(() => {
       this.connect().catch((error) => {

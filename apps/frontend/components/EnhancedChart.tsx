@@ -4,15 +4,8 @@ import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore'
 import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import type {
-  IChartApi,
-  ISeriesApi,
-  MouseEventParams,
-  Time} from 'lightweight-charts';
-import {
-  ColorType,
-  createChart
-} from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, MouseEventParams, Time } from 'lightweight-charts';
+import { ColorType, createChart } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 
 interface EnhancedChartProps {
@@ -38,7 +31,7 @@ export default function EnhancedChart({
   const selectedSymbol = symbolStore.get();
   const selectedTimeframe = timeframeStore.get();
 
-  const pane = panes.find((p: Pane) => p.id === paneId);
+  const _pane = panes.find((p: Pane) => p.id === paneId);
 
   // Initialize chart
   useEffect(() => {
@@ -247,7 +240,7 @@ export default function EnhancedChart({
 }
 
 // Helper function to create drawing objects
-function createDrawingObject(
+function _createDrawingObject(
   tool: string,
   start: { x: number; y: number; time: number; price: number },
   end: { x: number; y: number; time: number; price: number },

@@ -1,5 +1,5 @@
 'use client';
-import type { Pane} from '@/lib/stores/paneStore';
+import type { Pane } from '@/lib/stores/paneStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
@@ -11,7 +11,13 @@ import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { ChartLoadingState } from './ChartLoadingState';
 
 // Chart component with proper hook usage
-const ChartContainer = ({ children, ...props }: { children?: React.ReactNode; [key: string]: unknown }) => {
+const ChartContainer = ({
+  children,
+  ...props
+}: {
+  children?: React.ReactNode;
+  [key: string]: unknown;
+}) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   return (
     <div ref={chartContainerRef} {...props}>
@@ -21,9 +27,9 @@ const ChartContainer = ({ children, ...props }: { children?: React.ReactNode; [k
 };
 
 // Dynamic import with loading state
-const Chart = dynamic(
+const _Chart = dynamic(
   () =>
-    import('lightweight-charts').then((mod) => ({
+    import('lightweight-charts').then((_mod) => ({
       default: ChartContainer,
     })),
   {
@@ -236,7 +242,7 @@ const MIN_CHART_WIDTH = 400;
 
 export const MultiPaneChart: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(MIN_CHART_WIDTH);
+  const [_containerWidth, setContainerWidth] = useState(MIN_CHART_WIDTH);
   const { panes, updatePaneHeight } = usePaneStore();
 
   useEffect(() => {

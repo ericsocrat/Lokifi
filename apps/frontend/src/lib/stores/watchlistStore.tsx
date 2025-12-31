@@ -122,7 +122,7 @@ const defaultScreenerQuery: ScreenerQuery = {
 export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
   persist(
     // @ts-expect-error - Zustand v5 middleware type inference issue
-    immer<WatchlistState & WatchlistActions>((set, get, store) => ({
+    immer<WatchlistState & WatchlistActions>((set, get, _store) => ({
       // Initial State
       watchlists: [],
       activeWatchlistId: null,

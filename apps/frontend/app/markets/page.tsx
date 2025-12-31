@@ -50,8 +50,8 @@ function MarketsOverviewContent() {
 
   const cryptos = data?.data.crypto || [];
   const stocks = data?.data.stocks || [];
-  const indices = data?.data.indices || [];
-  const forex = data?.data.forex || [];
+  const _indices = data?.data.indices || [];
+  const _forex = data?.data.forex || [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950">
