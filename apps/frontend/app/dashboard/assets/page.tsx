@@ -236,13 +236,13 @@ export default function AssetsPage() {
             </div>
           </div>
           <div className="flex items-center space-x-6">
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
+            <button aria-label="Notifications" className="p-2 hover:bg-gray-100 rounded-lg">
               <Bell className="w-5 h-5 text-gray-600" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
+            <button aria-label="Search" className="p-2 hover:bg-gray-100 rounded-lg">
               <Search className="w-5 h-5 text-gray-600" />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-lg">
+            <button aria-label="Share" className="p-2 hover:bg-gray-100 rounded-lg">
               <Share2 className="w-5 h-5 text-gray-600" />
             </button>
             <button

@@ -16,7 +16,7 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGL
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html lang="en">
       <body>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <ReactQueryProvider>

@@ -595,10 +595,10 @@ function PortfolioPageContent() {
           <div className="mb-6 p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="filter-asset-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Asset Type
                 </label>
-                <select className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select id="filter-asset-type" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option>All Assets</option>
                   <option>Stocks</option>
                   <option>Crypto</option>
@@ -606,20 +606,20 @@ function PortfolioPageContent() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="filter-performance" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Performance
                 </label>
-                <select className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select id="filter-performance" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option>All Performance</option>
                   <option>Gainers Only</option>
                   <option>Losers Only</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label htmlFor="filter-value-range" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Value Range
                 </label>
-                <select className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select id="filter-value-range" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                   <option>Any Value</option>
                   <option>Under $1,000</option>
                   <option>$1,000 - $10,000</option>
