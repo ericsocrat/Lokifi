@@ -103,7 +103,7 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
@@ -269,7 +269,7 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
