@@ -31,23 +31,12 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           sync-labels: true
 
-      - name: � Size label
-        uses: codelytv/pr-size-labeler@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          xs_label: "size/XS"
-          xs_max_size: 10
-          s_label: "size/S"
-          s_max_size: 100
-          m_label: "size/M"
-          m_max_size: 500
-          l_label: "size/L"
-          l_max_size: 1000
-          xl_label: "size/XL"
-          message_if_xl: |
-            ⚠️ This PR is quite large. Consider splitting it into smaller, focused PRs for easier review.
+      # Note: Size labeling is handled by pr-size-check.yml which has better features:
+      # - Excludes generated files (package-lock.json, coverage/, dist/, etc.)
+      # - Provides detailed metrics and recommendations for large PRs
+      # - Uses consistent labels: size/XS, size/S, size/M, size/L, size/XL
 
-      - name: �📝 Welcome comment
+      - name: 📝 Welcome comment
         if: github.event.action == 'opened'
         uses: actions/github-script@v7
         with:
@@ -89,12 +78,13 @@ jobs:
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
           ## 🏷️ PR Labels
 
-          | Category | Labels |
-          |----------|--------|
-          | **Application** | `frontend`, `backend`, `mobile`, `admin` |
-          | **Size** | `size/XS` (<10), `size/S` (<100), `size/M` (<500), `size/L` (<1000), `size/XL` (1000+) |
-          | **Type** | `ci-cd`, `documentation`, `dependencies`, `testing`, `security` |
-          | **Scope** | `infrastructure`, `database`, `api`, `ui`, `configuration` |
+          | Category | Labels | Source |
+          |----------|--------|--------|
+          | **Application** | `frontend`, `backend`, `mobile`, `admin` | This workflow |
+          | **Size** | `size/XS`, `size/S`, `size/M`, `size/L`, `size/XL` | pr-size-check.yml |
+          | **Type** | `ci-cd`, `documentation`, `dependencies`, `testing`, `security` | This workflow |
+          | **Scope** | `infrastructure`, `database`, `api`, `ui`, `configuration` | This workflow |
 
-          Labels auto-applied based on changed files and PR size.
+          Application, type, and scope labels auto-applied based on changed files.
+          Size labels applied by pr-size-check.yml (excludes generated files).
           EOF

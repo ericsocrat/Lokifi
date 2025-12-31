@@ -80,29 +80,29 @@ jobs:
             core.setOutput('excluded-count', excludedCount);
             core.setOutput('excluded-files', excludedFiles.join(', '));
 
-            // Determine size category
-            let sizeLabel = 'size-xs';
+            // Determine size category (using labels.yml format: size/XS, size/S, etc.)
+            let sizeLabel = 'size/XS';
             let sizeEmoji = '🔹';
             let recommendation = 'Perfect size for review!';
 
             if (totalChanges < 50) {
-              sizeLabel = 'size-xs';
+              sizeLabel = 'size/XS';
               sizeEmoji = '🔹';
               recommendation = 'Perfect size for review!';
             } else if (totalChanges < 200) {
-              sizeLabel = 'size-s';
+              sizeLabel = 'size/S';
               sizeEmoji = '🔸';
               recommendation = 'Good size for review.';
             } else if (totalChanges < 500) {
-              sizeLabel = 'size-m';
+              sizeLabel = 'size/M';
               sizeEmoji = '🟡';
               recommendation = 'Medium size - consider splitting if possible.';
             } else if (totalChanges < 1000) {
-              sizeLabel = 'size-l';
+              sizeLabel = 'size/L';
               sizeEmoji = '🟠';
               recommendation = '⚠️ Large PR - strongly consider splitting into smaller PRs.';
             } else {
-              sizeLabel = 'size-xl';
+              sizeLabel = 'size/XL';
               sizeEmoji = '🔴';
               recommendation = '🚨 Extra large PR - this will be difficult to review. Please split into smaller PRs.';
             }
@@ -123,7 +123,7 @@ jobs:
         with:
           script: |
             const pr = context.payload.pull_request;
-            const sizeLabels = ['size-xs', 'size-s', 'size-m', 'size-l', 'size-xl'];
+            const sizeLabels = ['size/XS', 'size/S', 'size/M', 'size/L', 'size/XL'];
 
             // Get current labels
             const { data: currentLabels } = await github.rest.issues.listLabelsOnIssue({
@@ -163,8 +163,8 @@ jobs:
 
       - name: 💬 Add size comment (for large PRs)
         if: |
-          steps.analyze.outputs.size-label == 'size-l' ||
-          steps.analyze.outputs.size-label == 'size-xl'
+          steps.analyze.outputs.size-label == 'size/L' ||
+          steps.analyze.outputs.size-label == 'size/XL'
         uses: actions/github-script@v7
         with:
           script: |
