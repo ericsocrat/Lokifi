@@ -21,7 +21,7 @@ import os
 import sys
 from collections.abc import MutableMapping
 from datetime import datetime
-from typing import Any
+from typing import Any, ClassVar
 
 # Log levels
 DEBUG = logging.DEBUG
@@ -66,7 +66,7 @@ class ColoredFormatter(logging.Formatter):
     """
 
     # ANSI color codes
-    COLORS = {
+    COLORS: ClassVar[dict[str, str]] = {
         "DEBUG": "\033[36m",  # Cyan
         "INFO": "\033[32m",  # Green
         "WARNING": "\033[33m",  # Yellow

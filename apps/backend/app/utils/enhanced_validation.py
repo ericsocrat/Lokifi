@@ -7,7 +7,7 @@ import html
 import re
 import unicodedata
 from collections.abc import Callable
-from typing import Any
+from typing import Any, ClassVar
 from urllib.parse import urlparse
 
 import bleach
@@ -20,11 +20,11 @@ class InputSanitizer:
     """Utility class for sanitizing and validating user inputs"""
 
     # Dangerous HTML tags and attributes
-    ALLOWED_HTML_TAGS = ["p", "br", "strong", "em", "u", "ol", "ul", "li"]
-    ALLOWED_HTML_ATTRIBUTES = {}
+    ALLOWED_HTML_TAGS: ClassVar[list[str]] = ["p", "br", "strong", "em", "u", "ol", "ul", "li"]
+    ALLOWED_HTML_ATTRIBUTES: ClassVar[dict[str, list[str]]] = {}
 
     # Dangerous patterns
-    DANGEROUS_PATTERNS = [
+    DANGEROUS_PATTERNS: ClassVar[list[str]] = [
         # SQL injection
         r"(?i)(union|select|insert|delete|drop|create|alter|exec|execute)\s+",
         # XSS patterns
