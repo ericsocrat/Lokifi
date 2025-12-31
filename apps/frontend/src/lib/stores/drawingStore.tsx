@@ -120,21 +120,6 @@ interface DrawingState {
 const generateId = () => `drawing_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
 /**
- * Migration Helper: Check if drawing object has valid time/price coordinates.
- * Legacy drawings (Session 91 and earlier) only have x/y pixel coordinates.
- * New drawings (Session 92+) use time/price coordinates for TradingView Primitives API.
- *
- * @param obj - Drawing object to check
- * @returns true if object has valid time/price coordinates, false if legacy pixel-only
- */
-const _hasValidPrimitiveCoordinates = (obj: DrawingObject): boolean => {
-  if (!obj.points || obj.points.length === 0) return false;
-
-  // Check if all points have time/price coordinates (not just x/y pixels)
-  return obj.points.every((point) => point.time !== undefined && point.price !== undefined);
-};
-
-/**
  * Migration Note: Legacy drawings with only x/y coordinates cannot be rendered
  * with Primitives API (requires time/price anchoring). These drawings will be
  * visible in the Objects panel but won't render on chart until migrated.

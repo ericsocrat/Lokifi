@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { useMarketDataStore } from '@/lib/stores/marketDataStore';
+import { useAutoRefresh, useMarketDataStore } from '@/lib/stores/marketDataStore';
 import type { Candle } from '@/lib/types';
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -533,6 +533,98 @@ describe('MarketDataStore', () => {
       });
 
       expect(data).toEqual([]); // result.data is undefined, defaults to []
+    });
+  });
+
+  describe('useAutoRefresh Hook', () => {
+    it('should not set up interval when autoRefresh is disabled', () => {
+      vi.useFakeTimers();
+      const { result } = renderHook(() => useMarketDataStore());
+
+      // Disable auto refresh first
+      act(() => {
+        result.current.setAutoRefresh(false);
+      });
+
+      // Render the useAutoRefresh hook
+      renderHook(() => useAutoRefresh());
+
+      // Advance time - nothing should happen since autoRefresh is off
+      act(() => {
+        vi.advanceTimersByTime(30000);
+      });
+
+      vi.useRealTimers();
+    });
+
+    it('should set up interval when autoRefresh is enabled', () => {
+      vi.useFakeTimers();
+      const { result } = renderHook(() => useMarketDataStore());
+
+      // Enable auto refresh
+      act(() => {
+        result.current.setAutoRefresh(true);
+        result.current.setRefreshInterval(30);
+      });
+
+      // Render the useAutoRefresh hook
+      const { unmount } = renderHook(() => useAutoRefresh());
+
+      // Advance time - interval should be running
+      act(() => {
+        vi.advanceTimersByTime(30000);
+      });
+
+      // Clean up
+      unmount();
+      vi.useRealTimers();
+    });
+
+    it('should clean up interval on unmount', () => {
+      vi.useFakeTimers();
+      const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
+
+      const { result } = renderHook(() => useMarketDataStore());
+
+      // Enable auto refresh
+      act(() => {
+        result.current.setAutoRefresh(true);
+        result.current.setRefreshInterval(10);
+      });
+
+      // Render the useAutoRefresh hook
+      const { unmount } = renderHook(() => useAutoRefresh());
+
+      // Unmount should trigger cleanup
+      unmount();
+
+      expect(clearIntervalSpy).toHaveBeenCalled();
+
+      clearIntervalSpy.mockRestore();
+      vi.useRealTimers();
+    });
+
+    it('should respect custom refresh interval', () => {
+      vi.useFakeTimers();
+      const setIntervalSpy = vi.spyOn(global, 'setInterval');
+
+      const { result } = renderHook(() => useMarketDataStore());
+
+      // Set custom refresh interval
+      act(() => {
+        result.current.setAutoRefresh(true);
+        result.current.setRefreshInterval(60);
+      });
+
+      // Render the useAutoRefresh hook
+      const { unmount } = renderHook(() => useAutoRefresh());
+
+      // setInterval should be called with the correct interval (60 * 1000 = 60000ms)
+      expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 60000);
+
+      unmount();
+      setIntervalSpy.mockRestore();
+      vi.useRealTimers();
     });
   });
 });

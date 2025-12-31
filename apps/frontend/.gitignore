@@ -37,3 +37,4 @@ playwright/.cache/
 
 # Keep visual regression baselines
 !tests/visual-baselines/
+lint-output.txt

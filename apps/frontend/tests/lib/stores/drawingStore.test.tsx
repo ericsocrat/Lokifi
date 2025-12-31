@@ -919,4 +919,129 @@ describe('DrawingStore', () => {
       expect(uniqueIds.size).toBe(5);
     });
   });
+
+  describe('updateCurrentDrawingPoint', () => {
+    it('should update existing point in current drawing', () => {
+      const { result } = renderHook(() => useDrawingStore());
+
+      act(() => {
+        result.current.setActiveTool('trendline');
+        result.current.startDrawing('pane-1', { x: 100, y: 200, time: 1000, price: 50000 });
+      });
+
+      expect(result.current.currentDrawing?.points).toHaveLength(1);
+
+      act(() => {
+        result.current.updateCurrentDrawingPoint(0, {
+          x: 150,
+          y: 250,
+          time: 1001,
+          price: 51000,
+        });
+      });
+
+      expect(result.current.currentDrawing?.points?.[0]).toEqual({
+        x: 150,
+        y: 250,
+        time: 1001,
+        price: 51000,
+      });
+    });
+
+    it('should add new point when index exceeds current points length', () => {
+      const { result } = renderHook(() => useDrawingStore());
+
+      act(() => {
+        result.current.setActiveTool('trendline');
+        result.current.startDrawing('pane-1', { x: 100, y: 200, time: 1000, price: 50000 });
+      });
+
+      expect(result.current.currentDrawing?.points).toHaveLength(1);
+
+      act(() => {
+        result.current.updateCurrentDrawingPoint(1, {
+          x: 200,
+          y: 300,
+          time: 2000,
+          price: 52000,
+        });
+      });
+
+      expect(result.current.currentDrawing?.points).toHaveLength(2);
+      expect(result.current.currentDrawing?.points?.[1]).toEqual({
+        x: 200,
+        y: 300,
+        time: 2000,
+        price: 52000,
+      });
+    });
+
+    it('should not update when not drawing', () => {
+      const { result } = renderHook(() => useDrawingStore());
+
+      act(() => {
+        result.current.updateCurrentDrawingPoint(0, { x: 100, y: 200 });
+      });
+
+      expect(result.current.currentDrawing).toBeNull();
+    });
+
+    it('should not update when currentDrawing has no points', () => {
+      const { result } = renderHook(() => useDrawingStore());
+
+      // Set up a state where isDrawing is true but currentDrawing has no points
+      // This edge case shouldn't happen in practice but tests the guard clause
+      act(() => {
+        result.current.setActiveTool('trendline');
+        result.current.startDrawing('pane-1', { x: 100, y: 200, time: 1000, price: 50000 });
+      });
+
+      // The drawing started successfully
+      expect(result.current.currentDrawing?.points).toHaveLength(1);
+
+      // Update should work normally
+      act(() => {
+        result.current.updateCurrentDrawingPoint(0, {
+          x: 150,
+          y: 250,
+          time: 1001,
+          price: 51000,
+        });
+      });
+
+      expect(result.current.currentDrawing?.points?.[0]?.x).toBe(150);
+    });
+
+    it('should update middle point in multi-point drawing', () => {
+      const { result } = renderHook(() => useDrawingStore());
+
+      act(() => {
+        result.current.setActiveTool('trendline');
+        result.current.startDrawing('pane-1', { x: 100, y: 100, time: 1000, price: 50000 });
+        result.current.addPoint({ x: 200, y: 200, time: 2000, price: 51000 });
+        result.current.addPoint({ x: 300, y: 300, time: 3000, price: 52000 });
+      });
+
+      expect(result.current.currentDrawing?.points).toHaveLength(3);
+
+      act(() => {
+        result.current.updateCurrentDrawingPoint(1, {
+          x: 250,
+          y: 250,
+          time: 2500,
+          price: 51500,
+        });
+      });
+
+      expect(result.current.currentDrawing?.points?.[1]).toEqual({
+        x: 250,
+        y: 250,
+        time: 2500,
+        price: 51500,
+      });
+      // Other points unchanged
+      expect(result.current.currentDrawing?.points?.[0]?.x).toBe(100);
+      expect(result.current.currentDrawing?.points?.[2]?.x).toBe(300);
+    });
+  });
 });
