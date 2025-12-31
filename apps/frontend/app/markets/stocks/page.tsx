@@ -225,7 +225,7 @@ function StocksPageContent() {
                 Market Cap
                 {getSortIcon('market_cap')}
               </div>
-              <div className="col-span-1"></div>
+              <div className="col-span-1" />
             </div>
 
             {/* Table Body */}

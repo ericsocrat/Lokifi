@@ -1,8 +1,9 @@
 import ContextMenu from '@/components/ContextMenu';
 import { magnetYToOHLC, snapPxToGrid, snapYToPriceLevels, yToPrice } from '@/lib/charts/chartMap';
-import {
+import type {
   Drawing,
-  DrawingStyle,
+  DrawingStyle} from '@/lib/utils/drawings';
+import {
   createDrawing,
   drawParallelChannel,
   drawPitchfork,

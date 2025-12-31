@@ -4,13 +4,14 @@ import { useMarketDataStore, type OHLCData } from '@/lib/stores/marketDataStore'
 import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import {
-  ColorType,
-  createChart,
+import type {
   IChartApi,
   ISeriesApi,
   MouseEventParams,
-  Time,
+  Time} from 'lightweight-charts';
+import {
+  ColorType,
+  createChart
 } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 
@@ -212,7 +213,7 @@ export default function EnhancedChart({
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50 z-10">
           <div className="flex items-center gap-2 text-white">
-            <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+            <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
             Loading chart data...
           </div>
         </div>

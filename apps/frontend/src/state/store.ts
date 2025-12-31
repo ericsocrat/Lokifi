@@ -1,6 +1,7 @@
 import type { Alert, AlertEvent, CreateAlertInput } from '@/lib/utils/alerts';
 import type { Drawing, DrawingStyle } from '@/lib/utils/drawings';
-import { create, StateCreator } from 'zustand';
+import type { StateCreator } from 'zustand';
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type SetState = Parameters<StateCreator<ChartState>>[0];

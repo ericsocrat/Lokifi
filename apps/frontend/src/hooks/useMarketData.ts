@@ -5,7 +5,8 @@
  * Automatically subscribes to updates and provides live prices.
  */
 
-import marketData, { MarketAsset, MarketStats, PricePoint } from '@/services/marketData';
+import type { MarketAsset, MarketStats, PricePoint } from '@/services/marketData';
+import marketData from '@/services/marketData';
 import { useCallback, useEffect, useState } from 'react';
 
 /**

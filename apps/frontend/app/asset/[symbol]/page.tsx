@@ -187,7 +187,7 @@ function AssetDetailContent() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-950 dark:via-gray-950 dark:to-gray-950">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-gray-400 font-medium">
             Loading asset data from backend...
           </p>
@@ -244,8 +244,8 @@ function AssetDetailContent() {
                 {connected && (
                   <div className="absolute -top-1 -right-1">
                     <div className="relative flex h-4 w-4">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-4 w-4 bg-green-500 border-2 border-white" />
                     </div>
                   </div>
                 )}
@@ -365,7 +365,7 @@ function AssetDetailContent() {
               {historyLoading ? (
                 <div className="h-[400px] flex items-center justify-center">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2" />
                     <p className="text-gray-500 dark:text-gray-400">Loading chart data...</p>
                   </div>
                 </div>
@@ -502,8 +502,8 @@ function AssetDetailContent() {
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-200 dark:border-green-800 p-6 shadow-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="relative">
-                    <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse"></div>
-                    <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping"></div>
+                    <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse" />
+                    <div className="absolute inset-0 w-5 h-5 bg-green-500 rounded-full animate-ping" />
                   </div>
                   <span className="font-black text-gray-900 dark:text-white text-xl">
                     LIVE MARKET DATA

@@ -5,7 +5,7 @@
  * Draws rectangles on the chart with proper price/time anchoring
  */
 
-import {
+import type {
   AutoscaleInfo,
   IChartApi,
   ISeriesApi,

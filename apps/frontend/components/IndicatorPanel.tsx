@@ -49,7 +49,7 @@ export default function IndicatorPanel() {
           <input type="checkbox" checked={s.stddev} onChange={toggle('stddev')} /> StdDev Channels
         </label>
       </div>
-      <div className="mt-3"></div>
+      <div className="mt-3" />
     </div>
   );
 }

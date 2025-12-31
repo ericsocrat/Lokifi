@@ -196,7 +196,7 @@ export default function NotificationPreferencesPage() {
         {/* Loading State */}
         {isLoading && (
           <div className="text-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-4"></div>
+            <div className="animate-spin w-8 h-8 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-4" />
             <p className="text-neutral-400">Loading preferences...</p>
           </div>
         )}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useAllAssets, useAssetSearch } from '@/src/hooks/useMarketData';
-import { MarketAsset } from '@/src/services/marketData';
+import type { MarketAsset } from '@/src/services/marketData';
 import { AssetIcon } from '@/src/utils/assetIcons';
 import {
   ArrowLeft,

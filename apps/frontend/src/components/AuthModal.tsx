@@ -393,7 +393,7 @@ export function AuthModal({
           {/* Divider */}
           <div className="relative">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-neutral-700"></div>
+              <div className="w-full border-t border-neutral-700" />
             </div>
             <div className="relative flex justify-center text-sm">
               <span className="px-4 bg-neutral-900 text-neutral-500 uppercase tracking-wide">
@@ -511,7 +511,7 @@ export function AuthModal({
                       <div
                         className={`h-full ${passwordStrength.color} transition-all duration-300`}
                         style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-                      ></div>
+                       />
                     </div>
                     <span
                       className={`text-xs font-medium ${

@@ -152,7 +152,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
           <div className="max-h-96 overflow-y-auto">
             {isLoading && (
               <div className="p-4 text-center text-neutral-400">
-                <div className="animate-spin w-5 h-5 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-2"></div>
+                <div className="animate-spin w-5 h-5 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-2" />
                 Loading notifications...
               </div>
             )}
@@ -250,7 +250,7 @@ export const NotificationBell: React.FC<NotificationBellProps> = ({
 
                       {/* Unread indicator */}
                       {!notification.is_read && (
-                        <div className="w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4"></div>
+                        <div className="w-2 h-2 bg-blue-500 rounded-full absolute top-4 right-4" />
                       )}
                     </div>
                   </div>

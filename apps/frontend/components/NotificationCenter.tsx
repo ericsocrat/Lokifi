@@ -21,7 +21,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { NotificationData, useNotifications } from '../src/hooks/useNotifications';
+import type { NotificationData} from '../src/hooks/useNotifications';
+import { useNotifications } from '../src/hooks/useNotifications';
 
 type FilterType = 'all' | 'unread' | 'read' | 'dismissed';
 type NotificationType =
@@ -349,7 +350,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       <div className="overflow-y-auto" style={{ maxHeight }}>
         {isLoading && filteredNotifications.length === 0 && (
           <div className="p-8 text-center text-neutral-400">
-            <div className="animate-spin w-6 h-6 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-3"></div>
+            <div className="animate-spin w-6 h-6 border-2 border-neutral-600 border-t-white rounded-full mx-auto mb-3" />
             Loading notifications...
           </div>
         )}
@@ -426,7 +427,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
                         {getPriorityIcon(notification.priority)}
 
                         {!notification.is_read && (
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full" />
                         )}
                       </div>
 
@@ -572,7 +573,7 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
         {isLoading && filteredNotifications.length > 0 && (
           <div className="p-4 text-center text-neutral-400">
-            <div className="animate-spin w-4 h-4 border-2 border-neutral-600 border-t-white rounded-full mx-auto"></div>
+            <div className="animate-spin w-4 h-4 border-2 border-neutral-600 border-t-white rounded-full mx-auto" />
           </div>
         )}
       </div>

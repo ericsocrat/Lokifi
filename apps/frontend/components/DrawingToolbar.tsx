@@ -1,5 +1,6 @@
 'use client';
-import { DrawingTool, useDrawingStore } from '@/lib/stores/drawingStore';
+import type { DrawingTool} from '@/lib/stores/drawingStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
 import {
   Activity,
   ArrowRight,

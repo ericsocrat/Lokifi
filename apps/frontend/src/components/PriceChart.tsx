@@ -15,13 +15,14 @@ import { calculateRSI } from '@/services/indicators/rsi';
 import { calculateStochastic } from '@/services/indicators/stochastic';
 import { calculateWilliamsR } from '@/services/indicators/williams-r';
 import { useChartStore } from '@/state/store';
-import {
-  createChart,
+import type {
   IChartApi,
   ISeriesApi,
   ITimeScaleApi,
+  Time} from 'lightweight-charts';
+import {
+  createChart,
   LineStyle,
-  Time,
   type TimeRangeChangeEventHandler,
 } from 'lightweight-charts';
 import React from 'react';

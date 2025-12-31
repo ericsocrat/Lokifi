@@ -1,7 +1,7 @@
 'use client';
+import { usePaneStore } from '@/lib/stores/paneStore';
 import { Activity, BarChart3, Search, TrendingUp, Volume, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
-import { usePaneStore } from '@/lib/stores/paneStore';
 
 interface Indicator {
   id: string;
@@ -133,7 +133,11 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
           <h2 className="text-lg font-semibold text-white">Add Indicator</h2>
-          <button onClick={onClose} aria-label="Close modal" className="text-gray-400 hover:text-white transition-colors">
+          <button
+            onClick={onClose}
+            aria-label="Close modal"
+            className="text-gray-400 hover:text-white transition-colors"
+          >
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -226,4 +230,3 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
     </div>
   );
 };
-

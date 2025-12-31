@@ -1,9 +1,10 @@
 'use client';
-import { Point, useDrawingStore } from '@/lib/stores/drawingStore';
+import type { Point} from '@/lib/stores/drawingStore';
+import { useDrawingStore } from '@/lib/stores/drawingStore';
 import { usePaneStore } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
-import { BarData, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
+import type { BarData, IChartApi, ISeriesApi, Time, UTCTimestamp } from 'lightweight-charts';
 import dynamic from 'next/dynamic';
 import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { ChartErrorBoundary } from './ChartErrorBoundary';

@@ -4,12 +4,13 @@ import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { useToast } from '@/src/components/dashboard/ToastProvider';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
 import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import type {
+  PortfolioSection,
+  Asset as StorageAsset} from '@/src/lib/data/portfolioStorage';
 import {
   loadPortfolio,
-  PortfolioSection,
   addAssets as storageAddAssets,
   addSection as storageAddSection,
-  Asset as StorageAsset,
   deleteAsset as storageDeleteAsset,
 } from '@/src/lib/data/portfolioStorage';
 import {
@@ -273,7 +274,7 @@ function PortfolioPageContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -294,7 +295,7 @@ function PortfolioPageContent() {
                     backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
                     backgroundSize: '32px 32px',
                   }}
-                ></div>
+                 />
               </div>
 
               <div className="relative z-10">
@@ -305,8 +306,8 @@ function PortfolioPageContent() {
                       <span className="text-sm font-medium opacity-90">Total Portfolio Value</span>
                       <div className="flex items-center gap-1.5 px-2.5 py-1 bg-white/10 backdrop-blur-sm rounded-full ml-auto">
                         <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
                         </span>
                         <span className="text-xs font-medium">LIVE</span>
                       </div>
@@ -547,7 +548,7 @@ function PortfolioPageContent() {
             >
               <Filter className="w-4 h-4" />
               Filters
-              {showFilters && <span className="w-2 h-2 bg-blue-600 rounded-full"></span>}
+              {showFilters && <span className="w-2 h-2 bg-blue-600 rounded-full" />}
             </button>
 
             {/* View Toggle */}
@@ -595,10 +596,16 @@ function PortfolioPageContent() {
           <div className="mb-6 p-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="filter-asset-type" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="filter-asset-type"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Asset Type
                 </label>
-                <select id="filter-asset-type" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select
+                  id="filter-asset-type"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
                   <option>All Assets</option>
                   <option>Stocks</option>
                   <option>Crypto</option>
@@ -606,20 +613,32 @@ function PortfolioPageContent() {
                 </select>
               </div>
               <div>
-                <label htmlFor="filter-performance" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="filter-performance"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Performance
                 </label>
-                <select id="filter-performance" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select
+                  id="filter-performance"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
                   <option>All Performance</option>
                   <option>Gainers Only</option>
                   <option>Losers Only</option>
                 </select>
               </div>
               <div>
-                <label htmlFor="filter-value-range" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label
+                  htmlFor="filter-value-range"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
                   Value Range
                 </label>
-                <select id="filter-value-range" className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <select
+                  id="filter-value-range"
+                  className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
                   <option>Any Value</option>
                   <option>Under $1,000</option>
                   <option>$1,000 - $10,000</option>
@@ -851,7 +870,7 @@ function AssetItem({
   return (
     <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-5 flex items-center justify-between hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-300 group relative overflow-hidden">
       {/* Gradient background on hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/5 dark:to-purple-900/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/5 dark:to-purple-900/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
       <div className="flex items-center gap-4 flex-1 relative z-10">
         {/* Asset Icon and Symbol */}
@@ -950,7 +969,7 @@ function AssetItem({
                 <Edit2 className="w-4 h-4" />
                 Edit Asset
               </button>
-              <div className="my-1 border-t border-gray-200 dark:border-gray-700"></div>
+              <div className="my-1 border-t border-gray-200 dark:border-gray-700" />
               {onDelete && (
                 <button
                   onClick={() => {

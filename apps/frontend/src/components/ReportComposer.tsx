@@ -1,4 +1,5 @@
-import { buildReportPDF, downloadPdf, ReportBlock } from '@/lib/utils/report';
+import type { ReportBlock } from '@/lib/utils/report';
+import { buildReportPDF, downloadPdf } from '@/lib/utils/report';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 

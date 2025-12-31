@@ -4,10 +4,11 @@ import { usePreferences } from '@/src/components/dashboard/PreferencesContext';
 import { ProfileDropdown } from '@/src/components/dashboard/ProfileDropdown';
 import { useToast } from '@/src/components/dashboard/ToastProvider';
 import { useCurrencyFormatter } from '@/src/components/dashboard/useCurrencyFormatter';
+import type {
+  Asset as PortfolioAsset,
+  PortfolioSection} from '@/src/lib/data/portfolioStorage';
 import {
   loadPortfolio,
-  Asset as PortfolioAsset,
-  PortfolioSection,
   addAssets as storageAddAssets,
   addSection as storageAddSection,
   deleteAsset as storageDeleteAsset,
@@ -198,7 +199,7 @@ export default function AssetsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }

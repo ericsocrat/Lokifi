@@ -148,7 +148,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -186,7 +186,7 @@ export default function DashboardPage() {
               </div>
               <div className="ml-12">
                 <div className="w-32 h-32 rounded-full bg-gray-900 flex items-center justify-center">
-                  <div className="w-24 h-24 rounded-full bg-gray-800"></div>
+                  <div className="w-24 h-24 rounded-full bg-gray-800" />
                 </div>
               </div>
             </div>
@@ -370,17 +370,17 @@ export default function DashboardPage() {
                   </div>
                   <div className="mt-6 space-y-2 text-sm">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-300"></div>
+                      <div className="w-3 h-3 rounded-full bg-purple-300" />
                       <span className="text-gray-600">Stocks</span>
                       <span className="text-gray-400 ml-auto">12%</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-400"></div>
+                      <div className="w-3 h-3 rounded-full bg-purple-400" />
                       <span className="text-gray-600">Crypto</span>
                       <span className="text-gray-400 ml-auto">18%</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                      <div className="w-3 h-3 rounded-full bg-gray-300" />
                       <span className="text-gray-600">Other</span>
                       <span className="text-gray-400 ml-auto">70%</span>
                     </div>
@@ -429,17 +429,17 @@ export default function DashboardPage() {
                   </div>
                   <div className="mt-6 space-y-2 text-sm">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-300"></div>
+                      <div className="w-3 h-3 rounded-full bg-purple-300" />
                       <span className="text-gray-600">Technology</span>
                       <span className="text-gray-400 ml-auto">36%</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-purple-400"></div>
+                      <div className="w-3 h-3 rounded-full bg-purple-400" />
                       <span className="text-gray-600">Equities</span>
                       <span className="text-gray-400 ml-auto">28%</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-gray-300"></div>
+                      <div className="w-3 h-3 rounded-full bg-gray-300" />
                       <span className="text-gray-600">Other</span>
                       <span className="text-gray-400 ml-auto">36%</span>
                     </div>
@@ -462,8 +462,8 @@ export default function DashboardPage() {
                   </h2>
                   <span className="inline-flex items-center gap-1 text-xs text-green-600 dark:text-green-400 font-semibold uppercase tracking-wide">
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
                     </span>
                     LIVE
                   </span>
@@ -542,7 +542,7 @@ export default function DashboardPage() {
                         <div
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: item.color }}
-                        ></div>
+                         />
                         <span className="text-sm text-gray-700">{item.name}</span>
                       </div>
                       <div className="text-right">

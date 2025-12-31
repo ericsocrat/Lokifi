@@ -4,7 +4,7 @@
  * between two price points with proper anchoring
  */
 
-import {
+import type {
   AutoscaleInfo,
   IChartApi,
   ISeriesApi,

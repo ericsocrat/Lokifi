@@ -85,7 +85,13 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
               aria-label="Toggle Grid"
               className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                aria-hidden="true"
+              >
                 <path d="M0 0h16v1H0V0zm0 7h16v1H0V7zm0 8h16v1H0v-1z" />
                 <path d="M0 0h1v16H0V0zm7 0h1v16H7V0zm8 0h1v16h-1V0z" />
               </svg>
@@ -104,7 +110,13 @@ export default function ChartHeader({ onOpenObjectTree }: ChartHeaderProps) {
               aria-label="Toggle Crosshair"
               className="p-2 hover:bg-neutral-800 rounded-lg transition-colors text-neutral-400 hover:text-white"
             >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                aria-hidden="true"
+              >
                 <path d="M8 0v6H7V0h1zM8 10v6H7v-6h1zM0 8h6V7H0v1zm10 0h6V7h-6v1z" />
                 <circle cx="8" cy="8" r="1.5" />
               </svg>

@@ -6,7 +6,7 @@
  * price/time coordinate conversion, ensuring lines anchor correctly to chart data.
  */
 
-import {
+import type {
   AutoscaleInfo,
   IChartApi,
   ISeriesApi,
