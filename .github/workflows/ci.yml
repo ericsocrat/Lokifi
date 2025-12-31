@@ -73,7 +73,10 @@ jobs:
           bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
 
           echo "Running actionlint on all workflow files..."
-          ./actionlint -color -verbose
+          # Note: -shellcheck="" disables shellcheck integration to avoid false positives
+          # with GitHub Actions expressions that don't need shell quoting.
+          # These are SC2086 warnings that are not applicable in GitHub Actions context.
+          ./actionlint -color -verbose -shellcheck=""
 
       - name: 📊 Upload actionlint results
         if: always()
