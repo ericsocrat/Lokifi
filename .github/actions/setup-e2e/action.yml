@@ -47,10 +47,10 @@ runs:
           playwright-${{ runner.os }}-
 
     - name: 🎭 Install Playwright browsers
-      if: steps.playwright-cache.outputs.cache-hit != 'true'
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
+        # Always ensure browsers are installed (cache only restores browser files, not system deps)
         if [ "${{ inputs.browser }}" = "all" ]; then
           npx playwright install --with-deps
         else
