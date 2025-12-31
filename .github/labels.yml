@@ -124,7 +124,7 @@
 # ===========================================
 - name: stale
   color: "ededed"
-  description: "Marked stale due to inactivity (30 days)"
+  description: "Marked stale due to inactivity (60 days issues, 45 days PRs)"
 
 - name: wontfix
   color: "ffffff"
@@ -163,3 +163,69 @@
 - name: priority/low
   color: "0e8a16"
   description: "Low priority"
+
+- name: urgent
+  color: "b60205"
+  description: "Urgent - requires immediate attention"
+
+# Legacy priority format (used by failure-notifications.yml)
+- name: priority-critical
+  color: "b60205"
+  description: "Critical priority (legacy format)"
+
+- name: priority-high
+  color: "d93f0b"
+  description: "High priority (legacy format)"
+
+# ===========================================
+# Issue Type Labels
+# ===========================================
+- name: bug
+  color: "d73a4a"
+  description: "Something isn't working"
+
+- name: enhancement
+  color: "a2eeef"
+  description: "New feature or request"
+
+- name: good-first-issue
+  color: "7057ff"
+  description: "Good for newcomers"
+
+- name: help-wanted
+  color: "008672"
+  description: "Extra attention is needed"
+
+# ===========================================
+# Management Labels (stale.yml, automation)
+# ===========================================
+- name: pinned
+  color: "0052cc"
+  description: "Exempt from stale bot - intentionally kept open"
+
+- name: automated
+  color: "e7e7e7"
+  description: "Created by automated workflow"
+
+- name: ci-failure
+  color: "d73a4a"
+  description: "CI workflow failure - auto-created issue"
+
+# ===========================================
+# Additional Scope Labels
+# ===========================================
+- name: quality
+  color: "1d76db"
+  description: "Code quality and testing standards"
+
+- name: integration
+  color: "5319e7"
+  description: "Integration tests and cross-service concerns"
+
+- name: e2e
+  color: "bfd4f2"
+  description: "End-to-end testing"
+
+- name: cross-browser
+  color: "d4c5f9"
+  description: "Cross-browser compatibility testing"

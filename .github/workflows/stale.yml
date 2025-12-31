@@ -139,7 +139,8 @@ jobs:
           echo "**Configuration**:" >> $GITHUB_STEP_SUMMARY
           echo "- Issues: Stale after 60 days, close after 14 days" >> $GITHUB_STEP_SUMMARY
           echo "- PRs: Stale after 45 days, close after 14 days" >> $GITHUB_STEP_SUMMARY
-          echo "- Exempt labels: pinned, security, work-in-progress, hotfix, urgent" >> $GITHUB_STEP_SUMMARY
+          echo "- Issue exempt labels: pinned, security, bug, enhancement, help-wanted, good-first-issue, hotfix, urgent" >> $GITHUB_STEP_SUMMARY
+          echo "- PR exempt labels: pinned, security, work-in-progress, dependencies, hotfix, urgent" >> $GITHUB_STEP_SUMMARY
           echo "- Exempt assignees: ericsocrat" >> $GITHUB_STEP_SUMMARY
           echo "- Exempt milestones: All" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY

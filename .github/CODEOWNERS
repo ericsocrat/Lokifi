@@ -63,6 +63,7 @@ docker-compose*.yml @ericsocrat
 
 # GitHub configuration
 /.github/CODEOWNERS @ericsocrat
+/renovate.json @ericsocrat
 /.github/dependabot.yml @ericsocrat
 /.github/labeler.yml @ericsocrat
 /.github/labels.yml @ericsocrat
@@ -130,9 +131,16 @@ Makefile @ericsocrat
 /.gitignore @ericsocrat
 /.gitattributes @ericsocrat
 /LICENSE @ericsocrat
+/.editorconfig @ericsocrat
+/.nvmrc @ericsocrat
+/.yamllint.yml @ericsocrat
+/cspell.json @ericsocrat
 
 # Workspace configuration
 lokifi.code-workspace @ericsocrat
+
+# Config folder
+/config/ @ericsocrat
 
 # ========================================
 # Future Team Assignments (Examples)
