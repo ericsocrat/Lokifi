@@ -6,6 +6,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mockDescribeDrawing = vi.fn();
 vi.mock('@/lib/utils/labels', () => ({
   describeDrawing: (...args: any[]) => mockDescribeDrawing(...args),
+  DEFAULT_LABEL_CONFIG: {
+    showValue: true,
+    showPercent: true,
+    showAngle: true,
+    showRR: true,
+  },
 }));
 
 // Mock chart store
@@ -22,10 +28,12 @@ const mockStoreState = {
 };
 
 const mockSubscribe = vi.fn();
+const mockGetState = vi.fn(() => mockStoreState);
 
 vi.mock('@/state/store', () => ({
   useChartStore: Object.assign(() => mockStoreState, {
     subscribe: (...args: any[]) => mockSubscribe(...args),
+    getState: () => mockGetState(),
   }),
 }));
 
@@ -52,12 +60,11 @@ describe('LabelsLayer', () => {
   });
 
   describe('Initial Rendering', () => {
-    it('should render container when enabled', () => {
+    it('should render nothing when no drawings have labels', () => {
       const { container } = render(<LabelsLayer />);
 
-      // Should render the main container
-      const labelsContainer = container.querySelector('.pointer-events-none');
-      expect(labelsContainer).toBeInTheDocument();
+      // Optimized: returns null when no labels to render
+      expect(container.firstChild).toBeNull();
     });
 
     it('should render nothing when autoLabels is disabled', () => {
@@ -75,13 +82,20 @@ describe('LabelsLayer', () => {
       expect(mockSubscribe).toHaveBeenCalled();
     });
 
-    it('should handle missing autoLabels config', () => {
+    it('should handle missing autoLabels config with default values', () => {
       mockStoreState.autoLabels = null as any;
+      // Add a drawing with label to verify default config works
+      mockStoreState.drawings = [{ id: 'drawing-1', layerId: 'layer-1' }];
+      mockStoreState.layers = [{ id: 'layer-1', visible: true, opacity: 1 }];
+      mockDescribeDrawing.mockReturnValue({
+        anchor: { x: 100, y: 200 },
+        text: 'Default Config Label',
+      });
+
       const { container } = render(<LabelsLayer />);
 
-      // Should still render with default config
-      const labelsContainer = container.querySelector('.pointer-events-none');
-      expect(labelsContainer).toBeInTheDocument();
+      // Should render with default config
+      expect(screen.getByText('Default Config Label')).toBeInTheDocument();
     });
   });
 
@@ -256,6 +270,14 @@ describe('LabelsLayer', () => {
 
   describe('Styling and Classes', () => {
     it('should apply correct CSS classes to container', () => {
+      // Need a label to render the container
+      mockStoreState.drawings = [{ id: 'drawing-1', layerId: 'layer-1' }];
+      mockStoreState.layers = [{ id: 'layer-1', visible: true, opacity: 1 }];
+      mockDescribeDrawing.mockReturnValue({
+        anchor: { x: 100, y: 200 },
+        text: 'Container Test Label',
+      });
+
       const { container } = render(<LabelsLayer />);
 
       const labelsContainer = container.firstChild;
@@ -305,14 +327,13 @@ describe('LabelsLayer', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle empty drawings array', () => {
+    it('should return null when no labels to render (empty drawings)', () => {
       mockStoreState.drawings = [];
 
       const { container } = render(<LabelsLayer />);
 
-      const labelsContainer = container.firstChild;
-      expect(labelsContainer).toBeInTheDocument();
-      expect(labelsContainer?.childNodes.length).toBe(0);
+      // Optimized: returns null instead of empty container
+      expect(container.firstChild).toBeNull();
     });
 
     it('should handle drawings without layerId', () => {

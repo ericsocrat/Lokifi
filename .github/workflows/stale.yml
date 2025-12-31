@@ -100,9 +100,6 @@ jobs:
           # Behavior Settings
           # ==========================================
 
-          # Don't mark stale if recently updated
-          days-before-issue-stale: 60
-
           # Remove stale label when activity resumes
           remove-stale-when-updated: true
           remove-pr-stale-when-updated: true
@@ -128,29 +125,11 @@ jobs:
           exempt-all-milestones: true
 
           # ==========================================
-          # Additional Options
+          # Processing Options
           # ==========================================
-
-          # Mark as stale even if there's an assignee
-          # exempt-all-assignees: false
-
-          # Process stale items created before this date
-          # start-date: '2024-01-01T00:00:00Z'
-
-          # Only mark as stale, don't auto-close
-          # days-before-close: -1
-
-          # Disable stale for issues (only PRs)
-          # days-before-stale: -1
-
-          # Enable debug output
           debug-only: false
-
-          # Ascending order (oldest first)
-          ascending: true
-
-          # Delete branch when PR is closed
-          delete-branch: false # Set to true to auto-delete PR branches
+          ascending: true # Process oldest first
+          delete-branch: false
 
       - name: 📊 Generate summary
         if: always()

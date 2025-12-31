@@ -1,8 +1,16 @@
 # Automatic PR Labeling Configuration
 # Used by actions/labeler@v5 in label-pr.yml workflow
 # Docs: https://github.com/actions/labeler#common-examples
+#
+# Label categories:
+# - Application: frontend, backend, mobile, admin
+# - Size: size/XS, size/S, size/M, size/L, size/XL (added via workflow)
+# - Type: ci-cd, documentation, dependencies, testing, security
+# - Scope: infrastructure, database, api, ui, configuration
 
-# Application labels
+# ===========================================
+# Application Labels
+# ===========================================
 frontend:
   - changed-files:
       - any-glob-to-any-file:
@@ -23,7 +31,9 @@ admin:
       - any-glob-to-any-file:
           - "apps/admin/**"
 
-# CI/CD changes
+# ===========================================
+# Change Type Labels
+# ===========================================
 ci-cd:
   - changed-files:
       - any-glob-to-any-file:
@@ -100,7 +110,9 @@ performance:
       - any-glob-to-any-file:
           - "**/performance/**"
 
-# Database & Models
+# ===========================================
+# Scope Labels
+# ===========================================
 database:
   - changed-files:
       - any-glob-to-any-file:
@@ -126,7 +138,9 @@ ui:
           - "**/*.css"
           - "**/*.scss"
 
-# E2E tests (triggers full browser suite)
+# ===========================================
+# Test-Related Labels
+# ===========================================
 e2e-full:
   - changed-files:
       - any-glob-to-any-file:

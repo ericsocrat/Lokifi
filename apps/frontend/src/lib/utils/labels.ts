@@ -1,18 +1,38 @@
+/**
+ * Label utilities for chart drawings
+ * Generates descriptive text labels based on drawing type and configuration
+ * @module labels
+ */
 import { yToPrice } from '@/lib/charts/chartMap';
 import type { Drawing } from '@/lib/utils/drawings';
 import { rectFromPoints } from '@/lib/utils/geom';
 
+/** Configuration for which label types to display */
 export interface LabelConfig {
-  showValue: boolean;
-  showPercent: boolean;
-  showAngle: boolean;
-  showRR: boolean;
+  readonly showValue: boolean;
+  readonly showPercent: boolean;
+  readonly showAngle: boolean;
+  readonly showRR: boolean;
 }
 
+/** Result of label generation with text and position */
 export interface LabelResult {
-  text: string;
-  anchor: { x: number; y: number };
+  readonly text: string;
+  readonly anchor: Readonly<{ x: number; y: number }>;
 }
+
+/** Default label configuration - all labels enabled */
+export const DEFAULT_LABEL_CONFIG: LabelConfig = {
+  showValue: true,
+  showPercent: true,
+  showAngle: true,
+  showRR: true,
+} as const;
+
+/** Drawing kinds that support labels */
+export const SUPPORTED_DRAWING_KINDS = [
+  'hline', 'vline', 'trendline', 'ray', 'arrow', 'rect', 'ruler'
+] as const;
 
 type LabelHandler = (d: Drawing, cfg: LabelConfig) => LabelResult | null;
 
@@ -24,8 +44,14 @@ const LABEL_HANDLERS: Partial<Record<Drawing['kind'], LabelHandler>> = {
   arrow: lineLabel,
   rect: rectLabel,
   ruler: rulerLabel,
-};
+} as const;
 
+/**
+ * Generate a descriptive label for a chart drawing
+ * @param d - The drawing to describe
+ * @param cfg - Configuration for which labels to show
+ * @returns Label result with text and anchor position, or null if no label applicable
+ */
 export function describeDrawing(d: Drawing, cfg: LabelConfig): LabelResult | null {
   try {
     const handler = LABEL_HANDLERS[d.kind];

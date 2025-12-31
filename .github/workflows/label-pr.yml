@@ -31,7 +31,23 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           sync-labels: true
 
-      - name: 📝 Welcome comment
+      - name: � Size label
+        uses: codelytv/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/XS'
+          xs_max_size: 10
+          s_label: 'size/S'
+          s_max_size: 100
+          m_label: 'size/M'
+          m_max_size: 500
+          l_label: 'size/L'
+          l_max_size: 1000
+          xl_label: 'size/XL'
+          message_if_xl: |
+            ⚠️ This PR is quite large. Consider splitting it into smaller, focused PRs for easier review.
+
+      - name: �📝 Welcome comment
         if: github.event.action == 'opened'
         uses: actions/github-script@v7
         with:
@@ -72,5 +88,13 @@ jobs:
         run: |
           cat << 'EOF' >> $GITHUB_STEP_SUMMARY
           ## 🏷️ PR Labels
-          Labels auto-applied based on changed files. Workflows use labels for conditional execution.
+
+          | Category | Labels |
+          |----------|--------|
+          | **Application** | `frontend`, `backend`, `mobile`, `admin` |
+          | **Size** | `size/XS` (<10), `size/S` (<100), `size/M` (<500), `size/L` (<1000), `size/XL` (1000+) |
+          | **Type** | `ci-cd`, `documentation`, `dependencies`, `testing`, `security` |
+          | **Scope** | `infrastructure`, `database`, `api`, `ui`, `configuration` |
+
+          Labels auto-applied based on changed files and PR size.
           EOF
