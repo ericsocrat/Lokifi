@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
-import { SWRProvider } from '../../components/SWRProvider';
 import useSWR from 'swr';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SWRProvider } from '../../components/SWRProvider';
 
 // Test component that uses SWR to verify the provider works
 function TestConsumer({ url }: { url: string }) {
@@ -62,9 +62,7 @@ describe('SWRProvider', () => {
     });
 
     it('renders nothing when no children', () => {
-      const { container } = render(
-        <SWRProvider>{null}</SWRProvider>
-      );
+      const { container } = render(<SWRProvider>{null}</SWRProvider>);
 
       // SWRConfig renders a fragment, so container should be empty
       expect(container.firstChild).toBe(null);
@@ -89,9 +87,7 @@ describe('SWRProvider', () => {
 
       // Should eventually show data
       await waitFor(() => {
-        expect(
-          screen.getByText(`Data: ${JSON.stringify(mockData)}`)
-        ).toBeInTheDocument();
+        expect(screen.getByText(`Data: ${JSON.stringify(mockData)}`)).toBeInTheDocument();
       });
 
       expect(global.fetch).toHaveBeenCalledWith('/api/test');
@@ -124,9 +120,7 @@ describe('SWRProvider', () => {
       );
 
       await waitFor(() => {
-        expect(
-          screen.getByText(`Data: ${JSON.stringify(mockResponse)}`)
-        ).toBeInTheDocument();
+        expect(screen.getByText(`Data: ${JSON.stringify(mockResponse)}`)).toBeInTheDocument();
       });
     });
   });
@@ -153,9 +147,7 @@ describe('SWRProvider', () => {
       );
 
       await waitFor(() => {
-        expect(
-          screen.getByText(`Data: ${JSON.stringify(mockData1)}`)
-        ).toBeInTheDocument();
+        expect(screen.getByText(`Data: ${JSON.stringify(mockData1)}`)).toBeInTheDocument();
       });
 
       unmount();
@@ -168,9 +160,7 @@ describe('SWRProvider', () => {
       );
 
       await waitFor(() => {
-        expect(
-          screen.getByText(`Data: ${JSON.stringify(mockData2)}`)
-        ).toBeInTheDocument();
+        expect(screen.getByText(`Data: ${JSON.stringify(mockData2)}`)).toBeInTheDocument();
       });
     });
   });
