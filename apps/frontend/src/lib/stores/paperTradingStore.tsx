@@ -776,18 +776,16 @@ export const usePaperTradingStore = create<PaperTradingStore>()(
         });
       },
 
-      subscribeToSymbol: (symbol) => {
+      subscribeToSymbol: (_symbol) => {
         if (!FLAGS.paperTrading) return;
 
-        // In a real implementation, this would subscribe to real-time data
-        // For paper trading, we might generate random price movements
-        console.log(`Subscribing to ${symbol} price updates`);
+        // TODO: Subscribe to real-time data for paper trading price movements
       },
 
-      unsubscribeFromSymbol: (symbol) => {
+      unsubscribeFromSymbol: (_symbol) => {
         if (!FLAGS.paperTrading) return;
 
-        console.log(`Unsubscribing from ${symbol} price updates`);
+        // TODO: Unsubscribe from real-time data
       },
 
       // Portfolio Analysis
@@ -936,19 +934,18 @@ export const usePaperTradingStore = create<PaperTradingStore>()(
 
       // Copy Trading Integration
       followTrader: async (
-        traderId: string,
-        copySettings: { ratio: number; maxSize: number; riskLimit: number }
+        _traderId: string,
+        _copySettings: { ratio: number; maxSize: number; riskLimit: number }
       ) => {
         if (!FLAGS.paperTrading) return;
 
-        // This would integrate with the social trading system
-        console.log(`Following trader ${traderId} with settings:`, copySettings);
+        // TODO: Integrate with social trading system
       },
 
-      unfollowTrader: async (traderId: string) => {
+      unfollowTrader: async (_traderId: string) => {
         if (!FLAGS.paperTrading) return;
 
-        console.log(`Unfollowing trader ${traderId}`);
+        // TODO: Integrate with social trading system
       },
 
       // Risk Management

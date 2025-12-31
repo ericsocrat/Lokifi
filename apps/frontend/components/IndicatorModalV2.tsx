@@ -112,8 +112,7 @@ export const IndicatorModal: React.FC<IndicatorModalProps> = ({ isOpen, onClose 
       }
     } else {
       // Create a new pane for separate indicators
-      const newPaneId = addPane('indicator', [indicator.id]);
-      console.log(`Added indicator ${indicator.name} to new pane ${newPaneId}`);
+      addPane('indicator', [indicator.id]);
     }
 
     onClose();

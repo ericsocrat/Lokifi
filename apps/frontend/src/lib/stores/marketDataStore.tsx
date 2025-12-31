@@ -119,14 +119,13 @@ export const useMarketDataStore = create<MarketDataState>()(
       },
 
       // Subscribe to real-time updates (placeholder)
-      subscribeToSymbol: (symbol: string, timeframe: string) => {
-        console.log(`Subscribing to ${symbol} ${timeframe} (WebSocket would be used here)`);
-        // In a real implementation, this would establish a WebSocket connection
+      subscribeToSymbol: (_symbol: string, _timeframe: string) => {
+        // TODO: Implement WebSocket subscription
       },
 
       // Unsubscribe from updates
-      unsubscribeFromSymbol: (symbol: string, timeframe: string) => {
-        console.log(`Unsubscribing from ${symbol} ${timeframe}`);
+      unsubscribeFromSymbol: (_symbol: string, _timeframe: string) => {
+        // TODO: Implement WebSocket unsubscription
       },
 
       // Clear all cached data
@@ -225,9 +224,8 @@ export function useAutoRefresh() {
     if (!autoRefresh) return;
 
     const interval = setInterval(() => {
-      // Refresh data for currently visible symbols
+      // TODO: Implement auto-refresh for visible symbols
       // This would typically be managed by the chart components
-      console.log('Auto-refresh triggered');
     }, refreshInterval * 1000);
 
     return () => clearInterval(interval);

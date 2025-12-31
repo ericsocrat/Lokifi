@@ -134,9 +134,6 @@ export default function EnhancedChart({
           }));
 
           seriesRef.current.setData(chartData);
-
-          // Chart data loaded successfully
-          console.log(`Loaded ${chartData.length} data points for ${selectedSymbol}`);
         }
       } catch (err) {
         console.error('Failed to load chart data:', err);
@@ -150,17 +147,10 @@ export default function EnhancedChart({
   useEffect(() => {
     if (!chartRef.current || !activeTool || activeTool === 'cursor') return;
 
-    const handleClick = (param: MouseEventParams<Time>) => {
-      if (!param.point || !param.time) return;
+    const handleClick = (_param: MouseEventParams<Time>) => {
+      if (!_param.point || !_param.time) return;
 
-      console.log('Chart clicked in drawing mode:', {
-        tool: activeTool,
-        point: param.point,
-        time: param.time,
-      });
-
-      // Drawing logic would be implemented here
-      // For now, just log the interaction
+      // TODO: Implement drawing logic based on activeTool
     };
 
     chartRef.current.subscribeClick(handleClick);
@@ -180,9 +170,8 @@ export default function EnhancedChart({
 
     // This is a simplified example - real implementation would need
     // to create chart primitives or overlays for each drawing object
-    paneObjects.forEach((obj) => {
-      console.log('Rendering drawing object:', obj);
-      // Actual rendering logic would go here
+    paneObjects.forEach((_obj) => {
+      // TODO: Implement actual rendering logic for drawing objects
     });
   }, [objects, paneId]);
 

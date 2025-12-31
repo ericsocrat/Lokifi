@@ -17,11 +17,6 @@ export function getToken(): string | null {
 export async function apiFetch(input: string, init: RequestInit = {}) {
   const url = `${API_BASE}${input}`;
 
-  // Development-only logging
-  if (process.env.NODE_ENV === 'development') {
-    console.log('🌐 apiFetch:', init.method || 'GET', url);
-  }
-
   const headers = new Headers(init.headers || {});
   // Using HTTP-only cookies for auth, no need for Authorization header
   headers.set('Content-Type', headers.get('Content-Type') || 'application/json');

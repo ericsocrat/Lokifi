@@ -156,8 +156,6 @@ export function AuthModal({
 
       // Get API base URL from environment variable
       const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
-      console.log('🔍 Google Auth: API_BASE =', API_BASE);
-      console.log('🔍 Google Auth: Sending credential to backend...');
 
       // Send the Google credential to backend
       const response = await fetch(`${API_BASE}/auth/google`, {
@@ -170,8 +168,6 @@ export function AuthModal({
           token: credentialResponse.credential,
         }),
       });
-
-      console.log('✅ Google Auth: Response received, status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -511,7 +507,7 @@ export function AuthModal({
                       <div
                         className={`h-full ${passwordStrength.color} transition-all duration-300`}
                         style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-                       />
+                      />
                     </div>
                     <span
                       className={`text-xs font-medium ${

@@ -89,7 +89,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         // Request 500 candles for better history (about 3 weeks of hourly data, or 2 years of daily)
         const apiBase = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000/api';
         const url = `${apiBase}/ohlc?symbol=${symbol}&timeframe=${timeframe}&limit=500`;
-        console.log('[DrawingChart] Fetching OHLC data from:', url);
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -102,12 +101,6 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         }
 
         const result = await response.json();
-        console.log(
-          '[DrawingChart] Received',
-          result.candles?.length,
-          'candles, first price:',
-          result.candles?.[0]?.c
-        );
         const transformedData: BarData[] = result.candles.map(
           (candle: { ts: number; o: number; h: number; l: number; c: number }) => ({
             time: Math.floor(candle.ts / 1000) as UTCTimestamp,

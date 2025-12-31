@@ -33,6 +33,38 @@
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "prefer-const": "warn"
   },
+  "overrides": [
+    {
+      "files": ["lib/utils/logger.ts", "src/lib/utils/logger.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "app/test/**/*.tsx",
+        "src/lib/utils/webVitals.ts",
+        "components/WebSocketConnection.tsx",
+        "src/hooks/useNotifications.ts",
+        "src/services/backendPriceService.ts",
+        "src/lib/data/adapter.ts"
+      ],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": [
+        "src/lib/stores/mobileA11yStore.tsx",
+        "src/lib/stores/observabilityStore.tsx",
+        "src/lib/stores/performanceStore.tsx",
+        "src/lib/stores/rollbackStore.tsx"
+      ],
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ],
   "ignorePatterns": [
     "node_modules/",
     ".next/",

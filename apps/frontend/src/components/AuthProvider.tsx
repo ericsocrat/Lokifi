@@ -51,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (_error) {
       // Silent fail - user just needs to log in again
-      console.debug('Auth refresh failed - user not logged in');
       setUser(null);
     }
   }, []);
