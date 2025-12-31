@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { ArrowLeft, RefreshCw, Save, Settings } from 'lucide-react';
 import Link from 'next/link';
@@ -52,7 +52,7 @@ export default function NotificationPreferencesPage() {
 
         const response = await fetch('/api/notifications/preferences', {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -63,7 +63,6 @@ export default function NotificationPreferencesPage() {
 
         const data = await response.json();
         setPreferences(data);
-
       } catch (err) {
         console.error('Failed to load preferences:', err);
         setError(err instanceof Error ? err.message : 'Failed to load preferences');
@@ -93,7 +92,7 @@ export default function NotificationPreferencesPage() {
       const response = await fetch('/api/notifications/preferences', {
         method: 'PUT',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(preferences),
@@ -105,7 +104,6 @@ export default function NotificationPreferencesPage() {
 
       setSaveMessage('Preferences saved successfully!');
       setTimeout(() => setSaveMessage(null), 3000);
-
     } catch (err) {
       console.error('Failed to save preferences:', err);
       setError(err instanceof Error ? err.message : 'Failed to save preferences');
@@ -129,7 +127,7 @@ export default function NotificationPreferencesPage() {
       (newPrefs as any)[keys[0]] = {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any -- any required: dynamic path accessor pattern
         ...(newPrefs as any)[keys[0]],
-        [keys[1]]: value
+        [keys[1]]: value,
       };
     }
 
@@ -142,9 +140,7 @@ export default function NotificationPreferencesPage() {
         <Navbar />
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-semibold text-white mb-4">
-              Access Required
-            </h1>
+            <h1 className="text-2xl font-semibold text-white mb-4">Access Required</h1>
             <p className="text-neutral-400 mb-6">
               Please log in to manage your notification preferences.
             </p>
@@ -174,13 +170,9 @@ export default function NotificationPreferencesPage() {
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <Settings className="w-6 h-6 text-white" />
-            <h1 className="text-2xl font-semibold text-white">
-              Notification Preferences
-            </h1>
+            <h1 className="text-2xl font-semibold text-white">Notification Preferences</h1>
           </div>
-          <p className="text-neutral-400">
-            Customize how and when you receive notifications.
-          </p>
+          <p className="text-neutral-400">Customize how and when you receive notifications.</p>
         </div>
 
         {/* Status Messages */}
@@ -215,12 +207,16 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">In-App Notifications</label>
-                    <p className="text-sm text-neutral-400">Show notifications in the application</p>
+                    <p className="text-sm text-neutral-400">
+                      Show notifications in the application
+                    </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={preferences.in_app_enabled}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('in_app_enabled', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('in_app_enabled', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -228,12 +224,16 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Push Notifications</label>
-                    <p className="text-sm text-neutral-400">Browser push notifications when app is closed</p>
+                    <p className="text-sm text-neutral-400">
+                      Browser push notifications when app is closed
+                    </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={preferences.push_enabled}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('push_enabled', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('push_enabled', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -246,7 +246,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.email_enabled}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('email_enabled', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('email_enabled', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -269,7 +271,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.follow_notifications}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('type_preferences.follow_notifications', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('type_preferences.follow_notifications', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -285,7 +289,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.dm_notifications}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('type_preferences.dm_notifications', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('type_preferences.dm_notifications', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -295,13 +301,17 @@ export default function NotificationPreferencesPage() {
                     <span className="text-xl">🤖</span>
                     <div>
                       <label className="text-white font-medium">AI Responses</label>
-                      <p className="text-sm text-neutral-400">When AI assistant completes a response</p>
+                      <p className="text-sm text-neutral-400">
+                        When AI assistant completes a response
+                      </p>
                     </div>
                   </div>
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.ai_reply_notifications}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('type_preferences.ai_reply_notifications', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('type_preferences.ai_reply_notifications', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -317,7 +327,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.mention_notifications}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('type_preferences.mention_notifications', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('type_preferences.mention_notifications', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -333,7 +345,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="checkbox"
                     checked={preferences.type_preferences.system_notifications}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('type_preferences.system_notifications', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('type_preferences.system_notifications', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -348,12 +362,16 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Daily Digest</label>
-                    <p className="text-sm text-neutral-400">Receive a daily summary of notifications</p>
+                    <p className="text-sm text-neutral-400">
+                      Receive a daily summary of notifications
+                    </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={preferences.daily_digest_enabled}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('daily_digest_enabled', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('daily_digest_enabled', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -361,12 +379,16 @@ export default function NotificationPreferencesPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <label className="text-white font-medium">Weekly Digest</label>
-                    <p className="text-sm text-neutral-400">Receive a weekly summary of notifications</p>
+                    <p className="text-sm text-neutral-400">
+                      Receive a weekly summary of notifications
+                    </p>
                   </div>
                   <input
                     type="checkbox"
                     checked={preferences.weekly_digest_enabled}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('weekly_digest_enabled', e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('weekly_digest_enabled', e.target.checked)
+                    }
                     className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500"
                   />
                 </div>
@@ -377,7 +399,9 @@ export default function NotificationPreferencesPage() {
                     <input
                       type="time"
                       value={preferences.digest_time}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('digest_time', e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        updatePreference('digest_time', e.target.value)
+                      }
                       className="bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white"
                     />
                   </div>
@@ -395,7 +419,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="time"
                     value={preferences.quiet_hours_start || '22:00'}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('quiet_hours_start', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('quiet_hours_start', e.target.value)
+                    }
                     className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white"
                   />
                 </div>
@@ -405,7 +431,9 @@ export default function NotificationPreferencesPage() {
                   <input
                     type="time"
                     value={preferences.quiet_hours_end || '08:00'}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => updatePreference('quiet_hours_end', e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      updatePreference('quiet_hours_end', e.target.value)
+                    }
                     className="w-full bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white"
                   />
                 </div>
