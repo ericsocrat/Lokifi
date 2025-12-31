@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/src/components/AuthProvider';
+import { useAuth } from '@/components/AuthProvider';
 
 /**
  * Higher-Order Component to protect routes that require authentication
