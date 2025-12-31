@@ -14,6 +14,8 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+
 from app.api.routes.monitoring import (
     get_active_connections,
     get_alerts,
@@ -30,7 +32,6 @@ from app.api.routes.monitoring import (
     stop_monitoring,
     websocket_load_test,
 )
-from fastapi import HTTPException
 
 # ============================================================================
 # Fixtures
@@ -689,9 +690,10 @@ class TestMonitoringIntegration:
         mock_alert_manager.active_alerts = {}
         mock_alert_manager.alert_history = []
 
-        with patch("app.api.routes.monitoring.advanced_redis_client") as mock_client, patch(
-            "app.api.routes.monitoring.monitoring_system"
-        ) as mock_system:
+        with (
+            patch("app.api.routes.monitoring.advanced_redis_client") as mock_client,
+            patch("app.api.routes.monitoring.monitoring_system") as mock_system,
+        ):
             mock_client.invalidate_pattern = AsyncMock(return_value=10)
             mock_system.alert_manager = mock_alert_manager
 

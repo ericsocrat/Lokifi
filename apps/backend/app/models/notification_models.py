@@ -44,20 +44,30 @@ class Notification(Base):
 
     # Primary identification
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
 
     # Notification classification
     type: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
-    priority: Mapped[str] = mapped_column(String(20), nullable=False, default=NotificationPriority.NORMAL.value)
-    category: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)  # For grouping notifications
+    priority: Mapped[str] = mapped_column(
+        String(20), nullable=False, default=NotificationPriority.NORMAL.value
+    )
+    category: Mapped[str | None] = mapped_column(
+        String(50), nullable=True, index=True
+    )  # For grouping notifications
 
     # Content and metadata
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     message: Mapped[str | None] = mapped_column(Text, nullable=True)
-    payload: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)  # Rich structured data
+    payload: Mapped[dict[str, Any] | None] = mapped_column(
+        JSON, nullable=True
+    )  # Rich structured data
 
     # Delivery and interaction tracking
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     clicked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -78,14 +88,18 @@ class Notification(Base):
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Reference to related entities
-    related_entity_type: Mapped[str | None] = mapped_column(String(50), nullable=True)  # e.g., "message", "thread", "user"
+    related_entity_type: Mapped[str | None] = mapped_column(
+        String(50), nullable=True
+    )  # e.g., "message", "thread", "user"
     related_entity_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True)
     related_user_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=True
     )  # For user-specific notifications
 
     # Batching and grouping
-    batch_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), nullable=True, index=True)  # For batch operations
+    batch_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), nullable=True, index=True
+    )  # For batch operations
     parent_notification_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True), ForeignKey("notifications.id"), nullable=True
     )
@@ -203,7 +217,9 @@ class NotificationPreference(Base):
     # Timing preferences
     quiet_hours_start: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "22:00"
     quiet_hours_end: Mapped[str | None] = mapped_column(String(5), nullable=True)  # "08:00"
-    timezone: Mapped[str] = mapped_column(String(50), nullable=False, default="timezone.timezone.utc")
+    timezone: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="timezone.timezone.utc"
+    )
 
     # Digest settings
     daily_digest_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
@@ -211,8 +227,12 @@ class NotificationPreference(Base):
     digest_time: Mapped[str] = mapped_column(String(5), nullable=False, default="09:00")
 
     # Metadata
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     user = relationship("User", back_populates="notification_preferences")

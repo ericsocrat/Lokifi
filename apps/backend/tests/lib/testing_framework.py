@@ -915,7 +915,9 @@ class AdvancedTestFramework:
                     else (
                         "GOOD"
                         if overall_success_rate >= 75
-                        else "FAIR" if overall_success_rate >= 50 else "POOR"
+                        else "FAIR"
+                        if overall_success_rate >= 50
+                        else "POOR"
                     )
                 ),
             },

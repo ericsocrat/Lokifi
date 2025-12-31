@@ -66,7 +66,9 @@ class EnhancedPerformanceMonitor:
         self.error_count = 0
         self.total_requests = 0
         self.endpoint_metrics = defaultdict(list)
-        self.system_metrics_history: deque[PerformanceMetrics] = deque(maxlen=100)  # Last 100 data points
+        self.system_metrics_history: deque[PerformanceMetrics] = deque(
+            maxlen=100
+        )  # Last 100 data points
 
         # WebSocket tracking
         self.websocket_connections = 0

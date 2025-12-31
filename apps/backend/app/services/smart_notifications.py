@@ -139,7 +139,8 @@ class SmartNotificationProcessor:
         await redis_client.client.set(
             schedule_key,
             json.dumps(asdict(notification_data), default=str),
-            ex=int((notification_data.scheduled_for - datetime.now(timezone.utc)).total_seconds()) + 3600,
+            ex=int((notification_data.scheduled_for - datetime.now(timezone.utc)).total_seconds())
+            + 3600,
         )
 
         logger.info(f"Scheduled notification {schedule_id} for {notification_data.scheduled_for}")
@@ -181,7 +182,9 @@ class SmartNotificationProcessor:
         else:
             # Create new batch
             batch_id = str(uuid.uuid4())
-            delivery_time = datetime.now(timezone.utc) + timedelta(minutes=5)  # 5-minute grouping window
+            delivery_time = datetime.now(timezone.utc) + timedelta(
+                minutes=5
+            )  # 5-minute grouping window
 
             new_batch = NotificationBatch(
                 batch_id=batch_id,

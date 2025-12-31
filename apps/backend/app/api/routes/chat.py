@@ -10,8 +10,8 @@ import httpx
 from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel, Field
 
-from app.api.routes.alerts import CreateAlert as CreateAlertModel
 from app.api.routes.alerts import (
+    CreateAlert as CreateAlertModel,
     create_alert as _create_alert,  # reuse Pydantic validation
 )
 from app.api.routes.portfolio import portfolio_summary as _portfolio_summary  # reuse

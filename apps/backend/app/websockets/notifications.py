@@ -149,7 +149,9 @@ class NotificationWebSocketManager:
                 metadata = self.connection_metadata[websocket]
                 del self.connection_metadata[websocket]
 
-                connection_duration = (datetime.now(timezone.utc) - metadata["connected_at"]).total_seconds()
+                connection_duration = (
+                    datetime.now(timezone.utc) - metadata["connected_at"]
+                ).total_seconds()
 
                 logger.info(
                     f"WebSocket disconnected for user {metadata['username']} "
@@ -189,7 +191,9 @@ class NotificationWebSocketManager:
 
                 # Update last activity
                 if websocket in self.connection_metadata:
-                    self.connection_metadata[websocket]["last_activity"] = datetime.now(timezone.utc)
+                    self.connection_metadata[websocket]["last_activity"] = datetime.now(
+                        timezone.utc
+                    )
 
             except Exception as e:
                 logger.warning(f"Failed to send message to WebSocket for user {user_id}: {e}")

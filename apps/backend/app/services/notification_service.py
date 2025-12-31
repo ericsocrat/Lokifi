@@ -108,7 +108,8 @@ class NotificationService:
                 # Check user preferences unless skipped
                 if not skip_preferences:
                     preferences = await self._get_user_preferences(
-                        session, str(notification_data.user_id)  # Convert UUID to str for query
+                        session,
+                        str(notification_data.user_id),  # Convert UUID to str for query
                     )
                     if not await self._should_deliver_notification(preferences, notification_data):
                         logger.debug(

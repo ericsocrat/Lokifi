@@ -27,7 +27,7 @@ def init_db():
 
 
 @contextmanager
-def get_session() -> Generator[Session, None, None]:
+def get_session() -> Generator[Session]:
     """Provide a transactional database session with automatic commit/rollback."""
     db = SessionLocal()
     try:

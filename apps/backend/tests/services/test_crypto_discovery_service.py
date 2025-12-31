@@ -18,6 +18,7 @@ from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import httpx
 import pytest
+
 from app.services.crypto_discovery_service import (
     CryptoAsset,
     CryptoDiscoveryService,
@@ -207,7 +208,6 @@ class TestCryptoMetrics:
 
     def test_global_metrics_instance():
         """Test that crypto_metrics is a global instance."""
-        from app.services.crypto_discovery_service import crypto_metrics
 
         assert isinstance(crypto_metrics, CryptoMetrics)
 
@@ -844,11 +844,13 @@ class TestEdgeCases:
 
             mock_client_class.return_value = mock_client
 
-            with patch.object(
-                crypto_service, "_get_cached", new_callable=AsyncMock, return_value=None
+            with (
+                patch.object(
+                    crypto_service, "_get_cached", new_callable=AsyncMock, return_value=None
+                ),
+                patch.object(crypto_service, "_set_cache", new_callable=AsyncMock),
             ):
-                with patch.object(crypto_service, "_set_cache", new_callable=AsyncMock):
-                    cryptos = await crypto_service.get_top_cryptos(limit=2)
+                cryptos = await crypto_service.get_top_cryptos(limit=2)
 
             # Should create temporary client
             mock_client_class.assert_called_once()

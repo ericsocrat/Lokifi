@@ -8,14 +8,14 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
 from app.services.ai_context_manager import (
     AIContextManager,
     ContextSummary,
     ConversationMemory,
     ai_context_manager,
 )
-from app.services.ai_provider import AIMessage as AIProviderMessage
-from app.services.ai_provider import MessageRole
+from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole
 
 # ============================================================================
 # FIXTURES
@@ -237,9 +237,7 @@ class TestGetConversationContext:
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
             mock_query.filter.return_value.count.return_value = 0
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
@@ -261,9 +259,7 @@ class TestGetConversationContext:
             mock_session = MagicMock()
             mock_query = MagicMock()
             # Setup for recent messages query
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                sample_ai_messages
-            )
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = sample_ai_messages
             # Setup for count query
             mock_query.filter.return_value.count.return_value = 5
             mock_session.query.return_value = mock_query
@@ -311,9 +307,7 @@ class TestGetConversationContext:
         ):
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                sample_ai_messages
-            )
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = sample_ai_messages
             # Exceed summary threshold (20 messages)
             mock_query.filter.return_value.count.return_value = 25
             mock_session.query.return_value = mock_query
@@ -653,13 +647,9 @@ class TestContextCaching:
         ):
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
             mock_query.filter.return_value.count.return_value = 25
-            mock_query.filter.return_value.order_by.return_value.offset.return_value.all.return_value = (
-                []
-            )
+            mock_query.filter.return_value.order_by.return_value.offset.return_value.all.return_value = []
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
 
@@ -691,9 +681,7 @@ class TestGetUserContextAcrossThreads:
         """Test getting context when user has no threads."""
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -723,9 +711,7 @@ class TestGetUserContextAcrossThreads:
             ),
         ):
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                threads
-            )
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = threads
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -759,9 +745,7 @@ class TestGetUserContextAcrossThreads:
             ),
         ):
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                threads
-            )
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = threads
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -790,9 +774,7 @@ class TestGetUserContextAcrossThreads:
             ),
         ):
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                threads
-            )
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = threads
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -836,9 +818,7 @@ class TestEdgeCasesAndErrorHandling:
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
             mock_query.filter.return_value.count.return_value = 0
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session

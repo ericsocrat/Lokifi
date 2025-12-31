@@ -15,8 +15,7 @@ from sqlalchemy.orm import Session
 
 from app.db.db import get_session
 from app.db.models import AIMessage, AIThread
-from app.services.ai_provider import AIMessage as AIProviderMessage
-from app.services.ai_provider import MessageRole
+from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole
 from app.services.ai_provider_manager import ai_provider_manager
 
 logger = logging.getLogger(__name__)

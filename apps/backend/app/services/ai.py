@@ -5,8 +5,7 @@ from typing import Any
 import httpx
 
 from app.core.config import settings
-from app.services import news as news_svc
-from app.services import prices as prices_svc
+from app.services import news as news_svc, prices as prices_svc
 from app.services.indicators import ema, rsi, sma
 
 DEFAULT_MODEL = "llama3.1"  # good default in Ollama
@@ -76,7 +75,7 @@ async def _build_context(ctx_symbols: str | None, timeframe: str = "1h") -> str:
 DEFAULT_MODEL = "llama3.1"  # good default in Ollama
 
 
-async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str, None]:
+async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str]:
     host = settings.OLLAMA_BASE_URL or "http://localhost:11434"
     url = f"{host}/api/chat"
     payload = {
@@ -104,7 +103,7 @@ async def _stream_ollama(prompt: str, model: str | None) -> AsyncGenerator[str, 
 
 async def _stream_openai_compatible(
     prompt: str, base_url: str, api_key: str | None, model: str | None
-) -> AsyncGenerator[str, None]:
+) -> AsyncGenerator[str]:
     url = f"{base_url.rstrip('/')}/v1/chat/completions"
     headers = {"Content-Type": "application/json"}
     if api_key:
@@ -141,7 +140,7 @@ async def stream_answer(
     ctx_symbols: str | None,
     ctx_timeframe: str | None = None,
     model: str | None = None,
-) -> AsyncGenerator[str, None]:
+) -> AsyncGenerator[str]:
     prompt = (
         q
         if not ctx_symbols

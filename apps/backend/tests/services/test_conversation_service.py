@@ -336,7 +336,9 @@ class TestConversationServiceEdgeCases:
         # We're testing that the service doesn't crash unexpectedly
         try:
             await conversation_service.send_message(
-                None, sample_user_ids["user1"], message_data  # type: ignore
+                None,
+                sample_user_ids["user1"],
+                message_data,  # type: ignore
             )
         except (HTTPException, Exception):
             # Expected to fail, just verify no unexpected crashes
@@ -749,7 +751,9 @@ class TestGetUserConversationsDetailed:
             )
 
             result = await conversation_service.get_user_conversations(
-                user_id, page=3, page_size=2  # offset = (3-1)*2 = 4
+                user_id,
+                page=3,
+                page_size=2,  # offset = (3-1)*2 = 4
             )
 
             # Verify pagination metadata

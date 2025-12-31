@@ -18,6 +18,7 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
 from app.services.alerts import Alert, AlertEvaluator, AlertStore, SSEHub
 
 # ============================================================================

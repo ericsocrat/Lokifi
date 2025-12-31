@@ -59,9 +59,7 @@ def test_enhanced_security():
         print("\n⚙️ Testing Security Configuration...")
         print(f"  ✅ Rate limits: {len(security_config.RATE_LIMITS)} types")
         print(f"  ✅ Security headers: {len(security_config.SECURITY_HEADERS)} headers")
-        print(
-            f"  ✅ CSP policy configured: {'default-src' in security_config.CSP_POLICY}"
-        )
+        print(f"  ✅ CSP policy configured: {'default-src' in security_config.CSP_POLICY}")
 
         print("\n🎉 ALL ENHANCED SECURITY FEATURES WORKING!")
         return True

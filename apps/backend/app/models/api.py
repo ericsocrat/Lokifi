@@ -110,7 +110,9 @@ class WSMessage(BaseModel):
     """WebSocket message base"""
 
     type: str = Field(..., description="Message type")
-    timestamp: int = Field(default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000))
+    timestamp: int = Field(
+        default_factory=lambda: int(datetime.now(timezone.utc).timestamp() * 1000)
+    )
 
 
 class WSTickerMessage(WSMessage):

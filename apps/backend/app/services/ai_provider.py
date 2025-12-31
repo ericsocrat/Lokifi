@@ -69,7 +69,7 @@ class AIProvider(ABC):
     @abstractmethod
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """
         Stream chat completion tokens.
 
@@ -128,7 +128,7 @@ class MockProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Generate mock streaming response."""
         mock_response = (
             "I'm a mock AI assistant. To enable real AI capabilities, "

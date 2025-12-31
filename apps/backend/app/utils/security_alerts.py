@@ -187,7 +187,9 @@ class SecurityAlertManager:
         self.rate_limit_cache[cache_key] = datetime.now(timezone.utc)
 
         # Clean old entries
-        cutoff_time = datetime.now(timezone.utc) - timedelta(minutes=self.config.rate_limit_minutes * 2)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(
+            minutes=self.config.rate_limit_minutes * 2
+        )
         self.rate_limit_cache = {k: v for k, v in self.rate_limit_cache.items() if v > cutoff_time}
 
     async def _send_email_alert(self, alert: Alert):
@@ -414,7 +416,9 @@ class SecurityAlertManager:
             "description": alert.message,
             "color": severity_colors.get(alert.severity, 0x6C757D),
             "timestamp": (
-                alert.timestamp.isoformat() if alert.timestamp else datetime.now(timezone.utc).isoformat()
+                alert.timestamp.isoformat()
+                if alert.timestamp
+                else datetime.now(timezone.utc).isoformat()
             ),
             "fields": fields,
             "footer": {"text": "Lokifi Security Monitor"},
@@ -447,7 +451,9 @@ class SecurityAlertManager:
     def get_alert_statistics(self) -> dict[str, Any]:
         """Get statistics about recent alerts"""
         recent_alerts = [
-            a for a in self.alert_history if a.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
+            a
+            for a in self.alert_history
+            if a.timestamp > datetime.now(timezone.utc) - timedelta(hours=24)
         ]
 
         severity_counts = {}

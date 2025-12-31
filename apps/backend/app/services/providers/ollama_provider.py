@@ -35,7 +35,7 @@ class OllamaProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Stream chat completion from Ollama."""
 
         if not self.validate_messages(messages):
@@ -104,7 +104,7 @@ class OllamaProvider(AIProvider):
 
     async def _process_stream(
         self, response: httpx.Response, model: str, messages: list[AIMessage]
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Process Ollama streaming response."""
         chunk_id = str(uuid.uuid4())
         total_content = ""

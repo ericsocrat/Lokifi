@@ -13,6 +13,8 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException, Request
+
 from app.api.routes.cache import (
     cache_health_check,
     cache_statistics,
@@ -20,7 +22,6 @@ from app.api.routes.cache import (
     clear_cache_pattern,
     warm_cache_endpoint,
 )
-from fastapi import HTTPException, Request
 
 # ============================================================================
 # Fixtures
@@ -476,9 +477,10 @@ class TestCacheIntegration:
     async def test_clear_then_warm_workflow(self) -> None:
         """Should successfully clear cache then warm it"""
         # Arrange
-        with patch("app.api.routes.cache.clear_all_cache") as mock_clear, patch(
-            "app.api.routes.cache.warm_cache"
-        ) as mock_warm:
+        with (
+            patch("app.api.routes.cache.clear_all_cache") as mock_clear,
+            patch("app.api.routes.cache.warm_cache") as mock_warm,
+        ):
             mock_clear.return_value = True
             mock_warm.return_value = None
 
@@ -501,9 +503,10 @@ class TestCacheIntegration:
         mock_client = AsyncMock()
         mock_client.ping = AsyncMock()
 
-        with patch("app.api.routes.cache.cache") as mock_cache, patch(
-            "app.api.routes.cache.get_cache_stats"
-        ) as mock_stats:
+        with (
+            patch("app.api.routes.cache.cache") as mock_cache,
+            patch("app.api.routes.cache.get_cache_stats") as mock_stats,
+        ):
             mock_cache.get_client = AsyncMock(return_value=mock_client)
             mock_stats.return_value = {"hit_ratio": 90.0}
 
@@ -544,9 +547,11 @@ class TestCacheIntegration:
     async def test_error_resilience_sequence(self) -> None:
         """Should handle errors gracefully in sequence of operations"""
         # Arrange
-        with patch("app.api.routes.cache.clear_all_cache") as mock_clear, patch(
-            "app.api.routes.cache.cache"
-        ) as mock_cache, patch("app.api.routes.cache.get_cache_stats") as mock_stats:
+        with (
+            patch("app.api.routes.cache.clear_all_cache") as mock_clear,
+            patch("app.api.routes.cache.cache") as mock_cache,
+            patch("app.api.routes.cache.get_cache_stats") as mock_stats,
+        ):
             # First clear succeeds
             mock_clear.return_value = True
 

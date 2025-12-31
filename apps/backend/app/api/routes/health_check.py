@@ -12,8 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db_session
 from app.core.performance_monitor import performance_metrics
-from app.core.redis_client import RedisClient
-from app.core.redis_client import redis_client as _redis_client
+from app.core.redis_client import RedisClient, redis_client as _redis_client
 
 router = APIRouter(prefix="/health", tags=["health"])
 

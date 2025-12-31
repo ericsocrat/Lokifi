@@ -110,7 +110,9 @@ class LoggerAdapter(logging.LoggerAdapter):
     Custom logger adapter to support extra fields
     """
 
-    def process(self, msg: str, kwargs: MutableMapping[str, Any]) -> tuple[str, MutableMapping[str, Any]]:
+    def process(
+        self, msg: str, kwargs: MutableMapping[str, Any]
+    ) -> tuple[str, MutableMapping[str, Any]]:
         """
         Process log message and extract extra fields
         """

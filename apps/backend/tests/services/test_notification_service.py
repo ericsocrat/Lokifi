@@ -349,14 +349,16 @@ class TestBatchOperations:
             for i in range(5)
         ]
 
-        with patch.object(
-            notification_service,
-            "create_notification",
-            new_callable=AsyncMock,
-            side_effect=[Mock(spec=Notification) for _ in range(5)],
+        with (
+            patch.object(
+                notification_service,
+                "create_notification",
+                new_callable=AsyncMock,
+                side_effect=[Mock(spec=Notification) for _ in range(5)],
+            ),
+            patch.object(notification_service, "_emit_event", new_callable=AsyncMock),
         ):
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
-                results = await notification_service.create_batch_notifications(notifications_data)
+            results = await notification_service.create_batch_notifications(notifications_data)
 
         assert len(results) == 5
         assert all(isinstance(n, Mock) for n in results)
@@ -371,16 +373,18 @@ class TestBatchOperations:
             for _ in range(3)
         ]
 
-        with patch.object(
-            notification_service,
-            "create_notification",
-            new_callable=AsyncMock,
-            return_value=Mock(spec=Notification),
-        ) as mock_create:
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
-                await notification_service.create_batch_notifications(
-                    notifications_data, batch_id=batch_id
-                )
+        with (
+            patch.object(
+                notification_service,
+                "create_notification",
+                new_callable=AsyncMock,
+                return_value=Mock(spec=Notification),
+            ) as mock_create,
+            patch.object(notification_service, "_emit_event", new_callable=AsyncMock),
+        ):
+            await notification_service.create_batch_notifications(
+                notifications_data, batch_id=batch_id
+            )
 
         # Verify batch_id was passed to create_notification
         for call in mock_create.call_args_list:
@@ -406,14 +410,16 @@ class TestBatchOperations:
             Mock(spec=Notification),
         ]
 
-        with patch.object(
-            notification_service,
-            "create_notification",
-            new_callable=AsyncMock,
-            side_effect=side_effects,
+        with (
+            patch.object(
+                notification_service,
+                "create_notification",
+                new_callable=AsyncMock,
+                side_effect=side_effects,
+            ),
+            patch.object(notification_service, "_emit_event", new_callable=AsyncMock),
         ):
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
-                results = await notification_service.create_batch_notifications(notifications_data)
+            results = await notification_service.create_batch_notifications(notifications_data)
 
         assert len(results) == 2  # Only successful ones
 

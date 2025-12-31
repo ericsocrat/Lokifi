@@ -10,7 +10,6 @@ import pytest
 
 from app.core.optimized_imports import LazyImporter, lazy_importer
 
-
 # ============================================================================
 # LAZY IMPORTER TESTS
 # ============================================================================

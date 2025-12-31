@@ -54,7 +54,7 @@ performance_metrics = PerformanceMetrics()
 
 
 @asynccontextmanager
-async def measure_async(operation: str) -> AsyncGenerator[None, None]:
+async def measure_async(operation: str) -> AsyncGenerator[None]:
     """Context manager for measuring async operations"""
 
     start_time = time.time()

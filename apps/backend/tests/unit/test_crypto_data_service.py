@@ -31,6 +31,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 import pytest
+
 from app.services.crypto_data_service import CryptoDataService
 
 
@@ -367,9 +368,10 @@ class TestGetTopCoins:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_top_coins_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_top_coins(limit=100)
             assert result == sample_top_coins_data
             mock_redis_client.set.assert_awaited_once()
@@ -382,9 +384,10 @@ class TestGetTopCoins:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_top_coins_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_top_coins(limit=50, vs_currency="eur")
             assert result == sample_top_coins_data
 
@@ -403,9 +406,10 @@ class TestGetTopCoins:
         mock_redis_client.get.return_value = {"cached": "data"}
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_top_coins_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_top_coins(force_refresh=True)
             assert result == sample_top_coins_data
 
@@ -437,9 +441,10 @@ class TestGetGlobalMarketData:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_global_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_global_market_data()
 
             assert result["total_market_cap"] == 2000000000000
@@ -460,9 +465,10 @@ class TestGetGlobalMarketData:
         # No "data" key in response
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response({}))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_global_market_data()
             assert result == {}
 
@@ -474,9 +480,10 @@ class TestGetGlobalMarketData:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_global_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.get_global_market_data()
 
             # Verify formatted data was cached
@@ -511,9 +518,10 @@ class TestGetCoinDetails:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_coin_details))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_coin_details("bitcoin")
             assert result == sample_coin_details
             mock_redis_client.set.assert_awaited_once()
@@ -526,9 +534,10 @@ class TestGetCoinDetails:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_coin_details))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.get_coin_details("bitcoin")
 
             # Verify API endpoint and params
@@ -547,9 +556,10 @@ class TestGetCoinDetails:
         mock_redis_client.get.return_value = {"old": "data"}
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_coin_details))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_coin_details("bitcoin", force_refresh=True)
             assert result == sample_coin_details
             mock_redis_client.get.assert_not_awaited()
@@ -590,9 +600,10 @@ class TestGetCoinOHLC:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_ohlc_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_coin_ohlc("bitcoin", days=7)
 
             assert len(result) == 3
@@ -610,9 +621,10 @@ class TestGetCoinOHLC:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_ohlc_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.get_coin_ohlc("ethereum", vs_currency="eur", days=30)
 
             # Verify API params
@@ -629,9 +641,10 @@ class TestGetCoinOHLC:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_ohlc_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.get_coin_ohlc("bitcoin")
 
             # Verify formatted data was cached
@@ -673,9 +686,10 @@ class TestGetSimplePrice:
             return_value=create_mock_response(sample_simple_price_data)
         )
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_simple_price(["bitcoin", "ethereum"])
             assert result == sample_simple_price_data
 
@@ -693,9 +707,10 @@ class TestGetSimplePrice:
             return_value=create_mock_response(sample_simple_price_data)
         )
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.get_simple_price(["bitcoin"], vs_currencies=["usd", "eur", "gbp"])
 
             # Verify API params
@@ -719,9 +734,10 @@ class TestGetSimplePrice:
             return_value=create_mock_response(sample_simple_price_data)
         )
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.get_simple_price(["bitcoin"])
 
             # Verify default currency is USD
@@ -743,9 +759,10 @@ class TestSearchAndTrending:
         """Test search_coins fetches from API (no cache for search)"""
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_search_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.search_coins("bitcoin")
             assert result == sample_search_data
 
@@ -761,9 +778,10 @@ class TestSearchAndTrending:
         """Test search_coins does not cache results (query-specific)"""
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_search_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             await crypto_service.search_coins("bitcoin")
 
             # Cache set should NOT be called
@@ -788,9 +806,10 @@ class TestSearchAndTrending:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_trending_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             result = await crypto_service.get_trending()
             assert result == sample_trending_data
             mock_redis_client.set.assert_awaited_once()
@@ -809,9 +828,11 @@ class TestEdgeCasesAndErrors:
         """Test _fetch_from_api adds API key to params when configured"""
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response({"test": "data"}))
 
-        with patch("app.services.crypto_data_service.settings") as mock_settings, patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.settings") as mock_settings,
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             mock_settings.COINGECKO_KEY = "test_api_key_12345"
 
             await crypto_service._fetch_from_api("test/endpoint", {"param": "value"})
@@ -831,8 +852,9 @@ class TestEdgeCasesAndErrors:
         )
         mock_httpx_client.get.return_value = mock_response
 
-        with patch("httpx.AsyncClient", return_value=mock_httpx_client), pytest.raises(
-            httpx.HTTPStatusError
+        with (
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+            pytest.raises(httpx.HTTPStatusError),
         ):
             await crypto_service._fetch_from_api("test/endpoint")
 
@@ -846,8 +868,9 @@ class TestEdgeCasesAndErrors:
         )
         mock_httpx_client.get.return_value = mock_response
 
-        with patch("httpx.AsyncClient", return_value=mock_httpx_client), pytest.raises(
-            httpx.HTTPStatusError
+        with (
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+            pytest.raises(httpx.HTTPStatusError),
         ):
             await crypto_service._fetch_from_api("test/endpoint")
 
@@ -856,8 +879,9 @@ class TestEdgeCasesAndErrors:
         """Test _fetch_from_api handles network/timeout errors"""
         mock_httpx_client.get.side_effect = httpx.ConnectError("Connection failed")
 
-        with patch("httpx.AsyncClient", return_value=mock_httpx_client), pytest.raises(
-            httpx.ConnectError
+        with (
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+            pytest.raises(httpx.ConnectError),
         ):
             await crypto_service._fetch_from_api("test/endpoint")
 
@@ -872,9 +896,10 @@ class TestEdgeCasesAndErrors:
         mock_redis_client.get.return_value = None
         mock_httpx_client.get = AsyncMock(return_value=create_mock_response(sample_top_coins_data))
 
-        with patch(
-            "app.services.crypto_data_service.advanced_redis_client", mock_redis_client
-        ), patch("httpx.AsyncClient", return_value=mock_httpx_client):
+        with (
+            patch("app.services.crypto_data_service.advanced_redis_client", mock_redis_client),
+            patch("httpx.AsyncClient", return_value=mock_httpx_client),
+        ):
             # Should create temporary client and work
             result = await crypto_service.get_top_coins()
             assert result == sample_top_coins_data

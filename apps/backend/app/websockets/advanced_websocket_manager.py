@@ -109,7 +109,9 @@ class ConnectionPool:
 
         connection_id = str(uuid.uuid4())
 
-        metrics = ConnectionMetrics(connected_at=datetime.now(timezone.utc), last_activity=datetime.now(timezone.utc))
+        metrics = ConnectionMetrics(
+            connected_at=datetime.now(timezone.utc), last_activity=datetime.now(timezone.utc)
+        )
 
         connection_info = ConnectionInfo(
             websocket=websocket,
@@ -539,7 +541,10 @@ class AdvancedWebSocketManager:
 
     async def _handle_ping(self, connection_id: str):
         """Handle ping message"""
-        pong_message = {"type": "pong", "data": {"timestamp": datetime.now(timezone.utc).isoformat()}}
+        pong_message = {
+            "type": "pong",
+            "data": {"timestamp": datetime.now(timezone.utc).isoformat()},
+        }
         await self._send_to_connection(connection_id, pong_message)
 
     async def _handle_subscribe(self, connection_id: str, data: dict[str, Any]):

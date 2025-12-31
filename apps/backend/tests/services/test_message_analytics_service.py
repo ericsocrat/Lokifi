@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, Mock
 
 import pytest
+
 from app.services.message_analytics_service import (
     ConversationAnalytics,
     MessageAnalyticsService,

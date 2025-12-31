@@ -13,14 +13,15 @@ from typing import Any
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.api.routes.health_check import (
     check_component_health,
     comprehensive_health_check,
     get_performance_metrics,
     get_redis_client,
 )
-from fastapi import HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # Fixtures

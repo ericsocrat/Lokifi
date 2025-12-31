@@ -41,7 +41,7 @@ class HuggingFaceProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Stream chat completion from Hugging Face."""
 
         if not self.api_key:
@@ -140,7 +140,7 @@ class HuggingFaceProvider(AIProvider):
 
     async def _simulate_streaming(
         self, full_text: str, chunk_id: str, model: str, messages: list[AIMessage]
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Simulate streaming by chunking the response."""
         words = full_text.split()
 
@@ -172,7 +172,7 @@ class HuggingFaceProvider(AIProvider):
 
     async def _fallback_non_streaming(
         self, model: str, payload: dict, messages: list[AIMessage]
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Fallback to non-streaming request when model is loading."""
         try:
             response = await self.client.post(f"{self.base_url}/{model}", json=payload)

@@ -4,9 +4,6 @@ __all__ = ["router"]
 
 from datetime import datetime, timedelta, timezone
 
-from app.core.config import get_settings
-from app.db.db import get_session, init_db
-from app.db.models import User
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi import APIRouter, Header, HTTPException
@@ -14,6 +11,10 @@ from jose import JWTError, jwt
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
+from app.core.config import get_settings
+from app.db.db import get_session, init_db
+from app.db.models import User
 
 router = APIRouter()
 init_db()

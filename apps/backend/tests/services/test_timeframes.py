@@ -120,7 +120,7 @@ class TestNormalize:
     # Canonical verification
     def test_canonical_constant(self):
         """Test CANONICAL constant contains expected values"""
-        assert CANONICAL == {"1m", "5m", "15m", "1h", "4h", "1d"}
+        assert {"1m", "5m", "15m", "1h", "4h", "1d"} == CANONICAL
 
 
 # ============================================================================
@@ -224,9 +224,9 @@ class TestTimeframesIntegration:
         for alias, expected_seconds in test_cases:
             canonical = normalize(alias)
             assert canonical in CANONICAL, f"{alias} normalized to {canonical} not in CANONICAL"
-            assert (
-                seconds(alias) == expected_seconds
-            ), f"{alias} → {canonical} → {seconds(alias)} != {expected_seconds}"
+            assert seconds(alias) == expected_seconds, (
+                f"{alias} → {canonical} → {seconds(alias)} != {expected_seconds}"
+            )
 
     def test_normalize_then_seconds_consistency(self):
         """Test that normalize → seconds is consistent"""

@@ -2,9 +2,10 @@ import logging
 import random
 import time
 
+from fastapi import APIRouter, Query
+
 from app.db.schemas.market import OHLCResponse, Timeframe
 from app.services.data_service import ohlc_aggregator
-from fastapi import APIRouter, Query
 
 logger = logging.getLogger(__name__)
 

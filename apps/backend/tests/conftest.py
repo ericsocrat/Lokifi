@@ -41,7 +41,7 @@ def mock_db_session():
 async def async_mock_db_session():
     """
     Mock database session for async tests (pytest 9.x compatible).
-    
+
     Use this fixture for tests decorated with @pytest.mark.asyncio
     that need a mock database session.
     """
@@ -110,7 +110,7 @@ def sample_user_login_request():
 
 
 @pytest_asyncio.fixture(scope="function")
-async def integration_db_session() -> AsyncGenerator[AsyncSession, None]:
+async def integration_db_session() -> AsyncGenerator[AsyncSession]:
     """
     Real database session for integration tests with transaction rollback.
 

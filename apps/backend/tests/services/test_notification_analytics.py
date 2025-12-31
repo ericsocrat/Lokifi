@@ -9,6 +9,7 @@ from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+
 from app.services.notification_analytics import (
     NotificationAnalytics,
     NotificationMetrics,
@@ -720,7 +721,11 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good" if overall_score >= 75 else "fair" if overall_score >= 50 else "poor"
+            else "good"
+            if overall_score >= 75
+            else "fair"
+            if overall_score >= 50
+            else "poor"
         )
         assert status == "excellent"
 
@@ -730,7 +735,11 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good" if overall_score >= 75 else "fair" if overall_score >= 50 else "poor"
+            else "good"
+            if overall_score >= 75
+            else "fair"
+            if overall_score >= 50
+            else "poor"
         )
         assert status == "good"
 
@@ -740,7 +749,11 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good" if overall_score >= 75 else "fair" if overall_score >= 50 else "poor"
+            else "good"
+            if overall_score >= 75
+            else "fair"
+            if overall_score >= 50
+            else "poor"
         )
         assert status == "fair"
 
@@ -750,6 +763,10 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good" if overall_score >= 75 else "fair" if overall_score >= 50 else "poor"
+            else "good"
+            if overall_score >= 75
+            else "fair"
+            if overall_score >= 50
+            else "poor"
         )
         assert status == "poor"

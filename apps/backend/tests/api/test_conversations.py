@@ -140,6 +140,7 @@ def sample_message():
 def sample_message_create():
     """Sample MessageCreate request"""
     from app.models.conversation import ContentType
+
     return MessageCreate(content="New test message", content_type=ContentType.TEXT)
 
 
@@ -247,7 +248,11 @@ class TestDMConversationManagement:
         """✅ Test: Handle conversation not found (404)"""
         mock_service = MagicMock()
         conversation_list = ConversationListResponse(
-            conversations=[], page=1, page_size=100, total=0, has_next=False  # Added required field
+            conversations=[],
+            page=1,
+            page_size=100,
+            total=0,
+            has_next=False,  # Added required field
         )
         mock_service.get_user_conversations = AsyncMock(return_value=conversation_list)
         mock_service_class.return_value = mock_service
@@ -730,7 +735,11 @@ class TestEdgeCases:
         """✅ Test: Get conversations with no results"""
         mock_service = MagicMock()
         conversation_list = ConversationListResponse(
-            conversations=[], page=1, page_size=20, total=0, has_next=False  # Added required field
+            conversations=[],
+            page=1,
+            page_size=20,
+            total=0,
+            has_next=False,  # Added required field
         )
         mock_service.get_user_conversations = AsyncMock(return_value=conversation_list)
         mock_service_class.return_value = mock_service

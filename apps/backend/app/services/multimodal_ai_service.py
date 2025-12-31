@@ -27,8 +27,7 @@ except ImportError:
 
 
 from app.db.db import get_session
-from app.services.ai_provider import AIMessage as AIProviderMessage
-from app.services.ai_provider import MessageRole
+from app.services.ai_provider import AIMessage as AIProviderMessage, MessageRole
 from app.services.ai_provider_manager import ai_provider_manager
 from app.services.ai_service import StreamChunk
 
@@ -101,7 +100,7 @@ class MultiModalAIService:
 
     async def analyze_image_with_ai(
         self, image_data: bytes, user_prompt: str, user_id: int, thread_id: int
-    ) -> AsyncGenerator[StreamChunk | str, None]:
+    ) -> AsyncGenerator[StreamChunk | str]:
         """Analyze image using AI with user prompt."""
 
         try:
@@ -148,7 +147,7 @@ class MultiModalAIService:
 
     async def analyze_document_with_ai(
         self, document_text: str, user_prompt: str, filename: str, user_id: int, thread_id: int
-    ) -> AsyncGenerator[StreamChunk | str, None]:
+    ) -> AsyncGenerator[StreamChunk | str]:
         """Analyze document content using AI."""
 
         try:

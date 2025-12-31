@@ -133,9 +133,7 @@ class TestJWTTokenCreation:
         # Should match JWT_EXPIRE_MINUTES setting
         expected_minutes = settings.JWT_EXPIRE_MINUTES
         delta = exp - iat
-        assert (
-            expected_minutes - 1 <= delta.total_seconds() / 60 <= expected_minutes + 1
-        )
+        assert expected_minutes - 1 <= delta.total_seconds() / 60 <= expected_minutes + 1
 
     def test_create_jwt_token_includes_claims(self):
         """Token should include all provided claims"""
@@ -300,12 +298,8 @@ class TestRefreshTokenCreation:
         refresh_token = create_refresh_token(user_id)
 
         jwt_secret = settings.get_jwt_secret()
-        access_decoded = jwt.decode(
-            access_token, jwt_secret, algorithms=[settings.JWT_ALGORITHM]
-        )
-        refresh_decoded = jwt.decode(
-            refresh_token, jwt_secret, algorithms=[settings.JWT_ALGORITHM]
-        )
+        access_decoded = jwt.decode(access_token, jwt_secret, algorithms=[settings.JWT_ALGORITHM])
+        refresh_decoded = jwt.decode(refresh_token, jwt_secret, algorithms=[settings.JWT_ALGORITHM])
 
         access_exp = datetime.fromtimestamp(access_decoded["exp"], timezone.utc)
         refresh_exp = datetime.fromtimestamp(refresh_decoded["exp"], timezone.utc)

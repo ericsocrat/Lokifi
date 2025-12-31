@@ -4,7 +4,6 @@ import re
 from collections.abc import AsyncGenerator
 from typing import Optional
 
-from app.core.config import Settings, settings
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -13,6 +12,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.pool import StaticPool
+
+from app.core.config import Settings, settings
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +133,7 @@ class DatabaseManager:
                 logger.warning(f"⚠️ Replica database connection failed: {e}")
                 # Don't raise for replica failures - fall back to primary
 
-    async def get_session(self, read_only: bool = False) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(self, read_only: bool = False) -> AsyncGenerator[AsyncSession]:
         """Get database session - uses replica for read-only queries when available"""
         if not self._initialized:
             await self.initialize()
@@ -157,7 +158,7 @@ class DatabaseManager:
             finally:
                 await session.close()
 
-    async def get_primary_session(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_primary_session(self) -> AsyncGenerator[AsyncSession]:
         """Get primary database session (always read/write)"""
         async for session in self.get_session(read_only=False):
             yield session
@@ -173,7 +174,7 @@ class DatabaseManager:
         else:
             return self.primary_engine
 
-    async def get_replica_session(self) -> AsyncGenerator[AsyncSession, None]:
+    async def get_replica_session(self) -> AsyncGenerator[AsyncSession]:
         """Get replica database session (read-only)"""
         async for session in self.get_session(read_only=True):
             yield session
@@ -219,26 +220,26 @@ db_manager = DatabaseManager(settings)
 
 
 # Dependency for FastAPI
-async def get_db_session(read_only: bool = False) -> AsyncGenerator[AsyncSession, None]:
+async def get_db_session(read_only: bool = False) -> AsyncGenerator[AsyncSession]:
     """FastAPI dependency for database sessions"""
     async for session in db_manager.get_session(read_only=read_only):
         yield session
 
 
-async def get_db_primary() -> AsyncGenerator[AsyncSession, None]:
+async def get_db_primary() -> AsyncGenerator[AsyncSession]:
     """FastAPI dependency for primary database session"""
     async for session in db_manager.get_primary_session():
         yield session
 
 
-async def get_db_replica() -> AsyncGenerator[AsyncSession, None]:
+async def get_db_replica() -> AsyncGenerator[AsyncSession]:
     """FastAPI dependency for replica database session"""
     async for session in db_manager.get_replica_session():
         yield session
 
 
 # Legacy compatibility
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db() -> AsyncGenerator[AsyncSession]:
     """Legacy database dependency"""
     async for session in get_db_session():
         yield session

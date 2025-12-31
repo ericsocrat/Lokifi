@@ -7,8 +7,10 @@ Success Criteria: 80%+ coverage, 100% pass rate
 
 import json
 from unittest.mock import AsyncMock, MagicMock, patch
+
 import httpx
 import pytest
+
 from app.services.indices_service import IndicesService
 
 
@@ -64,7 +66,9 @@ class TestCacheOperations:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(
+            service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = [{"symbol": "SPX"}]
             result = await service.get_indices(limit=5)
             assert len(result) > 0
@@ -96,8 +100,12 @@ class TestProviderCascade:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av, \
-             patch.object(service, "_fetch_from_yahoo_finance", new_callable=AsyncMock) as mock_yahoo:
+        with (
+            patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av,
+            patch.object(
+                service, "_fetch_from_yahoo_finance", new_callable=AsyncMock
+            ) as mock_yahoo,
+        ):
             mock_av.return_value = []
             mock_yahoo.return_value = [{"provider": "yahoo_finance"}]
             result = await service.get_indices(limit=5)
@@ -112,8 +120,12 @@ class TestProviderCascade:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av, \
-             patch.object(service, "_fetch_from_yahoo_finance", new_callable=AsyncMock) as mock_yahoo:
+        with (
+            patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av,
+            patch.object(
+                service, "_fetch_from_yahoo_finance", new_callable=AsyncMock
+            ) as mock_yahoo,
+        ):
             mock_av.return_value = []
             mock_yahoo.return_value = []
             result = await service.get_indices(limit=5)
@@ -514,7 +526,9 @@ class TestEdgeCasesAndErrors:
 
         with patch("app.services.indices_service.settings") as mock_settings:
             mock_settings.ALPHAVANTAGE_KEY = None
-            with patch.object(service, "_fetch_from_yahoo_finance", new_callable=AsyncMock) as mock_yahoo:
+            with patch.object(
+                service, "_fetch_from_yahoo_finance", new_callable=AsyncMock
+            ) as mock_yahoo:
                 mock_yahoo.return_value = [{"symbol": "SPX", "provider": "yahoo_finance"}]
                 result = await service.get_indices(limit=1)
 

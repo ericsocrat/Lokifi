@@ -13,8 +13,7 @@ from typing import Any
 
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool
-from redis.exceptions import ConnectionError as RedisConnectionError
-from redis.exceptions import RedisError
+from redis.exceptions import ConnectionError as RedisConnectionError, RedisError
 
 from app.core.config import settings
 

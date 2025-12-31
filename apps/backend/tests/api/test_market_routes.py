@@ -7,9 +7,10 @@ Tests the /market endpoints including health check and OHLC data fetching.
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from fastapi import HTTPException
+
 from app.api.routes.market import get_ohlc, health
 from app.services.errors import NotFoundError, ProviderError
-from fastapi import HTTPException
 
 # ============================================================================
 # HEALTH ENDPOINT TESTS

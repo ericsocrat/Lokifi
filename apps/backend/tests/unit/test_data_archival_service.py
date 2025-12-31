@@ -14,13 +14,14 @@ from unittest.mock import AsyncMock, MagicMock, call, patch
 
 import pytest
 import pytest_asyncio
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import Settings
 from app.services.data_archival_service import (
     ArchivalStats,
     DataArchivalService,
     StorageMetrics,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # ============================================================================
 # FIXTURES
@@ -517,25 +518,27 @@ class TestFullMaintenance:
         mock_archive_stats = ArchivalStats(messages_archived=1000, operation_duration=5.0)
         mock_metrics = StorageMetrics(total_size_mb=100.0, total_messages=50000)
 
-        with patch.object(
-            archival_service,
-            "archive_old_conversations",
-            new=AsyncMock(return_value=mock_archive_stats),
+        with (
+            patch.object(
+                archival_service,
+                "archive_old_conversations",
+                new=AsyncMock(return_value=mock_archive_stats),
+            ),
+            patch.object(archival_service, "vacuum_database", new=AsyncMock()),
+            patch.object(
+                archival_service,
+                "get_storage_metrics",
+                new=AsyncMock(return_value=mock_metrics),
+            ),
         ):
-            with patch.object(archival_service, "vacuum_database", new=AsyncMock()):
-                with patch.object(
-                    archival_service,
-                    "get_storage_metrics",
-                    new=AsyncMock(return_value=mock_metrics),
-                ):
-                    with caplog.at_level(logging.INFO):
-                        results = await archival_service.run_full_maintenance()
+            with caplog.at_level(logging.INFO):
+                results = await archival_service.run_full_maintenance()
 
-                    assert "archive" in results
-                    assert results["archive"].messages_archived == 1000
-                    assert "🧹 Starting maintenance cycle" in caplog.text
-                    assert "🎉 Maintenance completed!" in caplog.text
-                    assert "100.00MB" in caplog.text
+            assert "archive" in results
+            assert results["archive"].messages_archived == 1000
+            assert "🧹 Starting maintenance cycle" in caplog.text
+            assert "🎉 Maintenance completed!" in caplog.text
+            assert "100.00MB" in caplog.text
 
     @pytest.mark.asyncio
     async def test_run_full_maintenance_archive_error(
@@ -560,21 +563,23 @@ class TestFullMaintenance:
         """Test full maintenance when vacuum fails"""
         mock_archive_stats = ArchivalStats(messages_archived=500)
 
-        with patch.object(
-            archival_service,
-            "archive_old_conversations",
-            new=AsyncMock(return_value=mock_archive_stats),
-        ):
-            with patch.object(
+        with (
+            patch.object(
+                archival_service,
+                "archive_old_conversations",
+                new=AsyncMock(return_value=mock_archive_stats),
+            ),
+            patch.object(
                 archival_service,
                 "vacuum_database",
                 new=AsyncMock(side_effect=Exception("VACUUM failed")),
-            ):
-                with caplog.at_level(logging.ERROR):
-                    with pytest.raises(Exception, match="VACUUM failed"):
-                        await archival_service.run_full_maintenance()
+            ),
+        ):
+            with caplog.at_level(logging.ERROR):
+                with pytest.raises(Exception, match="VACUUM failed"):
+                    await archival_service.run_full_maintenance()
 
-                assert "Error during maintenance" in caplog.text
+            assert "Error during maintenance" in caplog.text
 
 
 # ============================================================================
@@ -618,26 +623,28 @@ class TestDataArchivalEdgeCases:
         mock_archive_stats = ArchivalStats(messages_archived=100)
         mock_metrics = StorageMetrics(total_size_mb=50.0)
 
-        with patch.object(
-            archival_service,
-            "archive_old_conversations",
-            new=AsyncMock(return_value=mock_archive_stats),
+        with (
+            patch.object(
+                archival_service,
+                "archive_old_conversations",
+                new=AsyncMock(return_value=mock_archive_stats),
+            ),
+            patch.object(archival_service, "vacuum_database", new=AsyncMock()),
+            patch.object(
+                archival_service,
+                "get_storage_metrics",
+                new=AsyncMock(return_value=mock_metrics),
+            ),
         ):
-            with patch.object(archival_service, "vacuum_database", new=AsyncMock()):
-                with patch.object(
-                    archival_service,
-                    "get_storage_metrics",
-                    new=AsyncMock(return_value=mock_metrics),
-                ):
-                    # Run two maintenance operations concurrently
-                    results = await asyncio.gather(
-                        archival_service.run_full_maintenance(),
-                        archival_service.run_full_maintenance(),
-                    )
+            # Run two maintenance operations concurrently
+            results = await asyncio.gather(
+                archival_service.run_full_maintenance(),
+                archival_service.run_full_maintenance(),
+            )
 
-                    # Both should complete successfully
-                    assert len(results) == 2
-                    assert all("archive" in result for result in results)
+            # Both should complete successfully
+            assert len(results) == 2
+            assert all("archive" in result for result in results)
 
     @pytest.mark.asyncio
     async def test_large_batch_archival(

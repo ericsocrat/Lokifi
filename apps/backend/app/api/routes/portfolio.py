@@ -19,8 +19,7 @@ from app.services.auth import require_handle
 
 # Optional alerts integration
 try:
-    from app.services.alerts import Alert as AlertModel
-    from app.services.alerts import store as alerts_store
+    from app.services.alerts import Alert as AlertModel, store as alerts_store
 
     ALERTS_AVAILABLE = True
 except Exception:

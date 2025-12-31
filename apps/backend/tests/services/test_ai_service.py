@@ -287,9 +287,10 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_create_thread_with_title(self, ai_service):
         """Test creating thread with custom title"""
-        with patch("app.services.ai_service.AIThread") as mock_thread_class, patch(
-            "app.services.ai_service.get_session"
-        ) as mock_get_session:
+        with (
+            patch("app.services.ai_service.AIThread") as mock_thread_class,
+            patch("app.services.ai_service.get_session") as mock_get_session,
+        ):
             mock_db = MagicMock()
             mock_session_ctx = MagicMock()
             mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
@@ -311,9 +312,10 @@ class TestAIService:
     @pytest.mark.asyncio
     async def test_create_thread_auto_title(self, ai_service):
         """Test creating thread with auto-generated title"""
-        with patch("app.services.ai_service.AIThread") as mock_thread_class, patch(
-            "app.services.ai_service.get_session"
-        ) as mock_get_session:
+        with (
+            patch("app.services.ai_service.AIThread") as mock_thread_class,
+            patch("app.services.ai_service.get_session") as mock_get_session,
+        ):
             mock_db = MagicMock()
             mock_session_ctx = MagicMock()
             mock_session_ctx.__enter__ = MagicMock(return_value=mock_db)
@@ -377,12 +379,11 @@ class TestSendMessageCoreFlow:
             ]
 
             # Mock AI provider
-            with patch("app.services.ai_service.get_ai_provider") as mock_get_provider, patch(
-                "app.services.ai_service.moderate_ai_input"
-            ) as mock_moderate_input, patch(
-                "app.services.ai_service.moderate_ai_output"
-            ) as mock_moderate_output:
-
+            with (
+                patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
+                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
+                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+            ):
                 # Setup moderation (allow)
                 mock_mod_result = MagicMock()
                 mock_mod_result.level = MagicMock()
@@ -469,10 +470,10 @@ class TestSendMessageCoreFlow:
         thread_id = 999
         message = "Hello!"
 
-        with patch("app.services.ai_service.get_session") as mock_get_session, patch(
-            "app.services.ai_service.moderate_ai_input"
-        ) as mock_moderate:
-
+        with (
+            patch("app.services.ai_service.get_session") as mock_get_session,
+            patch("app.services.ai_service.moderate_ai_input") as mock_moderate,
+        ):
             # Setup moderation (allow)
             mock_mod_result = MagicMock()
             from app.services.content_moderation import ModerationLevel
@@ -501,10 +502,10 @@ class TestSendMessageCoreFlow:
         thread_id = 1
         message = "Hello!"
 
-        with patch("app.services.ai_service.get_session") as mock_get_session, patch(
-            "app.services.ai_service.moderate_ai_input"
-        ) as mock_moderate:
-
+        with (
+            patch("app.services.ai_service.get_session") as mock_get_session,
+            patch("app.services.ai_service.moderate_ai_input") as mock_moderate,
+        ):
             # Setup moderation (allow)
             mock_mod_result = MagicMock()
             from app.services.content_moderation import ModerationLevel
@@ -570,12 +571,11 @@ class TestSendMessageCoreFlow:
             ]
 
             # Mock AI provider
-            with patch("app.services.ai_service.get_ai_provider") as mock_get_provider, patch(
-                "app.services.ai_service.moderate_ai_input"
-            ) as mock_moderate_input, patch(
-                "app.services.ai_service.moderate_ai_output"
-            ) as mock_moderate_output:
-
+            with (
+                patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
+                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
+                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+            ):
                 # Setup moderation
                 mock_mod_result = MagicMock()
                 from app.services.content_moderation import ModerationLevel
@@ -635,15 +635,13 @@ class TestSendMessageCoreFlow:
             mock_db.query.return_value.filter.return_value.count.return_value = 5
 
             # Mock empty message history
-            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
 
             # Mock provider to raise error
-            with patch("app.services.ai_service.get_ai_provider") as mock_get_provider, patch(
-                "app.services.ai_service.moderate_ai_input"
-            ) as mock_moderate:
-
+            with (
+                patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
+                patch("app.services.ai_service.moderate_ai_input") as mock_moderate,
+            ):
                 # Setup moderation
                 mock_mod_result = MagicMock()
                 from app.services.content_moderation import ModerationLevel
@@ -682,17 +680,14 @@ class TestSendMessageCoreFlow:
             mock_db.query.return_value.filter.return_value.count.return_value = 5
 
             # Mock empty message history
-            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
 
             # Mock AI provider
-            with patch("app.services.ai_service.get_ai_provider") as mock_get_provider, patch(
-                "app.services.ai_service.moderate_ai_input"
-            ) as mock_moderate_input, patch(
-                "app.services.ai_service.moderate_ai_output"
-            ) as mock_moderate_output:
-
+            with (
+                patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
+                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
+                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+            ):
                 # Setup moderation
                 mock_mod_result = MagicMock()
                 from app.services.content_moderation import ModerationLevel
@@ -761,17 +756,14 @@ class TestSendMessageCoreFlow:
             mock_db.query.return_value.filter.return_value.count.return_value = 5
 
             # Mock empty message history
-            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
-                []
-            )
+            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
 
             # Mock AI provider
-            with patch("app.services.ai_service.get_ai_provider") as mock_get_provider, patch(
-                "app.services.ai_service.moderate_ai_input"
-            ) as mock_moderate_input, patch(
-                "app.services.ai_service.moderate_ai_output"
-            ) as mock_moderate_output:
-
+            with (
+                patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
+                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
+                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+            ):
                 # Input moderation allows
                 mock_input_mod = MagicMock()
                 from app.services.content_moderation import ModerationLevel

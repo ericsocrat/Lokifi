@@ -324,6 +324,4 @@ class TestRealWorldUsage:
         perf_logger = get_logger("app.performance")
 
         # Use extra dict for custom fields
-        perf_logger.info(
-            "Query executed", extra={"duration_ms": 45.2, "query_type": "SELECT"}
-        )
+        perf_logger.info("Query executed", extra={"duration_ms": 45.2, "query_type": "SELECT"})

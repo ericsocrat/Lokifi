@@ -24,9 +24,7 @@ async def test_health():
             resp = await client.get(f"{API_BASE}/prices/health")
             data = resp.json()
             print(f"✅ Health: {data['status']}")
-            print(
-                f"   Redis: {'✅ Connected' if data['redis_connected'] else '❌ Not Connected'}"
-            )
+            print(f"   Redis: {'✅ Connected' if data['redis_connected'] else '❌ Not Connected'}")
             print(f"   Providers: {', '.join(data['providers'])}")
             return True
         except Exception as e:
@@ -68,9 +66,7 @@ async def test_historical_data():
     async with httpx.AsyncClient(timeout=30.0) as client:
         for symbol, period in test_cases:
             try:
-                resp = await client.get(
-                    f"{API_BASE}/prices/{symbol}/history?period={period}"
-                )
+                resp = await client.get(f"{API_BASE}/prices/{symbol}/history?period={period}")
                 data = resp.json()
                 print(f"✅ {symbol} {period} history: {data['count']} data points")
                 if data["count"] > 0:
@@ -79,9 +75,7 @@ async def test_historical_data():
                     first_date = datetime.fromtimestamp(first["timestamp"]).strftime(
                         "%Y-%m-%d %H:%M"
                     )
-                    last_date = datetime.fromtimestamp(last["timestamp"]).strftime(
-                        "%Y-%m-%d %H:%M"
-                    )
+                    last_date = datetime.fromtimestamp(last["timestamp"]).strftime("%Y-%m-%d %H:%M")
                     print(f"   First: ${first['price']:,.2f} ({first_date})")
                     print(f"   Last:  ${last['price']:,.2f} ({last_date})")
             except Exception as e:
@@ -100,9 +94,7 @@ async def test_ohlcv_data():
     async with httpx.AsyncClient(timeout=30.0) as client:
         for symbol, period in test_cases:
             try:
-                resp = await client.get(
-                    f"{API_BASE}/prices/{symbol}/ohlcv?period={period}"
-                )
+                resp = await client.get(f"{API_BASE}/prices/{symbol}/ohlcv?period={period}")
                 data = resp.json()
                 print(f"✅ {symbol} {period} OHLCV: {data['count']} candles")
                 if data["count"] > 0:
@@ -168,14 +160,10 @@ async def test_batch_prices():
 
     async with httpx.AsyncClient() as client:
         try:
-            resp = await client.post(
-                f"{API_BASE}/prices/batch", json={"symbols": symbols}
-            )
+            resp = await client.post(f"{API_BASE}/prices/batch", json={"symbols": symbols})
             data = resp.json()
             print(f"✅ Batch request: {len(data['data'])} prices fetched")
-            print(
-                f"   Cache hits: {data['cache_hits']}, API calls: {data['api_calls']}"
-            )
+            print(f"   Cache hits: {data['cache_hits']}, API calls: {data['api_calls']}")
             for symbol, price_data in list(data["data"].items())[:3]:
                 print(f"   {symbol}: ${price_data['price']:,.2f}")
         except Exception as e:

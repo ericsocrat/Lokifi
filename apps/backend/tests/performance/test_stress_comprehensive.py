@@ -580,7 +580,9 @@ class AdvancedStressTester:
                 "memory_efficiency": (
                     "Good"
                     if avg_memory_growth < 10
-                    else "Needs Review" if avg_memory_growth < 50 else "Poor"
+                    else "Needs Review"
+                    if avg_memory_growth < 50
+                    else "Poor"
                 ),
             },
             "detailed_results": [asdict(result) for result in self.results],

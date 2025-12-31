@@ -429,7 +429,11 @@ class NotificationAnalytics:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good" if overall_score >= 75 else "fair" if overall_score >= 50 else "poor"
+            else "good"
+            if overall_score >= 75
+            else "fair"
+            if overall_score >= 50
+            else "poor"
         )
 
         return {

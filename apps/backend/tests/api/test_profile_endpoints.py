@@ -9,9 +9,7 @@ BASE_URL = "http://localhost:8000"
 
 
 @pytest.mark.integration
-@pytest.mark.skip(
-    reason="Requires live server - run manually or in integration test suite"
-)
+@pytest.mark.skip(reason="Requires live server - run manually or in integration test suite")
 def test_profile_endpoints():
     print("🧪 Testing Phase J2 Profile & Settings Endpoints")
     print("=" * 60)
@@ -66,9 +64,7 @@ def test_profile_endpoints():
         "is_public": True,
     }
 
-    response = requests.put(
-        f"{BASE_URL}/api/profile/me", json=profile_update, cookies=cookies
-    )
+    response = requests.put(f"{BASE_URL}/api/profile/me", json=profile_update, cookies=cookies)
     if response.status_code == 200:
         updated_profile = response.json()
         print("✅ Profile update successful")
@@ -108,15 +104,11 @@ def test_profile_endpoints():
         print(f"   Updated Timezone: {updated_settings['timezone']}")
         print(f"   Updated Language: {updated_settings['language']}")
     else:
-        print(
-            f"❌ User settings update failed: {response.status_code} - {response.text}"
-        )
+        print(f"❌ User settings update failed: {response.status_code} - {response.text}")
 
     # Step 6: Get notification preferences
     print("\n🔔 Step 6: Get notification preferences...")
-    response = requests.get(
-        f"{BASE_URL}/api/profile/settings/notifications", cookies=cookies
-    )
+    response = requests.get(f"{BASE_URL}/api/profile/settings/notifications", cookies=cookies)
     if response.status_code == 200:
         notif_prefs = response.json()
         print("✅ Get notification preferences successful")
@@ -124,9 +116,7 @@ def test_profile_endpoints():
         print(f"   Email Follows: {notif_prefs['email_follows']}")
         print(f"   Push Enabled: {notif_prefs['push_enabled']}")
     else:
-        print(
-            f"❌ Get notification preferences failed: {response.status_code} - {response.text}"
-        )
+        print(f"❌ Get notification preferences failed: {response.status_code} - {response.text}")
 
     # Step 7: Update notification preferences
     print("\n🔔 Step 7: Update notification preferences...")
@@ -174,9 +164,7 @@ def test_profile_endpoints():
         print(f"   Username: {profile_by_username['username']}")
         print(f"   Display Name: {profile_by_username['display_name']}")
     else:
-        print(
-            f"❌ Get profile by username failed: {response.status_code} - {response.text}"
-        )
+        print(f"❌ Get profile by username failed: {response.status_code} - {response.text}")
 
     # Step 10: Search profiles
     print("\n🔍 Step 10: Search profiles...")

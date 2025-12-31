@@ -43,7 +43,7 @@ class OpenRouterProvider(AIProvider):
 
     async def stream_chat(
         self, messages: list[AIMessage], options: StreamOptions = StreamOptions()
-    ) -> AsyncGenerator[StreamChunk, None]:
+    ) -> AsyncGenerator[StreamChunk]:
         """Stream chat completion from OpenRouter."""
 
         if not self.api_key:

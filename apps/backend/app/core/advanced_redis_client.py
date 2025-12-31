@@ -18,8 +18,7 @@ from typing import Any
 import redis.asyncio as redis
 from redis.asyncio import ConnectionPool, Sentinel
 from redis.backoff import ExponentialBackoff
-from redis.exceptions import ConnectionError as RedisConnectionError
-from redis.exceptions import RedisError
+from redis.exceptions import ConnectionError as RedisConnectionError, RedisError
 from redis.retry import Retry
 
 from app.core.config import settings

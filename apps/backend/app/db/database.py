@@ -48,7 +48,7 @@ AsyncSessionLocal = async_sessionmaker(
 # Base = declarative_base()  # Commented out - using app.core.database.Base
 
 
-async def get_db() -> AsyncGenerator[AsyncSession, None]:
+async def get_db() -> AsyncGenerator[AsyncSession]:
     """FastAPI dependency yielding an AsyncSession with proper rollback/close semantics."""
     async with AsyncSessionLocal() as session:
         try:
@@ -58,7 +58,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             raise
 
 
-async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_db_session() -> AsyncGenerator[AsyncSession]:
     """Alias dependency maintained for backward compatibility."""
     async for sess in get_db():
         yield sess

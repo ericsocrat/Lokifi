@@ -261,7 +261,7 @@ class AIService:
         message: str,
         provider_name: str | None = None,
         model: str | None = None,
-    ) -> AsyncGenerator[StreamChunk | AIMessage, None]:
+    ) -> AsyncGenerator[StreamChunk | AIMessage]:
         """
         Send a message and stream the AI response.
 
@@ -329,8 +329,11 @@ class AIService:
             )
 
             # Convert to AI provider format
-            from app.services.ai_provider import AIMessage as AIProviderMessage
-            from app.services.ai_provider import MessageRole, StreamOptions
+            from app.services.ai_provider import (
+                AIMessage as AIProviderMessage,
+                MessageRole,
+                StreamOptions,
+            )
 
             conversation_history = []
             for msg in reversed(recent_messages):
