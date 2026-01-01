@@ -11,7 +11,7 @@
  * @module tests/unit/stores/drawStore.test
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock symbolStore and timeframeStore before importing drawStore
 vi.mock('@/lib/stores/symbolStore', () => ({
@@ -46,7 +46,13 @@ const localStorageMock = (() => {
 Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });
 
 // Import after mocks
-import { drawStore, type Tool, type Shape, type Point, type DrawState } from '@/lib/stores/drawStore';
+import {
+  drawStore,
+  type DrawState,
+  type Point,
+  type Shape,
+  type Tool,
+} from '@/lib/stores/drawStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
 
@@ -408,7 +414,7 @@ describe('drawStore', () => {
         const shape: Shape = { id: 'hline1', type: 'hline', y: 100 };
         drawStore.addShape(shape);
 
-        drawStore.updateShape('hline1', (s) => ({ ...s, y: 200 } as Shape));
+        drawStore.updateShape('hline1', (s) => ({ ...s, y: 200 }) as Shape);
 
         const updated = drawStore.get().shapes.find((s) => s.id === 'hline1');
         expect(updated).toBeDefined();
@@ -429,7 +435,7 @@ describe('drawStore', () => {
         drawStore.addShape(shape);
         localStorageMock.setItem.mockClear();
 
-        drawStore.updateShape('hline1', (s) => ({ ...s, y: 200 } as Shape));
+        drawStore.updateShape('hline1', (s) => ({ ...s, y: 200 }) as Shape);
 
         expect(localStorageMock.setItem).toHaveBeenCalled();
       });
@@ -601,10 +607,7 @@ describe('drawStore', () => {
 
         drawStore.clear();
 
-        expect(localStorageMock.setItem).toHaveBeenCalledWith(
-          'lokifi.drawings.BTCUSD.1h',
-          '[]'
-        );
+        expect(localStorageMock.setItem).toHaveBeenCalledWith('lokifi.drawings.BTCUSD.1h', '[]');
       });
     });
   });
@@ -634,14 +637,14 @@ describe('drawStore', () => {
       // Add a shape then undo it to exhaust the stack for this shape
       drawStore.addShape({ id: 'exhaustTest', type: 'hline', y: 999 });
       drawStore.undo(); // Back to state before 'exhaustTest'
-      
+
       // Try to undo again - should have no more items for 'exhaustTest'
       const beforeState = JSON.stringify(drawStore.get());
       drawStore.undo(); // May undo from previous tests or do nothing
-      
+
       // The key is that repeated undos eventually stop changing state
       // or they restore to some known state - either is valid behavior
-      expect(drawStore.get().shapes.find(s => s.id === 'exhaustTest')).toBeUndefined();
+      expect(drawStore.get().shapes.find((s) => s.id === 'exhaustTest')).toBeUndefined();
     });
 
     it('should do nothing when redo stack is empty', () => {
@@ -693,7 +696,7 @@ describe('drawStore', () => {
 
     it('should undo updateShape', () => {
       drawStore.addShape({ id: 'shape1', type: 'hline', y: 100 });
-      drawStore.updateShape('shape1', (s) => ({ ...s, y: 200 } as Shape));
+      drawStore.updateShape('shape1', (s) => ({ ...s, y: 200 }) as Shape);
 
       drawStore.undo();
 
@@ -750,14 +753,14 @@ describe('drawStore', () => {
     it('should persist shapes as JSON', () => {
       // Clear mock to only track calls from this test
       localStorageMock.setItem.mockClear();
-      
+
       const shape: Shape = { id: 'persistTest', type: 'hline', y: 100 };
       drawStore.addShape(shape);
 
       // Get the most recent setItem call for our shape
       const calls = localStorageMock.setItem.mock.calls;
       expect(calls.length).toBeGreaterThan(0);
-      
+
       const savedData = calls[calls.length - 1][1];
       const parsed = JSON.parse(savedData);
 
@@ -799,9 +802,7 @@ describe('drawStore', () => {
 
         drawStore.loadCurrent();
 
-        expect(localStorageMock.getItem).toHaveBeenCalledWith(
-          'lokifi.drawings.XAUUSD.1D'
-        );
+        expect(localStorageMock.getItem).toHaveBeenCalledWith('lokifi.drawings.XAUUSD.1D');
       });
     });
 
@@ -811,9 +812,7 @@ describe('drawStore', () => {
       });
 
       // Should not throw
-      expect(() =>
-        drawStore.addShape({ id: 'shape1', type: 'hline', y: 100 })
-      ).not.toThrow();
+      expect(() => drawStore.addShape({ id: 'shape1', type: 'hline', y: 100 })).not.toThrow();
     });
   });
 

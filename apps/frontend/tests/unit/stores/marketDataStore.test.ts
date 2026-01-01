@@ -10,9 +10,8 @@
  * @module tests/unit/stores/marketDataStore.test
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { act } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../../mocks/server';
 
 // Mock localStorage
@@ -283,7 +282,7 @@ describe('marketDataStore', () => {
 
     it('should clear error on successful fetch', async () => {
       // First, set an error state and clear cache to force new fetch
-      useMarketDataStore.setState({ 
+      useMarketDataStore.setState({
         error: 'Previous error',
         ohlcData: {},
         lastUpdate: {},
