@@ -1,185 +1,5 @@
 [
   {
-    "timestamp": "2025-10-28T13:05:52.660Z",
-    "coverage": {
-      "statements": 11.741003547896604,
-      "branches": 89.36651583710407,
-      "functions": 86.24161073825503,
-      "lines": 11.741003547896604
-    },
-    "tests": 0,
-    "files": 182,
-    "git": {
-      "branch": "main",
-      "commit": "a08e2de3"
-    }
-  },
-  {
-    "timestamp": "2025-10-28T13:07:01.116Z",
-    "coverage": {
-      "statements": 11.741003547896604,
-      "branches": 89.36651583710407,
-      "functions": 86.24161073825503,
-      "lines": 11.741003547896604
-    },
-    "tests": 0,
-    "files": 182,
-    "git": {
-      "branch": "main",
-      "commit": "a08e2de3"
-    }
-  },
-  {
-    "timestamp": "2025-11-01T17:00:58.980Z",
-    "coverage": {
-      "statements": 11.72233300099701,
-      "branches": 89.36046511627907,
-      "functions": 80.63492063492063,
-      "lines": 11.72233300099701
-    },
-    "tests": 0,
-    "files": 182,
-    "git": {
-      "branch": "main",
-      "commit": "27c5eee2"
-    }
-  },
-  {
-    "timestamp": "2025-11-08T15:39:44.309Z",
-    "coverage": {
-      "statements": 12.010866856088928,
-      "branches": 89.47068867387593,
-      "functions": 80.85443037974683,
-      "lines": 12.010866856088928
-    },
-    "tests": 0,
-    "files": 182,
-    "git": {
-      "branch": "main",
-      "commit": "d81f9e88"
-    }
-  },
-  {
-    "timestamp": "2025-11-08T15:48:20.072Z",
-    "coverage": {
-      "statements": 12.010866856088928,
-      "branches": 89.47068867387593,
-      "functions": 80.85443037974683,
-      "lines": 12.010866856088928
-    },
-    "tests": 0,
-    "files": 182,
-    "git": {
-      "branch": "main",
-      "commit": "d81f9e88"
-    }
-  },
-  {
-    "timestamp": "2025-11-08T17:38:42.584Z",
-    "coverage": {
-      "statements": 12.144439190702535,
-      "branches": 89.64365256124721,
-      "functions": 80.94488188976378,
-      "lines": 12.144439190702535
-    },
-    "tests": 0,
-    "files": 183,
-    "git": {
-      "branch": "main",
-      "commit": "d81f9e88"
-    }
-  },
-  {
-    "timestamp": "2025-11-08T20:28:44.033Z",
-    "coverage": {
-      "statements": 12.516413547060425,
-      "branches": 89.89790435249866,
-      "functions": 81.06416275430361,
-      "lines": 12.516413547060425
-    },
-    "tests": 0,
-    "files": 184,
-    "git": {
-      "branch": "main",
-      "commit": "ab3f2961"
-    }
-  },
-  {
-    "timestamp": "2025-11-09T13:13:18.410Z",
-    "coverage": {
-      "statements": 13.465778256822302,
-      "branches": 90.2619871478003,
-      "functions": 81.49847094801224,
-      "lines": 13.465778256822302
-    },
-    "tests": 0,
-    "files": 187,
-    "git": {
-      "branch": "main",
-      "commit": "ee4589f6"
-    }
-  },
-  {
-    "timestamp": "2025-11-18T16:26:22.192Z",
-    "coverage": {
-      "statements": 14.100978035059871,
-      "branches": 90.33273381294964,
-      "functions": 81.03703703703704,
-      "lines": 14.100978035059871
-    },
-    "tests": 0,
-    "files": 196,
-    "git": {
-      "branch": "main",
-      "commit": "fa622039"
-    }
-  },
-  {
-    "timestamp": "2025-12-28T01:51:34.736Z",
-    "coverage": {
-      "statements": 14.100978035059871,
-      "branches": 90.33273381294964,
-      "functions": 81.03703703703704,
-      "lines": 14.100978035059871
-    },
-    "tests": 0,
-    "files": 196,
-    "git": {
-      "branch": "main",
-      "commit": "e666ae2b"
-    }
-  },
-  {
-    "timestamp": "2025-12-31T18:52:54.098Z",
-    "coverage": {
-      "statements": 17.155201063476238,
-      "branches": 87.68642447418739,
-      "functions": 80.02466091245375,
-      "lines": 17.155201063476238
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "29d0dd91"
-    }
-  },
-  {
-    "timestamp": "2025-12-31T18:54:16.436Z",
-    "coverage": {
-      "statements": 17.155201063476238,
-      "branches": 87.68642447418739,
-      "functions": 80.02466091245375,
-      "lines": 17.155201063476238
-    },
-    "tests": 0,
-    "files": 197,
-    "git": {
-      "branch": "main",
-      "commit": "29d0dd91"
-    }
-  },
-  {
     "timestamp": "2025-12-31T18:55:40.196Z",
     "coverage": {
       "statements": 17.155201063476238,
@@ -447,6 +267,186 @@
     "git": {
       "branch": "main",
       "commit": "1222a71d"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T13:56:16.999Z",
+    "coverage": {
+      "statements": 18.430790365823935,
+      "branches": 87.0435393258427,
+      "functions": 83.94607843137256,
+      "lines": 18.430790365823935
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "ed048125"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T13:57:13.551Z",
+    "coverage": {
+      "statements": 18.430790365823935,
+      "branches": 87.0435393258427,
+      "functions": 83.94607843137256,
+      "lines": 18.430790365823935
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "ed048125"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T14:03:11.218Z",
+    "coverage": {
+      "statements": 19.405729986040637,
+      "branches": 86.53974615898463,
+      "functions": 83.9667458432304,
+      "lines": 19.405729986040637
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "ed048125"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T14:04:08.603Z",
+    "coverage": {
+      "statements": 19.405729986040637,
+      "branches": 86.53974615898463,
+      "functions": 83.9667458432304,
+      "lines": 19.405729986040637
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "ed048125"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T14:10:03.994Z",
+    "coverage": {
+      "statements": 19.405729986040637,
+      "branches": 86.53974615898463,
+      "functions": 83.9667458432304,
+      "lines": 19.405729986040637
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "ed048125"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T14:11:01.549Z",
+    "coverage": {
+      "statements": 19.405729986040637,
+      "branches": 86.53974615898463,
+      "functions": 83.9667458432304,
+      "lines": 19.405729986040637
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "ed048125"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T14:25:42.647Z",
+    "coverage": {
+      "statements": 19.405729986040637,
+      "branches": 86.53974615898463,
+      "functions": 83.9667458432304,
+      "lines": 19.405729986040637
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "238b18de"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T15:02:40.745Z",
+    "coverage": {
+      "statements": 20.061598457822782,
+      "branches": 86.48736228127025,
+      "functions": 83.75870069605568,
+      "lines": 20.061598457822782
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "238b18de"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T15:03:42.769Z",
+    "coverage": {
+      "statements": 20.061598457822782,
+      "branches": 86.48736228127025,
+      "functions": 83.75870069605568,
+      "lines": 20.061598457822782
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "238b18de"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T15:05:09.277Z",
+    "coverage": {
+      "statements": 20.061598457822782,
+      "branches": 86.48736228127025,
+      "functions": 83.75870069605568,
+      "lines": 20.061598457822782
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "238b18de"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T15:08:33.887Z",
+    "coverage": {
+      "statements": 20.074893089007556,
+      "branches": 86.4856126737795,
+      "functions": 83.9907192575406,
+      "lines": 20.074893089007556
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "238b18de"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T15:09:50.413Z",
+    "coverage": {
+      "statements": 20.074893089007556,
+      "branches": 86.4856126737795,
+      "functions": 83.9907192575406,
+      "lines": 20.074893089007556
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "238b18de"
     }
   }
 ]

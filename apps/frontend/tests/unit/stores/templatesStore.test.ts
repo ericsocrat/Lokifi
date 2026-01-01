@@ -1,15 +1,8 @@
 /**
  * @vitest-environment jsdom
  */
-import type {
-  ChartTemplate,
-  ExportOptions,
-  ShareableLink,
-} from '@/lib/stores/templatesStore';
-import {
-  useFilteredTemplates,
-  useTemplatesStore,
-} from '@/lib/stores/templatesStore';
+import type { ChartTemplate, ExportOptions, ShareableLink } from '@/lib/stores/templatesStore';
+import { useTemplatesStore } from '@/lib/stores/templatesStore';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { server } from '../../mocks/server';
 
@@ -480,13 +473,11 @@ describe('TemplatesStore', () => {
       });
 
       it('should set loading state during fetch', async () => {
-        mockFetch.mockImplementationOnce(() =>
-          new Promise((resolve) =>
-            setTimeout(
-              () => resolve({ ok: true, json: async () => [] }),
-              100
+        mockFetch.mockImplementationOnce(
+          () =>
+            new Promise((resolve) =>
+              setTimeout(() => resolve({ ok: true, json: async () => [] }), 100)
             )
-          )
         );
 
         const { loadUserTemplates } = useTemplatesStore.getState();
@@ -709,17 +700,18 @@ describe('TemplatesStore', () => {
       });
 
       it('should set exporting state during export', async () => {
-        mockFetch.mockImplementationOnce(() =>
-          new Promise((resolve) =>
-            setTimeout(
-              () =>
-                resolve({
-                  ok: true,
-                  blob: async () => new Blob(['test']),
-                }),
-              100
+        mockFetch.mockImplementationOnce(
+          () =>
+            new Promise((resolve) =>
+              setTimeout(
+                () =>
+                  resolve({
+                    ok: true,
+                    blob: async () => new Blob(['test']),
+                  }),
+                100
+              )
             )
-          )
         );
 
         const { exportAsImage } = useTemplatesStore.getState();
@@ -975,9 +967,9 @@ describe('TemplatesStore', () => {
 
         const { exportMultipleTemplates } = useTemplatesStore.getState();
 
-        await expect(
-          exportMultipleTemplates(['template_1', 'template_2'])
-        ).rejects.toThrow('Bulk export failed');
+        await expect(exportMultipleTemplates(['template_1', 'template_2'])).rejects.toThrow(
+          'Bulk export failed'
+        );
       });
     });
 
@@ -1143,8 +1135,7 @@ describe('TemplatesStore', () => {
 
         const state = useTemplatesStore.getState();
         const sorted = [...state.templates].sort((a, b) => {
-          const comparison =
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          const comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
           return state.sortOrder === 'desc' ? -comparison : comparison;
         });
 
@@ -1166,8 +1157,7 @@ describe('TemplatesStore', () => {
 
         const state = useTemplatesStore.getState();
         const sorted = [...state.templates].sort((a, b) => {
-          const comparison =
-            new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+          const comparison = new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
           return state.sortOrder === 'desc' ? -comparison : comparison;
         });
 
