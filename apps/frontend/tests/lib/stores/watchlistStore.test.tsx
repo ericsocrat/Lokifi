@@ -427,7 +427,9 @@ describe('WatchlistStore', () => {
         });
 
         expect(result.current.watchlists[0].items).toHaveLength(2);
-        expect(result.current.watchlists[0].items.map((c: { symbol: string }) => c.symbol)).not.toContain('TSLA');
+        expect(
+          result.current.watchlists[0].items.map((c: { symbol: string }) => c.symbol)
+        ).not.toContain('TSLA');
       });
 
       it('should not error when removing non-existent symbol', () => {
@@ -1055,8 +1057,20 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
         });
 
         act(() => {
@@ -1081,8 +1095,20 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 200, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 199, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 200,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 199,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
         });
 
         act(() => {
@@ -1107,8 +1133,20 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 200, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 201, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 200,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 201,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
         });
 
         act(() => {
@@ -1133,8 +1171,20 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 200, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 200,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
         });
 
         act(() => {
@@ -1159,9 +1209,27 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
-          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
+          directory.set('MSFT', {
+            symbol: 'MSFT',
+            price: 400,
+            changePercent: 1.0,
+            volume: 20000000,
+            marketCap: 2900000000000,
+          });
         });
 
         act(() => {
@@ -1188,7 +1256,13 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
         });
 
         act(() => {
@@ -1212,9 +1286,27 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
-          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
+          directory.set('MSFT', {
+            symbol: 'MSFT',
+            price: 400,
+            changePercent: 1.0,
+            volume: 20000000,
+            marketCap: 2900000000000,
+          });
         });
 
         act(() => {
@@ -1238,9 +1330,27 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
-          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
+          directory.set('MSFT', {
+            symbol: 'MSFT',
+            price: 400,
+            changePercent: 1.0,
+            volume: 20000000,
+            marketCap: 2900000000000,
+          });
         });
 
         act(() => {
@@ -1264,9 +1374,27 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
-          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
+          directory.set('MSFT', {
+            symbol: 'MSFT',
+            price: 400,
+            changePercent: 1.0,
+            volume: 20000000,
+            marketCap: 2900000000000,
+          });
         });
 
         act(() => {
@@ -1285,9 +1413,27 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
-          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
+          directory.set('MSFT', {
+            symbol: 'MSFT',
+            price: 400,
+            changePercent: 1.0,
+            volume: 20000000,
+            marketCap: 2900000000000,
+          });
         });
 
         act(() => {
@@ -1321,7 +1467,13 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
           // TSLA missing some fields
           directory.set('TSLA', { symbol: 'TSLA' } as any);
         });
@@ -1349,8 +1501,20 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 'not-a-number' as any, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 'not-a-number' as any,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
         });
 
         act(() => {
@@ -1387,8 +1551,20 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
-          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
         });
 
         await act(async () => {
@@ -1403,7 +1579,13 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
         });
 
         // Force an unknown operator through direct state manipulation
@@ -1432,7 +1614,13 @@ describe('WatchlistStore', () => {
 
         act(() => {
           const directory = result.current.symbolDirectory;
-          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
         });
 
         act(() => {
@@ -1546,10 +1734,16 @@ describe('WatchlistStore', () => {
         });
 
         expect(importedId).toBeTruthy();
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
         expect(watchlist).toBeDefined();
         expect(watchlist!.items).toHaveLength(3);
-        expect(watchlist!.items.map((c: { symbol: string }) => c.symbol)).toEqual(['AAPL', 'TSLA', 'MSFT']);
+        expect(watchlist!.items.map((c: { symbol: string }) => c.symbol)).toEqual([
+          'AAPL',
+          'TSLA',
+          'MSFT',
+        ]);
       });
 
       it('should handle empty import', () => {
@@ -1561,7 +1755,9 @@ describe('WatchlistStore', () => {
         });
 
         expect(importedId).toBeTruthy();
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
         expect(watchlist!.items).toHaveLength(0);
       });
 
@@ -1573,8 +1769,14 @@ describe('WatchlistStore', () => {
           importedId = result.current.importWatchlist(['aapl', 'tsla', 'msft']);
         });
 
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
-        expect(watchlist!.items.map((c: { symbol: string }) => c.symbol)).toEqual(['AAPL', 'TSLA', 'MSFT']);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
+        expect(watchlist!.items.map((c: { symbol: string }) => c.symbol)).toEqual([
+          'AAPL',
+          'TSLA',
+          'MSFT',
+        ]);
       });
 
       it('should deduplicate symbols during import', () => {
@@ -1585,7 +1787,9 @@ describe('WatchlistStore', () => {
           importedId = result.current.importWatchlist(['AAPL', 'TSLA', 'AAPL', 'MSFT', 'TSLA']);
         });
 
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
         expect(watchlist!.items).toHaveLength(3);
       });
 
@@ -1597,7 +1801,9 @@ describe('WatchlistStore', () => {
           importedId = result.current.importWatchlist(['AAPL']);
         });
 
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
         expect(watchlist!.name).toBe('Imported Watchlist');
       });
 
@@ -1609,7 +1815,9 @@ describe('WatchlistStore', () => {
           importedId = result.current.importWatchlist(['AAPL', 'TSLA']);
         });
 
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
         watchlist!.items.forEach((item: { addedAt: Date }) => {
           expect(item.addedAt).toBeInstanceOf(Date);
         });
@@ -1623,7 +1831,9 @@ describe('WatchlistStore', () => {
           importedId = result.current.importWatchlist(['AAPL', 'TSLA']);
         });
 
-        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        const watchlist = result.current.watchlists.find(
+          (c: { id: string }) => c.id === importedId
+        );
         watchlist!.items.forEach((item: { alerts: unknown[] }) => {
           expect(item.alerts).toEqual([]);
         });
@@ -1747,7 +1957,9 @@ describe('WatchlistStore', () => {
 
       // Verify we have 2 items
       expect(result.current.watchlists[0]?.items).toHaveLength(2);
-      const symbols = result.current.watchlists[0]?.items.map((item: { symbol: string }) => item.symbol);
+      const symbols = result.current.watchlists[0]?.items.map(
+        (item: { symbol: string }) => item.symbol
+      );
       expect(symbols).toContain('AAPL');
       expect(symbols).toContain('TSLA');
 

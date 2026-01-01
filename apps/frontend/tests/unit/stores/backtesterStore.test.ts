@@ -7,7 +7,12 @@ import type {
   TradingStrategy,
 } from '@/lib/stores/backtesterStore';
 import { calculatePerformanceMetrics, useBacktesterStore } from '@/lib/stores/backtesterStore';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { enableMapSet } from 'immer';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { server } from '../../mocks/server';
+
+// Enable Immer's MapSet plugin for Set operations (runningBacktests)
+enableMapSet();
 
 // Mock feature flags with backtester enabled
 vi.mock('@/lib/utils/featureFlags', () => ({
@@ -17,17 +22,29 @@ vi.mock('@/lib/utils/featureFlags', () => ({
   },
 }));
 
-// Mock global fetch for API calls
+// Mock global fetch for API calls using vi.stubGlobal for proper interception
 const mockFetch = vi.fn();
-global.fetch = mockFetch;
+
+// Disable MSW for this test file to use direct fetch mocking
+beforeAll(() => {
+  server.close(); // Close MSW server to allow direct fetch mocking
+  vi.stubGlobal('fetch', mockFetch);
+});
+
+afterAll(() => {
+  // Restore MSW server for other tests (if needed)
+  server.listen({ onUnhandledRequest: 'warn' });
+});
 
 describe('BacktesterStore', () => {
   beforeEach(() => {
-    // Reset fetch mock
+    // Reset fetch mock with comprehensive default response
     mockFetch.mockReset();
     mockFetch.mockResolvedValue({
       ok: true,
+      status: 200,
       json: async () => [],
+      blob: async () => new Blob([''], { type: 'text/plain' }),
     });
 
     // Reset store before each test
@@ -349,6 +366,60 @@ describe('BacktesterStore', () => {
       expect(strategy?.config.entryConditions).toHaveLength(1);
       expect(strategy?.config.entryConditions[0].type).toBe('volume');
     });
+
+    it('should add volume condition type', () => {
+      const { createStrategy, addCondition } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      addCondition(strategyId, 'entry', {
+        type: 'volume',
+        volumeOperator: 'spike',
+        volumeValue: 200,
+      });
+
+      const { strategies } = useBacktesterStore.getState();
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
+      expect(strategy?.config.entryConditions[0].type).toBe('volume');
+      expect(strategy?.config.entryConditions[0].volumeOperator).toBe('spike');
+    });
+
+    it('should add pattern condition type', () => {
+      const { createStrategy, addCondition } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      addCondition(strategyId, 'entry', {
+        type: 'pattern',
+        patternType: 'double_bottom',
+      });
+
+      const { strategies } = useBacktesterStore.getState();
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
+      expect(strategy?.config.entryConditions[0].type).toBe('pattern');
+      expect(strategy?.config.entryConditions[0].patternType).toBe('double_bottom');
+    });
+
+    it('should handle addCondition to non-existent strategy', () => {
+      const { addCondition } = useBacktesterStore.getState();
+
+      // Should not throw
+      expect(() => addCondition('non-existent', 'entry', { type: 'indicator' })).not.toThrow();
+    });
+
+    it('should handle updateCondition on non-existent strategy', () => {
+      const { updateCondition } = useBacktesterStore.getState();
+
+      // Should not throw
+      expect(() =>
+        updateCondition('non-existent', 'entry', 'cond_1', { indicatorValue: 50 })
+      ).not.toThrow();
+    });
+
+    it('should handle removeCondition from non-existent strategy', () => {
+      const { removeCondition } = useBacktesterStore.getState();
+
+      // Should not throw
+      expect(() => removeCondition('non-existent', 'entry', 'cond_1')).not.toThrow();
+    });
   });
 
   describe('UI State Management', () => {
@@ -373,6 +444,16 @@ describe('BacktesterStore', () => {
       expect(useBacktesterStore.getState().selectedTab).toBe('strategy');
     });
 
+    it('should handle all tab values', () => {
+      const { setSelectedTab } = useBacktesterStore.getState();
+      const tabs = ['strategy', 'results', 'comparison', 'library'] as const;
+
+      for (const tab of tabs) {
+        setSelectedTab(tab);
+        expect(useBacktesterStore.getState().selectedTab).toBe(tab);
+      }
+    });
+
     it('should set date range', () => {
       const { setDateRange } = useBacktesterStore.getState();
       const start = new Date('2023-01-01');
@@ -383,6 +464,18 @@ describe('BacktesterStore', () => {
       const { dateRange } = useBacktesterStore.getState();
       expect(dateRange.start).toEqual(start);
       expect(dateRange.end).toEqual(end);
+    });
+
+    it('should handle date range at boundaries', () => {
+      const { setDateRange } = useBacktesterStore.getState();
+      const farPast = new Date('2000-01-01');
+      const farFuture = new Date('2050-12-31');
+
+      setDateRange(farPast, farFuture);
+
+      const { dateRange } = useBacktesterStore.getState();
+      expect(dateRange.start).toEqual(farPast);
+      expect(dateRange.end).toEqual(farFuture);
     });
 
     it('should update default config', () => {
@@ -401,42 +494,91 @@ describe('BacktesterStore', () => {
       // Others should remain default
       expect(defaultConfig.slippageRate).toBe(0.0005);
     });
+
+    it('should preserve other config values when updating partial config', () => {
+      const { updateDefaultConfig, defaultConfig: initialConfig } = useBacktesterStore.getState();
+
+      updateDefaultConfig({ initialCapital: 25000 });
+
+      const { defaultConfig } = useBacktesterStore.getState();
+      expect(defaultConfig.initialCapital).toBe(25000);
+      expect(defaultConfig.commissionRate).toBe(initialConfig.commissionRate);
+      expect(defaultConfig.slippageRate).toBe(initialConfig.slippageRate);
+      expect(defaultConfig.maxDrawdown).toBe(initialConfig.maxDrawdown);
+    });
+
+    it('should handle empty symbols array', () => {
+      const { setSelectedSymbols } = useBacktesterStore.getState();
+
+      setSelectedSymbols([]);
+
+      const { selectedSymbols } = useBacktesterStore.getState();
+      expect(selectedSymbols).toEqual([]);
+    });
+
+    it('should handle many symbols', () => {
+      const { setSelectedSymbols } = useBacktesterStore.getState();
+      const manySymbols = [
+        'AAPL',
+        'GOOGL',
+        'MSFT',
+        'AMZN',
+        'META',
+        'NVDA',
+        'TSLA',
+        'BRK.B',
+        'JPM',
+        'JNJ',
+      ];
+
+      setSelectedSymbols(manySymbols);
+
+      const { selectedSymbols } = useBacktesterStore.getState();
+      expect(selectedSymbols).toEqual(manySymbols);
+      expect(selectedSymbols.length).toBe(10);
+    });
   });
 
   describe('Backtest Management', () => {
-    it('should delete a backtest', () => {
-      // First need to manually add a backtest to state for testing
-      const store = useBacktesterStore.getState();
-
-      // Create strategy first
-      const strategyId = store.createStrategy({
-        name: 'Test',
-        createdBy: 'test',
-        tags: [],
-        isPublic: false,
-        config: {
-          entryConditions: [],
-          entryLogic: 'AND',
-          exitConditions: [],
-          exitLogic: 'AND',
-          positionSizing: { type: 'percentage', value: 2 },
-          timeframe: '1d',
-        },
-      });
-
-      // Note: Since runBacktest is async and makes API calls,
-      // we would need to mock fetch to test it properly.
-      // For now, we test the deleteBacktest with manual state manipulation
-      expect(useBacktesterStore.getState().strategies).toHaveLength(1);
+    it('should have stopBacktest as a function', () => {
+      const { stopBacktest } = useBacktesterStore.getState();
+      expect(typeof stopBacktest).toBe('function');
     });
 
-    it('should stop backtest by removing from running set', () => {
+    it('should have deleteBacktest as a function', () => {
+      const { deleteBacktest } = useBacktesterStore.getState();
+      expect(typeof deleteBacktest).toBe('function');
+    });
+
+    it('should have runBacktest as a function', () => {
+      const { runBacktest } = useBacktesterStore.getState();
+      expect(typeof runBacktest).toBe('function');
+    });
+
+    it('should create backtest even for non-existent strategy (strategyId is just a reference)', async () => {
+      // The store doesn't validate if a strategy exists - it just uses the strategyId as a reference
+      const { runBacktest } = useBacktesterStore.getState();
+
+      const result = await runBacktest('non-existent-strategy', ['AAPL']);
+
+      // Should return a backtest ID (the store creates the backtest regardless)
+      expect(result).toMatch(/^backtest_\d+$/);
+
+      // Verify backtest was created
+      const { backtests } = useBacktesterStore.getState();
+      expect(backtests.some((b) => b.id === result)).toBe(true);
+    });
+
+    it('should not throw when stopping non-existent backtest', () => {
       const { stopBacktest } = useBacktesterStore.getState();
 
-      // stopBacktest removes from runningBacktests set
-      // Since we can't easily add to the Set without running a backtest,
-      // we verify the function exists and can be called
-      expect(typeof stopBacktest).toBe('function');
+      expect(() => stopBacktest('non-existent-backtest')).not.toThrow();
+    });
+
+    it('should not throw when deleting non-existent backtest', () => {
+      const { deleteBacktest } = useBacktesterStore.getState();
+
+      expect(() => deleteBacktest('non-existent-backtest')).not.toThrow();
     });
   });
 
@@ -449,6 +591,385 @@ describe('BacktesterStore', () => {
       const { comparison, selectedTab } = useBacktesterStore.getState();
       expect(comparison.backtestIds).toEqual(['backtest_1', 'backtest_2', 'backtest_3']);
       expect(selectedTab).toBe('comparison');
+    });
+  });
+
+  describe('Results Analysis', () => {
+    it('should have loadBacktestResults as a function', () => {
+      const { loadBacktestResults } = useBacktesterStore.getState();
+      expect(typeof loadBacktestResults).toBe('function');
+    });
+
+    it('should set error state on load failure', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 404,
+      });
+
+      const { loadBacktestResults } = useBacktesterStore.getState();
+      await loadBacktestResults('non-existent-backtest');
+
+      const { error, isLoading } = useBacktesterStore.getState();
+      expect(error).toBe('Failed to load results');
+      expect(isLoading).toBe(false);
+    });
+  });
+
+  describe('Export Results', () => {
+    it('should have exportResults as a function', () => {
+      const { exportResults } = useBacktesterStore.getState();
+      expect(typeof exportResults).toBe('function');
+    });
+
+    it('should throw error when export fails', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      });
+
+      const { exportResults } = useBacktesterStore.getState();
+
+      await expect(exportResults('backtest_123', 'csv')).rejects.toThrow('Export failed');
+    });
+
+    it('should return blob when export succeeds', async () => {
+      const mockBlob = new Blob(['csv,data'], { type: 'text/csv' });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        blob: async () => mockBlob,
+      });
+
+      const { exportResults } = useBacktesterStore.getState();
+      const result = await exportResults('backtest_123', 'csv');
+
+      expect(result).toBeInstanceOf(Blob);
+    });
+
+    it('should call correct URL for JSON format', async () => {
+      const mockBlob = new Blob(['{"data": []}'], { type: 'application/json' });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        blob: async () => mockBlob,
+      });
+
+      const { exportResults } = useBacktesterStore.getState();
+      await exportResults('backtest_456', 'json');
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/backtester/export/backtest_456?format=json');
+    });
+
+    it('should call correct URL for PDF format', async () => {
+      const mockBlob = new Blob(['pdf content'], { type: 'application/pdf' });
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        blob: async () => mockBlob,
+      });
+
+      const { exportResults } = useBacktesterStore.getState();
+      await exportResults('backtest_789', 'pdf');
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/backtester/export/backtest_789?format=pdf');
+    });
+  });
+
+  describe('Strategy Library', () => {
+    const createTestStrategy = () => ({
+      name: 'Library Test Strategy',
+      description: 'For library tests',
+      createdBy: 'test-user',
+      tags: [],
+      isPublic: false,
+      config: {
+        entryConditions: [],
+        entryLogic: 'AND' as const,
+        exitConditions: [],
+        exitLogic: 'AND' as const,
+        positionSizing: { type: 'percentage' as const, value: 2 },
+        timeframe: '1d',
+      },
+    });
+
+    it('should have loadPublicStrategies as a function', () => {
+      const { loadPublicStrategies } = useBacktesterStore.getState();
+      expect(typeof loadPublicStrategies).toBe('function');
+    });
+
+    it('should handle load public strategies failure', async () => {
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      });
+
+      const { loadPublicStrategies } = useBacktesterStore.getState();
+      await loadPublicStrategies();
+
+      const { error } = useBacktesterStore.getState();
+      expect(error).toBe('Failed to load public strategies');
+    });
+
+    it('should have saveToLibrary as a function', () => {
+      const { saveToLibrary } = useBacktesterStore.getState();
+      expect(typeof saveToLibrary).toBe('function');
+    });
+
+    it('should handle save to library failure', async () => {
+      const { createStrategy, saveToLibrary } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      });
+
+      await saveToLibrary(strategyId, true);
+
+      const { error } = useBacktesterStore.getState();
+      expect(error).toBe('Failed to save to library');
+    });
+
+    it('should update strategy isPublic on successful save', async () => {
+      const { createStrategy, saveToLibrary } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      await saveToLibrary(strategyId, true);
+
+      const { strategies } = useBacktesterStore.getState();
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
+      expect(strategy?.isPublic).toBe(true);
+    });
+
+    it('should call API with correct parameters', async () => {
+      const { createStrategy, saveToLibrary } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({}),
+      });
+
+      await saveToLibrary(strategyId, true);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        `/api/backtester/strategies/${strategyId}/publish`,
+        expect.objectContaining({
+          method: 'POST',
+          body: JSON.stringify({ isPublic: true }),
+        })
+      );
+    });
+
+    it('should import strategy with full data', async () => {
+      const { importStrategy } = useBacktesterStore.getState();
+
+      const importedId = await importStrategy({
+        name: 'Imported RSI Strategy',
+        description: 'RSI-based strategy from file',
+        tags: ['imported', 'rsi'],
+        isPublic: false,
+        config: {
+          entryConditions: [
+            { id: 'cond_1', type: 'indicator', indicatorType: 'rsi', indicatorValue: 30 },
+          ],
+          entryLogic: 'AND',
+          exitConditions: [
+            { id: 'cond_2', type: 'indicator', indicatorType: 'rsi', indicatorValue: 70 },
+          ],
+          exitLogic: 'AND',
+          positionSizing: { type: 'percentage', value: 5 },
+          timeframe: '4h',
+        },
+      });
+
+      expect(importedId).toMatch(/^strategy_/);
+
+      const { strategies } = useBacktesterStore.getState();
+      const imported = strategies.find((s: TradingStrategy) => s.id === importedId);
+      expect(imported?.name).toBe('Imported RSI Strategy');
+      expect(imported?.tags).toContain('imported');
+      expect(imported?.config.timeframe).toBe('4h');
+    });
+
+    it('should import strategy with default values', async () => {
+      // Clear all strategies first
+      const store = useBacktesterStore.getState();
+      for (const strategy of [...store.strategies]) {
+        store.deleteStrategy(strategy.id);
+      }
+
+      const { importStrategy } = useBacktesterStore.getState();
+
+      const importedId = await importStrategy({});
+
+      expect(importedId).toMatch(/^strategy_/);
+
+      const { strategies } = useBacktesterStore.getState();
+      const imported = strategies.find((s: TradingStrategy) => s.id === importedId);
+      expect(imported?.name).toBe('Imported Strategy');
+      expect(imported?.createdBy).toBe('imported');
+    });
+
+    it('should import strategy with provided name', async () => {
+      const { importStrategy } = useBacktesterStore.getState();
+
+      const importedId = await importStrategy({
+        name: 'Custom Named Strategy',
+      });
+
+      const { strategies } = useBacktesterStore.getState();
+      const imported = strategies.find((s: TradingStrategy) => s.id === importedId);
+      expect(imported?.name).toBe('Custom Named Strategy');
+    });
+  });
+
+  describe('Live Trading Integration', () => {
+    const createTestStrategy = () => ({
+      name: 'Live Trading Test Strategy',
+      description: 'For live trading tests',
+      createdBy: 'test-user',
+      tags: [],
+      isPublic: false,
+      config: {
+        entryConditions: [],
+        entryLogic: 'AND' as const,
+        exitConditions: [],
+        exitLogic: 'AND' as const,
+        positionSizing: { type: 'percentage' as const, value: 2 },
+        timeframe: '1d',
+      },
+    });
+
+    it('should have createLiveSignals as a function', () => {
+      const { createLiveSignals } = useBacktesterStore.getState();
+      expect(typeof createLiveSignals).toBe('function');
+    });
+
+    it('should handle live signals creation failure', async () => {
+      const { createStrategy, createLiveSignals } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      mockFetch.mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      });
+
+      await createLiveSignals(strategyId, ['AAPL']);
+
+      const { error } = useBacktesterStore.getState();
+      expect(error).toBe('Failed to create live signals');
+    });
+
+    it('should call API with correct parameters on success', async () => {
+      const { createStrategy, createLiveSignals } = useBacktesterStore.getState();
+      const strategyId = createStrategy(createTestStrategy());
+
+      mockFetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ signalId: 'signal_123' }),
+      });
+
+      await createLiveSignals(strategyId, ['AAPL', 'GOOGL', 'MSFT']);
+
+      expect(mockFetch).toHaveBeenCalledWith('/api/backtester/live-signals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strategyId, symbols: ['AAPL', 'GOOGL', 'MSFT'] }),
+      });
+    });
+  });
+
+  describe('Strategy Edge Cases', () => {
+    const createTestStrategy = () => ({
+      name: 'Strategy Edge Case',
+      description: 'Testing edge cases',
+      createdBy: 'test-user',
+      tags: [],
+      isPublic: false,
+      config: {
+        entryConditions: [],
+        entryLogic: 'AND' as const,
+        exitConditions: [],
+        exitLogic: 'AND' as const,
+        positionSizing: { type: 'percentage' as const, value: 2 },
+        timeframe: '1d',
+      },
+    });
+
+    it('should handle updating non-existent strategy gracefully', () => {
+      const { updateStrategy } = useBacktesterStore.getState();
+
+      expect(() => updateStrategy('non-existent-id', { name: 'New Name' })).not.toThrow();
+    });
+
+    it('should handle deleting non-existent strategy gracefully', () => {
+      const { deleteStrategy } = useBacktesterStore.getState();
+
+      expect(() => deleteStrategy('non-existent-id')).not.toThrow();
+    });
+
+    it('should create strategy with OR logic', () => {
+      const { createStrategy } = useBacktesterStore.getState();
+
+      const strategyId = createStrategy({
+        ...createTestStrategy(),
+        config: {
+          ...createTestStrategy().config,
+          entryLogic: 'OR' as const,
+          exitLogic: 'OR' as const,
+        },
+      });
+
+      const { strategies } = useBacktesterStore.getState();
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
+      expect(strategy?.config.entryLogic).toBe('OR');
+      expect(strategy?.config.exitLogic).toBe('OR');
+    });
+
+    it('should create strategy with fixed position sizing', () => {
+      const { createStrategy } = useBacktesterStore.getState();
+
+      const strategyId = createStrategy({
+        ...createTestStrategy(),
+        config: {
+          ...createTestStrategy().config,
+          positionSizing: { type: 'fixed' as const, value: 5000 },
+        },
+      });
+
+      const { strategies } = useBacktesterStore.getState();
+      const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
+      expect(strategy?.config.positionSizing.type).toBe('fixed');
+      expect(strategy?.config.positionSizing.value).toBe(5000);
+    });
+
+    it('should create strategy with various timeframes', () => {
+      const { createStrategy, deleteStrategy } = useBacktesterStore.getState();
+      const timeframes = ['1m', '5m', '15m', '1h', '4h', '1d', '1w'] as const;
+
+      for (const tf of timeframes) {
+        const strategyId = createStrategy({
+          ...createTestStrategy(),
+          name: `Strategy ${tf}`,
+          config: {
+            ...createTestStrategy().config,
+            timeframe: tf,
+          },
+        });
+
+        const { strategies } = useBacktesterStore.getState();
+        const strategy = strategies.find((s: TradingStrategy) => s.id === strategyId);
+        expect(strategy?.config.timeframe).toBe(tf);
+
+        // Clean up
+        deleteStrategy(strategyId);
+      }
     });
   });
 });
@@ -649,10 +1170,51 @@ describe('calculatePerformanceMetrics', () => {
     expect(metrics.volatility).toBeGreaterThan(0);
     expect(typeof metrics.sharpeRatio).toBe('number');
   });
+
+  it('should handle all losing trades', () => {
+    const trades: BacktestTrade[] = [
+      {
+        id: 'trade_1',
+        symbol: 'AAPL',
+        direction: 'long',
+        entryPrice: 100,
+        exitPrice: 90,
+        quantity: 10,
+        entryTime: new Date(),
+        exitTime: new Date(),
+        pnl: -100,
+        pnlPercent: -10,
+        holdingPeriod: 30,
+        reason: 'stop-loss',
+      },
+      {
+        id: 'trade_2',
+        symbol: 'AAPL',
+        direction: 'long',
+        entryPrice: 100,
+        exitPrice: 95,
+        quantity: 10,
+        entryTime: new Date(),
+        exitTime: new Date(),
+        pnl: -50,
+        pnlPercent: -5,
+        holdingPeriod: 20,
+        reason: 'stop-loss',
+      },
+    ];
+
+    const metrics = calculatePerformanceMetrics(trades);
+
+    expect(metrics.totalTrades).toBe(2);
+    expect(metrics.winningTrades).toBe(0);
+    expect(metrics.losingTrades).toBe(2);
+    expect(metrics.winRate).toBe(0);
+    expect(metrics.avgWin).toBe(0);
+    expect(metrics.avgLoss).toBe(75); // (100 + 50) / 2
+  });
 });
 
 describe('Store Selectors', () => {
-  // These are imported from the store but we test them through usage
   it('should have useRunningBacktests selector', async () => {
     const { useRunningBacktests } = await import('@/lib/stores/backtesterStore');
     expect(typeof useRunningBacktests).toBe('function');
