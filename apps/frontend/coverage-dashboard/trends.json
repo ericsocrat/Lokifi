@@ -1,95 +1,5 @@
 [
   {
-    "timestamp": "2025-10-19T14:49:34.228Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "fedaf2fe"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T14:52:56.934Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "fedaf2fe"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T15:03:54.543Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "04b850fc"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T15:03:57.739Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "04b850fc"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T15:04:57.516Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "04b850fc"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T15:18:33.893Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "04b850fc"
-    }
-  },
-  {
     "timestamp": "2025-10-19T15:38:43.528Z",
     "coverage": {
       "statements": 11.259037646472201,
@@ -447,6 +357,96 @@
     "git": {
       "branch": "main",
       "commit": "bcf6ed3b"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T03:51:20.561Z",
+    "coverage": {
+      "statements": 17.431477255101814,
+      "branches": 87.89136175028291,
+      "functions": 81.03448275862068,
+      "lines": 17.431477255101814
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "55942efa"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T03:52:22.017Z",
+    "coverage": {
+      "statements": 17.431477255101814,
+      "branches": 87.89136175028291,
+      "functions": 81.03448275862068,
+      "lines": 17.431477255101814
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "55942efa"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T03:54:07.506Z",
+    "coverage": {
+      "statements": 17.431477255101814,
+      "branches": 87.89136175028291,
+      "functions": 81.03448275862068,
+      "lines": 17.431477255101814
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "55942efa"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T03:55:09.620Z",
+    "coverage": {
+      "statements": 17.431477255101814,
+      "branches": 87.89136175028291,
+      "functions": 81.03448275862068,
+      "lines": 17.431477255101814
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "55942efa"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T04:10:49.684Z",
+    "coverage": {
+      "statements": 17.93002592453081,
+      "branches": 87.39956172388604,
+      "functions": 82.45398773006136,
+      "lines": 17.93002592453081
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "55942efa"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T13:05:59.908Z",
+    "coverage": {
+      "statements": 17.93002592453081,
+      "branches": 87.39956172388604,
+      "functions": 82.45398773006136,
+      "lines": 17.93002592453081
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "55942efa"
     }
   }
 ]

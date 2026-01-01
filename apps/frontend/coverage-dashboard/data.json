@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-01T03:44:49.743Z",
+  "generated": "2026-01-01T13:05:59.908Z",
   "git": {
     "branch": "main",
-    "commit": "bcf6ed3b",
+    "commit": "55942efa",
     "author": "ericsocrat",
-    "message": "test(coverage): add drawingStore and marketDataStore tests - 80.37% functions"
+    "message": "test(coverage): add symbolStore and multiChartStore component tests - 81.03% functions"
   },
   "current": {
     "tests": {
@@ -17,26 +17,26 @@
       "duration": "-"
     },
     "coverage": {
-      "statements": 17.43,
-      "branches": 87.89,
-      "functions": 81.03,
-      "lines": 17.43
+      "statements": 17.93,
+      "branches": 87.4,
+      "functions": 82.45,
+      "lines": 17.93
     },
     "totals": {
       "statements": {
-        "covered": 7867,
+        "covered": 8092,
         "total": 45131
       },
       "branches": {
-        "covered": 2330,
-        "total": 2651
+        "covered": 2393,
+        "total": 2738
       },
       "functions": {
-        "covered": 658,
-        "total": 812
+        "covered": 672,
+        "total": 815
       },
       "lines": {
-        "covered": 7867,
+        "covered": 8092,
         "total": 45131
       }
     }
@@ -47,16 +47,16 @@
       "category": "other",
       "subcategory": null,
       "coverage": {
-        "statements": 17.431477255101814,
-        "branches": 87.89136175028291,
-        "functions": 81.03448275862068,
-        "lines": 17.431477255101814
+        "statements": 17.93002592453081,
+        "branches": 87.39956172388604,
+        "functions": 82.45398773006136,
+        "lines": 17.93002592453081
       },
       "files": 197,
       "metrics": {
         "totalLines": 45131,
-        "coveredLines": 7867,
-        "uncoveredLines": 37264
+        "coveredLines": 8092,
+        "uncoveredLines": 37039
       },
       "health": "critical"
     }
@@ -1067,96 +1067,6 @@
   ],
   "trends": [
     {
-      "timestamp": "2025-10-19T14:49:34.228Z",
-      "coverage": {
-        "statements": 11.259037646472201,
-        "branches": 88.74856486796784,
-        "functions": 84.87394957983193,
-        "lines": 11.259037646472201
-      },
-      "tests": 83,
-      "files": 197,
-      "git": {
-        "branch": "test/workflow-optimizations-validation",
-        "commit": "fedaf2fe"
-      }
-    },
-    {
-      "timestamp": "2025-10-19T14:52:56.934Z",
-      "coverage": {
-        "statements": 11.259037646472201,
-        "branches": 88.74856486796784,
-        "functions": 84.87394957983193,
-        "lines": 11.259037646472201
-      },
-      "tests": 83,
-      "files": 197,
-      "git": {
-        "branch": "test/workflow-optimizations-validation",
-        "commit": "fedaf2fe"
-      }
-    },
-    {
-      "timestamp": "2025-10-19T15:03:54.543Z",
-      "coverage": {
-        "statements": 11.259037646472201,
-        "branches": 88.74856486796784,
-        "functions": 84.87394957983193,
-        "lines": 11.259037646472201
-      },
-      "tests": 83,
-      "files": 197,
-      "git": {
-        "branch": "test/workflow-optimizations-validation",
-        "commit": "04b850fc"
-      }
-    },
-    {
-      "timestamp": "2025-10-19T15:03:57.739Z",
-      "coverage": {
-        "statements": 11.259037646472201,
-        "branches": 88.74856486796784,
-        "functions": 84.87394957983193,
-        "lines": 11.259037646472201
-      },
-      "tests": 83,
-      "files": 197,
-      "git": {
-        "branch": "test/workflow-optimizations-validation",
-        "commit": "04b850fc"
-      }
-    },
-    {
-      "timestamp": "2025-10-19T15:04:57.516Z",
-      "coverage": {
-        "statements": 11.259037646472201,
-        "branches": 88.74856486796784,
-        "functions": 84.87394957983193,
-        "lines": 11.259037646472201
-      },
-      "tests": 83,
-      "files": 197,
-      "git": {
-        "branch": "test/workflow-optimizations-validation",
-        "commit": "04b850fc"
-      }
-    },
-    {
-      "timestamp": "2025-10-19T15:18:33.893Z",
-      "coverage": {
-        "statements": 11.259037646472201,
-        "branches": 88.74856486796784,
-        "functions": 84.87394957983193,
-        "lines": 11.259037646472201
-      },
-      "tests": 83,
-      "files": 197,
-      "git": {
-        "branch": "test/workflow-optimizations-validation",
-        "commit": "04b850fc"
-      }
-    },
-    {
       "timestamp": "2025-10-19T15:38:43.528Z",
       "coverage": {
         "statements": 11.259037646472201,
@@ -1515,50 +1425,140 @@
         "branch": "main",
         "commit": "bcf6ed3b"
       }
+    },
+    {
+      "timestamp": "2026-01-01T03:51:20.561Z",
+      "coverage": {
+        "statements": 17.431477255101814,
+        "branches": 87.89136175028291,
+        "functions": 81.03448275862068,
+        "lines": 17.431477255101814
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "55942efa"
+      }
+    },
+    {
+      "timestamp": "2026-01-01T03:52:22.017Z",
+      "coverage": {
+        "statements": 17.431477255101814,
+        "branches": 87.89136175028291,
+        "functions": 81.03448275862068,
+        "lines": 17.431477255101814
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "55942efa"
+      }
+    },
+    {
+      "timestamp": "2026-01-01T03:54:07.506Z",
+      "coverage": {
+        "statements": 17.431477255101814,
+        "branches": 87.89136175028291,
+        "functions": 81.03448275862068,
+        "lines": 17.431477255101814
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "55942efa"
+      }
+    },
+    {
+      "timestamp": "2026-01-01T03:55:09.620Z",
+      "coverage": {
+        "statements": 17.431477255101814,
+        "branches": 87.89136175028291,
+        "functions": 81.03448275862068,
+        "lines": 17.431477255101814
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "55942efa"
+      }
+    },
+    {
+      "timestamp": "2026-01-01T04:10:49.684Z",
+      "coverage": {
+        "statements": 17.93002592453081,
+        "branches": 87.39956172388604,
+        "functions": 82.45398773006136,
+        "lines": 17.93002592453081
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "55942efa"
+      }
+    },
+    {
+      "timestamp": "2026-01-01T13:05:59.908Z",
+      "coverage": {
+        "statements": 17.93002592453081,
+        "branches": 87.39956172388604,
+        "functions": 82.45398773006136,
+        "lines": 17.93002592453081
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "55942efa"
+      }
     }
   ],
   "delta": {
     "statements": {
-      "text": "↑ 0.23%",
-      "value": 0.22600873014114242,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "branches": {
-      "text": "↑ 0.10%",
-      "value": 0.09668494419926787,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "functions": {
-      "text": "↑ 0.66%",
-      "value": 0.6641123882503166,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     },
     "lines": {
-      "text": "↑ 0.23%",
-      "value": 0.22600873014114242,
-      "direction": "↑",
-      "color": "green"
+      "text": "→ 0.00%",
+      "value": 0,
+      "direction": "→",
+      "color": "gray"
     }
   },
   "weeklyTrend": {
-    "statements": 0.27627619162557693,
-    "branches": 0.20493727609552082,
-    "functions": 1.009821846166929,
-    "lines": 0.27627619162557693
+    "statements": 0.49854866942899534,
+    "branches": -0.4918000263968736,
+    "functions": 1.4195049714406736,
+    "lines": 0.49854866942899534
   },
   "metadata": {
-    "totalRuns": 30,
+    "totalRuns": 36,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-01T03:44:49.743Z",
+    "lastRun": "2026-01-01T13:05:59.908Z",
     "bestCoverage": {
-      "statements": 17.431477255101814,
-      "branches": 87.89136175028291,
-      "functions": 81.03448275862068,
-      "lines": 17.431477255101814,
-      "timestamp": "2026-01-01T03:44:49.743Z"
+      "statements": 17.93002592453081,
+      "branches": 87.39956172388604,
+      "functions": 82.45398773006136,
+      "lines": 17.93002592453081,
+      "timestamp": "2026-01-01T04:10:49.684Z"
     },
     "worstCoverage": {
       "statements": 11.259037646472201,
@@ -1569,7 +1569,7 @@
     "velocity": {
       "testsPerDay": "-1.1",
       "filesPerRun": "6.6",
-      "avgCoverageGain": "0.21"
+      "avgCoverageGain": "0.22"
     }
   },
   "insights": [
@@ -1602,10 +1602,10 @@
     "totalFiles": 197,
     "totalModules": 1,
     "criticalGaps": 102,
-    "mediumGaps": 1,
+    "mediumGaps": 0,
     "lowGaps": 5,
     "healthyFiles": 76,
-    "criticalFiles": 114,
+    "criticalFiles": 113,
     "avgComplexity": 18
   },
   "topFiles": {
@@ -1732,6 +1732,13 @@
         "functions": 43
       },
       {
+        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\alertsStore.tsx",
+        "complexity": 186,
+        "coverage": "79.4",
+        "branches": 150,
+        "functions": 36
+      },
+      {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\drawingStore.tsx",
         "complexity": 122,
         "coverage": "96.2",
@@ -1758,13 +1765,6 @@
         "coverage": "53.9",
         "branches": 87,
         "functions": 27
-      },
-      {
-        "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\alertsStore.tsx",
-        "complexity": 96,
-        "coverage": "38.3",
-        "branches": 63,
-        "functions": 33
       },
       {
         "path": "C:\\Users\\ericsocrat\\Desktop\\lokifi\\apps\\frontend\\src\\lib\\stores\\watchlistStore.tsx",

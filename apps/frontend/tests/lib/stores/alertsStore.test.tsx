@@ -790,6 +790,692 @@ describe('AlertsStore', () => {
     });
   });
 
+  describe('Alert Execution', () => {
+    describe('executeAlert', () => {
+      it('should execute alert and create execution record', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert({
+            ...createBasicAlert(),
+            isActive: true,
+          });
+        });
+
+        await act(async () => {
+          const execution = await result.current.executeAlert(alertId);
+          expect(execution.alertId).toBe(alertId);
+          expect(execution.success).toBe(true);
+          expect(execution.triggeredAt).toBeInstanceOf(Date);
+        });
+
+        // Verify execution was recorded
+        expect(result.current.recentExecutions).toHaveLength(1);
+        expect(result.current.recentExecutions[0]?.alertId).toBe(alertId);
+      });
+
+      it('should update alert trigger count after execution', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert(createBasicAlert());
+        });
+
+        const initialCount = result.current.alerts[0]?.triggerCount ?? 0;
+
+        await act(async () => {
+          await result.current.executeAlert(alertId);
+        });
+
+        expect(result.current.alerts[0]?.triggerCount).toBe(initialCount + 1);
+        expect(result.current.alerts[0]?.lastTriggered).toBeInstanceOf(Date);
+      });
+
+      it('should throw error for non-existent alert', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        await expect(
+          act(async () => {
+            await result.current.executeAlert('non-existent-id');
+          })
+        ).rejects.toThrow('Alert not found');
+      });
+
+      it('should respect max triggers limit', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert({
+            ...createBasicAlert(),
+            maxTriggers: 1,
+          });
+        });
+
+        // First execution should succeed
+        await act(async () => {
+          await result.current.executeAlert(alertId);
+        });
+
+        // Second execution should fail due to max triggers
+        await expect(
+          act(async () => {
+            await result.current.executeAlert(alertId);
+          })
+        ).rejects.toThrow('Alert has reached maximum trigger count');
+      });
+
+      it('should allow forced execution past max triggers', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert({
+            ...createBasicAlert(),
+            maxTriggers: 1,
+          });
+        });
+
+        await act(async () => {
+          await result.current.executeAlert(alertId);
+        });
+
+        // Force execution should work
+        await act(async () => {
+          const execution = await result.current.executeAlert(alertId, true);
+          expect(execution.success).toBe(true);
+        });
+
+        expect(result.current.alerts[0]?.triggerCount).toBe(2);
+      });
+
+      it('should limit recent executions to 100', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert(createBasicAlert());
+        });
+
+        // Execute alert 105 times (forced to bypass count limits)
+        for (let i = 0; i < 105; i++) {
+          await act(async () => {
+            await result.current.executeAlert(alertId, true);
+          });
+        }
+
+        expect(result.current.recentExecutions.length).toBeLessThanOrEqual(100);
+      });
+
+      it('should throw when alerts feature is disabled', async () => {
+        setDevFlag('alertsV2', false);
+        const { result } = renderHook(() => useAlertsStore());
+
+        await expect(
+          act(async () => {
+            await result.current.executeAlert('any-id');
+          })
+        ).rejects.toThrow('Alerts v2 not enabled');
+      });
+    });
+
+    describe('executeAction', () => {
+      it('should execute notification action', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert(createBasicAlert());
+        });
+
+        const alert = result.current.alerts[0]!;
+        const action = alert.actions[0]!;
+
+        await act(async () => {
+          const execution = await result.current.executeAction(action, alert);
+          expect(execution.type).toBe('notification');
+          expect(execution.success).toBe(true);
+          expect(execution.duration).toBeGreaterThanOrEqual(0);
+        });
+      });
+
+      it('should handle action execution errors gracefully', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert({
+            ...createBasicAlert(),
+            actions: [
+              {
+                type: 'webhook',
+                enabled: true,
+                webhookUrl: 'http://invalid-url-that-will-fail.test',
+              },
+            ],
+          });
+        });
+
+        const alert = result.current.alerts[0]!;
+        const action = alert.actions[0]!;
+
+        await act(async () => {
+          const execution = await result.current.executeAction(action, alert);
+          expect(execution.success).toBe(false);
+          expect(execution.error).toBeDefined();
+        });
+      });
+
+      it('should track action execution duration', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert(createBasicAlert());
+        });
+
+        const alert = result.current.alerts[0]!;
+        const action = alert.actions[0]!;
+
+        await act(async () => {
+          const execution = await result.current.executeAction(action, alert);
+          expect(typeof execution.duration).toBe('number');
+          expect(execution.duration).toBeGreaterThanOrEqual(0);
+        });
+      });
+    });
+
+    describe('checkAlerts', () => {
+      it('should update lastUpdate timestamp', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        expect(result.current.lastUpdate).toBeNull();
+
+        await act(async () => {
+          await result.current.checkAlerts();
+        });
+
+        expect(result.current.lastUpdate).toBeInstanceOf(Date);
+      });
+
+      it('should not run when feature is disabled', async () => {
+        setDevFlag('alertsV2', false);
+        const { result } = renderHook(() => useAlertsStore());
+
+        await act(async () => {
+          await result.current.checkAlerts();
+        });
+
+        // lastUpdate should remain null when feature disabled
+        expect(result.current.lastUpdate).toBeNull();
+      });
+
+      it('should only check active alerts', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let activeId: string = '';
+        let inactiveId: string = '';
+
+        act(() => {
+          activeId = result.current.createAlert({ ...createBasicAlert(), isActive: true });
+        });
+        await new Promise((resolve) => setTimeout(resolve, 2));
+        act(() => {
+          inactiveId = result.current.createAlert({ ...createBasicAlert(), isActive: false });
+        });
+
+        expect(result.current.activeAlerts.has(activeId)).toBe(true);
+        expect(result.current.activeAlerts.has(inactiveId)).toBe(false);
+
+        await act(async () => {
+          await result.current.checkAlerts();
+        });
+
+        // Both alerts should have 0 trigger count since checkAlerts evaluates conditions
+        // but the test condition (price above) isn't met without real price data
+        expect(result.current.alerts.find((a) => a.id === activeId)?.triggerCount).toBe(0);
+        expect(result.current.alerts.find((a) => a.id === inactiveId)?.triggerCount).toBe(0);
+      });
+    });
+  });
+
+  describe('Backtesting', () => {
+    describe('startBacktest', () => {
+      it('should throw when feature is disabled', async () => {
+        setDevFlag('alertsV2', false);
+        const { result } = renderHook(() => useAlertsStore());
+
+        await expect(
+          act(async () => {
+            await result.current.startBacktest('alert-id', new Date(), new Date());
+          })
+        ).rejects.toThrow('Alerts v2 not enabled');
+      });
+
+      it('should set isBacktesting state during backtest', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert(createBasicAlert());
+        });
+
+        // Mock fetch to control backtest response
+        const mockBacktest = {
+          id: 'backtest-123',
+          alertId,
+          startDate: new Date().toISOString(),
+          endDate: new Date().toISOString(),
+          config: { initialBalance: 10000, commissionRate: 0.001, slippageRate: 0.0005 },
+        };
+
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockBacktest),
+        });
+
+        await act(async () => {
+          const backtestId = await result.current.startBacktest(
+            alertId,
+            new Date('2024-01-01'),
+            new Date('2024-12-31')
+          );
+          expect(backtestId).toBe('backtest-123');
+        });
+
+        expect(result.current.isBacktesting).toBe(false); // Should be false after completion
+        expect(result.current.currentBacktest).not.toBeNull();
+      });
+
+      it('should handle backtest API failure', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        let alertId: string = '';
+        act(() => {
+          alertId = result.current.createAlert(createBasicAlert());
+        });
+
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+        });
+
+        // The function throws, so we need to catch it and then check state
+        try {
+          await act(async () => {
+            await result.current.startBacktest(alertId, new Date(), new Date());
+          });
+          // If we reach here, the test should fail
+          expect(true).toBe(false);
+        } catch (e) {
+          expect((e as Error).message).toBe('Backtest failed to start');
+        }
+
+        // State should be updated after the error
+        expect(result.current.isBacktesting).toBe(false);
+      });
+    });
+
+    describe('stopBacktest', () => {
+      it('should clear backtest state', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        // Set up backtest state
+        act(() => {
+          useAlertsStore.setState({
+            isBacktesting: true,
+            currentBacktest: {
+              id: 'test-backtest',
+              alertId: 'alert-1',
+              startDate: '2024-01-01',
+              endDate: '2024-12-31',
+              config: { initialBalance: 10000, commissionRate: 0.001, slippageRate: 0.0005 },
+            },
+          });
+        });
+
+        expect(result.current.isBacktesting).toBe(true);
+        expect(result.current.currentBacktest).not.toBeNull();
+
+        act(() => {
+          result.current.stopBacktest();
+        });
+
+        expect(result.current.isBacktesting).toBe(false);
+        expect(result.current.currentBacktest).toBeNull();
+      });
+
+      it('should not run when feature is disabled', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        act(() => {
+          useAlertsStore.setState({ isBacktesting: true });
+        });
+
+        setDevFlag('alertsV2', false);
+
+        act(() => {
+          result.current.stopBacktest();
+        });
+
+        // State should remain unchanged when feature disabled
+        expect(result.current.isBacktesting).toBe(true);
+      });
+    });
+
+    describe('getBacktestResults', () => {
+      it('should return backtest by ID', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const backtest = {
+          id: 'backtest-123',
+          alertId: 'alert-1',
+          startDate: '2024-01-01',
+          endDate: '2024-12-31',
+          config: { initialBalance: 10000, commissionRate: 0.001, slippageRate: 0.0005 },
+        };
+
+        act(() => {
+          useAlertsStore.setState({ backtests: [backtest] });
+        });
+
+        const results = result.current.getBacktestResults('backtest-123');
+        expect(results).toEqual(backtest);
+      });
+
+      it('should return null for non-existent backtest', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const results = result.current.getBacktestResults('non-existent');
+        expect(results).toBeNull();
+      });
+    });
+  });
+
+  describe('Data Management', () => {
+    describe('loadAlerts', () => {
+      it('should load alerts from API', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const mockAlerts = [
+          {
+            id: 'alert-1',
+            name: 'Test Alert 1',
+            symbol: 'AAPL',
+            isActive: true,
+            condition: { type: 'price' },
+            actions: [],
+            tags: [],
+            priority: 'medium',
+            triggerCount: 0,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+          {
+            id: 'alert-2',
+            name: 'Test Alert 2',
+            symbol: 'TSLA',
+            isActive: false,
+            condition: { type: 'price' },
+            actions: [],
+            tags: [],
+            priority: 'high',
+            triggerCount: 5,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          },
+        ];
+
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockAlerts),
+        });
+
+        await act(async () => {
+          await result.current.loadAlerts();
+        });
+
+        expect(result.current.alerts).toHaveLength(2);
+        expect(result.current.alertsBySymbol.get('AAPL')).toHaveLength(1);
+        expect(result.current.alertsBySymbol.get('TSLA')).toHaveLength(1);
+        expect(result.current.activeAlerts.has('alert-1')).toBe(true);
+        expect(result.current.activeAlerts.has('alert-2')).toBe(false);
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      it('should handle API failure', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+          ok: false,
+          status: 500,
+        });
+
+        await act(async () => {
+          await result.current.loadAlerts();
+        });
+
+        expect(result.current.error).toBe('Failed to load alerts');
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      it('should not load when feature is disabled', async () => {
+        setDevFlag('alertsV2', false);
+        const { result } = renderHook(() => useAlertsStore());
+
+        globalThis.fetch = vi.fn();
+
+        await act(async () => {
+          await result.current.loadAlerts();
+        });
+
+        expect(globalThis.fetch).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('loadExecutionHistory', () => {
+      it('should load execution history for alert', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const mockExecutions = [
+          {
+            id: 'exec-1',
+            alertId: 'alert-1',
+            triggeredAt: new Date().toISOString(),
+            conditionsMet: ['price_above'],
+            actionsExecuted: [],
+            success: true,
+          },
+          {
+            id: 'exec-2',
+            alertId: 'alert-1',
+            triggeredAt: new Date().toISOString(),
+            conditionsMet: ['price_above'],
+            actionsExecuted: [],
+            success: false,
+            error: 'Network error',
+          },
+        ];
+
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+          ok: true,
+          json: () => Promise.resolve(mockExecutions),
+        });
+
+        await act(async () => {
+          await result.current.loadExecutionHistory('alert-1');
+        });
+
+        expect(result.current.executionHistory.get('alert-1')).toHaveLength(2);
+      });
+
+      it('should handle API failure', async () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        globalThis.fetch = vi.fn().mockResolvedValueOnce({
+          ok: false,
+          status: 404,
+        });
+
+        await act(async () => {
+          await result.current.loadExecutionHistory('alert-1');
+        });
+
+        expect(result.current.error).toBe('Failed to load execution history');
+      });
+    });
+
+    describe('clearExecutionHistory', () => {
+      it('should clear execution history for alert', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        // Set up execution history
+        act(() => {
+          const history = new Map();
+          history.set('alert-1', [
+            { id: 'exec-1', alertId: 'alert-1', success: true },
+            { id: 'exec-2', alertId: 'alert-1', success: true },
+          ]);
+          useAlertsStore.setState({
+            executionHistory: history,
+            recentExecutions: [
+              { id: 'exec-1', alertId: 'alert-1', success: true },
+              { id: 'exec-2', alertId: 'alert-1', success: true },
+              { id: 'exec-3', alertId: 'alert-2', success: true },
+            ],
+          });
+        });
+
+        expect(result.current.executionHistory.get('alert-1')).toHaveLength(2);
+        expect(result.current.recentExecutions).toHaveLength(3);
+
+        act(() => {
+          result.current.clearExecutionHistory('alert-1');
+        });
+
+        expect(result.current.executionHistory.has('alert-1')).toBe(false);
+        // Recent executions for alert-1 should be removed
+        expect(result.current.recentExecutions).toHaveLength(1);
+        expect(result.current.recentExecutions[0]?.alertId).toBe('alert-2');
+      });
+    });
+  });
+
+  describe('Real-time Connection', () => {
+    describe('connectRealtime', () => {
+      it('should not connect when feature is disabled', () => {
+        setDevFlag('alertsV2', false);
+        const { result } = renderHook(() => useAlertsStore());
+
+        // When feature is disabled, connectRealtime should exit early
+        act(() => {
+          result.current.connectRealtime();
+        });
+
+        // State should remain disconnected
+        expect(result.current.realtimeConnected).toBe(false);
+      });
+    });
+
+    describe('disconnectRealtime', () => {
+      it('should disconnect and update state', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        // Set connected state
+        act(() => {
+          useAlertsStore.setState({ realtimeConnected: true });
+        });
+
+        expect(result.current.realtimeConnected).toBe(true);
+
+        act(() => {
+          result.current.disconnectRealtime();
+        });
+
+        expect(result.current.realtimeConnected).toBe(false);
+      });
+
+      it('should not disconnect when feature is disabled', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        act(() => {
+          useAlertsStore.setState({ realtimeConnected: true });
+        });
+
+        setDevFlag('alertsV2', false);
+
+        act(() => {
+          result.current.disconnectRealtime();
+        });
+
+        // State should remain unchanged
+        expect(result.current.realtimeConnected).toBe(true);
+      });
+    });
+  });
+
+  describe('Recent Executions', () => {
+    describe('getRecentExecutions', () => {
+      it('should return recent executions with default limit', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const executions = Array.from({ length: 30 }, (_, i) => ({
+          id: `exec-${i}`,
+          alertId: 'alert-1',
+          triggeredAt: new Date(),
+          conditionsMet: [],
+          actionsExecuted: [],
+          success: true,
+        }));
+
+        act(() => {
+          useAlertsStore.setState({ recentExecutions: executions });
+        });
+
+        const recent = result.current.getRecentExecutions();
+        expect(recent).toHaveLength(20); // Default limit is 20
+      });
+
+      it('should return executions with custom limit', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const executions = Array.from({ length: 30 }, (_, i) => ({
+          id: `exec-${i}`,
+          alertId: 'alert-1',
+          triggeredAt: new Date(),
+          conditionsMet: [],
+          actionsExecuted: [],
+          success: true,
+        }));
+
+        act(() => {
+          useAlertsStore.setState({ recentExecutions: executions });
+        });
+
+        const recent = result.current.getRecentExecutions(5);
+        expect(recent).toHaveLength(5);
+      });
+
+      it('should return all executions if less than limit', () => {
+        const { result } = renderHook(() => useAlertsStore());
+
+        const executions = [
+          { id: 'exec-1', alertId: 'alert-1', success: true },
+          { id: 'exec-2', alertId: 'alert-1', success: true },
+        ];
+
+        act(() => {
+          useAlertsStore.setState({ recentExecutions: executions });
+        });
+
+        const recent = result.current.getRecentExecutions(10);
+        expect(recent).toHaveLength(2);
+      });
+    });
+  });
+
   describe('Edge Cases', () => {
     it('should handle rapid alert creation', async () => {
       const { result } = renderHook(() => useAlertsStore());
