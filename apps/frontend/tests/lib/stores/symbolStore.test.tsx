@@ -26,6 +26,16 @@ describe('SymbolStore', () => {
       expect(symbolStore.get()).toBe('ETHUSD');
     });
 
+    it('should set symbol via setSymbol alias', () => {
+      symbolStore.setSymbol('SOLUSD');
+      expect(symbolStore.get()).toBe('SOLUSD');
+    });
+
+    it('should convert symbol to uppercase via setSymbol', () => {
+      symbolStore.setSymbol('adausd');
+      expect(symbolStore.get()).toBe('ADAUSD');
+    });
+
     it('should convert symbol to uppercase', () => {
       symbolStore.set('btcusd');
       expect(symbolStore.get()).toBe('BTCUSD');

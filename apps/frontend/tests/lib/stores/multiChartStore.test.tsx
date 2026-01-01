@@ -1,9 +1,15 @@
 /**
  * @vitest-environment jsdom
  */
-import { useMultiChartStore } from '@/lib/stores/multiChartStore';
+import {
+  useMultiChartStore,
+  MultiChartProvider,
+  useMultiChart,
+  LayoutSelector,
+  LinkingControls,
+} from '@/lib/stores/multiChartStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import { act, renderHook } from '@testing-library/react';
+import { act, renderHook, render, screen, fireEvent } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock feature flags
@@ -594,6 +600,195 @@ describe('MultiChartStore', () => {
       expect(result.current.linking.symbol).toBe(true);
       expect(result.current.linking.timeframe).toBe(true);
       expect(result.current.linking.cursor).toBe(true);
+    });
+  });
+
+  describe('MultiChartProvider and useMultiChart', () => {
+    const TestComponent = () => {
+      const context = useMultiChart();
+      return (
+        <div>
+          <span data-testid="layout">{context.currentLayout}</span>
+          <span data-testid="enabled">{String(context.isMultiChartEnabled)}</span>
+          <span data-testid="charts">{context.charts.length}</span>
+          <span data-testid="linking-symbol">{String(context.linking.symbol)}</span>
+          <button onClick={() => context.setLayout('2x2')}>Set 2x2</button>
+          <button onClick={() => context.updateLinking('symbol', true)}>Link Symbol</button>
+          <button onClick={() => context.changeSymbol('ETHUSDT', 'chart-1')}>Change Symbol</button>
+          <button onClick={() => context.changeTimeframe('4h', 'chart-1')}>Change TF</button>
+        </div>
+      );
+    };
+
+    it('should provide context values to children', () => {
+      render(
+        <MultiChartProvider>
+          <TestComponent />
+        </MultiChartProvider>
+      );
+
+      expect(screen.getByTestId('layout')).toHaveTextContent('1x1');
+      expect(screen.getByTestId('enabled')).toHaveTextContent('true');
+      expect(screen.getByTestId('charts')).toHaveTextContent('1');
+    });
+
+    it('should throw error when useMultiChart is used outside provider', () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      expect(() => render(<TestComponent />)).toThrow(
+        'useMultiChart must be used within MultiChartProvider'
+      );
+
+      consoleError.mockRestore();
+    });
+
+    it('should allow changing layout via context', () => {
+      render(
+        <MultiChartProvider>
+          <TestComponent />
+        </MultiChartProvider>
+      );
+
+      fireEvent.click(screen.getByText('Set 2x2'));
+      expect(screen.getByTestId('layout')).toHaveTextContent('2x2');
+      expect(screen.getByTestId('charts')).toHaveTextContent('4');
+    });
+
+    it('should allow updating linking via context', () => {
+      // Reset linking state first
+      const { result: storeResult } = renderHook(() => useMultiChartStore());
+      act(() => {
+        storeResult.current.updateLinking('symbol', false);
+      });
+
+      render(
+        <MultiChartProvider>
+          <TestComponent />
+        </MultiChartProvider>
+      );
+
+      expect(screen.getByTestId('linking-symbol')).toHaveTextContent('false');
+      fireEvent.click(screen.getByText('Link Symbol'));
+      expect(screen.getByTestId('linking-symbol')).toHaveTextContent('true');
+    });
+
+    it('should allow changing symbol via context', () => {
+      const { result } = renderHook(() => useMultiChartStore());
+
+      render(
+        <MultiChartProvider>
+          <TestComponent />
+        </MultiChartProvider>
+      );
+
+      fireEvent.click(screen.getByText('Change Symbol'));
+      // Symbol change affects the store
+      expect(result.current.charts[0].symbol).toBe('ETHUSDT');
+    });
+
+    it('should allow changing timeframe via context', () => {
+      const { result } = renderHook(() => useMultiChartStore());
+
+      render(
+        <MultiChartProvider>
+          <TestComponent />
+        </MultiChartProvider>
+      );
+
+      fireEvent.click(screen.getByText('Change TF'));
+      expect(result.current.charts[0].timeframe).toBe('4h');
+    });
+  });
+
+  describe('LayoutSelector Component', () => {
+    it('should render layout buttons when multiChart flag is enabled', () => {
+      render(
+        <MultiChartProvider>
+          <LayoutSelector />
+        </MultiChartProvider>
+      );
+
+      expect(screen.getByText('Layout:')).toBeInTheDocument();
+      expect(screen.getByText('1x1')).toBeInTheDocument();
+      expect(screen.getByText('1x2')).toBeInTheDocument();
+      expect(screen.getByText('2x2')).toBeInTheDocument();
+    });
+
+    it('should not render when multiChart flag is disabled', () => {
+      vi.mocked(FLAGS).multiChart = false;
+
+      const { container } = render(
+        <MultiChartProvider>
+          <LayoutSelector />
+        </MultiChartProvider>
+      );
+
+      expect(container.firstChild).toBeNull();
+
+      vi.mocked(FLAGS).multiChart = true; // Reset
+    });
+
+    it('should change layout when button is clicked', () => {
+      const { result } = renderHook(() => useMultiChartStore());
+
+      render(
+        <MultiChartProvider>
+          <LayoutSelector />
+        </MultiChartProvider>
+      );
+
+      fireEvent.click(screen.getByText('2x2'));
+      expect(result.current.layout).toBe('2x2');
+    });
+  });
+
+  describe('LinkingControls Component', () => {
+    it('should render linking checkboxes when multiChart flag is enabled', () => {
+      render(
+        <MultiChartProvider>
+          <LinkingControls />
+        </MultiChartProvider>
+      );
+
+      expect(screen.getByText('Link:')).toBeInTheDocument();
+      expect(screen.getByText('symbol')).toBeInTheDocument();
+      expect(screen.getByText('timeframe')).toBeInTheDocument();
+      expect(screen.getByText('cursor')).toBeInTheDocument();
+    });
+
+    it('should not render when multiChart flag is disabled', () => {
+      vi.mocked(FLAGS).multiChart = false;
+
+      const { container } = render(
+        <MultiChartProvider>
+          <LinkingControls />
+        </MultiChartProvider>
+      );
+
+      expect(container.firstChild).toBeNull();
+
+      vi.mocked(FLAGS).multiChart = true; // Reset
+    });
+
+    it('should toggle linking when checkbox is clicked', () => {
+      const { result } = renderHook(() => useMultiChartStore());
+      
+      // Reset linking state first
+      act(() => {
+        result.current.updateLinking('symbol', false);
+      });
+
+      render(
+        <MultiChartProvider>
+          <LinkingControls />
+        </MultiChartProvider>
+      );
+
+      const symbolCheckbox = screen.getByText('symbol').previousElementSibling as HTMLInputElement;
+      expect(symbolCheckbox.checked).toBe(false);
+
+      fireEvent.click(symbolCheckbox);
+      expect(result.current.linking.symbol).toBe(true);
     });
   });
 });
