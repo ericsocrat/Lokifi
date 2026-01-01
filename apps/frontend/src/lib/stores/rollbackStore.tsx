@@ -991,7 +991,7 @@ export const useRollbackStore = create<RollbackStore>()(
 
         try {
           // Execute steps in order
-          for (const step of plan.rollbackSteps.sort((a, b) => a.order - b.order)) {
+          for (const step of [...plan.rollbackSteps].sort((a, b) => a.order - b.order)) {
             const stepResult: RollbackStepResult = {
               stepId: step.id,
               startedAt: new Date(),
