@@ -1,50 +1,5 @@
 [
   {
-    "timestamp": "2025-10-19T15:38:43.528Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "0c1657cb"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T15:42:17.094Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "7a4a39c8"
-    }
-  },
-  {
-    "timestamp": "2025-10-19T16:31:31.638Z",
-    "coverage": {
-      "statements": 11.259037646472201,
-      "branches": 88.74856486796784,
-      "functions": 84.87394957983193,
-      "lines": 11.259037646472201
-    },
-    "tests": 83,
-    "files": 197,
-    "git": {
-      "branch": "test/workflow-optimizations-validation",
-      "commit": "5c217d00"
-    }
-  },
-  {
     "timestamp": "2025-10-19T17:47:54.882Z",
     "coverage": {
       "statements": 11.259037646472201,
@@ -447,6 +402,51 @@
     "git": {
       "branch": "main",
       "commit": "55942efa"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T13:17:29.066Z",
+    "coverage": {
+      "statements": 18.122798076710023,
+      "branches": 87.468671679198,
+      "functions": 83.06748466257669,
+      "lines": 18.122798076710023
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "96e7c796"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T13:18:27.628Z",
+    "coverage": {
+      "statements": 18.122798076710023,
+      "branches": 87.468671679198,
+      "functions": 83.06748466257669,
+      "lines": 18.122798076710023
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "96e7c796"
+    }
+  },
+  {
+    "timestamp": "2026-01-01T13:19:23.753Z",
+    "coverage": {
+      "statements": 18.122798076710023,
+      "branches": 87.468671679198,
+      "functions": 83.06748466257669,
+      "lines": 18.122798076710023
+    },
+    "tests": 0,
+    "files": 197,
+    "git": {
+      "branch": "main",
+      "commit": "96e7c796"
     }
   }
 ]

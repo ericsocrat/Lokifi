@@ -586,6 +586,296 @@ describe('WatchlistStore', () => {
         expect(alerts[1].id).toBeTruthy();
         expect(alerts[0].id).not.toBe(alerts[1].id);
       });
+
+      it('should not error when adding alert to non-existent symbol', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        expect(() => {
+          act(() => {
+            result.current.addAlert(watchlistId, 'NVDA', {
+              condition: 'above',
+              value: 500,
+              field: 'price',
+              isActive: true,
+            });
+          });
+        }).not.toThrow();
+      });
+
+      it('should not error when adding alert to non-existent watchlist', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        expect(() => {
+          act(() => {
+            result.current.addAlert('non-existent', 'AAPL', {
+              condition: 'above',
+              value: 150,
+              field: 'price',
+              isActive: true,
+            });
+          });
+        }).not.toThrow();
+      });
+
+      it('should initialize alerts array if undefined', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        // Add item without alerts explicitly
+        act(() => {
+          result.current.addToWatchlist(watchlistId, 'TSLA');
+        });
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'TSLA', {
+            condition: 'below',
+            value: 200,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const item = result.current.watchlists[0].items.find(
+          (i: { symbol: string }) => i.symbol === 'TSLA'
+        );
+        expect(item?.alerts).toHaveLength(1);
+      });
+    });
+
+    describe('removeAlert', () => {
+      it('should remove alert from watchlist item', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const alertId = result.current.watchlists[0].items[0].alerts![0].id;
+
+        act(() => {
+          result.current.removeAlert(watchlistId, 'AAPL', alertId);
+        });
+
+        expect(result.current.watchlists[0].items[0].alerts).toHaveLength(0);
+      });
+
+      it('should remove specific alert when multiple exist', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        // Small delay for unique IDs
+        await new Promise((resolve) => setTimeout(resolve, 5));
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'below',
+            value: 140,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const alerts = result.current.watchlists[0].items[0].alerts!;
+        const firstAlertId = alerts[0].id;
+
+        act(() => {
+          result.current.removeAlert(watchlistId, 'AAPL', firstAlertId);
+        });
+
+        expect(result.current.watchlists[0].items[0].alerts).toHaveLength(1);
+        expect(result.current.watchlists[0].items[0].alerts![0].condition).toBe('below');
+      });
+
+      it('should not error when removing non-existent alert', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        expect(() => {
+          act(() => {
+            result.current.removeAlert(watchlistId, 'AAPL', 'non-existent-id');
+          });
+        }).not.toThrow();
+
+        expect(result.current.watchlists[0].items[0].alerts).toHaveLength(1);
+      });
+
+      it('should not error when symbol has no alerts', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        expect(() => {
+          act(() => {
+            result.current.removeAlert(watchlistId, 'AAPL', 'any-id');
+          });
+        }).not.toThrow();
+      });
+
+      it('should update watchlist updatedAt timestamp', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const originalUpdatedAt = result.current.watchlists[0].updatedAt;
+        const alertId = result.current.watchlists[0].items[0].alerts![0].id;
+
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        act(() => {
+          result.current.removeAlert(watchlistId, 'AAPL', alertId);
+        });
+
+        expect(result.current.watchlists[0].updatedAt.getTime()).toBeGreaterThan(
+          originalUpdatedAt.getTime()
+        );
+      });
+    });
+
+    describe('toggleAlert', () => {
+      it('should toggle alert active state from true to false', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const alertId = result.current.watchlists[0].items[0].alerts![0].id;
+
+        act(() => {
+          result.current.toggleAlert(watchlistId, 'AAPL', alertId);
+        });
+
+        expect(result.current.watchlists[0].items[0].alerts![0].isActive).toBe(false);
+      });
+
+      it('should toggle alert active state from false to true', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: false,
+          });
+        });
+
+        const alertId = result.current.watchlists[0].items[0].alerts![0].id;
+
+        act(() => {
+          result.current.toggleAlert(watchlistId, 'AAPL', alertId);
+        });
+
+        expect(result.current.watchlists[0].items[0].alerts![0].isActive).toBe(true);
+      });
+
+      it('should toggle specific alert when multiple exist', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 5));
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'below',
+            value: 140,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const secondAlertId = result.current.watchlists[0].items[0].alerts![1].id;
+
+        act(() => {
+          result.current.toggleAlert(watchlistId, 'AAPL', secondAlertId);
+        });
+
+        expect(result.current.watchlists[0].items[0].alerts![0].isActive).toBe(true);
+        expect(result.current.watchlists[0].items[0].alerts![1].isActive).toBe(false);
+      });
+
+      it('should not error when toggling non-existent alert', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        expect(() => {
+          act(() => {
+            result.current.toggleAlert(watchlistId, 'AAPL', 'non-existent-id');
+          });
+        }).not.toThrow();
+      });
+
+      it('should update watchlist updatedAt timestamp', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.addAlert(watchlistId, 'AAPL', {
+            condition: 'above',
+            value: 150,
+            field: 'price',
+            isActive: true,
+          });
+        });
+
+        const originalUpdatedAt = result.current.watchlists[0].updatedAt;
+        const alertId = result.current.watchlists[0].items[0].alerts![0].id;
+
+        await new Promise((resolve) => setTimeout(resolve, 10));
+
+        act(() => {
+          result.current.toggleAlert(watchlistId, 'AAPL', alertId);
+        });
+
+        expect(result.current.watchlists[0].updatedAt.getTime()).toBeGreaterThan(
+          originalUpdatedAt.getTime()
+        );
+      });
     });
   });
 
@@ -695,6 +985,554 @@ describe('WatchlistStore', () => {
         }).not.toThrow();
       });
     });
+
+    describe('runScreener', () => {
+      it('should set loading state during screener execution', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        // Start screener (will resolve immediately with empty symbolDirectory)
+        const screenerPromise = result.current.runScreener();
+
+        // Can't reliably test intermediate loading state with fake timers
+        // Just verify completion
+        await screenerPromise;
+
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      it('should filter results using gt operator', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        // Setup symbolDirectory with test data
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+          directory.set('TSLA', {
+            symbol: 'TSLA',
+            price: 250,
+            changePercent: -1.2,
+            volume: 30000000,
+            marketCap: 800000000000,
+          });
+          directory.set('MSFT', {
+            symbol: 'MSFT',
+            price: 400,
+            changePercent: 1.0,
+            volume: 20000000,
+            marketCap: 2900000000000,
+          });
+        });
+
+        // Add filter for price > 200
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'gt',
+            value: 200,
+            label: 'Price > 200',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(2);
+        const symbols = result.current.screenerResults.map((r: { symbol: string }) => r.symbol);
+        expect(symbols).toContain('TSLA');
+        expect(symbols).toContain('MSFT');
+        expect(symbols).not.toContain('AAPL');
+      });
+
+      it('should filter results using lt operator', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'lt',
+            value: 200,
+            label: 'Price < 200',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(1);
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+      });
+
+      it('should filter results using gte operator', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 200, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 199, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'gte',
+            value: 200,
+            label: 'Price >= 200',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(1);
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+      });
+
+      it('should filter results using lte operator', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 200, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 201, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'lte',
+            value: 200,
+            label: 'Price <= 200',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(1);
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+      });
+
+      it('should filter results using eq operator', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 200, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'eq',
+            value: 200,
+            label: 'Price = 200',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(1);
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+      });
+
+      it('should filter results using between operator', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'between',
+            value: [170, 260],
+            label: 'Price 170-260',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(2);
+        const symbols = result.current.screenerResults.map((r: { symbol: string }) => r.symbol);
+        expect(symbols).toContain('AAPL');
+        expect(symbols).toContain('TSLA');
+      });
+
+      it('should handle between operator with incomplete value array', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'between',
+            value: [170], // Only one value - should filter out everything
+            label: 'Invalid between',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(0);
+      });
+
+      it('should sort results in descending order', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+        });
+
+        act(() => {
+          result.current.updateScreenerQuery({
+            sortBy: 'price',
+            sortOrder: 'desc',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults[0].symbol).toBe('MSFT');
+        expect(result.current.screenerResults[1].symbol).toBe('TSLA');
+        expect(result.current.screenerResults[2].symbol).toBe('AAPL');
+      });
+
+      it('should sort results in ascending order', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+        });
+
+        act(() => {
+          result.current.updateScreenerQuery({
+            sortBy: 'price',
+            sortOrder: 'asc',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+        expect(result.current.screenerResults[1].symbol).toBe('TSLA');
+        expect(result.current.screenerResults[2].symbol).toBe('MSFT');
+      });
+
+      it('should limit results to screenerQuery.limit', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+        });
+
+        act(() => {
+          result.current.updateScreenerQuery({ limit: 2 });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(2);
+      });
+
+      it('should apply multiple filters', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+          directory.set('MSFT', { symbol: 'MSFT', price: 400, changePercent: 1.0, volume: 20000000, marketCap: 2900000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'gt',
+            value: 100,
+            label: 'Price > 100',
+          });
+          result.current.addScreenerFilter({
+            field: 'changePercent',
+            operator: 'gt',
+            value: 0,
+            label: 'Positive change',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        // Only AAPL (2.5%) and MSFT (1.0%) have positive change
+        expect(result.current.screenerResults).toHaveLength(2);
+        const symbols = result.current.screenerResults.map((r: { symbol: string }) => r.symbol);
+        expect(symbols).toContain('AAPL');
+        expect(symbols).toContain('MSFT');
+      });
+
+      it('should handle symbols with undefined field values', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          // TSLA missing some fields
+          directory.set('TSLA', { symbol: 'TSLA' } as any);
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'gt',
+            value: 100,
+            label: 'Price > 100',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        // Only AAPL should pass (TSLA has undefined price)
+        expect(result.current.screenerResults).toHaveLength(1);
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+      });
+
+      it('should handle non-numeric field values gracefully', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 'not-a-number' as any, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+        });
+
+        act(() => {
+          result.current.addScreenerFilter({
+            field: 'price',
+            operator: 'gt',
+            value: 100,
+            label: 'Price > 100',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        // Only AAPL should pass
+        expect(result.current.screenerResults).toHaveLength(1);
+        expect(result.current.screenerResults[0].symbol).toBe('AAPL');
+      });
+
+      it('should clear error and set loading state', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.isLoading).toBe(false);
+        expect(result.current.error).toBeNull();
+      });
+
+      it('should return all symbols when no filters applied', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+          directory.set('TSLA', { symbol: 'TSLA', price: 250, changePercent: -1.2, volume: 30000000, marketCap: 800000000000 });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        expect(result.current.screenerResults).toHaveLength(2);
+      });
+
+      it('should handle default unknown operator gracefully', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+        });
+
+        // Force an unknown operator through direct state manipulation
+        act(() => {
+          result.current.screenerQuery.filters.push({
+            id: 'test-filter',
+            field: 'price',
+            operator: 'unknown-op' as any,
+            value: 100,
+            label: 'Unknown',
+          });
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        // Unknown operator should return true (pass through)
+        expect(result.current.screenerResults).toHaveLength(1);
+      });
+    });
+
+    describe('runScreener with feature flag disabled', () => {
+      it('should not run screener when feature flag is disabled', async () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          const directory = result.current.symbolDirectory;
+          directory.set('AAPL', { symbol: 'AAPL', price: 180, changePercent: 2.5, volume: 50000000, marketCap: 2800000000000 });
+        });
+
+        act(() => {
+          setDevFlag('watchlist', false);
+        });
+
+        await act(async () => {
+          await result.current.runScreener();
+        });
+
+        // State should remain unchanged when feature disabled
+        expect(result.current.screenerResults).toHaveLength(0);
+      });
+    });
+  });
+
+  describe('Data Management', () => {
+    describe('getSymbolMetrics', () => {
+      it('should return metrics for existing symbol', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.symbolDirectory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+        });
+
+        const metrics = result.current.getSymbolMetrics('AAPL');
+
+        expect(metrics).toBeDefined();
+        expect(metrics?.symbol).toBe('AAPL');
+        expect(metrics?.price).toBe(180);
+      });
+
+      it('should return undefined for non-existent symbol', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        const metrics = result.current.getSymbolMetrics('NVDA');
+
+        expect(metrics).toBeUndefined();
+      });
+
+      it('should be case-insensitive', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          result.current.symbolDirectory.set('AAPL', {
+            symbol: 'AAPL',
+            price: 180,
+            changePercent: 2.5,
+            volume: 50000000,
+            marketCap: 2800000000000,
+          });
+        });
+
+        const metrics = result.current.getSymbolMetrics('aapl');
+
+        expect(metrics).toBeDefined();
+        expect(metrics?.symbol).toBe('AAPL');
+      });
+    });
+
+    describe('refreshSymbolDirectory', () => {
+      // Note: refreshSymbolDirectory calls fetch('/api/symbols/metrics') directly.
+      // Due to module-level closures in Zustand stores, global.fetch mocking is unreliable.
+      // The following tests verify the feature flag guard and error handling paths.
+
+      it('should not refresh when feature flag is disabled', async () => {
+        const originalFetch = global.fetch;
+        const mockFetch = vi.fn();
+        global.fetch = mockFetch;
+
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          setDevFlag('watchlist', false);
+        });
+
+        await act(async () => {
+          await result.current.refreshSymbolDirectory();
+        });
+
+        // When feature is disabled, the function returns early before calling fetch
+        expect(mockFetch).not.toHaveBeenCalled();
+
+        global.fetch = originalFetch;
+      });
+
+      it('should have correct initial state', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        expect(result.current.symbolDirectory).toBeInstanceOf(Map);
+        expect(result.current.symbolDirectory.size).toBe(0);
+        expect(result.current.lastUpdated).toBeNull();
+      });
+    });
   });
 
   describe('Bulk Operations', () => {
@@ -725,6 +1563,85 @@ describe('WatchlistStore', () => {
         expect(importedId).toBeTruthy();
         const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
         expect(watchlist!.items).toHaveLength(0);
+      });
+
+      it('should convert symbols to uppercase', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        let importedId: string = '';
+        act(() => {
+          importedId = result.current.importWatchlist(['aapl', 'tsla', 'msft']);
+        });
+
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        expect(watchlist!.items.map((c: { symbol: string }) => c.symbol)).toEqual(['AAPL', 'TSLA', 'MSFT']);
+      });
+
+      it('should deduplicate symbols during import', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        let importedId: string = '';
+        act(() => {
+          importedId = result.current.importWatchlist(['AAPL', 'TSLA', 'AAPL', 'MSFT', 'TSLA']);
+        });
+
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        expect(watchlist!.items).toHaveLength(3);
+      });
+
+      it('should create watchlist with correct name', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        let importedId: string = '';
+        act(() => {
+          importedId = result.current.importWatchlist(['AAPL']);
+        });
+
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        expect(watchlist!.name).toBe('Imported Watchlist');
+      });
+
+      it('should set addedAt for each imported item', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        let importedId: string = '';
+        act(() => {
+          importedId = result.current.importWatchlist(['AAPL', 'TSLA']);
+        });
+
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        watchlist!.items.forEach((item: { addedAt: Date }) => {
+          expect(item.addedAt).toBeInstanceOf(Date);
+        });
+      });
+
+      it('should initialize alerts array for each imported item', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        let importedId: string = '';
+        act(() => {
+          importedId = result.current.importWatchlist(['AAPL', 'TSLA']);
+        });
+
+        const watchlist = result.current.watchlists.find((c: { id: string }) => c.id === importedId);
+        watchlist!.items.forEach((item: { alerts: unknown[] }) => {
+          expect(item.alerts).toEqual([]);
+        });
+      });
+
+      it('should return empty string when feature flag is disabled', () => {
+        const { result } = renderHook(() => useWatchlistStore());
+
+        act(() => {
+          setDevFlag('watchlist', false);
+        });
+
+        let importedId: string = '';
+        act(() => {
+          importedId = result.current.importWatchlist(['AAPL', 'TSLA']);
+        });
+
+        expect(importedId).toBe('');
       });
     });
 
