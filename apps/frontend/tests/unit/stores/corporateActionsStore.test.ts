@@ -36,11 +36,11 @@ import type {
   TradingSession,
 } from '@/lib/stores/corporateActionsStore';
 import {
-  useCorporateActionsStore,
-  useMarketHolidays,
   useActiveSessions,
-  useUpcomingActions,
+  useCorporateActionsStore,
   useDataQuality,
+  useMarketHolidays,
+  useUpcomingActions,
 } from '@/lib/stores/corporateActionsStore';
 
 // Helper to create mock corporate action

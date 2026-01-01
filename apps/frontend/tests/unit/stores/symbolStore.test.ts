@@ -7,8 +7,8 @@
  * Note: set() automatically converts to uppercase
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { symbolStore } from '@/lib/stores/symbolStore';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('symbolStore', () => {
   // Reset the store state before each test

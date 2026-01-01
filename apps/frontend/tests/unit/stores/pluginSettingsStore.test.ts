@@ -7,11 +7,8 @@
  * Features: Global settings + per-symbol overrides
  */
 
+import { pluginSettingsStore, pluginSymbolSettings } from '@/lib/stores/pluginSettingsStore';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  pluginSettingsStore,
-  pluginSymbolSettings,
-} from '@/lib/stores/pluginSettingsStore';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -384,9 +381,7 @@ describe('pluginSymbolSettings', () => {
   describe('Edge Cases', () => {
     it('should handle clearing non-existent key', () => {
       // Should not throw
-      expect(() =>
-        pluginSymbolSettings.clear('NONEXISTENT', 'FAKE')
-      ).not.toThrow();
+      expect(() => pluginSymbolSettings.clear('NONEXISTENT', 'FAKE')).not.toThrow();
     });
 
     it('should handle symbols with special characters', () => {
@@ -417,9 +412,7 @@ describe('localStorage error handling', () => {
     });
 
     // Should not throw
-    expect(() =>
-      pluginSettingsStore.set('channelDefaultWidthPct', 5.0)
-    ).not.toThrow();
+    expect(() => pluginSettingsStore.set('channelDefaultWidthPct', 5.0)).not.toThrow();
   });
 
   it('should handle corrupted JSON in localStorage', () => {

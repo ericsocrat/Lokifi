@@ -7,17 +7,16 @@
  * Features: Flags, params, style + per-symbol/timeframe persistence
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  indicatorStore,
   DEFAULT_INDICATOR_FLAGS,
   DEFAULT_INDICATOR_PARAMS,
   DEFAULT_INDICATOR_STYLE,
+  indicatorStore,
   type IndicatorFlags,
   type IndicatorParams,
   type IndicatorStyle,
-  type IndicatorSnapshot,
 } from '@/lib/stores/indicatorStore';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock localStorage
 const localStorageMock = (() => {

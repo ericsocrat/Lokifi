@@ -1,11 +1,11 @@
 {
   "version": "2.0.0",
-  "generated": "2026-01-01T15:09:50.413Z",
+  "generated": "2026-01-01T15:21:05.684Z",
   "git": {
     "branch": "main",
-    "commit": "238b18de",
+    "commit": "e72c5756",
     "author": "ericsocrat",
-    "message": "test(coverage): templatesStore comprehensive tests - 0% → 85.18% functions"
+    "message": "test(corporateActionsStore): add comprehensive tests - 86% function coverage (Session 105)"
   },
   "current": {
     "tests": {
@@ -18,7 +18,7 @@
     },
     "coverage": {
       "statements": 20.07,
-      "branches": 86.49,
+      "branches": 86.62,
       "functions": 83.99,
       "lines": 20.07
     },
@@ -28,8 +28,8 @@
         "total": 45131
       },
       "branches": {
-        "covered": 2675,
-        "total": 3093
+        "covered": 2681,
+        "total": 3095
       },
       "functions": {
         "covered": 724,
@@ -48,7 +48,7 @@
       "subcategory": null,
       "coverage": {
         "statements": 20.074893089007556,
-        "branches": 86.4856126737795,
+        "branches": 86.62358642972536,
         "functions": 83.9907192575406,
         "lines": 20.074893089007556
       },
@@ -1067,21 +1067,6 @@
   ],
   "trends": [
     {
-      "timestamp": "2025-12-31T18:55:40.196Z",
-      "coverage": {
-        "statements": 17.155201063476238,
-        "branches": 87.68642447418739,
-        "functions": 80.02466091245375,
-        "lines": 17.155201063476238
-      },
-      "tests": 0,
-      "files": 197,
-      "git": {
-        "branch": "main",
-        "commit": "29d0dd91"
-      }
-    },
-    {
       "timestamp": "2025-12-31T19:07:25.860Z",
       "coverage": {
         "statements": 17.155201063476238,
@@ -1515,6 +1500,21 @@
         "branch": "main",
         "commit": "238b18de"
       }
+    },
+    {
+      "timestamp": "2026-01-01T15:21:05.684Z",
+      "coverage": {
+        "statements": 20.074893089007556,
+        "branches": 86.62358642972536,
+        "functions": 83.9907192575406,
+        "lines": 20.074893089007556
+      },
+      "tests": 0,
+      "files": 197,
+      "git": {
+        "branch": "main",
+        "commit": "e72c5756"
+      }
     }
   ],
   "delta": {
@@ -1525,10 +1525,10 @@
       "color": "gray"
     },
     "branches": {
-      "text": "→ 0.00%",
-      "value": 0,
-      "direction": "→",
-      "color": "gray"
+      "text": "↑ 0.14%",
+      "value": 0.1379737559458647,
+      "direction": "↑",
+      "color": "green"
     },
     "functions": {
       "text": "→ 0.00%",
@@ -1545,14 +1545,14 @@
   },
   "weeklyTrend": {
     "statements": 0.6691631029669196,
-    "branches": -0.05413348520512784,
+    "branches": 0.08384027074073686,
     "functions": 0.0239734143102055,
     "lines": 0.6691631029669196
   },
   "metadata": {
-    "totalRuns": 54,
+    "totalRuns": 55,
     "firstRun": "2025-10-19T14:49:34.228Z",
-    "lastRun": "2026-01-01T15:09:50.413Z",
+    "lastRun": "2026-01-01T15:21:05.684Z",
     "bestCoverage": {
       "statements": 20.074893089007556,
       "branches": 86.4856126737795,

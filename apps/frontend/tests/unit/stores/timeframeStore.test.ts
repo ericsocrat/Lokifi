@@ -6,8 +6,8 @@
  * Pattern: Module-level state with get/set/subscribe
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { timeframeStore, type TF } from '@/lib/stores/timeframeStore';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('timeframeStore', () => {
   // Reset the store state before each test
@@ -22,17 +22,7 @@ describe('timeframeStore', () => {
     });
 
     it('should be a valid TF type', () => {
-      const validTimeframes: TF[] = [
-        '1m',
-        '5m',
-        '15m',
-        '30m',
-        '1h',
-        '4h',
-        '1d',
-        '1w',
-        '1M',
-      ];
+      const validTimeframes: TF[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M'];
       expect(validTimeframes).toContain(timeframeStore.get());
     });
   });
@@ -51,20 +41,13 @@ describe('timeframeStore', () => {
   });
 
   describe('set()', () => {
-    it.each([
-      ['1m'],
-      ['5m'],
-      ['15m'],
-      ['30m'],
-      ['1h'],
-      ['4h'],
-      ['1d'],
-      ['1w'],
-      ['1M'],
-    ] as [TF][])('should set timeframe to %s', (tf) => {
-      timeframeStore.set(tf);
-      expect(timeframeStore.get()).toBe(tf);
-    });
+    it.each([['1m'], ['5m'], ['15m'], ['30m'], ['1h'], ['4h'], ['1d'], ['1w'], ['1M']] as [TF][])(
+      'should set timeframe to %s',
+      (tf) => {
+        timeframeStore.set(tf);
+        expect(timeframeStore.get()).toBe(tf);
+      }
+    );
 
     it('should notify all subscribers when set', () => {
       const listener1 = vi.fn();
@@ -186,17 +169,7 @@ describe('timeframeStore', () => {
       const listener = vi.fn();
       timeframeStore.subscribe(listener);
 
-      const timeframes: TF[] = [
-        '1m',
-        '5m',
-        '15m',
-        '30m',
-        '1h',
-        '4h',
-        '1d',
-        '1w',
-        '1M',
-      ];
+      const timeframes: TF[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M'];
       timeframes.forEach((tf) => timeframeStore.set(tf));
 
       expect(listener).toHaveBeenCalledTimes(9);
@@ -208,17 +181,7 @@ describe('timeframeStore', () => {
     it('should only accept valid TF values', () => {
       // This test validates type safety at compile time
       // All these should work without TypeScript errors
-      const validTFs: TF[] = [
-        '1m',
-        '5m',
-        '15m',
-        '30m',
-        '1h',
-        '4h',
-        '1d',
-        '1w',
-        '1M',
-      ];
+      const validTFs: TF[] = ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w', '1M'];
 
       validTFs.forEach((tf) => {
         timeframeStore.set(tf);
