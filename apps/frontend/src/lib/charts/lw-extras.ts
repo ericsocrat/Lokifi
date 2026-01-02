@@ -31,7 +31,7 @@ export function wireLightweightChartsExtras(
         vr &&
         'from' in vr &&
         'to' in vr &&
-        [vr.from, vr.to].every((v: any) => Number.isFinite(Number(v)))
+        [vr.from, vr.to].every((v) => Number.isFinite(Number(v)))
       ) {
         const fromIdx = Math.max(0, Math.floor(Number(vr.from)));
         const toIdx = Math.ceil(Number(vr.to));

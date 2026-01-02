@@ -1,14 +1,14 @@
 import * as Y from 'yjs'
 import { WebsocketProvider } from 'y-websocket'
 import type { Drawing } from '@/lib/utils/drawings'
-import { useChartStore } from '@/state/store'
+import { useChartStore, type ChartState } from '@/state/store'
 
 let doc: Y.Doc | null = null
 let provider: WebsocketProvider | null = null
-let yDrawings: Y.Array<any> | null = null
+let yDrawings: Y.Array<Drawing> | null = null
 
 export function startCollab(roomId: string, endpoint = 'wss://demos.yjs.dev'): { stop: () => void } {
-  const s = (useChartStore as any).getState()
+  const s = useChartStore.getState()
   doc = new Y.Doc()
   provider = new WebsocketProvider(endpoint, roomId, doc)
   yDrawings = doc.getArray('drawings')
@@ -20,7 +20,7 @@ export function startCollab(roomId: string, endpoint = 'wss://demos.yjs.dev'): {
   })
 
   // local → remote
-  const unsub = useChartStore.subscribe((state: any) => {
+  const unsub = useChartStore.subscribe((state: ChartState) => {
     if (!yDrawings) return
     doc!.transact(() => {
       yDrawings!.delete(0, yDrawings!.length)

@@ -6,10 +6,11 @@ import { priceToY } from '@/lib/charts/chartMap'
  * Returns a cleanup function.
  */
 export function startPriceFeed(getLastPrice: () => number | null, intervalMs = 500) {
-  const st = (useChartStore as any).getState?.()
+  // any required: evaluateAlerts is not typed in ChartState interface (planned feature)
+  const st = (useChartStore as unknown as { getState: () => { evaluateAlerts?: (prevY: number | null, y: number) => void } }).getState()
   if (!st) return () => {}
   let prevY: number | null = null
-  let t: any = null
+  let t: ReturnType<typeof setInterval> | null = null
 
   const tick = () => {
     try {
@@ -17,7 +18,7 @@ export function startPriceFeed(getLastPrice: () => number | null, intervalMs = 5
       if (p == null) return
       const y = priceToY(p)
       if (y == null) return
-      st.evaluateAlerts(prevY, y)
+      st.evaluateAlerts?.(prevY, y)
       prevY = y
     } catch {}
   }
