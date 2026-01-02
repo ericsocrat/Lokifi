@@ -3,7 +3,7 @@
  * Connects portfolio storage to dashboard metrics and calculations
  */
 
-import { loadPortfolio, totalValue, type PortfolioSection, type Asset } from './portfolioStorage';
+import { loadPortfolio, totalValue, type Asset, type PortfolioSection } from './portfolioStorage';
 
 export interface DashboardStats {
   netWorth: number;
@@ -55,13 +55,30 @@ export function getStats(): DashboardStats {
     const sectionValue = section.assets.reduce((sum: number, asset: Asset) => sum + asset.value, 0);
 
     // Categorize based on section title
-    if (sectionTitle.includes('invest') || sectionTitle.includes('stock') || sectionTitle.includes('crypto')) {
+    if (
+      sectionTitle.includes('invest') ||
+      sectionTitle.includes('stock') ||
+      sectionTitle.includes('crypto')
+    ) {
       investableAssets += sectionValue;
-    } else if (sectionTitle.includes('cash') || sectionTitle.includes('bank') || sectionTitle.includes('checking') || sectionTitle.includes('savings')) {
+    } else if (
+      sectionTitle.includes('cash') ||
+      sectionTitle.includes('bank') ||
+      sectionTitle.includes('checking') ||
+      sectionTitle.includes('savings')
+    ) {
       cashOnHand += sectionValue;
-    } else if (sectionTitle.includes('real estate') || sectionTitle.includes('property') || sectionTitle.includes('house')) {
+    } else if (
+      sectionTitle.includes('real estate') ||
+      sectionTitle.includes('property') ||
+      sectionTitle.includes('house')
+    ) {
       illiquid += sectionValue;
-    } else if (sectionTitle.includes('debt') || sectionTitle.includes('loan') || sectionTitle.includes('mortgage')) {
+    } else if (
+      sectionTitle.includes('debt') ||
+      sectionTitle.includes('loan') ||
+      sectionTitle.includes('mortgage')
+    ) {
       debts += sectionValue;
     } else {
       // Default to investable assets
@@ -138,8 +155,14 @@ export function getAllocationByAssetType(): AllocationItem[] {
   });
 
   const colors = [
-    '#a78bfa', '#c4b5fd', '#e9d5ff', '#ddd6fe',
-    '#c7d2fe', '#a5b4fc', '#93c5fd', '#7dd3fc',
+    '#a78bfa',
+    '#c4b5fd',
+    '#e9d5ff',
+    '#ddd6fe',
+    '#c7d2fe',
+    '#a5b4fc',
+    '#93c5fd',
+    '#7dd3fc',
   ];
 
   let colorIndex = 0;
@@ -156,9 +179,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
   });
 
   // Return top 10 only
-  return allocations
-    .sort((a: AllocationItem, b: AllocationItem) => b.value - a.value)
-    .slice(0, 10);
+  return allocations.sort((a: AllocationItem, b: AllocationItem) => b.value - a.value).slice(0, 10);
 }
 
 /**
@@ -180,9 +201,7 @@ export function getTopHoldings(limit: number = 5): TopHolding[] {
     });
   });
 
-  return holdings
-    .sort((a: TopHolding, b: TopHolding) => b.value - a.value)
-    .slice(0, limit);
+  return holdings.sort((a: TopHolding, b: TopHolding) => b.value - a.value).slice(0, limit);
 }
 
 /**
@@ -197,7 +216,7 @@ export function getNetWorthTrend(days: number = 30): NetWorthTrend[] {
   for (let i = days - 1; i >= 0; i--) {
     const date = new Date(today);
     date.setDate(date.getDate() - i);
-    
+
     // Simulate slight variation
     const variation = (Math.random() - 0.5) * 0.02; // ±1%
     const value = currentValue * (1 + variation);
@@ -225,11 +244,11 @@ export function getNetWorthChange(period: '1d' | '7d' | '30d' | '1y' | 'all' = '
   changePercent: number;
 } {
   const current = getTotalNetWorth();
-  
+
   // For now, simulate change (in real app, calculate from historical data)
-  const daysMap = { '1d': 1, '7d': 7, '30d': 30, '1y': 365, 'all': 365 };
+  const daysMap = { '1d': 1, '7d': 7, '30d': 30, '1y': 365, all: 365 };
   const days = daysMap[period] || 1;
-  
+
   // Simulate previous value (5% variation)
   const variation = (Math.random() - 0.3) * 0.05 * (days / 30);
   const previous = current * (1 - variation);
@@ -256,5 +275,8 @@ export function hasAssets(): boolean {
  */
 export function getAssetCount(): number {
   const portfolio = loadPortfolio();
-  return portfolio.reduce((count: number, section: PortfolioSection) => count + section.assets.length, 0);
+  return portfolio.reduce(
+    (count: number, section: PortfolioSection) => count + section.assets.length,
+    0
+  );
 }

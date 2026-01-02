@@ -569,9 +569,7 @@ export const useChartStore = create<ChartState>()(
         const first = boundsList[0];
         const last = boundsList[total - 1];
         const space =
-          direction === 'h'
-            ? (last.x - first.x) / (total - 1)
-            : (last.y - first.y) / (total - 1);
+          direction === 'h' ? (last.x - first.x) / (total - 1) : (last.y - first.y) / (total - 1);
 
         // Create a map of id -> new position
         const positionMap = new Map<string, { x: number; y: number }>();

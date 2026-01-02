@@ -21,10 +21,12 @@ import { calculateWilliamsR } from '@/services/indicators/williams-r';
 import { useChartStore } from '@/state/store';
 import type { IChartApi, ISeriesApi, ITimeScaleApi, Time } from 'lightweight-charts';
 import { createChart, LineStyle, type TimeRangeChangeEventHandler } from 'lightweight-charts';
+import React from 'react';
 
 // lightweight-charts Series interface extension (chart() method is internal but available)
-interface ISeriesApiWithChart<T extends 'Candlestick' | 'Line' | 'Histogram'>
-  extends ISeriesApi<T> {
+interface ISeriesApiWithChart<
+  T extends 'Candlestick' | 'Line' | 'Histogram',
+> extends ISeriesApi<T> {
   chart(): IChartApi;
 }
 
@@ -58,7 +60,6 @@ type IndicatorKey =
   | '_williamsR'
   | '_obv'
   | '_adLine';
-import React from 'react';
 
 import {
   bucketCountFor,

@@ -6,6 +6,7 @@
  * price/time coordinate conversion, ensuring lines anchor correctly to chart data.
  */
 
+import type { BitmapCoordinatesRenderingScope, CanvasRenderingTarget2D } from 'fancy-canvas';
 import type {
   AutoscaleInfo,
   IChartApi,
@@ -68,8 +69,8 @@ class TrendLinePaneRenderer {
     this._options = options;
   }
 
-  draw(target: any) {
-    target.useBitmapCoordinateSpace((scope: any) => {
+  draw(target: CanvasRenderingTarget2D) {
+    target.useBitmapCoordinateSpace((scope: BitmapCoordinatesRenderingScope) => {
       if (
         this._p1.x === null ||
         this._p1.y === null ||
@@ -101,7 +102,13 @@ class TrendLinePaneRenderer {
     });
   }
 
-  private _drawLabel(scope: any, text: string, x: number, y: number, left: boolean) {
+  private _drawLabel(
+    scope: BitmapCoordinatesRenderingScope,
+    text: string,
+    x: number,
+    y: number,
+    left: boolean
+  ) {
     const ctx = scope.context;
     ctx.font = `${14 * scope.verticalPixelRatio}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial`;
 
@@ -177,8 +184,8 @@ class TrendLinePaneView {
 }
 
 export class TrendLinePrimitive implements ISeriesPrimitive<Time> {
-  _chart: IChartApi;
-  _series: ISeriesApi<SeriesType>;
+  _chart: IChartApi | null = null;
+  _series: ISeriesApi<SeriesType> | null = null;
   _p1: TrendLinePoint;
   _p2: TrendLinePoint;
   _paneViews: TrendLinePaneView[];
@@ -197,9 +204,7 @@ export class TrendLinePrimitive implements ISeriesPrimitive<Time> {
       ...options,
     };
     this._paneViews = [new TrendLinePaneView(this)];
-    // Chart and series will be set in attached()
-    this._chart = null as any;
-    this._series = null as any;
+    // _chart and _series are initialized as null, set in attached()
   }
 
   attached(param: SeriesAttachedParameter<Time>) {
@@ -209,8 +214,8 @@ export class TrendLinePrimitive implements ISeriesPrimitive<Time> {
   }
 
   detached() {
-    this._chart = null as any;
-    this._series = null as any;
+    this._chart = null;
+    this._series = null;
     this._requestUpdate = undefined;
   }
 
@@ -254,6 +259,7 @@ export class TrendLinePrimitive implements ISeriesPrimitive<Time> {
   }
 
   private _pointIndex(p: TrendLinePoint): number | null {
+    if (!this._chart) return null;
     const coordinate = this._chart.timeScale().timeToCoordinate(p.time);
     if (coordinate === null) return null;
     const index = this._chart.timeScale().coordinateToLogical(coordinate);

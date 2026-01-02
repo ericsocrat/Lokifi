@@ -15,7 +15,7 @@ export interface PortfolioSection {
 // Load portfolio from localStorage
 export function loadPortfolio(): PortfolioSection[] {
   if (typeof window === 'undefined') return [];
-  
+
   try {
     const stored = localStorage.getItem('portfolio');
     if (stored) {
@@ -24,14 +24,14 @@ export function loadPortfolio(): PortfolioSection[] {
   } catch (error) {
     console.error('Error loading portfolio:', error);
   }
-  
+
   return [];
 }
 
 // Save portfolio to localStorage
 export function savePortfolio(sections: PortfolioSection[]): void {
   if (typeof window === 'undefined') return;
-  
+
   try {
     localStorage.setItem('portfolio', JSON.stringify(sections));
   } catch (error) {
@@ -43,13 +43,13 @@ export function savePortfolio(sections: PortfolioSection[]): void {
 export function addAssets(sectionTitle: string, assets: Asset[]): void {
   const sections = loadPortfolio();
   const sectionIndex = sections.findIndex((s: PortfolioSection) => s.title === sectionTitle);
-  
+
   if (sectionIndex >= 0) {
     sections[sectionIndex].assets.push(...assets);
   } else {
     sections.push({ title: sectionTitle, assets });
   }
-  
+
   savePortfolio(sections);
 }
 
@@ -64,7 +64,7 @@ export function addSection(section: PortfolioSection): void {
 export function deleteAsset(sectionTitle: string, assetId: string): void {
   const sections = loadPortfolio();
   const section = sections.find((s: PortfolioSection) => s.title === sectionTitle);
-  
+
   if (section) {
     section.assets = section.assets.filter((a: Asset) => a.id !== assetId);
     savePortfolio(sections);

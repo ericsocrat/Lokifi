@@ -1048,7 +1048,8 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
 
           try {
             const winExt = window as WindowWithExtensions;
-            const SpeechRecognitionClass = winExt.SpeechRecognition || winExt.webkitSpeechRecognition;
+            const SpeechRecognitionClass =
+              winExt.SpeechRecognition || winExt.webkitSpeechRecognition;
             if (!SpeechRecognitionClass) {
               throw new Error('SpeechRecognition not available');
             }
@@ -1188,7 +1189,9 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           if (!FLAGS.mobileA11y || !('screen' in window)) return;
 
           // Screen orientation lock API - cast through unknown for browser compatibility
-          const screenOrientation = window.screen.orientation as unknown as ScreenOrientationExtended | undefined;
+          const screenOrientation = window.screen.orientation as unknown as
+            | ScreenOrientationExtended
+            | undefined;
           if (!screenOrientation?.lock) return;
 
           try {
@@ -1206,7 +1209,9 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           if (!FLAGS.mobileA11y || !('screen' in window)) return;
 
           // Screen orientation unlock API - cast through unknown for browser compatibility
-          const screenOrientation = window.screen.orientation as unknown as ScreenOrientationExtended | undefined;
+          const screenOrientation = window.screen.orientation as unknown as
+            | ScreenOrientationExtended
+            | undefined;
           if (!screenOrientation?.unlock) return;
 
           try {

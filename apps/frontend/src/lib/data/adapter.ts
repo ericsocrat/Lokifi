@@ -273,7 +273,7 @@ function genMock(tf: string, n: number): Candle[] {
     const close = Math.max(low, Math.min(high, open + drift));
     p = close;
     // any required: Time type narrowing limitation (t is number at runtime)
-  out.push({ time: t as Time, open, high, low, close, volume: vol });
+    out.push({ time: t as Time, open, high, low, close, volume: vol });
     t += step;
   }
   return out;
