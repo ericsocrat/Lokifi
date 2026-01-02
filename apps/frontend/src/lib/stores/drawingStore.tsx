@@ -50,7 +50,7 @@ export interface DrawingObject {
     createdAt: number;
     updatedAt: number;
   };
-  // any required: Arbitrary user-defined metadata (application-specific key-value pairs)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Arbitrary user-defined metadata (application-specific key-value pairs)
   metadata?: Record<string, any>;
 }
 

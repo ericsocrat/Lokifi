@@ -4,12 +4,14 @@ export type PluginMeta = {
   description?: string;
   version?: string;
   permissions?: ('read' | 'write' | 'draw' | 'alerts')[];
-  settings?: Record<string, any>; // any required: Plugin settings can be of any type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin settings can be of any type
+  settings?: Record<string, any>;
 };
 
 export type PluginHooks = Partial<{
   onSelect(ids: string[]): void;
-  onAlert(event: any): void; // any required: Alert event structure varies by plugin type
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Alert event structure varies by plugin type
+  onAlert(event: any): void;
   onContextMenu?(payload: {
     selection: string[];
     add(menu: { label: string; action: () => void }[]): void;
@@ -20,8 +22,9 @@ export type Registered = {
   meta: PluginMeta;
   hooks: PluginHooks;
   enabled: boolean;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin defaults can be of any type
   defaults?: Record<string, any>;
-}; // any required: Plugin defaults can be of any type
+};
 
 const registry = new Map<string, Registered>();
 

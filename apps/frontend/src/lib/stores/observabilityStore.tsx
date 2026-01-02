@@ -1182,10 +1182,13 @@ export const useObservabilityStore = create<ObservabilityStore>()(
           }
         },
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Log data can be any structure
         debug: (message: string, data?: unknown) =>
           get().log('debug', message, data as Record<string, any> | undefined),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Log data can be any structure
         info: (message: string, data?: unknown) =>
           get().log('info', message, data as Record<string, any> | undefined),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Log data can be any structure
         warn: (message: string, data?: unknown) =>
           get().log('warn', message, data as Record<string, any> | undefined),
         error: (message, error, data = {}) => {

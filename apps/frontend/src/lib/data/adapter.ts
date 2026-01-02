@@ -216,7 +216,7 @@ function normalizeCandles(arr: unknown[]): Candle[] {
   return Array.isArray(arr) ? (arr.map(normalizeCandle).filter(Boolean) as Candle[]) : [];
 }
 
-// any required: External API data formats vary (object with keys OR array)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- External API data formats vary (object with keys OR array)
 function normalizeCandle(obj: any): Candle | null {
   if (!obj) return null;
   const t = obj.time ?? obj.t ?? obj[0];
@@ -231,7 +231,7 @@ function normalizeCandle(obj: any): Candle | null {
   return { time, open, high, low, close, volume: vol };
 }
 
-// any required: Input can be string or number from external APIs
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Input can be string or number from external APIs
 function toNum(x: any) {
   const n = typeof x === 'string' ? parseFloat(x) : x;
   return typeof n === 'number' ? n : NaN;

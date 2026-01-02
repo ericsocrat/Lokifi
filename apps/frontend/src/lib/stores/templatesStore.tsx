@@ -61,7 +61,7 @@ export interface IndicatorConfig {
   id: string;
   type: string;
   name: string;
-  // any required: Indicator-specific parameters (structure varies by indicator type: RSI, MACD, Bollinger Bands, etc.)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Indicator-specific parameters (structure varies by indicator type: RSI, MACD, Bollinger Bands, etc.)
   parameters: Record<string, any>;
   style: {
     color: string;
@@ -81,7 +81,7 @@ export interface DrawingConfig {
     fillColor?: string;
     textColor?: string;
   };
-  // any required: Drawing-specific properties (structure varies by drawing type: trendline, fibonacci, etc.)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Drawing-specific properties (structure varies by drawing type: trendline, fibonacci, etc.)
   properties: Record<string, any>;
 }
 

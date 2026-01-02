@@ -36,7 +36,8 @@ export interface Layer {
 
 // DrawingSettings type (flexible)
 export interface DrawingSettings {
-  [key: string]: any; // any required: Drawing settings are dynamic and tool-specific
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Drawing settings are dynamic and tool-specific
+  [key: string]: any;
 }
 
 export interface IndicatorSettings {

@@ -81,7 +81,7 @@ export interface EnvironmentConfig {
   scaling: ScalingConfig;
 
   // Custom settings
-  // any required: User-defined environment configuration (varies by provider)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- User-defined environment configuration (varies by provider)
   customSettings: Record<string, any>;
 }
 
@@ -174,7 +174,7 @@ export interface SecurityConfig {
   // Authentication
   authentication: {
     provider: 'internal' | 'oauth' | 'saml' | 'ldap';
-    // any required: Auth provider configuration (structure varies by provider)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Auth provider configuration (structure varies by provider)
     config: Record<string, any>;
   };
 
@@ -211,7 +211,7 @@ export interface SecurityRule {
   id: string;
   resource: string;
   action: string;
-  // any required: Security rule conditions (arbitrary evaluation criteria)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Security rule conditions (arbitrary evaluation criteria)
   conditions: Record<string, any>;
   effect: 'allow' | 'deny';
 }
@@ -492,7 +492,7 @@ export interface DeploymentChange {
   type: 'service' | 'config' | 'infrastructure';
   component: string;
   action: 'create' | 'update' | 'delete';
-  // any required: Deployment change details (structure varies by change type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Deployment change details (structure varies by change type)
   details: Record<string, any>;
 }
 
@@ -529,7 +529,7 @@ export interface EnvironmentComparison {
 export interface EnvironmentDifference {
   category: 'config' | 'services' | 'infrastructure' | 'security';
   path: string;
-  // any required: Environment-specific values (types vary by configuration path)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Environment-specific values (types vary by configuration path)
   environmentValues: Record<string, any>;
   severity: 'low' | 'medium' | 'high';
   description: string;
@@ -614,7 +614,7 @@ export interface SyncTransformation {
   scope: SyncScope;
   path: string;
   operation: 'replace' | 'transform' | 'ignore';
-  // any required: Transformation configuration (depends on operation type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Transformation configuration (depends on operation type)
   config: Record<string, any>;
 }
 
@@ -725,7 +725,7 @@ interface EnvironmentManagementActions {
   ) => string;
   updateTemplate: (templateId: string, updates: Partial<EnvironmentTemplate>) => void;
   deleteTemplate: (templateId: string) => void;
-  // any required: Template variables (arbitrary key-value pairs for substitution)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Template variables (arbitrary key-value pairs for substitution)
   applyTemplate: (templateId: string, variables: Record<string, any>) => Promise<string>;
 
   // Environment Comparison
