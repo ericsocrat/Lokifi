@@ -97,6 +97,22 @@ type RulerDrawing = BaseDrawing & {
   points: [Point, Point];
 };
 
+// Group drawing type for grouped drawings
+type GroupDrawing = BaseDrawing & {
+  kind: 'group';
+  type: 'group';
+  children: Drawing[];
+};
+
+// Position metadata for align/distribute operations
+export interface DrawingBounds {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 // Union of all drawing types
 export type Drawing =
   | TrendlineDrawing
@@ -110,7 +126,8 @@ export type Drawing =
   | ParallelChannelDrawing
   | PitchforkDrawing
   | TextDrawing
-  | RulerDrawing;
+  | RulerDrawing
+  | GroupDrawing;
 
 export const DEFAULT_STYLE: DrawingStyle = {
   stroke: '#9ca3af',
@@ -175,6 +192,9 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
       return { ...d, points: [{ x: p.x, y: d.points[0].y }] };
     case 'text':
       return { ...d, points: [p] };
+    case 'group':
+      // Groups don't have their own geometry - they contain child drawings
+      return d;
     default:
       // TypeScript exhaustiveness check
       const _exhaustive: never = d;

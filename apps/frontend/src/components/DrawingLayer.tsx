@@ -458,9 +458,20 @@ export default function DrawingLayer() {
     if (marquee) {
       const r = rectFromPoints(marquee.start, marquee.end);
       const ids = drawings
-        .filter(
-          (d: Drawing) => !d.hidden && !d.locked && d.points.some((pt: Point) => withinRect(pt, r))
-        )
+        .filter((d: Drawing) => {
+          if (d.hidden || d.locked) return false;
+          // Groups don't have points directly, check children recursively
+          if (d.kind === 'group') {
+            const checkPoints = (drawings: Drawing[]): boolean =>
+              drawings.some((child) =>
+                child.kind === 'group'
+                  ? checkPoints(child.children)
+                  : child.points.some((pt: Point) => withinRect(pt, r))
+              );
+            return checkPoints(d.children);
+          }
+          return d.points.some((pt: Point) => withinRect(pt, r));
+        })
         .map((d: Drawing) => d.id);
       s.setSelection(new Set(ids));
       setMarquee(null);

@@ -1,16 +1,49 @@
-import type { Drawing } from '@/lib/utils/drawings';
+import type { Drawing, Point } from '@/lib/utils/drawings';
 
 type B = { minX: number; maxX: number; minY: number; maxY: number; cx: number; cy: number };
 
+/**
+ * Get points from a drawing, handling groups which don't have direct points.
+ * Groups calculate their bounds from children.
+ */
+function getPoints(d: Drawing): Point[] {
+  if (d.kind === 'group') {
+    // For groups, collect all points from children
+    return d.children.flatMap(getPoints);
+  }
+  return d.points;
+}
+
 function bbox(d: Drawing): B {
-  const pts = d.points;
-  const xs = pts.map((p) => p.x),
-    ys = pts.map((p) => p.y);
+  const pts = getPoints(d);
+  if (pts.length === 0) {
+    // Fallback for empty groups
+    return { minX: 0, maxX: 0, minY: 0, maxY: 0, cx: 0, cy: 0 };
+  }
+  const xs = pts.map((p: Point) => p.x),
+    ys = pts.map((p: Point) => p.y);
   const minX = Math.min(...xs),
     maxX = Math.max(...xs);
   const minY = Math.min(...ys),
     maxY = Math.max(...ys);
   return { minX, maxX, minY, maxY, cx: (minX + maxX) / 2, cy: (minY + maxY) / 2 };
+}
+
+/**
+ * Transform a drawing by applying delta to all its points.
+ * Handles groups by recursively transforming children.
+ */
+function transformDrawing(d: Drawing, dx: number, dy: number): Drawing {
+  if (d.kind === 'group') {
+    return {
+      ...d,
+      children: d.children.map((child) => transformDrawing(child, dx, dy)),
+    };
+  }
+  return {
+    ...d,
+    points: d.points.map((p: Point) => ({ x: p.x + dx, y: p.y + dy })),
+  } as Drawing;
 }
 
 export function align(
@@ -41,7 +74,7 @@ export function align(
     const b = boxes.get(d.id)!;
     const dx = dir === 'left' ? target - b.minX : dir === 'right' ? target - b.maxX : 0;
     const dy = dir === 'top' ? target - b.minY : dir === 'bottom' ? target - b.maxY : 0;
-    return { ...d, points: d.points.map((p) => ({ x: p.x + dx, y: p.y + dy })) };
+    return transformDrawing(d, dx, dy);
   });
   return out;
 }
@@ -60,9 +93,7 @@ export function distribute(drawings: Drawing[], ids: Set<string>, axis: 'h' | 'v
       out.set(b.id, dx);
     });
     return drawings.map((d) =>
-      out.has(d.id)
-        ? { ...d, points: d.points.map((p) => ({ x: p.x + (out.get(d.id) || 0), y: p.y })) }
-        : d
+      out.has(d.id) ? transformDrawing(d, out.get(d.id) || 0, 0) : d
     );
   } else {
     boxes.sort((a, b) => a.minY - b.minY);
@@ -74,9 +105,7 @@ export function distribute(drawings: Drawing[], ids: Set<string>, axis: 'h' | 'v
       out.set(b.id, dy);
     });
     return drawings.map((d) =>
-      out.has(d.id)
-        ? { ...d, points: d.points.map((p) => ({ x: p.x, y: p.y + (out.get(d.id) || 0) })) }
-        : d
+      out.has(d.id) ? transformDrawing(d, 0, out.get(d.id) || 0) : d
     );
   }
 }
