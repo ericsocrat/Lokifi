@@ -16,18 +16,20 @@ export function listContextActions(): ContextAction[] {
 }
 
 export function runAction(id: string) {
-  const s = (useChartStore as any).getState()
-  const sel = Array.from(s.selection || []) as string[]
+  const s = useChartStore.getState()
+  const sel = Array.from(s.selection || [])
   const a = registry.actions.get(id)
   if (a) a.run(sel)
 }
 
 // expose a minimal global for third-parties
-;(globalThis as any).Lokifi = (globalThis as any).Lokifi || {}
-;(globalThis as any).Lokifi.plugins = {
+// globalThis extensions require 'as unknown as' pattern for type safety
+const globalAny = globalThis as unknown as { Lokifi?: { plugins?: unknown } }
+globalAny.Lokifi = globalAny.Lokifi || {}
+globalAny.Lokifi.plugins = {
   registerContextAction,
   listContextActions,
   runAction,
-  getDrawings: (): Drawing[] => (useChartStore as any).getState().drawings,
-  getSelection: (): string[] => Array.from((useChartStore as any).getState().selection || [])
+  getDrawings: (): Drawing[] => useChartStore.getState().drawings,
+  getSelection: (): string[] => Array.from(useChartStore.getState().selection || [])
 }

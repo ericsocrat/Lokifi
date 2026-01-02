@@ -151,9 +151,14 @@ function getComponentForType(type: PluginParameter['type']) {
   }
 }
 
-function getValidationForParam(param: PluginParameter) {
-  const validation: any = {
-    // any required: Dynamic validation schema based on parameter type
+interface ValidationSchema {
+  required: boolean;
+  min?: number;
+  max?: number;
+}
+
+function getValidationForParam(param: PluginParameter): ValidationSchema {
+  const validation: ValidationSchema = {
     required: param.defaultValue === undefined,
   };
 
@@ -251,20 +256,18 @@ export const BUILTIN_INDICATORS = {
 
 // Built-in drawing tool renderers
 export const BUILTIN_DRAWING_TOOLS = {
-  trendline: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => {
-    // any required: Dynamic drawing parameters (color, lineWidth, etc.)
+  trendline: (ctx: CanvasRenderingContext2D, points: Point[], params: Record<string, unknown>) => {
     if (points.length < 2) return;
 
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
     ctx.lineTo(points[1].x, points[1].y);
-    ctx.strokeStyle = params.color || '#00ff00';
-    ctx.lineWidth = params.lineWidth || 1;
+    ctx.strokeStyle = (params.color as string) || '#00ff00';
+    ctx.lineWidth = (params.lineWidth as number) || 1;
     ctx.stroke();
   },
 
-  rectangle: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => {
-    // any required: Dynamic drawing parameters (color, lineWidth, fillColor, etc.)
+  rectangle: (ctx: CanvasRenderingContext2D, points: Point[], params: Record<string, unknown>) => {
     if (points.length < 2) return;
 
     const x1 = Math.min(points[0].x, points[1].x);
@@ -272,19 +275,18 @@ export const BUILTIN_DRAWING_TOOLS = {
     const width = Math.abs(points[1].x - points[0].x);
     const height = Math.abs(points[1].y - points[0].y);
 
-    ctx.strokeStyle = params.color || '#00ff00';
-    ctx.lineWidth = params.lineWidth || 1;
+    ctx.strokeStyle = (params.color as string) || '#00ff00';
+    ctx.lineWidth = (params.lineWidth as number) || 1;
 
     if (params.fillColor) {
-      ctx.fillStyle = params.fillColor;
+      ctx.fillStyle = params.fillColor as string;
       ctx.fillRect(x1, y1, width, height);
     }
 
     ctx.strokeRect(x1, y1, width, height);
   },
 
-  circle: (ctx: CanvasRenderingContext2D, points: Point[], params: any) => {
-    // any required: Dynamic drawing parameters (color, lineWidth, fillColor, etc.)
+  circle: (ctx: CanvasRenderingContext2D, points: Point[], params: Record<string, unknown>) => {
     if (points.length < 2) return;
 
     const centerX = points[0].x;
@@ -295,11 +297,11 @@ export const BUILTIN_DRAWING_TOOLS = {
 
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-    ctx.strokeStyle = params.color || '#00ff00';
-    ctx.lineWidth = params.lineWidth || 1;
+    ctx.strokeStyle = (params.color as string) || '#00ff00';
+    ctx.lineWidth = (params.lineWidth as number) || 1;
 
     if (params.fillColor) {
-      ctx.fillStyle = params.fillColor;
+      ctx.fillStyle = params.fillColor as string;
       ctx.fill();
     }
 
