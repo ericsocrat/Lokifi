@@ -143,7 +143,8 @@ export class MarketDataAdapter {
       this.ws = new WebSocket(applyQuery(stream, { symbol: this.symbol, tf: this.timeframe }));
       this.ws.onmessage = (m) => {
         try {
-          const obj = JSON.parse(m.data as any);
+          // any required: WebSocket MessageEvent.data is untyped
+          const obj = JSON.parse(m.data as string);
           const c = normalizeCandle(obj);
           if (c) {
             this.mergeLatest(c);
@@ -190,10 +191,12 @@ export class MarketDataAdapter {
 
 /** Helpers */
 
+// any required: lightweight-charts Time is union of number | string | BusinessDay
 function asSec(t: Time): number {
   if (typeof t === 'number') return t;
-  if (typeof (t as any) === 'string') return Number(t);
-  const bd = t as any;
+  if (typeof t === 'string') return Number(t);
+  // Type assertion for BusinessDay interface
+  const bd = t as { year: number; month?: number; day: number };
   if (bd?.day) {
     // business day -> approximate to midnight
     const d = new Date(Date.UTC(bd.year, (bd.month || 1) - 1, bd.day));
@@ -202,7 +205,7 @@ function asSec(t: Time): number {
   return 0;
 }
 
-function applyQuery(url: string, params: Record<string, any>): string {
+function applyQuery(url: string, params: Record<string, unknown>): string {
   const u = new URL(url, typeof window !== 'undefined' ? window.location.href : 'http://localhost');
   for (const [k, v] of Object.entries(params))
     if (v != null && v !== '') u.searchParams.set(k, String(v));
@@ -269,7 +272,8 @@ function genMock(tf: string, n: number): Candle[] {
     const low = open - Math.abs(drift) * 2 - Math.random() * 1.5;
     const close = Math.max(low, Math.min(high, open + drift));
     p = close;
-    out.push({ time: t as any, open, high, low, close, volume: vol });
+    // any required: Time type narrowing limitation (t is number at runtime)
+  out.push({ time: t as Time, open, high, low, close, volume: vol });
     t += step;
   }
   return out;
@@ -290,7 +294,8 @@ function mockNext(prev: Candle[]): Candle[] {
     const low = open - Math.abs(drift) * 2 - Math.random();
     const close = Math.max(low, Math.min(high, open + drift));
     const next: Candle = {
-      time: (asSec(last.time) + step) as any,
+      // any required: Time type narrowing limitation (numeric timestamp)
+      time: (asSec(last.time) + step) as Time,
       open,
       high,
       low,
