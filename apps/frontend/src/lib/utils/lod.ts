@@ -57,10 +57,10 @@ export function downsampleLineMinMax(xs: Array<{ time: Time; value: number }>, t
 // Convert lightweight-charts Time to seconds for comparisons.
 export function timeToSec(t: Time): number {
   if (typeof t === 'number') return t
-  if (typeof (t as any) === 'string') return Number(t)
-  const bd = t as any
-  if (bd && typeof bd === 'object' && 'year' in bd && 'month' in bd && 'day' in bd) {
-    const d = new Date(Date.UTC(bd.year, (bd.month || 1) - 1, bd.day))
+  if (typeof t === 'string') return Number(t)
+  // BusinessDay object with year, month, day
+  if (t && typeof t === 'object' && 'year' in t && 'month' in t && 'day' in t) {
+    const d = new Date(Date.UTC(t.year, (t.month || 1) - 1, t.day))
     return Math.floor(d.getTime() / 1000)
   }
   return 0

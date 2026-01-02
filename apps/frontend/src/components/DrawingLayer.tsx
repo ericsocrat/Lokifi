@@ -61,7 +61,7 @@ export default function DrawingLayer() {
       el.style.height = r.height + 'px';
       // try offscreen
       try {
-        // any required: transferControlToOffscreen is experimental browser API with incomplete types
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- transferControlToOffscreen is experimental browser API with incomplete types
         offscreen.current = (el as any).transferControlToOffscreen?.() || null;
       } catch {
         offscreen.current = null;

@@ -87,7 +87,8 @@ export async function buildReportPDF(blocks: ReportBlock[]): Promise<Uint8Array>
 }
 
 export function downloadPdf(bytes: Uint8Array, filename = 'report.pdf') {
-  const blob = new Blob([(bytes as any).buffer ?? bytes], { type: 'application/pdf' });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Uint8Array<ArrayBufferLike> not assignable to BlobPart in newer TS
+  const blob = new Blob([bytes as any], { type: 'application/pdf' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = filename;

@@ -87,7 +87,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
     autoRefresh = true,
     refreshInterval = 30000, // 30 seconds
     realTimeEnabled = true,
-    maxNotifications = 100
+    maxNotifications = 100,
   } = options;
 
   // State
@@ -110,7 +110,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
     // Try localStorage first (legacy)
     const localToken = localStorage.getItem('token') || localStorage.getItem('social_token');
     if (localToken) return localToken;
-    
+
     // Check cookies (current method)
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
@@ -123,73 +123,80 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   }, []);
 
   // API call helper
-  const apiCall = useCallback(async (endpoint: string, options: RequestInit = {}) => {
-    const token = getAuthToken();
-    if (!token) {
-      // Don't throw error, just return null to prevent console spam
-      console.warn('No authentication token found for notifications');
-      return null;
-    }
+  const apiCall = useCallback(
+    async (endpoint: string, options: RequestInit = {}) => {
+      const token = getAuthToken();
+      if (!token) {
+        // Don't throw error, just return null to prevent console spam
+        console.warn('No authentication token found for notifications');
+        return null;
+      }
 
-    const response = await fetch(`${API_BASE}${endpoint}`, {
-      ...options,
-      credentials: 'include', // Include cookies
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        ...options,
+        credentials: 'include', // Include cookies
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          ...options.headers,
+        },
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.detail || `HTTP ${response.status}`);
-    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || `HTTP ${response.status}`);
+      }
 
-    return response.json();
-  }, [getAuthToken]);
+      return response.json();
+    },
+    [getAuthToken]
+  );
 
   // Load notifications
-  const loadNotifications = useCallback(async (reset = false) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const loadNotifications = useCallback(
+    async (reset = false) => {
+      try {
+        setIsLoading(true);
+        setError(null);
 
-      const currentOffset = reset ? 0 : offset.current;
-      const limit = 50;
+        const currentOffset = reset ? 0 : offset.current;
+        const limit = 50;
 
-      const data = await apiCall(`/?limit=${limit}&offset=${currentOffset}&include_dismissed=false`);
-      
-      // If no token, apiCall returns null
-      if (!data) {
-        setNotifications([]);
-        setUnreadCount(0);
-        setTotalCount(0);
-        setHasMore(false);
-        return;
+        const data = await apiCall(
+          `/?limit=${limit}&offset=${currentOffset}&include_dismissed=false`
+        );
+
+        // If no token, apiCall returns null
+        if (!data) {
+          setNotifications([]);
+          setUnreadCount(0);
+          setTotalCount(0);
+          setHasMore(false);
+          return;
+        }
+
+        const newNotifications = data.notifications || [];
+
+        if (reset) {
+          setNotifications(newNotifications);
+          offset.current = newNotifications.length;
+        } else {
+          setNotifications((prev) => [...prev, ...newNotifications]);
+          offset.current += newNotifications.length;
+        }
+
+        setUnreadCount(data.unread_count || 0);
+        setTotalCount(data.total_count || 0);
+        setHasMore(data.has_more || false);
+      } catch (err) {
+        console.error('Failed to load notifications:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load notifications');
+      } finally {
+        setIsLoading(false);
       }
-
-      const newNotifications = data.notifications || [];
-
-      if (reset) {
-        setNotifications(newNotifications);
-        offset.current = newNotifications.length;
-      } else {
-        setNotifications(prev => [...prev, ...newNotifications]);
-        offset.current += newNotifications.length;
-      }
-
-      setUnreadCount(data.unread_count || 0);
-      setTotalCount(data.total_count || 0);
-      setHasMore(data.has_more || false);
-
-    } catch (err) {
-      console.error('Failed to load notifications:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load notifications');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [apiCall]);
+    },
+    [apiCall]
+  );
 
   // Refresh notifications (reset)
   const refreshNotifications = useCallback(async () => {
@@ -203,44 +210,43 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   }, [hasMore, isLoading, loadNotifications]);
 
   // Mark notification as read
-  const markAsRead = useCallback(async (notificationId: string) => {
-    try {
-      const result = await apiCall(`/${notificationId}/read`, { method: 'POST' });
-      if (!result) return; // No token, skip
+  const markAsRead = useCallback(
+    async (notificationId: string) => {
+      try {
+        const result = await apiCall(`/${notificationId}/read`, { method: 'POST' });
+        if (!result) return; // No token, skip
 
-      setNotifications(prev =>
-        prev.map((n) =>
-          n.id === notificationId
-            ? { ...n, is_read: true, read_at: new Date().toISOString() }
-            : n
-        )
-      );
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
+          )
+        );
 
-      setUnreadCount(prev => Math.max(0, prev - 1));
-
-    } catch (err) {
-      console.error('Failed to mark notification as read:', err);
-      setError(err instanceof Error ? err.message : 'Failed to mark as read');
-    }
-  }, [apiCall]);
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      } catch (err) {
+        console.error('Failed to mark notification as read:', err);
+        setError(err instanceof Error ? err.message : 'Failed to mark as read');
+      }
+    },
+    [apiCall]
+  );
 
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     try {
       const result = await apiCall('/mark-read', {
         method: 'POST',
-        body: JSON.stringify({})
+        body: JSON.stringify({}),
       });
-      
+
       if (!result) return; // No token, skip
 
       const now = new Date().toISOString();
-      setNotifications(prev =>
+      setNotifications((prev) =>
         prev.map((n) => ({ ...n, is_read: true, read_at: n.read_at || now }))
       );
 
       setUnreadCount(0);
-
     } catch (err) {
       console.error('Failed to mark all notifications as read:', err);
       setError(err instanceof Error ? err.message : 'Failed to mark all as read');
@@ -248,28 +254,28 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
   }, [apiCall]);
 
   // Dismiss notification
-  const dismissNotification = useCallback(async (notificationId: string) => {
-    try {
-      const result = await apiCall(`/${notificationId}/dismiss`, { method: 'POST' });
-      if (!result) return; // No token, skip
+  const dismissNotification = useCallback(
+    async (notificationId: string) => {
+      try {
+        const result = await apiCall(`/${notificationId}/dismiss`, { method: 'POST' });
+        if (!result) return; // No token, skip
 
-      setNotifications(prev =>
-        prev.filter((n) => n.id !== notificationId)
-      );
+        setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
 
-      // Update unread count if the dismissed notification was unread
-      const notification = notifications.find((n) => n.id === notificationId);
-      if (notification && !notification.is_read) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        // Update unread count if the dismissed notification was unread
+        const notification = notifications.find((n) => n.id === notificationId);
+        if (notification && !notification.is_read) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+
+        setTotalCount((prev) => Math.max(0, prev - 1));
+      } catch (err) {
+        console.error('Failed to dismiss notification:', err);
+        setError(err instanceof Error ? err.message : 'Failed to dismiss notification');
       }
-
-      setTotalCount(prev => Math.max(0, prev - 1));
-
-    } catch (err) {
-      console.error('Failed to dismiss notification:', err);
-      setError(err instanceof Error ? err.message : 'Failed to dismiss notification');
-    }
-  }, [apiCall, notifications]);
+    },
+    [apiCall, notifications]
+  );
 
   // Clear all notifications
   const clearAllNotifications = useCallback(async () => {
@@ -282,7 +288,6 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
       setTotalCount(0);
       setHasMore(false);
       offset.current = 0;
-
     } catch (err) {
       console.error('Failed to clear all notifications:', err);
       setError(err instanceof Error ? err.message : 'Failed to clear notifications');
@@ -328,16 +333,16 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
           switch (data.type) {
             case 'new_notification':
               const newNotification = data.data;
-              setNotifications(prev => [newNotification, ...prev.slice(0, maxNotifications - 1)]);
-              setUnreadCount(data.unread_count || (prev => prev + 1));
-              setTotalCount(prev => prev + 1);
+              setNotifications((prev) => [newNotification, ...prev.slice(0, maxNotifications - 1)]);
+              setUnreadCount(data.unread_count || ((prev) => prev + 1));
+              setTotalCount((prev) => prev + 1);
 
               // Browser notification
               if ('Notification' in window && Notification.permission === 'granted') {
                 new Notification(newNotification.title, {
                   body: newNotification.message,
                   icon: '/favicon.ico',
-                  tag: newNotification.id
+                  tag: newNotification.id,
                 });
               }
               break;
@@ -348,18 +353,16 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
 
             case 'notification_read':
               const readId = data.data.notification_id;
-              setNotifications(prev =>
+              setNotifications((prev) =>
                 prev.map((n) =>
-                  n.id === readId
-                    ? { ...n, is_read: true, read_at: new Date().toISOString() }
-                    : n
+                  n.id === readId ? { ...n, is_read: true, read_at: new Date().toISOString() } : n
                 )
               );
               break;
 
             case 'notification_dismissed':
               const dismissedId = data.data.notification_id;
-              setNotifications(prev => prev.filter((n) => n.id !== dismissedId));
+              setNotifications((prev) => prev.filter((n) => n.id !== dismissedId));
               break;
 
             case 'keepalive':
@@ -387,7 +390,6 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
         console.error('Notification WebSocket error:', error);
         setError('WebSocket connection failed');
       };
-
     } catch (err) {
       console.error('Failed to connect WebSocket:', err);
       setError('Failed to connect to real-time notifications');
@@ -416,7 +418,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
     }
 
     // Return cleanup function for consistency, even if not needed
-    return () => { };
+    return () => {};
   }, [autoRefresh, refreshInterval, refreshNotifications]);
 
   // Initial load and WebSocket connection

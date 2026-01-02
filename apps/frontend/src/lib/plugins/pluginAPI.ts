@@ -1,35 +1,39 @@
-import type { Drawing } from '@/lib/utils/drawings'
-import { useChartStore } from '@/state/store'
+import type { Drawing } from '@/lib/utils/drawings';
+import { useChartStore } from '@/state/store';
 
-type ContextAction = { id: string; label: string; run: (selection: string[]) => void }
+type ContextAction = { id: string; label: string; run: (selection: string[]) => void };
 
 const registry = {
-  actions: new Map<string, ContextAction>()
-}
+  actions: new Map<string, ContextAction>(),
+};
 
-export function registerContextAction(id: string, label: string, run: (selection: string[]) => void) {
-  registry.actions.set(id, { id, label, run })
+export function registerContextAction(
+  id: string,
+  label: string,
+  run: (selection: string[]) => void
+) {
+  registry.actions.set(id, { id, label, run });
 }
 
 export function listContextActions(): ContextAction[] {
-  return Array.from(registry.actions.values())
+  return Array.from(registry.actions.values());
 }
 
 export function runAction(id: string) {
-  const s = useChartStore.getState()
-  const sel = Array.from(s.selection || [])
-  const a = registry.actions.get(id)
-  if (a) a.run(sel)
+  const s = useChartStore.getState();
+  const sel = Array.from(s.selection || []);
+  const a = registry.actions.get(id);
+  if (a) a.run(sel);
 }
 
 // expose a minimal global for third-parties
 // globalThis extensions require 'as unknown as' pattern for type safety
-const globalAny = globalThis as unknown as { Lokifi?: { plugins?: unknown } }
-globalAny.Lokifi = globalAny.Lokifi || {}
+const globalAny = globalThis as unknown as { Lokifi?: { plugins?: unknown } };
+globalAny.Lokifi = globalAny.Lokifi || {};
 globalAny.Lokifi.plugins = {
   registerContextAction,
   listContextActions,
   runAction,
   getDrawings: (): Drawing[] => useChartStore.getState().drawings,
-  getSelection: (): string[] => Array.from(useChartStore.getState().selection || [])
-}
+  getSelection: (): string[] => Array.from(useChartStore.getState().selection || []),
+};

@@ -30,7 +30,7 @@ export default function DrawingSettingsPanel() {
     const now = Date.now();
     if (now - ding.current > 250) {
       try {
-        (window as any).__lokifi_toast?.('Saved');
+        window.__lokifi_toast?.('Saved');
       } catch {}
       ding.current = now;
     }

@@ -1,4 +1,4 @@
-import type { Drawing } from '@/lib/utils/drawings';
+import type { Drawing, StrokeDash } from '@/lib/utils/drawings';
 import { useChartStore } from '@/state/store';
 import React from 'react';
 
@@ -83,7 +83,7 @@ export default function ObjectInspector() {
             className="w-full bg-transparent border border-white/15 rounded px-2 py-1"
             value={first?.style?.dash || 'solid'}
             onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-              s.setSelectedStyle({ dash: e.target.value as any })
+              s.setSelectedStyle({ dash: e.target.value as StrokeDash })
             }
           >
             <option value="solid">solid</option>

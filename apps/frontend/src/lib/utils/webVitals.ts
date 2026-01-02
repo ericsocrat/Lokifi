@@ -137,6 +137,7 @@ class WebVitalsMonitor {
           ...report,
           url: window.location.href,
           userAgent: navigator.userAgent,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- navigator.connection is Network Information API, not in standard TypeScript lib
           connectionType: (navigator as any).connection?.effectiveType,
         }),
         keepalive: true,
