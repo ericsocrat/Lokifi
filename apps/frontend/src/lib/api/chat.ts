@@ -8,5 +8,5 @@ export async function chat(messages: ChatMessage[]) {
     method: 'POST',
     body: JSON.stringify({ messages }),
   });
-  return res.json() as Promise<{ mode: string; answer: string; result?: any }>;
+  return res.json() as Promise<{ mode: string; answer: string; result?: unknown }>;
 }

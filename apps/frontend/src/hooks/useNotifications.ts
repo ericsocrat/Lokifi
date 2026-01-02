@@ -13,6 +13,7 @@ export interface NotificationData {
   category?: string;
   title: string;
   message?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- notification payloads have varying structures
   payload?: Record<string, any>;
   created_at: string;
   read_at?: string;

@@ -2207,7 +2207,17 @@ class MarketDataService {
       const { data } = await response.json();
 
       // Update assets with real prices
-      Object.entries(data).forEach(([symbol, priceData]: [string, any]) => {
+      interface PriceDataResponse {
+        price: number;
+        change?: number;
+        changePercent?: number;
+        volume?: number;
+        marketCap?: number;
+        high24h?: number;
+        low24h?: number;
+        lastUpdated?: number;
+      }
+      (Object.entries(data) as [string, PriceDataResponse][]).forEach(([symbol, priceData]) => {
         const asset = this.assets.get(symbol);
         if (asset && priceData) {
           asset.price = priceData.price;

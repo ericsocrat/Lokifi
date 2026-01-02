@@ -38,6 +38,7 @@ export async function exportReportPDF(title = 'Lokifi Chart Report') {
   page.drawImage(png, { x: margin, y: ph - margin * 2 - imgH, width: imgW, height: imgH });
 
   const bytes = await pdf.save();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- pdf-lib Uint8Array compatibility with Blob
   const blob = new Blob([(bytes as any).buffer ?? bytes], { type: 'application/pdf' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

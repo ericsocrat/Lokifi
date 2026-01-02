@@ -16,6 +16,8 @@ const WS_BASE_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/api';
 // TYPES
 // ============================================================================
 
+export type HistoricalPeriod = '1d' | '1w' | '1m' | '3m' | '6m' | '1y' | '5y' | 'all';
+
 export interface HistoricalPricePoint {
   timestamp: string;
   price: number;
@@ -125,7 +127,7 @@ export class HistoricalDataService {
    */
   static async getHistory(
     symbol: string,
-    period: '1d' | '1w' | '1m' | '3m' | '6m' | '1y' | '5y' | 'all' = '1m'
+    period: HistoricalPeriod = '1m'
   ): Promise<HistoricalPriceResponse> {
     try {
       const response = await fetch(`${API_BASE_URL}/prices/${symbol}/history?period=${period}`);
@@ -173,14 +175,14 @@ export class HistoricalDataService {
    */
   static async getBatchHistory(
     symbols: string[],
-    period: string = '1m'
+    period: HistoricalPeriod = '1m'
   ): Promise<Map<string, HistoricalPriceResponse>> {
     const results = new Map<string, HistoricalPriceResponse>();
 
     await Promise.all(
       symbols.map(async (symbol) => {
         try {
-          const data = await this.getHistory(symbol, period as any);
+          const data = await this.getHistory(symbol, period);
           results.set(symbol, data);
         } catch (error) {
           console.error(`Failed to fetch history for ${symbol}:`, error);
