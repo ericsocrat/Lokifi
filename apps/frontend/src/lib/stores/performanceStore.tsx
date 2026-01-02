@@ -4,6 +4,76 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
 
+// Browser API Extensions (non-standard APIs)
+interface PerformanceWithMemory extends Performance {
+  memory?: {
+    usedJSHeapSize: number;
+    totalJSHeapSize: number;
+    jsHeapSizeLimit: number;
+  };
+}
+
+interface NetworkInformation {
+  downlink?: number;
+  effectiveType?: string;
+  rtt?: number;
+  saveData?: boolean;
+}
+
+interface BatteryManager {
+  level: number;
+  charging: boolean;
+  chargingTime: number;
+  dischargingTime: number;
+}
+
+interface NavigatorWithExtensions extends Navigator {
+  deviceMemory?: number;
+  connection?: NetworkInformation;
+  getBattery?: () => Promise<BatteryManager>;
+}
+
+interface WindowWithGC extends Window {
+  gc?: () => void;
+  __performanceMonitoring?: ReturnType<typeof setInterval>;
+}
+
+// Result Types
+interface BenchmarkComparisonResult {
+  renderTime: { change: number; improvement: boolean };
+  memoryUsage: { change: number; improvement: boolean };
+  opsPerSecond: { change: number; improvement: boolean };
+}
+
+interface BenchmarkOperationResult {
+  operationsPerSecond: number;
+  errorRate: number;
+  peakMemoryUsage: number;
+  p50: number;
+  p90: number;
+  p95: number;
+  p99: number;
+}
+
+interface TrendResult {
+  direction: 'improving' | 'stable' | 'degrading';
+  rate: number;
+}
+
+interface PerformanceAnalysisResult {
+  summary?: {
+    dataPoints: number;
+    timeRange: { start: Date; end: Date };
+    averageMetrics: Record<string, number>;
+  };
+  trends?: {
+    lcp: TrendResult;
+    fid: TrendResult;
+    memoryUsage: TrendResult;
+  };
+  insights?: string[];
+}
+
 // Performance Types
 export interface PerformanceConfig {
   // Chart Performance
@@ -261,7 +331,7 @@ export interface OptimizationRule {
   // Action
   action: {
     type: 'reduce-quality' | 'cleanup-memory' | 'throttle-updates' | 'disable-feature';
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
   };
 
   // Settings
@@ -389,7 +459,10 @@ interface PerformanceActions {
 
   // Benchmarking
   runBenchmark: (config: PerformanceBenchmark['testConfig']) => Promise<PerformanceBenchmark>;
-  compareBenchmarks: (benchmarkId1: string, benchmarkId2: string) => any;
+  compareBenchmarks: (
+    benchmarkId1: string,
+    benchmarkId2: string
+  ) => BenchmarkComparisonResult | null;
   deleteBenchmark: (benchmarkId: string) => void;
 
   // Issue Detection
@@ -421,7 +494,7 @@ interface PerformanceActions {
   checkBudget: () => { passed: boolean; violations: string[] };
 
   // Analysis
-  analyzePerformance: (timeRange?: { start: Date; end: Date }) => any;
+  analyzePerformance: (timeRange?: { start: Date; end: Date }) => PerformanceAnalysisResult;
   generateReport: (type: 'summary' | 'detailed' | 'trends') => Promise<Blob>;
   getRecommendations: () => string[];
 
@@ -604,7 +677,8 @@ export const usePerformanceStore = create<PerformanceStore>()(
             // Custom metrics
             chartRenderTime: 0, // Will be measured during chart operations
             apiResponseTime: 0, // Will be measured during API calls
-            memoryUsage: (performance as any).memory?.usedJSHeapSize / 1024 / 1024 || 0,
+            memoryUsage:
+              ((performance as PerformanceWithMemory).memory?.usedJSHeapSize ?? 0) / 1024 / 1024,
             cpuUsage: 0, // Estimated
             networkLatency: 0,
 
@@ -655,7 +729,8 @@ export const usePerformanceStore = create<PerformanceStore>()(
           }, interval);
 
           // Store interval ID for cleanup
-          (window as any).__performanceMonitoring = monitoringId;
+          const extWindow = window as WindowWithGC;
+          extWindow.__performanceMonitoring = monitoringId;
         },
 
         stopMonitoring: () => {
@@ -666,9 +741,10 @@ export const usePerformanceStore = create<PerformanceStore>()(
           });
 
           // Clear monitoring interval
-          if ((window as any).__performanceMonitoring) {
-            clearInterval((window as any).__performanceMonitoring);
-            delete (window as any).__performanceMonitoring;
+          const extWindow = window as WindowWithGC;
+          if (extWindow.__performanceMonitoring) {
+            clearInterval(extWindow.__performanceMonitoring);
+            delete extWindow.__performanceMonitoring;
           }
         },
 
@@ -722,7 +798,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
                   width: window.innerWidth,
                   height: window.innerHeight,
                 },
-                memory: (navigator as any).deviceMemory || 4,
+                memory: (navigator as NavigatorWithExtensions).deviceMemory || 4,
                 cores: navigator.hardwareConcurrency || 4,
               },
             };
@@ -925,16 +1001,16 @@ export const usePerformanceStore = create<PerformanceStore>()(
             return {} as ResourceUsage;
           }
 
-          const memory = (performance as any).memory;
-          const nav = navigator as any;
+          const perfMemory = (performance as PerformanceWithMemory).memory;
+          const navExt = navigator as NavigatorWithExtensions;
 
           const usage: ResourceUsage = {
             timestamp: new Date(),
 
             jsHeapSize: {
-              used: memory?.usedJSHeapSize || 0,
-              total: memory?.totalJSHeapSize || 0,
-              limit: memory?.jsHeapSizeLimit || 0,
+              used: perfMemory?.usedJSHeapSize || 0,
+              total: perfMemory?.totalJSHeapSize || 0,
+              limit: perfMemory?.jsHeapSizeLimit || 0,
             },
 
             dom: {
@@ -945,7 +1021,7 @@ export const usePerformanceStore = create<PerformanceStore>()(
 
             network: {
               activeRequests: 0, // Would track active XHR/fetch
-              bandwidth: nav.connection?.downlink || 0,
+              bandwidth: navExt.connection?.downlink || 0,
               dataUsage: 0, // Would track cumulative
             },
 
@@ -965,19 +1041,13 @@ export const usePerformanceStore = create<PerformanceStore>()(
           };
 
           // Add battery info if available
-          if (nav.getBattery) {
-            nav.getBattery().then((battery: unknown) => {
-              const bat = battery as {
-                level: number;
-                charging: boolean;
-                chargingTime: number;
-                dischargingTime: number;
-              };
+          if (navExt.getBattery) {
+            navExt.getBattery().then((battery: BatteryManager) => {
               usage.battery = {
-                level: bat.level * 100,
-                charging: bat.charging,
-                chargingTime: bat.chargingTime,
-                dischargingTime: bat.dischargingTime,
+                level: battery.level * 100,
+                charging: battery.charging,
+                chargingTime: battery.chargingTime,
+                dischargingTime: battery.dischargingTime,
               };
             });
           }
@@ -1022,8 +1092,9 @@ export const usePerformanceStore = create<PerformanceStore>()(
           if (!FLAGS.performance || typeof window === 'undefined') return;
 
           // Force garbage collection if available
-          if ((window as any).gc) {
-            (window as any).gc();
+          const extWindow = window as WindowWithGC;
+          if (extWindow.gc) {
+            extWindow.gc();
           }
 
           // Clear caches
@@ -1632,7 +1703,9 @@ export const usePerformanceStore = create<PerformanceStore>()(
 );
 
 // Helper Functions
-async function runBenchmarkOperations(config: PerformanceBenchmark['testConfig']): Promise<any> {
+async function runBenchmarkOperations(
+  config: PerformanceBenchmark['testConfig']
+): Promise<BenchmarkOperationResult> {
   const startTime = performance.now();
   let operationCount = 0;
   let errorCount = 0;
@@ -1662,7 +1735,8 @@ async function runBenchmarkOperations(config: PerformanceBenchmark['testConfig']
   return {
     operationsPerSecond: operationCount / totalDuration,
     errorRate: errorCount / config.operations.length,
-    peakMemoryUsage: (performance as any).memory?.usedJSHeapSize / 1024 / 1024 || 0,
+    peakMemoryUsage:
+      ((performance as PerformanceWithMemory).memory?.usedJSHeapSize ?? 0) / 1024 / 1024,
     p50: durations[Math.floor(durations.length * 0.5)] || 0,
     p90: durations[Math.floor(durations.length * 0.9)] || 0,
     p95: durations[Math.floor(durations.length * 0.95)] || 0,
@@ -1671,10 +1745,11 @@ async function runBenchmarkOperations(config: PerformanceBenchmark['testConfig']
 }
 
 function executeOptimizationAction(action: OptimizationRule['action']): void {
+  const extWindow = window as WindowWithGC;
   switch (action.type) {
     case 'cleanup-memory':
-      if ((window as any).gc && action.parameters.aggressive) {
-        (window as any).gc();
+      if (extWindow.gc && action.parameters.aggressive) {
+        extWindow.gc();
       }
       window.dispatchEvent(
         new CustomEvent('optimization:cleanup-memory', { detail: action.parameters })
