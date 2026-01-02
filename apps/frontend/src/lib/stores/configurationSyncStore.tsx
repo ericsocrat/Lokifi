@@ -375,6 +375,16 @@ export type DriftType =
 
 export type DriftStatus = 'detected' | 'acknowledged' | 'resolved' | 'ignored' | 'false_positive';
 
+// Import format interface for configuration file imports
+export interface ImportedConfigData {
+  key: string;
+  value: unknown;
+  type?: ConfigurationType;
+  category?: string;
+  description?: string;
+  [key: string]: unknown; // Allow additional fields from external formats
+}
+
 export interface ConfigurationAudit {
   id: string;
   action: AuditAction;
@@ -1586,7 +1596,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
         }
 
         const importedIds: string[] = [];
-        const configArray = importData as Array<any>;
+        const configArray = importData as ImportedConfigData[];
 
         for (const config of configArray) {
           const existingConfig = get().configurations.find(
@@ -1602,7 +1612,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             }
           } else {
             const configId = get().createConfiguration({
-              ...config,
+              key: config.key,
+              value: config.value,
+              type: config.type ?? 'string',
+              category: config.category ?? 'imported',
+              description: config.description ?? '',
+              schema: undefined,
+              isValid: true,
+              validationErrors: [],
+              isReadOnly: false,
+              isSecret: false,
+              owner: 'import',
+              status: 'active',
+              tags: [],
               environmentId,
             });
             importedIds.push(configId);

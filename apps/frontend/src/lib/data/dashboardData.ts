@@ -3,7 +3,7 @@
  * Connects portfolio storage to dashboard metrics and calculations
  */
 
-import { loadPortfolio, totalValue } from './portfolioStorage';
+import { loadPortfolio, totalValue, type PortfolioSection, type Asset } from './portfolioStorage';
 
 export interface DashboardStats {
   netWorth: number;
@@ -50,9 +50,9 @@ export function getStats(): DashboardStats {
   let illiquid = 0;
   let debts = 0;
 
-  portfolio.forEach((section: any) => {
+  portfolio.forEach((section: PortfolioSection) => {
     const sectionTitle = section.title.toLowerCase();
-    const sectionValue = section.assets.reduce((sum: any, asset: any) => sum + asset.value, 0);
+    const sectionValue = section.assets.reduce((sum: number, asset: Asset) => sum + asset.value, 0);
 
     // Categorize based on section title
     if (sectionTitle.includes('invest') || sectionTitle.includes('stock') || sectionTitle.includes('crypto')) {
@@ -90,8 +90,8 @@ export function getAllocationByCategory(): AllocationItem[] {
   const categoryMap = new Map<string, number>();
   const total = totalValue();
 
-  portfolio.forEach((section: any) => {
-    const value = section.assets.reduce((sum: any, asset: any) => sum + asset.value, 0);
+  portfolio.forEach((section: PortfolioSection) => {
+    const value = section.assets.reduce((sum: number, asset: Asset) => sum + asset.value, 0);
     categoryMap.set(section.title, value);
   });
 
@@ -107,7 +107,7 @@ export function getAllocationByCategory(): AllocationItem[] {
   let colorIndex = 0;
   const allocations: AllocationItem[] = [];
 
-  categoryMap.forEach((value: any, name: any) => {
+  categoryMap.forEach((value: number, name: string) => {
     allocations.push({
       name,
       value,
@@ -117,7 +117,7 @@ export function getAllocationByCategory(): AllocationItem[] {
     colorIndex++;
   });
 
-  return allocations.sort((a: any, b: any) => b.value - a.value);
+  return allocations.sort((a: AllocationItem, b: AllocationItem) => b.value - a.value);
 }
 
 /**
@@ -128,8 +128,8 @@ export function getAllocationByAssetType(): AllocationItem[] {
   const typeMap = new Map<string, number>();
   const total = totalValue();
 
-  portfolio.forEach((section: any) => {
-    section.assets.forEach((asset: any) => {
+  portfolio.forEach((section: PortfolioSection) => {
+    section.assets.forEach((asset: Asset) => {
       // Group by symbol or name
       const key = asset.symbol || asset.name;
       const currentValue = typeMap.get(key) || 0;
@@ -145,7 +145,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
   let colorIndex = 0;
   const allocations: AllocationItem[] = [];
 
-  typeMap.forEach((value: any, name: any) => {
+  typeMap.forEach((value: number, name: string) => {
     allocations.push({
       name,
       value,
@@ -157,7 +157,7 @@ export function getAllocationByAssetType(): AllocationItem[] {
 
   // Return top 10 only
   return allocations
-    .sort((a: any, b: any) => b.value - a.value)
+    .sort((a: AllocationItem, b: AllocationItem) => b.value - a.value)
     .slice(0, 10);
 }
 
@@ -169,8 +169,8 @@ export function getTopHoldings(limit: number = 5): TopHolding[] {
   const holdings: TopHolding[] = [];
   const total = totalValue();
 
-  portfolio.forEach((section: any) => {
-    section.assets.forEach((asset: any) => {
+  portfolio.forEach((section: PortfolioSection) => {
+    section.assets.forEach((asset: Asset) => {
       holdings.push({
         symbol: asset.symbol,
         name: asset.name,
@@ -181,7 +181,7 @@ export function getTopHoldings(limit: number = 5): TopHolding[] {
   });
 
   return holdings
-    .sort((a: any, b: any) => b.value - a.value)
+    .sort((a: TopHolding, b: TopHolding) => b.value - a.value)
     .slice(0, limit);
 }
 
@@ -248,7 +248,7 @@ export function getNetWorthChange(period: '1d' | '7d' | '30d' | '1y' | 'all' = '
  */
 export function hasAssets(): boolean {
   const portfolio = loadPortfolio();
-  return portfolio.some((section: any) => section.assets.length > 0);
+  return portfolio.some((section: PortfolioSection) => section.assets.length > 0);
 }
 
 /**
@@ -256,5 +256,5 @@ export function hasAssets(): boolean {
  */
 export function getAssetCount(): number {
   const portfolio = loadPortfolio();
-  return portfolio.reduce((count: any, section: any) => count + section.assets.length, 0);
+  return portfolio.reduce((count: number, section: PortfolioSection) => count + section.assets.length, 0);
 }
