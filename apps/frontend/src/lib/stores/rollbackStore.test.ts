@@ -565,12 +565,16 @@ describe('rollbackStore', () => {
 
     it('should track step execution results', async () => {
       const planId = useRollbackStore.getState().createPlan(createMockPlan());
-      useRollbackStore.getState().addStep(planId, createMockStep({ order: 1, name: 'Step 1', isRequired: false }));
-      useRollbackStore.getState().addStep(planId, createMockStep({ order: 2, name: 'Step 2', isRequired: false }));
+      useRollbackStore
+        .getState()
+        .addStep(planId, createMockStep({ order: 1, name: 'Step 1', isRequired: false }));
+      useRollbackStore
+        .getState()
+        .addStep(planId, createMockStep({ order: 2, name: 'Step 2', isRequired: false }));
 
       const execPromise = useRollbackStore.getState().executeRollback(planId);
       await vi.runAllTimersAsync();
-      
+
       try {
         await execPromise;
       } catch (error) {
@@ -589,7 +593,7 @@ describe('rollbackStore', () => {
       useRollbackStore.getState().addStep(planId, createMockStep({ order: 1, isRequired: false }));
 
       const execPromise = useRollbackStore.getState().executeRollback(planId);
-      
+
       // Advance timers partially to start execution but not complete it
       await vi.advanceTimersByTimeAsync(100);
 
@@ -642,10 +646,10 @@ describe('rollbackStore', () => {
 
       // Advance time slightly before execution
       vi.advanceTimersByTime(10);
-      
+
       const execPromise = useRollbackStore.getState().executeRollback(planId);
       await vi.runAllTimersAsync();
-      
+
       try {
         await execPromise;
       } catch (error) {

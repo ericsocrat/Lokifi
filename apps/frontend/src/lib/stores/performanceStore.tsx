@@ -1227,27 +1227,29 @@ export const usePerformanceStore = create<PerformanceStore>()(
         analyzePerformance: (timeRange?: { start: Date; end: Date }) => {
           if (!FLAGS.performance) return {};
 
-          const { metricsHistory } = get();
-          const range = timeRange || get().selectedTimeRange;
+          const { metricsHistory, selectedTimeRange } = get();
+          const range = timeRange || selectedTimeRange;
 
-          const filteredMetrics = metricsHistory.filter(
-            (m) => m.timestamp >= range.start && m.timestamp <= range.end
-          );
+          const filteredMetrics = range
+            ? metricsHistory.filter((m) => m.timestamp >= range.start && m.timestamp <= range.end)
+            : metricsHistory;
 
-          if (filteredMetrics.length === 0) return {};
+          const metricsToAnalyze = filteredMetrics.length > 0 ? filteredMetrics : metricsHistory;
+
+          if (metricsToAnalyze.length === 0) return {};
 
           const analysis = {
             summary: {
-              dataPoints: filteredMetrics.length,
+              dataPoints: metricsToAnalyze.length,
               timeRange: range,
-              averageMetrics: calculateAverageMetrics(filteredMetrics),
+              averageMetrics: calculateAverageMetrics(metricsToAnalyze),
             },
             trends: {
-              lcp: calculateTrend(filteredMetrics.map((m) => m.lcp)),
-              fid: calculateTrend(filteredMetrics.map((m) => m.fid)),
-              memoryUsage: calculateTrend(filteredMetrics.map((m) => m.memoryUsage)),
+              lcp: calculateTrend(metricsToAnalyze.map((m) => m.lcp)),
+              fid: calculateTrend(metricsToAnalyze.map((m) => m.fid)),
+              memoryUsage: calculateTrend(metricsToAnalyze.map((m) => m.memoryUsage)),
             },
-            insights: generateInsights(filteredMetrics),
+            insights: generateInsights(metricsToAnalyze),
           };
 
           return analysis;
