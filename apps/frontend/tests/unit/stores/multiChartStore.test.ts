@@ -1,6 +1,6 @@
-import * as featureFlags from '@/lib/utils/featureFlags';
-import type { ChartInstance, LayoutType, LinkingDimensions } from '@/lib/stores/multiChartStore';
+import type { ChartInstance } from '@/lib/stores/multiChartStore';
 import { useMultiChartStore } from '@/lib/stores/multiChartStore';
+import * as featureFlags from '@/lib/utils/featureFlags';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock feature flags

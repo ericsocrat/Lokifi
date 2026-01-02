@@ -19,9 +19,9 @@ import { act } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   useProgressiveDeploymentStore,
-  type DeploymentStrategy,
   type Deployment,
   type DeploymentMetrics,
+  type DeploymentStrategy,
 } from '../../src/lib/stores/progressiveDeploymentStore';
 
 // Mock feature flags - enable progressive deployment for tests
@@ -72,7 +72,9 @@ describe('progressiveDeploymentStore', () => {
 
   // Helper to create a minimal valid strategy
   const createTestStrategy = (
-    overrides: Partial<Omit<DeploymentStrategy, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>> = {}
+    overrides: Partial<
+      Omit<DeploymentStrategy, 'id' | 'createdAt' | 'updatedAt' | 'usageCount'>
+    > = {}
   ) => ({
     name: 'Test Strategy',
     type: 'canary' as const,
@@ -178,7 +180,9 @@ describe('progressiveDeploymentStore', () => {
   // Helper to create a minimal valid deployment
   const createTestDeployment = (
     strategyId: string,
-    overrides: Partial<Omit<Deployment, 'id' | 'createdAt' | 'status' | 'phaseHistory' | 'metrics'>> = {}
+    overrides: Partial<
+      Omit<Deployment, 'id' | 'createdAt' | 'status' | 'phaseHistory' | 'metrics'>
+    > = {}
   ) => ({
     name: 'Test Deployment',
     version: '1.0.0',
@@ -343,7 +347,9 @@ describe('progressiveDeploymentStore', () => {
 
         const { strategies } = useProgressiveDeploymentStore.getState();
         // The updatedAt should be greater than or equal to original (same moment is fine)
-        expect(strategies[0].updatedAt.getTime()).toBeGreaterThanOrEqual(originalUpdatedAt.getTime());
+        expect(strategies[0].updatedAt.getTime()).toBeGreaterThanOrEqual(
+          originalUpdatedAt.getTime()
+        );
       });
 
       it('should not update non-existent strategy', () => {
@@ -399,12 +405,12 @@ describe('progressiveDeploymentStore', () => {
         let strategyId2: string;
 
         act(() => {
-          strategyId1 = useProgressiveDeploymentStore.getState().createStrategy(
-            createTestStrategy({ name: 'Strategy 1' })
-          );
-          strategyId2 = useProgressiveDeploymentStore.getState().createStrategy(
-            createTestStrategy({ name: 'Strategy 2' })
-          );
+          strategyId1 = useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy({ name: 'Strategy 1' }));
+          strategyId2 = useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy({ name: 'Strategy 2' }));
           useProgressiveDeploymentStore.getState().setSelectedStrategy(strategyId1);
         });
 
@@ -427,7 +433,9 @@ describe('progressiveDeploymentStore', () => {
 
         let cloneId: string;
         act(() => {
-          cloneId = useProgressiveDeploymentStore.getState().cloneStrategy(originalId!, 'Cloned Strategy');
+          cloneId = useProgressiveDeploymentStore
+            .getState()
+            .cloneStrategy(originalId!, 'Cloned Strategy');
         });
 
         const { strategies } = useProgressiveDeploymentStore.getState();
@@ -796,14 +804,16 @@ describe('progressiveDeploymentStore', () => {
       it('should update deployment metrics', () => {
         let strategyId: string;
         act(() => {
-          strategyId = useProgressiveDeploymentStore.getState().createStrategy(createTestStrategy());
+          strategyId = useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy());
         });
 
         let deploymentId: string;
         act(() => {
-          deploymentId = useProgressiveDeploymentStore.getState().createDeployment(
-            createTestDeployment(strategyId!)
-          );
+          deploymentId = useProgressiveDeploymentStore
+            .getState()
+            .createDeployment(createTestDeployment(strategyId!));
         });
 
         const newMetrics: DeploymentMetrics = {
@@ -830,7 +840,9 @@ describe('progressiveDeploymentStore', () => {
 
     describe('runHealthCheck', () => {
       it('should return a boolean result', async () => {
-        const result = await useProgressiveDeploymentStore.getState().runHealthCheck('deployment-1', 'health-1');
+        const result = await useProgressiveDeploymentStore
+          .getState()
+          .runHealthCheck('deployment-1', 'health-1');
         expect(typeof result).toBe('boolean');
       });
     });
@@ -841,18 +853,20 @@ describe('progressiveDeploymentStore', () => {
       it('should compare two deployments and return difference', () => {
         let strategyId: string;
         act(() => {
-          strategyId = useProgressiveDeploymentStore.getState().createStrategy(createTestStrategy());
+          strategyId = useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy());
         });
 
         let deploymentId1: string;
         let deploymentId2: string;
         act(() => {
-          deploymentId1 = useProgressiveDeploymentStore.getState().createDeployment(
-            createTestDeployment(strategyId!, { name: 'Deployment 1' })
-          );
-          deploymentId2 = useProgressiveDeploymentStore.getState().createDeployment(
-            createTestDeployment(strategyId!, { name: 'Deployment 2' })
-          );
+          deploymentId1 = useProgressiveDeploymentStore
+            .getState()
+            .createDeployment(createTestDeployment(strategyId!, { name: 'Deployment 1' }));
+          deploymentId2 = useProgressiveDeploymentStore
+            .getState()
+            .createDeployment(createTestDeployment(strategyId!, { name: 'Deployment 2' }));
         });
 
         // Update metrics for both
@@ -877,7 +891,9 @@ describe('progressiveDeploymentStore', () => {
           });
         });
 
-        const comparison = useProgressiveDeploymentStore.getState().compareDeployments(deploymentId1!, deploymentId2!);
+        const comparison = useProgressiveDeploymentStore
+          .getState()
+          .compareDeployments(deploymentId1!, deploymentId2!);
 
         expect(comparison).not.toBeNull();
         expect(comparison.errorRate.deployment1).toBe(1.0);
@@ -888,10 +904,9 @@ describe('progressiveDeploymentStore', () => {
       });
 
       it('should return null for non-existent deployments', () => {
-        const comparison = useProgressiveDeploymentStore.getState().compareDeployments(
-          'non-existent-1',
-          'non-existent-2'
-        );
+        const comparison = useProgressiveDeploymentStore
+          .getState()
+          .compareDeployments('non-existent-1', 'non-existent-2');
         expect(comparison).toBeNull();
       });
     });
@@ -1014,9 +1029,9 @@ describe('progressiveDeploymentStore', () => {
       it('should export strategy as Blob', async () => {
         let strategyId: string;
         act(() => {
-          strategyId = useProgressiveDeploymentStore.getState().createStrategy(
-            createTestStrategy({ name: 'Export Test' })
-          );
+          strategyId = useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy({ name: 'Export Test' }));
         });
 
         const blob = await useProgressiveDeploymentStore.getState().exportStrategy(strategyId!);
@@ -1037,14 +1052,16 @@ describe('progressiveDeploymentStore', () => {
       it('should generate deployment report as Blob', async () => {
         let strategyId: string;
         act(() => {
-          strategyId = useProgressiveDeploymentStore.getState().createStrategy(createTestStrategy());
+          strategyId = useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy());
         });
 
         let deploymentId: string;
         act(() => {
-          deploymentId = useProgressiveDeploymentStore.getState().createDeployment(
-            createTestDeployment(strategyId!, { name: 'Report Test' })
-          );
+          deploymentId = useProgressiveDeploymentStore
+            .getState()
+            .createDeployment(createTestDeployment(strategyId!, { name: 'Report Test' }));
         });
 
         const blob = await useProgressiveDeploymentStore.getState().generateReport(deploymentId!);
@@ -1107,9 +1124,9 @@ describe('progressiveDeploymentStore', () => {
 
       it('should not create default strategies if some exist', async () => {
         act(() => {
-          useProgressiveDeploymentStore.getState().createStrategy(
-            createTestStrategy({ name: 'Existing' })
-          );
+          useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy({ name: 'Existing' }));
         });
 
         expect(useProgressiveDeploymentStore.getState().strategies).toHaveLength(1);
@@ -1128,9 +1145,9 @@ describe('progressiveDeploymentStore', () => {
     it('should handle rapid strategy creation', () => {
       act(() => {
         for (let i = 0; i < 10; i++) {
-          useProgressiveDeploymentStore.getState().createStrategy(
-            createTestStrategy({ name: `Strategy ${i}` })
-          );
+          useProgressiveDeploymentStore
+            .getState()
+            .createStrategy(createTestStrategy({ name: `Strategy ${i}` }));
         }
       });
 
@@ -1149,7 +1166,9 @@ describe('progressiveDeploymentStore', () => {
         useProgressiveDeploymentStore.getState().resumeDeployment('non-existent');
         useProgressiveDeploymentStore.getState().cancelDeployment('non-existent');
         useProgressiveDeploymentStore.getState().adjustTraffic('non-existent', 50);
-        useProgressiveDeploymentStore.getState().updateMetrics('non-existent', {} as DeploymentMetrics);
+        useProgressiveDeploymentStore
+          .getState()
+          .updateMetrics('non-existent', {} as DeploymentMetrics);
       });
 
       // State should remain unchanged
@@ -1172,9 +1191,9 @@ describe('progressiveDeploymentStore', () => {
       // 1. Create strategy
       let strategyId: string;
       act(() => {
-        strategyId = useProgressiveDeploymentStore.getState().createStrategy(
-          createTestStrategy({ name: 'Integration Test Strategy' })
-        );
+        strategyId = useProgressiveDeploymentStore
+          .getState()
+          .createStrategy(createTestStrategy({ name: 'Integration Test Strategy' }));
       });
 
       // 2. Create deployment
