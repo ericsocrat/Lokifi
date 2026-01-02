@@ -4,6 +4,38 @@ import { persist, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { FLAGS } from './featureFlags';
 
+// ============================================================================
+// Window Extensions for Observability
+// ============================================================================
+interface TraceEntry {
+  name: string;
+  operation: string;
+  startTime: number;
+  startMark: string;
+}
+
+interface WindowWithTraces extends Window {
+  __traces?: Record<string, TraceEntry>;
+}
+
+// ============================================================================
+// Performance Analysis Result (API Response)
+// ============================================================================
+export interface PerformanceAnalysisResult {
+  summary?: {
+    averageLoadTime: number;
+    averageRenderTime: number;
+    errorRate: number;
+    throughput: number;
+  };
+  trends?: {
+    loadTime: 'improving' | 'stable' | 'degrading';
+    errorRate: 'improving' | 'stable' | 'degrading';
+  };
+  recommendations?: string[];
+  metrics?: Record<string, number>;
+}
+
 // Observability Types
 export interface MetricDefinition {
   id: string;
@@ -76,7 +108,8 @@ export interface AlertCondition {
 
 export interface AlertAction {
   type: 'email' | 'webhook' | 'slack' | 'notification';
-  config: Record<string, any>;
+  // Config varies by action type
+  config: Record<string, unknown>;
   isEnabled: boolean;
 }
 
@@ -159,7 +192,7 @@ export interface UserBehaviorEvent {
   deviceType: 'desktop' | 'tablet' | 'mobile';
 
   // Custom Properties
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
 }
 
 export interface ErrorEvent {
@@ -195,7 +228,7 @@ export interface ErrorEvent {
 
   // Metadata
   tags: string[];
-  customData: Record<string, any>;
+  customData: Record<string, unknown>;
 }
 
 export interface PerformanceTrace {
@@ -303,7 +336,8 @@ export interface WidgetConfig {
 
   // General
   limit?: number;
-  filters?: Record<string, any>;
+  // Filters vary by widget type
+  filters?: Record<string, unknown>;
 }
 
 export interface DashboardLayout {
@@ -336,7 +370,7 @@ export interface LogEntry {
 
   // Metadata
   tags: string[];
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 
   // Error Context
   error?: {
@@ -441,7 +475,7 @@ interface ObservabilityActions {
 
   // User Behavior Tracking
   trackEvent: (event: Omit<UserBehaviorEvent, 'id' | 'timestamp'>) => void;
-  trackPageView: (page: string, properties?: Record<string, any>) => void;
+  trackPageView: (page: string, properties?: Record<string, unknown>) => void;
   trackUserAction: (action: string, category: string, label?: string, value?: number) => void;
 
   // Error Tracking
@@ -454,11 +488,11 @@ interface ObservabilityActions {
   recordPerformance: (trace: Omit<PerformanceTrace, 'id' | 'timestamp'>) => void;
 
   // Logging
-  log: (level: LogEntry['level'], message: string, data?: Record<string, any>) => void;
-  debug: (message: string, data?: Record<string, any>) => void;
-  info: (message: string, data?: Record<string, any>) => void;
-  warn: (message: string, data?: Record<string, any>) => void;
-  error: (message: string, error?: Error, data?: Record<string, any>) => void;
+  log: (level: LogEntry['level'], message: string, data?: Record<string, unknown>) => void;
+  debug: (message: string, data?: Record<string, unknown>) => void;
+  info: (message: string, data?: Record<string, unknown>) => void;
+  warn: (message: string, data?: Record<string, unknown>) => void;
+  error: (message: string, error?: Error, data?: Record<string, unknown>) => void;
 
   // Dashboards
   createDashboard: (
@@ -479,7 +513,7 @@ interface ObservabilityActions {
 
   // Query & Analysis
   queryMetrics: (query: string, timeRange: TimeRange) => Promise<MetricValue[]>;
-  analyzePerformance: (timeRange: TimeRange) => Promise<any>;
+  analyzePerformance: (timeRange: TimeRange) => Promise<PerformanceAnalysisResult>;
   generateReport: (type: string, config: Record<string, unknown>) => Promise<Blob>;
 
   // Data Management
@@ -997,8 +1031,9 @@ export const useObservabilityStore = create<ObservabilityStore>()(
 
           // Store trace start time
           if (typeof window !== 'undefined') {
-            (window as any).__traces = (window as any).__traces || {};
-            (window as any).__traces[traceId] = {
+            const win = window as WindowWithTraces;
+            win.__traces = win.__traces || {};
+            win.__traces[traceId] = {
               name,
               operation,
               startTime: performance.now(),
@@ -1014,7 +1049,8 @@ export const useObservabilityStore = create<ObservabilityStore>()(
         endTrace: (traceId, status = 'success', errorMessage) => {
           if (!FLAGS.observability || typeof window === 'undefined') return;
 
-          const traces = (window as any).__traces;
+          const win = window as WindowWithTraces;
+          const traces = win.__traces;
           if (!traces || !traces[traceId]) return;
 
           const trace = traces[traceId];
@@ -1684,17 +1720,19 @@ export const useObservabilityStore = create<ObservabilityStore>()(
                   break;
 
                 case 'webhook':
-                  await fetch(action.config.url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                      alert: rule.name,
-                      description: rule.description,
-                      value,
-                      severity: rule.severity,
-                      timestamp: new Date().toISOString(),
-                    }),
-                  });
+                  if (typeof action.config.url === 'string') {
+                    await fetch(action.config.url, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        alert: rule.name,
+                        description: rule.description,
+                        value,
+                        severity: rule.severity,
+                        timestamp: new Date().toISOString(),
+                      }),
+                    });
+                  }
                   break;
 
                 case 'email':

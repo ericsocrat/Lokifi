@@ -19,6 +19,47 @@ interface SpeechRecognitionErrorEventLike {
   error: string;
 }
 
+// Browser API extensions not in standard TypeScript lib
+interface NavigatorWithExtensions extends Navigator {
+  deviceMemory?: number;
+  connection?: NetworkInformation;
+  mozConnection?: NetworkInformation;
+  webkitConnection?: NetworkInformation;
+}
+
+interface NetworkInformation {
+  effectiveType?: '2g' | '3g' | '4g' | 'slow-2g';
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+}
+
+interface SpeechRecognitionInstance {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: (event: SpeechRecognitionEventLike) => void;
+  onerror: (event: SpeechRecognitionErrorEventLike) => void;
+  start: () => void;
+  stop: () => void;
+}
+
+// Browser extensions - use type augmentation approach
+interface WindowWithExtensions {
+  SpeechRecognition?: new () => SpeechRecognitionInstance;
+  webkitSpeechRecognition?: new () => SpeechRecognitionInstance;
+  webkitAudioContext?: typeof AudioContext;
+  speechSynthesis?: SpeechSynthesis;
+  __voiceRecognition?: SpeechRecognitionInstance;
+}
+
+interface ScreenOrientationExtended {
+  lock: (orientation: string) => Promise<void>;
+  unlock: () => void;
+  type: string;
+  angle: number;
+}
+
 // Mobile & Accessibility Types
 export interface AccessibilitySettings {
   // Screen Reader Support
@@ -135,7 +176,8 @@ export interface GestureConfig {
   // Action
   action: string;
   component?: string;
-  parameters?: Record<string, any>;
+  // Parameters are user-defined with varying types
+  parameters?: Record<string, unknown>;
 
   // Conditions
   enabled: boolean;
@@ -159,7 +201,8 @@ export interface KeyboardShortcut {
   // Action
   action: string;
   component?: string;
-  parameters?: Record<string, any>;
+  // Parameters are user-defined with varying types
+  parameters?: Record<string, unknown>;
 
   // Conditions
   enabled: boolean;
@@ -583,15 +626,13 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           const highContrast = window.matchMedia('(prefers-contrast: high)').matches;
 
-          // Estimate performance
-          const memory = (navigator as any).deviceMemory || 4;
+          // Estimate performance - use type-safe Navigator extensions
+          const navExt = navigator as NavigatorWithExtensions;
+          const memory = navExt.deviceMemory || 4;
           const cores = navigator.hardwareConcurrency || 4;
 
           // Detect connection
-          const connection =
-            (navigator as any).connection ||
-            (navigator as any).mozConnection ||
-            (navigator as any).webkitConnection;
+          const connection = navExt.connection || navExt.mozConnection || navExt.webkitConnection;
           const connectionType = connection?.effectiveType || 'unknown';
 
           const deviceInfo: DeviceInfo = {
@@ -612,8 +653,8 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
             memory,
             cores,
             connection: connectionType,
-            voiceOver: (navigator as any).userAgent?.includes('VoiceOver') || false,
-            talkBack: (navigator as any).userAgent?.includes('TalkBack') || false,
+            voiceOver: navigator.userAgent?.includes('VoiceOver') || false,
+            talkBack: navigator.userAgent?.includes('TalkBack') || false,
             highContrast,
             reducedMotion,
           };
@@ -659,10 +700,11 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
         checkFeatureSupport: () => {
           if (!FLAGS.mobileA11y || typeof window === 'undefined') return;
 
+          const winExt = window as WindowWithExtensions;
           const features = {
             touchGestures: 'ontouchstart' in window,
             voiceCommands: 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window,
-            screenReader: !!(window as any).speechSynthesis,
+            screenReader: !!winExt.speechSynthesis,
             keyboardNavigation: true,
             highContrast: window.matchMedia('(prefers-contrast: high)').matches,
             reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -1005,15 +1047,17 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           }
 
           try {
-            const SpeechRecognition =
-              (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-            const recognition = new SpeechRecognition();
+            const winExt = window as WindowWithExtensions;
+            const SpeechRecognitionClass = winExt.SpeechRecognition || winExt.webkitSpeechRecognition;
+            if (!SpeechRecognitionClass) {
+              throw new Error('SpeechRecognition not available');
+            }
+            const recognition = new SpeechRecognitionClass();
 
             recognition.continuous = true;
             recognition.interimResults = false;
             recognition.lang = 'en-US';
 
-            // any required for: SpeechRecognition API event types not available in TypeScript lib
             recognition.onresult = (event: SpeechRecognitionEventLike) => {
               const command = event.results[event.results.length - 1][0].transcript
                 .toLowerCase()
@@ -1021,7 +1065,6 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
               get().processVoiceCommand(command);
             };
 
-            // any required for: SpeechRecognition API event types not available in TypeScript lib
             recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
               console.error('Voice recognition error:', event.error);
             };
@@ -1029,7 +1072,7 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
             recognition.start();
 
             // Store recognition instance for later cleanup
-            (window as any).__voiceRecognition = recognition;
+            winExt.__voiceRecognition = recognition;
           } catch (_error) {
             throw new Error('Failed to start voice recognition');
           }
@@ -1038,10 +1081,11 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
         stopVoiceRecognition: () => {
           if (!FLAGS.mobileA11y) return;
 
-          const recognition = (window as any).__voiceRecognition;
+          const winExt = window as WindowWithExtensions;
+          const recognition = winExt.__voiceRecognition;
           if (recognition) {
             recognition.stop();
-            delete (window as any).__voiceRecognition;
+            delete winExt.__voiceRecognition;
           }
         },
 
@@ -1141,15 +1185,14 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
 
         // Orientation & Layout
         lockOrientation: (orientation: string) => {
-          if (
-            !FLAGS.mobileA11y ||
-            !('screen' in window) ||
-            !('orientation' in (window as any).screen)
-          )
-            return;
+          if (!FLAGS.mobileA11y || !('screen' in window)) return;
+
+          // Screen orientation lock API - cast through unknown for browser compatibility
+          const screenOrientation = window.screen.orientation as unknown as ScreenOrientationExtended | undefined;
+          if (!screenOrientation?.lock) return;
 
           try {
-            (window as any).screen.orientation.lock(orientation);
+            screenOrientation.lock(orientation);
 
             set((draft: Draft<MobileA11yStore>) => {
               draft.orientationLocked = true;
@@ -1160,15 +1203,14 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
         },
 
         unlockOrientation: () => {
-          if (
-            !FLAGS.mobileA11y ||
-            !('screen' in window) ||
-            !('orientation' in (window as any).screen)
-          )
-            return;
+          if (!FLAGS.mobileA11y || !('screen' in window)) return;
+
+          // Screen orientation unlock API - cast through unknown for browser compatibility
+          const screenOrientation = window.screen.orientation as unknown as ScreenOrientationExtended | undefined;
+          if (!screenOrientation?.unlock) return;
 
           try {
-            (window as any).screen.orientation.unlock();
+            screenOrientation.unlock();
 
             set((draft: Draft<MobileA11yStore>) => {
               draft.orientationLocked = false;
@@ -1215,7 +1257,11 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
           if (!FLAGS.mobileA11y || !get().accessibilitySettings.soundEffects) return;
 
           // This would play appropriate accessibility sounds
-          const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+          const winExt = window as WindowWithExtensions;
+          const AudioContextClass = window.AudioContext || winExt.webkitAudioContext;
+          if (!AudioContextClass) return;
+
+          const context = new AudioContextClass();
           const oscillator = context.createOscillator();
           const gainNode = context.createGain();
 
@@ -1571,8 +1617,26 @@ export const useMobileAccessibilityStore = create<MobileA11yStore>()(
   )
 );
 
+// Accessibility audit result type
+interface AccessibilityAuditResult {
+  score: number;
+  issues: AccessibilityIssue[];
+  recommendations: AccessibilityRecommendation[];
+  testedElements: number;
+  passedTests: number;
+  failedTests: number;
+  categories: {
+    perceivable: number;
+    operable: number;
+    understandable: number;
+    robust: number;
+  };
+  wcagLevel: 'A' | 'AA' | 'AAA';
+  section508: boolean;
+}
+
 // Helper Functions
-async function performAccessibilityAudit(): Promise<any> {
+async function performAccessibilityAudit(): Promise<AccessibilityAuditResult> {
   // This would integrate with axe-core or similar
   return {
     score: 85,
@@ -1587,7 +1651,7 @@ async function performAccessibilityAudit(): Promise<any> {
       understandable: 85,
       robust: 85,
     },
-    wcagLevel: 'AA' as const,
+    wcagLevel: 'AA',
     section508: true,
   };
 }
