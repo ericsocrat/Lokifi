@@ -227,14 +227,14 @@ export type PhaseStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skip
 export interface PhaseCondition {
   id: string;
   type: 'metric' | 'health_check' | 'approval' | 'time' | 'custom';
-  // any required: Phase condition configuration (structure varies by condition type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Phase condition configuration (structure varies by condition type)
   config: Record<string, any>;
 }
 
 export interface PhaseAction {
   id: string;
   type: 'notification' | 'script' | 'service_restart' | 'health_check' | 'custom';
-  // any required: Phase action configuration (structure varies by action type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Phase action configuration (structure varies by action type)
   config: Record<string, any>;
 }
 
@@ -259,7 +259,7 @@ export interface HealthCheckConfig {
   id: string;
   name: string;
   type: 'http' | 'tcp' | 'custom';
-  // any required: Health check configuration (varies by check type: http, tcp, custom)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Health check configuration (varies by check type: http, tcp, custom)
   config: Record<string, any>;
 
   // Settings
@@ -296,7 +296,7 @@ export interface RollbackTrigger {
   type: 'metric_threshold' | 'error_spike' | 'manual' | 'health_failure';
 
   // Configuration
-  // any required: Rollback trigger configuration (varies by trigger type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rollback trigger configuration (varies by trigger type)
   config: Record<string, any>;
 
   // Settings
@@ -478,7 +478,7 @@ interface ProgressiveDeploymentActions {
   runHealthCheck: (deploymentId: string, checkId: string) => Promise<boolean>;
 
   // Analysis
-  // any required: Deployment comparison result (complex nested structure)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Deployment comparison result (complex nested structure)
   compareDeployments: (deploymentId1: string, deploymentId2: string) => any;
   generateReport: (deploymentId: string) => Promise<Blob>;
 
@@ -638,7 +638,7 @@ export const useProgressiveDeploymentStore = create<
               throughput: 0,
               availability: 100,
               customMetrics: {},
-              // any required: Nested baseline metrics (recursive structure)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Nested baseline metrics (recursive structure)
               baseline: {} as any,
               improvement: {},
             },
@@ -743,7 +743,7 @@ export const useProgressiveDeploymentStore = create<
               throughput: 1000 + Math.random() * 500,
               availability: 99 + Math.random(),
               customMetrics: {},
-              // any required: Baseline metrics for comparison (recursive structure)
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Baseline metrics for comparison (recursive structure)
               baseline: {} as any,
               improvement: {},
             },

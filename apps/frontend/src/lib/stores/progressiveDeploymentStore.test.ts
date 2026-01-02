@@ -152,7 +152,7 @@ const createMockMetrics = (overrides: Partial<DeploymentMetrics> = {}): Deployme
     throughput: 1000,
     availability: 99.8,
     customMetrics: {},
-    // any required: Nested baseline metrics (recursive structure)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Nested baseline metrics (recursive structure)
     baseline: {} as any,
     improvement: {},
   },
