@@ -13,6 +13,8 @@
     "start": "next start -p 3000",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:security": "eslint . --no-error-on-unmatched-pattern",
+    "lint:a11y": "eslint . --no-error-on-unmatched-pattern",
     "typecheck": "tsc --noEmit",
     "analyze": "ANALYZE=true npm run build",
     "test": "vitest",
