@@ -132,7 +132,7 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
     if (!chartContainerRef.current || chartData.length === 0) return;
 
     try {
-      const { createChart } = await import('lightweight-charts');
+      const { createChart, CandlestickSeries } = await import('lightweight-charts');
 
       const chart = createChart(chartContainerRef.current, {
         width: chartContainerRef.current.clientWidth,
@@ -171,7 +171,8 @@ const DrawingPaneComponent: React.FC<DrawingPaneComponentProps> = ({
         handleScale: true,
       });
 
-      const candlestickSeries = chart.addCandlestickSeries({
+      // Add candlestick series (lightweight-charts v5 API)
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
         upColor: '#10b981',
         downColor: '#ef4444',
         borderUpColor: '#10b981',

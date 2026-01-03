@@ -5,7 +5,7 @@ import { usePaneStore, type Pane } from '@/lib/stores/paneStore';
 import { symbolStore } from '@/lib/stores/symbolStore';
 import { timeframeStore } from '@/lib/stores/timeframeStore';
 import type { IChartApi, ISeriesApi, MouseEventParams, Time } from 'lightweight-charts';
-import { ColorType, createChart } from 'lightweight-charts';
+import { CandlestickSeries, ColorType, createChart } from 'lightweight-charts';
 import { useEffect, useRef, useState } from 'react';
 
 interface EnhancedChartProps {
@@ -84,7 +84,8 @@ export default function EnhancedChart({
       },
     });
 
-    const candlestickSeries = chart.addCandlestickSeries({
+    // Add candlestick series (lightweight-charts v5 API)
+    const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#26a69a',
       downColor: '#ef5350',
       borderVisible: false,

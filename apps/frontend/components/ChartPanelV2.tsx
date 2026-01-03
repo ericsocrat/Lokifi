@@ -10,7 +10,14 @@ import { indicatorStore, type IndicatorSnapshot } from '@/stores/indicatorStore'
 import { symbolStore } from '@/stores/symbolStore';
 import { timeframeStore, type TF } from '@/stores/timeframeStore';
 import type { IChartApi, Time } from 'lightweight-charts';
-import { ColorType, createChart } from 'lightweight-charts';
+import {
+  AreaSeries,
+  CandlestickSeries,
+  ColorType,
+  createChart,
+  HistogramSeries,
+  LineSeries,
+} from 'lightweight-charts';
 import dynamic from 'next/dynamic';
 import { pluginManager } from 'plugins/registry';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -211,8 +218,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       },
     });
 
-    // Add candlestick series
-    const candleSeries = chart.addCandlestickSeries({
+    // Add candlestick series (lightweight-charts v5 API)
+    const candleSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#00ff88',
       downColor: '#ff4444',
       borderDownColor: '#ff4444',
@@ -242,10 +249,10 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     const lows = chartData.candles.map((c: Candle) => c.l);
     const vols = chartData.candles.map((c: Candle) => c.v ?? 0);
 
-    // Helper to add line series
+    // Helper to add line series (lightweight-charts v5 API)
     const addLineSeries = (values: (number | null)[], color: string, width = 2) => {
       if (!values) return null;
-      const lineSeries = chart.addLineSeries({
+      const lineSeries = chart.addSeries(LineSeries, {
         color,
         lineWidth: width,
       });
@@ -269,7 +276,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       addLineSeries(bb.lower, '#666666', 1);
 
       if (inds.bbFill) {
-        const upperArea = chart.addAreaSeries({
+        const upperArea = chart.addSeries(AreaSeries, {
           lineWidth: 0,
           topColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
           bottomColor: hexToRGBA(style.bbFillColor, style.bbFillOpacity),
@@ -336,7 +343,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       // RSI
       if (inds.rsi) {
         const rsiValues = rsi(closes, 14);
-        const rsiSeries = subChart.addLineSeries({
+        const rsiSeries = subChart.addSeries(LineSeries, {
           color: '#ff6b35',
           lineWidth: 2,
         });
@@ -348,7 +355,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         );
 
         // Add RSI levels
-        const rsiLevelSeries = subChart.addLineSeries({
+        const rsiLevelSeries = subChart.addSeries(LineSeries, {
           color: '#666666',
           lineWidth: 1,
           lineStyle: 2, // Dashed
@@ -364,7 +371,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         const macdData = macd(closes, 12, 26, 9);
 
         // MACD histogram
-        const macdHistSeries = subChart.addHistogramSeries({
+        const macdHistSeries = subChart.addSeries(HistogramSeries, {
           color: '#4ecdc4',
         });
         macdHistSeries.setData(
@@ -375,7 +382,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
         );
 
         // MACD signal line
-        const signalSeries = subChart.addLineSeries({
+        const signalSeries = subChart.addSeries(LineSeries, {
           color: '#ff4444',
           lineWidth: 2,
         });

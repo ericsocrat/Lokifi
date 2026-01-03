@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "echo Skipping rollup rebuild on Windows",
     "dev": "next dev -p 3000",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start -p 3000",
     "lint": "next lint",
     "lint:security": "eslint . --config eslint-security.config.mjs",
@@ -70,6 +70,7 @@
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
     "@next/bundle-analyzer": "^16.1.1",
     "@playwright/test": "^1.57.0",
+    "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^14.5.2",

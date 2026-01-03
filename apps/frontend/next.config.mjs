@@ -6,13 +6,20 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: true },
   reactStrictMode: false, // Temporarily disabled - causes chart duplication
 
   // Performance optimizations
   compress: true,
   poweredByHeader: false, // Security: Remove X-Powered-By header
+
+  // Next.js 16: Add turbopack config for monorepo compatibility
+  turbopack: {
+    root: process.cwd(),
+  },
+
+  // Force ESM handling for lightweight-charts v5 (ESM-only package)
+  transpilePackages: ['lightweight-charts'],
 
   experimental: {
     forceSwcTransforms: false,
@@ -42,6 +49,19 @@ const nextConfig = {
     config.watchOptions = {
       poll: 1000,
       aggregateTimeout: 300,
+    };
+
+    // Fix lightweight-charts v5 ESM-only package resolution
+    // The package only exports ESM, so we need to ensure webpack handles it correctly
+    config.resolve = {
+      ...config.resolve,
+      extensionAlias: {
+        ...config.resolve?.extensionAlias,
+        '.js': ['.ts', '.tsx', '.js', '.jsx'],
+        '.mjs': ['.mts', '.mjs'],
+      },
+      // Ensure import conditions prioritize ESM
+      conditionNames: ['import', 'module', 'require', 'default'],
     };
 
     // Optimize for debugging

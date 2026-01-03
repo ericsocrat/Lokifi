@@ -133,7 +133,7 @@ export class APIClient {
             status: response.status,
             statusText: response.statusText,
             data: errorData,
-            parseErrors: parsedError.error?.errors,
+            parseErrors: parsedError.error?.issues,
           });
         }
       } catch (jsonError) {
