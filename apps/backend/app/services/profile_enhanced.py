@@ -231,7 +231,7 @@ class EnhancedProfileService:
             follow_stmt = select(Follow).where(
                 and_(
                     Follow.follower_id == current_user_id,
-                    Follow.following_id == profile.user_id,
+                    Follow.followee_id == profile.user_id,
                 )
             )
             follow_result = await self.db.execute(follow_stmt)
@@ -245,8 +245,8 @@ class EnhancedProfileService:
             bio=profile.bio,
             avatar_url=profile.avatar_url,
             is_public=profile.is_public,
-            follower_count=getattr(profile, "follower_count", 0),
-            following_count=getattr(profile, "following_count", 0),
+            follower_count=getattr(profile, "follower_count", 0) or 0,
+            following_count=getattr(profile, "following_count", 0) or 0,
             created_at=profile.created_at,
             is_following=is_following,
         )
@@ -341,7 +341,7 @@ class EnhancedProfileService:
             # Delete follows (both directions)
             await self.db.execute(
                 delete(Follow).where(
-                    or_(Follow.follower_id == user_id, Follow.following_id == user_id)
+                    or_(Follow.follower_id == user_id, Follow.followee_id == user_id)
                 )
             )
 
@@ -386,7 +386,7 @@ class EnhancedProfileService:
         following_result = await self.db.execute(following_stmt)
         following = following_result.scalars().all()
 
-        followers_stmt = select(Follow).where(Follow.following_id == user_id)
+        followers_stmt = select(Follow).where(Follow.followee_id == user_id)
         followers_result = await self.db.execute(followers_stmt)
         followers = followers_result.scalars().all()
 
@@ -420,20 +420,20 @@ class EnhancedProfileService:
             "notification_preferences": (
                 {
                     "email_enabled": prefs.email_enabled,
-                    "email_follows": prefs.email_follows,
-                    "email_messages": prefs.email_messages,
-                    "email_ai_responses": prefs.email_ai_responses,
-                    "email_system": prefs.email_system,
                     "push_enabled": prefs.push_enabled,
-                    "push_follows": prefs.push_follows,
-                    "push_messages": prefs.push_messages,
-                    "push_ai_responses": prefs.push_ai_responses,
-                    "push_system": prefs.push_system,
+                    "in_app_enabled": prefs.in_app_enabled,
+                    "type_preferences": prefs.type_preferences,
+                    "quiet_hours_start": prefs.quiet_hours_start,
+                    "quiet_hours_end": prefs.quiet_hours_end,
+                    "timezone": prefs.timezone,
+                    "daily_digest_enabled": prefs.daily_digest_enabled,
+                    "weekly_digest_enabled": prefs.weekly_digest_enabled,
+                    "digest_time": prefs.digest_time,
                 }
                 if prefs
                 else None
             ),
-            "following": [str(f.following_id) for f in following],
+            "following": [str(f.followee_id) for f in following],
             "followers": [str(f.follower_id) for f in followers],
             "stats": {
                 "follower_count": len(followers),
@@ -457,7 +457,7 @@ class EnhancedProfileService:
         followers_stmt = (
             select(func.count())
             .select_from(Follow)
-            .where(Follow.following_id == user_id)
+            .where(Follow.followee_id == user_id)
         )
         followers_result = await self.db.execute(followers_stmt)
         follower_count = followers_result.scalar()

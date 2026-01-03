@@ -580,9 +580,12 @@ class TestPublicProfile:
 
     @pytest.mark.asyncio
     async def test_get_public_profile_success(
-        self, service, mock_db, sample_profile_id, sample_user_id, sample_profile
+        self, service, mock_db, sample_profile_id, sample_profile
     ):
         """Test getting public profile successfully."""
+        # Use a different user_id as viewer (not the profile owner)
+        viewer_user_id = uuid.uuid4()
+
         # Mock database queries
         mock_profile_result = MagicMock()
         mock_profile_result.scalar_one_or_none.return_value = sample_profile
@@ -595,7 +598,7 @@ class TestPublicProfile:
         )
 
         # Execute
-        result = await service.get_public_profile(sample_profile_id, sample_user_id)
+        result = await service.get_public_profile(sample_profile_id, viewer_user_id)
 
         # Verify
         assert isinstance(result, PublicProfileResponse)
@@ -667,11 +670,13 @@ class TestPublicProfile:
         service,
         mock_db,
         sample_profile_id,
-        sample_user_id,
         sample_profile,
         sample_follow,
     ):
         """Test public profile shows is_following status."""
+        # Use a different user_id as viewer (not the profile owner)
+        viewer_user_id = uuid.uuid4()
+
         # Mock database queries
         mock_profile_result = MagicMock()
         mock_profile_result.scalar_one_or_none.return_value = sample_profile
@@ -686,7 +691,7 @@ class TestPublicProfile:
         )
 
         # Execute
-        result = await service.get_public_profile(sample_profile_id, sample_user_id)
+        result = await service.get_public_profile(sample_profile_id, viewer_user_id)
 
         # Verify
         assert result.is_following is True
@@ -721,9 +726,7 @@ class TestSearchProfiles:
     """Test profile search functionality."""
 
     @pytest.mark.asyncio
-    async def test_search_profiles_success(
-        self, service, mock_db, sample_profile, sample_user_id
-    ):
+    async def test_search_profiles_success(self, service, mock_db, sample_profile):
         """Test successful profile search."""
         # Mock database queries
         mock_profiles_result = MagicMock()
@@ -736,8 +739,8 @@ class TestSearchProfiles:
             side_effect=[mock_profiles_result, mock_count_result]
         )
 
-        # Execute
-        result = await service.search_profiles("john", current_user_id=sample_user_id)
+        # Execute without current_user_id (anonymous search)
+        result = await service.search_profiles("john")
 
         # Verify
         assert isinstance(result, ProfileSearchResponse)
@@ -814,7 +817,7 @@ class TestSearchProfiles:
         assert result.has_next is False
 
     @pytest.mark.asyncio
-    @patch("app.services.profile_enhanced.FollowService")
+    @patch("app.services.follow_service.FollowService")
     async def test_search_profiles_with_follow_status(
         self,
         mock_follow_service_class,
