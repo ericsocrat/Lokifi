@@ -1127,13 +1127,14 @@ describe('paperTradingStore', () => {
         const { createAccount } = usePaperTradingStore.getState();
         const accountId = createAccount('Test', createMockSettings());
 
+        // Create positions and set up market prices so orders can execute
         usePaperTradingStore.setState({
           positions: [createMockPosition({ accountId }), createMockPosition({ accountId })],
+          marketPrices: new Map([['AAPL', { price: 155.0, timestamp: new Date() }]]),
         });
 
         const { liquidateAccount } = usePaperTradingStore.getState();
-        // This will try to place closing orders, which may fail without market prices
-        // But we can verify the method doesn't throw
+        // With market prices set, liquidation should succeed
         await expect(liquidateAccount(accountId, 'Margin call')).resolves.not.toThrow();
       });
 
