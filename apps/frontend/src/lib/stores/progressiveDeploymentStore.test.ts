@@ -309,7 +309,7 @@ describe('progressiveDeploymentStore', () => {
           },
         });
 
-        const id = createStrategy(strategyData);
+        const _id = createStrategy(strategyData);
         const { strategies } = useProgressiveDeploymentStore.getState();
         expect(strategies[0].type).toBe('rolling');
         expect(strategies[0].config.rolling?.batchSize).toBe(2);
@@ -328,7 +328,7 @@ describe('progressiveDeploymentStore', () => {
           },
         });
 
-        const id = createStrategy(strategyData);
+        const _id = createStrategy(strategyData);
         const { strategies } = useProgressiveDeploymentStore.getState();
         expect(strategies[0].type).toBe('feature_flag');
         expect(strategies[0].config.featureFlag?.flagName).toBe('new_feature');
@@ -534,7 +534,7 @@ describe('progressiveDeploymentStore', () => {
         const strategyId = createStrategy(strategyData);
         const deploymentData = createMockDeployment({ strategyId });
 
-        const id = createDeployment(deploymentData);
+        const _id = createDeployment(deploymentData);
 
         const { deployments } = useProgressiveDeploymentStore.getState();
         expect(deployments[0].metrics).toMatchObject({

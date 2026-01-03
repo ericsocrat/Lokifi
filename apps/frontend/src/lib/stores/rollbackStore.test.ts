@@ -577,7 +577,7 @@ describe('rollbackStore', () => {
 
       try {
         await execPromise;
-      } catch (error) {
+      } catch (_error) {
         // Execution might fail due to random step failures, that's okay
       }
 
@@ -621,7 +621,7 @@ describe('rollbackStore', () => {
         const execPromise = useRollbackStore.getState().executeRollback(planId);
         await vi.runAllTimersAsync();
         await execPromise;
-      } catch (error) {
+      } catch (_error) {
         // Expected to potentially fail based on random success rate
       }
 
@@ -652,7 +652,7 @@ describe('rollbackStore', () => {
 
       try {
         await execPromise;
-      } catch (error) {
+      } catch (_error) {
         // Step might fail randomly, that's okay
       }
 
