@@ -246,7 +246,9 @@ function Initialize-TestEnvironment {
     # Use script-level paths configuration
     $Config = $script:Paths
 
-    Write-TestLog 'Initializing test environment...' -Level Info
+    if (-not $Quiet) {
+        Write-TestLog 'Initializing test environment...' -Level Info
+    }
 
     # Validate environment first
     $pythonFound = Get-Command python -ErrorAction SilentlyContinue
@@ -280,7 +282,9 @@ function Initialize-TestEnvironment {
     $env:TESTING = 'true'
     $env:PYTEST_CURRENT_TEST = $true
 
-    Write-TestLog 'Environment ready' -Level Success
+    if (-not $Quiet) {
+        Write-TestLog 'Environment ready' -Level Success
+    }
 }
 
 # ============================================================================
@@ -373,7 +377,9 @@ function Invoke-BackendTests {
         # Output
         $pytestArgs += "--junit-xml=$($Config.BackendTestResults)/backend-results.xml"
 
-        Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
+        if (-not $Quiet) {
+            Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
+        }
 
         & .\venv\Scripts\python.exe -m pytest @pytestArgs | Out-Host
 
@@ -457,7 +463,9 @@ function Invoke-FrontendTests {
             $testArgs += '--reporter=verbose'
         }
 
-        Write-TestLog "npm $($testArgs -join ' ')" -Level Info
+        if (-not $Quiet) {
+            Write-TestLog "npm $($testArgs -join ' ')" -Level Info
+        }
 
         # In Quiet mode, suppress stderr (expected errors from tests)
         if ($Quiet) {
@@ -1037,8 +1045,8 @@ function Invoke-TestRunner {
     $warnings = @()
     $errorsList = @()
 
-    # Skip header in CI mode
-    if (-not $CIMode) {
+    # Skip header in CI mode or Quiet mode
+    if (-not $CIMode -and -not $Quiet) {
         Write-Host ''
         Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
         Write-Host '║           Lokifi Test Runner - Comprehensive Suite        ║' -ForegroundColor Cyan
@@ -1175,13 +1183,15 @@ function Invoke-TestRunner {
             exit $output.exit_code
         }
 
-        # Human-readable output
-        Write-Host ''
-        Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
-        Write-Host '║                     Test Run Complete                      ║' -ForegroundColor Cyan
-        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
-        Write-Host ''
-        Write-TestLog "Duration: $($duration.TotalSeconds.ToString('0.00'))s" -Level Info
+        # Human-readable output (suppress in Quiet mode except final status)
+        if (-not $Quiet) {
+            Write-Host ''
+            Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+            Write-Host '║                     Test Run Complete                      ║' -ForegroundColor Cyan
+            Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+            Write-Host ''
+            Write-TestLog "Duration: $($duration.TotalSeconds.ToString('0.00'))s" -Level Info
+        }
 
         if ($exitCode -eq 0) {
             Write-TestLog 'All tests passed! 🎉' -Level Success
@@ -1189,7 +1199,9 @@ function Invoke-TestRunner {
             Write-TestLog "Tests failed with exit code $exitCode" -Level Error
         }
 
-        Write-Host ''
+        if (-not $Quiet) {
+            Write-Host ''
+        }
 
     } catch {
         $errorsList += $_.Exception.Message
