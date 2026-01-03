@@ -36,19 +36,19 @@ export interface RollbackSnapshot {
 
 export interface ApplicationStateSnapshot {
   // Frontend State
-  userPreferences: Record<string, any>;
-  sessionData: Record<string, any>;
-  cachedData: Record<string, any>;
+  userPreferences: Record<string, unknown>;
+  sessionData: Record<string, unknown>;
+  cachedData: Record<string, unknown>;
 
   // Feature Flags
   featureFlags: Record<string, boolean>;
 
   // UI State
-  dashboardLayouts: Record<string, any>;
-  chartConfigurations: Record<string, any>;
+  dashboardLayouts: Record<string, unknown>;
+  chartConfigurations: Record<string, unknown>;
 
   // Custom Settings
-  customSettings: Record<string, any>;
+  customSettings: Record<string, unknown>;
 }
 
 export interface DatabaseStateSnapshot {
@@ -79,13 +79,13 @@ export interface ConfigurationSnapshot {
   environment: Record<string, string>;
 
   // Application Config
-  appConfig: Record<string, any>;
+  appConfig: Record<string, unknown>;
 
   // External Services
-  serviceConfigs: Record<string, any>;
+  serviceConfigs: Record<string, unknown>;
 
   // Security Settings
-  securityConfig: Record<string, any>;
+  securityConfig: Record<string, unknown>;
 }
 
 export interface RollbackPlan {
@@ -171,7 +171,7 @@ export interface RollbackStepConfig {
   // Config restore
   configRestore?: {
     configFile: string;
-    backupConfig: Record<string, any>;
+    backupConfig: Record<string, unknown>;
     mergeStrategy?: 'replace' | 'merge' | 'selective';
     restoreKeys?: string[];
   };
@@ -350,7 +350,7 @@ export interface RollbackTriggerConfig {
   scheduled?: {
     cron: string;
     timezone?: string;
-    conditions?: Record<string, any>;
+    conditions?: Record<string, unknown>;
   };
 
   // Dependency failure
@@ -467,7 +467,7 @@ export interface RollbackExecution {
   // Metadata
   environment: string;
   version: string;
-  executionContext: Record<string, any>;
+  executionContext: Record<string, unknown>;
 }
 
 export type RollbackExecutionStatus =
@@ -493,7 +493,7 @@ export interface ValidationResult {
   ruleId: string;
   status: 'passed' | 'failed' | 'skipped';
   message?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   duration?: number; // milliseconds
 }
 
@@ -991,7 +991,7 @@ export const useRollbackStore = create<RollbackStore>()(
 
         try {
           // Execute steps in order
-          for (const step of plan.rollbackSteps.sort((a, b) => a.order - b.order)) {
+          for (const step of [...plan.rollbackSteps].sort((a, b) => a.order - b.order)) {
             const stepResult: RollbackStepResult = {
               stepId: step.id,
               startedAt: new Date(),

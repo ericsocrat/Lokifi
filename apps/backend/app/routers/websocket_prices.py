@@ -58,7 +58,9 @@ class PriceWebSocketManager:
         connection_metrics.total_connections += 1
         connection_metrics.active_connections = len(self.active_connections)
 
-        logger.info(f"✅ WebSocket connected: {client_id} (total: {len(self.active_connections)})")
+        logger.info(
+            f"✅ WebSocket connected: {client_id} (total: {len(self.active_connections)})"
+        )
 
         # Start update task if not running
         if self.update_task is None or self.update_task.done():
@@ -80,7 +82,11 @@ class PriceWebSocketManager:
         )
 
         # Stop update task if no connections
-        if not self.active_connections and self.update_task and not self.update_task.done():
+        if (
+            not self.active_connections
+            and self.update_task
+            and not self.update_task.done()
+        ):
             self.update_task.cancel()
             logger.info("⏹️ Stopped price update loop (no active connections)")
 
@@ -98,7 +104,9 @@ class PriceWebSocketManager:
     async def unsubscribe(self, client_id: str, symbols: list[str]):
         """Unsubscribe from symbols"""
         if client_id in self.subscriptions:
-            self.subscriptions[client_id].difference_update([s.upper() for s in symbols])
+            self.subscriptions[client_id].difference_update(
+                [s.upper() for s in symbols]
+            )
             logger.info(f"{client_id} unsubscribed from: {symbols}")
             return True
         return False
@@ -160,7 +168,9 @@ class PriceWebSocketManager:
                         await advanced_redis_client.client.publish(
                             "lokifi:price_updates", json.dumps(price_payload)
                         )
-                        logger.debug(f"📤 Published {len(price_payload)} prices to Redis")
+                        logger.debug(
+                            f"📤 Published {len(price_payload)} prices to Redis"
+                        )
                     except Exception as e:
                         logger.debug(f"Redis publish failed: {e}")
 
@@ -180,9 +190,11 @@ class PriceWebSocketManager:
                                 "low": data.low,
                                 "volume": data.volume,
                                 "market_cap": data.market_cap,
-                                "last_updated": data.last_updated.isoformat()
-                                if data.last_updated
-                                else None,
+                                "last_updated": (
+                                    data.last_updated.isoformat()
+                                    if data.last_updated
+                                    else None
+                                ),
                                 "source": data.source,
                                 "cached": data.cached,
                             }
@@ -198,7 +210,9 @@ class PriceWebSocketManager:
                             },
                         )
 
-                logger.info(f"✅ Sent price updates to {len(self.subscriptions)} clients")
+                logger.info(
+                    f"✅ Sent price updates to {len(self.subscriptions)} clients"
+                )
 
             except Exception as e:
                 logger.error(f"❌ Error in price update loop: {e}", exc_info=True)
@@ -215,7 +229,8 @@ price_ws_manager = PriceWebSocketManager()
 
 @router.websocket("/prices")
 async def websocket_price_endpoint(
-    websocket: WebSocket, client_id: str = Query(default=None, description="Optional client ID")
+    websocket: WebSocket,
+    client_id: str = Query(default=None, description="Optional client ID"),
 ):
     """
     WebSocket endpoint for real-time price updates
@@ -303,7 +318,11 @@ async def websocket_price_endpoint(
                         await price_ws_manager.subscribe(client_id, symbols)
                         await price_ws_manager.send_message(
                             client_id,
-                            {"type": "subscribed", "symbols": symbols, "count": len(symbols)},
+                            {
+                                "type": "subscribed",
+                                "symbols": symbols,
+                                "count": len(symbols),
+                            },
                         )
 
                 elif action == "unsubscribe":
@@ -316,18 +335,21 @@ async def websocket_price_endpoint(
 
                 elif action == "ping":
                     await price_ws_manager.send_message(
-                        client_id, {"type": "pong", "timestamp": datetime.now().isoformat()}
+                        client_id,
+                        {"type": "pong", "timestamp": datetime.now().isoformat()},
                     )
 
                 elif action == "get_subscriptions":
                     subs = list(price_ws_manager.subscriptions.get(client_id, set()))
                     await price_ws_manager.send_message(
-                        client_id, {"type": "subscriptions", "symbols": subs, "count": len(subs)}
+                        client_id,
+                        {"type": "subscriptions", "symbols": subs, "count": len(subs)},
                     )
 
                 else:
                     await price_ws_manager.send_message(
-                        client_id, {"type": "error", "message": f"Unknown action: {action}"}
+                        client_id,
+                        {"type": "error", "message": f"Unknown action: {action}"},
                     )
 
             except json.JSONDecodeError:
@@ -336,7 +358,9 @@ async def websocket_price_endpoint(
                 )
             except Exception as e:
                 logger.error(f"Error processing message from {client_id}: {e}")
-                await price_ws_manager.send_message(client_id, {"type": "error", "message": str(e)})
+                await price_ws_manager.send_message(
+                    client_id, {"type": "error", "message": str(e)}
+                )
 
     except WebSocketDisconnect:
         price_ws_manager.disconnect(client_id)

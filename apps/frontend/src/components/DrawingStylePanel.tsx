@@ -28,7 +28,7 @@ export default function DrawingStylePanel() {
             {PALETTE.map((c: string) => (
               <button
                 key={c}
-                onClick={() => apply({ color: c } as any)} // any required: color not in type
+                onClick={() => apply({ color: c })}
                 className="h-6 rounded"
                 style={{ background: c }}
                 title={c}

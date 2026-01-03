@@ -46,7 +46,9 @@ export interface LokifiGlobalThis {
 }
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface Window extends FynixWindow {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface GlobalThis extends FynixGlobalThis {}
 }
 
@@ -70,6 +72,7 @@ export interface ChartSeries {
   update(data: ChartData): void;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ChartInstance extends IChartApi {
   // Extends lightweight-charts IChartApi with any custom methods
 }

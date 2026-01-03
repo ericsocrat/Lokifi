@@ -38,49 +38,71 @@ def upgrade() -> None:
     op.execute("DROP TYPE IF EXISTS notificationpriority CASCADE")
 
     # Add category column for grouping notifications
-    op.add_column("notifications", sa.Column("category", sa.String(length=50), nullable=True))
+    op.add_column(
+        "notifications", sa.Column("category", sa.String(length=50), nullable=True)
+    )
 
     # Add interaction tracking columns
     op.add_column(
-        "notifications", sa.Column("clicked_at", sa.DateTime(timezone=True), nullable=True)
+        "notifications",
+        sa.Column("clicked_at", sa.DateTime(timezone=True), nullable=True),
     )
     op.add_column(
-        "notifications", sa.Column("dismissed_at", sa.DateTime(timezone=True), nullable=True)
+        "notifications",
+        sa.Column("dismissed_at", sa.DateTime(timezone=True), nullable=True),
     )
 
     # Add status flags
     op.add_column(
         "notifications",
-        sa.Column("is_dismissed", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "is_dismissed",
+            sa.Boolean(),
+            nullable=False,
+            server_default=sa.text("false"),
+        ),
     )
     op.add_column(
         "notifications",
-        sa.Column("is_archived", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "is_archived", sa.Boolean(), nullable=False, server_default=sa.text("false")
+        ),
     )
 
     # Add delivery channel flags
     op.add_column(
         "notifications",
-        sa.Column("email_sent", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "email_sent", sa.Boolean(), nullable=False, server_default=sa.text("false")
+        ),
     )
     op.add_column(
         "notifications",
-        sa.Column("push_sent", sa.Boolean(), nullable=False, server_default=sa.text("false")),
+        sa.Column(
+            "push_sent", sa.Boolean(), nullable=False, server_default=sa.text("false")
+        ),
     )
     op.add_column(
         "notifications",
-        sa.Column("in_app_sent", sa.Boolean(), nullable=False, server_default=sa.text("true")),
+        sa.Column(
+            "in_app_sent", sa.Boolean(), nullable=False, server_default=sa.text("true")
+        ),
     )
 
     # Add entity reference columns
     op.add_column(
-        "notifications", sa.Column("related_entity_type", sa.String(length=50), nullable=True)
+        "notifications",
+        sa.Column("related_entity_type", sa.String(length=50), nullable=True),
     )
-    op.add_column("notifications", sa.Column("related_entity_id", sa.UUID(), nullable=True))
+    op.add_column(
+        "notifications", sa.Column("related_entity_id", sa.UUID(), nullable=True)
+    )
 
     # Add grouping columns
     op.add_column("notifications", sa.Column("batch_id", sa.UUID(), nullable=True))
-    op.add_column("notifications", sa.Column("parent_notification_id", sa.UUID(), nullable=True))
+    op.add_column(
+        "notifications", sa.Column("parent_notification_id", sa.UUID(), nullable=True)
+    )
 
     # Add payload column (was extra_data in old schema)
     op.add_column("notifications", sa.Column("payload", sa.JSON(), nullable=True))
@@ -135,7 +157,9 @@ def downgrade() -> None:
     op.execute(
         "CREATE TYPE notificationtype AS ENUM ('FOLLOW', 'MESSAGE', 'AI_RESPONSE', 'SYSTEM')"
     )
-    op.execute("CREATE TYPE notificationpriority AS ENUM ('LOW', 'NORMAL', 'HIGH', 'URGENT')")
+    op.execute(
+        "CREATE TYPE notificationpriority AS ENUM ('LOW', 'NORMAL', 'HIGH', 'URGENT')"
+    )
     op.execute(
         "ALTER TABLE notifications ALTER COLUMN type TYPE notificationtype USING type::notificationtype"
     )

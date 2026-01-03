@@ -45,13 +45,17 @@ async def get_service_health(service: str):
         all_health = await monitoring_system._run_all_health_checks()
 
         if service not in all_health:
-            raise HTTPException(status_code=404, detail=f"Service '{service}' not found")
+            raise HTTPException(
+                status_code=404, detail=f"Service '{service}' not found"
+            )
 
         return {"status": "success", "data": all_health[service].to_dict()}
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get service health: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get service health: {e}"
+        )
 
 
 @router.get("/metrics")
@@ -82,7 +86,9 @@ async def get_websocket_analytics():
 
         return {"status": "success", "data": analytics}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get WebSocket analytics: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get WebSocket analytics: {e}"
+        )
 
 
 @router.get("/websocket/connections")
@@ -97,7 +103,10 @@ async def get_active_connections(current_user: dict = Depends(get_current_user))
 
         # Get detailed connection info (without websocket objects)
         connections_detail = []
-        for conn_id, conn_info in advanced_websocket_manager.connection_pool.connections.items():
+        for (
+            conn_id,
+            conn_info,
+        ) in advanced_websocket_manager.connection_pool.connections.items():
             connections_detail.append(
                 {
                     "connection_id": conn_id,
@@ -113,7 +122,10 @@ async def get_active_connections(current_user: dict = Depends(get_current_user))
 
         return {
             "status": "success",
-            "data": {"statistics": connections_stats, "connections": connections_detail},
+            "data": {
+                "statistics": connections_stats,
+                "connections": connections_detail,
+            },
         }
     except HTTPException:
         raise
@@ -144,11 +156,17 @@ async def invalidate_cache_pattern(
         if current_user.get("handle") != "admin":
             raise HTTPException(status_code=403, detail="Admin access required")
 
-        invalidated_count = await advanced_redis_client.invalidate_pattern(pattern, layer)
+        invalidated_count = await advanced_redis_client.invalidate_pattern(
+            pattern, layer
+        )
 
         return {
             "status": "success",
-            "data": {"pattern": pattern, "layer": layer, "invalidated_count": invalidated_count},
+            "data": {
+                "pattern": pattern,
+                "layer": layer,
+                "invalidated_count": invalidated_count,
+            },
         }
     except HTTPException:
         raise
@@ -204,7 +222,9 @@ async def get_monitoring_dashboard():
 
         return {"status": "success", "data": dashboard_data}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get dashboard data: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get dashboard data: {e}"
+        )
 
 
 @router.get("/performance/insights")
@@ -215,7 +235,9 @@ async def get_performance_insights():
 
         return {"status": "success", "data": insights}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get performance insights: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get performance insights: {e}"
+        )
 
 
 @router.post("/monitoring/start")
@@ -271,13 +293,17 @@ async def get_monitoring_status():
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get monitoring status: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get monitoring status: {e}"
+        )
 
 
 # Load testing endpoint for performance validation
 @router.get("/load-test/websocket")
 async def websocket_load_test(
-    connections: int = Query(100, description="Number of test connections", ge=1, le=1000),
+    connections: int = Query(
+        100, description="Number of test connections", ge=1, le=1000
+    ),
     duration: int = Query(60, description="Test duration in seconds", ge=10, le=300),
     current_user: dict = Depends(get_current_user),
 ):

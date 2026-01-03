@@ -37,26 +37,38 @@ class AIProviderManager:
         # OpenRouter provider
         if hasattr(settings, "OPENROUTER_API_KEY") and settings.OPENROUTER_API_KEY:
             try:
-                self.providers["openrouter"] = OpenRouterProvider(settings.OPENROUTER_API_KEY)
+                self.providers["openrouter"] = OpenRouterProvider(
+                    settings.OPENROUTER_API_KEY
+                )
                 logger.info("OpenRouter provider initialized")
             except Exception as e:
-                logger.error(f"Failed to initialize OpenRouter provider: {e}", exc_info=True)
+                logger.error(
+                    f"Failed to initialize OpenRouter provider: {e}", exc_info=True
+                )
 
         # Hugging Face provider
         if hasattr(settings, "HUGGING_FACE_API_KEY") and settings.HUGGING_FACE_API_KEY:
             try:
-                self.providers["huggingface"] = HuggingFaceProvider(settings.HUGGING_FACE_API_KEY)
+                self.providers["huggingface"] = HuggingFaceProvider(
+                    settings.HUGGING_FACE_API_KEY
+                )
                 logger.info("Hugging Face provider initialized")
             except Exception as e:
-                logger.error(f"Failed to initialize Hugging Face provider: {e}", exc_info=True)
+                logger.error(
+                    f"Failed to initialize Hugging Face provider: {e}", exc_info=True
+                )
 
         # Ollama provider
         if hasattr(settings, "OLLAMA_BASE_URL"):
             try:
                 self.providers["ollama"] = OllamaProvider(settings.OLLAMA_BASE_URL)
-                logger.info(f"Ollama provider initialized at {settings.OLLAMA_BASE_URL}")
+                logger.info(
+                    f"Ollama provider initialized at {settings.OLLAMA_BASE_URL}"
+                )
             except Exception as e:
-                logger.error(f"Failed to initialize Ollama provider: {e}", exc_info=True)
+                logger.error(
+                    f"Failed to initialize Ollama provider: {e}", exc_info=True
+                )
         else:
             # Try default Ollama URL
             try:
@@ -83,7 +95,9 @@ class AIProviderManager:
 
         return available
 
-    async def get_best_provider(self, preferred_provider: str | None = None) -> AIProvider:
+    async def get_best_provider(
+        self, preferred_provider: str | None = None
+    ) -> AIProvider:
         """Get the best available provider, optionally preferring a specific one."""
 
         # If a specific provider is requested and available, use it
@@ -93,7 +107,9 @@ class AIProviderManager:
                 if await provider.is_available():
                     return provider
                 else:
-                    logger.warning(f"Preferred provider {preferred_provider} is not available")
+                    logger.warning(
+                        f"Preferred provider {preferred_provider} is not available"
+                    )
             except Exception as e:
                 logger.error(f"Error checking provider {preferred_provider}: {e}")
 
@@ -113,6 +129,18 @@ class AIProviderManager:
         # Fallback to mock if nothing else works
         logger.warning("All providers failed, falling back to mock provider")
         return self.providers["mock"]
+
+    async def get_primary_provider(self) -> AIProvider | None:
+        """Get the primary (best available) AI provider.
+
+        Returns the best available provider, or None if no providers are available.
+        This is an alias for get_best_provider() for backward compatibility.
+        """
+        try:
+            return await self.get_best_provider()
+        except Exception as e:
+            logger.error(f"Error getting primary provider: {e}")
+            return None
 
     def get_provider_by_name(self, name: str) -> AIProvider | None:
         """Get a specific provider by name."""

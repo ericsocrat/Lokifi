@@ -35,11 +35,13 @@ async def test_database_connection():
                 break
 
         print("✅ DATABASE: No connection issues detected")
-        return True
+        # Test passes if we reach here without exception
 
     except Exception as e:
-        print(f"❌ DATABASE: Connection issues found: {e}")
-        return False
+        # Skip if database is unavailable (expected in local development without db)
+        if "Connection refused" in str(e) or "connect" in str(e).lower():
+            pytest.skip(f"Database unavailable (expected in development): {e}")
+        pytest.fail(f"DATABASE: Connection issues found: {e}")
 
 
 @pytest.mark.asyncio
@@ -63,15 +65,18 @@ async def test_redis_connection():
             else:
                 print("⚠️ Redis client not connected (expected in development)")
         else:
-            print("⚠️ Cannot determine Redis connection status (no 'is_connected' method)")
+            print(
+                "⚠️ Cannot determine Redis connection status (no 'is_connected' method)"
+            )
 
         print("✅ REDIS: No critical configuration issues")
-        return True
+        # Test passes if we reach here without exception
 
     except Exception as e:
+        # Redis connection failures are expected in development without Redis running
         print(f"⚠️ REDIS: Expected connection issues in development: {e}")
         print("✅ REDIS: Configuration is properly handled")
-        return True  # This is expected in development
+        # This is expected in development - test passes
 
 
 def test_scheduler_issues():
@@ -98,11 +103,10 @@ def test_scheduler_issues():
         print("✅ Main app imports without scheduler conflicts")
 
         print("✅ SCHEDULER: No async coroutine issues detected")
-        return True
+        # Test passes if we reach here without exception
 
     except Exception as e:
-        print(f"❌ SCHEDULER: Async issues found: {e}")
-        return False
+        pytest.fail(f"SCHEDULER: Async issues found: {e}")
 
 
 @pytest.mark.asyncio
@@ -122,45 +126,50 @@ async def test_monitoring_alerts():
                 time.time() - monitoring_system.startup_time
             )
             if grace_remaining > 0:
-                print(f"✅ Startup grace period active: {grace_remaining:.1f}s remaining")
+                print(
+                    f"✅ Startup grace period active: {grace_remaining:.1f}s remaining"
+                )
             else:
                 print("✅ Grace period expired - monitoring active")
         else:
             print("⚠️ Monitoring system may not have grace period")
 
         print("✅ MONITORING: Alert system configured properly")
-        return True
+        # Test passes if we reach here without exception
 
     except Exception as e:
-        print(f"❌ MONITORING: Issues found: {e}")
-        return False
+        pytest.fail(f"MONITORING: Issues found: {e}")
 
 
 async def main():
-    """Run all tests"""
+    """Run all tests manually (for debugging purposes)."""
     print("🔍 TESTING THREE SPECIFIC ISSUES")
     print("=" * 50)
 
-    results = []
+    issues = [
+        ("Database connection issues", test_database_connection),
+        ("Redis connection issues", test_redis_connection),
+        ("Async scheduling issues", test_scheduler_issues),
+        ("Monitoring alert issues", test_monitoring_alerts),
+    ]
 
-    # Test each issue
-    results.append(await test_database_connection())
-    results.append(await test_redis_connection())
-    results.append(test_scheduler_issues())
-    results.append(await test_monitoring_alerts())
+    results = []
+    for issue_name, test_func in issues:
+        try:
+            if asyncio.iscoroutinefunction(test_func):
+                await test_func()
+            else:
+                test_func()
+            results.append((issue_name, True))
+        except Exception as e:
+            print(f"❌ {issue_name}: {e}")
+            results.append((issue_name, False))
 
     print("\n" + "=" * 50)
     print("📊 ISSUE STATUS SUMMARY:")
 
-    issues = [
-        "Database connection issues",
-        "Redis connection issues",
-        "Async scheduling issues",
-        "Monitoring alert issues",
-    ]
-
     all_fixed = True
-    for i, (issue, result) in enumerate(zip(issues, results, strict=False), 1):
+    for i, (issue, result) in enumerate(results, 1):
         status = "✅ FIXED" if result else "❌ STILL PRESENT"
         print(f"{i}. {issue}: {status}")
         if not result:

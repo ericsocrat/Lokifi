@@ -113,7 +113,9 @@ class CryptoDiscoveryService:
             if cached:
                 crypto_metrics.record_fetch(cached=True)
                 duration = time.time() - start_time
-                logger.info(f"✅ Cache hit for top {limit} cryptos - {duration * 1000:.1f}ms")
+                logger.info(
+                    f"✅ Cache hit for top {limit} cryptos - {duration * 1000:.1f}ms"
+                )
                 return [CryptoAsset(**crypto) for crypto in cached]
 
         try:
@@ -126,11 +128,15 @@ class CryptoDiscoveryService:
             if cryptos:
                 # Cache for 1 hour
                 await self._set_cache(
-                    cache_key, [crypto.to_dict() for crypto in cryptos], ttl=self.cache_ttl
+                    cache_key,
+                    [crypto.to_dict() for crypto in cryptos],
+                    ttl=self.cache_ttl,
                 )
                 crypto_metrics.record_fetch(cached=False, success=True)
                 duration = time.time() - start_time
-                logger.info(f"📊 Fetched {len(cryptos)} cryptocurrencies - {duration * 1000:.1f}ms")
+                logger.info(
+                    f"📊 Fetched {len(cryptos)} cryptocurrencies - {duration * 1000:.1f}ms"
+                )
             else:
                 crypto_metrics.record_fetch(cached=False, success=False)
                 logger.warning("⚠️ No cryptocurrencies returned")
@@ -141,7 +147,9 @@ class CryptoDiscoveryService:
             logger.error(f"❌ Error fetching top cryptos: {e}")
             return []
 
-    async def _fetch_top_cryptos(self, client: httpx.AsyncClient, limit: int) -> list[CryptoAsset]:
+    async def _fetch_top_cryptos(
+        self, client: httpx.AsyncClient, limit: int
+    ) -> list[CryptoAsset]:
         """Fetch top cryptocurrencies from CoinGecko"""
         try:
             # CoinGecko allows fetching up to 250 per page
@@ -183,12 +191,16 @@ class CryptoDiscoveryService:
                             market_cap=coin.get("market_cap", 0),
                             total_volume=coin.get("total_volume", 0),
                             price_change_24h=coin.get("price_change_24h", 0),
-                            price_change_percentage_24h=coin.get("price_change_percentage_24h", 0),
+                            price_change_percentage_24h=coin.get(
+                                "price_change_percentage_24h", 0
+                            ),
                             image=coin.get("image", ""),
                         )
                         all_cryptos.append(crypto)
                     except Exception as e:
-                        logger.warning(f"Error parsing crypto {coin.get('symbol')}: {e}")
+                        logger.warning(
+                            f"Error parsing crypto {coin.get('symbol')}: {e}"
+                        )
                         continue
 
                 if len(all_cryptos) >= limit:
@@ -263,7 +275,9 @@ class CryptoDiscoveryService:
 
         except Exception as e:
             duration = time.time() - start_time
-            logger.error(f"❌ Error searching cryptos for '{query}': {e} - {duration * 1000:.1f}ms")
+            logger.error(
+                f"❌ Error searching cryptos for '{query}': {e} - {duration * 1000:.1f}ms"
+            )
             return []
 
     async def _search_cryptos(
@@ -316,7 +330,9 @@ class CryptoDiscoveryService:
                         market_cap=coin.get("market_cap", 0),
                         total_volume=coin.get("total_volume", 0),
                         price_change_24h=coin.get("price_change_24h", 0),
-                        price_change_percentage_24h=coin.get("price_change_percentage_24h", 0),
+                        price_change_percentage_24h=coin.get(
+                            "price_change_percentage_24h", 0
+                        ),
                         image=coin.get("image", ""),
                     )
                     results.append(crypto)

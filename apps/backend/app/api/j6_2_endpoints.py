@@ -92,14 +92,17 @@ class NotificationPreferencesUpdate(BaseModel):
 
 @router.get("/analytics/dashboard")
 async def get_notification_dashboard(
-    days: int = Query(default=7, ge=1, le=90), current_user: User = Depends(get_current_user)
+    days: int = Query(default=7, ge=1, le=90),
+    current_user: User = Depends(get_current_user),
 ):
     """Get comprehensive notification analytics dashboard"""
     try:
         dashboard_data = await analytics_service.get_dashboard_data(days=days)
         return JSONResponse(content=dashboard_data)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get dashboard data: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get dashboard data: {e!s}"
+        )
 
 
 @router.get("/analytics/metrics/{user_id}")
@@ -110,10 +113,14 @@ async def get_user_metrics(
 ):
     """Get notification metrics for specific user"""
     try:
-        metrics = await analytics_service.get_user_engagement_metrics(user_id, days=days)
+        metrics = await analytics_service.get_user_engagement_metrics(
+            user_id, days=days
+        )
         return JSONResponse(content=metrics)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get user metrics: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get user metrics: {e!s}"
+        )
 
 
 @router.get("/analytics/performance")
@@ -123,12 +130,15 @@ async def get_performance_metrics(current_user: User = Depends(get_current_user)
         performance = await analytics_service.get_system_performance_metrics()
         return JSONResponse(content=performance)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get performance metrics: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get performance metrics: {e!s}"
+        )
 
 
 @router.get("/analytics/trends")
 async def get_notification_trends(
-    days: int = Query(default=30, ge=7, le=365), current_user: User = Depends(get_current_user)
+    days: int = Query(default=30, ge=7, le=365),
+    current_user: User = Depends(get_current_user),
 ):
     """Get notification trends and patterns"""
     try:
@@ -145,7 +155,9 @@ async def get_system_health_score(current_user: User = Depends(get_current_user)
         health_score = await analytics_service.calculate_system_health_score()
         return JSONResponse(content={"health_score": health_score})
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get health score: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get health score: {e!s}"
+        )
 
 
 # Smart Notification Endpoints
@@ -183,7 +195,9 @@ async def send_rich_notification_endpoint(
             }
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to send rich notification: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to send rich notification: {e!s}"
+        )
 
 
 @router.post("/batched")
@@ -211,17 +225,22 @@ async def send_batched_notification_endpoint(
             }
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to send batched notification: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to send batched notification: {e!s}"
+        )
 
 
 @router.post("/schedule")
 async def schedule_notification_endpoint(
-    request: ScheduledNotificationRequest, current_user: User = Depends(get_current_user)
+    request: ScheduledNotificationRequest,
+    current_user: User = Depends(get_current_user),
 ):
     """Schedule a notification for future delivery"""
     try:
         if request.scheduled_for <= datetime.now(timezone.utc):
-            raise HTTPException(status_code=400, detail="Scheduled time must be in the future")
+            raise HTTPException(
+                status_code=400, detail="Scheduled time must be in the future"
+            )
 
         schedule_id = await schedule_notification(
             user_id=request.user_id,
@@ -243,7 +262,9 @@ async def schedule_notification_endpoint(
             }
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to schedule notification: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to schedule notification: {e!s}"
+        )
 
 
 # Batch Management Endpoints
@@ -256,11 +277,15 @@ async def get_pending_batches(current_user: User = Depends(get_current_user)):
         summary = await smart_notification_processor.get_pending_batches_summary()
         return JSONResponse(content=summary)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get pending batches: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get pending batches: {e!s}"
+        )
 
 
 @router.post("/batches/{batch_id}/deliver")
-async def force_deliver_batch(batch_id: str, current_user: User = Depends(get_current_user)):
+async def force_deliver_batch(
+    batch_id: str, current_user: User = Depends(get_current_user)
+):
     """Force immediate delivery of a pending batch"""
     try:
         if batch_id in smart_notification_processor.pending_batches:
@@ -292,7 +317,9 @@ async def configure_ab_test(
 ):
     """Configure A/B test for notifications"""
     try:
-        await smart_notification_processor.configure_ab_test(config.test_name, config.variants)
+        await smart_notification_processor.configure_ab_test(
+            config.test_name, config.variants
+        )
 
         return JSONResponse(
             content={
@@ -303,7 +330,9 @@ async def configure_ab_test(
             }
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to configure A/B test: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to configure A/B test: {e!s}"
+        )
 
 
 @router.get("/ab-tests")
@@ -329,10 +358,16 @@ async def get_user_notification_preferences(
 ):
     """Get user notification preferences"""
     try:
-        preferences = await smart_notification_processor.get_user_notification_preferences(user_id)
+        preferences = (
+            await smart_notification_processor.get_user_notification_preferences(
+                user_id
+            )
+        )
         return JSONResponse(content=preferences)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get user preferences: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get user preferences: {e!s}"
+        )
 
 
 @router.put("/preferences/{user_id}")
@@ -346,8 +381,10 @@ async def update_user_notification_preferences(
         # This would integrate with your existing preference system
         # For now, return success with the updated preferences
 
-        current_prefs = await smart_notification_processor.get_user_notification_preferences(
-            user_id
+        current_prefs = (
+            await smart_notification_processor.get_user_notification_preferences(
+                user_id
+            )
         )
 
         # Update with new preferences
@@ -363,7 +400,9 @@ async def update_user_notification_preferences(
             }
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to update preferences: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update preferences: {e!s}"
+        )
 
 
 # Templates and Configuration Endpoints
@@ -429,7 +468,9 @@ async def get_system_status(current_user: User = Depends(get_current_user)):
 
         return JSONResponse(content=status)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to get system status: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get system status: {e!s}"
+        )
 
 
 # Export router

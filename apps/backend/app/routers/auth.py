@@ -144,7 +144,9 @@ async def login(login_data: UserLoginRequest, db: AsyncSession = Depends(get_db)
 
 
 @router.post("/google", response_model=AuthUserResponse)
-async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depends(get_db)):
+async def google_oauth(
+    oauth_data: GoogleOAuthRequest, db: AsyncSession = Depends(get_db)
+):
     """
     Authenticate with Google OAuth using ID token.
 
@@ -172,7 +174,8 @@ async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depend
         # Validate token audience (security check)
         if user_info.get("aud") != settings.GOOGLE_CLIENT_ID:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token audience"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token audience",
             )
 
         # Validate token expiration (Google should handle this, but double-check)
@@ -198,7 +201,8 @@ async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depend
 
         if not email_verified:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST, detail="Google email not verified"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Google email not verified",
             )
 
         # Create or get user
@@ -269,7 +273,9 @@ async def google_oauth(oauth_data: GoogleOAuthRequest, db: AsyncSession = Depend
 @router.post("/logout", response_model=MessageResponse)
 async def logout():
     """Logout a user by clearing cookies."""
-    response = JSONResponse(content={"message": "Successfully logged out", "success": True})
+    response = JSONResponse(
+        content={"message": "Successfully logged out", "success": True}
+    )
 
     # Clear cookies
     response.delete_cookie(key="access_token")

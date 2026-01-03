@@ -25,7 +25,12 @@ router = APIRouter()
 async def tool_get_price(symbol: str, timeframe: str = "1h") -> dict[str, Any]:
     bars = await fetch_ohlc(symbol=symbol, timeframe=timeframe, limit=1)
     last = bars[-1]
-    return {"symbol": symbol, "timeframe": timeframe, "price": float(last["close"]), "bar": last}
+    return {
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "price": float(last["close"]),
+        "bar": last,
+    }
 
 
 async def tool_portfolio_summary(authorization: str | None) -> dict[str, Any]:
@@ -73,7 +78,9 @@ async def openai_chat(messages: list[dict], tools: list[dict]) -> dict:
     }
     headers = {"Authorization": f"Bearer {OPENAI_API_KEY}"}
     async with httpx.AsyncClient(timeout=60.0) as client:
-        r = await client.post(f"{OPENAI_BASE}/chat/completions", headers=headers, json=body)
+        r = await client.post(
+            f"{OPENAI_BASE}/chat/completions", headers=headers, json=body
+        )
         r.raise_for_status()
         return r.json()
 
@@ -86,11 +93,15 @@ class ChatMessage(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    messages: list[ChatMessage] = Field(..., description="chat history, user-then-assistant, etc.")
+    messages: list[ChatMessage] = Field(
+        ..., description="chat history, user-then-assistant, etc."
+    )
 
 
 @router.post("/chat")
-async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> dict[str, Any]:
+async def chat(
+    req: ChatRequest, authorization: str | None = Header(None)
+) -> dict[str, Any]:
     # Identify user (optional); some tools require auth
     me = auth_handle_from_header(authorization)
 
@@ -119,9 +130,13 @@ async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> di
     if text.startswith("/alert"):
         parts = text.split()
         if len(parts) < 4:
-            raise HTTPException(status_code=400, detail="Usage: /alert SYMBOL above|below PRICE")
+            raise HTTPException(
+                status_code=400, detail="Usage: /alert SYMBOL above|below PRICE"
+            )
         if not me:
-            raise HTTPException(status_code=401, detail="Login required to create alerts")
+            raise HTTPException(
+                status_code=401, detail="Login required to create alerts"
+            )
         sym, direction, price = parts[1], parts[2], float(parts[3])
         data = await tool_create_price_alert(sym, direction, price, authorization)
         return {
@@ -132,7 +147,9 @@ async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> di
 
     if text.startswith("/portfolio"):
         if not me:
-            raise HTTPException(status_code=401, detail="Login required to view portfolio")
+            raise HTTPException(
+                status_code=401, detail="Login required to view portfolio"
+            )
         data = await tool_portfolio_summary(authorization)
         return {
             "mode": "command",
@@ -219,7 +236,8 @@ async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> di
                     elif fn == "portfolio_summary":
                         if not me:
                             raise HTTPException(
-                                status_code=401, detail="Login required to view portfolio"
+                                status_code=401,
+                                detail="Login required to view portfolio",
                             )
                         out = await tool_portfolio_summary(authorization)
                         return {
@@ -232,10 +250,14 @@ async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> di
                     elif fn == "create_price_alert":
                         if not me:
                             raise HTTPException(
-                                status_code=401, detail="Login required to create alerts"
+                                status_code=401,
+                                detail="Login required to create alerts",
                             )
                         out = await tool_create_price_alert(
-                            args["symbol"], args["direction"], float(args["price"]), authorization
+                            args["symbol"],
+                            args["direction"],
+                            float(args["price"]),
+                            authorization,
                         )
                         return {
                             "mode": "tool",
@@ -252,7 +274,11 @@ async def chat(req: ChatRequest, authorization: str | None = Header(None)) -> di
     if "price" in lower:
         # try to grab a symbol-like token
         tok = next(
-            (w for w in text.replace(",", " ").split() if w.isalpha() and len(w) in (3, 4, 5, 6)),
+            (
+                w
+                for w in text.replace(",", " ").split()
+                if w.isalpha() and len(w) in (3, 4, 5, 6)
+            ),
             "BTCUSD",
         )
         out = await tool_get_price(tok, "1h")

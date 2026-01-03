@@ -23,7 +23,7 @@ export async function exportPNG(filename = 'lokifi-chart.png') {
 
 /** Export vector-only drawings as SVG (doesn't rasterize the price series) */
 export function exportSVG(filename = 'lokifi-drawings.svg') {
-  const s = (useChartStore as any).getState?.() || null;
+  const s = useChartStore.getState();
   if (!s) return;
   const container = document.querySelector('main') as HTMLElement | null;
   const rect = container?.getBoundingClientRect() || { width: 1200, height: 600 };

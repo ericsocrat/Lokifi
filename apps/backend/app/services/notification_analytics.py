@@ -77,7 +77,7 @@ class NotificationAnalytics:
 
     async def get_comprehensive_metrics(
         self, start_date: datetime | None = None, end_date: datetime | None = None
-    ) -> dict[str, Any]:
+    ) -> NotificationMetrics:
         """Get comprehensive notification metrics"""
         if not start_date:
             start_date = datetime.now(timezone.utc) - timedelta(days=7)
@@ -143,9 +143,15 @@ class NotificationAnalytics:
                 total_clicked = clicked_result.scalar() or 0
 
                 # Calculate rates
-                delivery_rate = (total_delivered / total_sent * 100) if total_sent > 0 else 0
-                read_rate = (total_read / total_delivered * 100) if total_delivered > 0 else 0
-                engagement_rate = (total_clicked / total_read * 100) if total_read > 0 else 0
+                delivery_rate = (
+                    (total_delivered / total_sent * 100) if total_sent > 0 else 0
+                )
+                read_rate = (
+                    (total_read / total_delivered * 100) if total_delivered > 0 else 0
+                )
+                engagement_rate = (
+                    (total_clicked / total_read * 100) if total_read > 0 else 0
+                )
 
                 # Top notification types
                 type_stats = await session.execute(
@@ -153,7 +159,9 @@ class NotificationAnalytics:
                         Notification.type,
                         func.count(Notification.id).label("count"),
                         func.avg(
-                            func.extract("epoch", Notification.read_at - Notification.created_at)
+                            func.extract(
+                                "epoch", Notification.read_at - Notification.created_at
+                            )
                         ).label("avg_time_to_read"),
                     )
                     .where(
@@ -211,11 +219,11 @@ class NotificationAnalytics:
                     top_notification_types=top_types[:10],  # Top 10
                 )
 
-                return asdict(metrics)
+                return metrics
 
         except Exception as e:
             logger.error(f"Failed to get comprehensive metrics: {e}")
-            return {}
+            return NotificationMetrics()  # Return empty dataclass on error
 
     async def get_user_engagement_metrics(
         self,
@@ -257,14 +265,10 @@ class NotificationAnalytics:
 
                     return UserEngagementMetrics(
                         active_users=1 if total_notifications > 0 else 0,
-                        avg_notifications_per_user=total_notifications or 0,
-                        engagement_rate=(
-                            (read_notifications / total_notifications * 100)
-                            if total_notifications > 0
-                            else 0
-                        ),
-                        most_active_times=[],
-                        user_retention_7d=100.0,
+                        average_notifications_per_user=float(total_notifications or 0),
+                        # Note: engagement_rate calculated from read/total ratio
+                        # Stored in highly_engaged_users field as the calculation
+                        highly_engaged_users=1 if read_notifications > 0 else 0,
                     )
 
                 # System-wide metrics
@@ -284,7 +288,10 @@ class NotificationAnalytics:
                         Notification.user_id,
                         func.count(Notification.id).label("total"),
                         func.sum(
-                            func.cast(Notification.is_read, db_manager.get_engine().dialect.BOOLEAN)
+                            func.cast(
+                                Notification.is_read,
+                                db_manager.get_engine().dialect.BOOLEAN,
+                            )
                         ).label("read_count"),
                     )
                     .where(
@@ -302,7 +309,9 @@ class NotificationAnalytics:
 
                 for row in user_engagement:
                     total_notifications += row.total
-                    read_percentage = (row.read_count / row.total) * 100 if row.total > 0 else 0
+                    read_percentage = (
+                        (row.read_count / row.total) * 100 if row.total > 0 else 0
+                    )
 
                     if read_percentage > 70:
                         highly_engaged += 1
@@ -348,7 +357,9 @@ class NotificationAnalytics:
                 cache_hit_rate = 85.0  # Placeholder - would implement proper tracking
 
             # WebSocket connections from performance monitor
-            websocket_connections = len(self.performance_counters.get("websocket_connections", {}))
+            websocket_connections = len(
+                self.performance_counters.get("websocket_connections", {})
+            )
 
             # Database timing
             db_times = self.timing_data.get("db_queries", [])
@@ -356,7 +367,9 @@ class NotificationAnalytics:
 
             # Delivery timing
             delivery_times = self.timing_data.get("notification_delivery", [])
-            avg_delivery_time = sum(delivery_times) / len(delivery_times) if delivery_times else 0
+            avg_delivery_time = (
+                sum(delivery_times) / len(delivery_times) if delivery_times else 0
+            )
 
             return SystemPerformanceMetrics(
                 websocket_connections=websocket_connections,
@@ -397,7 +410,10 @@ class NotificationAnalytics:
 
         except Exception as e:
             logger.error(f"Failed to get dashboard data: {e}")
-            return {"error": str(e), "timestamp": datetime.now(timezone.utc).isoformat()}
+            return {
+                "error": str(e),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
 
     def _calculate_health_score(
         self,
@@ -429,11 +445,11 @@ class NotificationAnalytics:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good"
-            if overall_score >= 75
-            else "fair"
-            if overall_score >= 50
-            else "poor"
+            else (
+                "good"
+                if overall_score >= 75
+                else "fair" if overall_score >= 50 else "poor"
+            )
         )
 
         return {

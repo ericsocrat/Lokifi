@@ -156,7 +156,9 @@ class DatabaseOptimizer:
                 optimization_suggestions=[f"Analysis failed: {e!s}"],
             )
 
-    def _generate_basic_suggestions(self, query: str, execution_time_ms: float) -> list[str]:
+    def _generate_basic_suggestions(
+        self, query: str, execution_time_ms: float
+    ) -> list[str]:
         """Generate basic optimization suggestions"""
         suggestions = []
 
@@ -168,7 +170,9 @@ class DatabaseOptimizer:
         query_lower = query.lower()
 
         if "select *" in query_lower:
-            suggestions.append("Consider selecting only required columns instead of SELECT *")
+            suggestions.append(
+                "Consider selecting only required columns instead of SELECT *"
+            )
 
         if "where" not in query_lower and "select" in query_lower:
             suggestions.append("Consider adding WHERE clause to limit result set")
@@ -215,22 +219,36 @@ class DatabaseOptimizer:
 
             # Check for high cost operations
             if plan.get("Total Cost", 0) > 1000:
-                suggestions.append("High cost operation detected - consider query optimization")
+                suggestions.append(
+                    "High cost operation detected - consider query optimization"
+                )
 
             # Check for nested loops with high row counts
-            if plan.get("Node Type") == "Nested Loop" and plan.get("Plan Rows", 0) > 10000:
-                suggestions.append("Large nested loop detected - consider join optimization")
+            if (
+                plan.get("Node Type") == "Nested Loop"
+                and plan.get("Plan Rows", 0) > 10000
+            ):
+                suggestions.append(
+                    "Large nested loop detected - consider join optimization"
+                )
 
             # Check buffer usage
-            if plan.get("Shared Hit Blocks", 0) + plan.get("Shared Read Blocks", 0) > 10000:
-                suggestions.append("High buffer usage - consider increasing shared_buffers")
+            if (
+                plan.get("Shared Hit Blocks", 0) + plan.get("Shared Read Blocks", 0)
+                > 10000
+            ):
+                suggestions.append(
+                    "High buffer usage - consider increasing shared_buffers"
+                )
 
         except Exception as e:
             suggestions.append(f"EXPLAIN analysis error: {e!s}")
 
         return suggestions
 
-    def _extract_rows_examined(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> int:
+    def _extract_rows_examined(
+        self, explain_data: list[dict[str, Any]] | dict[str, Any]
+    ) -> int:
         """Extract rows examined from explain output"""
         try:
             if isinstance(explain_data, list) and len(explain_data) > 0:
@@ -241,7 +259,9 @@ class DatabaseOptimizer:
         except (KeyError, IndexError, TypeError):
             return 0
 
-    def _extract_rows_returned(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> int:
+    def _extract_rows_returned(
+        self, explain_data: list[dict[str, Any]] | dict[str, Any]
+    ) -> int:
         """Extract actual rows returned from explain output"""
         try:
             if isinstance(explain_data, list) and len(explain_data) > 0:
@@ -252,7 +272,9 @@ class DatabaseOptimizer:
         except (KeyError, IndexError, TypeError):
             return 0
 
-    def _check_index_usage(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> bool:
+    def _check_index_usage(
+        self, explain_data: list[dict[str, Any]] | dict[str, Any]
+    ) -> bool:
         """Check if query uses indexes effectively"""
         try:
             if isinstance(explain_data, list) and len(explain_data) > 0:
@@ -265,7 +287,9 @@ class DatabaseOptimizer:
         except (KeyError, IndexError, TypeError):
             return False
 
-    def _check_full_table_scan(self, explain_data: list[dict[str, Any]] | dict[str, Any]) -> bool:
+    def _check_full_table_scan(
+        self, explain_data: list[dict[str, Any]] | dict[str, Any]
+    ) -> bool:
         """Check if query performs full table scan"""
         try:
             if isinstance(explain_data, list) and len(explain_data) > 0:
@@ -296,7 +320,10 @@ class DatabaseOptimizer:
                 "UPDATE notifications SET is_read = true WHERE id = ?",
                 {"id": "test-notification-id"},
             ),
-            ("SELECT * FROM notifications WHERE expires_at < NOW() AND expires_at IS NOT NULL", {}),
+            (
+                "SELECT * FROM notifications WHERE expires_at < NOW() AND expires_at IS NOT NULL",
+                {},
+            ),
         ]
 
         for query, params in test_queries:
@@ -387,7 +414,10 @@ class DatabaseOptimizer:
                                 implementation_effort="low",
                                 risk_level="low",
                                 code_changes_required=False,
-                                metadata={"table": "notifications", "columns": ["expires_at"]},
+                                metadata={
+                                    "table": "notifications",
+                                    "columns": ["expires_at"],
+                                },
                             )
                         )
 
@@ -410,7 +440,11 @@ class CacheOptimizer:
         """Analyze overall cache performance and identify optimization opportunities"""
         from app.core.advanced_redis_client import advanced_redis_client
 
-        analysis = {"overall_metrics": {}, "layer_performance": {}, "recommendations": []}
+        analysis = {
+            "overall_metrics": {},
+            "layer_performance": {},
+            "recommendations": [],
+        }
 
         try:
             # Get current cache metrics
@@ -561,7 +595,9 @@ class CacheOptimizer:
             for key in warm_keys:
                 try:
                     # Simulate warming by setting a placeholder if key doesn't exist
-                    existing = await advanced_redis_client.get_with_layers(key, "memory")
+                    existing = await advanced_redis_client.get_with_layers(
+                        key, "memory"
+                    )
                     if existing is None:
                         warm_data = {"warmed": True, "timestamp": time.time()}
                         await advanced_redis_client.set_with_layer(
@@ -588,7 +624,9 @@ class PerformanceOptimizer:
     holistic system performance improvements.
     """
 
-    def __init__(self, optimization_level: OptimizationLevel = OptimizationLevel.BALANCED):
+    def __init__(
+        self, optimization_level: OptimizationLevel = OptimizationLevel.BALANCED
+    ):
         self.optimization_level = optimization_level
         self.db_optimizer = DatabaseOptimizer()
         self.cache_optimizer = CacheOptimizer()
@@ -624,7 +662,8 @@ class PerformanceOptimizer:
             all_recommendations = db_recommendations + index_recommendations
             if "recommendations" in cache_analysis:
                 cache_recs = [
-                    OptimizationRecommendation(**r) for r in cache_analysis["recommendations"]
+                    OptimizationRecommendation(**r)
+                    for r in cache_analysis["recommendations"]
                 ]
                 all_recommendations.extend(cache_recs)
 
@@ -682,7 +721,9 @@ class PerformanceOptimizer:
                 "notification_templates",
             ]
 
-            warming_results = await self.cache_optimizer.implement_cache_warming(common_keys)
+            warming_results = await self.cache_optimizer.implement_cache_warming(
+                common_keys
+            )
             results["cache_warming_results"] = warming_results
             optimizations_applied.append("cache_warming")
 

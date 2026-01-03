@@ -66,12 +66,18 @@ class ContentModerator:
             ],
             ModerationCategory.VIOLENCE: [
                 r"\b(?:kill|murder|assassinate|eliminate).{0,20}\b(?:someone|people|person)\b",
+                # Match weapon-related content in either order
                 r"\b(?:weapon|gun|knife|bomb).{0,30}\b(?:make|create|build|get)\b",
+                r"\b(?:make|create|build|get).{0,30}\b(?:weapon|gun|knife|bomb)\b",
                 r"\b(?:violence|violent|attack|assault)\b",
+                r"\bhow.{0,10}(?:make|build|create).{0,30}(?:weapon|gun|knife|bomb)\b",
+                r"\bhurt.{0,20}(?:someone|people|person)\b",
             ],
             ModerationCategory.ADULT_CONTENT: [
-                r"\b(?:sex|sexual|nude|naked|porn|xxx)\b",
+                r"\b(?:sex|sexual|nude|naked|xxx)\b",
+                r"\bporn",  # Match porn, pornography, pornographic, etc.
                 r"\b(?:adult|mature|explicit).{0,10}\b(?:content|material|image)\b",
+                r"\b(?:nsfw|erotic|pornographic)\b",
             ],
             ModerationCategory.PERSONAL_INFO: [
                 r"\b(?:ssn|social.?security)\b.{0,20}\d{3}.?\d{2}.?\d{4}",
@@ -80,9 +86,12 @@ class ContentModerator:
                 r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",  # Email
             ],
             ModerationCategory.SPAM: [
-                r"\b(?:click|visit|buy|purchase).{0,20}\b(?:here|now|today)\b.{0,20}\b(?:http|www)\b",
-                r"\b(?:free|win|prize|money|cash)\b.{0,30}\b(?:click|visit|call)\b",
+                # Match promotional patterns in different orders
+                r"\b(?:click|visit|buy|purchase).{0,30}\b(?:here|now|today)\b",
+                r"\b(?:free|win|prize|money|cash).{0,30}\b(?:click|visit|call|here|now)\b",
                 r"(.)\1{10,}",  # Repeated characters
+                r"\b(?:http|www)\b.{0,50}\b(?:buy|click|visit|free|win)\b",
+                r"\b(?:buy|click|visit).{0,50}\b(?:http|www)\b",
             ],
         }
 
@@ -111,7 +120,10 @@ class ContentModerator:
 
         if not content or not content.strip():
             return ModerationResult(
-                level=ModerationLevel.SAFE, categories=[], confidence=1.0, reason="Empty content"
+                level=ModerationLevel.SAFE,
+                categories=[],
+                confidence=1.0,
+                reason="Empty content",
             )
 
         detected_categories = []
@@ -136,7 +148,9 @@ class ContentModerator:
             reasons.append(f"High toxicity score: {toxicity_score:.2f}")
 
         # Determine moderation level
-        level = self._determine_moderation_level(detected_categories, highest_confidence, user_id)
+        level = self._determine_moderation_level(
+            detected_categories, highest_confidence, user_id
+        )
 
         # Update user tracking
         if user_id and detected_categories:
@@ -180,7 +194,10 @@ class ContentModerator:
         return min(1.0, toxic_count / len(words) * 5)  # Reduced scale
 
     def _determine_moderation_level(
-        self, categories: list[ModerationCategory], confidence: float, user_id: int | None
+        self,
+        categories: list[ModerationCategory],
+        confidence: float,
+        user_id: int | None,
     ) -> ModerationLevel:
         """Determine appropriate moderation level."""
 

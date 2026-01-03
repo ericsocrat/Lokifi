@@ -6,7 +6,16 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, Index, String, Text, func
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Enum as SqlEnum,
+    ForeignKey,
+    Index,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -28,7 +37,9 @@ class Conversation(Base):
     __tablename__ = "conversations"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Conversation type (always false for 1:1 DMs in this implementation)
     is_group: Mapped[bool] = mapped_column(Boolean, default=False, index=True)
@@ -51,8 +62,12 @@ class Conversation(Base):
     )
 
     # Relationships
-    participants = relationship("ConversationParticipant", back_populates="conversation")
-    messages = relationship("Message", back_populates="conversation", order_by="Message.created_at")
+    participants = relationship(
+        "ConversationParticipant", back_populates="conversation"
+    )
+    messages = relationship(
+        "Message", back_populates="conversation", order_by="Message.created_at"
+    )
 
     def __repr__(self) -> str:
         return f"<Conversation(id={self.id}, is_group={self.is_group})>"
@@ -65,7 +80,9 @@ class ConversationParticipant(Base):
 
     # Composite primary key (remove id field for efficiency)
     conversation_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("conversations.id", ondelete="CASCADE"), primary_key=True
+        UUID(as_uuid=True),
+        ForeignKey("conversations.id", ondelete="CASCADE"),
+        primary_key=True,
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
@@ -73,11 +90,15 @@ class ConversationParticipant(Base):
 
     # Read tracking
     last_read_message_id: Mapped[uuid.UUID | None] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("messages.id", ondelete="SET NULL"), nullable=True
+        UUID(as_uuid=True),
+        ForeignKey("messages.id", ondelete="SET NULL"),
+        nullable=True,
     )
 
     # Participant metadata
-    joined_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    joined_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
     # Relationships
@@ -101,11 +122,15 @@ class Message(Base):
     __tablename__ = "messages"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign keys
     conversation_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("conversations.id", ondelete="CASCADE"), index=True
+        UUID(as_uuid=True),
+        ForeignKey("conversations.id", ondelete="CASCADE"),
+        index=True,
     )
     sender_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), index=True
@@ -131,7 +156,9 @@ class Message(Base):
 
     # Relationships
     conversation = relationship("Conversation", back_populates="messages")
-    sender = relationship("User", foreign_keys=[sender_id], back_populates="sent_messages")
+    sender = relationship(
+        "User", foreign_keys=[sender_id], back_populates="sent_messages"
+    )
     receipts = relationship("MessageReceipt", back_populates="message")
     reactions = relationship("MessageReaction", back_populates="message")
 
@@ -142,9 +169,7 @@ class Message(Base):
     )
 
     def __repr__(self) -> str:
-        return (
-            f"<Message(id={self.id}, sender_id={self.sender_id}, content='{self.content[:50]}...')>"
-        )
+        return f"<Message(id={self.id}, sender_id={self.sender_id}, content='{self.content[:50]}...')>"
 
 
 class MessageReceipt(Base):
@@ -154,14 +179,18 @@ class MessageReceipt(Base):
 
     # Composite primary key (remove id field for efficiency)
     message_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("messages.id", ondelete="CASCADE"), primary_key=True
+        UUID(as_uuid=True),
+        ForeignKey("messages.id", ondelete="CASCADE"),
+        primary_key=True,
     )
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
 
     # Receipt timestamp
-    read_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    read_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     # Relationships
     message = relationship("Message", back_populates="receipts")

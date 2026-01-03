@@ -131,7 +131,9 @@ class TestLazyImporter:
         assert result is None
         # Check that a warning was logged
         assert len(caplog.records) > 0
-        assert any("Optional import failed" in record.message for record in caplog.records)
+        assert any(
+            "Optional import failed" in record.message for record in caplog.records
+        )
 
 
 # ============================================================================

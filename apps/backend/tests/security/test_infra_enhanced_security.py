@@ -5,6 +5,8 @@ Test Enhanced Security Features
 
 import sys
 
+import pytest
+
 sys.path.append(".")
 
 
@@ -59,29 +61,19 @@ def test_enhanced_security():
         print("\n⚙️ Testing Security Configuration...")
         print(f"  ✅ Rate limits: {len(security_config.RATE_LIMITS)} types")
         print(f"  ✅ Security headers: {len(security_config.SECURITY_HEADERS)} headers")
-        print(f"  ✅ CSP policy configured: {'default-src' in security_config.CSP_POLICY}")
+        print(
+            f"  ✅ CSP policy configured: {'default-src' in security_config.CSP_POLICY}"
+        )
 
         print("\n🎉 ALL ENHANCED SECURITY FEATURES WORKING!")
-        return True
+        # Test passes if we reach here without exception
 
     except Exception as e:
-        print(f"❌ Error: {e}")
         import traceback
 
         traceback.print_exc()
-        return False
+        pytest.fail(f"Enhanced security test failed: {e}")
 
 
 if __name__ == "__main__":
-    success = test_enhanced_security()
-
-    if success:
-        print("\n✨ Enhanced security validation complete!")
-        print("🛡️ Your Lokifi application now has:")
-        print("  • Enhanced HTML sanitization with Bleach")
-        print("  • Comprehensive security alerting system")
-        print("  • Multi-channel alert delivery (Email, Slack, Discord, Webhook)")
-        print("  • Real-time security monitoring with automated responses")
-        print("  • Enterprise-grade security configuration")
-    else:
-        print("\n⚠️ Some enhanced security features failed - please review errors")
+    pytest.main([__file__, "-v"])

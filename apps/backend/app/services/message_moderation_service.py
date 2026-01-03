@@ -149,7 +149,9 @@ class MessageModerationService:
                 sanitized = sanitized.replace(item, "*" * len(item))
             else:
                 # Remove suspicious patterns
-                sanitized = re.sub(re.escape(item), "[removed]", sanitized, flags=re.IGNORECASE)
+                sanitized = re.sub(
+                    re.escape(item), "[removed]", sanitized, flags=re.IGNORECASE
+                )
 
         return sanitized.strip()
 
@@ -159,7 +161,9 @@ class MessageModerationService:
         """Report a message for manual moderation review."""
         try:
             # In a real implementation, this would create a moderation report record
-            logger.info(f"Message {message_id} reported by user {reporter_id}: {reason}")
+            logger.info(
+                f"Message {message_id} reported by user {reporter_id}: {reason}"
+            )
 
             # Could automatically re-moderate the reported message
             message_stmt = select(Message).where(Message.id == message_id)
@@ -176,7 +180,9 @@ class MessageModerationService:
                     update_stmt = (
                         update(Message)
                         .where(Message.id == message_id)
-                        .values(is_deleted=True, content="[message removed by moderation]")
+                        .values(
+                            is_deleted=True, content="[message removed by moderation]"
+                        )
                     )
                     await self.db.execute(update_stmt)
                     await self.db.commit()

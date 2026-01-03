@@ -47,7 +47,10 @@ async def comprehensive_health_check(
             "response_time_ms": db_response_time,
         }
     except Exception as e:
-        health_status["components"]["database"] = {"status": "unhealthy", "error": str(e)}
+        health_status["components"]["database"] = {
+            "status": "unhealthy",
+            "error": str(e),
+        }
         health_status["status"] = "degraded"
 
     # Redis health check
@@ -72,7 +75,10 @@ async def comprehensive_health_check(
             "active_connections": 0,  # Would track actual connections
         }
     except Exception as e:
-        health_status["components"]["websockets"] = {"status": "unhealthy", "error": str(e)}
+        health_status["components"]["websockets"] = {
+            "status": "unhealthy",
+            "error": str(e),
+        }
         health_status["status"] = "degraded"
 
     # AI Services health check
@@ -82,7 +88,10 @@ async def comprehensive_health_check(
             "providers_available": 1,  # Would check actual providers
         }
     except Exception as e:
-        health_status["components"]["ai_services"] = {"status": "unhealthy", "error": str(e)}
+        health_status["components"]["ai_services"] = {
+            "status": "unhealthy",
+            "error": str(e),
+        }
         health_status["status"] = "degraded"
 
     return health_status
@@ -133,4 +142,6 @@ async def check_component_health(
             return {"component": component_name, "status": "unhealthy", "error": str(e)}
 
     else:
-        raise HTTPException(status_code=404, detail=f"Component '{component_name}' not found")
+        raise HTTPException(
+            status_code=404, detail=f"Component '{component_name}' not found"
+        )

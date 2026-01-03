@@ -100,7 +100,9 @@ class TestCacheStatistics:
             mock_get_stats.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_raises_500_on_cache_stats_failure(self, mock_request: MagicMock) -> None:
+    async def test_raises_500_on_cache_stats_failure(
+        self, mock_request: MagicMock
+    ) -> None:
         """Should raise HTTPException 500 when get_cache_stats fails"""
         # Arrange
         with patch("app.api.routes.cache.get_cache_stats") as mock_get_stats:
@@ -205,7 +207,9 @@ class TestClearCache:
             assert "Redis error" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_logs_error_on_failure(self, caplog: pytest.LogCaptureFixture) -> None:
+    async def test_logs_error_on_failure(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Should log error when cache clear fails"""
         # Arrange
         with patch("app.api.routes.cache.clear_all_cache") as mock_clear:
@@ -261,7 +265,9 @@ class TestWarmCacheEndpoint:
             assert "Warming failed" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_logs_error_on_failure(self, caplog: pytest.LogCaptureFixture) -> None:
+    async def test_logs_error_on_failure(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Should log error when cache warming fails"""
         # Arrange
         with patch("app.api.routes.cache.warm_cache") as mock_warm:
@@ -348,7 +354,9 @@ class TestClearCachePattern:
             assert "Pattern error" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_logs_error_on_failure(self, caplog: pytest.LogCaptureFixture) -> None:
+    async def test_logs_error_on_failure(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
         """Should log error when pattern clear fails"""
         # Arrange
         with patch("app.api.routes.cache.cache") as mock_cache:
@@ -437,7 +445,9 @@ class TestCacheHealthCheck:
         """Should return unhealthy status when client creation fails"""
         # Arrange
         with patch("app.api.routes.cache.cache") as mock_cache:
-            mock_cache.get_client = AsyncMock(side_effect=Exception("Client initialization failed"))
+            mock_cache.get_client = AsyncMock(
+                side_effect=Exception("Client initialization failed")
+            )
 
             # Act
             result = await cache_health_check()

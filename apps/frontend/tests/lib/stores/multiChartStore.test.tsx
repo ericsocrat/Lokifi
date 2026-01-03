@@ -2,14 +2,14 @@
  * @vitest-environment jsdom
  */
 import {
-  useMultiChartStore,
-  MultiChartProvider,
-  useMultiChart,
   LayoutSelector,
   LinkingControls,
+  MultiChartProvider,
+  useMultiChart,
+  useMultiChartStore,
 } from '@/lib/stores/multiChartStore';
 import { FLAGS } from '@/lib/utils/featureFlags';
-import { act, renderHook, render, screen, fireEvent } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock feature flags
@@ -772,7 +772,7 @@ describe('MultiChartStore', () => {
 
     it('should toggle linking when checkbox is clicked', () => {
       const { result } = renderHook(() => useMultiChartStore());
-      
+
       // Reset linking state first
       act(() => {
         result.current.updateLinking('symbol', false);

@@ -19,7 +19,9 @@ def test_openapi_schema_exists(client: TestClient):
     response = client.get("/openapi.json")
 
     assert response.status_code == 200, "OpenAPI schema endpoint should return 200"
-    assert response.headers["content-type"] == "application/json", "OpenAPI schema should be JSON"
+    assert (
+        response.headers["content-type"] == "application/json"
+    ), "OpenAPI schema should be JSON"
 
     schema = response.json()
     assert "openapi" in schema, "Schema should have 'openapi' version field"
@@ -33,7 +35,9 @@ def test_openapi_schema_version(client: TestClient):
     schema = response.json()
 
     openapi_version = schema.get("openapi", "")
-    assert openapi_version.startswith("3."), f"Should use OpenAPI 3.x (found: {openapi_version})"
+    assert openapi_version.startswith(
+        "3."
+    ), f"Should use OpenAPI 3.x (found: {openapi_version})"
 
 
 def test_openapi_schema_is_valid(client: TestClient):
@@ -100,7 +104,9 @@ def test_openapi_schema_has_response_schemas(client: TestClient):
                 responses = details.get("responses", {})
 
                 # Check if success responses (2xx) have schemas
-                success_responses = [code for code in responses.keys() if code.startswith("2")]
+                success_responses = [
+                    code for code in responses.keys() if code.startswith("2")
+                ]
 
                 for code in success_responses:
                     response_def = responses[code]
@@ -113,12 +119,20 @@ def test_openapi_schema_has_response_schemas(client: TestClient):
     # Allow some endpoints to not have response schemas (like 204 No Content)
     # but most should have them
     if endpoints_without_response_schema:
-        print(f"Endpoints without response schemas: {len(endpoints_without_response_schema)}")
+        print(
+            f"Endpoints without response schemas: {len(endpoints_without_response_schema)}"
+        )
         print(f"Examples: {endpoints_without_response_schema[:3]}")
 
     # This is a warning, not a failure - some endpoints legitimately don't have response bodies
     total_endpoints = sum(
-        len([m for m in methods.keys() if m.upper() in ["GET", "POST", "PUT", "DELETE", "PATCH"]])
+        len(
+            [
+                m
+                for m in methods.keys()
+                if m.upper() in ["GET", "POST", "PUT", "DELETE", "PATCH"]
+            ]
+        )
         for methods in paths.values()
     )
 
@@ -160,9 +174,9 @@ def test_openapi_schema_security_schemes(client: TestClient):
         components = schema.get("components", {})
         security_schemes = components.get("securitySchemes", {})
 
-        assert len(security_schemes) > 0, (
-            "If endpoints use security, security schemes should be defined"
-        )
+        assert (
+            len(security_schemes) > 0
+        ), "If endpoints use security, security schemes should be defined"
 
 
 def test_openapi_schema_can_be_parsed_by_openapi_core(client: TestClient):
@@ -189,7 +203,9 @@ def test_openapi_docs_endpoint_accessible(client: TestClient):
     response = client.get("/docs")
 
     assert response.status_code == 200, "Swagger UI docs should be accessible"
-    assert "text/html" in response.headers["content-type"], "Docs endpoint should return HTML"
+    assert (
+        "text/html" in response.headers["content-type"]
+    ), "Docs endpoint should return HTML"
 
 
 def test_openapi_redoc_endpoint_accessible(client: TestClient):
@@ -197,4 +213,6 @@ def test_openapi_redoc_endpoint_accessible(client: TestClient):
     response = client.get("/redoc")
 
     assert response.status_code == 200, "ReDoc docs should be accessible"
-    assert "text/html" in response.headers["content-type"], "ReDoc endpoint should return HTML"
+    assert (
+        "text/html" in response.headers["content-type"]
+    ), "ReDoc endpoint should return HTML"

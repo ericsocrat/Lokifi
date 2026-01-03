@@ -50,14 +50,17 @@ class ProfileService:
         # Get existing profile
         profile = await self.get_profile_by_user_id(user_id)
         if not profile:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+            )
 
         # Check username availability if changing
         if profile_data.username and profile_data.username != profile.username:
             existing_profile = await self.get_profile_by_username(profile_data.username)
             if existing_profile:
                 raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT, detail="Username already taken"
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Username already taken",
                 )
 
         # Update fields
@@ -97,7 +100,9 @@ class ProfileService:
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
 
         # Update fields
         update_data: dict[str, Any] = {}
@@ -115,7 +120,8 @@ class ProfileService:
 
             if not validate_email(settings_data.email):
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid email format",
                 )
 
             # Check if email already exists
@@ -156,7 +162,8 @@ class ProfileService:
 
         if not prefs:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Notification preferences not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Notification preferences not found",
             )
 
         # Update fields
@@ -191,7 +198,9 @@ class ProfileService:
         profile = result.scalar_one_or_none()
 
         if not profile:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+            )
 
         # Check if current user follows this profile
         is_following = None
@@ -221,7 +230,8 @@ class ProfileService:
 
         # Search query
         search_filter = or_(
-            Profile.username.ilike(f"%{query}%"), Profile.display_name.ilike(f"%{query}%")
+            Profile.username.ilike(f"%{query}%"),
+            Profile.display_name.ilike(f"%{query}%"),
         )
 
         # Get profiles with pagination
@@ -238,7 +248,9 @@ class ProfileService:
 
         # Get total count
         count_stmt = (
-            select(func.count()).select_from(Profile).where(and_(Profile.is_public, search_filter))
+            select(func.count())
+            .select_from(Profile)
+            .where(and_(Profile.is_public, search_filter))
         )
         result = await self.db.execute(count_stmt)
         total = result.scalar()
@@ -251,7 +263,8 @@ class ProfileService:
 
                 follow_service = FollowService(self.db)
                 follow_map = await follow_service.batch_follow_status(
-                    current_user_id=current_user_id, target_user_ids=[p.user_id for p in profiles]
+                    current_user_id=current_user_id,
+                    target_user_ids=[p.user_id for p in profiles],
                 )
             for profile in profiles:
                 status_info = follow_map.get(profile.user_id)
@@ -268,7 +281,9 @@ class ProfileService:
                     "created_at": profile.created_at,
                     "is_following": is_following,
                 }
-                public_profiles.append(PublicProfileResponse.model_validate(response_data))
+                public_profiles.append(
+                    PublicProfileResponse.model_validate(response_data)
+                )
 
         return ProfileSearchResponse(
             profiles=public_profiles,
@@ -282,13 +297,16 @@ class ProfileService:
         self, user_id: uuid.UUID
     ) -> NotificationPreferencesResponse:
         """Get notification preferences for a user."""
-        stmt = select(NotificationPreference).where(NotificationPreference.user_id == user_id)
+        stmt = select(NotificationPreference).where(
+            NotificationPreference.user_id == user_id
+        )
         result = await self.db.execute(stmt)
         prefs = result.scalar_one_or_none()
 
         if not prefs:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Notification preferences not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Notification preferences not found",
             )
 
         return NotificationPreferencesResponse.model_validate(prefs)

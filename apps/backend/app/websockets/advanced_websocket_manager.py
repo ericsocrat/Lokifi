@@ -99,7 +99,10 @@ class ConnectionPool:
         }
 
     async def add_connection(
-        self, websocket: WebSocket, user_id: str, client_info: dict[str, Any] | None = None
+        self,
+        websocket: WebSocket,
+        user_id: str,
+        client_info: dict[str, Any] | None = None,
     ) -> str | None:
         """Add new WebSocket connection with enhanced tracking"""
 
@@ -110,7 +113,8 @@ class ConnectionPool:
         connection_id = str(uuid.uuid4())
 
         metrics = ConnectionMetrics(
-            connected_at=datetime.now(timezone.utc), last_activity=datetime.now(timezone.utc)
+            connected_at=datetime.now(timezone.utc),
+            last_activity=datetime.now(timezone.utc),
         )
 
         connection_info = ConnectionInfo(
@@ -176,7 +180,9 @@ class ConnectionPool:
         self.room_connections[room].add(connection_id)
 
         # Update Redis
-        await self._update_connection_rooms(connection_id, self.connections[connection_id].rooms)
+        await self._update_connection_rooms(
+            connection_id, self.connections[connection_id].rooms
+        )
 
         return True
 
@@ -191,18 +197,24 @@ class ConnectionPool:
         if not self.room_connections[room]:
             del self.room_connections[room]
 
-        await self._update_connection_rooms(connection_id, self.connections[connection_id].rooms)
+        await self._update_connection_rooms(
+            connection_id, self.connections[connection_id].rooms
+        )
         return True
 
     def get_user_connections(self, user_id: str) -> list[ConnectionInfo]:
         """Get all connections for a user"""
         connection_ids = self.user_connections.get(user_id, set())
-        return [self.connections[cid] for cid in connection_ids if cid in self.connections]
+        return [
+            self.connections[cid] for cid in connection_ids if cid in self.connections
+        ]
 
     def get_room_connections(self, room: str) -> list[ConnectionInfo]:
         """Get all connections in a room"""
         connection_ids = self.room_connections.get(room, set())
-        return [self.connections[cid] for cid in connection_ids if cid in self.connections]
+        return [
+            self.connections[cid] for cid in connection_ids if cid in self.connections
+        ]
 
     async def _store_connection_info(self, connection_info: ConnectionInfo):
         """Store connection info in Redis for cluster awareness"""
@@ -220,7 +232,9 @@ class ConnectionPool:
     async def _remove_connection_info(self, connection_id: str):
         """Remove connection info from Redis"""
         try:
-            await advanced_redis_client.invalidate_pattern(f"ws_connection:{connection_id}")
+            await advanced_redis_client.invalidate_pattern(
+                f"ws_connection:{connection_id}"
+            )
         except Exception as e:
             logger.error(f"Failed to remove connection info from Redis: {e}")
 
@@ -337,7 +351,10 @@ class AdvancedWebSocketManager:
         logger.info("✅ All advanced WebSocket background tasks stopped")
 
     async def connect(
-        self, websocket: WebSocket, user_id: str, client_info: dict[str, Any] | None = None
+        self,
+        websocket: WebSocket,
+        user_id: str,
+        client_info: dict[str, Any] | None = None,
     ) -> str | None:
         """Connect a new WebSocket with enhanced tracking"""
 
@@ -410,7 +427,8 @@ class AdvancedWebSocketManager:
                         "user_id": connection_info.user_id,
                         "connection_id": connection_id,
                         "session_duration": (
-                            datetime.now(timezone.utc) - connection_info.metrics.connected_at
+                            datetime.now(timezone.utc)
+                            - connection_info.metrics.connected_at
                         ).total_seconds(),
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                     }
@@ -421,7 +439,9 @@ class AdvancedWebSocketManager:
         except Exception as e:
             logger.error(f"Error during WebSocket disconnect: {e}")
 
-    async def send_to_user(self, user_id: str, message: dict[str, Any], priority: int = 0) -> int:
+    async def send_to_user(
+        self, user_id: str, message: dict[str, Any], priority: int = 0
+    ) -> int:
         """Send message to all connections of a user with priority support"""
 
         connections = self.connection_pool.get_user_connections(user_id)
@@ -661,9 +681,14 @@ class AdvancedWebSocketManager:
                 stale_connections = []
                 current_time = datetime.now(timezone.utc)
 
-                for connection_id, connection_info in self.connection_pool.connections.items():
+                for (
+                    connection_id,
+                    connection_info,
+                ) in self.connection_pool.connections.items():
                     # Check for stale connections (no activity for 10 minutes)
-                    if (current_time - connection_info.metrics.last_activity).seconds > 600:
+                    if (
+                        current_time - connection_info.metrics.last_activity
+                    ).seconds > 600:
                         stale_connections.append(connection_id)
 
                 # Clean up stale connections
@@ -699,7 +724,9 @@ class AdvancedWebSocketManager:
         stats = self.connection_pool.get_stats()
 
         # Calculate messages per second
-        recent_messages = list(self.analytics["messages_per_second"])[-6:]  # Last minute
+        recent_messages = list(self.analytics["messages_per_second"])[
+            -6:
+        ]  # Last minute
         avg_messages_per_sec = (
             sum(m["count"] for m in recent_messages) / len(recent_messages)
             if recent_messages
@@ -723,10 +750,14 @@ class AdvancedWebSocketManager:
                 "avg_messages_per_second": round(avg_messages_per_sec, 2),
                 "avg_broadcast_time": round(avg_broadcast_time, 4),
                 "active_subscriptions": sum(
-                    len(conn.subscriptions) for conn in self.connection_pool.connections.values()
+                    len(conn.subscriptions)
+                    for conn in self.connection_pool.connections.values()
                 ),
             },
-            "recent_events": {"connections": recent_connections, "broadcasts": recent_broadcasts},
+            "recent_events": {
+                "connections": recent_connections,
+                "broadcasts": recent_broadcasts,
+            },
         }
 
 

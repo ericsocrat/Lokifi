@@ -13,8 +13,12 @@ from app.models.conversation import ContentType
 class MessageCreate(BaseModel):
     """Schema for creating a new message."""
 
-    content: str = Field(..., min_length=1, max_length=5000, description="Message content")
-    content_type: ContentType = Field(default=ContentType.TEXT, description="Message content type")
+    content: str = Field(
+        ..., min_length=1, max_length=5000, description="Message content"
+    )
+    content_type: ContentType = Field(
+        default=ContentType.TEXT, description="Message content type"
+    )
 
 
 class MessageResponse(BaseModel):
@@ -99,7 +103,9 @@ class MessagesListResponse(BaseModel):
 class ConversationCreateRequest(BaseModel):
     """Schema for creating a 1:1 conversation."""
 
-    other_user_id: uuid.UUID = Field(..., description="ID of the other user in the conversation")
+    other_user_id: uuid.UUID = Field(
+        ..., description="ID of the other user in the conversation"
+    )
 
 
 class MarkReadRequest(BaseModel):

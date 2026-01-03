@@ -47,8 +47,12 @@ class DataArchivalService:
 
         try:
             async for session in db_manager.get_session(read_only=True):
-                metrics.total_threads = await session.scalar(select(func.count(AIThread.id))) or 0
-                metrics.total_messages = await session.scalar(select(func.count(AIMessage.id))) or 0
+                metrics.total_threads = (
+                    await session.scalar(select(func.count(AIThread.id))) or 0
+                )
+                metrics.total_messages = (
+                    await session.scalar(select(func.count(AIMessage.id))) or 0
+                )
 
                 metrics.oldest_message_date = await session.scalar(
                     select(func.min(AIMessage.created_at))
@@ -60,11 +64,16 @@ class DataArchivalService:
                 # Rough size estimates for SQLite
                 metrics.ai_threads_size_mb = (metrics.total_threads * 1) / 1024
                 metrics.ai_messages_size_mb = (metrics.total_messages * 5) / 1024
-                metrics.total_size_mb = metrics.ai_threads_size_mb + metrics.ai_messages_size_mb
+                metrics.total_size_mb = (
+                    metrics.ai_threads_size_mb + metrics.ai_messages_size_mb
+                )
 
                 try:
                     metrics.archived_messages = (
-                        await session.scalar(text("SELECT COUNT(*) FROM ai_messages_archive")) or 0
+                        await session.scalar(
+                            text("SELECT COUNT(*) FROM ai_messages_archive")
+                        )
+                        or 0
                     )
                 except Exception:
                     metrics.archived_messages = 0
@@ -83,7 +92,8 @@ class DataArchivalService:
         try:
             async for session in db_manager.get_session(read_only=False):
                 await session.execute(
-                    text("""
+                    text(
+                        """
                     CREATE TABLE IF NOT EXISTS ai_messages_archive (
                         id INTEGER PRIMARY KEY,
                         thread_id INTEGER NOT NULL,
@@ -98,7 +108,8 @@ class DataArchivalService:
                         archived_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                         content_compressed BOOLEAN DEFAULT FALSE
                     )
-                """)
+                """
+                    )
                 )
                 logger.info("✅ Archive table verified")
                 return
@@ -121,13 +132,17 @@ class DataArchivalService:
 
             async for session in db_manager.get_session(read_only=True):
                 old_count = await session.scalar(
-                    select(func.count(AIMessage.id)).where(AIMessage.created_at < cutoff_date)
+                    select(func.count(AIMessage.id)).where(
+                        AIMessage.created_at < cutoff_date
+                    )
                 )
 
                 stats.messages_archived = old_count or 0
                 stats.operation_duration = (datetime.now() - start_time).total_seconds()
 
-                logger.info(f"✅ Found {stats.messages_archived} messages eligible for archival")
+                logger.info(
+                    f"✅ Found {stats.messages_archived} messages eligible for archival"
+                )
                 return stats
 
         except Exception as e:
@@ -162,7 +177,9 @@ class DataArchivalService:
             await self.vacuum_database()
 
             final_metrics = await self.get_storage_metrics()
-            logger.info(f"🎉 Maintenance completed! Database: {final_metrics.total_size_mb:.2f}MB")
+            logger.info(
+                f"🎉 Maintenance completed! Database: {final_metrics.total_size_mb:.2f}MB"
+            )
             return results
 
         except Exception as e:

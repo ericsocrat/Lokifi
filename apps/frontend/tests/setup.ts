@@ -3,10 +3,15 @@
  *
  * Configures the test environment before running tests.
  * Sets up MSW mock server to intercept API calls.
+ * Enables Immer plugins for Map and Set support.
  */
 
+import { enableMapSet } from 'immer';
 import { afterAll, afterEach, beforeAll } from 'vitest';
 import { server } from './mocks/server';
+
+// Enable Immer MapSet plugin for stores that use Map/Set in state
+enableMapSet();
 
 // Start MSW server before all tests
 beforeAll(() => {

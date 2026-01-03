@@ -11,9 +11,8 @@
     "dev": "next dev -p 3000",
     "build": "next build --webpack",
     "start": "next start -p 3000",
-    "lint": "next lint",
-    "lint:security": "eslint . --config eslint-security.config.mjs",
-    "lint:a11y": "eslint . --config eslint-a11y.config.mjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "analyze": "ANALYZE=true npm run build",
     "test": "vitest",
@@ -66,6 +65,7 @@
     "@axe-core/cli": "^4.11.0",
     "@axe-core/playwright": "^4.11.0",
     "@axe-core/react": "^4.11.0",
+    "@eslint/js": "^9.39.2",
     "@lhci/cli": "^0.15.0",
     "@microsoft/eslint-formatter-sarif": "^3.1.0",
     "@next/bundle-analyzer": "^16.1.1",
@@ -84,6 +84,7 @@
     "eslint-config-next": "^15.5.9",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-security": "^3.0.1",
+    "globals": "^17.0.0",
     "husky": "^9.1.7",
     "jest-axe": "^10.0.0",
     "jsdom": "^27.0.0",
@@ -95,12 +96,13 @@
     "supertest": "^7.1.4",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.51.0",
     "vitest": "^3.2.4",
     "wait-on": "^9.0.3"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "next lint --fix --file",
+      "eslint --fix",
       "prettier --write"
     ],
     "*.{json,md,yml,yaml}": [

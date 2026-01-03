@@ -20,7 +20,7 @@ import logging
 import os
 import sys
 from collections.abc import MutableMapping
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, ClassVar
 
 # Log levels
@@ -38,7 +38,7 @@ class StructuredFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         log_data = {
-            "timestamp": datetime.utcnow().isoformat() + "Z",
+            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "level": record.levelname,
             "logger": record.name,
             "message": record.getMessage(),
@@ -280,7 +280,8 @@ def log_function_call(func):
         try:
             result = func(*args, **kwargs)
             func_logger.debug(
-                f"Completed {func.__name__}", extra={"function": func.__name__, "success": True}
+                f"Completed {func.__name__}",
+                extra={"function": func.__name__, "success": True},
             )
             return result
         except Exception as e:

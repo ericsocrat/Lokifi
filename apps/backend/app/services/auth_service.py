@@ -57,7 +57,8 @@ class AuthService:
 
         if existing_user:
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT, detail="User with this email already exists"
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this email already exists",
             )
 
         # Check if username is taken (if provided)
@@ -68,7 +69,8 @@ class AuthService:
 
             if existing_profile:
                 raise HTTPException(
-                    status_code=status.HTTP_409_CONFLICT, detail="Username already taken"
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail="Username already taken",
                 )
 
         # Create user
@@ -132,16 +134,20 @@ class AuthService:
 
         if not row:
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password",
             )
 
         user, profile = row
 
         # Verify password
-        if not user.password_hash or not verify_password(login_data.password, user.password_hash):
+        if not user.password_hash or not verify_password(
+            login_data.password, user.password_hash
+        ):
             # TODO: Track failed login attempts for account lockout
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email or password"
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password",
             )
 
         # Check if user is active
@@ -214,14 +220,18 @@ class AuthService:
                 await self.db.commit()
 
             # Generate tokens
-            access_token = create_access_token(str(existing_user.id), existing_user.email)
+            access_token = create_access_token(
+                str(existing_user.id), existing_user.email
+            )
             refresh_token = create_refresh_token(str(existing_user.id))
 
             return {
                 "user": UserResponse.model_validate(existing_user),
                 "profile": ProfileResponse.model_validate(profile) if profile else None,
                 "tokens": TokenResponse(
-                    access_token=access_token, refresh_token=refresh_token, expires_in=1800
+                    access_token=access_token,
+                    refresh_token=refresh_token,
+                    expires_in=1800,
                 ),
             }
 
@@ -239,7 +249,9 @@ class AuthService:
         await self.db.flush()
 
         # Create profile
-        profile = Profile(id=uuid.uuid4(), user_id=user.id, display_name=full_name, is_public=True)
+        profile = Profile(
+            id=uuid.uuid4(), user_id=user.id, display_name=full_name, is_public=True
+        )
 
         self.db.add(profile)
 

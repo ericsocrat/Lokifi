@@ -88,7 +88,9 @@ async def simulate_stress_test_scenarios():
         print(f"   ⚡ Avg Response Time: {response_time_avg:.1f}ms")
         print(f"   📊 P95 Response Time: {response_time_p95:.1f}ms")
         print(f"   📊 P99 Response Time: {response_time_p99:.1f}ms")
-        print(f"   ✅ Success Rate: {cast(float, scenario['simulated_success_rate']):.1f}%")
+        print(
+            f"   ✅ Success Rate: {cast(float, scenario['simulated_success_rate']):.1f}%"
+        )
         print()
 
     # Final system metrics

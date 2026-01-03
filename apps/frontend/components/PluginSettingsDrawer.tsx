@@ -109,7 +109,7 @@ export default function PluginSettingsDrawer({
           <div className="flex gap-2">
             <button
               onClick={() => {
-                // any required: Plugin API extension on window global
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin API extension on window global
                 (window as any).__lokifiApplySymbolSettings?.();
               }}
               className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800"
@@ -118,7 +118,7 @@ export default function PluginSettingsDrawer({
             </button>
             <button
               onClick={() => {
-                // any required: Plugin API extension on window global
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin API extension on window global
                 (window as any).__lokifiClearSymbolSettings?.();
               }}
               className="text-xs px-2 py-1 rounded border border-neutral-700 hover:bg-neutral-800"

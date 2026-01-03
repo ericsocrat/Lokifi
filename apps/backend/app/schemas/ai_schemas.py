@@ -18,7 +18,9 @@ class AIThreadCreate(BaseModel):
 class AIThreadUpdate(BaseModel):
     """Schema for updating an AI thread."""
 
-    title: str = Field(..., min_length=1, max_length=255, description="New thread title")
+    title: str = Field(
+        ..., min_length=1, max_length=255, description="New thread title"
+    )
 
 
 class AIThreadResponse(BaseModel):
@@ -59,7 +61,9 @@ class AIMessageResponse(BaseModel):
 class AIChatRequest(BaseModel):
     """Schema for sending a chat message."""
 
-    message: str = Field(..., min_length=1, max_length=10000, description="User message")
+    message: str = Field(
+        ..., min_length=1, max_length=10000, description="User message"
+    )
     provider: str | None = Field(None, description="Preferred AI provider")
     model: str | None = Field(None, description="Specific model to use")
 

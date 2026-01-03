@@ -35,7 +35,9 @@ async def get_my_profile(
     profile = await profile_service.get_profile_by_user_id(current_user.id)
 
     if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+        )
 
     return ProfileResponse.model_validate(profile)
 
@@ -75,7 +77,9 @@ async def get_profile_by_username(
     # First get the profile by username
     profile = await profile_service.get_profile_by_username(username)
     if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+        )
 
     # Then get public profile info
     current_user_id = current_user.id if current_user else None
@@ -135,7 +139,9 @@ async def update_notification_preferences(
 ):
     """Update current user's notification preferences."""
     profile_service = ProfileService(db)
-    return await profile_service.update_notification_preferences(current_user.id, prefs_data)
+    return await profile_service.update_notification_preferences(
+        current_user.id, prefs_data
+    )
 
 
 @router.delete("/me", response_model=MessageResponse)

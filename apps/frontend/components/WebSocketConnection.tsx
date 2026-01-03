@@ -94,6 +94,7 @@ export default function WebSocketConnection({
       if (Math.random() > 0.1) {
         // 90% success rate
         const mockWs = simulateWebSocket();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Mock WebSocket interface differs from real WebSocket
         wsRef.current = mockWs as any;
       } else {
         // Simulate connection error
@@ -210,6 +211,7 @@ export default function WebSocketConnection({
 
 // Hook to use WebSocket in components
 export function useWebSocketData(symbol: string, enabled: boolean = true) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WebSocket data structure is dynamic
   const [data, setData] = useState<any>(null);
   const [isConnected, setIsConnected] = useState(false);
 

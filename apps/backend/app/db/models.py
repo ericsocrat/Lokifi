@@ -40,12 +40,18 @@ class User(Base):
     bio: Mapped[str | None] = mapped_column(String(280), nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-    posts: Mapped[list[Post]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    posts: Mapped[list[Post]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
     following: Mapped[list[Follow]] = relationship(
-        foreign_keys="Follow.follower_id", cascade="all, delete-orphan", back_populates="follower"
+        foreign_keys="Follow.follower_id",
+        cascade="all, delete-orphan",
+        back_populates="follower",
     )
     followers: Mapped[list[Follow]] = relationship(
-        foreign_keys="Follow.followee_id", cascade="all, delete-orphan", back_populates="followee"
+        foreign_keys="Follow.followee_id",
+        cascade="all, delete-orphan",
+        back_populates="followee",
     )
     positions: Mapped[list[PortfolioPosition]] = relationship(
         back_populates="user", cascade="all, delete-orphan"
@@ -62,16 +68,24 @@ class Follow(Base):
     followee_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"))
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)
 
-    follower: Mapped[User] = relationship(foreign_keys=[follower_id], back_populates="following")
-    followee: Mapped[User] = relationship(foreign_keys=[followee_id], back_populates="followers")
+    follower: Mapped[User] = relationship(
+        foreign_keys=[follower_id], back_populates="following"
+    )
+    followee: Mapped[User] = relationship(
+        foreign_keys=[followee_id], back_populates="followers"
+    )
 
-    __table_args__ = (UniqueConstraint("follower_id", "followee_id", name="uq_follow_pair"),)
+    __table_args__ = (
+        UniqueConstraint("follower_id", "followee_id", name="uq_follow_pair"),
+    )
 
 
 class Post(Base):
     __tablename__ = "posts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
     content: Mapped[str] = mapped_column(Text)
     symbol: Mapped[str | None] = mapped_column(String(24), index=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow, index=True)
@@ -85,7 +99,9 @@ Index("ix_posts_symbol_created", Post.symbol, Post.created_at.desc())
 class PortfolioPosition(Base):
     __tablename__ = "portfolio_positions"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
     symbol: Mapped[str] = mapped_column(String(48), index=True)
     qty: Mapped[float] = mapped_column(Float)
     cost_basis: Mapped[float] = mapped_column(Float)
@@ -104,7 +120,9 @@ class AIThread(Base):
     __tablename__ = "ai_threads"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"), index=True
+    )
     title: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -134,7 +152,9 @@ class AIMessage(Base):
     model: Mapped[str | None] = mapped_column(
         String(100), nullable=True
     )  # AI model used (for assistant messages)
-    provider: Mapped[str | None] = mapped_column(String(50), nullable=True)  # AI provider used
+    provider: Mapped[str | None] = mapped_column(
+        String(50), nullable=True
+    )  # AI provider used
     token_count: Mapped[int | None] = mapped_column(
         Integer, nullable=True
     )  # Number of tokens in response

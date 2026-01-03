@@ -89,7 +89,7 @@ export interface TestSuiteConfig {
   performanceThresholds: PerformanceThreshold[];
 
   // Custom settings
-  // any required: User-defined test configuration (varies by test framework)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- User-defined test configuration (varies by test framework)
   customSettings: Record<string, any>;
 }
 
@@ -161,7 +161,7 @@ export interface TestStep {
   name: string;
   type: TestStepType;
   action: string;
-  // any required: Test step parameters (structure varies by step type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test step parameters (structure varies by step type)
   parameters: Record<string, any>;
   expectedResult?: string;
   continueOnFailure: boolean;
@@ -283,7 +283,7 @@ export interface TestResult {
   assertionResults: TestAssertionResult[];
 
   // Data
-  // any required: Test execution results (structure depends on test type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test execution results (structure depends on test type)
   actualResults: Record<string, any>;
   screenshots?: string[]; // file paths or URLs
 
@@ -381,7 +381,7 @@ export interface TestLog {
   source: string;
   testCaseId?: string;
   stepId?: string;
-  // any required: Log metadata (arbitrary context information)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Log metadata (arbitrary context information)
   metadata?: Record<string, any>;
 }
 
@@ -479,7 +479,7 @@ export interface TestPipelineStage {
   approvers: string[];
 
   // Environment-specific
-  // any required: Environment configuration overrides (varies by environment)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Environment configuration overrides (varies by environment)
   environmentOverrides: Record<string, any>;
 }
 
@@ -494,7 +494,7 @@ export interface StageCondition {
 export interface PipelineTrigger {
   id: string;
   type: TriggerType;
-  // any required: Trigger conditions (structure varies by trigger type)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Trigger conditions (structure varies by trigger type)
   conditions: Record<string, any>;
   isEnabled: boolean;
 }
@@ -1592,7 +1592,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             content = JSON.stringify(executions, null, 2);
             mimeType = 'application/json';
             break;
-          case 'csv':
+          case 'csv': {
             const headers = 'ID,Suite,Environment,Status,Duration,Pass Rate';
             const rows = executions
               .map(
@@ -1603,6 +1603,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             content = `${headers}\n${rows}`;
             mimeType = 'text/csv';
             break;
+          }
           case 'xml':
             content = `<?xml version="1.0"?><executions>${executions
               .map((e) => `<execution id="${e.id}" status="${e.status}"/>`)

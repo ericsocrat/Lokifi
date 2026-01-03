@@ -111,7 +111,9 @@ class NotificationService:
                         session,
                         str(notification_data.user_id),  # Convert UUID to str for query
                     )
-                    if not await self._should_deliver_notification(preferences, notification_data):
+                    if not await self._should_deliver_notification(
+                        preferences, notification_data
+                    ):
                         logger.debug(
                             f"Notification blocked by user preferences: {notification_data.type}"
                         )
@@ -144,7 +146,9 @@ class NotificationService:
                 await self._emit_event(NotificationEvent.CREATED, notification)
 
                 # Schedule delivery if needed
-                asyncio.create_task(self._deliver_notification(notification, notification_data))
+                asyncio.create_task(
+                    self._deliver_notification(notification, notification_data)
+                )
 
                 logger.info(
                     f"Created notification {notification.id} for user {notification_data.user_id}"
@@ -169,7 +173,9 @@ class NotificationService:
             chunk = notifications_data[i : i + self.max_batch_size]
 
             # Create notifications in parallel
-            tasks = [self.create_notification(data, batch_id=batch_id) for data in chunk]
+            tasks = [
+                self.create_notification(data, batch_id=batch_id) for data in chunk
+            ]
 
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -282,7 +288,9 @@ class NotificationService:
             logger.error(f"Failed to get unread count: {e}")
             return 0
 
-    async def mark_as_read(self, notification_id: str, user_id: str | UUID | None = None) -> bool:
+    async def mark_as_read(
+        self, notification_id: str, user_id: str | UUID | None = None
+    ) -> bool:
         """Mark a notification as read"""
         user_id_str = str(user_id) if user_id else None  # Convert UUID to string
         try:
@@ -319,7 +327,10 @@ class NotificationService:
                 # Get unread notifications
                 result = await session.execute(
                     select(Notification).where(
-                        and_(Notification.user_id == user_id_str, Notification.is_read.is_(False))
+                        and_(
+                            Notification.user_id == user_id_str,
+                            Notification.is_read.is_(False),
+                        )
                     )
                 )
                 notifications = result.scalars().all()
@@ -335,7 +346,8 @@ class NotificationService:
 
                     # Emit batch read event
                     await self._emit_event(
-                        NotificationEvent.READ, {"user_id": user_id, "count": count, "batch": True}
+                        NotificationEvent.READ,
+                        {"user_id": user_id, "count": count, "batch": True},
                     )
 
                 return count
@@ -411,18 +423,25 @@ class NotificationService:
         try:
             async for session in db_manager.get_session(read_only=True):
                 # Base query for user's notifications
-                base_query = select(Notification).where(Notification.user_id == user_id_str)
+                base_query = select(Notification).where(
+                    Notification.user_id == user_id_str
+                )
 
                 # Total count
                 total_result = await session.execute(
-                    select(func.count(Notification.id)).where(Notification.user_id == user_id_str)
+                    select(func.count(Notification.id)).where(
+                        Notification.user_id == user_id_str
+                    )
                 )
                 total_count = total_result.scalar() or 0
 
                 # Status counts
                 unread_result = await session.execute(
                     select(func.count(Notification.id)).where(
-                        and_(Notification.user_id == user_id_str, Notification.is_read.is_(False))
+                        and_(
+                            Notification.user_id == user_id_str,
+                            Notification.is_read.is_(False),
+                        )
                     )
                 )
                 unread_count = unread_result.scalar() or 0
@@ -432,7 +451,8 @@ class NotificationService:
                 dismissed_result = await session.execute(
                     select(func.count(Notification.id)).where(
                         and_(
-                            Notification.user_id == user_id_str, Notification.is_dismissed.is_(True)
+                            Notification.user_id == user_id_str,
+                            Notification.is_dismissed.is_(True),
                         )
                     )
                 )
@@ -441,7 +461,8 @@ class NotificationService:
                 delivered_result = await session.execute(
                     select(func.count(Notification.id)).where(
                         and_(
-                            Notification.user_id == user_id_str, Notification.is_delivered.is_(True)
+                            Notification.user_id == user_id_str,
+                            Notification.is_delivered.is_(True),
                         )
                     )
                 )
@@ -479,7 +500,9 @@ class NotificationService:
 
                     # Track read times
                     if notification.read_at and notification.created_at:
-                        read_time = (notification.read_at - notification.created_at).total_seconds()
+                        read_time = (
+                            notification.read_at - notification.created_at
+                        ).total_seconds()
                         read_times.append(read_time)
 
                     # Most recent notification
@@ -557,11 +580,15 @@ class NotificationService:
             logger.error(f"Failed to cleanup expired notifications: {e}")
             return 0
 
-    async def _get_user_preferences(self, session, user_id: str) -> NotificationPreference | None:
+    async def _get_user_preferences(
+        self, session, user_id: str
+    ) -> NotificationPreference | None:
         """Get user notification preferences"""
         try:
             result = await session.execute(
-                select(NotificationPreference).where(NotificationPreference.user_id == user_id)
+                select(NotificationPreference).where(
+                    NotificationPreference.user_id == user_id
+                )
             )
             return result.scalar_one_or_none()
         except Exception as e:
@@ -569,7 +596,9 @@ class NotificationService:
             return None
 
     async def _should_deliver_notification(
-        self, preferences: NotificationPreference | None, notification_data: NotificationData
+        self,
+        preferences: NotificationPreference | None,
+        notification_data: NotificationData,
     ) -> bool:
         """Check if notification should be delivered based on user preferences"""
         if not preferences:

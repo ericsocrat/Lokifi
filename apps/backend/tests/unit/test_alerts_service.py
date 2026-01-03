@@ -432,7 +432,10 @@ class TestAlertEvaluator:
     @pytest.mark.asyncio
     @patch("app.services.alerts.get_ohlc")
     async def test_evaluate_pct_change_up_triggered(
-        self, mock_get_ohlc: AsyncMock, evaluator: AlertEvaluator, sample_pct_alert: Alert
+        self,
+        mock_get_ohlc: AsyncMock,
+        evaluator: AlertEvaluator,
+        sample_pct_alert: Alert,
     ):
         """Test percentage change alert triggered (up)"""
         # Mock OHLC data showing 5% increase
@@ -450,7 +453,10 @@ class TestAlertEvaluator:
     @pytest.mark.asyncio
     @patch("app.services.alerts.get_ohlc")
     async def test_evaluate_pct_change_up_not_triggered(
-        self, mock_get_ohlc: AsyncMock, evaluator: AlertEvaluator, sample_pct_alert: Alert
+        self,
+        mock_get_ohlc: AsyncMock,
+        evaluator: AlertEvaluator,
+        sample_pct_alert: Alert,
     ):
         """Test percentage change alert not triggered (up)"""
         # Mock OHLC data showing less than 5% increase
@@ -527,7 +533,9 @@ class TestAlertEvaluator:
 
     @pytest.mark.asyncio
     @patch("app.services.alerts.get_ohlc")
-    async def test_evaluate_unknown_type(self, mock_get_ohlc: AsyncMock, evaluator: AlertEvaluator):
+    async def test_evaluate_unknown_type(
+        self, mock_get_ohlc: AsyncMock, evaluator: AlertEvaluator
+    ):
         """Test evaluation of unknown alert type"""
         alert = Alert(
             id="alert-unknown",

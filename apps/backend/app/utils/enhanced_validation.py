@@ -11,7 +11,7 @@ from typing import Any, ClassVar
 from urllib.parse import urlparse
 
 import bleach
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.core.security_config import security_config
 
@@ -20,7 +20,16 @@ class InputSanitizer:
     """Utility class for sanitizing and validating user inputs"""
 
     # Dangerous HTML tags and attributes
-    ALLOWED_HTML_TAGS: ClassVar[list[str]] = ["p", "br", "strong", "em", "u", "ol", "ul", "li"]
+    ALLOWED_HTML_TAGS: ClassVar[list[str]] = [
+        "p",
+        "br",
+        "strong",
+        "em",
+        "u",
+        "ol",
+        "ul",
+        "li",
+    ]
     ALLOWED_HTML_ATTRIBUTES: ClassVar[dict[str, list[str]]] = {}
 
     # Dangerous patterns
@@ -48,7 +57,9 @@ class InputSanitizer:
 
         # Remove control characters except whitespace
         text = "".join(
-            char for char in text if unicodedata.category(char)[0] != "C" or char.isspace()
+            char
+            for char in text
+            if unicodedata.category(char)[0] != "C" or char.isspace()
         )
 
         # Limit length
@@ -169,7 +180,9 @@ class InputSanitizer:
 
         # Character validation (alphanumeric, underscore, hyphen)
         if not re.match(r"^[a-zA-Z0-9_-]+$", username):
-            raise ValueError("Username can only contain letters, numbers, underscores, and hyphens")
+            raise ValueError(
+                "Username can only contain letters, numbers, underscores, and hyphens"
+            )
 
         # Must start with letter or number
         if not re.match(r"^[a-zA-Z0-9]", username):
@@ -181,13 +194,14 @@ class InputSanitizer:
 class SecureValidationModel(BaseModel):
     """Base Pydantic model with enhanced security validation"""
 
-    class Config:
+    model_config = ConfigDict(
         # Validate all fields on assignment
-        validate_assignment = True
+        validate_assignment=True,
         # Don't allow extra fields
-        extra = "forbid"
+        extra="forbid",
         # Use enum values
-        use_enum_values = True
+        use_enum_values=True,
+    )
 
     @field_validator("*", mode="before")
     @classmethod

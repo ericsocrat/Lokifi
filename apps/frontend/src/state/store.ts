@@ -1,11 +1,28 @@
 import type { Alert, AlertEvent, CreateAlertInput } from '@/lib/utils/alerts';
-import type { Drawing, DrawingStyle } from '@/lib/utils/drawings';
+import type { Drawing, DrawingBounds, DrawingStyle } from '@/lib/utils/drawings';
 import type { StateCreator } from 'zustand';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type SetState = Parameters<StateCreator<ChartState>>[0];
 type GetState = Parameters<StateCreator<ChartState>>[1];
+
+/**
+ * Extract bounds from a Drawing for align/distribute operations.
+ * Drawings store coordinates in `points` array, not x/y directly.
+ * Returns calculated bounding box from first two points.
+ */
+function getDrawingBounds(d: Drawing): DrawingBounds {
+  // Drawings use points array for coordinates
+  const points = 'points' in d ? d.points : [];
+  const p0 = points[0] ?? { x: 0, y: 0 };
+  const p1 = points[1] ?? p0;
+  const x = Math.min(p0.x, p1.x);
+  const y = Math.min(p0.y, p1.y);
+  const width = Math.abs(p1.x - p0.x) || 1; // Ensure non-zero for single-point drawings
+  const height = Math.abs(p1.y - p0.y) || 1;
+  return { id: d.id, x, y, width, height };
+}
 
 // Layer type (minimal definition based on usage)
 export interface Layer {
@@ -19,7 +36,8 @@ export interface Layer {
 
 // DrawingSettings type (flexible)
 export interface DrawingSettings {
-  [key: string]: any; // any required: Drawing settings are dynamic and tool-specific
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Drawing settings are dynamic and tool-specific
+  [key: string]: any;
 }
 
 export interface IndicatorSettings {
@@ -395,21 +413,22 @@ export const useChartStore = create<ChartState>()(
         const selected = new Set(get().selection);
         const toGroup = drawings.filter((d) => selected.has(d.id));
         const others = drawings.filter((d) => !selected.has(d.id));
-        const group = {
+        const group: Drawing = {
           id: crypto.randomUUID(),
-          type: 'group' as const,
+          kind: 'group',
+          type: 'group',
           children: toGroup,
         };
-        set({ drawings: [...others, group as any] });
+        set({ drawings: [...others, group] });
       },
 
       ungroupSelected: () => {
         const drawings = get().drawings;
         const selected = new Set(get().selection);
-        const newDrawings = [];
+        const newDrawings: Drawing[] = [];
         for (const d of drawings) {
-          if (selected.has(d.id) && (d as any).type === 'group') {
-            newDrawings.push(...(d as any).children);
+          if (selected.has(d.id) && d.kind === 'group') {
+            newDrawings.push(...d.children);
           } else {
             newDrawings.push(d);
           }
@@ -507,14 +526,7 @@ export const useChartStore = create<ChartState>()(
         if (sel.size < 2) return;
 
         const selectedDrawings = get().drawings.filter((d) => sel.has(d.id));
-        const bounds = selectedDrawings.map((d: any) => ({
-          // any required: Drawing union type doesn't guarantee x/y/width/height properties
-          id: d.id,
-          x: d.x,
-          y: d.y,
-          width: d.width,
-          height: d.height,
-        }));
+        const bounds = selectedDrawings.map(getDrawingBounds);
 
         let alignTo: number;
         switch (direction) {
@@ -536,6 +548,8 @@ export const useChartStore = create<ChartState>()(
             break;
         }
 
+        // Note: This updates x/y which doesn't persist to Drawing.points
+        // TODO: Implement proper point transformation for drawing alignment
         const next = get().drawings.map((d) => {
           const bound = bounds.find((b) => b.id === d.id);
           return bound ? { ...d, x: bound.x, y: bound.y } : d;
@@ -547,29 +561,32 @@ export const useChartStore = create<ChartState>()(
         const sel = get().selection;
         if (sel.size < 3) return;
 
-        const selectedDrawings = get()
-          .drawings.filter((d) => sel.has(d.id))
-          .sort((a, b) =>
-            direction === 'h' ? (a as any).x - (b as any).x : (a as any).y - (b as any).y
-          );
+        // Get bounds for selected drawings and sort by position
+        const selectedDrawings = get().drawings.filter((d) => sel.has(d.id));
+        const boundsList = selectedDrawings.map(getDrawingBounds);
+        boundsList.sort((a, b) => (direction === 'h' ? a.x - b.x : a.y - b.y));
 
-        const total = selectedDrawings.length;
-        const first = selectedDrawings[0] as any;
-        const last = selectedDrawings[total - 1] as any;
+        const total = boundsList.length;
+        const first = boundsList[0];
+        const last = boundsList[total - 1];
         const space =
-          direction === 'h'
-            ? ((last as any).x - (first as any).x) / (total - 1)
-            : ((last as any).y - (first as any).y) / (total - 1);
+          direction === 'h' ? (last.x - first.x) / (total - 1) : (last.y - first.y) / (total - 1);
 
+        // Create a map of id -> new position
+        const positionMap = new Map<string, { x: number; y: number }>();
+        boundsList.forEach((bounds, idx) => {
+          if (idx === 0 || idx === total - 1) return; // Keep first and last in place
+          positionMap.set(bounds.id, {
+            x: direction === 'h' ? first.x + space * idx : bounds.x,
+            y: direction === 'v' ? first.y + space * idx : bounds.y,
+          });
+        });
+
+        // Note: This updates x/y which doesn't persist to Drawing.points
+        // TODO: Implement proper point transformation for drawing distribution
         const next = get().drawings.map((d) => {
-          const idx = selectedDrawings.findIndex((sd) => sd.id === d.id);
-          if (idx === -1 || idx === 0 || idx === total - 1) return d;
-
-          return {
-            ...d,
-            x: direction === 'h' ? (first as any).x + space * idx : (d as any).x,
-            y: direction === 'v' ? (first as any).y + space * idx : (d as any).y,
-          };
+          const pos = positionMap.get(d.id);
+          return pos ? { ...d, x: pos.x, y: pos.y } : d;
         });
         set({ drawings: next });
       },
@@ -730,26 +747,14 @@ export const useChartStore = create<ChartState>()(
   )
 );
 
-// expose helpers the UI expects on the hook function
-(useChartStore as any).getState =
-  (useChartStore as any).getState || (() => (useChartStore as any)());
-(useChartStore as any).setState = (patch: Partial<ChartState>) => {
-  const cur = (useChartStore as any).getState();
-  (useChartStore as any)((_s: ChartState) => ({ ...cur, ...patch }));
-};
-(useChartStore as any).subscribe = (cb: (s: ChartState) => void) => {
-  let prev = (useChartStore as any).getState();
-  const unsub = (useChartStore as any)((_s: ChartState) => {
-    if (_s !== prev) {
-      prev = _s;
-      try {
-        cb(_s);
-      } catch {}
-    }
-  });
-  return () => {
-    try {
-      unsub();
-    } catch {}
-  };
-};
+// Type-safe store extension interface
+// Zustand v4+ provides these methods, but we add explicit types for type safety
+interface StoreWithHelpers {
+  getState: () => ChartState;
+  setState: (patch: Partial<ChartState>) => void;
+  subscribe: (cb: (s: ChartState) => void) => () => void;
+}
+
+// The store already has these methods from Zustand's create function
+// This explicit cast ensures TypeScript knows about them
+export const chartStoreHelpers = useChartStore as typeof useChartStore & StoreWithHelpers;

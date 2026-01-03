@@ -33,7 +33,9 @@ class FollowService:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def follow_user(self, follower_id: uuid.UUID, followee_id: uuid.UUID) -> FollowResponse:
+    async def follow_user(
+        self, follower_id: uuid.UUID, followee_id: uuid.UUID
+    ) -> FollowResponse:
         """Idempotently follow a user. Returns existing relationship if already following."""
         if follower_id == followee_id:
             raise HTTPException(
@@ -45,7 +47,9 @@ class FollowService:
             select(User.id).where(and_(User.id == followee_id, User.is_active))
         )
         if result.scalar_one_or_none() is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
 
         # Try fetch existing
         existing = await self.db.execute(
@@ -58,7 +62,9 @@ class FollowService:
             return FollowResponse.model_validate(follow)
 
         # Create
-        follow = Follow(id=uuid.uuid4(), follower_id=follower_id, followee_id=followee_id)
+        follow = Follow(
+            id=uuid.uuid4(), follower_id=follower_id, followee_id=followee_id
+        )
         self.db.add(follow)
         await self.db.flush()
 
@@ -78,7 +84,9 @@ class FollowService:
         await self.db.commit()
         return FollowResponse.model_validate(follow)
 
-    async def unfollow_user(self, follower_id: uuid.UUID, followee_id: uuid.UUID) -> bool:
+    async def unfollow_user(
+        self, follower_id: uuid.UUID, followee_id: uuid.UUID
+    ) -> bool:
         """Idempotent unfollow. Returns True if relationship existed or already absent."""
         result = await self.db.execute(
             select(Follow).where(
@@ -123,7 +131,11 @@ class FollowService:
         followers_data = result.all()
 
         # Get total count
-        count_stmt = select(func.count()).select_from(Follow).where(Follow.followee_id == user_id)
+        count_stmt = (
+            select(func.count())
+            .select_from(Follow)
+            .where(Follow.followee_id == user_id)
+        )
         result = await self.db.execute(count_stmt)
         total = result.scalar() or 0
 
@@ -131,7 +143,9 @@ class FollowService:
         followers = []
         id_list = [row.follower_id for row in followers_data]
         status_map = (
-            await self.batch_follow_status(current_user_id, id_list) if current_user_id else {}
+            await self.batch_follow_status(current_user_id, id_list)
+            if current_user_id
+            else {}
         )
         for row in followers_data:
             st = status_map.get(
@@ -189,7 +203,11 @@ class FollowService:
         following_data = result.all()
 
         # Get total count
-        count_stmt = select(func.count()).select_from(Follow).where(Follow.follower_id == user_id)
+        count_stmt = (
+            select(func.count())
+            .select_from(Follow)
+            .where(Follow.follower_id == user_id)
+        )
         result = await self.db.execute(count_stmt)
         total = result.scalar() or 0
 
@@ -197,7 +215,9 @@ class FollowService:
         following = []
         id_list = [row.followee_id for row in following_data]
         status_map = (
-            await self.batch_follow_status(current_user_id, id_list) if current_user_id else {}
+            await self.batch_follow_status(current_user_id, id_list)
+            if current_user_id
+            else {}
         )
         for row in following_data:
             st = status_map.get(
@@ -226,7 +246,11 @@ class FollowService:
         )
 
     async def get_mutual_follows(
-        self, user_id: uuid.UUID, other_user_id: uuid.UUID, page: int = 1, page_size: int = 20
+        self,
+        user_id: uuid.UUID,
+        other_user_id: uuid.UUID,
+        page: int = 1,
+        page_size: int = 20,
     ) -> MutualFollowsResponse:
         """Get mutual follows between two users."""
         offset = (page - 1) * page_size
@@ -247,7 +271,8 @@ class FollowService:
             .join(
                 Follow2,
                 and_(
-                    Follow2.followee_id == Follow1.followee_id, Follow2.follower_id == other_user_id
+                    Follow2.followee_id == Follow1.followee_id,
+                    Follow2.follower_id == other_user_id,
                 ),
             )
             .where(Follow1.follower_id == user_id)
@@ -266,7 +291,8 @@ class FollowService:
             .join(
                 Follow2,
                 and_(
-                    Follow2.followee_id == Follow1.followee_id, Follow2.follower_id == other_user_id
+                    Follow2.followee_id == Follow1.followee_id,
+                    Follow2.follower_id == other_user_id,
                 ),
             )
             .where(Follow1.follower_id == user_id)
@@ -395,7 +421,9 @@ class FollowService:
         # Build suggestions list
         suggestions = []
         for suggestion in suggestions_data:
-            uid = getattr(suggestion, "followee_id", None) or getattr(suggestion, "user_id", None)
+            uid = getattr(suggestion, "followee_id", None) or getattr(
+                suggestion, "user_id", None
+            )
             if uid is None:
                 continue
             # uid is UUID from Profile.user_id or Follow.followee_id
@@ -413,7 +441,9 @@ class FollowService:
             )
         has_next = False
         if reason == "mutual_follows":
-            has_next = has_next_mutual or (len(suggestions) == page_size and has_next_popular)
+            has_next = has_next_mutual or (
+                len(suggestions) == page_size and has_next_popular
+            )
         else:
             has_next = has_next_popular
 
@@ -437,12 +467,16 @@ class FollowService:
         profile = result.scalar_one_or_none()
 
         if not profile:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+            )
 
         # Get mutual followers count if current user is provided
         mutual_count = None
         if current_user_id and current_user_id != user_id:
-            mutual_count = await self._get_mutual_followers_count(user_id, current_user_id)
+            mutual_count = await self._get_mutual_followers_count(
+                user_id, current_user_id
+            )
 
         return FollowStatsResponse(
             user_id=user_id,
@@ -467,7 +501,9 @@ class FollowService:
                 Follow.created_at,
             )
             .join(Profile, Profile.user_id == Follow.follower_id)
-            .where(and_(Follow.followee_id == user_id, Follow.created_at >= seven_days_ago))
+            .where(
+                and_(Follow.followee_id == user_id, Follow.created_at >= seven_days_ago)
+            )
             .order_by(desc(Follow.created_at))
             .limit(5)
         )
@@ -485,7 +521,9 @@ class FollowService:
                 Follow.created_at,
             )
             .join(Profile, Profile.user_id == Follow.followee_id)
-            .where(and_(Follow.follower_id == user_id, Follow.created_at >= seven_days_ago))
+            .where(
+                and_(Follow.follower_id == user_id, Follow.created_at >= seven_days_ago)
+            )
             .order_by(desc(Follow.created_at))
             .limit(5)
         )
@@ -497,7 +535,9 @@ class FollowService:
         follower_growth_stmt = (
             select(func.count())
             .select_from(Follow)
-            .where(and_(Follow.followee_id == user_id, Follow.created_at >= seven_days_ago))
+            .where(
+                and_(Follow.followee_id == user_id, Follow.created_at >= seven_days_ago)
+            )
         )
         result = await self.db.execute(follower_growth_stmt)
         follower_growth = result.scalar() or 0
@@ -505,7 +545,9 @@ class FollowService:
         following_growth_stmt = (
             select(func.count())
             .select_from(Follow)
-            .where(and_(Follow.follower_id == user_id, Follow.created_at >= seven_days_ago))
+            .where(
+                and_(Follow.follower_id == user_id, Follow.created_at >= seven_days_ago)
+            )
         )
         result = await self.db.execute(following_growth_stmt)
         following_growth = result.scalar() or 0
@@ -546,7 +588,9 @@ class FollowService:
             following_growth=following_growth,
         )
 
-    async def is_following(self, follower_id: uuid.UUID, followee_id: uuid.UUID) -> bool:
+    async def is_following(
+        self, follower_id: uuid.UUID, followee_id: uuid.UUID
+    ) -> bool:
         """Check if one user follows another."""
         result = await self.db.execute(
             select(Follow.id).where(
@@ -561,16 +605,21 @@ class FollowService:
         """Build a unified FollowActionResponse after a follow/unfollow/noop."""
         # Fetch profiles for counts
         result = await self.db.execute(
-            select(Profile).where(Profile.user_id.in_([target_user_id, current_user_id]))
+            select(Profile).where(
+                Profile.user_id.in_([target_user_id, current_user_id])
+            )
         )
         profiles = {p.user_id: p for p in result.scalars().all()}
         target_profile = profiles.get(target_user_id)
         current_profile = profiles.get(current_user_id)
         if not target_profile or not current_profile:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Profile not found"
+            )
         status_map = await self.batch_follow_status(current_user_id, [target_user_id])
         st = status_map.get(
-            target_user_id, {"is_following": False, "follows_you": False, "mutual_follow": False}
+            target_user_id,
+            {"is_following": False, "follows_you": False, "mutual_follow": False},
         )
         return FollowActionResponse(
             user_id=target_user_id,
@@ -610,13 +659,15 @@ class FollowService:
             return {}
         result = await self.db.execute(
             select(Follow.followee_id).where(
-                Follow.follower_id == current_user_id, Follow.followee_id.in_(target_user_ids)
+                Follow.follower_id == current_user_id,
+                Follow.followee_id.in_(target_user_ids),
             )
         )
         following_set = {row[0] for row in result.all()}
         result = await self.db.execute(
             select(Follow.follower_id).where(
-                Follow.followee_id == current_user_id, Follow.follower_id.in_(target_user_ids)
+                Follow.followee_id == current_user_id,
+                Follow.follower_id.in_(target_user_ids),
             )
         )
         followed_by_set = {row[0] for row in result.all()}
@@ -650,7 +701,9 @@ class FollowService:
             "mutual_follow": is_following and follows_you,
         }
 
-    async def _get_mutual_followers_count(self, user1_id: uuid.UUID, user2_id: uuid.UUID) -> int:
+    async def _get_mutual_followers_count(
+        self, user1_id: uuid.UUID, user2_id: uuid.UUID
+    ) -> int:
         """Get count of mutual followers between two users."""
         Follow1 = aliased(Follow)
         Follow2 = aliased(Follow)
@@ -660,7 +713,10 @@ class FollowService:
             .select_from(Follow1)
             .join(
                 Follow2,
-                and_(Follow2.follower_id == Follow1.follower_id, Follow2.followee_id == user2_id),
+                and_(
+                    Follow2.follower_id == Follow1.follower_id,
+                    Follow2.followee_id == user2_id,
+                ),
             )
             .where(Follow1.followee_id == user1_id)
         )

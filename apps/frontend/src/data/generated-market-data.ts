@@ -11,7 +11,8 @@ export interface Asset {
   changePercent?: number;
   volume?: number;
   marketCap?: number;
-  [key: string]: any; // any required: Generated market data may contain additional dynamic properties
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Generated market data may contain additional dynamic properties
+  [key: string]: any;
 }
 
 export const ALL_ASSETS: Asset[] = [

@@ -39,7 +39,9 @@ def test_api_responses_are_json():
     for endpoint in endpoints:
         response = client.get(endpoint)
         if response.status_code == 200:
-            assert "application/json" in response.headers.get("content-type", "").lower()
+            assert (
+                "application/json" in response.headers.get("content-type", "").lower()
+            )
 
 
 @pytest.mark.skip(reason="Property-based tests disabled for CI/CD speed")

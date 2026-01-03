@@ -133,7 +133,9 @@ class DatabaseManager:
                 logger.warning(f"⚠️ Replica database connection failed: {e}")
                 # Don't raise for replica failures - fall back to primary
 
-    async def get_session(self, read_only: bool = False) -> AsyncGenerator[AsyncSession]:
+    async def get_session(
+        self, read_only: bool = False
+    ) -> AsyncGenerator[AsyncSession]:
         """Get database session - uses replica for read-only queries when available"""
         if not self._initialized:
             await self.initialize()
@@ -191,7 +193,9 @@ class DatabaseManager:
 
     def get_database_info(self) -> dict:
         """Get database configuration info"""
-        db_type = "SQLite" if self._is_sqlite(self.settings.DATABASE_URL) else "PostgreSQL"
+        db_type = (
+            "SQLite" if self._is_sqlite(self.settings.DATABASE_URL) else "PostgreSQL"
+        )
 
         return {
             "database_type": db_type,

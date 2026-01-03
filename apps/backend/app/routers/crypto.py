@@ -42,12 +42,15 @@ async def fetch_from_coingecko(endpoint: str, params: dict | None = None) -> dic
         import logging
 
         logging.error(f"CoinGecko API error: {type(e).__name__}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to fetch cryptocurrency data")
+        raise HTTPException(
+            status_code=500, detail="Failed to fetch cryptocurrency data"
+        )
 
 
 @router.get("/top")
 async def get_top_cryptocurrencies(
-    limit: int = Query(default=100, ge=1, le=250), vs_currency: str = Query(default="usd")
+    limit: int = Query(default=100, ge=1, le=250),
+    vs_currency: str = Query(default="usd"),
 ):
     """
     Get top cryptocurrencies by market cap
@@ -87,7 +90,9 @@ async def get_market_overview():
             global_data = data["data"]
 
             return {
-                "total_market_cap": global_data.get("total_market_cap", {}).get("usd", 0),
+                "total_market_cap": global_data.get("total_market_cap", {}).get(
+                    "usd", 0
+                ),
                 "total_volume_24h": global_data.get("total_volume", {}).get("usd", 0),
                 "bitcoin_dominance": round(
                     global_data.get("market_cap_percentage", {}).get("btc", 0), 2
@@ -98,7 +103,9 @@ async def get_market_overview():
                 "market_sentiment": 70,  # Placeholder - CoinGecko doesn't provide this in free tier
                 "active_coins": global_data.get("active_cryptocurrencies", 0),
                 "markets": global_data.get("markets", 0),
-                "market_cap_change_24h": global_data.get("market_cap_change_percentage_24h_usd", 0),
+                "market_cap_change_24h": global_data.get(
+                    "market_cap_change_percentage_24h_usd", 0
+                ),
             }
 
         raise HTTPException(status_code=500, detail="Invalid response from CoinGecko")
@@ -146,7 +153,9 @@ async def get_coin_details(
 
 @router.get("/price")
 async def get_simple_price(
-    ids: str = Query(..., description="Comma-separated coin IDs (e.g., 'bitcoin,ethereum')"),
+    ids: str = Query(
+        ..., description="Comma-separated coin IDs (e.g., 'bitcoin,ethereum')"
+    ),
     vs_currencies: str = Query(default="usd", description="Comma-separated currencies"),
 ):
     """

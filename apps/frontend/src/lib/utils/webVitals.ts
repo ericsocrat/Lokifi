@@ -99,10 +99,9 @@ class WebVitalsMonitor {
 
     // Console logging
     if (this.config.consoleLog) {
-      const emoji = report.rating === 'good' ? '✅' : report.rating === 'needs-improvement' ? '⚠️' : '❌';
-      console.log(
-        `${emoji} ${report.name}: ${report.value.toFixed(2)} (${report.rating})`
-      );
+      const emoji =
+        report.rating === 'good' ? '✅' : report.rating === 'needs-improvement' ? '⚠️' : '❌';
+      console.log(`${emoji} ${report.name}: ${report.value.toFixed(2)} (${report.rating})`);
     }
 
     // Report to API
@@ -137,6 +136,7 @@ class WebVitalsMonitor {
           ...report,
           url: window.location.href,
           userAgent: navigator.userAgent,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- navigator.connection is Network Information API, not in standard TypeScript lib
           connectionType: (navigator as any).connection?.effectiveType,
         }),
         keepalive: true,
@@ -222,7 +222,9 @@ class WebVitalsMonitor {
 export const webVitalsMonitor = new WebVitalsMonitor({
   enableReporting: true,
   reportToAPI: process.env.NODE_ENV === 'production',
-  apiEndpoint: process.env.NEXT_PUBLIC_API_URL ? `${process.env.NEXT_PUBLIC_API_URL}/api/metrics/web-vitals` : undefined,
+  apiEndpoint: process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/metrics/web-vitals`
+    : undefined,
   consoleLog: process.env.NODE_ENV === 'development',
   sampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0, // 10% sampling in production
 });

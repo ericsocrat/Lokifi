@@ -18,7 +18,9 @@ class User(Base):
     __tablename__ = "users"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Authentication fields
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
@@ -34,18 +36,24 @@ class User(Base):
 
     # User preferences
     timezone: Mapped[str | None] = mapped_column(String(50), nullable=True)
-    language: Mapped[str | None] = mapped_column(String(10), nullable=True, default="en")
+    language: Mapped[str | None] = mapped_column(
+        String(10), nullable=True, default="en"
+    )
 
     # Account status
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-    last_login: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_login: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Verification
     verification_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -55,12 +63,18 @@ class User(Base):
 
     # Password reset
     reset_token: Mapped[str | None] = mapped_column(String(255), nullable=True)
-    reset_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    reset_expires: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     # Relationships
     profile = relationship("Profile", back_populates="user", uselist=False)
-    following = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower")
-    followers = relationship("Follow", foreign_keys="Follow.followee_id", back_populates="followee")
+    following = relationship(
+        "Follow", foreign_keys="Follow.follower_id", back_populates="follower"
+    )
+    followers = relationship(
+        "Follow", foreign_keys="Follow.followee_id", back_populates="followee"
+    )
     conversations = relationship("ConversationParticipant", back_populates="user")
     sent_messages = relationship(
         "Message", foreign_keys="Message.sender_id", back_populates="sender"

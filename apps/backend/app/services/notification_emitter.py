@@ -49,7 +49,9 @@ class NotificationEventEmitter:
     """
 
     @staticmethod
-    async def emit_follow_notification(follower_user: UserLike, followed_user: UserLike) -> bool:
+    async def emit_follow_notification(
+        follower_user: UserLike, followed_user: UserLike
+    ) -> bool:
         """
         Emit notification when a user follows another user
 
@@ -79,10 +81,13 @@ class NotificationEventEmitter:
                 },
                 related_entity_type="user",
                 related_entity_id=str(follower_user.id),
-                expires_at=datetime.now(timezone.utc) + timedelta(days=30),  # Expire after 30 days
+                expires_at=datetime.now(timezone.utc)
+                + timedelta(days=30),  # Expire after 30 days
             )
 
-            notification = await notification_service.create_notification(notification_data)
+            notification = await notification_service.create_notification(
+                notification_data
+            )
 
             if notification:
                 logger.info(
@@ -123,7 +128,9 @@ class NotificationEventEmitter:
         try:
             # Truncate message for notification preview
             preview_content = (
-                message_content[:100] + "..." if len(message_content) > 100 else message_content
+                message_content[:100] + "..."
+                if len(message_content) > 100
+                else message_content
             )
 
             notification_data = NotificationData(
@@ -148,12 +155,15 @@ class NotificationEventEmitter:
                 },
                 related_entity_type="message",
                 related_entity_id=message_id,
-                expires_at=datetime.now(timezone.utc) + timedelta(days=7),  # Expire after 7 days
+                expires_at=datetime.now(timezone.utc)
+                + timedelta(days=7),  # Expire after 7 days
                 email_enabled=True,  # Enable email for important DMs
                 push_enabled=True,  # Enable push notifications for DMs
             )
 
-            notification = await notification_service.create_notification(notification_data)
+            notification = await notification_service.create_notification(
+                notification_data
+            )
 
             if notification:
                 logger.info(
@@ -195,7 +205,9 @@ class NotificationEventEmitter:
         """
         try:
             # Truncate AI response for notification preview
-            preview_response = ai_response[:150] + "..." if len(ai_response) > 150 else ai_response
+            preview_response = (
+                ai_response[:150] + "..." if len(ai_response) > 150 else ai_response
+            )
 
             # Determine priority based on processing time
             priority = (
@@ -233,10 +245,13 @@ class NotificationEventEmitter:
                 },
                 related_entity_type="ai_message",
                 related_entity_id=message_id,
-                expires_at=datetime.now(timezone.utc) + timedelta(days=3),  # Expire after 3 days
+                expires_at=datetime.now(timezone.utc)
+                + timedelta(days=3),  # Expire after 3 days
             )
 
-            notification = await notification_service.create_notification(notification_data)
+            notification = await notification_service.create_notification(
+                notification_data
+            )
 
             if notification:
                 logger.info(
@@ -244,7 +259,9 @@ class NotificationEventEmitter:
                 )
                 return True
             else:
-                logger.warning(f"AI reply notification blocked by preferences for {user.username}")
+                logger.warning(
+                    f"AI reply notification blocked by preferences for {user.username}"
+                )
                 return False
 
         except Exception as e:
@@ -302,7 +319,9 @@ class NotificationEventEmitter:
                 email_enabled=True,  # Enable email for mentions
             )
 
-            notification = await notification_service.create_notification(notification_data)
+            notification = await notification_service.create_notification(
+                notification_data
+            )
 
             if notification:
                 logger.info(
@@ -360,8 +379,10 @@ class NotificationEventEmitter:
                 },
                 related_entity_type="system",
                 related_entity_id=alert_type,
-                expires_at=expires_at or datetime.now(timezone.utc) + timedelta(days=30),
-                email_enabled=priority == NotificationPriority.URGENT,  # Email for urgent alerts
+                expires_at=expires_at
+                or datetime.now(timezone.utc) + timedelta(days=30),
+                email_enabled=priority
+                == NotificationPriority.URGENT,  # Email for urgent alerts
             )
 
             notification = await notification_service.create_notification(
@@ -371,10 +392,14 @@ class NotificationEventEmitter:
             )
 
             if notification:
-                logger.info(f"Created system alert notification for {user_id}: {alert_type}")
+                logger.info(
+                    f"Created system alert notification for {user_id}: {alert_type}"
+                )
                 return True
             else:
-                logger.warning(f"System alert notification blocked for {user_id}: {alert_type}")
+                logger.warning(
+                    f"System alert notification blocked for {user_id}: {alert_type}"
+                )
                 return False
 
         except Exception as e:
@@ -423,8 +448,10 @@ class NotificationEventEmitter:
                 notifications_data.append(notification_data)
 
             # Create notifications in batch
-            created_notifications = await notification_service.create_batch_notifications(
-                notifications_data
+            created_notifications = (
+                await notification_service.create_batch_notifications(
+                    notifications_data
+                )
             )
 
             notification_ids = [str(n.id) for n in created_notifications]

@@ -1,9 +1,10 @@
 import { setMappers, setVisibleBarCoords, setVisiblePriceLevels } from '@/lib/charts/chartMap';
 import type { IChartApi, ISeriesApi, Time } from 'lightweight-charts';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function wireLightweightChartsMappings(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- lightweight-charts types are incomplete
   chart: IChartApi | any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- lightweight-charts types are incomplete
   series: ISeriesApi<'Candlestick'> | any
 ) {
   if (!chart || !series) return;

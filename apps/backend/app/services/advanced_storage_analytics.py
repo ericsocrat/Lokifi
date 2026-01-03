@@ -127,9 +127,15 @@ class AdvancedStorageAnalytics:
         try:
             async for session in get_db_session():
                 # Basic counts with separate optimized queries to avoid N+1
-                metrics.total_threads = await session.scalar(select(func.count(AIThread.id))) or 0
-                metrics.total_messages = await session.scalar(select(func.count(AIMessage.id))) or 0
-                metrics.total_users = await session.scalar(select(func.count(User.id))) or 0
+                metrics.total_threads = (
+                    await session.scalar(select(func.count(AIThread.id))) or 0
+                )
+                metrics.total_messages = (
+                    await session.scalar(select(func.count(AIMessage.id))) or 0
+                )
+                metrics.total_users = (
+                    await session.scalar(select(func.count(User.id))) or 0
+                )
 
                 # Distribution analysis
                 if metrics.total_messages > 0:
@@ -143,7 +149,9 @@ class AdvancedStorageAnalytics:
 
                     if thread_counts:
                         metrics.messages_per_thread_avg = statistics.mean(thread_counts)
-                        metrics.messages_per_thread_median = statistics.median(thread_counts)
+                        metrics.messages_per_thread_median = statistics.median(
+                            thread_counts
+                        )
                         metrics.largest_thread_messages = max(thread_counts)
 
                     # Messages per user distribution
@@ -157,11 +165,16 @@ class AdvancedStorageAnalytics:
 
                     if user_counts:
                         metrics.messages_per_user_avg = statistics.mean(user_counts)
-                        metrics.messages_per_user_median = statistics.median(user_counts)
+                        metrics.messages_per_user_median = statistics.median(
+                            user_counts
+                        )
 
                     # Calculate average message size
                     total_content_length = (
-                        await session.scalar(select(func.sum(func.length(AIMessage.content)))) or 0
+                        await session.scalar(
+                            select(func.sum(func.length(AIMessage.content)))
+                        )
+                        or 0
                     )
 
                     metrics.avg_message_size_kb = (
@@ -176,7 +189,9 @@ class AdvancedStorageAnalytics:
                 yesterday = now - timedelta(days=1)
                 messages_last_24h = (
                     await session.scalar(
-                        select(func.count(AIMessage.id)).where(AIMessage.created_at >= yesterday)
+                        select(func.count(AIMessage.id)).where(
+                            AIMessage.created_at >= yesterday
+                        )
                     )
                     or 0
                 )
@@ -186,7 +201,9 @@ class AdvancedStorageAnalytics:
                 last_week = now - timedelta(days=7)
                 messages_last_week = (
                     await session.scalar(
-                        select(func.count(AIMessage.id)).where(AIMessage.created_at >= last_week)
+                        select(func.count(AIMessage.id)).where(
+                            AIMessage.created_at >= last_week
+                        )
                     )
                     or 0
                 )
@@ -196,7 +213,9 @@ class AdvancedStorageAnalytics:
                 last_month = now - timedelta(days=30)
                 messages_last_month = (
                     await session.scalar(
-                        select(func.count(AIMessage.id)).where(AIMessage.created_at >= last_month)
+                        select(func.count(AIMessage.id)).where(
+                            AIMessage.created_at >= last_month
+                        )
                     )
                     or 0
                 )
@@ -220,14 +239,16 @@ class AdvancedStorageAnalytics:
 
                 # Time-based usage patterns
                 hourly_stats = await session.execute(
-                    text("""
+                    text(
+                        """
                         SELECT EXTRACT(hour FROM created_at) as hour, COUNT(*) as count
                         FROM ai_messages 
                         WHERE created_at >= :last_week
                         GROUP BY EXTRACT(hour FROM created_at)
                         ORDER BY count DESC
                         LIMIT 5
-                    """),
+                    """
+                    ),
                     {"last_week": last_week},
                 )
                 metrics.peak_hours = [int(row[0]) for row in hourly_stats]
@@ -235,13 +256,22 @@ class AdvancedStorageAnalytics:
                 # Growth predictions
                 if metrics.daily_growth_rate > 0:
                     metrics.predicted_size_30_days = metrics.total_size_mb + (
-                        metrics.daily_growth_rate * metrics.avg_message_size_kb * 30 / 1024
+                        metrics.daily_growth_rate
+                        * metrics.avg_message_size_kb
+                        * 30
+                        / 1024
                     )
                     metrics.predicted_size_90_days = metrics.total_size_mb + (
-                        metrics.daily_growth_rate * metrics.avg_message_size_kb * 90 / 1024
+                        metrics.daily_growth_rate
+                        * metrics.avg_message_size_kb
+                        * 90
+                        / 1024
                     )
                     metrics.predicted_size_365_days = metrics.total_size_mb + (
-                        metrics.daily_growth_rate * metrics.avg_message_size_kb * 365 / 1024
+                        metrics.daily_growth_rate
+                        * metrics.avg_message_size_kb
+                        * 365
+                        / 1024
                     )
 
                 # Calculate optimization score (0-100)
@@ -250,9 +280,14 @@ class AdvancedStorageAnalytics:
                 # Archive utilization (higher is better)
                 try:
                     archived_count = (
-                        await session.scalar(text("SELECT COUNT(*) FROM ai_messages_archive")) or 0
+                        await session.scalar(
+                            text("SELECT COUNT(*) FROM ai_messages_archive")
+                        )
+                        or 0
                     )
-                    archive_ratio = archived_count / (metrics.total_messages + archived_count + 1)
+                    archive_ratio = archived_count / (
+                        metrics.total_messages + archived_count + 1
+                    )
                     score_factors.append(min(archive_ratio * 100, 30))  # Max 30 points
                 except (ZeroDivisionError, AttributeError, TypeError):
                     score_factors.append(0)
@@ -295,25 +330,32 @@ class AdvancedStorageAnalytics:
 
         # Archive old data recommendation
         if metrics.total_messages > 10000:
-            old_threshold = datetime.now() - timedelta(days=self.settings.ARCHIVE_THRESHOLD_DAYS)
+            old_threshold = datetime.now() - timedelta(
+                days=self.settings.ARCHIVE_THRESHOLD_DAYS
+            )
 
             async for session in get_db_session():
                 old_messages_count = (
                     await session.scalar(
-                        select(func.count(AIMessage.id)).where(AIMessage.created_at < old_threshold)
+                        select(func.count(AIMessage.id)).where(
+                            AIMessage.created_at < old_threshold
+                        )
                     )
                     or 0
                 )
 
                 if old_messages_count > 1000:
-                    potential_savings = (old_messages_count * metrics.avg_message_size_kb) / 1024
+                    potential_savings = (
+                        old_messages_count * metrics.avg_message_size_kb
+                    ) / 1024
 
                     recommendations.append(
                         OptimizationRecommendation(
                             category="Data Archival",
                             priority="HIGH",
                             description=f"Archive {old_messages_count:,} old messages to reduce active database size",
-                            potential_savings_mb=potential_savings * 0.7,  # Assume 70% compression
+                            potential_savings_mb=potential_savings
+                            * 0.7,  # Assume 70% compression
                             effort_level="EASY",
                             implementation_steps=[
                                 "Run: python manage_db.py archive",
@@ -331,7 +373,8 @@ class AdvancedStorageAnalytics:
                     category="Database Maintenance",
                     priority="MEDIUM",
                     description="Optimize database performance with VACUUM and reindexing",
-                    potential_savings_mb=metrics.total_size_mb * 0.1,  # ~10% space reclaim
+                    potential_savings_mb=metrics.total_size_mb
+                    * 0.1,  # ~10% space reclaim
                     effort_level="EASY",
                     implementation_steps=[
                         "Run: python manage_db.py maintenance",
@@ -386,7 +429,9 @@ class AdvancedStorageAnalytics:
 
             for provider, count in metrics.provider_usage.items():
                 usage_ratio = count / total_messages
-                if usage_ratio < 0.1 and count > 100:  # Less than 10% usage but >100 messages
+                if (
+                    usage_ratio < 0.1 and count > 100
+                ):  # Less than 10% usage but >100 messages
                     inefficient_providers.append(provider)
 
             if inefficient_providers:
@@ -422,9 +467,15 @@ class AdvancedStorageAnalytics:
                 "message_insert",
                 "INSERT INTO ai_messages (thread_id, role, content, created_at) VALUES (1, 'user', 'test', NOW())",
             ),
-            ("message_select", "SELECT * FROM ai_messages ORDER BY created_at DESC LIMIT 10"),
+            (
+                "message_select",
+                "SELECT * FROM ai_messages ORDER BY created_at DESC LIMIT 10",
+            ),
             ("thread_count", "SELECT COUNT(*) FROM ai_threads"),
-            ("message_search", "SELECT * FROM ai_messages WHERE content LIKE '%test%' LIMIT 5"),
+            (
+                "message_search",
+                "SELECT * FROM ai_messages WHERE content LIKE '%test%' LIMIT 5",
+            ),
         ]
 
         for op_name, query in operations:
@@ -477,7 +528,8 @@ class AdvancedStorageAnalytics:
         try:
             async for session in get_db_session():
                 # Temporal distribution
-                temporal_query = text("""
+                temporal_query = text(
+                    """
                     SELECT 
                         DATE(created_at) as date,
                         COUNT(*) as message_count,
@@ -487,10 +539,12 @@ class AdvancedStorageAnalytics:
                     GROUP BY DATE(created_at)
                     ORDER BY date DESC
                     LIMIT 30
-                """)
+                """
+                )
 
                 temporal_result = await session.execute(
-                    temporal_query, {"last_30_days": datetime.now() - timedelta(days=30)}
+                    temporal_query,
+                    {"last_30_days": datetime.now() - timedelta(days=30)},
                 )
 
                 patterns["temporal_distribution"] = {
@@ -499,7 +553,8 @@ class AdvancedStorageAnalytics:
                 }
 
                 # User behavior patterns
-                user_behavior_query = text("""
+                user_behavior_query = text(
+                    """
                     SELECT 
                         u.id,
                         COUNT(DISTINCT t.id) as thread_count,
@@ -513,7 +568,8 @@ class AdvancedStorageAnalytics:
                     HAVING COUNT(m.id) > 0
                     ORDER BY message_count DESC
                     LIMIT 20
-                """)
+                """
+                )
 
                 user_behavior_result = await session.execute(user_behavior_query)
                 patterns["user_behavior"] = {
@@ -527,7 +583,8 @@ class AdvancedStorageAnalytics:
                 }
 
                 # Content analysis
-                content_query = text("""
+                content_query = text(
+                    """
                     SELECT 
                         provider,
                         model,
@@ -539,7 +596,8 @@ class AdvancedStorageAnalytics:
                     AND provider IS NOT NULL
                     GROUP BY provider, model
                     ORDER BY count DESC
-                """)
+                """
+                )
 
                 content_result = await session.execute(content_query)
                 patterns["content_analysis"] = {
@@ -592,7 +650,9 @@ class AdvancedStorageAnalytics:
                 "growth_rate_healthy": metrics.daily_growth_rate < 1000,
                 "size_manageable": metrics.total_size_mb < 1000,
                 "distribution_balanced": metrics.messages_per_thread_median > 0,
-                "archival_active": any("Archive" in r.category for r in recommendations),
+                "archival_active": any(
+                    "Archive" in r.category for r in recommendations
+                ),
             },
         }
 

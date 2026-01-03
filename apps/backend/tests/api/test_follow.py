@@ -155,7 +155,9 @@ class TestFollowUnfollowOperations:
         # User not yet following
         mock_service.is_following = AsyncMock(return_value=False)
         mock_service.follow_user = AsyncMock(return_value=None)
-        mock_service.follow_action_response = AsyncMock(return_value=sample_follow_action_response)
+        mock_service.follow_action_response = AsyncMock(
+            return_value=sample_follow_action_response
+        )
 
         # Mock target user for notification
         target_user = MagicMock()
@@ -173,7 +175,9 @@ class TestFollowUnfollowOperations:
         result = await follow_user(target_user_id, mock_current_user, mock_db_session)
 
         assert isinstance(result, FollowActionResponse)
-        mock_service.follow_user.assert_awaited_once_with(mock_current_user.id, target_user_id)
+        mock_service.follow_user.assert_awaited_once_with(
+            mock_current_user.id, target_user_id
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.follow.FollowService")
@@ -191,7 +195,9 @@ class TestFollowUnfollowOperations:
         # User already following
         mock_service.is_following = AsyncMock(return_value=True)
         sample_follow_action_response.action = "noop"
-        mock_service.follow_action_response = AsyncMock(return_value=sample_follow_action_response)
+        mock_service.follow_action_response = AsyncMock(
+            return_value=sample_follow_action_response
+        )
 
         mock_service_class.return_value = mock_service
 
@@ -220,7 +226,9 @@ class TestFollowUnfollowOperations:
         mock_service.unfollow_user = AsyncMock(return_value=None)
         sample_follow_action_response.action = "unfollow"
         sample_follow_action_response.is_following = False
-        mock_service.follow_action_response = AsyncMock(return_value=sample_follow_action_response)
+        mock_service.follow_action_response = AsyncMock(
+            return_value=sample_follow_action_response
+        )
 
         mock_service_class.return_value = mock_service
 
@@ -229,7 +237,9 @@ class TestFollowUnfollowOperations:
         assert isinstance(result, FollowActionResponse)
         assert result.action == "unfollow"
         assert result.is_following is False
-        mock_service.unfollow_user.assert_awaited_once_with(mock_current_user.id, target_user_id)
+        mock_service.unfollow_user.assert_awaited_once_with(
+            mock_current_user.id, target_user_id
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.follow.FollowService")
@@ -247,7 +257,9 @@ class TestFollowUnfollowOperations:
         # User not following
         mock_service.is_following = AsyncMock(return_value=False)
         sample_follow_action_response.action = "noop"
-        mock_service.follow_action_response = AsyncMock(return_value=sample_follow_action_response)
+        mock_service.follow_action_response = AsyncMock(
+            return_value=sample_follow_action_response
+        )
 
         mock_service_class.return_value = mock_service
 
@@ -281,7 +293,9 @@ class TestFollowStatusAndLists:
 
         mock_service_class.return_value = mock_service
 
-        result = await get_follow_status(target_user_id, mock_current_user, mock_db_session)
+        result = await get_follow_status(
+            target_user_id, mock_current_user, mock_db_session
+        )
 
         assert result["user_id"] == target_user_id
         assert result["is_following"] is True
@@ -302,7 +316,9 @@ class TestFollowStatusAndLists:
 
         mock_service_class.return_value = mock_service
 
-        result = await get_follow_status(target_user_id, mock_current_user, mock_db_session)
+        result = await get_follow_status(
+            target_user_id, mock_current_user, mock_db_session
+        )
 
         assert result["is_following"] is True
         assert result["follows_you"] is False
@@ -311,7 +327,11 @@ class TestFollowStatusAndLists:
     @pytest.mark.asyncio
     @patch("app.routers.follow.FollowService")
     async def test_get_user_followers_success(
-        self, mock_service_class, sample_followers_list, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_followers_list,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Get user's followers list"""
         mock_service = MagicMock()
@@ -322,7 +342,11 @@ class TestFollowStatusAndLists:
         mock_service_class.return_value = mock_service
 
         result = await get_user_followers(
-            target_user_id, page=1, page_size=20, current_user=mock_current_user, db=mock_db_session
+            target_user_id,
+            page=1,
+            page_size=20,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, FollowersListResponse)
@@ -332,7 +356,11 @@ class TestFollowStatusAndLists:
     @pytest.mark.asyncio
     @patch("app.routers.follow.FollowService")
     async def test_get_user_following_success(
-        self, mock_service_class, sample_following_list, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_following_list,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Get user's following list"""
         mock_service = MagicMock()
@@ -343,7 +371,11 @@ class TestFollowStatusAndLists:
         mock_service_class.return_value = mock_service
 
         result = await get_user_following(
-            target_user_id, page=1, page_size=20, current_user=mock_current_user, db=mock_db_session
+            target_user_id,
+            page=1,
+            page_size=20,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, FollowingListResponse)
@@ -353,7 +385,11 @@ class TestFollowStatusAndLists:
     @pytest.mark.asyncio
     @patch("app.routers.follow.FollowService")
     async def test_get_my_followers_success(
-        self, mock_service_class, sample_followers_list, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_followers_list,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Get current user's followers"""
         mock_service = MagicMock()
@@ -372,7 +408,11 @@ class TestFollowStatusAndLists:
     @pytest.mark.asyncio
     @patch("app.routers.follow.FollowService")
     async def test_get_my_following_success(
-        self, mock_service_class, sample_following_list, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_following_list,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Get current user's following"""
         mock_service = MagicMock()
@@ -428,7 +468,11 @@ class TestMutualFollowsAndSuggestions:
         mock_service_class.return_value = mock_service
 
         result = await get_mutual_follows(
-            other_user_id, page=1, page_size=20, current_user=mock_current_user, db=mock_db_session
+            other_user_id,
+            page=1,
+            page_size=20,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, MutualFollowsResponse)
@@ -463,7 +507,9 @@ class TestMutualFollowsAndSuggestions:
             has_next=False,
         )
 
-        mock_service.get_follow_suggestions = AsyncMock(return_value=suggestions_response)
+        mock_service.get_follow_suggestions = AsyncMock(
+            return_value=suggestions_response
+        )
 
         mock_service_class.return_value = mock_service
 
@@ -503,7 +549,9 @@ class TestStatisticsAndActivity:
 
         mock_service_class.return_value = mock_service
 
-        result = await get_my_follow_stats(current_user=mock_current_user, db=mock_db_session)
+        result = await get_my_follow_stats(
+            current_user=mock_current_user, db=mock_db_session
+        )
 
         assert isinstance(result, FollowStatsResponse)
         assert result.follower_count == 100
@@ -558,7 +606,9 @@ class TestStatisticsAndActivity:
 
         mock_service_class.return_value = mock_service
 
-        result = await get_my_follow_activity(current_user=mock_current_user, db=mock_db_session)
+        result = await get_my_follow_activity(
+            current_user=mock_current_user, db=mock_db_session
+        )
 
         assert isinstance(result, FollowActivityResponse)
         assert result.follower_growth == 5
@@ -650,7 +700,9 @@ class TestBulkOperations:
         assert "Successfully unfollowed 2 users" in result.message
 
     @pytest.mark.asyncio
-    async def test_bulk_unfollow_users_too_many(self, mock_current_user, mock_db_session):
+    async def test_bulk_unfollow_users_too_many(
+        self, mock_current_user, mock_db_session
+    ):
         """✅ Test: Bulk unfollow exceeds limit (max 10)"""
         user_ids = [uuid.uuid4() for _ in range(11)]
 
@@ -685,7 +737,11 @@ class TestEdgeCases:
         mock_service_class.return_value = mock_service
 
         result = await get_user_followers(
-            target_user_id, page=1, page_size=20, current_user=mock_current_user, db=mock_db_session
+            target_user_id,
+            page=1,
+            page_size=20,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, FollowersListResponse)

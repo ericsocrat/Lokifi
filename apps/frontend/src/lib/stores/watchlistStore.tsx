@@ -403,8 +403,7 @@ export const useWatchlistStore = create<WatchlistState & WatchlistActions>()(
           const limitedResults: SymbolMetrics[] = results.slice(0, screenerQuery.limit);
 
           set((draft: Draft<WatchlistState>) => {
-            // Immer Draft requires type assertion for complex array assignments
-            // any required: Draft<SymbolMetrics[]> incompatibility with filtered/sorted result
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Draft<SymbolMetrics[]> incompatibility with filtered/sorted result
             draft.screenerResults = limitedResults as any;
             draft.isLoading = false;
           });

@@ -114,7 +114,11 @@ class TestDMConversationCreation:
 
     @pytest.mark.asyncio
     async def test_get_or_create_dm_returns_existing_conversation(
-        self, conversation_service, sample_user_ids, mock_db_session, sample_conversation_id
+        self,
+        conversation_service,
+        sample_user_ids,
+        mock_db_session,
+        sample_conversation_id,
     ):
         """Test that existing DM conversation is returned"""
         user1_id = sample_user_ids["user1"]
@@ -128,7 +132,10 @@ class TestDMConversationCreation:
         mock_conv = MagicMock()
         mock_conv.id = sample_conversation_id
         mock_conv.is_group = False
-        mock_conv.participants = [MagicMock(user_id=user1_id), MagicMock(user_id=user2_id)]
+        mock_conv.participants = [
+            MagicMock(user_id=user1_id),
+            MagicMock(user_id=user2_id),
+        ]
 
         mock_conv_result = MagicMock()
         mock_conv_result.scalars().all.return_value = [mock_conv]
@@ -159,7 +166,11 @@ class TestMessageSending:
 
     @pytest.mark.asyncio
     async def test_send_message_validates_participant(
-        self, conversation_service, sample_conversation_id, sample_user_ids, mock_db_session
+        self,
+        conversation_service,
+        sample_conversation_id,
+        sample_user_ids,
+        mock_db_session,
     ):
         """Test that non-participants cannot send messages"""
         # Mock participant query - return None (not a participant)
@@ -167,7 +178,9 @@ class TestMessageSending:
         mock_result.scalar_one_or_none.return_value = None
         mock_db_session.execute.return_value = mock_result
 
-        message_data = MessageCreate(content="Test message", content_type=ContentType.TEXT)
+        message_data = MessageCreate(
+            content="Test message", content_type=ContentType.TEXT
+        )
 
         with pytest.raises(HTTPException) as exc_info:
             await conversation_service.send_message(
@@ -179,7 +192,11 @@ class TestMessageSending:
 
     @pytest.mark.asyncio
     async def test_send_message_creates_message_and_receipt(
-        self, conversation_service, sample_conversation_id, sample_user_ids, mock_db_session
+        self,
+        conversation_service,
+        sample_conversation_id,
+        sample_user_ids,
+        mock_db_session,
     ):
         """Test successful message creation"""
         # Mock participant query - user is participant
@@ -188,7 +205,9 @@ class TestMessageSending:
         mock_result.scalar_one_or_none.return_value = mock_participant
         mock_db_session.execute.return_value = mock_result
 
-        message_data = MessageCreate(content="Test message", content_type=ContentType.TEXT)
+        message_data = MessageCreate(
+            content="Test message", content_type=ContentType.TEXT
+        )
 
         with patch.object(
             conversation_service, "_build_message_response", new_callable=AsyncMock
@@ -216,7 +235,11 @@ class TestMessageRetrieval:
 
     @pytest.mark.asyncio
     async def test_get_messages_validates_participant(
-        self, conversation_service, sample_conversation_id, sample_user_ids, mock_db_session
+        self,
+        conversation_service,
+        sample_conversation_id,
+        sample_user_ids,
+        mock_db_session,
     ):
         """Test that non-participants cannot retrieve messages"""
         # Mock participant query - return None (not a participant)
@@ -234,7 +257,11 @@ class TestMessageRetrieval:
 
     @pytest.mark.asyncio
     async def test_get_messages_pagination(
-        self, conversation_service, sample_conversation_id, sample_user_ids, mock_db_session
+        self,
+        conversation_service,
+        sample_conversation_id,
+        sample_user_ids,
+        mock_db_session,
     ):
         """Test message pagination works correctly"""
         from uuid import UUID
@@ -403,7 +430,11 @@ class TestDMCreationNewConversationFlow:
 
     @pytest.mark.asyncio
     async def test_create_new_dm_conversation_when_none_exists(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test creating a new DM conversation when no existing conversation found"""
         user1_id = sample_user_ids["user1"]
@@ -432,7 +463,9 @@ class TestDMCreationNewConversationFlow:
             mock_response = MagicMock(id=sample_conversation_id, is_group=False)
             mock_build.return_value = mock_response
 
-            result = await conversation_service.get_or_create_dm_conversation(user1_id, user2_id)
+            result = await conversation_service.get_or_create_dm_conversation(
+                user1_id, user2_id
+            )
 
             # Verify new conversation was created
             assert mock_db_session.add.call_count == 3  # Conversation + 2 participants
@@ -575,7 +608,9 @@ class TestGetUserConversationsDetailed:
 
         conv2 = MagicMock()
         conv2.id = conv2_id
-        conv2.last_message_at = datetime(2025, 1, 2, 12, 0, tzinfo=timezone.utc)  # Most recent
+        conv2.last_message_at = datetime(
+            2025, 1, 2, 12, 0, tzinfo=timezone.utc
+        )  # Most recent
         conv2.updated_at = datetime(2025, 1, 2, 10, 0, tzinfo=timezone.utc)
         conv2.participants = []
 
@@ -702,7 +737,9 @@ class TestGetUserConversationsDetailed:
                 for conv_id in conv_ids
             ]
 
-            result = await conversation_service.get_user_conversations(user_id, page=1, page_size=2)
+            result = await conversation_service.get_user_conversations(
+                user_id, page=1, page_size=2
+            )
 
             # Verify pagination metadata
             assert result.page == 1
@@ -817,7 +854,9 @@ class TestGetUserConversationsDetailed:
 
         mock_db_session.execute.side_effect = [mock_conv_result, mock_count_result]
 
-        result = await conversation_service.get_user_conversations(user_id, page=1, page_size=20)
+        result = await conversation_service.get_user_conversations(
+            user_id, page=1, page_size=20
+        )
 
         # Verify empty response
         assert result.conversations == []
@@ -863,7 +902,11 @@ class TestMarkMessagesReadValidation:
 
     @pytest.mark.asyncio
     async def test_mark_messages_read_validates_participant(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test that mark_messages_read validates user is a participant"""
         from app.schemas.conversation import MarkReadRequest
@@ -892,7 +935,11 @@ class TestMarkMessagesReadValidation:
 
     @pytest.mark.asyncio
     async def test_mark_messages_read_validates_message_exists(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test that mark_messages_read validates message exists in conversation"""
         from app.schemas.conversation import MarkReadRequest
@@ -910,7 +957,10 @@ class TestMarkMessagesReadValidation:
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = None
 
-        mock_db_session.execute.side_effect = [mock_participant_result, mock_message_result]
+        mock_db_session.execute.side_effect = [
+            mock_participant_result,
+            mock_message_result,
+        ]
 
         # Verify: HTTPException 404 raised
         with pytest.raises(HTTPException) as exc_info:
@@ -930,7 +980,11 @@ class TestMarkMessagesReadReceipts:
 
     @pytest.mark.asyncio
     async def test_mark_messages_read_creates_new_receipts(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test creating new receipts for unread messages"""
         from app.schemas.conversation import MarkReadRequest
@@ -948,7 +1002,9 @@ class TestMarkMessagesReadReceipts:
         # Mock: Target message exists
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
-        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message.created_at = datetime(
+            2025, 1, 15, 12, 0, tzinfo=timezone.utc
+        )
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = mock_target_message
 
@@ -960,7 +1016,9 @@ class TestMarkMessagesReadReceipts:
         # Mock: 2 messages already have receipts
         existing_ids = message_ids[:2]
         mock_existing_receipts_result = MagicMock()
-        mock_existing_receipts_result.all.return_value = [(msg_id,) for msg_id in existing_ids]
+        mock_existing_receipts_result.all.return_value = [
+            (msg_id,) for msg_id in existing_ids
+        ]
 
         # Side effects for 4 queries + 1 update
         mock_db_session.execute.side_effect = [
@@ -990,7 +1048,11 @@ class TestMarkMessagesReadReceipts:
 
     @pytest.mark.asyncio
     async def test_mark_messages_read_handles_all_read(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test when all messages already have receipts (no new receipts needed)"""
         from app.schemas.conversation import MarkReadRequest
@@ -1008,7 +1070,9 @@ class TestMarkMessagesReadReceipts:
         # Mock: Target message exists
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
-        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message.created_at = datetime(
+            2025, 1, 15, 12, 0, tzinfo=timezone.utc
+        )
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = mock_target_message
 
@@ -1019,7 +1083,9 @@ class TestMarkMessagesReadReceipts:
 
         # Mock: ALL messages already have receipts
         mock_existing_receipts_result = MagicMock()
-        mock_existing_receipts_result.all.return_value = [(msg_id,) for msg_id in message_ids]
+        mock_existing_receipts_result.all.return_value = [
+            (msg_id,) for msg_id in message_ids
+        ]
 
         # Side effects for 4 queries + 1 update
         mock_db_session.execute.side_effect = [
@@ -1048,7 +1114,11 @@ class TestMarkMessagesReadReceipts:
 
     @pytest.mark.asyncio
     async def test_mark_messages_read_filters_by_timestamp(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test that only messages up to target timestamp are marked read"""
         from app.schemas.conversation import MarkReadRequest
@@ -1075,7 +1145,9 @@ class TestMarkMessagesReadReceipts:
         # This simulates messages before and at the target timestamp
         message_ids_before_target = [uuid.uuid4() for _ in range(6)]
         mock_messages_result = MagicMock()
-        mock_messages_result.all.return_value = [(msg_id,) for msg_id in message_ids_before_target]
+        mock_messages_result.all.return_value = [
+            (msg_id,) for msg_id in message_ids_before_target
+        ]
 
         # Mock: No existing receipts
         mock_existing_receipts_result = MagicMock()
@@ -1108,7 +1180,11 @@ class TestMarkMessagesReadReceipts:
 
     @pytest.mark.asyncio
     async def test_mark_messages_read_excludes_deleted_messages(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test that deleted messages are excluded from marking read"""
         from app.schemas.conversation import MarkReadRequest
@@ -1126,7 +1202,9 @@ class TestMarkMessagesReadReceipts:
         # Mock: Target message exists
         mock_target_message = MagicMock()
         mock_target_message.id = target_message_id
-        mock_target_message.created_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_target_message.created_at = datetime(
+            2025, 1, 15, 12, 0, tzinfo=timezone.utc
+        )
         mock_message_result = MagicMock()
         mock_message_result.scalar_one_or_none.return_value = mock_target_message
 
@@ -1134,7 +1212,9 @@ class TestMarkMessagesReadReceipts:
         # This simulates the is_deleted filter in the query
         message_ids_not_deleted = [uuid.uuid4() for _ in range(7)]
         mock_messages_result = MagicMock()
-        mock_messages_result.all.return_value = [(msg_id,) for msg_id in message_ids_not_deleted]
+        mock_messages_result.all.return_value = [
+            (msg_id,) for msg_id in message_ids_not_deleted
+        ]
 
         # Mock: No existing receipts
         mock_existing_receipts_result = MagicMock()
@@ -1178,7 +1258,11 @@ class TestBuildConversationResponse:
 
     @pytest.mark.asyncio
     async def test_build_conversation_response_with_participants_and_last_message(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test building conversation response with participants and last message"""
         from app.models.profile import Profile
@@ -1195,7 +1279,9 @@ class TestBuildConversationResponse:
         mock_conversation.description = None
         mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
         mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.last_message_at = datetime(
+            2025, 1, 15, 12, 0, tzinfo=timezone.utc
+        )
 
         # Mock participants with profiles
         mock_participant1 = MagicMock(spec=ConversationParticipant)
@@ -1255,7 +1341,9 @@ class TestBuildConversationResponse:
         ]
 
         # Execute
-        result = await conversation_service._build_conversation_response(mock_conversation, user_id)
+        result = await conversation_service._build_conversation_response(
+            mock_conversation, user_id
+        )
 
         # Verify response structure
         assert result.id == sample_conversation_id
@@ -1269,7 +1357,11 @@ class TestBuildConversationResponse:
 
     @pytest.mark.asyncio
     async def test_build_conversation_response_unread_count_with_last_read(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test unread count calculation when participant has last_read_message_id"""
         from app.models.profile import Profile
@@ -1285,7 +1377,9 @@ class TestBuildConversationResponse:
         mock_conversation.description = None
         mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
         mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.last_message_at = datetime(
+            2025, 1, 15, 12, 0, tzinfo=timezone.utc
+        )
 
         # Mock participant with last_read_message_id
         mock_participant = MagicMock(spec=ConversationParticipant)
@@ -1319,7 +1413,9 @@ class TestBuildConversationResponse:
         ]
 
         # Execute
-        result = await conversation_service._build_conversation_response(mock_conversation, user_id)
+        result = await conversation_service._build_conversation_response(
+            mock_conversation, user_id
+        )
 
         # Verify: Unread count uses "messages after last_read" logic
         assert result.unread_count == 3
@@ -1327,7 +1423,11 @@ class TestBuildConversationResponse:
 
     @pytest.mark.asyncio
     async def test_build_conversation_response_unread_count_no_last_read(
-        self, conversation_service, sample_user_ids, sample_conversation_id, mock_db_session
+        self,
+        conversation_service,
+        sample_user_ids,
+        sample_conversation_id,
+        mock_db_session,
     ):
         """Test unread count when participant has NO last_read_message_id (never read)"""
         from app.models.profile import Profile
@@ -1342,7 +1442,9 @@ class TestBuildConversationResponse:
         mock_conversation.description = None
         mock_conversation.created_at = datetime(2025, 1, 15, 10, 0, tzinfo=timezone.utc)
         mock_conversation.updated_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
-        mock_conversation.last_message_at = datetime(2025, 1, 15, 12, 0, tzinfo=timezone.utc)
+        mock_conversation.last_message_at = datetime(
+            2025, 1, 15, 12, 0, tzinfo=timezone.utc
+        )
 
         # Mock participant with NO last_read_message_id
         mock_participant = MagicMock(spec=ConversationParticipant)
@@ -1376,7 +1478,9 @@ class TestBuildConversationResponse:
         ]
 
         # Execute
-        result = await conversation_service._build_conversation_response(mock_conversation, user_id)
+        result = await conversation_service._build_conversation_response(
+            mock_conversation, user_id
+        )
 
         # Verify: Unread count uses "count all messages" logic
         assert result.unread_count == 10

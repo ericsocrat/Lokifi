@@ -42,7 +42,9 @@ class ConnectionManager:
                 logger.info("✅ Redis WebSocket integration ready")
                 # Advanced pub/sub features will be implemented in Phase K Track 3
             else:
-                logger.warning("⚠️ Redis not available - WebSocket running in standalone mode")
+                logger.warning(
+                    "⚠️ Redis not available - WebSocket running in standalone mode"
+                )
         except Exception as e:
             logger.error(f"❌ Redis initialization failed: {e}")
             # Continue without Redis - standalone mode
@@ -144,11 +146,15 @@ class ConnectionManager:
     ):
         """Broadcast new message to conversation participants."""
         try:
-            notification = NewMessageNotification(type="new_message", message=message_response)
+            notification = NewMessageNotification(
+                type="new_message", message=message_response
+            )
             message_json = notification.model_dump_json()
 
             await self.send_to_conversation_participants(
-                message_json, participant_ids, exclude_user_id=message_response.sender_id
+                message_json,
+                participant_ids,
+                exclude_user_id=message_response.sender_id,
             )
 
             # Also publish to Redis for other instances
@@ -178,7 +184,10 @@ class ConnectionManager:
         """Broadcast typing indicator to conversation participants."""
         try:
             typing_msg = TypingIndicatorMessage(
-                type="typing", conversation_id=conversation_id, user_id=user_id, is_typing=is_typing
+                type="typing",
+                conversation_id=conversation_id,
+                user_id=user_id,
+                is_typing=is_typing,
             )
             message_json = typing_msg.model_dump_json()
 
@@ -285,11 +294,15 @@ class ConnectionManager:
                 # Reconstruct MessageResponse from dict
                 message_response = MessageResponse(**message_data)
 
-                notification = NewMessageNotification(type="new_message", message=message_response)
+                notification = NewMessageNotification(
+                    type="new_message", message=message_response
+                )
                 message_json = notification.model_dump_json()
 
                 await self.send_to_conversation_participants(
-                    message_json, participant_ids, exclude_user_id=message_response.sender_id
+                    message_json,
+                    participant_ids,
+                    exclude_user_id=message_response.sender_id,
                 )
 
             elif channel == "dm_typing" and data["type"] == "typing":
@@ -304,7 +317,9 @@ class ConnectionManager:
                 message_json = typing_msg.model_dump_json()
 
                 await self.send_to_conversation_participants(
-                    message_json, participant_ids, exclude_user_id=uuid.UUID(data["user_id"])
+                    message_json,
+                    participant_ids,
+                    exclude_user_id=uuid.UUID(data["user_id"]),
                 )
 
             elif channel == "dm_read_receipts" and data["type"] == "message_read":
@@ -315,12 +330,16 @@ class ConnectionManager:
                     conversation_id=uuid.UUID(data["conversation_id"]),
                     user_id=uuid.UUID(data["user_id"]),
                     message_id=uuid.UUID(data["message_id"]),
-                    read_at=datetime.fromisoformat(data["read_at"].replace("Z", "+00:00")),
+                    read_at=datetime.fromisoformat(
+                        data["read_at"].replace("Z", "+00:00")
+                    ),
                 )
                 message_json = read_msg.model_dump_json()
 
                 await self.send_to_conversation_participants(
-                    message_json, participant_ids, exclude_user_id=uuid.UUID(data["user_id"])
+                    message_json,
+                    participant_ids,
+                    exclude_user_id=uuid.UUID(data["user_id"]),
                 )
 
         except Exception as e:

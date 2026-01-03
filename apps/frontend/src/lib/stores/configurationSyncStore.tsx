@@ -7,11 +7,16 @@ import { FLAGS } from './featureFlags';
 // H10: Configuration Sync - Centralized configuration management and synchronization
 // Version control integration, cross-environment sync, configuration validation
 
+// ConfigValue: Type alias for dynamic configuration values
+// Using unknown provides type safety while maintaining flexibility for dynamic config
+// All access to ConfigValue should use type guards or explicit type assertions
+export type ConfigValue = unknown;
+
 // Configuration Sync Types
 export interface ConfigurationItem {
   id: string;
   key: string;
-  value: any; // any required: Configuration values can be string | number | boolean | object | array
+  value: ConfigValue;
   type: ConfigurationType;
   category: string;
   description: string;
@@ -68,8 +73,8 @@ export type ConfigurationStatus =
 export interface ConfigurationSchema {
   type: string;
   required?: boolean;
-  default?: any; // any required: Schema default can be of any type matching the schema
-  enum?: any[]; // any required: Enum values can be strings, numbers, or booleans
+  default?: ConfigValue;
+  enum?: ConfigValue[];
   pattern?: string;
   minimum?: number;
   maximum?: number;
@@ -104,7 +109,7 @@ export interface TemplateVariable {
   name: string;
   description: string;
   type: ConfigurationType;
-  defaultValue?: any; // any required: Template variable defaults match ConfigurationType union
+  defaultValue?: ConfigValue;
   required: boolean;
   placeholder?: string;
 }
@@ -121,7 +126,7 @@ export interface ConfigurationEnvironment {
 
   // Configuration
   configurations: string[]; // configuration item ids
-  overrides: Record<string, any>; // any required: Environment overrides can be any config type
+  overrides: Record<string, ConfigValue>;
 
   // Access
   isReadOnly: boolean;
@@ -140,7 +145,7 @@ export interface ConfigurationVersion {
   id: string;
   configurationId: string;
   version: number;
-  value: any; // any required: Version value matches parent ConfigurationItem value type
+  value: ConfigValue;
   changelog: string;
 
   // Metadata
@@ -199,8 +204,8 @@ export interface ConfigurationChange {
   id: string;
   type: 'create' | 'update' | 'delete';
   configurationId: string;
-  oldValue?: any; // any required: Old value matches ConfigurationItem value type
-  newValue?: any; // any required: New value matches ConfigurationItem value type
+  oldValue?: ConfigValue;
+  newValue?: ConfigValue;
   reason: string;
 }
 
@@ -292,8 +297,8 @@ export interface SyncedItem {
   configurationId: string;
   key: string;
   action: 'created' | 'updated' | 'deleted' | 'skipped';
-  oldValue?: any; // any required: Synced old value matches ConfigurationItem value type
-  newValue?: any; // any required: Synced new value matches ConfigurationItem value type
+  oldValue?: ConfigValue;
+  newValue?: ConfigValue;
   targetEnvironment: string;
 }
 
@@ -347,8 +352,8 @@ export interface ConfigurationDrift {
   configurationId: string;
 
   // Drift details
-  expectedValue: any; // any required: Expected value matches ConfigurationItem value type
-  actualValue: any; // any required: Actual value matches ConfigurationItem value type
+  expectedValue: ConfigValue;
+  actualValue: ConfigValue;
   driftType: DriftType;
 
   // Detection
@@ -375,6 +380,16 @@ export type DriftType =
 
 export type DriftStatus = 'detected' | 'acknowledged' | 'resolved' | 'ignored' | 'false_positive';
 
+// Import format interface for configuration file imports
+export interface ImportedConfigData {
+  key: string;
+  value: unknown;
+  type?: ConfigurationType;
+  category?: string;
+  description?: string;
+  [key: string]: unknown; // Allow additional fields from external formats
+}
+
 export interface ConfigurationAudit {
   id: string;
   action: AuditAction;
@@ -382,9 +397,9 @@ export interface ConfigurationAudit {
   resourceId: string;
 
   // Details
-  oldValue?: any; // any required: Audit old value matches any ConfigurationItem value type
-  newValue?: any; // any required: Audit new value matches any ConfigurationItem value type
-  changes: Record<string, { from: any; to: any }>; // any required: Change tracking for any value type
+  oldValue?: ConfigValue;
+  newValue?: ConfigValue;
+  changes: Record<string, { from: ConfigValue; to: ConfigValue }>;
 
   // Context
   userId: string;
@@ -398,7 +413,7 @@ export interface ConfigurationAudit {
   errorMessage?: string;
 
   // Additional data
-  metadata: Record<string, any>;
+  metadata: Record<string, ConfigValue>;
 }
 
 export type AuditAction =
@@ -527,8 +542,8 @@ interface ConfigurationSyncActions {
   setSelectedConfiguration: (configId: string | null) => void;
 
   // Configuration Values
-  getConfigurationValue: (key: string, environmentId?: string) => any; // any required: Return type matches ConfigurationItem value
-  setConfigurationValue: (key: string, value: any, environmentId?: string) => void; // any required: Input matches ConfigurationItem value
+  getConfigurationValue: (key: string, environmentId?: string) => ConfigValue | undefined;
+  setConfigurationValue: (key: string, value: ConfigValue, environmentId?: string) => void;
 
   // Validation
   validateConfiguration: (configId: string) => Promise<string[]>;
@@ -546,7 +561,7 @@ interface ConfigurationSyncActions {
   applyTemplate: (
     templateId: string,
     environmentId: string,
-    variables: Record<string, any>
+    variables: Record<string, ConfigValue>
   ) => Promise<string[]>;
 
   // Environment Management
@@ -872,7 +887,11 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
           errors.push('Value must be a string');
         }
 
-        if (config.schema.minimum && config.value < config.schema.minimum) {
+        if (
+          config.schema.minimum !== undefined &&
+          typeof config.value === 'number' &&
+          config.value < config.schema.minimum
+        ) {
           errors.push(`Value must be at least ${config.schema.minimum}`);
         }
 
@@ -955,11 +974,14 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
 
         for (const item of template.items) {
           // Apply variable substitutions
-          let value = item.value;
+          let value: ConfigValue = item.value;
           if (typeof value === 'string') {
+            let stringValue = value;
             for (const [key, val] of Object.entries(variables)) {
-              value = value.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), val);
+              const replacement = typeof val === 'string' ? val : String(val);
+              stringValue = stringValue.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), replacement);
             }
+            value = stringValue;
           }
 
           const configId = get().createConfiguration({
@@ -1586,7 +1608,7 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
         }
 
         const importedIds: string[] = [];
-        const configArray = importData as Array<any>;
+        const configArray = importData as ImportedConfigData[];
 
         for (const config of configArray) {
           const existingConfig = get().configurations.find(
@@ -1602,7 +1624,19 @@ export const useConfigurationSyncStore = create<ConfigurationSyncStore>()(
             }
           } else {
             const configId = get().createConfiguration({
-              ...config,
+              key: config.key,
+              value: config.value,
+              type: config.type ?? 'string',
+              category: config.category ?? 'imported',
+              description: config.description ?? '',
+              schema: undefined,
+              isValid: true,
+              validationErrors: [],
+              isReadOnly: false,
+              isSecret: false,
+              owner: 'import',
+              status: 'active',
+              tags: [],
               environmentId,
             });
             importedIds.push(configId);

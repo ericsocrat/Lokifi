@@ -86,7 +86,9 @@ class TestProviderCascade:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av:
+        with patch.object(
+            service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+        ) as mock_av:
             mock_av.return_value = [{"provider": "alpha_vantage"}]
             result = await service.get_indices(limit=5)
             assert result[0]["provider"] == "alpha_vantage"
@@ -101,7 +103,9 @@ class TestProviderCascade:
         service = IndicesService(redis_client=mock_redis)
 
         with (
-            patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av,
+            patch.object(
+                service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+            ) as mock_av,
             patch.object(
                 service, "_fetch_from_yahoo_finance", new_callable=AsyncMock
             ) as mock_yahoo,
@@ -121,7 +125,9 @@ class TestProviderCascade:
         service = IndicesService(redis_client=mock_redis)
 
         with (
-            patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av,
+            patch.object(
+                service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+            ) as mock_av,
             patch.object(
                 service, "_fetch_from_yahoo_finance", new_callable=AsyncMock
             ) as mock_yahoo,
@@ -154,7 +160,9 @@ class TestAlphaVantageProvider:
         }
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.return_value = create_mock_response(200, av_response)()
                 result = await service._fetch_av_data(limit=1)
 
@@ -182,8 +190,12 @@ class TestAlphaVantageProvider:
         ]
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
-                mock_get.side_effect = [create_mock_response(200, resp)() for resp in av_responses]
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
+                mock_get.side_effect = [
+                    create_mock_response(200, resp)() for resp in av_responses
+                ]
                 result = await service._fetch_av_data(limit=3)
 
                 assert len(result) == 3
@@ -203,7 +215,9 @@ class TestAlphaVantageProvider:
         empty_response = {"Note": "API call frequency exceeded"}
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.return_value = create_mock_response(200, empty_response)()
                 result = await service._fetch_av_data(limit=1)
 
@@ -218,7 +232,9 @@ class TestAlphaVantageProvider:
         service = IndicesService(redis_client=mock_redis)
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.side_effect = httpx.HTTPStatusError(
                     "429 Too Many Requests",
                     request=MagicMock(),
@@ -237,7 +253,9 @@ class TestAlphaVantageProvider:
         service = IndicesService(redis_client=mock_redis)
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.side_effect = httpx.ConnectError("Network unreachable")
                 result = await service._fetch_av_data(limit=1)
 
@@ -273,7 +291,9 @@ class TestYahooFinanceFallback:
         }
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.return_value = create_mock_response(200, yahoo_response)()
                 result = await service._fetch_yahoo_data(["SPX", "DJI"])
 
@@ -304,7 +324,9 @@ class TestYahooFinanceFallback:
         }
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.return_value = create_mock_response(200, yahoo_response)()
                 result = await service._fetch_yahoo_data(["IXIC"])
 
@@ -321,7 +343,9 @@ class TestYahooFinanceFallback:
         service = IndicesService(redis_client=mock_redis)
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.side_effect = httpx.HTTPStatusError(
                     "500 Internal Server Error",
                     request=MagicMock(),
@@ -342,7 +366,9 @@ class TestYahooFinanceFallback:
         malformed_response = {"error": "Invalid request"}
 
         async with service:
-            with patch.object(service.client, "get", new_callable=AsyncMock) as mock_get:
+            with patch.object(
+                service.client, "get", new_callable=AsyncMock
+            ) as mock_get:
                 mock_get.return_value = create_mock_response(200, malformed_response)()
                 result = await service._fetch_yahoo_data(["SPX"])
 
@@ -358,7 +384,11 @@ class TestIndividualIndexRetrieval:
         mock_redis = MagicMock()
         mock_redis.client = AsyncMock()
 
-        cached_index = {"symbol": "SPX", "current_price": 5800.0, "provider": "alpha_vantage"}
+        cached_index = {
+            "symbol": "SPX",
+            "current_price": 5800.0,
+            "provider": "alpha_vantage",
+        }
         mock_redis.client.get = AsyncMock(return_value=json.dumps(cached_index))
 
         service = IndicesService(redis_client=mock_redis)
@@ -379,7 +409,9 @@ class TestIndividualIndexRetrieval:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "get_indices", new_callable=AsyncMock) as mock_get_all:
+        with patch.object(
+            service, "get_indices", new_callable=AsyncMock
+        ) as mock_get_all:
             mock_get_all.return_value = [
                 {"symbol": "SPX", "current_price": 5800.0},
                 {"symbol": "DJI", "current_price": 42500.0},
@@ -400,7 +432,9 @@ class TestIndividualIndexRetrieval:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "get_indices", new_callable=AsyncMock) as mock_get_all:
+        with patch.object(
+            service, "get_indices", new_callable=AsyncMock
+        ) as mock_get_all:
             mock_get_all.return_value = [{"symbol": "SPX"}]
             result = await service.get_index_by_symbol("UNKNOWN")
 
@@ -416,7 +450,9 @@ class TestIndividualIndexRetrieval:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "get_indices", new_callable=AsyncMock) as mock_get_all:
+        with patch.object(
+            service, "get_indices", new_callable=AsyncMock
+        ) as mock_get_all:
             mock_get_all.return_value = [{"symbol": "DJI", "current_price": 42500.0}]
             result = await service.get_index_by_symbol("DJI")
 
@@ -438,7 +474,9 @@ class TestEdgeCasesAndErrors:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av:
+        with patch.object(
+            service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+        ) as mock_av:
             mock_av.return_value = [{"symbol": "SPX"}]
             result = await service.get_indices(limit=0)
 
@@ -466,12 +504,16 @@ class TestEdgeCasesAndErrors:
         """Test cache read errors don't block API calls"""
         mock_redis = MagicMock()
         mock_redis.client = AsyncMock()
-        mock_redis.client.get = AsyncMock(side_effect=Exception("Redis connection error"))
+        mock_redis.client.get = AsyncMock(
+            side_effect=Exception("Redis connection error")
+        )
         mock_redis.client.setex = AsyncMock()
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av:
+        with patch.object(
+            service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+        ) as mock_av:
             mock_av.return_value = [{"symbol": "SPX"}]
             result = await service.get_indices(limit=1)
 
@@ -487,7 +529,9 @@ class TestEdgeCasesAndErrors:
 
         service = IndicesService(redis_client=mock_redis)
 
-        with patch.object(service, "_fetch_from_alpha_vantage", new_callable=AsyncMock) as mock_av:
+        with patch.object(
+            service, "_fetch_from_alpha_vantage", new_callable=AsyncMock
+        ) as mock_av:
             mock_av.return_value = [{"symbol": "SPX"}]
             result = await service.get_indices(limit=1)
 
@@ -529,7 +573,9 @@ class TestEdgeCasesAndErrors:
             with patch.object(
                 service, "_fetch_from_yahoo_finance", new_callable=AsyncMock
             ) as mock_yahoo:
-                mock_yahoo.return_value = [{"symbol": "SPX", "provider": "yahoo_finance"}]
+                mock_yahoo.return_value = [
+                    {"symbol": "SPX", "provider": "yahoo_finance"}
+                ]
                 result = await service.get_indices(limit=1)
 
                 assert len(result) == 1

@@ -130,7 +130,10 @@ class TestProfileServiceIntegration:
 
     @pytest.mark.asyncio
     async def test_update_profile_with_database_constraints(
-        self, profile_service_integration, test_users_with_profiles, integration_db_session
+        self,
+        profile_service_integration,
+        test_users_with_profiles,
+        integration_db_session,
     ):
         """
         Test profile update with database constraints.

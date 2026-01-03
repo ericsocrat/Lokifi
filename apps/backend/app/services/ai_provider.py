@@ -149,14 +149,20 @@ class MockProvider(AIProvider):
                 id=chunk_id,
                 content=content,
                 is_complete=(i == len(words) - 1),
-                token_usage=TokenUsage(
-                    prompt_tokens=sum(self.estimate_tokens(msg.content) for msg in messages),
-                    completion_tokens=len(words),
-                    total_tokens=sum(self.estimate_tokens(msg.content) for msg in messages)
-                    + len(words),
-                )
-                if i == len(words) - 1
-                else None,
+                token_usage=(
+                    TokenUsage(
+                        prompt_tokens=sum(
+                            self.estimate_tokens(msg.content) for msg in messages
+                        ),
+                        completion_tokens=len(words),
+                        total_tokens=sum(
+                            self.estimate_tokens(msg.content) for msg in messages
+                        )
+                        + len(words),
+                    )
+                    if i == len(words) - 1
+                    else None
+                ),
                 model="mock-model",
                 metadata={"provider": "mock", "demo": True},
             )

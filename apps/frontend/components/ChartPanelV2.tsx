@@ -9,7 +9,7 @@ import { drawStore } from '@/stores/drawStore';
 import { indicatorStore, type IndicatorSnapshot } from '@/stores/indicatorStore';
 import { symbolStore } from '@/stores/symbolStore';
 import { timeframeStore, type TF } from '@/stores/timeframeStore';
-import type { IChartApi, Time } from 'lightweight-charts';
+import type { IChartApi, ISeriesApi, SeriesType, Time } from 'lightweight-charts';
 import {
   AreaSeries,
   CandlestickSeries,
@@ -22,6 +22,36 @@ import dynamic from 'next/dynamic';
 import { pluginManager } from 'plugins/registry';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import useSWR from 'swr';
+
+// Type declarations for window global plugin system extensions
+interface PluginSettingsStore {
+  get?: () => {
+    channelDefaultWidthPct?: number;
+    channelWidthMode?: string;
+    fibPreset?: string;
+    fibCustomLevels?: number[];
+  };
+}
+
+interface PluginSymbolSettings {
+  set?: (sym: string, tf: string, settings: Record<string, unknown>) => void;
+  clear?: (sym: string, tf: string) => void;
+}
+
+declare global {
+  interface Window {
+    __lokifiChart?: IChartApi;
+    __lokifiCandle?: ISeriesApi<SeriesType>;
+    __lokifiApplySymbolSettings?: () => void;
+    __lokifiClearSymbolSettings?: () => void;
+  }
+}
+
+// Type extension for globalThis plugin stores
+interface GlobalThisWithPlugins {
+  pluginSettingsStore?: PluginSettingsStore;
+  pluginSymbolSettings?: PluginSymbolSettings;
+}
 
 // Constants
 const CHART_HEIGHT = 520;
@@ -422,9 +452,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     }
 
     // Global chart references for external access (debugging and plugin API)
-    // any required: Window global extensions for plugin system
-    (window as any).__lokifiChart = chart;
-    (window as any).__lokifiCandle = candleSeries;
+    window.__lokifiChart = chart;
+    window.__lokifiCandle = candleSeries;
 
     // Cleanup
     return () => {
@@ -439,11 +468,11 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
 
   // Plugin symbol settings binding
   useEffect(() => {
-    const pss: any = (globalThis as any).pluginSettingsStore; // any required: Dynamic plugin system
-    const pssym: any = (globalThis as any).pluginSymbolSettings; // any required: Dynamic plugin system
+    const globalWithPlugins = globalThis as GlobalThisWithPlugins;
+    const pss = globalWithPlugins.pluginSettingsStore;
+    const pssym = globalWithPlugins.pluginSymbolSettings;
 
-    // any required: Window global extension for plugin settings API
-    (window as any).__lokifiApplySymbolSettings = () => {
+    window.__lokifiApplySymbolSettings = () => {
       try {
         const s = pss?.get?.();
         if (!s || !pssym?.set) return;
@@ -458,8 +487,7 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
       }
     };
 
-    // any required: Window global extension for plugin settings API
-    (window as any).__lokifiClearSymbolSettings = () => {
+    window.__lokifiClearSymbolSettings = () => {
       try {
         pssym?.clear?.(sym, tf);
       } catch (e) {
@@ -468,9 +496,8 @@ function ChartPanelCore({ symbol: propSymbol, timeframe: propTimeframe }: ChartP
     };
 
     return () => {
-      // any required: Cleanup window global extensions
-      delete (window as any).__lokifiApplySymbolSettings;
-      delete (window as any).__lokifiClearSymbolSettings;
+      delete window.__lokifiApplySymbolSettings;
+      delete window.__lokifiClearSymbolSettings;
     };
   }, [sym, tf]);
 

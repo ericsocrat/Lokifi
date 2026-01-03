@@ -32,7 +32,9 @@ class RedisCache:
 
     def __init__(self, redis_url: str | None = None):
         settings = Settings()
-        self.redis_url = redis_url or getattr(settings, "REDIS_URL", "redis://localhost:6379/0")
+        self.redis_url = redis_url or getattr(
+            settings, "REDIS_URL", "redis://localhost:6379/0"
+        )
         self._client: redis.Redis | None = None
         self.default_ttl = 300  # 5 minutes default
 
@@ -48,7 +50,9 @@ class RedisCache:
         # Create a string representation of arguments
         key_data = {
             "args": args,
-            "kwargs": {k: v for k, v in kwargs.items() if k not in ["request", "response"]},
+            "kwargs": {
+                k: v for k, v in kwargs.items() if k not in ["request", "response"]
+            },
         }
 
         # Hash the key data for consistent, compact keys
@@ -177,7 +181,12 @@ def redis_cache(
                 return await func(*args, **kwargs)
 
             # Handle cache invalidation on mutations
-            if invalidate_on_mutation and request.method in ["POST", "PUT", "DELETE", "PATCH"]:
+            if invalidate_on_mutation and request.method in [
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+            ]:
                 # Invalidate related caches
                 await cache.clear_pattern(f"cache:{prefix}:*")
                 logger.info(
@@ -194,7 +203,9 @@ def redis_cache(
 
             # Add query parameters
             if request.query_params:
-                query_str = "&".join([f"{k}={v}" for k, v in sorted(request.query_params.items())])
+                query_str = "&".join(
+                    [f"{k}={v}" for k, v in sorted(request.query_params.items())]
+                )
                 key_components.append(query_str)
 
             # Add user ID if required
@@ -242,7 +253,10 @@ def redis_cache(
 def cache_user_data(ttl: int = 600):
     """Cache user-specific data for 10 minutes"""
     return redis_cache(
-        ttl=ttl, prefix="user_data", vary_on_user=True, vary_on_headers=["Authorization"]
+        ttl=ttl,
+        prefix="user_data",
+        vary_on_user=True,
+        vary_on_headers=["Authorization"],
     )
 
 
@@ -253,7 +267,9 @@ def cache_public_data(ttl: int = 1800):
 
 def cache_portfolio_data(ttl: int = 300):
     """Cache portfolio data for 5 minutes with user variation"""
-    return redis_cache(ttl=ttl, prefix="portfolio", vary_on_user=True, invalidate_on_mutation=True)
+    return redis_cache(
+        ttl=ttl, prefix="portfolio", vary_on_user=True, invalidate_on_mutation=True
+    )
 
 
 def cache_notifications(ttl: int = 120):

@@ -226,13 +226,18 @@ class TestGetStorageMetrics:
         assert metrics.total_threads == 10450
         assert metrics.total_messages == 143800
         assert metrics.oldest_message_date == datetime(2024, 1, 1, tzinfo=timezone.utc)
-        assert metrics.newest_message_date == datetime(2024, 11, 18, tzinfo=timezone.utc)
+        assert metrics.newest_message_date == datetime(
+            2024, 11, 18, tzinfo=timezone.utc
+        )
         assert metrics.archived_messages == 26420
 
         # Size calculations: threads * 1 / 1024, messages * 5 / 1024
         assert metrics.ai_threads_size_mb == (10450 * 1) / 1024
         assert metrics.ai_messages_size_mb == (143800 * 5) / 1024
-        assert metrics.total_size_mb == metrics.ai_threads_size_mb + metrics.ai_messages_size_mb
+        assert (
+            metrics.total_size_mb
+            == metrics.ai_threads_size_mb + metrics.ai_messages_size_mb
+        )
 
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
@@ -277,7 +282,9 @@ class TestGetStorageMetrics:
                 500,  # total_messages
                 datetime(2024, 1, 1, tzinfo=timezone.utc),  # oldest
                 datetime(2024, 11, 18, tzinfo=timezone.utc),  # newest
-                Exception("no such table: ai_messages_archive"),  # archived_messages fails
+                Exception(
+                    "no such table: ai_messages_archive"
+                ),  # archived_messages fails
             ]
         )
 
@@ -297,7 +304,9 @@ class TestGetStorageMetrics:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_get_storage_metrics_database_error(self, mock_logger, mock_db_manager, service):
+    async def test_get_storage_metrics_database_error(
+        self, mock_logger, mock_db_manager, service
+    ):
         """Test storage metrics with database error."""
 
         # Mock session to raise exception
@@ -319,7 +328,9 @@ class TestGetStorageMetrics:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_get_storage_metrics_logging(self, mock_logger, mock_db_manager, service):
+    async def test_get_storage_metrics_logging(
+        self, mock_logger, mock_db_manager, service
+    ):
         """Test storage metrics logs information correctly."""
         # Mock session
         mock_session = MagicMock()
@@ -351,7 +362,9 @@ class TestCreateArchiveTable:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_create_archive_table_success(self, mock_logger, mock_db_manager, service):
+    async def test_create_archive_table_success(
+        self, mock_logger, mock_db_manager, service
+    ):
         """Test successful archive table creation."""
         # Mock session
         mock_session = MagicMock()
@@ -372,7 +385,9 @@ class TestCreateArchiveTable:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_create_archive_table_already_exists(self, mock_logger, mock_db_manager, service):
+    async def test_create_archive_table_already_exists(
+        self, mock_logger, mock_db_manager, service
+    ):
         """Test archive table creation when table already exists."""
         # Mock session
         mock_session = MagicMock()
@@ -393,7 +408,9 @@ class TestCreateArchiveTable:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_create_archive_table_error(self, mock_logger, mock_db_manager, service):
+    async def test_create_archive_table_error(
+        self, mock_logger, mock_db_manager, service
+    ):
         """Test archive table creation with database error."""
 
         # Mock session to raise exception
@@ -424,7 +441,9 @@ class TestArchiveOldConversations:
     async def test_archive_old_conversations_success(self, mock_db_manager, service):
         """Test successful archival of old conversations."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=5200)
@@ -455,10 +474,14 @@ class TestArchiveOldConversations:
 
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
-    async def test_archive_old_conversations_no_old_messages(self, mock_db_manager, service):
+    async def test_archive_old_conversations_no_old_messages(
+        self, mock_db_manager, service
+    ):
         """Test archival when no old messages found."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session with 0 count
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=0)
@@ -480,7 +503,9 @@ class TestArchiveOldConversations:
     async def test_archive_old_conversations_null_count(self, mock_db_manager, service):
         """Test archival with null count from database."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session with None count
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=None)
@@ -498,10 +523,14 @@ class TestArchiveOldConversations:
 
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
-    async def test_archive_old_conversations_custom_batch_size(self, mock_db_manager, service):
+    async def test_archive_old_conversations_custom_batch_size(
+        self, mock_db_manager, service
+    ):
         """Test archival with custom batch size."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=500)
@@ -525,7 +554,9 @@ class TestArchiveOldConversations:
     ):
         """Test archival with database error."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session to raise exception
             async def mock_get_session(read_only=True):
                 raise Exception("Database error")
@@ -544,10 +575,14 @@ class TestArchiveOldConversations:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_archive_old_conversations_logging(self, mock_logger, mock_db_manager, service):
+    async def test_archive_old_conversations_logging(
+        self, mock_logger, mock_db_manager, service
+    ):
         """Test archival logs correct information."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=1000)
@@ -567,10 +602,14 @@ class TestArchiveOldConversations:
 
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
-    async def test_archive_old_conversations_cutoff_date(self, mock_db_manager, service):
+    async def test_archive_old_conversations_cutoff_date(
+        self, mock_db_manager, service
+    ):
         """Test archival uses correct cutoff date."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=100)
@@ -621,7 +660,9 @@ class TestVacuumDatabase:
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
     @patch("app.services.data_archival_service.logger")
-    async def test_vacuum_database_postgresql(self, mock_logger, mock_db_manager, service_postgres):
+    async def test_vacuum_database_postgresql(
+        self, mock_logger, mock_db_manager, service_postgres
+    ):
         """Test vacuum for PostgreSQL database."""
         # Mock session
         mock_session = MagicMock()
@@ -677,7 +718,9 @@ class TestRunFullMaintenance:
         with patch.object(
             service, "archive_old_conversations", return_value=mock_archive_stats
         ) as mock_archive:
-            with patch.object(service, "vacuum_database", new_callable=AsyncMock) as mock_vacuum:
+            with patch.object(
+                service, "vacuum_database", new_callable=AsyncMock
+            ) as mock_vacuum:
                 mock_metrics = StorageMetrics(total_size_mb=100.5)
                 with patch.object(
                     service, "get_storage_metrics", return_value=mock_metrics
@@ -698,10 +741,14 @@ class TestRunFullMaintenance:
     async def test_run_full_maintenance_logging(self, mock_logger, service):
         """Test full maintenance logs correctly."""
         # Mock all service methods
-        with patch.object(service, "archive_old_conversations", return_value=ArchivalStats()):
+        with patch.object(
+            service, "archive_old_conversations", return_value=ArchivalStats()
+        ):
             with patch.object(service, "vacuum_database", new_callable=AsyncMock):
                 with patch.object(
-                    service, "get_storage_metrics", return_value=StorageMetrics(total_size_mb=150.5)
+                    service,
+                    "get_storage_metrics",
+                    return_value=StorageMetrics(total_size_mb=150.5),
                 ):
                     # Execute
                     await service.run_full_maintenance()
@@ -718,7 +765,9 @@ class TestRunFullMaintenance:
         """Test full maintenance with archive error."""
         # Mock archive to raise exception
         with patch.object(
-            service, "archive_old_conversations", side_effect=Exception("Archive failed")
+            service,
+            "archive_old_conversations",
+            side_effect=Exception("Archive failed"),
         ):
             # Execute and verify exception
             with pytest.raises(Exception) as exc_info:
@@ -732,8 +781,12 @@ class TestRunFullMaintenance:
     async def test_run_full_maintenance_vacuum_error(self, mock_logger, service):
         """Test full maintenance with vacuum error."""
         # Mock archive success, vacuum error
-        with patch.object(service, "archive_old_conversations", return_value=ArchivalStats()):
-            with patch.object(service, "vacuum_database", side_effect=Exception("Vacuum failed")):
+        with patch.object(
+            service, "archive_old_conversations", return_value=ArchivalStats()
+        ):
+            with patch.object(
+                service, "vacuum_database", side_effect=Exception("Vacuum failed")
+            ):
                 # Execute and verify exception
                 with pytest.raises(Exception) as exc_info:
                     await service.run_full_maintenance()
@@ -746,10 +799,14 @@ class TestRunFullMaintenance:
     async def test_run_full_maintenance_metrics_error(self, mock_logger, service):
         """Test full maintenance continues despite metrics error."""
         # Mock archive and vacuum success, metrics error
-        with patch.object(service, "archive_old_conversations", return_value=ArchivalStats()):
+        with patch.object(
+            service, "archive_old_conversations", return_value=ArchivalStats()
+        ):
             with patch.object(service, "vacuum_database", new_callable=AsyncMock):
                 with patch.object(
-                    service, "get_storage_metrics", side_effect=Exception("Metrics failed")
+                    service,
+                    "get_storage_metrics",
+                    side_effect=Exception("Metrics failed"),
                 ):
                     # Execute and verify exception
                     with pytest.raises(Exception) as exc_info:
@@ -791,10 +848,14 @@ class TestEdgeCases:
 
     @pytest.mark.asyncio
     @patch("app.services.data_archival_service.db_manager")
-    async def test_archive_conversations_very_large_batch(self, mock_db_manager, service):
+    async def test_archive_conversations_very_large_batch(
+        self, mock_db_manager, service
+    ):
         """Test archival with very large batch size."""
         # Mock create_archive_table_if_not_exists
-        with patch.object(service, "create_archive_table_if_not_exists", new_callable=AsyncMock):
+        with patch.object(
+            service, "create_archive_table_if_not_exists", new_callable=AsyncMock
+        ):
             # Mock session
             mock_session = MagicMock()
             mock_session.scalar = AsyncMock(return_value=1000000)  # 1 million messages

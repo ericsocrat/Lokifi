@@ -36,7 +36,9 @@ class TestStockServiceInit:
         assert service.api_key == "D8RDSS583XDQ1DIA"
         assert service.base_url == "https://www.alphavantage.co/query"
         assert service.cache_ttl == 30
-        assert len(service.stock_symbols) == 50  # Implementation verification: 50 major stocks
+        assert (
+            len(service.stock_symbols) == 50
+        )  # Implementation verification: 50 major stocks
         assert len(service.stock_names) == 50  # 50 stock name mappings
 
     def test_init_with_redis(self):
@@ -84,7 +86,9 @@ class TestCacheOperations:
                 "total_volume": 50000000,
             }
         ]
-        mock_redis.get.return_value = json.dumps(cached_stocks)  # Pattern: JSON serialization
+        mock_redis.get.return_value = json.dumps(
+            cached_stocks
+        )  # Pattern: JSON serialization
         service = StockService(redis_client=mock_redis)
 
         # Act

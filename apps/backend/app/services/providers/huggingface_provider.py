@@ -78,7 +78,9 @@ class HuggingFaceProvider(AIProvider):
                     raise ProviderRateLimitError("Hugging Face rate limit exceeded")
                 elif response.status_code == 503:
                     # Model loading - try non-streaming response
-                    async for chunk in self._fallback_non_streaming(model, payload, messages):
+                    async for chunk in self._fallback_non_streaming(
+                        model, payload, messages
+                    ):
                         yield chunk
                     return
                 elif response.status_code != 200:
@@ -100,10 +102,17 @@ class HuggingFaceProvider(AIProvider):
                             if chunk_str:
                                 response_data = json.loads(chunk_str)
 
-                                if isinstance(response_data, list) and len(response_data) > 0:
-                                    generated_text = response_data[0].get("generated_text", "")
+                                if (
+                                    isinstance(response_data, list)
+                                    and len(response_data) > 0
+                                ):
+                                    generated_text = response_data[0].get(
+                                        "generated_text", ""
+                                    )
                                 elif isinstance(response_data, dict):
-                                    generated_text = response_data.get("generated_text", "")
+                                    generated_text = response_data.get(
+                                        "generated_text", ""
+                                    )
                                 else:
                                     generated_text = str(response_data)
 
@@ -153,9 +162,13 @@ class HuggingFaceProvider(AIProvider):
                 is_complete=(i == len(words) - 1),
                 token_usage=(
                     TokenUsage(
-                        prompt_tokens=sum(self.estimate_tokens(msg.content) for msg in messages),
+                        prompt_tokens=sum(
+                            self.estimate_tokens(msg.content) for msg in messages
+                        ),
                         completion_tokens=len(words),
-                        total_tokens=sum(self.estimate_tokens(msg.content) for msg in messages)
+                        total_tokens=sum(
+                            self.estimate_tokens(msg.content) for msg in messages
+                        )
                         + len(words),
                     )
                     if i == len(words) - 1
@@ -236,7 +249,10 @@ class HuggingFaceProvider(AIProvider):
                 "https://huggingface.co/api/models/microsoft/DialoGPT-medium",
                 headers={"Authorization": f"Bearer {self.api_key}"},
             )
-            return response.status_code in [200, 404]  # 404 is also fine, means auth works
+            return response.status_code in [
+                200,
+                404,
+            ]  # 404 is also fine, means auth works
         except (httpx.RequestError, httpx.HTTPStatusError):
             return False
 

@@ -39,7 +39,9 @@ async def test_server_components():
         from app.services.websocket_manager import connection_manager
 
         await connection_manager.initialize_redis()
-        print("✓ WebSocket manager Redis initialization completed (with graceful fallback)")
+        print(
+            "✓ WebSocket manager Redis initialization completed (with graceful fallback)"
+        )
     except Exception as e:
         print(f"❌ WebSocket manager initialization failed: {e}")
         return False
@@ -59,7 +61,9 @@ async def test_server_components():
         return False
 
     print("\n🎉 All server components loaded successfully!")
-    print("✨ Redis connection fix verified - server should start without Redis connection errors")
+    print(
+        "✨ Redis connection fix verified - server should start without Redis connection errors"
+    )
     return True
 
 

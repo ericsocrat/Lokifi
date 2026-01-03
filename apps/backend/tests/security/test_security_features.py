@@ -8,6 +8,8 @@ import os
 import sys
 from datetime import timezone
 
+import pytest
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -24,9 +26,7 @@ def test_bleach_integration():
         sanitizer = InputSanitizer()
 
         # Test dangerous HTML
-        test_html = (
-            '<script>alert("xss")</script><p>Safe content</p><img src="x" onerror="alert(1)">'
-        )
+        test_html = '<script>alert("xss")</script><p>Safe content</p><img src="x" onerror="alert(1)">'
         cleaned = sanitizer.sanitize_html(test_html)
         print(f"Original: {test_html}")
         print(f"Cleaned: {cleaned}")
@@ -36,11 +36,10 @@ def test_bleach_integration():
         assert "onerror" not in cleaned
         assert "<p>Safe content</p>" in cleaned
         print("✅ HTML sanitization working correctly!")
+        # Test passes if we reach here without exception
 
     except Exception as e:
-        print(f"❌ Bleach test failed: {e}")
-        return False
-    return True
+        pytest.fail(f"Bleach test failed: {e}")
 
 
 def test_security_alerts():
@@ -77,9 +76,7 @@ def test_security_alerts():
         print("✅ Alert history initialized")
 
     except Exception as e:
-        print(f"❌ Security alerts test failed: {e}")
-        return False
-    return True
+        pytest.fail(f"Security alerts test failed: {e}")
 
 
 def test_input_validation():
@@ -95,26 +92,19 @@ def test_input_validation():
             assert sanitized == safe_test
             print("✅ Safe string validation working!")
         except ValueError:
-            print("❌ Safe string incorrectly flagged as dangerous")
-            return False
+            pytest.fail("Safe string incorrectly flagged as dangerous")
 
         # Test dangerous SQL pattern detection
         sql_test = "'; DROP TABLE users; --"
-        try:
+        with pytest.raises(ValueError):
             InputSanitizer.sanitize_string(sql_test)
-            print("❌ SQL injection not detected")
-            return False
-        except ValueError:
-            print("✅ SQL injection detection working!")
+        print("✅ SQL injection detection working!")
 
         # Test XSS pattern detection
         xss_test = "<script>alert('xss')</script>"
-        try:
+        with pytest.raises(ValueError):
             InputSanitizer.sanitize_string(xss_test)
-            print("❌ XSS not detected")
-            return False
-        except ValueError:
-            print("✅ XSS detection working!")
+        print("✅ XSS detection working!")
 
         # Test HTML sanitization
         dangerous_html = "<script>alert('hack')</script><p>Safe content</p>"
@@ -130,9 +120,7 @@ def test_input_validation():
         print("✅ Filename sanitization working!")
 
     except Exception as e:
-        print(f"❌ Input validation test failed: {e}")
-        return False
-    return True
+        pytest.fail(f"Input validation test failed: {e}")
 
 
 def test_security_logger():
@@ -167,9 +155,7 @@ def test_security_logger():
         print("✅ Security logger available!")
 
     except Exception as e:
-        print(f"❌ Security logger test failed: {e}")
-        return False
-    return True
+        pytest.fail(f"Security logger test failed: {e}")
 
 
 def main():

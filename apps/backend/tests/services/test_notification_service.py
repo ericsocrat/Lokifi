@@ -202,7 +202,11 @@ class TestNotificationCreation:
     """Test suite for notification creation operations"""
 
     async def test_create_notification_success(
-        self, notification_service, sample_notification_data, mock_db_session, mock_notification
+        self,
+        notification_service,
+        sample_notification_data,
+        mock_db_session,
+        mock_notification,
     ):
         """Test successful notification creation"""
         # Mock database manager
@@ -217,13 +221,21 @@ class TestNotificationCreation:
             )
 
             # Mock preference check (allow delivery)
-            with patch.object(notification_service, "_get_user_preferences", return_value=Mock()):
+            with patch.object(
+                notification_service, "_get_user_preferences", return_value=Mock()
+            ):
                 with patch.object(
-                    notification_service, "_should_deliver_notification", return_value=True
+                    notification_service,
+                    "_should_deliver_notification",
+                    return_value=True,
                 ):
-                    with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                    with patch.object(
+                        notification_service, "_emit_event", new_callable=AsyncMock
+                    ):
                         with patch.object(
-                            notification_service, "_deliver_notification", new_callable=AsyncMock
+                            notification_service,
+                            "_deliver_notification",
+                            new_callable=AsyncMock,
                         ):
                             result = await notification_service.create_notification(
                                 sample_notification_data
@@ -239,12 +251,18 @@ class TestNotificationCreation:
     ):
         """Test notification creation blocked by user preferences"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
-            mock_db_manager.get_session.return_value.__aenter__.return_value = mock_db_session
+            mock_db_manager.get_session.return_value.__aenter__.return_value = (
+                mock_db_session
+            )
 
             # Mock preference check (block delivery)
-            with patch.object(notification_service, "_get_user_preferences", return_value=Mock()):
+            with patch.object(
+                notification_service, "_get_user_preferences", return_value=Mock()
+            ):
                 with patch.object(
-                    notification_service, "_should_deliver_notification", return_value=False
+                    notification_service,
+                    "_should_deliver_notification",
+                    return_value=False,
                 ):
                     result = await notification_service.create_notification(
                         sample_notification_data
@@ -254,7 +272,11 @@ class TestNotificationCreation:
             mock_db_session.add.assert_not_called()
 
     async def test_create_notification_skip_preferences(
-        self, notification_service, sample_notification_data, mock_db_session, mock_notification
+        self,
+        notification_service,
+        sample_notification_data,
+        mock_db_session,
+        mock_notification,
     ):
         """Test notification creation skipping preference check"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
@@ -268,9 +290,13 @@ class TestNotificationCreation:
             )
 
             # Skip preference check
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 with patch.object(
-                    notification_service, "_deliver_notification", new_callable=AsyncMock
+                    notification_service,
+                    "_deliver_notification",
+                    new_callable=AsyncMock,
                 ):
                     result = await notification_service.create_notification(
                         sample_notification_data, skip_preferences=True
@@ -281,7 +307,11 @@ class TestNotificationCreation:
             mock_db_session.add.assert_called_once()
 
     async def test_create_notification_with_batch_id(
-        self, notification_service, sample_notification_data, mock_db_session, mock_notification
+        self,
+        notification_service,
+        sample_notification_data,
+        mock_db_session,
+        mock_notification,
     ):
         """Test notification creation with batch ID"""
         batch_id = str(uuid.uuid4())
@@ -292,15 +322,25 @@ class TestNotificationCreation:
                 yield mock_db_session
 
             mock_db_manager.get_session.return_value = mock_get_session()
-            mock_db_session.refresh.side_effect = lambda obj: setattr(obj, "batch_id", batch_id)
+            mock_db_session.refresh.side_effect = lambda obj: setattr(
+                obj, "batch_id", batch_id
+            )
 
-            with patch.object(notification_service, "_get_user_preferences", return_value=Mock()):
+            with patch.object(
+                notification_service, "_get_user_preferences", return_value=Mock()
+            ):
                 with patch.object(
-                    notification_service, "_should_deliver_notification", return_value=True
+                    notification_service,
+                    "_should_deliver_notification",
+                    return_value=True,
                 ):
-                    with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+                    with patch.object(
+                        notification_service, "_emit_event", new_callable=AsyncMock
+                    ):
                         with patch.object(
-                            notification_service, "_deliver_notification", new_callable=AsyncMock
+                            notification_service,
+                            "_deliver_notification",
+                            new_callable=AsyncMock,
                         ):
                             result = await notification_service.create_notification(
                                 sample_notification_data, batch_id=batch_id
@@ -314,12 +354,18 @@ class TestNotificationCreation:
     ):
         """Test notification creation handles database errors gracefully"""
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
-            mock_db_manager.get_session.return_value.__aenter__.return_value = mock_db_session
+            mock_db_manager.get_session.return_value.__aenter__.return_value = (
+                mock_db_session
+            )
             mock_db_session.commit.side_effect = Exception("Database error")
 
-            with patch.object(notification_service, "_get_user_preferences", return_value=Mock()):
+            with patch.object(
+                notification_service, "_get_user_preferences", return_value=Mock()
+            ):
                 with patch.object(
-                    notification_service, "_should_deliver_notification", return_value=True
+                    notification_service,
+                    "_should_deliver_notification",
+                    return_value=True,
                 ):
                     result = await notification_service.create_notification(
                         sample_notification_data
@@ -337,7 +383,9 @@ class TestNotificationCreation:
 class TestBatchOperations:
     """Test suite for batch notification operations"""
 
-    async def test_create_batch_notifications_success(self, notification_service, sample_user_id):
+    async def test_create_batch_notifications_success(
+        self, notification_service, sample_user_id
+    ):
         """Test successful batch notification creation"""
         notifications_data = [
             NotificationData(
@@ -358,7 +406,9 @@ class TestBatchOperations:
             ),
             patch.object(notification_service, "_emit_event", new_callable=AsyncMock),
         ):
-            results = await notification_service.create_batch_notifications(notifications_data)
+            results = await notification_service.create_batch_notifications(
+                notifications_data
+            )
 
         assert len(results) == 5
         assert all(isinstance(n, Mock) for n in results)
@@ -369,7 +419,9 @@ class TestBatchOperations:
         """Test batch notifications use provided batch ID"""
         batch_id = str(uuid.uuid4())
         notifications_data = [
-            NotificationData(user_id=sample_user_id, type=NotificationType.FOLLOW, title="Test")
+            NotificationData(
+                user_id=sample_user_id, type=NotificationType.FOLLOW, title="Test"
+            )
             for _ in range(3)
         ]
 
@@ -419,7 +471,9 @@ class TestBatchOperations:
             ),
             patch.object(notification_service, "_emit_event", new_callable=AsyncMock),
         ):
-            results = await notification_service.create_batch_notifications(notifications_data)
+            results = await notification_service.create_batch_notifications(
+                notifications_data
+            )
 
         assert len(results) == 2  # Only successful ones
 
@@ -484,7 +538,10 @@ class TestUserNotificationRetrieval:
             mock_db_session.execute.return_value = mock_result
 
             result = await notification_service.get_user_notifications(
-                sample_user_id, unread_only=True, notification_type="FOLLOW", category="social"
+                sample_user_id,
+                unread_only=True,
+                notification_type="FOLLOW",
+                category="social",
             )
 
             assert isinstance(result, list)
@@ -538,7 +595,9 @@ class TestUnreadCount:
     """Test suite for get_unread_count with Redis caching"""
 
     @pytest.mark.asyncio
-    async def test_get_unread_count_cache_hit(self, notification_service, sample_user_id):
+    async def test_get_unread_count_cache_hit(
+        self, notification_service, sample_user_id
+    ):
         """Test get_unread_count returns cached value"""
         with patch("app.services.notification_service.redis_client") as mock_redis:
             mock_redis.get_cached_unread_count = AsyncMock(return_value=5)
@@ -557,7 +616,9 @@ class TestUnreadCount:
             mock_redis.get_cached_unread_count = AsyncMock(return_value=None)
             mock_redis.cache_unread_count = AsyncMock()
 
-            with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            with patch(
+                "app.services.notification_service.db_manager"
+            ) as mock_db_manager:
 
                 async def mock_get_session(*args, **kwargs):
                     yield mock_db_session
@@ -572,7 +633,9 @@ class TestUnreadCount:
                 result = await notification_service.get_unread_count(sample_user_id)
 
                 assert result == 3
-                mock_redis.cache_unread_count.assert_called_once_with(sample_user_id, 3, ttl=300)
+                mock_redis.cache_unread_count.assert_called_once_with(
+                    sample_user_id, 3, ttl=300
+                )
 
     @pytest.mark.asyncio
     async def test_get_unread_count_error_handling(
@@ -582,7 +645,9 @@ class TestUnreadCount:
         with patch("app.services.notification_service.redis_client") as mock_redis:
             mock_redis.get_cached_unread_count = AsyncMock(return_value=None)
 
-            with patch("app.services.notification_service.db_manager") as mock_db_manager:
+            with patch(
+                "app.services.notification_service.db_manager"
+            ) as mock_db_manager:
 
                 async def mock_get_session(*args, **kwargs):
                     yield mock_db_session
@@ -619,8 +684,12 @@ class TestMarkAsRead:
             mock_result.scalar_one_or_none.return_value = mock_notification
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
-                result = await notification_service.mark_as_read(notification_id, sample_user_id)
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
+                result = await notification_service.mark_as_read(
+                    notification_id, sample_user_id
+                )
 
             assert result is True
             mock_notification.mark_as_read.assert_called_once()
@@ -644,7 +713,9 @@ class TestMarkAsRead:
             mock_result.scalar_one_or_none.return_value = None
             mock_db_session.execute.return_value = mock_result
 
-            result = await notification_service.mark_as_read(notification_id, sample_user_id)
+            result = await notification_service.mark_as_read(
+                notification_id, sample_user_id
+            )
 
             assert result is False
 
@@ -668,8 +739,12 @@ class TestMarkAsRead:
             mock_result.scalar_one_or_none.return_value = mock_notification
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
-                result = await notification_service.mark_as_read(notification_id, user_id=None)
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
+                result = await notification_service.mark_as_read(
+                    notification_id, user_id=None
+                )
 
             assert result is True
 
@@ -688,7 +763,9 @@ class TestMarkAsRead:
             mock_db_manager.get_session.return_value = mock_get_session()
             mock_db_session.execute.side_effect = Exception("Database error")
 
-            result = await notification_service.mark_as_read(notification_id, sample_user_id)
+            result = await notification_service.mark_as_read(
+                notification_id, sample_user_id
+            )
 
             assert result is False
 
@@ -720,7 +797,9 @@ class TestMarkAllAsRead:
             mock_result.scalars.return_value = mock_scalars
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 result = await notification_service.mark_all_as_read(sample_user_id)
 
             assert result == 5
@@ -797,7 +876,9 @@ class TestDismissNotification:
             mock_result.scalar_one_or_none.return_value = mock_notification
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 result = await notification_service.dismiss_notification(
                     notification_id, sample_user_id
                 )
@@ -850,7 +931,9 @@ class TestDismissNotification:
             mock_result.scalar_one_or_none.return_value = mock_notification
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 result = await notification_service.dismiss_notification(
                     notification_id, user_id=None
                 )
@@ -902,7 +985,9 @@ class TestClickNotification:
             mock_result.scalar_one_or_none.return_value = mock_notification
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 result = await notification_service.click_notification(
                     notification_id, sample_user_id
                 )
@@ -929,7 +1014,9 @@ class TestClickNotification:
             mock_result.scalar_one_or_none.return_value = None
             mock_db_session.execute.return_value = mock_result
 
-            result = await notification_service.click_notification(notification_id, sample_user_id)
+            result = await notification_service.click_notification(
+                notification_id, sample_user_id
+            )
 
             assert result is False
 
@@ -952,7 +1039,9 @@ class TestClickNotification:
             mock_result.scalar_one_or_none.return_value = mock_notification
             mock_db_session.execute.return_value = mock_result
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 result = await notification_service.click_notification(
                     notification_id, user_id=None
                 )
@@ -974,7 +1063,9 @@ class TestClickNotification:
             mock_db_manager.get_session.return_value = mock_get_session()
             mock_db_session.execute.side_effect = Exception("Database error")
 
-            result = await notification_service.click_notification(notification_id, sample_user_id)
+            result = await notification_service.click_notification(
+                notification_id, sample_user_id
+            )
 
             assert result is False
 
@@ -1029,7 +1120,9 @@ class TestNotificationStats:
                 make_scalar_mock(5),  # delivered_count
                 make_scalar_mock(2),  # clicked_count
                 Mock(
-                    scalars=Mock(return_value=Mock(all=Mock(return_value=notifications)))
+                    scalars=Mock(
+                        return_value=Mock(all=Mock(return_value=notifications))
+                    )
                 ),  # all_notifications
             ]
 
@@ -1096,7 +1189,9 @@ class TestCleanupExpired:
             mock_db_session.execute.return_value = mock_result
             mock_db_session.delete = AsyncMock()
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 result = await notification_service.cleanup_expired_notifications()
 
             assert result == 3
@@ -1156,29 +1251,39 @@ class TestPreferenceLogic:
         mock_result.scalar_one_or_none.return_value = mock_preference
         mock_session.execute.return_value = mock_result
 
-        result = await notification_service._get_user_preferences(mock_session, sample_user_id)
+        result = await notification_service._get_user_preferences(
+            mock_session, sample_user_id
+        )
 
         assert result == mock_preference
 
     @pytest.mark.asyncio
-    async def test_get_user_preferences_not_found(self, notification_service, sample_user_id):
+    async def test_get_user_preferences_not_found(
+        self, notification_service, sample_user_id
+    ):
         """Test _get_user_preferences with no preferences"""
         mock_session = AsyncMock()
         mock_result = Mock()
         mock_result.scalar_one_or_none.return_value = None
         mock_session.execute.return_value = mock_result
 
-        result = await notification_service._get_user_preferences(mock_session, sample_user_id)
+        result = await notification_service._get_user_preferences(
+            mock_session, sample_user_id
+        )
 
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_get_user_preferences_error_handling(self, notification_service, sample_user_id):
+    async def test_get_user_preferences_error_handling(
+        self, notification_service, sample_user_id
+    ):
         """Test _get_user_preferences error handling"""
         mock_session = AsyncMock()
         mock_session.execute.side_effect = Exception("Database error")
 
-        result = await notification_service._get_user_preferences(mock_session, sample_user_id)
+        result = await notification_service._get_user_preferences(
+            mock_session, sample_user_id
+        )
 
         assert result is None
 
@@ -1249,7 +1354,11 @@ class TestDeliveryAndEvents:
 
     @pytest.mark.asyncio
     async def test_deliver_notification_success(
-        self, notification_service, mock_db_session, mock_notification, sample_notification_data
+        self,
+        notification_service,
+        mock_db_session,
+        mock_notification,
+        sample_notification_data,
     ):
         """Test _deliver_notification success"""
         mock_notification.mark_as_delivered = Mock()
@@ -1261,7 +1370,9 @@ class TestDeliveryAndEvents:
 
             mock_db_manager.get_session.return_value = mock_get_session()
 
-            with patch.object(notification_service, "_emit_event", new_callable=AsyncMock):
+            with patch.object(
+                notification_service, "_emit_event", new_callable=AsyncMock
+            ):
                 await notification_service._deliver_notification(
                     mock_notification, sample_notification_data
                 )
@@ -1270,10 +1381,16 @@ class TestDeliveryAndEvents:
 
     @pytest.mark.asyncio
     async def test_deliver_notification_error_handling(
-        self, notification_service, mock_db_session, mock_notification, sample_notification_data
+        self,
+        notification_service,
+        mock_db_session,
+        mock_notification,
+        sample_notification_data,
     ):
         """Test _deliver_notification error handling"""
-        mock_notification.mark_as_delivered = Mock(side_effect=Exception("Delivery error"))
+        mock_notification.mark_as_delivered = Mock(
+            side_effect=Exception("Delivery error")
+        )
 
         with patch("app.services.notification_service.db_manager") as mock_db_manager:
 
@@ -1293,7 +1410,9 @@ class TestDeliveryAndEvents:
         async_handler = AsyncMock()
         notification_service.add_event_handler(NotificationEvent.CREATED, async_handler)
 
-        await notification_service._emit_event(NotificationEvent.CREATED, {"test": "data"})
+        await notification_service._emit_event(
+            NotificationEvent.CREATED, {"test": "data"}
+        )
 
         async_handler.assert_called_once_with({"test": "data"})
 
@@ -1311,10 +1430,14 @@ class TestDeliveryAndEvents:
     async def test_emit_event_handler_error(self, notification_service):
         """Test _emit_event with handler that raises exception"""
         faulty_handler = Mock(side_effect=Exception("Handler error"))
-        notification_service.add_event_handler(NotificationEvent.DISMISSED, faulty_handler)
+        notification_service.add_event_handler(
+            NotificationEvent.DISMISSED, faulty_handler
+        )
 
         # Should not raise exception, just log error
-        await notification_service._emit_event(NotificationEvent.DISMISSED, {"test": "data"})
+        await notification_service._emit_event(
+            NotificationEvent.DISMISSED, {"test": "data"}
+        )
 
     def test_add_event_handler(self, notification_service):
         """Test add_event_handler"""
@@ -1330,7 +1453,10 @@ class TestDeliveryAndEvents:
         notification_service.add_event_handler(NotificationEvent.EXPIRED, handler)
         notification_service.remove_event_handler(NotificationEvent.EXPIRED, handler)
 
-        assert handler not in notification_service.event_handlers[NotificationEvent.EXPIRED]
+        assert (
+            handler
+            not in notification_service.event_handlers[NotificationEvent.EXPIRED]
+        )
 
     def test_remove_event_handler_not_found(self, notification_service):
         """Test remove_event_handler with non-existent handler"""

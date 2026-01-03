@@ -17,6 +17,7 @@ import {
   HistoricalDataService,
   type CryptoListResponse,
   type CryptoSearchResponse,
+  type HistoricalPeriod,
   type HistoricalPriceResponse,
   type OHLCVResponse,
   type PriceUpdate,
@@ -366,8 +367,8 @@ export function useBatchHistoricalPrices(
 // COMBINED ASSET DATA HOOK (Historical + Real-Time)
 // ============================================================================
 
-export function useAssetData(symbol: string, period: string = '1m') {
-  const historical = useHistoricalPrices(symbol, period as any);
+export function useAssetData(symbol: string, period: HistoricalPeriod = '1m') {
+  const historical = useHistoricalPrices(symbol, period);
   const { prices, connected } = useWebSocketPrices({
     symbols: [symbol],
     autoConnect: true,

@@ -134,7 +134,9 @@ class J53PerformanceMonitor:
 
                 for table in tables:
                     try:
-                        count = await session.scalar(text(f"SELECT COUNT(*) FROM {table}"))
+                        count = await session.scalar(
+                            text(f"SELECT COUNT(*) FROM {table}")
+                        )
                         table_stats[table] = count or 0
                     except Exception as e:
                         logger.warning(f"Could not get count for table {table}: {e}")
@@ -217,7 +219,8 @@ class J53PerformanceMonitor:
             # Memory usage estimation
             estimated_memory_usage = (
                 storage_metrics.total_messages * 0.001  # ~1KB per message in memory
-                + storage_metrics.total_threads * 0.0001  # ~100 bytes per thread in memory
+                + storage_metrics.total_threads
+                * 0.0001  # ~100 bytes per thread in memory
             )
             metrics["estimated_memory_usage_mb"] = estimated_memory_usage
 
@@ -428,7 +431,9 @@ class J53PerformanceMonitor:
 
         # Calculate performance trend (simplified)
         recent_alerts = [
-            a for a in self.alert_history if a.timestamp > datetime.now() - timedelta(hours=24)
+            a
+            for a in self.alert_history
+            if a.timestamp > datetime.now() - timedelta(hours=24)
         ]
         older_alerts = [
             a
@@ -452,7 +457,9 @@ class J53PerformanceMonitor:
             critical_alerts=critical_count,
             warning_alerts=warning_count,
             last_check=datetime.now(),
-            uptime_percentage=max(0, 100 - (critical_count * 5)),  # Simplified uptime calculation
+            uptime_percentage=max(
+                0, 100 - (critical_count * 5)
+            ),  # Simplified uptime calculation
             performance_trend=trend,
         )
 
@@ -464,7 +471,9 @@ class J53PerformanceMonitor:
             return True
         return False
 
-    async def acknowledge_alert(self, alert_id: str, acknowledged_by: str = "system") -> bool:
+    async def acknowledge_alert(
+        self, alert_id: str, acknowledged_by: str = "system"
+    ) -> bool:
         """Mark an alert as acknowledged"""
         if alert_id in self.active_alerts:
             self.active_alerts[alert_id].acknowledged = True
@@ -483,7 +492,9 @@ class J53PerformanceMonitor:
             msg = MIMEMultipart()
             msg["From"] = getattr(self.settings, "FROM_EMAIL", "noreply@lokifi.app")
             msg["To"] = getattr(self.settings, "ADMIN_EMAIL", msg["From"])
-            msg["Subject"] = f"🚨 Lokifi {alert.severity.value.upper()} Alert: {alert.category}"
+            msg["Subject"] = (
+                f"🚨 Lokifi {alert.severity.value.upper()} Alert: {alert.category}"
+            )
 
             body = f"""
             Alert Details:
@@ -506,12 +517,15 @@ class J53PerformanceMonitor:
 
             msg.attach(MIMEText(body, "plain"))
 
-            server = smtplib.SMTP(self.settings.SMTP_HOST, getattr(self.settings, "SMTP_PORT", 587))
+            server = smtplib.SMTP(
+                self.settings.SMTP_HOST, getattr(self.settings, "SMTP_PORT", 587)
+            )
             if getattr(self.settings, "SMTP_TLS", True):
                 server.starttls()
             if hasattr(self.settings, "SMTP_USERNAME") and self.settings.SMTP_USERNAME:
                 server.login(
-                    self.settings.SMTP_USERNAME, getattr(self.settings, "SMTP_PASSWORD", "")
+                    self.settings.SMTP_USERNAME,
+                    getattr(self.settings, "SMTP_PASSWORD", ""),
                 )
 
             text = msg.as_string()
@@ -550,11 +564,15 @@ class J53PerformanceMonitor:
             },
             "system_health": asdict(health),
             "active_alerts": [
-                alert.to_dict() for alert in self.active_alerts.values() if not alert.resolved
+                alert.to_dict()
+                for alert in self.active_alerts.values()
+                if not alert.resolved
             ],
             "new_alerts": [alert.to_dict() for alert in new_alerts],
             "alert_summary": {
-                "total_active": len([a for a in self.active_alerts.values() if not a.resolved]),
+                "total_active": len(
+                    [a for a in self.active_alerts.values() if not a.resolved]
+                ),
                 "critical": len(
                     [
                         a
@@ -621,7 +639,10 @@ class J53AutoOptimizer:
                         )
 
                         for row in index_analysis:
-                            if row.seq_scan > 1000 and (row.idx_scan or 0) < row.seq_scan:
+                            if (
+                                row.seq_scan > 1000
+                                and (row.idx_scan or 0) < row.seq_scan
+                            ):
                                 optimizations.append(
                                     f"Table {row.tablename} may benefit from additional indexes"
                                 )
@@ -644,7 +665,9 @@ class J53AutoOptimizer:
         }
 
         self.optimization_history.append(optimization_record)
-        logger.info(f"🚀 Auto-optimization completed: {len(optimizations)} optimizations applied")
+        logger.info(
+            f"🚀 Auto-optimization completed: {len(optimizations)} optimizations applied"
+        )
 
         return optimization_record
 

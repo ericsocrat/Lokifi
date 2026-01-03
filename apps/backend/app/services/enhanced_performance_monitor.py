@@ -127,7 +127,9 @@ class EnhancedPerformanceMonitor:
             # Response time calculations
             response_times_list = list(self.response_times)
             avg_response_time = (
-                sum(response_times_list) / len(response_times_list) if response_times_list else 0
+                sum(response_times_list) / len(response_times_list)
+                if response_times_list
+                else 0
             )
             min_response_time = min(response_times_list) if response_times_list else 0
             max_response_time = max(response_times_list) if response_times_list else 0
@@ -137,7 +139,9 @@ class EnhancedPerformanceMonitor:
                 sorted_times = sorted(response_times_list)
                 p95_index = int(0.95 * len(sorted_times))
                 p95_response_time = (
-                    sorted_times[p95_index] if p95_index < len(sorted_times) else max_response_time
+                    sorted_times[p95_index]
+                    if p95_index < len(sorted_times)
+                    else max_response_time
                 )
             else:
                 p95_response_time = 0
@@ -149,7 +153,9 @@ class EnhancedPerformanceMonitor:
 
             # Error rate
             error_rate = (
-                (self.error_count / self.total_requests * 100) if self.total_requests > 0 else 0
+                (self.error_count / self.total_requests * 100)
+                if self.total_requests > 0
+                else 0
             )
 
             # Throughput (requests per second over last minute)
@@ -158,20 +164,28 @@ class EnhancedPerformanceMonitor:
 
             # Database metrics
             db_queries_list = list(self.database_queries)
-            avg_db_time = sum(db_queries_list) / len(db_queries_list) if db_queries_list else 0
+            avg_db_time = (
+                sum(db_queries_list) / len(db_queries_list) if db_queries_list else 0
+            )
 
             # Cache metrics
             total_cache_ops = self.cache_hits + self.cache_misses
-            cache_hit_rate = (self.cache_hits / total_cache_ops * 100) if total_cache_ops > 0 else 0
+            cache_hit_rate = (
+                (self.cache_hits / total_cache_ops * 100) if total_cache_ops > 0 else 0
+            )
             cache_miss_rate = (
-                (self.cache_misses / total_cache_ops * 100) if total_cache_ops > 0 else 0
+                (self.cache_misses / total_cache_ops * 100)
+                if total_cache_ops > 0
+                else 0
             )
 
             # Availability (simplified calculation)
             availability = 100 - error_rate if error_rate < 100 else 0
 
             return PerformanceMetrics(
-                average_response_time=round(avg_response_time * 1000, 2),  # Convert to ms
+                average_response_time=round(
+                    avg_response_time * 1000, 2
+                ),  # Convert to ms
                 min_response_time=round(min_response_time * 1000, 2),
                 max_response_time=round(max_response_time * 1000, 2),
                 p95_response_time=round(p95_response_time * 1000, 2),

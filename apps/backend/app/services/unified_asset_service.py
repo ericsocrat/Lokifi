@@ -93,7 +93,9 @@ class UnifiedAssetService:
                 async with httpx.AsyncClient(timeout=30.0) as client:
                     resp = await client.get(url, params=cast(Mapping[str, Any], params))
             else:
-                resp = await self.client.get(url, params=cast(Mapping[str, Any], params))
+                resp = await self.client.get(
+                    url, params=cast(Mapping[str, Any], params)
+                )
 
             resp.raise_for_status()
             data = resp.json()
@@ -111,7 +113,9 @@ class UnifiedAssetService:
                     market_cap_rank=coin.get("market_cap_rank"),
                 )
 
-            logger.info(f"✅ Initialized crypto registry with {len(self._crypto_symbols)} symbols")
+            logger.info(
+                f"✅ Initialized crypto registry with {len(self._crypto_symbols)} symbols"
+            )
 
         except Exception as e:
             logger.error(f"❌ Error fetching crypto symbols: {e}")
@@ -190,7 +194,10 @@ class UnifiedAssetService:
             )
 
     async def get_all_assets(
-        self, limit_per_type: int = 10, types: list[str] | None = None, force_refresh: bool = False
+        self,
+        limit_per_type: int = 10,
+        types: list[str] | None = None,
+        force_refresh: bool = False,
     ) -> dict[str, list[dict]]:
         """
         Get unified assets from all requested types
@@ -218,7 +225,9 @@ class UnifiedAssetService:
             try:
                 async with CryptoDiscoveryService() as crypto_service:
                     # Fetch more cryptos - 300 for comprehensive coverage
-                    crypto_limit = min(300, limit_per_type * 3) if limit_per_type < 100 else 300
+                    crypto_limit = (
+                        min(300, limit_per_type * 3) if limit_per_type < 100 else 300
+                    )
                     cryptos = await crypto_service.get_top_cryptos(
                         limit=crypto_limit, force_refresh=force_refresh
                     )
@@ -248,7 +257,9 @@ class UnifiedAssetService:
             try:
                 from app.services.indices_service import IndicesService
 
-                async with IndicesService(redis_client=advanced_redis_client) as indices_service:
+                async with IndicesService(
+                    redis_client=advanced_redis_client
+                ) as indices_service:
                     indices = await indices_service.get_indices(limit=limit_per_type)
                     result["indices"] = indices
                     logger.info(f"✅ Fetched {len(indices)} indices from real API")
@@ -264,7 +275,9 @@ class UnifiedAssetService:
                 forex_service = ForexService(redis_client=advanced_redis_client)
                 forex = await forex_service.get_forex_pairs(limit=limit_per_type)
                 result["forex"] = forex
-                logger.info(f"✅ Fetched {len(forex)} forex pairs from ExchangeRate-API")
+                logger.info(
+                    f"✅ Fetched {len(forex)} forex pairs from ExchangeRate-API"
+                )
             except Exception as e:
                 logger.error(f"❌ Error fetching forex: {e}")
                 # Fallback to mock data if API fails

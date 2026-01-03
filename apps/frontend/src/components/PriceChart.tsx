@@ -2,7 +2,11 @@ import DataStatus from '@/components/DataStatus';
 import SymbolTfBar from '@/components/SymbolTfBar';
 import { setChart } from '@/lib/charts/chartBus';
 import { stdDevChannels, vwap, vwma, type Candle as IndCandle } from '@/lib/charts/indicators';
-import { MarketDataAdapter, type Candle as AdapterCandle } from '@/lib/data/adapter';
+import {
+  MarketDataAdapter,
+  type Candle as AdapterCandle,
+  type ProviderKind,
+} from '@/lib/data/adapter';
 import useHotkeys from '@/lib/utils/hotkeys';
 import { debounce, rafThrottle } from '@/lib/utils/perf';
 import { calculateADLine } from '@/services/indicators/ad-line';
@@ -25,6 +29,44 @@ import {
   type TimeRangeChangeEventHandler,
 } from 'lightweight-charts';
 import React from 'react';
+
+// lightweight-charts Series interface extension (chart() method is internal but available)
+interface ISeriesApiWithChart<
+  T extends 'Candlestick' | 'Line' | 'Histogram',
+> extends ISeriesApi<T> {
+  chart(): IChartApi;
+}
+
+// Window extension for indicator series cleanup (runtime-assigned properties)
+interface WindowWithIndicators extends Window {
+  _bbSeries?: ISeriesApi<'Line'>[];
+  _vwap?: ISeriesApi<'Line'>;
+  _vwma?: ISeriesApi<'Line'>;
+  _stdch?: ISeriesApi<'Line'>[];
+  _rsi?: ISeriesApi<'Line'>[];
+  _macd?: (ISeriesApi<'Line'> | ISeriesApi<'Histogram'>)[];
+  _stochastic?: ISeriesApi<'Line'>[];
+  _adx?: ISeriesApi<'Line'>[];
+  _cci?: ISeriesApi<'Line'>[];
+  _williamsR?: ISeriesApi<'Line'>[];
+  _obv?: ISeriesApi<'Line'>[];
+  _adLine?: ISeriesApi<'Line'>[];
+}
+
+// Union type for indicator keys only (not native Window properties)
+type IndicatorKey =
+  | '_bbSeries'
+  | '_vwap'
+  | '_vwma'
+  | '_stdch'
+  | '_rsi'
+  | '_macd'
+  | '_stochastic'
+  | '_adx'
+  | '_cci'
+  | '_williamsR'
+  | '_obv'
+  | '_adLine';
 
 import {
   bucketCountFor,
@@ -53,8 +95,8 @@ export default function PriceChart() {
   const chartRef = React.useRef<IChartApi | null>(null);
 
   const { indicators, indicatorSettings, theme, symbol, timeframe } = useChartStore();
-  const [provider] = React.useState<string>(
-    String(process.env.NEXT_PUBLIC_DATA_PROVIDER || 'mock')
+  const [provider] = React.useState<ProviderKind>(
+    (process.env.NEXT_PUBLIC_DATA_PROVIDER as ProviderKind) || 'mock'
   );
   const [candles, setCandles] = React.useState<Candle[]>([]);
   const [rangeTick, setRangeTick] = React.useState(0); // bump on zoom/pan to refresh indicator LOD
@@ -140,7 +182,7 @@ export default function PriceChart() {
   React.useEffect(() => {
     // Lokifi Phase U: ensure extras are stopped on unmount
     const __lokifiCleanup = typeof __lokifiStopExtras === 'function' ? __lokifiStopExtras : null;
-    const adapter = new MarketDataAdapter({ provider: provider as any, symbol, timeframe });
+    const adapter = new MarketDataAdapter({ provider, symbol, timeframe });
     let unsub = () => {};
     unsub = adapter.on(
       rafThrottle((ev: { type: 'snapshot' | 'update'; candles: AdapterCandle[] }) => {
@@ -152,7 +194,9 @@ export default function PriceChart() {
         recomputeLOD();
         // Indicators will re-plot on rangeTick via subscription; also bump once here so live updates refresh lines.
         bumpRangeTick();
-        setChart({ chart: (s as any).chart(), series: s, candles: ev.candles as any });
+        // Cast series to extended interface that exposes chart() method
+        const sWithChart = s as ISeriesApiWithChart<'Candlestick'>;
+        setChart({ chart: sWithChart.chart(), series: s, candles: ev.candles as Candle[] });
       })
     );
     adapter.start();
@@ -172,8 +216,9 @@ export default function PriceChart() {
       if (!s || !chart || candles.length === 0) return;
 
       // cleanup previous indicator series
-      const kill = (key: string) => {
-        (window as any)[key] = undefined;
+      const windowExt = window as WindowWithIndicators;
+      const kill = (key: IndicatorKey) => {
+        windowExt[key] = undefined;
       };
       kill('_bbSeries');
       kill('_vwap');
@@ -196,7 +241,8 @@ export default function PriceChart() {
       if (vr) {
         const fromSec = timeToSec(vr.from as Time);
         const toSec = timeToSec(vr.to as Time);
-        view = sliceByTimeWindow(candles as any, fromSec, toSec) as Candle[];
+        // Cast Candle to LodCandle (compatible types: both have time, open, high, low, close, volume)
+        view = sliceByTimeWindow(candles as LodCandle[], fromSec, toSec) as Candle[];
         if (view.length >= 2) {
           // locate indices by comparing times; since sliceByTimeWindow already clamps, we can map back via time match
           const firstT = timeToSec(view[0].time as Time);
@@ -281,7 +327,7 @@ export default function PriceChart() {
           upper.applyOptions({ priceLineVisible: false });
           lower.applyOptions({ priceLineVisible: false });
         }
-        (window as any)._bbSeries = [basis, upper, lower];
+        windowExt._bbSeries = [basis, upper, lower];
       }
 
       // --- VWAP (respect anchored index; shift relative to padded slice)
@@ -298,7 +344,7 @@ export default function PriceChart() {
           value: v[i + (startIdx - paddedStart)] ?? NaN,
         }));
         vwapLine.setData(downsampleLineMinMax(data, target));
-        (window as any)._vwap = vwapLine;
+        windowExt._vwap = vwapLine;
       }
 
       // --- VWMA
@@ -313,7 +359,7 @@ export default function PriceChart() {
           value: vArr[i + (startIdx - paddedStart)] ?? NaN,
         }));
         line.setData(downsampleLineMinMax(data, target));
-        (window as any)._vwma = line;
+        windowExt._vwma = line;
       }
 
       // --- StdDev Channels
@@ -343,7 +389,7 @@ export default function PriceChart() {
         mid.setData(downsampleLineMinMax(midData, tgt));
         up.setData(downsampleLineMinMax(upData, tgt));
         lo.setData(downsampleLineMinMax(loData, tgt));
-        (window as any)._stdch = [mid, up, lo];
+        windowExt._stdch = [mid, up, lo];
       }
 
       // --- RSI (Relative Strength Index)
@@ -387,7 +433,7 @@ export default function PriceChart() {
         rsiLine.setData(downsampleLineMinMax(rsiData, target));
         overboughtLine.setData(overboughtData);
         oversoldLine.setData(oversoldData);
-        (window as any)._rsi = [rsiLine, overboughtLine, oversoldLine];
+        windowExt._rsi = [rsiLine, overboughtLine, oversoldLine];
       }
 
       // --- MACD (Moving Average Convergence Divergence)
@@ -452,7 +498,7 @@ export default function PriceChart() {
         macdLine.setData(downsampleLineMinMax(macdData, target));
         signalLine.setData(downsampleLineMinMax(signalData, target));
         histogramSeries.setData(histogramData); // Don't downsample histogram (loses color info)
-        (window as any)._macd = [macdLine, signalLine, histogramSeries];
+        windowExt._macd = [macdLine, signalLine, histogramSeries];
       }
 
       // --- Stochastic Oscillator
@@ -497,7 +543,7 @@ export default function PriceChart() {
 
         kLine.setData(downsampleLineMinMax(kData, target));
         dLine.setData(downsampleLineMinMax(dData, target));
-        (window as any)._stochastic = [kLine, dLine];
+        windowExt._stochastic = [kLine, dLine];
       }
 
       // --- ADX (Average Directional Index)
@@ -528,7 +574,7 @@ export default function PriceChart() {
         }));
 
         adxLine.setData(downsampleLineMinMax(adxData, target));
-        (window as any)._adx = [adxLine];
+        windowExt._adx = [adxLine];
       }
 
       // --- CCI (Commodity Channel Index)
@@ -559,7 +605,7 @@ export default function PriceChart() {
         }));
 
         cciLine.setData(downsampleLineMinMax(cciData, target));
-        (window as any)._cci = [cciLine];
+        windowExt._cci = [cciLine];
       }
 
       // --- Williams %R
@@ -589,7 +635,7 @@ export default function PriceChart() {
         }));
 
         williamsRLine.setData(downsampleLineMinMax(williamsRData, target));
-        (window as any)._williamsR = [williamsRLine];
+        windowExt._williamsR = [williamsRLine];
       }
 
       // --- OBV (On-Balance Volume)
@@ -621,7 +667,7 @@ export default function PriceChart() {
         }));
 
         obvLine.setData(downsampleLineMinMax(obvData, target));
-        (window as any)._obv = [obvLine];
+        windowExt._obv = [obvLine];
       }
 
       // --- A/D Line (Accumulation/Distribution)
@@ -653,7 +699,7 @@ export default function PriceChart() {
         }));
 
         adLine.setData(downsampleLineMinMax(adLineData, target));
-        (window as any)._adLine = [adLine];
+        windowExt._adLine = [adLine];
       }
     };
     // Debounce to avoid thrashing when panning/zooming; re-run when:

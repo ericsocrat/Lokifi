@@ -117,7 +117,9 @@ def follow(handle: str, authorization: str | None = Header(None)):
         if me_u.id == target.id:
             raise HTTPException(status_code=400, detail="Cannot follow yourself")
         exists = db.execute(
-            select(Follow).where(Follow.follower_id == me_u.id, Follow.followee_id == target.id)
+            select(Follow).where(
+                Follow.follower_id == me_u.id, Follow.followee_id == target.id
+            )
         ).scalar_one_or_none()
         if exists:
             return {"ok": True, "following": True}
@@ -132,7 +134,9 @@ def unfollow(handle: str, authorization: str | None = Header(None)):
         me_u = _user_by_handle(db, me)
         target = _user_by_handle(db, handle)
         f = db.execute(
-            select(Follow).where(Follow.follower_id == me_u.id, Follow.followee_id == target.id)
+            select(Follow).where(
+                Follow.follower_id == me_u.id, Follow.followee_id == target.id
+            )
         ).scalar_one_or_none()
         if not f:
             return {"ok": True, "following": False}
@@ -188,7 +192,9 @@ def list_posts(symbol: str | None = None, limit: int = 50, after_id: int | None 
 
 # ===== Feed (people I follow) =====
 @router.get("/social/feed", response_model=list[PostOut])
-def feed(handle: str, symbol: str | None = None, limit: int = 50, after_id: int | None = None):
+def feed(
+    handle: str, symbol: str | None = None, limit: int = 50, after_id: int | None = None
+):
     limit = max(1, min(200, limit))
     with get_session() as db:
         me = _user_by_handle(db, handle)

@@ -177,7 +177,9 @@ class StockService:
                 try:
                     # Pattern: JSON serialization for Redis (list[dict] → str)
                     stocks_json = json.dumps(stocks)
-                    await self.redis_client.set(cache_key, stocks_json, ttl=self.cache_ttl)
+                    await self.redis_client.set(
+                        cache_key, stocks_json, ttl=self.cache_ttl
+                    )
                     logger.info(f"Cached {len(stocks)} stocks for {self.cache_ttl}s")
                 except Exception as e:
                     logger.warning(f"Redis cache write failed: {e}")
@@ -190,7 +192,9 @@ class StockService:
             # Return empty list on error
             return []
 
-    async def _fetch_stock_quote(self, client: httpx.AsyncClient, symbol: str) -> dict | None:
+    async def _fetch_stock_quote(
+        self, client: httpx.AsyncClient, symbol: str
+    ) -> dict | None:
         """
         Fetch a single stock quote from Alpha Vantage
 
@@ -202,7 +206,11 @@ class StockService:
             Stock data dictionary or None
         """
         try:
-            params = {"function": "GLOBAL_QUOTE", "symbol": symbol, "apikey": self.api_key}
+            params = {
+                "function": "GLOBAL_QUOTE",
+                "symbol": symbol,
+                "apikey": self.api_key,
+            }
 
             response = await client.get(self.base_url, params=params)
             response.raise_for_status()
@@ -210,7 +218,9 @@ class StockService:
 
             # Check for API error or rate limit
             if "Error Message" in data:
-                logger.error(f"Alpha Vantage API error for {symbol}: {data['Error Message']}")
+                logger.error(
+                    f"Alpha Vantage API error for {symbol}: {data['Error Message']}"
+                )
                 return None
 
             if "Note" in data:

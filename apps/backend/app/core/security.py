@@ -36,7 +36,10 @@ async def get_current_user(
     try:
         jwt_secret = settings.get_jwt_secret()
         payload = jwt.decode(
-            token.credentials, jwt_secret, algorithms=["HS256"], options={"verify_aud": False}
+            token.credentials,
+            jwt_secret,
+            algorithms=["HS256"],
+            options={"verify_aud": False},
         )
         return {
             "id": payload.get("sub"),
@@ -64,7 +67,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
         return False
 
 
-def create_jwt_token(data: dict[str, Any], expires_delta: timedelta | None = None) -> str:
+def create_jwt_token(
+    data: dict[str, Any], expires_delta: timedelta | None = None
+) -> str:
     """Create a JWT token."""
     to_encode = data.copy()
     now = datetime.now(timezone.utc)

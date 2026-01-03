@@ -9,6 +9,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    watch: false, // Always exit after tests complete (no waiting for 'q')
     // Fix for lucide-react 0.552.0 requiring React in CommonJS format
     // Tell Vitest to include lucide-react for transformation
     server: {

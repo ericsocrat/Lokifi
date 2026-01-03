@@ -7,9 +7,10 @@ import type { IChartApi, ISeriesApi, SeriesDataPoint, Time } from 'lightweight-c
  *  - Feeds precise bar X coords (for X-snap) from real series data
  *  - Starts a live price feed that drives the alerts engine (line/level crossings)
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function wireLightweightChartsExtras(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- lightweight-charts types are incomplete
   chart: IChartApi | any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- lightweight-charts types are incomplete
   series: ISeriesApi<'Candlestick'> | any,
   getSeriesData: () => Array<SeriesDataPoint>,
   getLastPrice: () => number | null
@@ -31,7 +32,7 @@ export function wireLightweightChartsExtras(
         vr &&
         'from' in vr &&
         'to' in vr &&
-        [vr.from, vr.to].every((v: any) => Number.isFinite(Number(v)))
+        [vr.from, vr.to].every((v) => Number.isFinite(Number(v)))
       ) {
         const fromIdx = Math.max(0, Math.floor(Number(vr.from)));
         const toIdx = Math.ceil(Number(vr.to));

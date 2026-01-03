@@ -56,7 +56,9 @@ async def create_thread(
 ):
     """Create a new AI chat thread."""
     try:
-        thread = await ai_service.create_thread(user_id=current_user.id, title=thread_data.title)
+        thread = await ai_service.create_thread(
+            user_id=current_user.id, title=thread_data.title
+        )
         return AIThreadResponse.model_validate(thread)
     except Exception as e:
         logger.error(f"Failed to create thread: {e}")
@@ -152,7 +154,9 @@ async def send_message(
 
                     # J6.1 Notification Integration: Trigger AI response notification
                     try:
-                        processing_time = (datetime.now() - start_time).total_seconds() * 1000
+                        processing_time = (
+                            datetime.now() - start_time
+                        ).total_seconds() * 1000
 
                         await trigger_ai_response_notification(
                             user_data={
@@ -220,7 +224,9 @@ async def update_thread(
             user_id=current_user.id, thread_id=thread_id, title=thread_update.title
         )
         if not thread:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thread not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Thread not found"
+            )
         return AIThreadResponse.model_validate(thread)
     except Exception as e:
         logger.error(f"Failed to update thread: {e}")
@@ -238,9 +244,13 @@ async def delete_thread(
 ):
     """Delete a thread and all its messages."""
     try:
-        success = await ai_service.delete_thread(user_id=current_user.id, thread_id=thread_id)
+        success = await ai_service.delete_thread(
+            user_id=current_user.id, thread_id=thread_id
+        )
         if not success:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Thread not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Thread not found"
+            )
         return {"message": "Thread deleted successfully"}
     except Exception as e:
         logger.error(f"Failed to delete thread: {e}")
@@ -293,7 +303,9 @@ async def export_conversations(
         # Parse thread IDs if provided
         thread_id_list = None
         if thread_ids:
-            thread_id_list = [int(id.strip()) for id in thread_ids.split(",") if id.strip()]
+            thread_id_list = [
+                int(id.strip()) for id in thread_ids.split(",") if id.strip()
+            ]
 
         options = ExportOptions(
             format=format,
@@ -320,11 +332,15 @@ async def export_conversations(
             content_type = "application/zip"
             filename = f"conversations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
         else:
-            filename = f"conversations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{format}"
+            filename = (
+                f"conversations_{datetime.now().strftime('%Y%m%d_%H%M%S')}.{format}"
+            )
 
         return Response(
             content=(
-                content if isinstance(content, (bytes, bytearray)) else str(content).encode("utf-8")
+                content
+                if isinstance(content, (bytes, bytearray))
+                else str(content).encode("utf-8")
             ),
             media_type=content_type,
             headers={"Content-Disposition": f"attachment; filename={filename}"},
@@ -394,7 +410,9 @@ async def get_user_moderation_status(current_user: User = Depends(get_current_us
 
     except Exception as e:
         logger.error(f"Failed to get moderation status: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 # ===== J5.2 ADVANCED FEATURES =====
@@ -426,11 +444,15 @@ async def get_conversation_metrics(
 
     except Exception as e:
         logger.error(f"Failed to get conversation metrics: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 @router.get("/analytics/user-insights")
-async def get_user_insights(days_back: int = 90, current_user: User = Depends(get_current_user)):
+async def get_user_insights(
+    days_back: int = 90, current_user: User = Depends(get_current_user)
+):
     """Get detailed user AI usage insights."""
     try:
         insights = await ai_analytics_service.get_user_insights(
@@ -452,7 +474,9 @@ async def get_user_insights(days_back: int = 90, current_user: User = Depends(ge
 
     except Exception as e:
         logger.error(f"Failed to get user insights: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 @router.get("/analytics/provider-performance")
@@ -462,13 +486,17 @@ async def get_provider_performance(
 ):
     """Get AI provider performance metrics."""
     try:
-        performance_data = await ai_analytics_service.get_provider_performance(days_back)
+        performance_data = await ai_analytics_service.get_provider_performance(
+            days_back
+        )
 
         return {"performance": performance_data, "period_days": days_back}
 
     except Exception as e:
         logger.error(f"Failed to get provider performance: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 @router.get("/context/user-profile")
@@ -479,11 +507,16 @@ async def get_user_ai_profile(current_user: User = Depends(get_current_user)):
             user_id=current_user.id
         )
 
-        return {"profile": context_data, "generated_at": datetime.now(timezone.utc).isoformat()}
+        return {
+            "profile": context_data,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
 
     except Exception as e:
         logger.error(f"Failed to get user AI profile: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )
 
 
 @router.post("/threads/{thread_id}/file-upload")
@@ -592,7 +625,11 @@ async def upload_file_to_thread(
     except UnsupportedFileTypeError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except FileProcessingError as e:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e)
+        )
     except Exception as e:
         logger.error(f"File upload failed: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        )

@@ -10,7 +10,12 @@ from sqlalchemy import desc, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.conversation import Conversation, ConversationParticipant, Message, MessageReceipt
+from app.models.conversation import (
+    Conversation,
+    ConversationParticipant,
+    Message,
+    MessageReceipt,
+)
 from app.models.profile import Profile
 from app.models.user import User
 from app.schemas.conversation import (
@@ -41,23 +46,28 @@ class ConversationService:
             )
 
         # Ensure both users exist and are active
-        users_stmt = select(User).where(User.id.in_([user1_id, user2_id]), User.is_active)
+        users_stmt = select(User).where(
+            User.id.in_([user1_id, user2_id]), User.is_active
+        )
         result = await self.db.execute(users_stmt)
         users = result.scalars().all()
 
         if len(users) != 2:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="One or both users not found"
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="One or both users not found",
             )
 
         # Look for existing conversation between these users
         existing_stmt = (
             select(Conversation)
             .join(
-                ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id
+                ConversationParticipant,
+                ConversationParticipant.conversation_id == Conversation.id,
             )
             .where(
-                ~Conversation.is_group, ConversationParticipant.user_id.in_([user1_id, user2_id])
+                ~Conversation.is_group,
+                ConversationParticipant.user_id.in_([user1_id, user2_id]),
             )
             .group_by(Conversation.id)
             .having(func.count(ConversationParticipant.user_id) == 2)
@@ -79,8 +89,12 @@ class ConversationService:
         await self.db.flush()
 
         # Add participants
-        participant1 = ConversationParticipant(conversation_id=conversation.id, user_id=user1_id)
-        participant2 = ConversationParticipant(conversation_id=conversation.id, user_id=user2_id)
+        participant1 = ConversationParticipant(
+            conversation_id=conversation.id, user_id=user1_id
+        )
+        participant2 = ConversationParticipant(
+            conversation_id=conversation.id, user_id=user2_id
+        )
 
         self.db.add(participant1)
         self.db.add(participant2)
@@ -100,9 +114,13 @@ class ConversationService:
         stmt = (
             select(Conversation)
             .join(
-                ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id
+                ConversationParticipant,
+                ConversationParticipant.conversation_id == Conversation.id,
             )
-            .where(ConversationParticipant.user_id == user_id, ConversationParticipant.is_active)
+            .where(
+                ConversationParticipant.user_id == user_id,
+                ConversationParticipant.is_active,
+            )
             .order_by(desc(Conversation.last_message_at), desc(Conversation.updated_at))
             .offset(offset)
             .limit(page_size)
@@ -117,9 +135,13 @@ class ConversationService:
             select(func.count())
             .select_from(Conversation)
             .join(
-                ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id
+                ConversationParticipant,
+                ConversationParticipant.conversation_id == Conversation.id,
             )
-            .where(ConversationParticipant.user_id == user_id, ConversationParticipant.is_active)
+            .where(
+                ConversationParticipant.user_id == user_id,
+                ConversationParticipant.is_active,
+            )
         )
         result = await self.db.execute(count_stmt)
         total = result.scalar() or 0
@@ -139,7 +161,10 @@ class ConversationService:
         )
 
     async def send_message(
-        self, conversation_id: uuid.UUID, sender_id: uuid.UUID, message_data: MessageCreate
+        self,
+        conversation_id: uuid.UUID,
+        sender_id: uuid.UUID,
+        message_data: MessageCreate,
     ) -> MessageResponse:
         """Send a message in a conversation."""
         # Verify user is participant in conversation
@@ -172,7 +197,8 @@ class ConversationService:
             update(Conversation)
             .where(Conversation.id == conversation_id)
             .values(
-                last_message_at=datetime.now(timezone.utc), updated_at=datetime.now(timezone.utc)
+                last_message_at=datetime.now(timezone.utc),
+                updated_at=datetime.now(timezone.utc),
             )
         )
         await self.db.execute(update_conv_stmt)
@@ -187,7 +213,11 @@ class ConversationService:
         return await self._build_message_response(message)
 
     async def get_conversation_messages(
-        self, conversation_id: uuid.UUID, user_id: uuid.UUID, page: int = 1, page_size: int = 50
+        self,
+        conversation_id: uuid.UUID,
+        user_id: uuid.UUID,
+        page: int = 1,
+        page_size: int = 50,
     ) -> MessagesListResponse:
         """Get messages in a conversation with pagination."""
         # Verify user is participant
@@ -218,7 +248,9 @@ class ConversationService:
         )
 
         result = await self.db.execute(stmt)
-        messages = list(reversed(result.scalars().all()))  # Reverse for chronological order
+        messages = list(
+            reversed(result.scalars().all())
+        )  # Reverse for chronological order
 
         # Get total count
         count_stmt = (
@@ -245,7 +277,10 @@ class ConversationService:
         )
 
     async def mark_messages_read(
-        self, conversation_id: uuid.UUID, user_id: uuid.UUID, mark_read_data: MarkReadRequest
+        self,
+        conversation_id: uuid.UUID,
+        user_id: uuid.UUID,
+        mark_read_data: MarkReadRequest,
     ) -> bool:
         """Mark messages as read up to a specific message."""
         # Verify user is participant
@@ -265,7 +300,8 @@ class ConversationService:
 
         # Verify message exists in conversation
         message_stmt = select(Message).where(
-            Message.id == mark_read_data.message_id, Message.conversation_id == conversation_id
+            Message.id == mark_read_data.message_id,
+            Message.conversation_id == conversation_id,
         )
         result = await self.db.execute(message_stmt)
         target_message = result.scalar_one_or_none()
@@ -287,7 +323,8 @@ class ConversationService:
 
         # Create receipts for messages not already read by this user
         existing_receipts_stmt = select(MessageReceipt.message_id).where(
-            MessageReceipt.message_id.in_(message_ids), MessageReceipt.user_id == user_id
+            MessageReceipt.message_id.in_(message_ids),
+            MessageReceipt.user_id == user_id,
         )
         result = await self.db.execute(existing_receipts_stmt)
         existing_message_ids = {row[0] for row in result.all()}
@@ -295,7 +332,9 @@ class ConversationService:
         new_receipts = []
         for message_id in message_ids:
             if message_id not in existing_message_ids:
-                new_receipts.append(MessageReceipt(message_id=message_id, user_id=user_id))
+                new_receipts.append(
+                    MessageReceipt(message_id=message_id, user_id=user_id)
+                )
 
         if new_receipts:
             self.db.add_all(new_receipts)
@@ -370,9 +409,9 @@ class ConversationService:
                 .where(
                     Message.conversation_id == conversation.id,
                     Message.created_at
-                    > select(Message.created_at).where(
-                        Message.id == current_participant[0].last_read_message_id
-                    ),
+                    > select(Message.created_at)
+                    .where(Message.id == current_participant[0].last_read_message_id)
+                    .scalar_subquery(),
                     ~Message.is_deleted,
                 )
             )

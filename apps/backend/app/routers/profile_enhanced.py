@@ -33,7 +33,9 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 def validate_image_file(file: UploadFile) -> None:
     """Validate uploaded image file."""
     if not file.filename:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No filename provided")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="No filename provided"
+        )
 
     # Check file extension
     if file.filename:
@@ -89,7 +91,8 @@ async def process_avatar_image(file: UploadFile, user_id: UUID) -> str:
         if file_path.exists():
             file_path.unlink()
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to process image"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to process image",
         )
 
 
@@ -129,7 +132,8 @@ async def upload_avatar(
         raise
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to upload avatar"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to upload avatar",
         )
 
 
@@ -143,7 +147,9 @@ async def get_avatar(user_id: UUID):
     if avatar_path.exists():
         return FileResponse(avatar_path)
     else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Avatar not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Avatar not found"
+        )
 
 
 @router.post("/enhanced/validate")
@@ -158,10 +164,13 @@ async def validate_profile_data(
     try:
         # Check if username is available (if changed)
         if profile_data.username:
-            existing_profile = await enhanced_service.get_profile_by_username(profile_data.username)
+            existing_profile = await enhanced_service.get_profile_by_username(
+                profile_data.username
+            )
             if existing_profile and existing_profile.user_id != current_user.id:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Username already taken"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Username already taken",
                 )
 
         return {"valid": True, "message": "Profile data is valid"}
@@ -170,7 +179,8 @@ async def validate_profile_data(
         raise
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Validation failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Validation failed",
         )
 
 
@@ -189,7 +199,8 @@ async def delete_account(
 
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to delete account"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to delete account",
         )
 
 
@@ -206,7 +217,8 @@ async def export_user_data(
 
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to export data"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to export data",
         )
 
 

@@ -91,7 +91,9 @@ class RateLimiter:
             if not requests:
                 del self.user_requests[user_id]
 
-    def get_user_usage(self, user_id: int, window_seconds: int = 3600) -> dict[str, Any]:
+    def get_user_usage(
+        self, user_id: int, window_seconds: int = 3600
+    ) -> dict[str, Any]:
         """Get current usage stats for a user."""
         now = time.time()
         cutoff_time = now - window_seconds
@@ -105,7 +107,9 @@ class RateLimiter:
 
         return {
             "requests_made": len(recent_requests),
-            "requests_remaining": max(0, 30 - len(recent_requests)),  # Default limit of 30
+            "requests_remaining": max(
+                0, 30 - len(recent_requests)
+            ),  # Default limit of 30
             "reset_time": next_reset,
             "window_seconds": window_seconds,
         }
@@ -131,7 +135,9 @@ class SafetyFilter:
 
     def __init__(self):
         self.harmful_regex = re.compile("|".join(self.HARMFUL_PATTERNS), re.IGNORECASE)
-        self.inappropriate_regex = re.compile("|".join(self.INAPPROPRIATE_PATTERNS), re.IGNORECASE)
+        self.inappropriate_regex = re.compile(
+            "|".join(self.INAPPROPRIATE_PATTERNS), re.IGNORECASE
+        )
 
     def check_input(self, text: str) -> bool:
         """Check if input text passes safety filters."""
@@ -145,7 +151,9 @@ class SafetyFilter:
 
         # Check for inappropriate patterns
         if self.inappropriate_regex.search(text):
-            logger.warning(f"Safety filter blocked inappropriate input: {text[:100]}...")
+            logger.warning(
+                f"Safety filter blocked inappropriate input: {text[:100]}..."
+            )
             return False
 
         # Check length limits
@@ -279,7 +287,9 @@ class AIService:
             if moderation_result.level == ModerationLevel.BLOCKED:
                 raise SafetyFilterError(f"Message blocked: {moderation_result.reason}")
             elif moderation_result.level == ModerationLevel.FLAGGED:
-                logger.warning(f"Flagged content from user {user_id}: {moderation_result.reason}")
+                logger.warning(
+                    f"Flagged content from user {user_id}: {moderation_result.reason}"
+                )
                 # Continue but log for review
 
             # Verify thread ownership
@@ -293,7 +303,9 @@ class AIService:
                 raise ValueError("Thread not found or access denied")
 
             # Check message limit per thread
-            message_count = db.query(AIMessage).filter(AIMessage.thread_id == thread_id).count()
+            message_count = (
+                db.query(AIMessage).filter(AIMessage.thread_id == thread_id).count()
+            )
             if message_count >= self.max_messages_per_thread:
                 raise ValueError(
                     f"Thread has reached maximum message limit of {self.max_messages_per_thread}"
@@ -339,7 +351,11 @@ class AIService:
             for msg in reversed(recent_messages):
                 conversation_history.append(
                     AIProviderMessage(
-                        role=MessageRole.USER if msg.role == "user" else MessageRole.ASSISTANT,
+                        role=(
+                            MessageRole.USER
+                            if msg.role == "user"
+                            else MessageRole.ASSISTANT
+                        ),
                         content=msg.content,
                     )
                 )
@@ -363,7 +379,9 @@ class AIService:
 
             try:
                 # Stream the response
-                stream_options = StreamOptions(max_tokens=self.max_tokens_per_request, model=model)
+                stream_options = StreamOptions(
+                    max_tokens=self.max_tokens_per_request, model=model
+                )
 
                 stream_generator = await provider.stream_chat(
                     messages=conversation_history, options=stream_options
@@ -423,9 +441,7 @@ class AIService:
                 )
 
                 # Update message with error
-                ai_message.content = (
-                    "I apologize, but I encountered an error while generating a response."
-                )
+                ai_message.content = "I apologize, but I encountered an error while generating a response."
                 ai_message.error = str(e)
                 ai_message.completed_at = datetime.now(timezone.utc)
 

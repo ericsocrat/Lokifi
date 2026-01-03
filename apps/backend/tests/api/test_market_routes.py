@@ -60,7 +60,9 @@ class TestOHLCEndpoint:
             },
         ]
 
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = mock_data
 
             # Act
@@ -69,7 +71,9 @@ class TestOHLCEndpoint:
             # Assert
             assert result == mock_data
             assert len(result) == 2
-            mock_fetch.assert_called_once_with(symbol="BTCUSD", timeframe="1h", limit=500)
+            mock_fetch.assert_called_once_with(
+                symbol="BTCUSD", timeframe="1h", limit=500
+            )
 
     @pytest.mark.asyncio
     async def test_get_ohlc_with_custom_parameters(self):
@@ -77,7 +81,9 @@ class TestOHLCEndpoint:
         # Arrange
         mock_data = [{"timestamp": "2024-01-01", "open": 50000.0, "close": 50500.0}]
 
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = mock_data
 
             # Act
@@ -91,7 +97,9 @@ class TestOHLCEndpoint:
     async def test_get_ohlc_not_found_error(self):
         """Test OHLC endpoint handles NotFoundError"""
         # Arrange
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.side_effect = NotFoundError("Symbol INVALID not found")
 
             # Act & Assert
@@ -105,7 +113,9 @@ class TestOHLCEndpoint:
     async def test_get_ohlc_provider_error(self):
         """Test OHLC endpoint handles ProviderError"""
         # Arrange
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.side_effect = ProviderError("API provider unavailable")
 
             # Act & Assert
@@ -119,7 +129,9 @@ class TestOHLCEndpoint:
     async def test_get_ohlc_generic_exception(self):
         """Test OHLC endpoint handles unexpected exceptions"""
         # Arrange
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.side_effect = RuntimeError("Unexpected database error")
 
             # Act & Assert
@@ -135,7 +147,9 @@ class TestOHLCEndpoint:
         # Arrange
         mock_data = []
 
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = mock_data
 
             # Act - symbol required, test with default timeframe and limit
@@ -143,14 +157,18 @@ class TestOHLCEndpoint:
             result = await get_ohlc(symbol="ETHUSDT", timeframe="1h", limit=500)
 
             # Assert
-            mock_fetch.assert_called_once_with(symbol="ETHUSDT", timeframe="1h", limit=500)
+            mock_fetch.assert_called_once_with(
+                symbol="ETHUSDT", timeframe="1h", limit=500
+            )
             assert result == []
 
     @pytest.mark.asyncio
     async def test_get_ohlc_empty_result(self):
         """Test OHLC endpoint handles empty data gracefully"""
         # Arrange
-        with patch("app.api.routes.market.fetch_ohlc", new_callable=AsyncMock) as mock_fetch:
+        with patch(
+            "app.api.routes.market.fetch_ohlc", new_callable=AsyncMock
+        ) as mock_fetch:
             mock_fetch.return_value = []
 
             # Act

@@ -61,7 +61,9 @@ class TestRegistrationErrorHandling:
             assert "timeout" not in exc_info.value.detail.lower()
 
     @pytest.mark.asyncio
-    async def test_registration_logs_full_error_details(self, async_mock_db_session, caplog):
+    async def test_registration_logs_full_error_details(
+        self, async_mock_db_session, caplog
+    ):
         """
         Test that registration logs full error details internally.
         Verifies exc_info=True captures stack trace for debugging.
@@ -119,7 +121,9 @@ class TestRegistrationErrorHandling:
             expected_exception = HTTPException(
                 status_code=status.HTTP_409_CONFLICT, detail="User already exists"
             )
-            mock_service.return_value.register_user = AsyncMock(side_effect=expected_exception)
+            mock_service.return_value.register_user = AsyncMock(
+                side_effect=expected_exception
+            )
 
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
@@ -151,7 +155,9 @@ class TestRegistrationErrorHandling:
                 # Simulate deep call stack
                 def nested_error():
                     def inner_error():
-                        raise RuntimeError("app/services/auth_service.py:123 - Database error")
+                        raise RuntimeError(
+                            "app/services/auth_service.py:123 - Database error"
+                        )
 
                     inner_error()
 
@@ -247,13 +253,17 @@ class TestLoginErrorHandling:
         Session 26 pattern: Validation errors bubble up unchanged.
         """
         # Arrange
-        login_data = UserLoginRequest(email="test@example.com", password="WrongPass123!")
+        login_data = UserLoginRequest(
+            email="test@example.com", password="WrongPass123!"
+        )
 
         with patch("app.routers.auth.AuthService") as mock_service:
             expected_exception = HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials"
             )
-            mock_service.return_value.login_user = AsyncMock(side_effect=expected_exception)
+            mock_service.return_value.login_user = AsyncMock(
+                side_effect=expected_exception
+            )
 
             # Act & Assert
             with pytest.raises(HTTPException) as exc_info:
@@ -272,7 +282,9 @@ class TestLoginErrorHandling:
         Security best practice: Same error for "user not found" vs "wrong password".
         """
         # Arrange
-        login_data = UserLoginRequest(email="nonexistent@example.com", password="AnyPass123!")
+        login_data = UserLoginRequest(
+            email="nonexistent@example.com", password="AnyPass123!"
+        )
 
         with patch("app.routers.auth.AuthService") as mock_service:
             # Simulate "user not found" scenario
@@ -299,7 +311,9 @@ class TestGoogleOAuthErrorHandling:
     """Test /google endpoint error handling (Session 26 patterns)"""
 
     @pytest.mark.asyncio
-    async def test_google_oauth_generic_error_on_unexpected_exception(self, async_mock_db_session):
+    async def test_google_oauth_generic_error_on_unexpected_exception(
+        self, async_mock_db_session
+    ):
         """
         Test that Google OAuth returns generic error on unexpected exceptions.
         OWASP A05:2021: No information disclosure to client.
@@ -339,7 +353,10 @@ class TestGoogleOAuthErrorHandling:
                         await google_oauth(oauth_data, async_mock_db_session)
 
                     # Verify generic error message for unexpected exceptions
-                    assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+                    assert (
+                        exc_info.value.status_code
+                        == status.HTTP_500_INTERNAL_SERVER_ERROR
+                    )
                     assert (
                         "An unexpected error occurred during Google authentication"
                         in exc_info.value.detail
@@ -375,7 +392,9 @@ class TestGoogleOAuthErrorHandling:
             assert "Google token verification failed" in exc_info.value.detail
 
     @pytest.mark.asyncio
-    async def test_google_oauth_logs_token_prefix_only(self, async_mock_db_session, caplog):
+    async def test_google_oauth_logs_token_prefix_only(
+        self, async_mock_db_session, caplog
+    ):
         """
         Test that Google OAuth logs token prefix (not full token).
         Security best practice: Don't log sensitive credentials.
@@ -472,7 +491,10 @@ class TestOWASPCompliance:
             assert "Traceback" not in detail
             assert 'File "' not in detail
             assert "line " not in detail
-            assert detail == "Internal server error during registration. Please try again later."
+            assert (
+                detail
+                == "Internal server error during registration. Please try again later."
+            )
 
     @pytest.mark.asyncio
     async def test_no_print_statements_in_error_handling(self):
@@ -506,7 +528,10 @@ class TestOWASPCompliance:
         test_cases = [
             ("Database connection lost", "Internal server error during registration"),
             ("Redis cache unavailable", "Internal server error during login"),
-            ("JWT signing key missing", "Internal server error during Google authentication"),
+            (
+                "JWT signing key missing",
+                "Internal server error during Google authentication",
+            ),
             ("app/models/user.py:45", "Internal server error during registration"),
         ]
 

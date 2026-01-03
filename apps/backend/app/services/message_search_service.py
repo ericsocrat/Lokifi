@@ -47,7 +47,11 @@ class MessageSearchService:
         self.db = db
 
     async def search_messages(
-        self, user_id: uuid.UUID, search_filter: SearchFilter, page: int = 1, page_size: int = 20
+        self,
+        user_id: uuid.UUID,
+        search_filter: SearchFilter,
+        page: int = 1,
+        page_size: int = 20,
     ) -> SearchResult:
         """Search messages with various filters."""
         start_time = datetime.now()
@@ -88,7 +92,9 @@ class MessageSearchService:
             query = query.where(Message.created_at <= search_filter.date_to)
 
         if search_filter.conversation_id:
-            query = query.where(Message.conversation_id == search_filter.conversation_id)
+            query = query.where(
+                Message.conversation_id == search_filter.conversation_id
+            )
 
         # Get total count
         count_query = select(func.count()).select_from(query.subquery())
@@ -97,7 +103,9 @@ class MessageSearchService:
 
         # Apply pagination and ordering
         offset = (page - 1) * page_size
-        query = query.order_by(Message.created_at.desc()).offset(offset).limit(page_size)
+        query = (
+            query.order_by(Message.created_at.desc()).offset(offset).limit(page_size)
+        )
 
         # Execute search
         result = await self.db.execute(query)
@@ -160,7 +168,8 @@ class MessageSearchService:
         stmt = (
             select(Conversation)
             .join(
-                ConversationParticipant, ConversationParticipant.conversation_id == Conversation.id
+                ConversationParticipant,
+                ConversationParticipant.conversation_id == Conversation.id,
             )
             .join(User, ConversationParticipant.user_id == User.id)
             .where(
@@ -187,9 +196,11 @@ class MessageSearchService:
                     "id": str(conv.id),
                     "is_group": conv.is_group,
                     "name": conv.name,
-                    "last_message_at": conv.last_message_at.isoformat()
-                    if conv.last_message_at
-                    else None,
+                    "last_message_at": (
+                        conv.last_message_at.isoformat()
+                        if conv.last_message_at
+                        else None
+                    ),
                 }
             )
 

@@ -24,7 +24,9 @@ def auth_handle_from_header(authorization: str | None) -> str | None:
         return None
 
 
-def require_handle(authorization: str | None, supplied_handle: str | None = None) -> str:
+def require_handle(
+    authorization: str | None, supplied_handle: str | None = None
+) -> str:
     """
     Returns the handle from JWT. If supplied_handle is given, it must match the token handle.
     Raises 401/403 accordingly.

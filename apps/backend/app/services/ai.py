@@ -15,7 +15,9 @@ def _fmt_pct(x: float) -> str:
     return f"{x:+.2f}%"
 
 
-async def _compose_symbol_context(symbol: str, timeframe: str = "1h", limit: int = 200) -> str:
+async def _compose_symbol_context(
+    symbol: str, timeframe: str = "1h", limit: int = 200
+) -> str:
     candles = await prices_svc.get_ohlc(symbol, timeframe, limit)
     if not candles:
         return f"- {symbol}: no market data available.\n"
@@ -51,9 +53,11 @@ async def _compose_symbol_context(symbol: str, timeframe: str = "1h", limit: int
 
     lines = [
         f"- {symbol} ({timeframe}): close={last['c']:.2f} ({_fmt_pct(chg)})",
-        f"  SMA20={s20v:.2f}  SMA50={s50v:.2f}  EMA20={e20v:.2f}  RSI14={rsiv:.1f}"
-        if all(v is not None for v in [s20v, s50v, e20v, rsiv])
-        else "  Indicators: insufficient data",
+        (
+            f"  SMA20={s20v:.2f}  SMA50={s50v:.2f}  EMA20={e20v:.2f}  RSI14={rsiv:.1f}"
+            if all(v is not None for v in [s20v, s50v, e20v, rsiv])
+            else "  Indicators: insufficient data"
+        ),
         f"  Signal: {cross}" if cross else "  Signal: —",
     ]
     if news_lines:
@@ -67,7 +71,8 @@ async def _build_context(ctx_symbols: str | None, timeframe: str = "1h") -> str:
         return ""
     symbols = [s.strip() for s in ctx_symbols.split(",") if s.strip()]
     sections = [
-        await _compose_symbol_context(sym, timeframe=timeframe, limit=200) for sym in symbols[:5]
+        await _compose_symbol_context(sym, timeframe=timeframe, limit=200)
+        for sym in symbols[:5]
     ]
     return "Market context for your query:\n" + "\n".join(sections) + "\n"
 

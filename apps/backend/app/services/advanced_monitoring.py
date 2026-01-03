@@ -176,8 +176,10 @@ class PerformanceAnalyzer:
 
         if len(recent_metrics) >= 10:
             self.performance_baselines = {
-                "cpu_usage": sum(m.cpu_usage for m in recent_metrics) / len(recent_metrics),
-                "memory_usage": sum(m.memory_usage for m in recent_metrics) / len(recent_metrics),
+                "cpu_usage": sum(m.cpu_usage for m in recent_metrics)
+                / len(recent_metrics),
+                "memory_usage": sum(m.memory_usage for m in recent_metrics)
+                / len(recent_metrics),
                 "response_time": sum(
                     (
                         sum(m.response_times.values()) / len(m.response_times)
@@ -201,7 +203,10 @@ class PerformanceAnalyzer:
             anomalies.append("high_cpu_usage")
 
         # Memory usage anomaly
-        if metrics.memory_usage > self.performance_baselines.get("memory_usage", 50) * 1.3:
+        if (
+            metrics.memory_usage
+            > self.performance_baselines.get("memory_usage", 50) * 1.3
+        ):
             anomalies.append("high_memory_usage")
 
         # Response time anomaly
@@ -398,7 +403,8 @@ class AdvancedMonitoringSystem:
             "database_connection_issues",
             lambda m: (
                 self._is_past_startup_grace_period()
-                and m.get("health_status", {}).get("database", {}).get("status") != "healthy"
+                and m.get("health_status", {}).get("database", {}).get("status")
+                != "healthy"
             ),
             "critical",
             2,
@@ -409,7 +415,8 @@ class AdvancedMonitoringSystem:
             "redis_connection_issues",
             lambda m: (
                 self._is_past_startup_grace_period()
-                and m.get("health_status", {}).get("redis", {}).get("status") != "healthy"
+                and m.get("health_status", {}).get("redis", {}).get("status")
+                != "healthy"
             ),
             "warning",
             3,
@@ -419,7 +426,8 @@ class AdvancedMonitoringSystem:
         self.alert_manager.add_rule(
             "slow_api_responses",
             lambda m: any(
-                rt > 1.0 for rt in m.get("system_metrics", {}).get("response_times", {}).values()
+                rt > 1.0
+                for rt in m.get("system_metrics", {}).get("response_times", {}).values()
             ),
             "warning",
             5,
@@ -525,7 +533,9 @@ class AdvancedMonitoringSystem:
                 "packets_sent": network.packets_sent,
                 "packets_recv": network.packets_recv,
             },
-            "active_connections": ws_analytics["connection_stats"]["active_connections"],
+            "active_connections": ws_analytics["connection_stats"][
+                "active_connections"
+            ],
             "database_connections": db_metrics.get("active_connections", 0),
             "cache_hit_rate": redis_metrics.get("hit_rate", 0),
             "response_times": response_times,
@@ -715,7 +725,9 @@ class AdvancedMonitoringSystem:
         """Clean up metrics older than 24 hours"""
         try:
             cutoff_timestamp = int(time.time()) - 86400  # 24 hours ago
-            await advanced_redis_client.invalidate_pattern(f"metrics:{cutoff_timestamp - 3600}*")
+            await advanced_redis_client.invalidate_pattern(
+                f"metrics:{cutoff_timestamp - 3600}*"
+            )
         except Exception as e:
             logger.error(f"Failed to cleanup old metrics: {e}")
 
@@ -726,7 +738,9 @@ class AdvancedMonitoringSystem:
         performance_insights = self.performance_analyzer.get_insights()
 
         # Overall system status
-        all_healthy = all(status.status == "healthy" for status in health_status.values())
+        all_healthy = all(
+            status.status == "healthy" for status in health_status.values()
+        )
         system_status = "healthy" if all_healthy else "degraded"
 
         # Recent alerts

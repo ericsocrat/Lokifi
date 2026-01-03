@@ -70,7 +70,10 @@ class TestForexServiceInit:
 
         assert service.redis_client is None
         assert service.api_key == "8f135e4396d9ef31264e34f0"
-        assert service.base_url == "https://v6.exchangerate-api.com/v6/8f135e4396d9ef31264e34f0"
+        assert (
+            service.base_url
+            == "https://v6.exchangerate-api.com/v6/8f135e4396d9ef31264e34f0"
+        )
         assert service.cache_ttl == 30
         assert (
             len(service.currency_pairs) == 50
@@ -254,7 +257,13 @@ class TestGetForexPairs:
         # Mock API response
         api_response = {
             "result": "success",
-            "conversion_rates": {"EUR": 0.92, "GBP": 0.79, "JPY": 149.50, "CHF": 0.88, "CAD": 1.36},
+            "conversion_rates": {
+                "EUR": 0.92,
+                "GBP": 0.79,
+                "JPY": 149.50,
+                "CHF": 0.88,
+                "CAD": 1.36,
+            },
         }
 
         with patch("httpx.AsyncClient") as MockClient:
@@ -281,7 +290,10 @@ class TestGetForexPairs:
         """Test that limit parameter restricts number of pairs."""
         service = ForexService()
 
-        api_response = {"result": "success", "conversion_rates": {"EUR": 0.92, "GBP": 0.79}}
+        api_response = {
+            "result": "success",
+            "conversion_rates": {"EUR": 0.92, "GBP": 0.79},
+        }
 
         with patch("httpx.AsyncClient") as MockClient:
             mock_client = AsyncMock()
@@ -351,7 +363,10 @@ class TestFetchForexRate:
         service = ForexService()
 
         pair = {"base": "USD", "quote": "EUR", "name": "US Dollar / Euro"}
-        api_response = {"result": "success", "conversion_rates": {"EUR": 0.92, "GBP": 0.79}}
+        api_response = {
+            "result": "success",
+            "conversion_rates": {"EUR": 0.92, "GBP": 0.79},
+        }
 
         mock_client = AsyncMock()
         mock_response = create_mock_response(json_data=api_response)

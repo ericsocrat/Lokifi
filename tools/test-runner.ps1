@@ -108,13 +108,17 @@ param(
     [switch]$Coverage,
     [switch]$Gate,
     [switch]$PreCommit,
+    [switch]$FastCheck,
+    [switch]$Quiet,
     [switch]$Parallel,
     [switch]$Verbose,
     [switch]$Watch,
     [switch]$DryRun,
     [switch]$SelfTest,
     [switch]$CIMode,
-    [int]$Timeout = 300
+    [int]$Timeout = 300,
+    [int]$CoverageThreshold = 15,
+    [switch]$GenerateReport
 )
 
 $ErrorActionPreference = 'Continue'
@@ -242,7 +246,9 @@ function Initialize-TestEnvironment {
     # Use script-level paths configuration
     $Config = $script:Paths
 
-    Write-TestLog 'Initializing test environment...' -Level Info
+    if (-not $Quiet) {
+        Write-TestLog 'Initializing test environment...' -Level Info
+    }
 
     # Validate environment first
     $pythonFound = Get-Command python -ErrorAction SilentlyContinue
@@ -276,7 +282,9 @@ function Initialize-TestEnvironment {
     $env:TESTING = 'true'
     $env:PYTEST_CURRENT_TEST = $true
 
-    Write-TestLog 'Environment ready' -Level Success
+    if (-not $Quiet) {
+        Write-TestLog 'Environment ready' -Level Success
+    }
 }
 
 # ============================================================================
@@ -290,7 +298,8 @@ function Invoke-BackendTests {
         [string]$Match,
         [switch]$Coverage,
         [switch]$Quick,
-        [switch]$Verbose
+        [switch]$Verbose,
+        [switch]$Quiet
     )
 
     # Use script-level paths configuration
@@ -331,20 +340,27 @@ function Invoke-BackendTests {
             $pytestArgs += $Match
         }
 
-        # Verbosity
-        if ($Verbose) {
+        # Verbosity and coverage terminal output
+        if ($Quiet) {
+            $pytestArgs += '-q'
+            $pytestArgs += '--tb=no'
+            $pytestArgs += '--no-header'
+            # Quiet: suppress verbose coverage table, just show summary percentage
+            $pytestArgs += '--cov-report='
+        } elseif ($Verbose) {
             $pytestArgs += '-vv'
             $pytestArgs += '--tb=long'
+            $pytestArgs += '--cov-report=term-missing'
         } else {
             $pytestArgs += '-v'
             $pytestArgs += '--tb=short'
+            $pytestArgs += '--cov-report=term-missing'
         }
 
-        # Coverage
+        # Additional coverage outputs (if explicitly requested)
         if ($Coverage) {
             $pytestArgs += '--cov=app'
             $pytestArgs += '--cov-report=html'
-            $pytestArgs += '--cov-report=term'
             $pytestArgs += "--cov-report=json:$($Config.BackendTestResults)/backend-coverage.json"
         }
 
@@ -361,7 +377,9 @@ function Invoke-BackendTests {
         # Output
         $pytestArgs += "--junit-xml=$($Config.BackendTestResults)/backend-results.xml"
 
-        Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
+        if (-not $Quiet) {
+            Write-TestLog "pytest $($pytestArgs -join ' ')" -Level Info
+        }
 
         & .\venv\Scripts\python.exe -m pytest @pytestArgs | Out-Host
 
@@ -392,7 +410,8 @@ function Invoke-FrontendTests {
         [switch]$Coverage,
         [switch]$Quick,
         [switch]$Verbose,
-        [switch]$Watch
+        [switch]$Watch,
+        [switch]$Quiet
     )
 
     # Use script-level paths configuration
@@ -408,8 +427,8 @@ function Invoke-FrontendTests {
             npm install
         }
 
-        # Build test command
-        $testArgs = @('test')
+        # Build test command - need '--' to separate npm args from vitest args
+        $testArgs = @('test', '--')
 
         if (-not $Watch) {
             $testArgs += '--run'
@@ -437,14 +456,23 @@ function Invoke-FrontendTests {
             $testArgs += '--coverage.reporter=json-summary'
         }
 
-        # Verbosity
-        if ($Verbose) {
+        # Verbosity - use dot reporter for quiet mode (minimal output)
+        if ($Quiet) {
+            $testArgs += '--reporter=dot'
+        } elseif ($Verbose) {
             $testArgs += '--reporter=verbose'
         }
 
-        Write-TestLog "npm $($testArgs -join ' ')" -Level Info
+        if (-not $Quiet) {
+            Write-TestLog "npm $($testArgs -join ' ')" -Level Info
+        }
 
-        npm @testArgs | Out-Host
+        # In Quiet mode, suppress stderr (expected errors from tests)
+        if ($Quiet) {
+            npm @testArgs 2>$null | Out-Host
+        } else {
+            npm @testArgs | Out-Host
+        }
 
         $exitCode = $LASTEXITCODE
 
@@ -536,6 +564,102 @@ function Invoke-QuickTests {
 # Pre-commit Tests
 # ============================================================================
 
+function Invoke-FastQualityChecks {
+    <#
+    .SYNOPSIS
+    Run fast quality checks for pre-commit validation (lint, format, typecheck)
+    #>
+    Write-TestLog 'Running fast quality checks...' -Level Info
+    $Config = $script:Paths
+    $allPassed = $true
+    $startTime = Get-Date
+
+    # Frontend quality checks
+    Write-Host ''
+    Write-Host '📦 Frontend Quality Checks' -ForegroundColor Cyan
+    Write-Host '─────────────────────────────' -ForegroundColor Gray
+
+    Push-Location $Config.FrontendDir
+    try {
+        # TypeScript type checking
+        Write-Host '  🔍 TypeScript type checking...' -ForegroundColor White -NoNewline
+        $typecheckOutput = npm run typecheck 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $typecheckOutput -ForegroundColor Red }
+        }
+
+        # ESLint
+        Write-Host '  🔍 ESLint checking...' -ForegroundColor White -NoNewline
+        $lintOutput = npm run lint 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $lintOutput -ForegroundColor Red }
+        }
+    } finally {
+        Pop-Location
+    }
+
+    # Backend quality checks
+    Write-Host ''
+    Write-Host '🐍 Backend Quality Checks' -ForegroundColor Cyan
+    Write-Host '─────────────────────────────' -ForegroundColor Gray
+
+    Push-Location $Config.BackendDir
+    try {
+        # Activate virtual environment
+        $venvActivate = Join-Path $Config.BackendDir 'venv\Scripts\Activate.ps1'
+        if (Test-Path $venvActivate) {
+            & $venvActivate
+        }
+
+        # Ruff linting
+        Write-Host '  🔍 Ruff linting...' -ForegroundColor White -NoNewline
+        $ruffOutput = ruff check . 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $ruffOutput -ForegroundColor Red }
+        }
+
+        # Black formatting check
+        Write-Host '  🔍 Black formatting...' -ForegroundColor White -NoNewline
+        $blackOutput = black . --check 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $blackOutput -ForegroundColor Red }
+        }
+    } finally {
+        Pop-Location
+    }
+
+    $duration = (Get-Date) - $startTime
+    Write-Host ''
+    Write-Host "⏱️  Duration: $($duration.TotalSeconds.ToString('F2'))s" -ForegroundColor Gray
+    Write-Host ''
+
+    if ($allPassed) {
+        Write-Host '✅ All quality checks passed! 🎉' -ForegroundColor Green
+        Write-TestLog 'Fast quality checks passed!' -Level Success
+        return 0
+    } else {
+        Write-Host '❌ Quality checks failed!' -ForegroundColor Red
+        Write-TestLog 'Fast quality checks failed' -Level Error
+        return 1
+    }
+}
+
 function Invoke-PreCommitTests {
     Write-TestLog 'Running pre-commit test suite...' -Level Info
 
@@ -547,20 +671,30 @@ function Invoke-PreCommitTests {
     )
 
     $allPassed = $true
+    $startTime = Get-Date
 
     foreach ($test in $tests) {
-        Write-TestLog "Running $($test.Name) tests..." -Level Info
+        if (-not $Quiet) {
+            Write-TestLog "Running $($test.Name) tests..." -Level Info
+        }
 
         if ($test.Type -eq 'backend') {
-            $result = Invoke-BackendTests -Category $test.Category -Quick:$test.Quick
+            $result = Invoke-BackendTests -Category $test.Category -Quick:$test.Quick -Quiet:$Quiet
         } else {
-            $result = Invoke-FrontendTests -Category $test.Category -Quick:$test.Quick
+            $result = Invoke-FrontendTests -Category $test.Category -Quick:$test.Quick -Quiet:$Quiet
         }
 
         if ($result -ne 0) {
             $allPassed = $false
             Write-TestLog "$($test.Name) tests failed!" -Level Error
         }
+    }
+
+    $duration = (Get-Date) - $startTime
+
+    if (-not $Quiet) {
+        Write-Host ''
+        Write-Host "⏱️  Duration: $($duration.TotalSeconds.ToString('F2'))s" -ForegroundColor Gray
     }
 
     if ($allPassed) {
@@ -911,8 +1045,8 @@ function Invoke-TestRunner {
     $warnings = @()
     $errorsList = @()
 
-    # Skip header in CI mode
-    if (-not $CIMode) {
+    # Skip header in CI mode or Quiet mode
+    if (-not $CIMode -and -not $Quiet) {
         Write-Host ''
         Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
         Write-Host '║           Lokifi Test Runner - Comprehensive Suite        ║' -ForegroundColor Cyan
@@ -931,7 +1065,17 @@ function Invoke-TestRunner {
 
     try {
         # Handle special modes
-        if ($Smart) {
+        if ($FastCheck) {
+            if ($DryRun) {
+                if (-not $CIMode) {
+                    Write-TestLog 'Would run fast quality checks (lint, format, typecheck)' -Level Info
+                }
+                $testResults = @{ mode = 'fastcheck-dryrun' }
+                $exitCode = 0
+            } else {
+                $exitCode = Invoke-FastQualityChecks
+            }
+        } elseif ($Smart) {
             if ($DryRun) {
                 $changedFiles = Get-ChangedFiles
                 $affectedTests = Get-AffectedTests -ChangedFiles $changedFiles
@@ -1039,13 +1183,15 @@ function Invoke-TestRunner {
             exit $output.exit_code
         }
 
-        # Human-readable output
-        Write-Host ''
-        Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
-        Write-Host '║                     Test Run Complete                      ║' -ForegroundColor Cyan
-        Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
-        Write-Host ''
-        Write-TestLog "Duration: $($duration.TotalSeconds.ToString('0.00'))s" -Level Info
+        # Human-readable output (suppress in Quiet mode except final status)
+        if (-not $Quiet) {
+            Write-Host ''
+            Write-Host '╔════════════════════════════════════════════════════════════╗' -ForegroundColor Cyan
+            Write-Host '║                     Test Run Complete                      ║' -ForegroundColor Cyan
+            Write-Host '╚════════════════════════════════════════════════════════════╝' -ForegroundColor Cyan
+            Write-Host ''
+            Write-TestLog "Duration: $($duration.TotalSeconds.ToString('0.00'))s" -Level Info
+        }
 
         if ($exitCode -eq 0) {
             Write-TestLog 'All tests passed! 🎉' -Level Success
@@ -1053,7 +1199,9 @@ function Invoke-TestRunner {
             Write-TestLog "Tests failed with exit code $exitCode" -Level Error
         }
 
-        Write-Host ''
+        if (-not $Quiet) {
+            Write-Host ''
+        }
 
     } catch {
         $errorsList += $_.Exception.Message

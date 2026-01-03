@@ -87,7 +87,8 @@ class InputValidator:
             if re.search(pattern, text_lower, re.IGNORECASE):
                 logger.warning(f"Potential SQL injection attempt detected: {pattern}")
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid input detected"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid input detected",
                 )
 
         # Check XSS patterns
@@ -95,7 +96,8 @@ class InputValidator:
             if re.search(pattern, text_lower, re.IGNORECASE):
                 logger.warning(f"Potential XSS attempt detected: {pattern}")
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid input detected"
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid input detected",
                 )
 
 

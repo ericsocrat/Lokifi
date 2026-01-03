@@ -111,7 +111,9 @@ class DataProvider(ABC):
                 continue
 
             # Check for invalid OHLC relationships
-            if not (bar.low <= bar.open <= bar.high and bar.low <= bar.close <= bar.high):
+            if not (
+                bar.low <= bar.open <= bar.high and bar.low <= bar.close <= bar.high
+            ):
                 continue
 
             cleaned.append(bar)
@@ -204,7 +206,9 @@ class SingleFlightCache:
         self._cache: dict[str, tuple[Any, float]] = {}
         self._etags: dict[str, str] = {}
 
-    async def get_or_fetch(self, key: str, fetch_func, ttl: int = 300, *args: Any, **kwargs):
+    async def get_or_fetch(
+        self, key: str, fetch_func, ttl: int = 300, *args: Any, **kwargs
+    ):
         """Get from cache or fetch with single-flight protection"""
         now = time.time()
 
@@ -297,7 +301,9 @@ class ProviderManager:
         if last_error:
             raise last_error
 
-        raise ProviderError("No providers available", ProviderErrorCode.PROVIDER_UNAVAILABLE, "all")
+        raise ProviderError(
+            "No providers available", ProviderErrorCode.PROVIDER_UNAVAILABLE, "all"
+        )
 
     async def _get_ohlc_with_failover(
         self,
@@ -315,7 +321,12 @@ class ProviderManager:
                 await provider._rate_limiter.acquire(f"{provider.name}:ohlc")
 
                 bars = await provider._circuit_breaker.call(
-                    provider.get_ohlc, symbol, timeframe, limit, from_timestamp, to_timestamp
+                    provider.get_ohlc,
+                    symbol,
+                    timeframe,
+                    limit,
+                    from_timestamp,
+                    to_timestamp,
                 )
 
                 # Validate data quality
@@ -323,14 +334,21 @@ class ProviderManager:
 
             except Exception as e:
                 last_error = e
-                if isinstance(e, ProviderError) and e.code == ProviderErrorCode.RATE_LIMITED:
+                if (
+                    isinstance(e, ProviderError)
+                    and e.code == ProviderErrorCode.RATE_LIMITED
+                ):
                     # Set backoff for this provider
-                    provider._rate_limiter.set_backoff(f"{provider.name}:ohlc", e.retry_after or 60)
+                    provider._rate_limiter.set_backoff(
+                        f"{provider.name}:ohlc", e.retry_after or 60
+                    )
                 continue
 
         if last_error:
             raise last_error
 
         raise ProviderError(
-            "No providers available for OHLC data", ProviderErrorCode.PROVIDER_UNAVAILABLE, "all"
+            "No providers available for OHLC data",
+            ProviderErrorCode.PROVIDER_UNAVAILABLE,
+            "all",
         )

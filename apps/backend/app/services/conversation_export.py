@@ -50,7 +50,9 @@ class ConversationExporter:
         else:
             return self._do_export(user_id, options, db)
 
-    def _do_export(self, user_id: int, options: ExportOptions, db: Session) -> str | bytes:
+    def _do_export(
+        self, user_id: int, options: ExportOptions, db: Session
+    ) -> str | bytes:
         """Internal export implementation."""
 
         # Get conversations data
@@ -101,7 +103,9 @@ class ConversationExporter:
         conversations = []
         for thread in threads:
             # Get messages for thread
-            messages_query = db.query(AIMessage).filter(AIMessage.thread_id == thread.id)
+            messages_query = db.query(AIMessage).filter(
+                AIMessage.thread_id == thread.id
+            )
 
             if not options.include_system_messages:
                 messages_query = messages_query.filter(AIMessage.role != "system")
@@ -137,10 +141,14 @@ class ConversationExporter:
                         "model": msg.model,
                         "provider": msg.provider,
                         "token_count": msg.token_count,
-                        "completed_at": msg.completed_at.isoformat() if msg.completed_at else None,
+                        "completed_at": (
+                            msg.completed_at.isoformat() if msg.completed_at else None
+                        ),
                         "error": msg.error,
                         "duration": (
-                            msg.duration_seconds if hasattr(msg, "duration_seconds") else None
+                            msg.duration_seconds
+                            if hasattr(msg, "duration_seconds")
+                            else None
                         ),
                     }
 
@@ -150,7 +158,9 @@ class ConversationExporter:
 
         return conversations
 
-    def _export_json(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
+    def _export_json(
+        self, conversations: list[dict[str, Any]], options: ExportOptions
+    ) -> str:
         """Export as JSON."""
         export_data = {
             "exported_at": datetime.now(timezone.utc).isoformat(),
@@ -161,12 +171,21 @@ class ConversationExporter:
 
         return json.dumps(export_data, indent=2, ensure_ascii=False)
 
-    def _export_csv(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
+    def _export_csv(
+        self, conversations: list[dict[str, Any]], options: ExportOptions
+    ) -> str:
         """Export as CSV."""
         output = StringIO()
 
         # CSV headers
-        headers = ["thread_id", "thread_title", "message_id", "role", "content", "created_at"]
+        headers = [
+            "thread_id",
+            "thread_title",
+            "message_id",
+            "role",
+            "content",
+            "created_at",
+        ]
         if options.include_metadata:
             headers.extend(["model", "provider", "token_count", "error"])
 
@@ -200,11 +219,15 @@ class ConversationExporter:
 
         return output.getvalue()
 
-    def _export_markdown(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
+    def _export_markdown(
+        self, conversations: list[dict[str, Any]], options: ExportOptions
+    ) -> str:
         """Export as Markdown."""
         output = []
         output.append("# AI Conversations Export")
-        output.append(f"\nExported at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
+        output.append(
+            f"\nExported at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
         output.append(f"Total conversations: {len(conversations)}\n")
 
         for conv in conversations:
@@ -226,7 +249,9 @@ class ConversationExporter:
 
         return "\n".join(output)
 
-    def _export_html(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
+    def _export_html(
+        self, conversations: list[dict[str, Any]], options: ExportOptions
+    ) -> str:
         """Export as HTML."""
         # Simple HTML conversion without markdown dependency
         output = []
@@ -242,14 +267,18 @@ class ConversationExporter:
         output.append(
             ".assistant { background: #f0f0f0; padding: 10px; border-radius: 5px; margin: 10px 0; }"
         )
-        output.append(".metadata { font-size: 0.8em; color: #666; font-style: italic; }")
+        output.append(
+            ".metadata { font-size: 0.8em; color: #666; font-style: italic; }"
+        )
         output.append("</style></head><body>")
 
         output.append("<h1>AI Conversations Export</h1>")
         output.append(
             f"<p><strong>Exported at:</strong> {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}</p>"
         )
-        output.append(f"<p><strong>Total conversations:</strong> {len(conversations)}</p>")
+        output.append(
+            f"<p><strong>Total conversations:</strong> {len(conversations)}</p>"
+        )
 
         for conv in conversations:
             output.append(f"<h2>{conv['title']}</h2>")
@@ -266,7 +295,9 @@ class ConversationExporter:
                 if options.include_metadata and "metadata" in msg:
                     metadata = msg["metadata"]
                     if metadata.get("model"):
-                        output.append(f"<p class='metadata'>Model: {metadata['model']}</p>")
+                        output.append(
+                            f"<p class='metadata'>Model: {metadata['model']}</p>"
+                        )
 
                 # Convert newlines to HTML breaks
                 content = msg["content"].replace("\n", "<br>")
@@ -277,7 +308,9 @@ class ConversationExporter:
         output.append("</body></html>")
         return "\n".join(output)
 
-    def _export_xml(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
+    def _export_xml(
+        self, conversations: list[dict[str, Any]], options: ExportOptions
+    ) -> str:
         """Export as XML."""
         root = ET.Element("conversations")
         root.set("exported_at", datetime.now(timezone.utc).isoformat())
@@ -310,12 +343,16 @@ class ConversationExporter:
 
         return ET.tostring(root, encoding="unicode", method="xml")
 
-    def _export_txt(self, conversations: list[dict[str, Any]], options: ExportOptions) -> str:
+    def _export_txt(
+        self, conversations: list[dict[str, Any]], options: ExportOptions
+    ) -> str:
         """Export as plain text."""
         output = []
         output.append("AI CONVERSATIONS EXPORT")
         output.append("=" * 50)
-        output.append(f"Exported at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}")
+        output.append(
+            f"Exported at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')}"
+        )
         output.append(f"Total conversations: {len(conversations)}")
         output.append("")
 
@@ -381,12 +418,19 @@ class ConversationImporter:
 
         if db is None:
             with get_session() as session:
-                return self._do_import(user_id, content, format, merge_strategy, session)
+                return self._do_import(
+                    user_id, content, format, merge_strategy, session
+                )
         else:
             return self._do_import(user_id, content, format, merge_strategy, db)
 
     def _do_import(
-        self, user_id: int, content: str | bytes, format: str, merge_strategy: str, db: Session
+        self,
+        user_id: int,
+        content: str | bytes,
+        format: str,
+        merge_strategy: str,
+        db: Session,
     ) -> dict[str, Any]:
         """Internal import implementation."""
 
@@ -432,7 +476,10 @@ class ConversationImporter:
                 if "thread_id" in conv_data:
                     existing_thread = (
                         db.query(AIThread)
-                        .filter(AIThread.id == conv_data["thread_id"], AIThread.user_id == user_id)
+                        .filter(
+                            AIThread.id == conv_data["thread_id"],
+                            AIThread.user_id == user_id,
+                        )
                         .first()
                     )
 
@@ -446,7 +493,9 @@ class ConversationImporter:
                     thread.updated_at = datetime.now(timezone.utc)
 
                     # Delete existing messages
-                    db.query(AIMessage).filter(AIMessage.thread_id == thread.id).delete()
+                    db.query(AIMessage).filter(
+                        AIMessage.thread_id == thread.id
+                    ).delete()
                 else:
                     # Create new thread
                     thread = AIThread(
@@ -487,7 +536,9 @@ class ConversationImporter:
                         message.token_count = metadata.get("token_count")
                         message.error = metadata.get("error")
                         if metadata.get("completed_at"):
-                            message.completed_at = datetime.fromisoformat(metadata["completed_at"])
+                            message.completed_at = datetime.fromisoformat(
+                                metadata["completed_at"]
+                            )
 
                     db.add(message)
                     imported_messages += 1

@@ -146,9 +146,12 @@ async def integration_db_session() -> AsyncGenerator[AsyncSession]:
         pool_pre_ping=True,
     )
 
-    # Create all tables
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Try to connect to database - skip if unavailable
+    try:
+        async with test_engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    except Exception as e:
+        pytest.skip(f"Database unavailable for integration tests: {e}")
 
     # Create session maker
     TestSessionLocal = async_sessionmaker(

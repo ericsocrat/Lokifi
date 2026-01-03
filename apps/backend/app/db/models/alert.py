@@ -12,4 +12,6 @@ class Alert(Base):
     payload_json: Mapped[dict]
     is_active: Mapped[bool] = mapped_column(default=True)
     cooldown_s: Mapped[int] = mapped_column(default=300)
-    created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    created_at: Mapped[str] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )

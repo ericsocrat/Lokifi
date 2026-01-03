@@ -274,7 +274,9 @@ class TestLoginEndpoint:
         assert result.expires_at > 0
 
         # Verify token contains correct handle
-        token_payload = jwt.decode(result.access_token, JWT_SECRET, algorithms=[JWT_ALG])
+        token_payload = jwt.decode(
+            result.access_token, JWT_SECRET, algorithms=[JWT_ALG]
+        )
         assert token_payload["sub"] == "testuser"
 
     @patch("app.api.routes.auth.get_session")

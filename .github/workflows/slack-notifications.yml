@@ -90,11 +90,11 @@ jobs:
             core.setOutput('repo-url', `https://github.com/${context.repo.owner}/${context.repo.repo}`);
 
       - name: 📢 Send Slack notification
-        uses: slackapi/slack-github-action@v1.27.0
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        uses: slackapi/slack-github-action@v1.27.1
         with:
+          # v2 compatibility: webhook inputs (env vars deprecated in v2)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "blocks": [

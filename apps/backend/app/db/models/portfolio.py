@@ -11,7 +11,9 @@ class Portfolio(Base):
     name: Mapped[str] = mapped_column(String(64))
     is_public: Mapped[bool] = mapped_column(default=False)
     benchmark_symbol: Mapped[str | None] = mapped_column(String(16))
-    created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    created_at: Mapped[str] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )
 
 
 class Holding(Base):
@@ -23,4 +25,6 @@ class Holding(Base):
     symbol: Mapped[str] = mapped_column(String(16), index=True)
     quantity: Mapped[float] = mapped_column(Numeric(20, 8))
     cost_basis: Mapped[float] = mapped_column(Numeric(20, 8))
-    created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    created_at: Mapped[str] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )

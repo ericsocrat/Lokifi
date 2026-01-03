@@ -4,6 +4,7 @@
  * between two price points with proper anchoring
  */
 
+import type { BitmapCoordinatesRenderingScope, CanvasRenderingTarget2D } from 'fancy-canvas';
 import type {
   AutoscaleInfo,
   IChartApi,
@@ -71,8 +72,8 @@ class FibonacciPaneRenderer {
     this._options = options;
   }
 
-  draw(target: any) {
-    target.useBitmapCoordinateSpace((scope: any) => {
+  draw(target: CanvasRenderingTarget2D) {
+    target.useBitmapCoordinateSpace((scope: BitmapCoordinatesRenderingScope) => {
       if (
         this._p1.x === null ||
         this._p1.y === null ||
@@ -129,7 +130,7 @@ class FibonacciPaneRenderer {
     });
   }
 
-  private _drawLabel(scope: any, text: string, x: number, y: number) {
+  private _drawLabel(scope: BitmapCoordinatesRenderingScope, text: string, x: number, y: number) {
     const ctx = scope.context;
     ctx.font = `${12 * scope.verticalPixelRatio}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial`;
 
@@ -203,8 +204,8 @@ class FibonacciPaneView {
 }
 
 export class FibonacciPrimitive implements ISeriesPrimitive<Time> {
-  _chart: IChartApi;
-  _series: ISeriesApi<SeriesType>;
+  _chart: IChartApi | null = null;
+  _series: ISeriesApi<SeriesType> | null = null;
   _p1: FibPoint;
   _p2: FibPoint;
   _paneViews: FibonacciPaneView[];
@@ -223,8 +224,7 @@ export class FibonacciPrimitive implements ISeriesPrimitive<Time> {
       ...options,
     };
     this._paneViews = [new FibonacciPaneView(this)];
-    this._chart = null as any;
-    this._series = null as any;
+    // _chart and _series are initialized as null, set in attached()
   }
 
   attached(param: SeriesAttachedParameter<Time>) {
@@ -234,8 +234,8 @@ export class FibonacciPrimitive implements ISeriesPrimitive<Time> {
   }
 
   detached() {
-    this._chart = null as any;
-    this._series = null as any;
+    this._chart = null;
+    this._series = null;
     this._requestUpdate = undefined;
   }
 
@@ -279,6 +279,7 @@ export class FibonacciPrimitive implements ISeriesPrimitive<Time> {
   }
 
   private _pointIndex(p: FibPoint): number | null {
+    if (!this._chart) return null;
     const coordinate = this._chart.timeScale().timeToCoordinate(p.time);
     if (coordinate === null) return null;
     const index = this._chart.timeScale().coordinateToLogical(coordinate);

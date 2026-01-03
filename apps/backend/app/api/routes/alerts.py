@@ -147,7 +147,10 @@ async def stream_alerts(
                             continue
                     yield {"event": "alert", "data": json.dumps(msg)}
                 except TimeoutError:
-                    yield {"event": "keepalive", "data": json.dumps({"ts": time.time()})}
+                    yield {
+                        "event": "keepalive",
+                        "data": json.dumps({"ts": time.time()}),
+                    }
         finally:
             await hub.unregister(q)
 

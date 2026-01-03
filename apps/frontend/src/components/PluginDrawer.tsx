@@ -3,6 +3,7 @@ import { listPlugins } from '@/lib/plugins/plugins';
 import { loadJSON, saveJSON } from '@/lib/utils/storage';
 import React from 'react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Plugin configuration values can be any type
 type ConfigMap = Record<string, Record<string, any>>;
 
 export default function PluginDrawer() {

@@ -32,7 +32,7 @@ export default function SymbolTfBar() {
   React.useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (!menuRef.current) return;
-      if (!menuRef.current.contains(e.target as any)) setShowSymMenu(false);
+      if (!menuRef.current.contains(e.target as Node)) setShowSymMenu(false);
     };
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);

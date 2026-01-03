@@ -137,7 +137,10 @@ class TestComprehensiveHealthCheck:
             assert result["status"] == "degraded"
             assert result["components"]["database"]["status"] == "unhealthy"
             assert "error" in result["components"]["database"]
-            assert "Database connection failed" in result["components"]["database"]["error"]
+            assert (
+                "Database connection failed"
+                in result["components"]["database"]["error"]
+            )
 
             # Redis should still be healthy
             assert result["components"]["redis"]["status"] == "healthy"
@@ -489,8 +492,12 @@ class TestHealthCheckIntegration:
             )
 
             # Assert - Statuses should match
-            assert comprehensive["components"]["database"]["status"] == db_health["status"]
-            assert comprehensive["components"]["redis"]["status"] == redis_health["status"]
+            assert (
+                comprehensive["components"]["database"]["status"] == db_health["status"]
+            )
+            assert (
+                comprehensive["components"]["redis"]["status"] == redis_health["status"]
+            )
 
     @pytest.mark.asyncio
     async def test_multiple_consecutive_health_checks(
@@ -512,7 +519,10 @@ class TestHealthCheckIntegration:
             # Assert - All should be healthy
             for result in results:
                 assert result["status"] == "healthy"
-                assert all(comp["status"] == "healthy" for comp in result["components"].values())
+                assert all(
+                    comp["status"] == "healthy"
+                    for comp in result["components"].values()
+                )
 
             # Assert - Database and Redis called 3 times each
             assert mock_db_session.execute.call_count == 3

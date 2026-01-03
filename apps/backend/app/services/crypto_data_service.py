@@ -164,7 +164,9 @@ class CryptoDataService:
 
         if "data" in data:
             formatted_data = {
-                "total_market_cap": data["data"].get("total_market_cap", {}).get("usd", 0),
+                "total_market_cap": data["data"]
+                .get("total_market_cap", {})
+                .get("usd", 0),
                 "total_volume_24h": data["data"].get("total_volume", {}).get("usd", 0),
                 "bitcoin_dominance": round(
                     data["data"].get("market_cap_percentage", {}).get("btc", 0), 2
@@ -212,13 +214,19 @@ class CryptoDataService:
         return data
 
     async def get_coin_ohlc(
-        self, coin_id: str, vs_currency: str = "usd", days: int = 7, force_refresh: bool = False
+        self,
+        coin_id: str,
+        vs_currency: str = "usd",
+        days: int = 7,
+        force_refresh: bool = False,
     ) -> list[dict]:
         """
         Get OHLC data for charting
         Used by: Charts page
         """
-        cache_key = self._get_cache_key("ohlc", coin_id=coin_id, currency=vs_currency, days=days)
+        cache_key = self._get_cache_key(
+            "ohlc", coin_id=coin_id, currency=vs_currency, days=days
+        )
 
         if not force_refresh:
             cached = await self._get_cached(cache_key)
@@ -261,7 +269,9 @@ class CryptoDataService:
         ids_str = ",".join(coin_ids)
         currencies_str = ",".join(vs_currencies)
 
-        cache_key = self._get_cache_key("simple_price", ids=ids_str, currencies=currencies_str)
+        cache_key = self._get_cache_key(
+            "simple_price", ids=ids_str, currencies=currencies_str
+        )
 
         if not force_refresh:
             cached = await self._get_cached(cache_key)

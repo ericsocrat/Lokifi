@@ -210,6 +210,7 @@ export interface FormFieldState<T = string> {
 /**
  * Generic form state
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Form values can be any type
 export interface FormState<T extends Record<string, any>> {
   fields: { [K in keyof T]: FormFieldState<T[K]> };
   isValid: boolean;

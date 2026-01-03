@@ -92,7 +92,9 @@ def sample_pct_change_alert() -> Alert:
 class TestAlertStore:
     """Test AlertStore persistence and CRUD operations."""
 
-    async def test_initialization(self, alert_store: AlertStore, temp_alert_path: Path) -> None:
+    async def test_initialization(
+        self, alert_store: AlertStore, temp_alert_path: Path
+    ) -> None:
         """Test AlertStore initializes with correct path."""
         assert alert_store.path == temp_alert_path
         assert isinstance(alert_store._alerts, dict)
@@ -109,11 +111,16 @@ class TestAlertStore:
         assert data == {}
 
     async def test_load_reads_existing_alerts(
-        self, alert_store: AlertStore, temp_alert_path: Path, sample_price_threshold_alert: Alert
+        self,
+        alert_store: AlertStore,
+        temp_alert_path: Path,
+        sample_price_threshold_alert: Alert,
     ) -> None:
         """Test load() reads alerts from existing file."""
         # Pre-populate file
-        alert_data = {sample_price_threshold_alert.id: vars(sample_price_threshold_alert)}
+        alert_data = {
+            sample_price_threshold_alert.id: vars(sample_price_threshold_alert)
+        }
         temp_alert_path.parent.mkdir(parents=True, exist_ok=True)
         temp_alert_path.write_text(json.dumps(alert_data))
 
@@ -141,10 +148,15 @@ class TestAlertStore:
         assert data == {}
 
     async def test_save_persists_alerts(
-        self, alert_store: AlertStore, temp_alert_path: Path, sample_price_threshold_alert: Alert
+        self,
+        alert_store: AlertStore,
+        temp_alert_path: Path,
+        sample_price_threshold_alert: Alert,
     ) -> None:
         """Test save() writes alerts to disk."""
-        alert_store._alerts[sample_price_threshold_alert.id] = sample_price_threshold_alert
+        alert_store._alerts[sample_price_threshold_alert.id] = (
+            sample_price_threshold_alert
+        )
 
         await alert_store.save()
 
@@ -160,7 +172,9 @@ class TestAlertStore:
         sample_pct_change_alert: Alert,
     ) -> None:
         """Test list() returns all stored alerts."""
-        alert_store._alerts[sample_price_threshold_alert.id] = sample_price_threshold_alert
+        alert_store._alerts[sample_price_threshold_alert.id] = (
+            sample_price_threshold_alert
+        )
         alert_store._alerts[sample_pct_change_alert.id] = sample_pct_change_alert
 
         alerts = await alert_store.list()
@@ -171,7 +185,10 @@ class TestAlertStore:
         assert sample_pct_change_alert.id in alert_ids
 
     async def test_add_alert(
-        self, alert_store: AlertStore, temp_alert_path: Path, sample_price_threshold_alert: Alert
+        self,
+        alert_store: AlertStore,
+        temp_alert_path: Path,
+        sample_price_threshold_alert: Alert,
     ) -> None:
         """Test add() stores alert and persists to disk."""
         result = await alert_store.add(sample_price_threshold_alert)
@@ -184,10 +201,15 @@ class TestAlertStore:
         assert sample_price_threshold_alert.id in data
 
     async def test_remove_alert_existing(
-        self, alert_store: AlertStore, temp_alert_path: Path, sample_price_threshold_alert: Alert
+        self,
+        alert_store: AlertStore,
+        temp_alert_path: Path,
+        sample_price_threshold_alert: Alert,
     ) -> None:
         """Test remove() deletes existing alert."""
-        alert_store._alerts[sample_price_threshold_alert.id] = sample_price_threshold_alert
+        alert_store._alerts[sample_price_threshold_alert.id] = (
+            sample_price_threshold_alert
+        )
 
         result = await alert_store.remove(sample_price_threshold_alert.id)
 
@@ -208,7 +230,9 @@ class TestAlertStore:
         self, alert_store: AlertStore, sample_price_threshold_alert: Alert
     ) -> None:
         """Test get() retrieves existing alert."""
-        alert_store._alerts[sample_price_threshold_alert.id] = sample_price_threshold_alert
+        alert_store._alerts[sample_price_threshold_alert.id] = (
+            sample_price_threshold_alert
+        )
 
         result = await alert_store.get(sample_price_threshold_alert.id)
 
@@ -223,11 +247,16 @@ class TestAlertStore:
         assert result is None
 
     async def test_set_active_existing_alert(
-        self, alert_store: AlertStore, temp_alert_path: Path, sample_price_threshold_alert: Alert
+        self,
+        alert_store: AlertStore,
+        temp_alert_path: Path,
+        sample_price_threshold_alert: Alert,
     ) -> None:
         """Test set_active() updates alert status."""
         sample_price_threshold_alert.active = True
-        alert_store._alerts[sample_price_threshold_alert.id] = sample_price_threshold_alert
+        alert_store._alerts[sample_price_threshold_alert.id] = (
+            sample_price_threshold_alert
+        )
 
         result = await alert_store.set_active(sample_price_threshold_alert.id, False)
 
@@ -355,7 +384,9 @@ class TestAlertEvaluator:
         assert alert_evaluator.interval_sec == 1
         assert alert_evaluator._task is None
 
-    async def test_start_creates_background_task(self, alert_evaluator: AlertEvaluator) -> None:
+    async def test_start_creates_background_task(
+        self, alert_evaluator: AlertEvaluator
+    ) -> None:
         """Test start() creates background evaluation task."""
         alert_evaluator.start()
 

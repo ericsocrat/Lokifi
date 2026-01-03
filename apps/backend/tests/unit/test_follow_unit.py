@@ -45,10 +45,13 @@ async def test_follow_flow_basic():
                 "username": bob_username,
             },
         )
+        # Skip if server error or database unavailable
+        if r1.status_code >= 500 or r2.status_code >= 500:
+            pytest.skip(
+                "Registration failed due to server error (database may be unavailable)"
+            )
         assert r1.status_code in [200, 201, 409]
         assert r2.status_code in [200, 201, 409]
-        if r1.status_code >= 500 or r2.status_code >= 500:
-            pytest.skip("Registration failed due to server error")
 
         login = await client.post(
             "/api/auth/login", json={"email": alice_email, "password": "TestUser123!"}
@@ -56,7 +59,11 @@ async def test_follow_flow_basic():
         if login.status_code != 200:
             pytest.skip("Login failed; skipping follow flow")
 
-        bob_user_id = r2.json().get("user", {}).get("id") if r2.status_code in [200, 201] else None
+        bob_user_id = (
+            r2.json().get("user", {}).get("id")
+            if r2.status_code in [200, 201]
+            else None
+        )
         if not bob_user_id:
             pytest.skip("Bob user not created; skipping follow flow")
 
@@ -77,7 +84,9 @@ async def test_follow_flow_basic():
         )
         assert follow_resp2.status_code in [200, 409]
 
-        followers_list = await client.get(f"/api/follow/{bob_user_id}/followers", headers=headers)
+        followers_list = await client.get(
+            f"/api/follow/{bob_user_id}/followers", headers=headers
+        )
         assert followers_list.status_code == 200
         data = followers_list.json()
         assert isinstance(data, dict)

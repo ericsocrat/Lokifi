@@ -167,7 +167,8 @@ export class APIClient {
   }
 
   async getSymbols(params?: SymbolSearchRequest): Promise<SymbolsResponse> {
-    const query = params ? new URLSearchParams(params as any).toString() : '';
+    // any required: URLSearchParams constructor doesn't accept typed objects with numbers/booleans
+    const query = params ? new URLSearchParams(params as Record<string, string>).toString() : '';
     return this.request(
       `/api/symbols${query ? `?${query}` : ''}`,
       { method: 'GET' },
@@ -176,7 +177,8 @@ export class APIClient {
   }
 
   async getOHLC(params: OHLCRequest): Promise<OHLCResponse> {
-    const query = new URLSearchParams(params as any).toString();
+    // any required: URLSearchParams constructor doesn't accept typed objects with numbers/booleans
+    const query = new URLSearchParams(params as unknown as Record<string, string>).toString();
     return this.request(`/api/ohlc?${query}`, { method: 'GET' }, OHLCResponseSchema);
   }
 

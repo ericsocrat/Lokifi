@@ -62,7 +62,8 @@ export default function ExportImportPanel() {
       e.target.value = ''; // reset file input
       alert('Imported scene.');
     } catch (err) {
-      alert('Failed to import: ' + (err as any)?.message);
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      alert('Failed to import: ' + message);
     }
   };
 
