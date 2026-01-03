@@ -91,10 +91,10 @@ jobs:
 
       - name: 📢 Send Slack notification
         uses: slackapi/slack-github-action@v1.27.1
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
         with:
+          # v2 compatibility: webhook inputs (env vars deprecated in v2)
+          webhook: ${{ secrets.SLACK_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
           payload: |
             {
               "blocks": [
