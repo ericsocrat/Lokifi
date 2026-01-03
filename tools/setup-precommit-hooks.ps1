@@ -260,17 +260,6 @@ if [ -f "`$PROTECTION_SCRIPT" ]; then
         echo ""
         echo "✅ All comprehensive checks passed! Push allowed."
         echo ""
-
-        # Also run tests if available
-        echo "🧪 Running test suite..."
-        if [ -f "`$LOKIFI_SCRIPT" ]; then
-            if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$LOKIFI_SCRIPT" test -Quick; then
-                echo "✅ Tests passed!"
-            else
-                echo "⚠️  Some tests failed, but push allowed (check CI results)"
-            fi
-        fi
-
         exit 0
     else
         echo ""
