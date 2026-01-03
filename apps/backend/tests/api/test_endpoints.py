@@ -6,6 +6,8 @@ Simple health check test
 import os
 import sys
 
+import pytest
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -48,16 +50,16 @@ def test_endpoints():
         print(f"✅ Settings: {settings.PROJECT_NAME}")
 
         print("\n🎯 ALL COMPONENTS WORKING!")
-        return True
+        # Test passes implicitly if we reach here without exception
 
     except Exception as e:
-        print(f"❌ Error: {e}")
         import traceback
 
         traceback.print_exc()
-        return False
+        pytest.fail(f"Endpoint test failed: {e}")
 
 
 if __name__ == "__main__":
-    success = test_endpoints()
-    print(f"\n{'✅ SUCCESS' if success else '❌ FAILED'}")
+    import pytest
+
+    pytest.main([__file__, "-v"])
