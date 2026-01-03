@@ -130,6 +130,18 @@ class AIProviderManager:
         logger.warning("All providers failed, falling back to mock provider")
         return self.providers["mock"]
 
+    async def get_primary_provider(self) -> AIProvider | None:
+        """Get the primary (best available) AI provider.
+
+        Returns the best available provider, or None if no providers are available.
+        This is an alias for get_best_provider() for backward compatibility.
+        """
+        try:
+            return await self.get_best_provider()
+        except Exception as e:
+            logger.error(f"Error getting primary provider: {e}")
+            return None
+
     def get_provider_by_name(self, name: str) -> AIProvider | None:
         """Get a specific provider by name."""
         return self.providers.get(name)

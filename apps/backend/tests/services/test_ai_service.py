@@ -692,7 +692,9 @@ class TestSendMessageCoreFlow:
                 # Provider raises error
                 mock_get_provider.side_effect = Exception("Provider unavailable")
 
-                with pytest.raises(Exception, match="Provider unavailable"):
+                with pytest.raises(
+                    Exception, match="AI service temporarily unavailable"
+                ):
                     async for _ in ai_service.send_message(user_id, thread_id, message):
                         pass
 

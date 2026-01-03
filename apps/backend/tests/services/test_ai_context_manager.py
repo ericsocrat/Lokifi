@@ -285,9 +285,11 @@ class TestGetConversationContext:
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = sample_ai_messages[
-                :2
-            ]
+            # Mock returns messages in reverse chronological order (newest first)
+            # as the query uses order_by(desc(created_at))
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = list(
+                reversed(sample_ai_messages[:2])
+            )
             mock_query.filter.return_value.count.return_value = 2
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
@@ -296,7 +298,7 @@ class TestGetConversationContext:
                 thread_id=1, user_id=123
             )
 
-            # Check role conversion
+            # Check role conversion - messages are in chronological order (oldest first)
             assert messages[0].role == MessageRole.USER
             assert messages[1].role == MessageRole.ASSISTANT
 

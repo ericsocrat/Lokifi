@@ -50,7 +50,7 @@ def sample_crypto_asset():
 
 @pytest.fixture
 def sample_coingecko_response():
-    """Sample CoinGecko API response."""
+    """Sample CoinGecko API response (raw from API - lowercase symbols)."""
     return [
         {
             "id": "bitcoin",
@@ -67,6 +67,37 @@ def sample_coingecko_response():
         {
             "id": "ethereum",
             "symbol": "eth",
+            "name": "Ethereum",
+            "market_cap_rank": 2,
+            "current_price": 3500.0,
+            "market_cap": 420000000000.0,
+            "total_volume": 15000000000.0,
+            "price_change_24h": -50.0,
+            "price_change_percentage_24h": -1.41,
+            "image": "https://example.com/ethereum.png",
+        },
+    ]
+
+
+@pytest.fixture
+def sample_cached_response():
+    """Sample cached response (uppercase symbols as stored in cache)."""
+    return [
+        {
+            "id": "bitcoin",
+            "symbol": "BTC",
+            "name": "Bitcoin",
+            "market_cap_rank": 1,
+            "current_price": 65000.0,
+            "market_cap": 1250000000000.0,
+            "total_volume": 25000000000.0,
+            "price_change_24h": 1500.0,
+            "price_change_percentage_24h": 2.35,
+            "image": "https://example.com/bitcoin.png",
+        },
+        {
+            "id": "ethereum",
+            "symbol": "ETH",
             "name": "Ethereum",
             "market_cap_rank": 2,
             "current_price": 3500.0,
@@ -122,7 +153,7 @@ class TestCryptoAssetDataclass:
         assert crypto_dict["name"] == "Bitcoin"
         assert crypto_dict["current_price"] == 65000.0
 
-    def test_crypto_asset_with_zero_values():
+    def test_crypto_asset_with_zero_values(self):
         """Test CryptoAsset with zero/default values."""
         crypto = CryptoAsset(
             id="test-coin",
@@ -206,9 +237,8 @@ class TestCryptoMetrics:
         assert stats["cache_hits"] == 0
         assert stats["cache_hit_rate"] == "0.0%"  # Should not raise ZeroDivisionError
 
-    def test_global_metrics_instance():
+    def test_global_metrics_instance(self):
         """Test that crypto_metrics is a global instance."""
-
         assert isinstance(crypto_metrics, CryptoMetrics)
 
 
@@ -347,10 +377,10 @@ class TestGetTopCryptos:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_top_cryptos_cache_hit(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test getting top cryptos from cache."""
-        mock_redis.get = AsyncMock(return_value=sample_coingecko_response)
+        mock_redis.get = AsyncMock(return_value=sample_cached_response)
 
         cryptos = await crypto_service.get_top_cryptos(limit=2)
 
@@ -362,16 +392,16 @@ class TestGetTopCryptos:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_top_cryptos_force_refresh(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test force refresh bypasses cache."""
-        mock_redis.get = AsyncMock(return_value=sample_coingecko_response)
+        mock_redis.get = AsyncMock(return_value=sample_cached_response)
         mock_redis.set = AsyncMock()
 
         with patch.object(
             crypto_service, "_fetch_top_cryptos", new_callable=AsyncMock
         ) as mock_fetch:
-            mock_fetch.return_value = [CryptoAsset(**sample_coingecko_response[0])]
+            mock_fetch.return_value = [CryptoAsset(**sample_cached_response[0])]
 
             cryptos = await crypto_service.get_top_cryptos(limit=1, force_refresh=True)
 
@@ -382,7 +412,7 @@ class TestGetTopCryptos:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_top_cryptos_api_fetch_success(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test successful API fetch when cache miss."""
         mock_redis.get = AsyncMock(return_value=None)  # Cache miss
@@ -391,9 +421,7 @@ class TestGetTopCryptos:
         with patch.object(
             crypto_service, "_fetch_top_cryptos", new_callable=AsyncMock
         ) as mock_fetch:
-            expected_cryptos = [
-                CryptoAsset(**coin) for coin in sample_coingecko_response
-            ]
+            expected_cryptos = [CryptoAsset(**coin) for coin in sample_cached_response]
             mock_fetch.return_value = expected_cryptos
 
             cryptos = await crypto_service.get_top_cryptos(limit=2)
@@ -591,10 +619,10 @@ class TestGetCryptoBySymbol:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_crypto_by_symbol_found(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test finding crypto by symbol."""
-        mock_redis.get = AsyncMock(return_value=sample_coingecko_response)
+        mock_redis.get = AsyncMock(return_value=sample_cached_response)
 
         crypto = await crypto_service.get_crypto_by_symbol("BTC")
 
@@ -605,10 +633,10 @@ class TestGetCryptoBySymbol:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_crypto_by_symbol_lowercase(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test symbol search is case-insensitive."""
-        mock_redis.get = AsyncMock(return_value=sample_coingecko_response)
+        mock_redis.get = AsyncMock(return_value=sample_cached_response)
 
         crypto = await crypto_service.get_crypto_by_symbol("btc")
 
@@ -618,10 +646,10 @@ class TestGetCryptoBySymbol:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_crypto_by_symbol_not_found(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test symbol not found returns None."""
-        mock_redis.get = AsyncMock(return_value=sample_coingecko_response)
+        mock_redis.get = AsyncMock(return_value=sample_cached_response)
 
         crypto = await crypto_service.get_crypto_by_symbol("NOTFOUND")
 
@@ -811,10 +839,10 @@ class TestGetSymbolToIdMapping:
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_symbol_to_id_mapping(
-        self, mock_redis, crypto_service, sample_coingecko_response
+        self, mock_redis, crypto_service, sample_cached_response
     ):
         """Test creating symbol to ID mapping."""
-        mock_redis.get = AsyncMock(return_value=sample_coingecko_response)
+        mock_redis.get = AsyncMock(return_value=sample_cached_response)
 
         mapping = await crypto_service.get_symbol_to_id_mapping()
 
@@ -827,11 +855,18 @@ class TestGetSymbolToIdMapping:
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
     async def test_get_symbol_to_id_mapping_empty(self, mock_redis, crypto_service):
         """Test mapping with no cryptos."""
-        mock_redis.get = AsyncMock(return_value=[])
+        # Cache returns None (miss), and API fetch returns empty list
+        mock_redis.get = AsyncMock(return_value=None)
+        mock_redis.set = AsyncMock()
 
-        mapping = await crypto_service.get_symbol_to_id_mapping()
+        with patch.object(
+            crypto_service, "_fetch_top_cryptos", new_callable=AsyncMock
+        ) as mock_fetch:
+            mock_fetch.return_value = []  # No cryptos from API
 
-        assert mapping == {}
+            mapping = await crypto_service.get_symbol_to_id_mapping()
+
+            assert mapping == {}
 
 
 # ============================================================================
@@ -900,7 +935,7 @@ class TestEdgeCases:
         assert cryptos[0].current_price == 0
         assert cryptos[0].image == ""
 
-    def test_crypto_asset_symbol_uppercase():
+    def test_crypto_asset_symbol_uppercase(self):
         """Test symbol is converted to uppercase in _fetch_top_cryptos."""
         # This is tested implicitly in fetch tests, but worth documenting
         crypto = CryptoAsset(
