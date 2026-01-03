@@ -159,6 +159,10 @@ function createMockTrade(overrides?: Partial<PaperTrade>): PaperTrade {
 
 describe('paperTradingStore', () => {
   beforeEach(() => {
+    // Mock Math.random to always return a value >= 0.05
+    // This prevents the 5% random order rejection in simulateOrderExecution
+    vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
     // Reset store to initial state before each test
     usePaperTradingStore.setState({
       accounts: [],
