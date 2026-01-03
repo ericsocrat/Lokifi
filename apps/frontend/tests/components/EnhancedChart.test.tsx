@@ -4,22 +4,41 @@ import { jest } from '@jest/globals';
 import '@testing-library/jest-dom';
 import EnhancedChart from '../components/EnhancedChart';
 
-// Mock the lightweight-charts library
-jest.mock('lightweight-charts', () => ({
-  createChart: jest.fn(() => ({
-    addCandlestickSeries: jest.fn(() => ({
-      setData: jest.fn(),
-      coordinateToPrice: jest.fn(() => 100),
+// Mock the lightweight-charts library - v5 API
+jest.mock('lightweight-charts', () => {
+  // Define Series type symbols
+  const CandlestickSeriesSymbol = Symbol('CandlestickSeries');
+  const LineSeriesSymbol = Symbol('LineSeries');
+  const HistogramSeriesSymbol = Symbol('HistogramSeries');
+  const AreaSeriesSymbol = Symbol('AreaSeries');
+
+  return {
+    createChart: jest.fn(() => ({
+      // v5 unified API
+      addSeries: jest.fn((_seriesType: symbol, _options?: any) => ({
+        setData: jest.fn(),
+        coordinateToPrice: jest.fn(() => 100),
+      })),
+      // Legacy methods for backward compatibility
+      addCandlestickSeries: jest.fn(() => ({
+        setData: jest.fn(),
+        coordinateToPrice: jest.fn(() => 100),
+      })),
+      subscribeClick: jest.fn(),
+      unsubscribeClick: jest.fn(),
+      remove: jest.fn(),
+      applyOptions: jest.fn(),
     })),
-    subscribeClick: jest.fn(),
-    unsubscribeClick: jest.fn(),
-    remove: jest.fn(),
-    applyOptions: jest.fn(),
-  })),
-  ColorType: {
-    Solid: 'solid',
-  },
-}));
+    // v5 Series type exports
+    CandlestickSeries: CandlestickSeriesSymbol,
+    LineSeries: LineSeriesSymbol,
+    HistogramSeries: HistogramSeriesSymbol,
+    AreaSeries: AreaSeriesSymbol,
+    ColorType: {
+      Solid: 'solid',
+    },
+  };
+});
 
 // Mock the stores
 jest.mock('../lib/drawingStore', () => ({

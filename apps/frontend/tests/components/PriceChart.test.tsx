@@ -4,8 +4,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import PriceChart from '../../src/components/PriceChart';
 import { useChartStore } from '../../src/state/store';
 
-// Mock lightweight-charts with comprehensive API
+// Mock lightweight-charts with v5 API (addSeries instead of addCandlestickSeries, etc.)
 vi.mock('lightweight-charts', () => {
+  // Define Series type symbols INSIDE the mock factory (vi.mock is hoisted)
+  const CandlestickSeriesSymbol = Symbol('CandlestickSeries');
+  const LineSeriesSymbol = Symbol('LineSeries');
+  const HistogramSeriesSymbol = Symbol('HistogramSeries');
+  const AreaSeriesSymbol = Symbol('AreaSeries');
+
   const mockChart: any = {}; // Define early so series can reference it
 
   // Series need to have a chart() method that returns the chart instance
@@ -17,7 +23,22 @@ vi.mock('lightweight-charts', () => {
     ...additionalMethods,
   });
 
+  // v5 unified addSeries API - takes SeriesType as first arg, options as second
+  const addSeriesMock = vi.fn((_seriesType: symbol, _options?: any) => {
+    // All series types get consistent mock with extended methods
+    return createSeries({
+      priceToCoordinate: vi.fn(() => 100),
+      coordinateToPrice: vi.fn(() => 50000),
+      priceScale: vi.fn(() => ({
+        applyOptions: vi.fn(),
+      })),
+    });
+  });
+
   Object.assign(mockChart, {
+    // v5 unified API
+    addSeries: addSeriesMock,
+    // Keep legacy methods for backward compatibility if needed
     addCandlestickSeries: vi.fn(() =>
       createSeries({
         priceToCoordinate: vi.fn(() => 100),
@@ -53,6 +74,11 @@ vi.mock('lightweight-charts', () => {
   return {
     // Named export
     createChart: vi.fn(() => mockChart),
+    // v5 Series type exports - these are passed to addSeries()
+    CandlestickSeries: CandlestickSeriesSymbol,
+    LineSeries: LineSeriesSymbol,
+    HistogramSeries: HistogramSeriesSymbol,
+    AreaSeries: AreaSeriesSymbol,
     // Export other needed items
     ColorType: {
       Solid: 'Solid',
@@ -227,11 +253,10 @@ describe('PriceChart Component', () => {
       await waitFor(() => {
         const mockChart = (createChart as any).mock.results[0].value;
 
-        // Verify candlestick series added
-        expect(mockChart.addCandlestickSeries).toHaveBeenCalled();
-
-        // Verify histogram series added (for volume)
-        expect(mockChart.addHistogramSeries).toHaveBeenCalled();
+        // v5 uses addSeries() instead of addCandlestickSeries/addHistogramSeries
+        expect(mockChart.addSeries).toHaveBeenCalled();
+        // At minimum: candlestick + histogram = 2 calls
+        expect(mockChart.addSeries.mock.calls.length).toBeGreaterThanOrEqual(2);
       });
     });
   });
@@ -312,11 +337,11 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Bollinger Bands creates 3 line series (upper, middle, lower)
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(3);
 
         // Verify at least one line series was created for BB
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
       });
     });
 
@@ -338,10 +363,10 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // VWAP creates 1 line series
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
 
         // Verify line series was created
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
@@ -364,10 +389,10 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // VWMA creates 1 line series
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
 
         // Verify line series was created
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
@@ -390,11 +415,11 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Std Dev Channels creates 3 line series (upper, middle, lower)
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(3);
 
         // Verify line series was created
-        expect(chartMock.addLineSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
       });
     });
   });
@@ -676,7 +701,7 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // All 4 indicators enabled = 3 BB lines + 1 VWAP + 1 VWMA + 3 Std Dev = 8 line series
-        const addLineSeriesCalls = chartMock.addLineSeries.mock.calls;
+        const addLineSeriesCalls = chartMock.addSeries.mock.calls;
         expect(addLineSeriesCalls.length).toBeGreaterThanOrEqual(6);
       });
     });
@@ -725,7 +750,7 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Verify histogram series was created for volume
-        expect(chartMock.addHistogramSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
       });
     });
 
@@ -739,11 +764,11 @@ describe('PriceChart Component', () => {
         expect(chartMock).toBeDefined();
 
         // Verify histogram series created
-        expect(chartMock.addHistogramSeries).toHaveBeenCalled();
+        expect(chartMock.addSeries).toHaveBeenCalled();
 
         // Volume bars colored based on price direction is implementation detail
         // Verified by histogram series creation
-        const addHistogramCalls = chartMock.addHistogramSeries.mock.calls;
+        const addHistogramCalls = chartMock.addSeries.mock.calls;
         expect(addHistogramCalls.length).toBeGreaterThanOrEqual(1);
       });
     });
@@ -794,7 +819,7 @@ describe('PriceChart Component', () => {
           // Get chartMock from the mock results
           const chartMock = (createChart as any).mock.results[0]?.value;
           // Only candlestick and histogram series should be created
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           // No RSI lines should exist
           const hasRSILine = lineCalls.some((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
           expect(hasRSILine).toBe(false);
@@ -845,7 +870,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(0);
 
           // Verify RSI line (orange)
@@ -916,7 +941,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
           expect(rsiLine[0].title).toBe('RSI(7)'); // Verify custom period in title
@@ -969,7 +994,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           const rsiLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(255, 152, 0)');
           expect(rsiLine).toBeDefined();
         },
@@ -1038,7 +1063,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(5); // BB (3) + VWAP (1) + RSI (3) = 7+
 
           // Verify RSI line exists
@@ -1105,8 +1130,8 @@ describe('PriceChart Component', () => {
         () => {
           // Get chartMock from the mock results
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const histogramCalls = chartMock.addSeries.mock.calls;
 
           // No MACD line (blue) should exist
           const hasMACDLine = lineCalls.some((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
@@ -1169,8 +1194,8 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const histogramCalls = chartMock.addSeries.mock.calls;
 
           expect(lineCalls.length).toBeGreaterThan(0);
           expect(histogramCalls.length).toBeGreaterThan(1); // Volume + MACD histogram
@@ -1243,7 +1268,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
           expect(macdLine[0].title).toBe('MACD(5,13,5)'); // Verify custom periods in title
@@ -1300,7 +1325,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           const macdLine = lineCalls.find((call: any) => call[0]?.color === 'rgb(33, 150, 243)');
           expect(macdLine).toBeDefined();
         },
@@ -1373,8 +1398,8 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
-          const histogramCalls = chartMock.addHistogramSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
+          const histogramCalls = chartMock.addSeries.mock.calls;
 
           // RSI: 3 lines (RSI, overbought, oversold)
           // MACD: 2 lines (MACD, Signal)
@@ -1451,7 +1476,7 @@ describe('PriceChart Component', () => {
         () => {
           // Get chartMock from the mock results
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           // No BB lines should exist (middle=orange, upper/lower=blue)
           const hasBBMiddle = lineCalls.some(
             (call: any) =>
@@ -1509,7 +1534,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           expect(lineCalls.length).toBeGreaterThan(0);
 
           // Verify BB Middle line (orange)
@@ -1580,7 +1605,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period/multiplier reflected in title
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
@@ -1639,7 +1664,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
           expect(bbMiddle).toBeDefined();
         },
@@ -1712,7 +1737,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
@@ -1789,7 +1814,7 @@ describe('PriceChart Component', () => {
 
       // Verify no Stochastic series created
       const chartMock = (createChart as any).mock.results[0]?.value;
-      const lineCalls = chartMock.addLineSeries.mock.calls;
+      const lineCalls = chartMock.addSeries.mock.calls;
       const stochasticK = lineCalls.find((call: any) => call[0]?.title?.includes('%K'));
       const stochasticD = lineCalls.find((call: any) => call[0]?.title?.includes('%D'));
 
@@ -1844,7 +1869,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify %K line exists (blue)
           const kLine = lineCalls.find(
@@ -1861,7 +1886,7 @@ describe('PriceChart Component', () => {
           expect(dLine).toBeDefined();
 
           // Verify data was set for both lines
-          const setDataCalls = chartMock.addLineSeries.mock.results;
+          const setDataCalls = chartMock.addSeries.mock.results;
           expect(setDataCalls.length).toBeGreaterThan(0);
         },
         { timeout: 1000 }
@@ -1914,7 +1939,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
           const kLine = lineCalls.find((call: any) => call[0]?.title?.includes('%K(21)'));
@@ -2047,7 +2072,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
@@ -2138,7 +2163,7 @@ describe('PriceChart Component', () => {
 
       // Verify no ADX series created
       const chartMock = (createChart as any).mock.results[0]?.value;
-      const lineCalls = chartMock.addLineSeries.mock.calls;
+      const lineCalls = chartMock.addSeries.mock.calls;
       const adxLine = lineCalls.find((call: any) => call[0]?.title?.includes('ADX'));
 
       expect(adxLine).toBeUndefined();
@@ -2193,7 +2218,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify ADX line exists (purple)
           const adxLine = lineCalls.find(
@@ -2203,7 +2228,7 @@ describe('PriceChart Component', () => {
           expect(adxLine).toBeDefined();
 
           // Verify data was set for ADX line
-          const setDataCalls = chartMock.addLineSeries.mock.results;
+          const setDataCalls = chartMock.addSeries.mock.results;
           expect(setDataCalls.length).toBeGreaterThan(0);
         },
         { timeout: 1000 }
@@ -2258,7 +2283,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
           const adxLine = lineCalls.find((call: any) => call[0]?.title?.includes('ADX(20)'));
@@ -2392,7 +2417,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
@@ -2485,7 +2510,7 @@ describe('PriceChart Component', () => {
 
       // Verify no CCI series created
       const chartMock = (createChart as any).mock.results[0]?.value;
-      const lineCalls = chartMock.addLineSeries.mock.calls;
+      const lineCalls = chartMock.addSeries.mock.calls;
       const cciLine = lineCalls.find((call: any) => call[0]?.title?.includes('CCI'));
 
       expect(cciLine).toBeUndefined();
@@ -2542,7 +2567,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify CCI line exists (blue-violet)
           const cciLine = lineCalls.find(
@@ -2552,7 +2577,7 @@ describe('PriceChart Component', () => {
           expect(cciLine).toBeDefined();
 
           // Verify data was set for CCI line
-          const setDataCalls = chartMock.addLineSeries.mock.results;
+          const setDataCalls = chartMock.addSeries.mock.results;
           expect(setDataCalls.length).toBeGreaterThan(0);
         },
         { timeout: 1000 }
@@ -2609,7 +2634,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify custom period appears in title
           const cciLine = lineCalls.find((call: any) => call[0]?.title?.includes('CCI(30)'));
@@ -2747,7 +2772,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
@@ -2893,7 +2918,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find Williams %R line (purple color)
           const williamsRLine = lineCalls.find(
@@ -2960,7 +2985,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find Williams %R line with custom period
           const williamsRLine = lineCalls.find(
@@ -3107,7 +3132,7 @@ describe('PriceChart Component', () => {
       await waitFor(
         () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
@@ -3272,7 +3297,7 @@ describe('PriceChart Component', () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
 
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Find A/D Line (indigo color)
           const adLineLine = lineCalls.find(
@@ -3428,7 +3453,7 @@ describe('PriceChart Component', () => {
           const chartMock = (createChart as any).mock.results[0]?.value;
           expect(chartMock).toBeDefined();
 
-          const lineCalls = chartMock.addLineSeries.mock.calls;
+          const lineCalls = chartMock.addSeries.mock.calls;
 
           // Verify BB Middle exists
           const bbMiddle = lineCalls.find((call: any) => call[0]?.title?.includes('BB Mid'));
