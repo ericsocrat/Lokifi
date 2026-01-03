@@ -13,7 +13,8 @@ class Settings(BaseSettings):
 
     # Phase J: Database Configuration
     DATABASE_URL: str = Field(
-        default="postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi", alias="DATABASE_URL"
+        default="postgresql+asyncpg://lokifi:lokifi2025@localhost:5432/lokifi",
+        alias="DATABASE_URL",
     )
 
     # Production Database Settings
@@ -29,13 +30,17 @@ class Settings(BaseSettings):
     # Storage and Archival Settings
     ENABLE_DATA_ARCHIVAL: bool = Field(default=False, alias="ENABLE_DATA_ARCHIVAL")
     ARCHIVE_THRESHOLD_DAYS: int = Field(default=365, alias="ARCHIVE_THRESHOLD_DAYS")
-    DELETE_THRESHOLD_DAYS: int = Field(default=2555, alias="DELETE_THRESHOLD_DAYS")  # 7 years
+    DELETE_THRESHOLD_DAYS: int = Field(
+        default=2555, alias="DELETE_THRESHOLD_DAYS"
+    )  # 7 years
 
     # Cloud Storage Settings (Optional)
     AWS_S3_BUCKET: str | None = Field(default=None, alias="AWS_S3_BUCKET")
     AWS_CLOUDFRONT_URL: str | None = Field(default=None, alias="AWS_CLOUDFRONT_URL")
     AWS_ACCESS_KEY_ID: str | None = Field(default=None, alias="AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: str | None = Field(default=None, alias="AWS_SECRET_ACCESS_KEY")
+    AWS_SECRET_ACCESS_KEY: str | None = Field(
+        default=None, alias="AWS_SECRET_ACCESS_KEY"
+    )
 
     # Phase J: Authentication - Must be set via environment variable
     JWT_SECRET_KEY: str | None = Field(default=None, alias="JWT_SECRET_KEY")
@@ -57,11 +62,17 @@ class Settings(BaseSettings):
     # Phase J: AI Providers
     OPENROUTER_API_KEY: str | None = Field(default=None, alias="OPENROUTER_API_KEY")
     HUGGING_FACE_API_KEY: str | None = Field(default=None, alias="HUGGING_FACE_API_KEY")
-    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434", alias="OLLAMA_BASE_URL")
+    OLLAMA_BASE_URL: str = Field(
+        default="http://localhost:11434", alias="OLLAMA_BASE_URL"
+    )
 
     # Frontend origin and CORS settings
-    frontend_origin: str = Field(default="http://localhost:3000", alias="FRONTEND_ORIGIN")
-    CORS_ORIGINS: list[str] = Field(default=["http://localhost:3000"], alias="CORS_ORIGINS")
+    frontend_origin: str = Field(
+        default="http://localhost:3000", alias="FRONTEND_ORIGIN"
+    )
+    CORS_ORIGINS: list[str] = Field(
+        default=["http://localhost:3000"], alias="CORS_ORIGINS"
+    )
 
     # Redis (for caching, pub/sub, etc.)
     redis_url: str = Field(default="redis://localhost:6379/0", alias="REDIS_URL")
@@ -69,7 +80,9 @@ class Settings(BaseSettings):
     redis_port: int = Field(default=6379, alias="REDIS_PORT")
     redis_password: str | None = Field(default=None, alias="REDIS_PASSWORD")
     redis_sentinel_hosts: list[str] = Field(default=[], alias="REDIS_SENTINEL_HOSTS")
-    redis_sentinel_service: str = Field(default="mymaster", alias="REDIS_SENTINEL_SERVICE")
+    redis_sentinel_service: str = Field(
+        default="mymaster", alias="REDIS_SENTINEL_SERVICE"
+    )
 
     # OpenAI / LLM integration
     openai_api_key: str | None = Field(default=None, alias="OPENAI_API_KEY")
@@ -86,7 +99,9 @@ class Settings(BaseSettings):
     MARKETAUX_KEY: str | None = Field(default=None, alias="MARKETAUX_KEY")
     FMP_KEY: str | None = Field(default=None, alias="FMP_KEY")
 
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")  # allow harmless extra vars
+    model_config = SettingsConfigDict(
+        env_file=".env", extra="ignore"
+    )  # allow harmless extra vars
 
     def validate_required_secrets(self) -> None:
         """Validate that required secrets are set"""
@@ -97,7 +112,9 @@ class Settings(BaseSettings):
             missing.append("JWT_SECRET_KEY")
 
         if missing:
-            raise ValueError(f"Missing required environment variables: {', '.join(missing)}")
+            raise ValueError(
+                f"Missing required environment variables: {', '.join(missing)}"
+            )
 
     def get_jwt_secret(self) -> str:
         """Get JWT secret with fallback validation"""

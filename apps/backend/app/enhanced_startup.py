@@ -39,15 +39,23 @@ class EnhancedSettings(BaseSettings):
     RUN_MIGRATIONS: bool = Field(default=True, description="Run migrations at startup")
 
     # Redis
-    REDIS_URL: str = Field(default="redis://localhost:6379", description="Redis connection URL")
+    REDIS_URL: str = Field(
+        default="redis://localhost:6379", description="Redis connection URL"
+    )
     REDIS_PASSWORD: str | None = Field(default=None, description="Redis password")
 
     # Security
-    JWT_SECRET_KEY: str = Field(default="change-me-in-production", description="JWT secret key")
-    CORS_ORIGINS: list = Field(default=["http://localhost:3000"], description="CORS origins")
+    JWT_SECRET_KEY: str = Field(
+        default="change-me-in-production", description="JWT secret key"
+    )
+    CORS_ORIGINS: list = Field(
+        default=["http://localhost:3000"], description="CORS origins"
+    )
 
     # Features
-    ENABLE_WEBSOCKETS: bool = Field(default=True, description="Enable WebSocket features")
+    ENABLE_WEBSOCKETS: bool = Field(
+        default=True, description="Enable WebSocket features"
+    )
     ENABLE_MONITORING: bool = Field(default=True, description="Enable monitoring")
     ENABLE_REDIS: bool = Field(default=True, description="Enable Redis features")
 
@@ -172,7 +180,9 @@ async def verify_redis_connectivity():
         await redis_client.initialize()
 
         # Test Redis connection
-        await redis_client.set("health_check", "ok", ttl=10)  # Use 'ttl' parameter for expiry
+        await redis_client.set(
+            "health_check", "ok", ttl=10
+        )  # Use 'ttl' parameter for expiry
         value = await redis_client.get("health_check")
 
         if value == "ok":
@@ -249,7 +259,9 @@ async def startup_dependency_checks():
 
     # Fail fast if critical dependencies are not available
     if not health_status.checks.get("database", False):
-        logger.error("🚨 CRITICAL: Database connectivity failed - cannot start application")
+        logger.error(
+            "🚨 CRITICAL: Database connectivity failed - cannot start application"
+        )
         sys.exit(1)
 
     return True
@@ -341,7 +353,11 @@ def create_app() -> FastAPI:
         if not health_status.is_healthy:
             raise HTTPException(status_code=503, detail=health_status.to_dict())
 
-        return {"status": "ready", "service": "lokifi-phase-k", "checks": health_status.to_dict()}
+        return {
+            "status": "ready",
+            "service": "lokifi-phase-k",
+            "checks": health_status.to_dict(),
+        }
 
     @app.get("/api/health/live", tags=["health"])
     async def liveness_check():

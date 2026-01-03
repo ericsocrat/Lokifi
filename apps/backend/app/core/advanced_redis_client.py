@@ -54,7 +54,11 @@ class CacheMetrics:
 
     @property
     def avg_response_time(self) -> float:
-        return sum(self.response_times) / len(self.response_times) if self.response_times else 0.0
+        return (
+            sum(self.response_times) / len(self.response_times)
+            if self.response_times
+            else 0.0
+        )
 
     def record_hit(self, response_time: float = 0.0):
         self.hits += 1
@@ -119,7 +123,9 @@ class AdvancedRedisClient:
                     sentinel_hosts,
                     socket_timeout=0.5,
                     password=(
-                        settings.redis_password if hasattr(settings, "redis_password") else None
+                        settings.redis_password
+                        if hasattr(settings, "redis_password")
+                        else None
                     ),
                 )
 
@@ -128,7 +134,9 @@ class AdvancedRedisClient:
                     "lokifi-primary",
                     socket_timeout=0.5,
                     password=(
-                        settings.redis_password if hasattr(settings, "redis_password") else None
+                        settings.redis_password
+                        if hasattr(settings, "redis_password")
+                        else None
                     ),
                     retry=Retry(backoff=ExponentialBackoff(), retries=3),
                     health_check_interval=30,
@@ -142,7 +150,9 @@ class AdvancedRedisClient:
                     host=settings.redis_host,
                     port=settings.redis_port,
                     password=(
-                        settings.redis_password if hasattr(settings, "redis_password") else None
+                        settings.redis_password
+                        if hasattr(settings, "redis_password")
+                        else None
                     ),
                     max_connections=20,
                     retry_on_timeout=True,
@@ -233,7 +243,8 @@ class AdvancedRedisClient:
         self.metrics.record_error()
 
         if (
-            self.circuit_breaker["failure_count"] >= self.circuit_breaker["failure_threshold"]
+            self.circuit_breaker["failure_count"]
+            >= self.circuit_breaker["failure_threshold"]
             and self.circuit_breaker["state"] == "closed"
         ):
             self.circuit_breaker["state"] = "open"
@@ -329,7 +340,11 @@ class AdvancedRedisClient:
                         # Promote to requested layer
                         await self.set_with_layer(key, result, layer)
                         self.metrics.record_hit(time.time() - start_time)
-                        return result.decode("utf-8") if isinstance(result, bytes) else result
+                        return (
+                            result.decode("utf-8")
+                            if isinstance(result, bytes)
+                            else result
+                        )
 
             self.metrics.record_miss(time.time() - start_time)
             return None
@@ -364,7 +379,9 @@ class AdvancedRedisClient:
             self.metrics.record_error()
             return False
 
-    async def cache_warm_batch(self, keys: list[str], layer: str = "warm") -> dict[str, Any]:
+    async def cache_warm_batch(
+        self, keys: list[str], layer: str = "warm"
+    ) -> dict[str, Any]:
         """Warm cache with batch operation"""
         if not await self.is_available():
             return {}
@@ -383,7 +400,9 @@ class AdvancedRedisClient:
             for i, key in enumerate(keys):
                 if results[i]:
                     cache_data[key] = (
-                        results[i].decode("utf-8") if isinstance(results[i], bytes) else results[i]
+                        results[i].decode("utf-8")
+                        if isinstance(results[i], bytes)
+                        else results[i]
                     )
 
             logger.info(f"Cache warmed with {len(cache_data)} items in layer {layer}")
@@ -462,7 +481,11 @@ class AdvancedRedisClient:
         try:
             # This would integrate with notification service
             # to pre-load frequently accessed notification data
-            warm_keys = ["notification_stats:*", "unread_count:*", "notification_prefs:*"]
+            warm_keys = [
+                "notification_stats:*",
+                "unread_count:*",
+                "notification_prefs:*",
+            ]
 
             for pattern in warm_keys:
                 await self.cache_warm_batch([pattern], "hot")

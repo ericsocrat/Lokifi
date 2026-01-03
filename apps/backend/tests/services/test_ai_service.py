@@ -94,12 +94,16 @@ class TestRateLimiter:
         user_id = 100
 
         # First request should pass
-        result = rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=60)
+        result = rate_limiter.check_rate_limit(
+            user_id, max_requests=5, window_seconds=60
+        )
         assert result is True
 
         # Subsequent requests within limit should pass
         for _ in range(4):
-            result = rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=60)
+            result = rate_limiter.check_rate_limit(
+                user_id, max_requests=5, window_seconds=60
+            )
             assert result is True
 
     def test_check_rate_limit_exceeded(self, rate_limiter):
@@ -111,7 +115,9 @@ class TestRateLimiter:
             rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=60)
 
         # 6th request should fail
-        result = rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=60)
+        result = rate_limiter.check_rate_limit(
+            user_id, max_requests=5, window_seconds=60
+        )
         assert result is False
 
     def test_rate_limit_window_sliding(self, rate_limiter):
@@ -125,17 +131,23 @@ class TestRateLimiter:
 
             # Make 5 requests at time 0
             for _ in range(5):
-                rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=10)
+                rate_limiter.check_rate_limit(
+                    user_id, max_requests=5, window_seconds=10
+                )
 
             # At time 0, should be at limit
-            result = rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=10)
+            result = rate_limiter.check_rate_limit(
+                user_id, max_requests=5, window_seconds=10
+            )
             assert result is False
 
             # Move time forward past window (11 seconds)
             mock_time.return_value = 11
 
             # Old requests should be expired, new request should pass
-            result = rate_limiter.check_rate_limit(user_id, max_requests=5, window_seconds=10)
+            result = rate_limiter.check_rate_limit(
+                user_id, max_requests=5, window_seconds=10
+            )
             assert result is True
 
     def test_cleanup_old_entries(self, rate_limiter):
@@ -183,11 +195,15 @@ class TestRateLimiter:
             rate_limiter.check_rate_limit(user_1, max_requests=5, window_seconds=60)
 
         # User 1 should be blocked
-        result_1 = rate_limiter.check_rate_limit(user_1, max_requests=5, window_seconds=60)
+        result_1 = rate_limiter.check_rate_limit(
+            user_1, max_requests=5, window_seconds=60
+        )
         assert result_1 is False
 
         # User 2 should still be able to make requests
-        result_2 = rate_limiter.check_rate_limit(user_2, max_requests=5, window_seconds=60)
+        result_2 = rate_limiter.check_rate_limit(
+            user_2, max_requests=5, window_seconds=60
+        )
         assert result_2 is True
 
 
@@ -365,7 +381,9 @@ class TestSendMessageCoreFlow:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Mock message count check
             mock_db.query.return_value.filter.return_value.count.return_value = 5
@@ -381,8 +399,12 @@ class TestSendMessageCoreFlow:
             # Mock AI provider
             with (
                 patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
-                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
-                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+                patch(
+                    "app.services.ai_service.moderate_ai_input"
+                ) as mock_moderate_input,
+                patch(
+                    "app.services.ai_service.moderate_ai_output"
+                ) as mock_moderate_output,
             ):
                 # Setup moderation (allow)
                 mock_mod_result = MagicMock()
@@ -405,8 +427,12 @@ class TestSendMessageCoreFlow:
 
                     from app.services.ai_provider import StreamChunk
 
-                    yield StreamChunk(id=str(uuid.uuid4()), content="Hello", is_complete=False)
-                    yield StreamChunk(id=str(uuid.uuid4()), content=" there!", is_complete=True)
+                    yield StreamChunk(
+                        id=str(uuid.uuid4()), content="Hello", is_complete=False
+                    )
+                    yield StreamChunk(
+                        id=str(uuid.uuid4()), content=" there!", is_complete=True
+                    )
 
                 mock_provider.stream_chat = AsyncMock(return_value=mock_stream())
                 mock_get_provider.return_value = mock_provider
@@ -438,7 +464,9 @@ class TestSendMessageCoreFlow:
         message = "Hello!"
 
         # Mock rate limiter to return False (limit exceeded)
-        with patch.object(ai_service.rate_limiter, "check_rate_limit", return_value=False):
+        with patch.object(
+            ai_service.rate_limiter, "check_rate_limit", return_value=False
+        ):
             with pytest.raises(RateLimitError, match="Rate limit exceeded"):
                 async for _ in ai_service.send_message(user_id, thread_id, message):
                     pass
@@ -524,7 +552,9 @@ class TestSendMessageCoreFlow:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Mock message count at limit (100)
             mock_db.query.return_value.filter.return_value.count.return_value = 100
@@ -551,7 +581,9 @@ class TestSendMessageCoreFlow:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Mock message count
             mock_db.query.return_value.filter.return_value.count.return_value = 10
@@ -573,8 +605,12 @@ class TestSendMessageCoreFlow:
             # Mock AI provider
             with (
                 patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
-                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
-                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+                patch(
+                    "app.services.ai_service.moderate_ai_input"
+                ) as mock_moderate_input,
+                patch(
+                    "app.services.ai_service.moderate_ai_output"
+                ) as mock_moderate_output,
             ):
                 # Setup moderation
                 mock_mod_result = MagicMock()
@@ -629,13 +665,17 @@ class TestSendMessageCoreFlow:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Mock message count
             mock_db.query.return_value.filter.return_value.count.return_value = 5
 
             # Mock empty message history
-            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
 
             # Mock provider to raise error
             with (
@@ -674,19 +714,27 @@ class TestSendMessageCoreFlow:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Mock message count
             mock_db.query.return_value.filter.return_value.count.return_value = 5
 
             # Mock empty message history
-            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
 
             # Mock AI provider
             with (
                 patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
-                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
-                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+                patch(
+                    "app.services.ai_service.moderate_ai_input"
+                ) as mock_moderate_input,
+                patch(
+                    "app.services.ai_service.moderate_ai_output"
+                ) as mock_moderate_output,
             ):
                 # Setup moderation
                 mock_mod_result = MagicMock()
@@ -712,9 +760,13 @@ class TestSendMessageCoreFlow:
                     # Generate more chunks than token limit
                     for i in range(10):
                         yield StreamChunk(
-                            id=str(uuid.uuid4()), content=f"Token {i} ", is_complete=False
+                            id=str(uuid.uuid4()),
+                            content=f"Token {i} ",
+                            is_complete=False,
                         )
-                    yield StreamChunk(id=str(uuid.uuid4()), content="End", is_complete=True)
+                    yield StreamChunk(
+                        id=str(uuid.uuid4()), content="End", is_complete=True
+                    )
 
                 mock_provider.stream_chat = AsyncMock(return_value=mock_stream())
                 mock_get_provider.return_value = mock_provider
@@ -727,10 +779,13 @@ class TestSendMessageCoreFlow:
 
                 # Should have truncation message
                 truncated = any(
-                    "truncated" in chunk.content.lower() or "token limit" in chunk.content.lower()
+                    "truncated" in chunk.content.lower()
+                    or "token limit" in chunk.content.lower()
                     for chunk in chunks
                 )
-                assert truncated or len(chunks) <= 10  # Either truncated or stopped early
+                assert (
+                    truncated or len(chunks) <= 10
+                )  # Either truncated or stopped early
 
     @pytest.mark.asyncio
     async def test_send_message_output_moderation_blocked(self, ai_service):
@@ -750,19 +805,27 @@ class TestSendMessageCoreFlow:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Mock message count
             mock_db.query.return_value.filter.return_value.count.return_value = 5
 
             # Mock empty message history
-            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_db.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
 
             # Mock AI provider
             with (
                 patch("app.services.ai_service.get_ai_provider") as mock_get_provider,
-                patch("app.services.ai_service.moderate_ai_input") as mock_moderate_input,
-                patch("app.services.ai_service.moderate_ai_output") as mock_moderate_output,
+                patch(
+                    "app.services.ai_service.moderate_ai_input"
+                ) as mock_moderate_input,
+                patch(
+                    "app.services.ai_service.moderate_ai_output"
+                ) as mock_moderate_output,
             ):
                 # Input moderation allows
                 mock_input_mod = MagicMock()
@@ -788,7 +851,9 @@ class TestSendMessageCoreFlow:
                     from app.services.ai_provider import StreamChunk
 
                     yield StreamChunk(
-                        id=str(uuid.uuid4()), content="Blocked content", is_complete=True
+                        id=str(uuid.uuid4()),
+                        content="Blocked content",
+                        is_complete=True,
                     )
 
                 mock_provider.stream_chat = AsyncMock(return_value=mock_stream())
@@ -839,7 +904,9 @@ class TestThreadManagement:
             mock_thread = MagicMock()
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Execute delete
             result = await ai_service.delete_thread(user_id, thread_id)
@@ -958,7 +1025,9 @@ class TestThreadManagement:
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
             mock_thread.title = "Old Title"
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Execute update
             result = await ai_service.update_thread_title(user_id, thread_id, new_title)
@@ -1015,7 +1084,9 @@ class TestThreadManagement:
             mock_db.query.return_value.filter.return_value.first.return_value = None
 
             # Execute update with wrong user
-            result = await ai_service.update_thread_title(wrong_user_id, thread_id, new_title)
+            result = await ai_service.update_thread_title(
+                wrong_user_id, thread_id, new_title
+            )
 
             # Should return None (not authorized)
             assert result is None
@@ -1039,10 +1110,14 @@ class TestThreadManagement:
             mock_thread.id = thread_id
             mock_thread.user_id = user_id
             mock_thread.title = "Old Title"
-            mock_db.query.return_value.filter.return_value.first.return_value = mock_thread
+            mock_db.query.return_value.filter.return_value.first.return_value = (
+                mock_thread
+            )
 
             # Execute update with long title
-            result = await ai_service.update_thread_title(user_id, thread_id, long_title)
+            result = await ai_service.update_thread_title(
+                user_id, thread_id, long_title
+            )
 
             # Title should be truncated to 255 characters
             assert result is not None
@@ -1148,7 +1223,12 @@ class TestProviderIntegration:
 
         # Mock rate limiter
         with patch.object(ai_service.rate_limiter, "get_user_usage") as mock_get_usage:
-            mock_usage = {"requests": 5, "window_start": 1234567890, "limit": 10, "remaining": 5}
+            mock_usage = {
+                "requests": 5,
+                "window_start": 1234567890,
+                "limit": 10,
+                "remaining": 5,
+            }
             mock_get_usage.return_value = mock_usage
 
             # Execute
@@ -1167,7 +1247,12 @@ class TestProviderIntegration:
 
         with patch.object(ai_service.rate_limiter, "get_user_usage") as mock_get_usage:
             # Return empty/default usage
-            mock_usage = {"requests": 0, "window_start": 0, "limit": 10, "remaining": 10}
+            mock_usage = {
+                "requests": 0,
+                "window_start": 0,
+                "limit": 10,
+                "remaining": 10,
+            }
             mock_get_usage.return_value = mock_usage
 
             # Execute

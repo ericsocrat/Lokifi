@@ -31,7 +31,10 @@ def _old_upgrade():
         "notifications",
         sa.Column("id", sa.String(36), primary_key=True),
         sa.Column(
-            "user_id", sa.String(36), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+            "user_id",
+            sa.String(36),
+            sa.ForeignKey("users.id", ondelete="CASCADE"),
+            nullable=False,
         ),
         sa.Column("type", sa.String(50), nullable=False),
         sa.Column("priority", sa.String(20), nullable=False, default="normal"),
@@ -89,7 +92,9 @@ def _old_upgrade():
     )
 
     # Create indexes for performance
-    op.create_index("idx_notifications_user_unread", "notifications", ["user_id", "is_read"])
+    op.create_index(
+        "idx_notifications_user_unread", "notifications", ["user_id", "is_read"]
+    )
     op.create_index("idx_notifications_user_type", "notifications", ["user_id", "type"])
     op.create_index("idx_notifications_type", "notifications", ["type"])
     op.create_index("idx_notifications_category", "notifications", ["category"])

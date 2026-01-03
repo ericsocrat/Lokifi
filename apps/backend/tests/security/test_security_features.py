@@ -24,9 +24,7 @@ def test_bleach_integration():
         sanitizer = InputSanitizer()
 
         # Test dangerous HTML
-        test_html = (
-            '<script>alert("xss")</script><p>Safe content</p><img src="x" onerror="alert(1)">'
-        )
+        test_html = '<script>alert("xss")</script><p>Safe content</p><img src="x" onerror="alert(1)">'
         cleaned = sanitizer.sanitize_html(test_html)
         print(f"Original: {test_html}")
         print(f"Cleaned: {cleaned}")

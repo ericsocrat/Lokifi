@@ -73,7 +73,9 @@ class RichNotificationData:
     message: str
     template: NotificationTemplate = NotificationTemplate.SIMPLE
     priority: NotificationPriority = NotificationPriority.NORMAL
-    channels: list[DeliveryChannel] = field(default_factory=lambda: [DeliveryChannel.IN_APP])
+    channels: list[DeliveryChannel] = field(
+        default_factory=lambda: [DeliveryChannel.IN_APP]
+    )
     scheduled_for: datetime | None = None
     expires_at: datetime | None = None
     payload: dict[str, Any] = field(default_factory=dict)
@@ -130,7 +132,9 @@ class SmartNotificationProcessor:
             logger.error(f"Failed to process rich notification: {e}")
             return False
 
-    async def _schedule_notification(self, notification_data: RichNotificationData) -> str:
+    async def _schedule_notification(
+        self, notification_data: RichNotificationData
+    ) -> str:
         """Schedule a notification for future delivery"""
         schedule_id = str(uuid.uuid4())
 
@@ -139,14 +143,22 @@ class SmartNotificationProcessor:
         await redis_client.client.set(
             schedule_key,
             json.dumps(asdict(notification_data), default=str),
-            ex=int((notification_data.scheduled_for - datetime.now(timezone.utc)).total_seconds())
+            ex=int(
+                (
+                    notification_data.scheduled_for - datetime.now(timezone.utc)
+                ).total_seconds()
+            )
             + 3600,
         )
 
-        logger.info(f"Scheduled notification {schedule_id} for {notification_data.scheduled_for}")
+        logger.info(
+            f"Scheduled notification {schedule_id} for {notification_data.scheduled_for}"
+        )
         return schedule_id
 
-    async def _apply_batching_strategy(self, notification_data: RichNotificationData) -> bool | str:
+    async def _apply_batching_strategy(
+        self, notification_data: RichNotificationData
+    ) -> bool | str:
         """Apply batching strategy to notification"""
         if notification_data.batch_strategy == BatchingStrategy.SMART_GROUPING:
             return await self._smart_group_notification(notification_data)
@@ -158,7 +170,9 @@ class SmartNotificationProcessor:
         # Fallback to immediate delivery
         return await self._create_rich_notification(notification_data)
 
-    async def _smart_group_notification(self, notification_data: RichNotificationData) -> str:
+    async def _smart_group_notification(
+        self, notification_data: RichNotificationData
+    ) -> str:
         """Smart grouping based on notification type and content"""
         user_id_str = str(notification_data.user_id)
         # grouping_key = notification_data.grouping_key or f"{notification_data.type.value}_{user_id_str}"
@@ -177,7 +191,9 @@ class SmartNotificationProcessor:
         if existing_batch:
             # Add to existing batch
             existing_batch.notifications.append(notification_data)
-            logger.info(f"Added notification to existing batch {existing_batch.batch_id}")
+            logger.info(
+                f"Added notification to existing batch {existing_batch.batch_id}"
+            )
             return existing_batch.batch_id
         else:
             # Create new batch
@@ -214,12 +230,19 @@ class SmartNotificationProcessor:
 
         # Group if same type or related types
         related_types = {
-            NotificationType.FOLLOW: {NotificationType.FOLLOW, NotificationType.MENTION},
-            NotificationType.DM_MESSAGE_RECEIVED: {NotificationType.DM_MESSAGE_RECEIVED},
+            NotificationType.FOLLOW: {
+                NotificationType.FOLLOW,
+                NotificationType.MENTION,
+            },
+            NotificationType.DM_MESSAGE_RECEIVED: {
+                NotificationType.DM_MESSAGE_RECEIVED
+            },
             NotificationType.AI_REPLY_FINISHED: {NotificationType.AI_REPLY_FINISHED},
         }
 
-        current_related = related_types.get(notification_data.type, {notification_data.type})
+        current_related = related_types.get(
+            notification_data.type, {notification_data.type}
+        )
 
         return bool(batch_types.intersection(current_related))
 
@@ -242,18 +265,24 @@ class SmartNotificationProcessor:
                 user_id=batch.user_id,
                 type=NotificationType.SYSTEM_ALERT,  # Use system alert for batched notifications
                 title=batch.title_template.format(count=len(batch.notifications)),
-                message=batch.message_template.format(types=", ".join(notification_types)),
+                message=batch.message_template.format(
+                    types=", ".join(notification_types)
+                ),
                 priority=NotificationPriority.NORMAL,
                 payload={
                     "batch_id": batch.batch_id,
                     "notification_count": len(batch.notifications),
                     "notification_types": notification_types,
-                    "individual_notifications": [asdict(n) for n in batch.notifications],
+                    "individual_notifications": [
+                        asdict(n) for n in batch.notifications
+                    ],
                 },
             )
 
             # Create the batch notification
-            result = await notification_service.create_notification(summary_notification)
+            result = await notification_service.create_notification(
+                summary_notification
+            )
 
             logger.info(
                 f"Delivered notification batch {batch.batch_id} with {len(batch.notifications)} notifications"
@@ -283,7 +312,9 @@ class SmartNotificationProcessor:
 
         return notification_data
 
-    async def _create_rich_notification(self, notification_data: RichNotificationData) -> bool:
+    async def _create_rich_notification(
+        self, notification_data: RichNotificationData
+    ) -> bool:
         """Create a rich notification with template and media"""
         try:
             # Convert to standard NotificationData
@@ -304,10 +335,14 @@ class SmartNotificationProcessor:
             )
 
             # Create the notification
-            result = await notification_service.create_notification(standard_notification)
+            result = await notification_service.create_notification(
+                standard_notification
+            )
 
             # Record analytics
-            await self._record_notification_analytics(notification_data, result is not None)
+            await self._record_notification_analytics(
+                notification_data, result is not None
+            )
 
             return result is not None
 
@@ -332,26 +367,35 @@ class SmartNotificationProcessor:
             }
 
             await redis_client.client.lpush(analytics_key, json.dumps(analytics_data))
-            await redis_client.client.ltrim(analytics_key, 0, 999)  # Keep last 1000 records
+            await redis_client.client.ltrim(
+                analytics_key, 0, 999
+            )  # Keep last 1000 records
 
     async def get_user_notification_preferences(self, user_id: str) -> dict[str, Any]:
         """Get advanced notification preferences for user"""
         try:
             async for session in db_manager.get_session(read_only=True):
                 result = await session.execute(
-                    select(NotificationPreference).where(NotificationPreference.user_id == user_id)
+                    select(NotificationPreference).where(
+                        NotificationPreference.user_id == user_id
+                    )
                 )
                 preference = result.scalar_one_or_none()
 
                 if preference:
                     return {
                         "batching_enabled": preference.enable_digest,
-                        "preferred_batching_strategy": "smart_grouping"
-                        if preference.enable_digest
-                        else "immediate",
+                        "preferred_batching_strategy": (
+                            "smart_grouping"
+                            if preference.enable_digest
+                            else "immediate"
+                        ),
                         "quiet_hours_start": preference.quiet_hours_start,
                         "quiet_hours_end": preference.quiet_hours_end,
-                        "preferred_channels": ["websocket", "in_app"],  # Default channels
+                        "preferred_channels": [
+                            "websocket",
+                            "in_app",
+                        ],  # Default channels
                         "template_preference": "simple",  # Default template
                     }
 
@@ -443,7 +487,9 @@ class SmartNotificationServiceWrapper:
 
 
 # Override with wrapper for testing
-smart_notification_service = SmartNotificationServiceWrapper(smart_notification_processor)
+smart_notification_service = SmartNotificationServiceWrapper(
+    smart_notification_processor
+)
 
 
 # Utility functions for easy integration
@@ -467,7 +513,9 @@ async def send_rich_notification(
         **kwargs,
     )
 
-    return await smart_notification_processor.process_rich_notification(rich_notification)
+    return await smart_notification_processor.process_rich_notification(
+        rich_notification
+    )
 
 
 async def send_batched_notification(
@@ -489,7 +537,9 @@ async def send_batched_notification(
         **kwargs,
     )
 
-    return await smart_notification_processor.process_rich_notification(rich_notification)
+    return await smart_notification_processor.process_rich_notification(
+        rich_notification
+    )
 
 
 async def schedule_notification(
@@ -510,4 +560,6 @@ async def schedule_notification(
         **kwargs,
     )
 
-    return await smart_notification_processor.process_rich_notification(rich_notification)
+    return await smart_notification_processor.process_rich_notification(
+        rich_notification
+    )

@@ -6,7 +6,16 @@ import uuid
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import Boolean, DateTime, Enum as SqlEnum, ForeignKey, Integer, String, Text, func
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    Enum as SqlEnum,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    func,
+)
 from sqlalchemy.dialects.postgresql import JSON, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -35,7 +44,9 @@ class AiThread(Base):
     __tablename__ = "ai_threads"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign keys
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -58,14 +69,18 @@ class AiThread(Base):
     temperature: Mapped[float | None] = mapped_column(nullable=True)
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
     # Relationships
     user = relationship("User", back_populates="ai_threads")
-    messages = relationship("AiMessage", back_populates="thread", order_by="AiMessage.created_at")
+    messages = relationship(
+        "AiMessage", back_populates="thread", order_by="AiMessage.created_at"
+    )
 
     def __repr__(self) -> str:
         return f"<AiThread(id={self.id}, title='{self.title}', provider={self.ai_provider})>"
@@ -77,7 +92,9 @@ class AiMessage(Base):
     __tablename__ = "ai_messages"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign keys
     thread_id: Mapped[uuid.UUID] = mapped_column(
@@ -96,7 +113,9 @@ class AiMessage(Base):
     output_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     # Relationships
     thread = relationship("AiThread", back_populates="messages")
@@ -111,7 +130,9 @@ class AiUsage(Base):
     __tablename__ = "ai_usage"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign keys
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -133,7 +154,9 @@ class AiUsage(Base):
     cost_cents: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     # Relationships
     user = relationship("User")

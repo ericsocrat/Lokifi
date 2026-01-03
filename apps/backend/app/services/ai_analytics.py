@@ -53,7 +53,9 @@ class AIAnalyticsService:
 
     def __init__(self):
         # session_factory is a callable that returns a context manager (contextmanager decorated function)
-        self.session_factory: Any = get_session  # any required: contextmanager return type complex
+        self.session_factory: Any = (
+            get_session  # any required: contextmanager return type complex
+        )
 
     async def get_conversation_metrics(
         self, user_id: int | None = None, days_back: int = 30
@@ -73,7 +75,9 @@ class AIAnalyticsService:
 
             # Message metrics
             message_query = (
-                db.query(AIMessage).join(AIThread).filter(AIThread.created_at >= start_date)
+                db.query(AIMessage)
+                .join(AIThread)
+                .filter(AIThread.created_at >= start_date)
             )
             if user_id:
                 message_query = message_query.filter(AIThread.user_id == user_id)
@@ -113,17 +117,24 @@ class AIAnalyticsService:
                 )
 
                 for i in range(1, len(messages)):
-                    if messages[i - 1].role == "user" and messages[i].role == "assistant":
+                    if (
+                        messages[i - 1].role == "user"
+                        and messages[i].role == "assistant"
+                    ):
                         if messages[i].completed_at and messages[i - 1].created_at:
                             response_time = (
                                 messages[i].completed_at - messages[i - 1].created_at
                             ).total_seconds()
                             response_times.append(response_time)
 
-            avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+            avg_response_time = (
+                sum(response_times) / len(response_times) if response_times else 0
+            )
 
             # Extract topics (simplified keyword analysis)
-            top_topics = await self._extract_conversation_topics(db, start_date, user_id)
+            top_topics = await self._extract_conversation_topics(
+                db, start_date, user_id
+            )
 
             # Placeholder for user satisfaction (would need user feedback system)
             user_satisfaction_score = 4.2  # Mock score
@@ -139,7 +150,9 @@ class AIAnalyticsService:
                 model_usage=model_usage,
             )
 
-    async def get_user_insights(self, user_id: int, days_back: int = 90) -> UserInsights:
+    async def get_user_insights(
+        self, user_id: int, days_back: int = 90
+    ) -> UserInsights:
         """Get detailed insights for a specific user."""
 
         with self.session_factory() as db:
@@ -187,7 +200,9 @@ class AIAnalyticsService:
             most_active_hours = [hour for hour, _ in hour_counts.most_common(3)]
 
             # Calculate average session length
-            avg_session_length = await self._calculate_avg_session_length(db, user_id, start_date)
+            avg_session_length = await self._calculate_avg_session_length(
+                db, user_id, start_date
+            )
 
             # Favorite topics (simplified)
             favorite_topics = await self._extract_user_topics(db, user_id, start_date)
@@ -217,7 +232,9 @@ class AIAnalyticsService:
             # Get all providers with usage
             providers = (
                 db.query(AIMessage.provider)
-                .filter(AIMessage.created_at >= start_date, AIMessage.provider.isnot(None))
+                .filter(
+                    AIMessage.created_at >= start_date, AIMessage.provider.isnot(None)
+                )
                 .distinct()
                 .all()
             )
@@ -226,7 +243,10 @@ class AIAnalyticsService:
                 # Message count
                 message_count = (
                     db.query(AIMessage)
-                    .filter(AIMessage.provider == provider, AIMessage.created_at >= start_date)
+                    .filter(
+                        AIMessage.provider == provider,
+                        AIMessage.created_at >= start_date,
+                    )
                     .count()
                 )
 
@@ -341,7 +361,8 @@ class AIAnalyticsService:
         # Count and return top topics
         topic_counts = Counter(keywords)
         top_topics = [
-            {"topic": topic, "count": count} for topic, count in topic_counts.most_common(10)
+            {"topic": topic, "count": count}
+            for topic, count in topic_counts.most_common(10)
         ]
 
         return top_topics
@@ -375,7 +396,9 @@ class AIAnalyticsService:
             )
 
             if len(messages) >= 2:
-                session_length = (messages[-1].created_at - messages[0].created_at).total_seconds()
+                session_length = (
+                    messages[-1].created_at - messages[0].created_at
+                ).total_seconds()
                 session_lengths.append(session_length)
 
         return sum(session_lengths) / len(session_lengths) if session_lengths else 0

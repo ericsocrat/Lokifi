@@ -14,6 +14,7 @@ async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
             "x_cg_demo_api_key": settings.COINGECKO_KEY,
         },
     )
-    return [{"ts": int(x[0]), "o": x[1], "h": x[2], "l": x[3], "c": x[4], "v": 0} for x in data][
-        -limit:
-    ]
+    return [
+        {"ts": int(x[0]), "o": x[1], "h": x[2], "l": x[3], "c": x[4], "v": 0}
+        for x in data
+    ][-limit:]

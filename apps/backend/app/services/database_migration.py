@@ -26,7 +26,9 @@ class DatabaseMigrationService:
             async for session in get_db_session():
                 # Check if migration table exists
                 result = await session.execute(
-                    text("SELECT name FROM sqlite_master WHERE type='table' AND name='migrations'")
+                    text(
+                        "SELECT name FROM sqlite_master WHERE type='table' AND name='migrations'"
+                    )
                 )
                 table_exists = result.fetchone() is not None
 
@@ -72,7 +74,8 @@ class DatabaseMigrationService:
             async for session in get_db_session():
                 # Check if already applied
                 result = await session.execute(
-                    text("SELECT id FROM migrations WHERE name = :name"), {"name": migration_name}
+                    text("SELECT id FROM migrations WHERE name = :name"),
+                    {"name": migration_name},
                 )
 
                 if result.fetchone():
@@ -84,7 +87,8 @@ class DatabaseMigrationService:
 
                 # Record migration
                 await session.execute(
-                    text("INSERT INTO migrations (name) VALUES (:name)"), {"name": migration_name}
+                    text("INSERT INTO migrations (name) VALUES (:name)"),
+                    {"name": migration_name},
                 )
 
                 await session.commit()
@@ -93,7 +97,9 @@ class DatabaseMigrationService:
                 return True
 
             # If we get here, no session was available
-            logger.error(f"No database session available for migration {migration_name}")
+            logger.error(
+                f"No database session available for migration {migration_name}"
+            )
             return False
 
         except Exception as e:

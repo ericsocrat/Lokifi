@@ -33,14 +33,18 @@ class MessageReaction(Base):
 
     # Composite primary key
     message_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("messages.id", ondelete="CASCADE"), primary_key=True
+        UUID(as_uuid=True),
+        ForeignKey("messages.id", ondelete="CASCADE"),
+        primary_key=True,
     )
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), primary_key=True
     )
 
-    reaction_type: Mapped[ReactionType] = mapped_column(String(20), primary_key=True, index=True)
+    reaction_type: Mapped[ReactionType] = mapped_column(
+        String(20), primary_key=True, index=True
+    )
 
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(

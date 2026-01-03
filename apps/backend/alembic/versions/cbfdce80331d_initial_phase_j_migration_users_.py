@@ -124,7 +124,9 @@ def upgrade() -> None:
         sa.Column("sender_id", sa.UUID(), nullable=False),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column(
-            "content_type", sa.Enum("TEXT", "IMAGE", "FILE", name="contenttype"), nullable=False
+            "content_type",
+            sa.Enum("TEXT", "IMAGE", "FILE", name="contenttype"),
+            nullable=False,
         ),
         sa.Column(
             "created_at",
@@ -132,7 +134,9 @@ def upgrade() -> None:
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(["conversation_id"], ["conversations.id"], ondelete="CASCADE"),
+        sa.ForeignKeyConstraint(
+            ["conversation_id"], ["conversations.id"], ondelete="CASCADE"
+        ),
         sa.ForeignKeyConstraint(["sender_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -173,7 +177,9 @@ def upgrade() -> None:
         sa.Column("related_user_id", sa.UUID(), nullable=True),
         sa.Column(
             "type",
-            sa.Enum("FOLLOW", "MESSAGE", "AI_RESPONSE", "SYSTEM", name="notificationtype"),
+            sa.Enum(
+                "FOLLOW", "MESSAGE", "AI_RESPONSE", "SYSTEM", name="notificationtype"
+            ),
             nullable=False,
         ),
         sa.Column(
@@ -231,7 +237,9 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("thread_id", sa.UUID(), nullable=False),
         sa.Column(
-            "role", sa.Enum("USER", "ASSISTANT", "SYSTEM", name="messagerole"), nullable=False
+            "role",
+            sa.Enum("USER", "ASSISTANT", "SYSTEM", name="messagerole"),
+            nullable=False,
         ),
         sa.Column("content", sa.Text(), nullable=False),
         sa.Column("extra_data", postgresql.JSON(astext_type=sa.Text()), nullable=True),
@@ -277,10 +285,17 @@ def upgrade() -> None:
         sa.Column("user_id", sa.UUID(), nullable=False),
         sa.Column("last_read_message_id", sa.UUID(), nullable=True),
         sa.Column(
-            "joined_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False
+            "joined_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
-        sa.ForeignKeyConstraint(["conversation_id"], ["conversations.id"], ondelete="CASCADE"),
-        sa.ForeignKeyConstraint(["last_read_message_id"], ["messages.id"], ondelete="SET NULL"),
+        sa.ForeignKeyConstraint(
+            ["conversation_id"], ["conversations.id"], ondelete="CASCADE"
+        ),
+        sa.ForeignKeyConstraint(
+            ["last_read_message_id"], ["messages.id"], ondelete="SET NULL"
+        ),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),
         sa.PrimaryKeyConstraint("id"),
     )
@@ -290,7 +305,10 @@ def upgrade() -> None:
         sa.Column("message_id", sa.UUID(), nullable=False),
         sa.Column("user_id", sa.UUID(), nullable=False),
         sa.Column(
-            "read_at", sa.DateTime(timezone=True), server_default=sa.text("now()"), nullable=False
+            "read_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
         sa.ForeignKeyConstraint(["message_id"], ["messages.id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["user_id"], ["users.id"], ondelete="CASCADE"),

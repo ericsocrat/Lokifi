@@ -18,7 +18,9 @@ class Follow(Base):
     __tablename__ = "follows"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign keys
     follower_id: Mapped[uuid.UUID] = mapped_column(
@@ -29,14 +31,22 @@ class Follow(Base):
     )
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     # Relationships
-    follower = relationship("User", foreign_keys=[follower_id], back_populates="following")
-    followee = relationship("User", foreign_keys=[followee_id], back_populates="followers")
+    follower = relationship(
+        "User", foreign_keys=[follower_id], back_populates="following"
+    )
+    followee = relationship(
+        "User", foreign_keys=[followee_id], back_populates="followers"
+    )
 
     # Constraints
-    __table_args__ = (UniqueConstraint("follower_id", "followee_id", name="unique_follow"),)
+    __table_args__ = (
+        UniqueConstraint("follower_id", "followee_id", name="unique_follow"),
+    )
 
     def __repr__(self) -> str:
         return f"<Follow(id={self.id}, follower_id={self.follower_id}, followee_id={self.followee_id})>"

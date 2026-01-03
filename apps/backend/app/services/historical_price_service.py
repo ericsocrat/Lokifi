@@ -210,13 +210,17 @@ class HistoricalPriceService:
                 )
             else:
                 duration = time.time() - start_time
-                performance_metrics.record_request(cached=False, duration=duration, error=True)
+                performance_metrics.record_request(
+                    cached=False, duration=duration, error=True
+                )
                 logger.warning(f"⚠️ No data returned for {symbol} ({period})")
 
             return data
         except Exception as e:
             duration = time.time() - start_time
-            performance_metrics.record_request(cached=False, duration=duration, error=True)
+            performance_metrics.record_request(
+                cached=False, duration=duration, error=True
+            )
             logger.error(f"❌ Error fetching history for {symbol}: {e}")
             return []
 
@@ -249,7 +253,9 @@ class HistoricalPriceService:
             if settings.COINGECKO_KEY:
                 params["x_cg_demo_api_key"] = settings.COINGECKO_KEY
 
-            logger.debug(f"Fetching crypto history: {url} (coin_id={coin_id}, days={days})")
+            logger.debug(
+                f"Fetching crypto history: {url} (coin_id={coin_id}, days={days})"
+            )
             resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
             data = resp.json()
@@ -271,7 +277,9 @@ class HistoricalPriceService:
             if e.response.status_code == 429:
                 logger.error(f"🚫 CoinGecko rate limit exceeded for {symbol}")
             else:
-                logger.error(f"❌ CoinGecko HTTP error for {symbol}: {e.response.status_code}")
+                logger.error(
+                    f"❌ CoinGecko HTTP error for {symbol}: {e.response.status_code}"
+                )
         except Exception as e:
             logger.error(f"❌ Error fetching crypto history for {symbol}: {e}")
 
@@ -305,13 +313,17 @@ class HistoricalPriceService:
                 "token": settings.FINNHUB_KEY,
             }
 
-            logger.debug(f"Fetching stock history: {symbol} (resolution={resolution}, days={days})")
+            logger.debug(
+                f"Fetching stock history: {symbol} (resolution={resolution}, days={days})"
+            )
             resp = await client.get(url, params=cast(Mapping[str, Any], params))
             resp.raise_for_status()
             data = resp.json()
 
             if data.get("s") == "ok" and "c" in data and len(data["c"]) > 0:
-                logger.info(f"✅ Finnhub returned {len(data['c'])} candles for {symbol}")
+                logger.info(
+                    f"✅ Finnhub returned {len(data['c'])} candles for {symbol}"
+                )
                 return [
                     HistoricalPricePoint(timestamp=data["t"][i], price=data["c"][i])
                     for i in range(len(data["c"]))
@@ -328,7 +340,9 @@ class HistoricalPriceService:
             elif e.response.status_code == 403:
                 logger.error(f"🚫 Finnhub API key invalid or expired for {symbol}")
             else:
-                logger.error(f"❌ Finnhub HTTP error for {symbol}: {e.response.status_code}")
+                logger.error(
+                    f"❌ Finnhub HTTP error for {symbol}: {e.response.status_code}"
+                )
         except Exception as e:
             logger.error(f"❌ Error fetching stock history for {symbol}: {e}")
 

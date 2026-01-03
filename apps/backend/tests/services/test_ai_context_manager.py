@@ -237,7 +237,9 @@ class TestGetConversationContext:
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
             mock_query.filter.return_value.count.return_value = 0
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
@@ -259,7 +261,9 @@ class TestGetConversationContext:
             mock_session = MagicMock()
             mock_query = MagicMock()
             # Setup for recent messages query
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = sample_ai_messages
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                sample_ai_messages
+            )
             # Setup for count query
             mock_query.filter.return_value.count.return_value = 5
             mock_session.query.return_value = mock_query
@@ -288,7 +292,9 @@ class TestGetConversationContext:
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
 
-            messages, _ = await context_manager.get_conversation_context(thread_id=1, user_id=123)
+            messages, _ = await context_manager.get_conversation_context(
+                thread_id=1, user_id=123
+            )
 
             # Check role conversion
             assert messages[0].role == MessageRole.USER
@@ -307,7 +313,9 @@ class TestGetConversationContext:
         ):
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = sample_ai_messages
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                sample_ai_messages
+            )
             # Exceed summary threshold (20 messages)
             mock_query.filter.return_value.count.return_value = 25
             mock_session.query.return_value = mock_query
@@ -333,7 +341,9 @@ class TestUpdateUserPreferences:
         preferences = {"theme": "dark", "language": "python"}
 
         # Should not raise error
-        await context_manager.update_user_preferences(user_id=123, preferences=preferences)
+        await context_manager.update_user_preferences(
+            user_id=123, preferences=preferences
+        )
 
     @pytest.mark.asyncio
     async def test_update_user_preferences_empty(self, context_manager):
@@ -345,7 +355,9 @@ class TestUpdateUserPreferences:
         """Test preferences update logs info."""
         with patch("app.services.ai_context_manager.logger") as mock_logger:
             preferences = {"key": "value"}
-            await context_manager.update_user_preferences(user_id=123, preferences=preferences)
+            await context_manager.update_user_preferences(
+                user_id=123, preferences=preferences
+            )
             mock_logger.info.assert_called_once()
 
 
@@ -466,7 +478,9 @@ class TestCreateContextSummary:
         assert len(summary.topic_tags) == 0
 
     @pytest.mark.asyncio
-    async def test_create_context_summary_fallback(self, context_manager, sample_ai_messages):
+    async def test_create_context_summary_fallback(
+        self, context_manager, sample_ai_messages
+    ):
         """Test fallback summary creation."""
         with patch(
             "app.services.ai_context_manager.ai_provider_manager.get_primary_provider",
@@ -534,7 +548,9 @@ class TestCreateContextSummary:
             assert summary.summary is not None
 
     @pytest.mark.asyncio
-    async def test_create_context_summary_ai_exception(self, context_manager, sample_ai_messages):
+    async def test_create_context_summary_ai_exception(
+        self, context_manager, sample_ai_messages
+    ):
         """Test handling exceptions during AI summary."""
         mock_provider = AsyncMock()
         mock_provider.stream_chat.side_effect = Exception("AI error")
@@ -634,7 +650,9 @@ class TestContextCaching:
         assert context_manager.context_cache[1] == sample_conversation_memory
 
     @pytest.mark.asyncio
-    async def test_cache_retrieval_fresh(self, context_manager, sample_conversation_memory):
+    async def test_cache_retrieval_fresh(
+        self, context_manager, sample_conversation_memory
+    ):
         """Test retrieving fresh cached context."""
         # Add fresh memory (within 1 hour)
         sample_conversation_memory.last_updated = datetime.now(timezone.utc)
@@ -643,13 +661,19 @@ class TestContextCaching:
         # Mock database to verify cache is used
         with (
             patch.object(context_manager, "session_factory") as mock_factory,
-            patch.object(context_manager, "create_context_summary") as mock_create_summary,
+            patch.object(
+                context_manager, "create_context_summary"
+            ) as mock_create_summary,
         ):
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
             mock_query.filter.return_value.count.return_value = 25
-            mock_query.filter.return_value.order_by.return_value.offset.return_value.all.return_value = []
+            mock_query.filter.return_value.order_by.return_value.offset.return_value.all.return_value = (
+                []
+            )
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
 
@@ -662,7 +686,9 @@ class TestContextCaching:
     async def test_cache_expiration(self, context_manager, sample_conversation_memory):
         """Test cache expiration after 1 hour."""
         # Add stale memory (> 1 hour old)
-        sample_conversation_memory.last_updated = datetime.now(timezone.utc) - timedelta(hours=2)
+        sample_conversation_memory.last_updated = datetime.now(
+            timezone.utc
+        ) - timedelta(hours=2)
         context_manager.context_cache[1] = sample_conversation_memory
 
         # Should be considered stale and regenerated
@@ -681,7 +707,9 @@ class TestGetUserContextAcrossThreads:
         """Test getting context when user has no threads."""
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -711,7 +739,9 @@ class TestGetUserContextAcrossThreads:
             ),
         ):
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = threads
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                threads
+            )
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -741,11 +771,15 @@ class TestGetUserContextAcrossThreads:
         with (
             patch.object(context_manager, "session_factory") as mock_factory,
             patch.object(
-                context_manager, "analyze_conversation_style", side_effect=style_responses
+                context_manager,
+                "analyze_conversation_style",
+                side_effect=style_responses,
             ),
         ):
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = threads
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                threads
+            )
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -774,7 +808,9 @@ class TestGetUserContextAcrossThreads:
             ),
         ):
             mock_session = MagicMock()
-            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = threads
+            mock_session.query.return_value.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                threads
+            )
             mock_factory.return_value.__enter__.return_value = mock_session
 
             result = await context_manager.get_user_context_across_threads(user_id=123)
@@ -818,7 +854,9 @@ class TestEdgeCasesAndErrorHandling:
         with patch.object(context_manager, "session_factory") as mock_factory:
             mock_session = MagicMock()
             mock_query = MagicMock()
-            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = []
+            mock_query.filter.return_value.order_by.return_value.limit.return_value.all.return_value = (
+                []
+            )
             mock_query.filter.return_value.count.return_value = 0
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
@@ -863,13 +901,17 @@ class TestEdgeCasesAndErrorHandling:
             "app.services.ai_context_manager.ai_provider_manager.get_primary_provider",
             return_value=None,
         ):
-            summary = await context_manager.create_context_summary(thread_id=1, messages=messages)
+            summary = await context_manager.create_context_summary(
+                thread_id=1, messages=messages
+            )
 
             # Should handle gracefully
             assert isinstance(summary, ContextSummary)
 
     @pytest.mark.asyncio
-    async def test_cache_thread_id_collision(self, context_manager, sample_conversation_memory):
+    async def test_cache_thread_id_collision(
+        self, context_manager, sample_conversation_memory
+    ):
         """Test cache handles thread ID collisions."""
         # Add memory for thread 1
         context_manager.context_cache[1] = sample_conversation_memory
@@ -946,7 +988,9 @@ class TestMessageRoleConversion:
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
 
-            messages, _ = await context_manager.get_conversation_context(thread_id=1, user_id=123)
+            messages, _ = await context_manager.get_conversation_context(
+                thread_id=1, user_id=123
+            )
 
             assert messages[0].role == MessageRole.USER
 
@@ -970,6 +1014,8 @@ class TestMessageRoleConversion:
             mock_session.query.return_value = mock_query
             mock_factory.return_value.__enter__.return_value = mock_session
 
-            messages, _ = await context_manager.get_conversation_context(thread_id=1, user_id=123)
+            messages, _ = await context_manager.get_conversation_context(
+                thread_id=1, user_id=123
+            )
 
             assert messages[0].role == MessageRole.ASSISTANT

@@ -102,11 +102,15 @@ class OpenRouterProvider(AIProvider):
                                 is_complete=True,
                                 token_usage=TokenUsage(
                                     prompt_tokens=sum(
-                                        self.estimate_tokens(msg.content) for msg in messages
+                                        self.estimate_tokens(msg.content)
+                                        for msg in messages
                                     ),
-                                    completion_tokens=self.estimate_tokens(total_content),
+                                    completion_tokens=self.estimate_tokens(
+                                        total_content
+                                    ),
                                     total_tokens=sum(
-                                        self.estimate_tokens(msg.content) for msg in messages
+                                        self.estimate_tokens(msg.content)
+                                        for msg in messages
                                     )
                                     + self.estimate_tokens(total_content),
                                 ),
@@ -118,7 +122,10 @@ class OpenRouterProvider(AIProvider):
                         try:
                             chunk_data = json.loads(data_str)
 
-                            if "choices" in chunk_data and len(chunk_data["choices"]) > 0:
+                            if (
+                                "choices" in chunk_data
+                                and len(chunk_data["choices"]) > 0
+                            ):
                                 choice = chunk_data["choices"][0]
                                 delta = choice.get("delta", {})
                                 content = delta.get("content", "")
@@ -134,7 +141,9 @@ class OpenRouterProvider(AIProvider):
                                     )
 
                         except json.JSONDecodeError:
-                            logger.warning(f"Failed to parse OpenRouter chunk: {data_str}")
+                            logger.warning(
+                                f"Failed to parse OpenRouter chunk: {data_str}"
+                            )
                             continue
 
         except httpx.RequestError as e:

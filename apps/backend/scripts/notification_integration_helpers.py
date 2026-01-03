@@ -46,7 +46,9 @@ class J6NotificationIntegrator:
             if not self.enabled:
                 return
 
-            await notification_integration.on_user_followed(follower_user_data, followed_user_data)
+            await notification_integration.on_user_followed(
+                follower_user_data, followed_user_data
+            )
             self._integration_stats["follow_notifications"] += 1
 
             logger.info(
@@ -106,10 +108,14 @@ class J6NotificationIntegrator:
             if not self.enabled:
                 return
 
-            await notification_integration.on_ai_response_completed(user_data, ai_response_data)
+            await notification_integration.on_ai_response_completed(
+                user_data, ai_response_data
+            )
             self._integration_stats["ai_notifications"] += 1
 
-            logger.info(f"AI response notification triggered for user: {user_data.get('username')}")
+            logger.info(
+                f"AI response notification triggered for user: {user_data.get('username')}"
+            )
 
         except Exception as e:
             logger.error(f"Error triggering AI response notification: {e}")
@@ -159,7 +165,8 @@ class J6NotificationIntegrator:
                 mentioning_user=mentioning_user,
                 content=content,
                 context_type=context_type,
-                context_id=context_id or f"{context_type}_{datetime.now(timezone.utc).timestamp()}",
+                context_id=context_id
+                or f"{context_type}_{datetime.now(timezone.utc).timestamp()}",
             )
 
             self._integration_stats["mention_notifications"] += 1
@@ -214,7 +221,9 @@ async def trigger_dm_notification(
     message_data: dict[str, Any],
 ):
     """Helper to trigger DM notification."""
-    await j6_integrator.on_dm_message_received(sender_user_data, recipient_user_data, message_data)
+    await j6_integrator.on_dm_message_received(
+        sender_user_data, recipient_user_data, message_data
+    )
 
 
 async def trigger_ai_response_notification(

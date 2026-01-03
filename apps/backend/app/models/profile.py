@@ -18,7 +18,9 @@ class Profile(Base):
     __tablename__ = "profiles"
 
     # Primary key
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Foreign key to user
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -26,7 +28,9 @@ class Profile(Base):
     )
 
     # Profile fields
-    username: Mapped[str | None] = mapped_column(String(30), unique=True, nullable=True, index=True)
+    username: Mapped[str | None] = mapped_column(
+        String(30), unique=True, nullable=True, index=True
+    )
     display_name: Mapped[str | None] = mapped_column(String(100), nullable=True)
     bio: Mapped[str | None] = mapped_column(Text, nullable=True)
     avatar_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
@@ -44,7 +48,9 @@ class Profile(Base):
     )
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )

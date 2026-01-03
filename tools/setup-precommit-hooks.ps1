@@ -134,11 +134,11 @@ REPO_ROOT=`$(git rev-parse --show-toplevel)`
 PROTECTION_SCRIPT="`$REPO_ROOT/tools/test-runner.ps1"
 SECURITY_SCRIPT="`$REPO_ROOT/tools/security-scanner.ps1"
 
-# Run enhanced protection with relaxed/strict settings for pre-commit
+# Run fast quality checks (lint, format, typecheck) for pre-commit
 if [ -f "`$PROTECTION_SCRIPT" ]; then
-    echo "🔍 Running enhanced protection checks..."
+    echo "🔍 Running fast quality checks..."
 
-    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -PreCommit -CoverageThreshold $preCommitCoverage $enforceStrictParam; then
+    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -FastCheck $enforceStrictParam; then
         echo ""
         echo "✅ Quality gates passed!"
         echo ""
@@ -256,7 +256,7 @@ if [ -f "`$PROTECTION_SCRIPT" ]; then
     # Use higher coverage threshold for push
     PUSH_COVERAGE=$prePushCoverage
 
-    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -PreCommit -CoverageThreshold `$PUSH_COVERAGE -GenerateReport; then
+    if `$SHELL_CMD -ExecutionPolicy Bypass -File "`$PROTECTION_SCRIPT" -PreCommit -CoverageThreshold `$PUSH_COVERAGE -Quiet; then
         echo ""
         echo "✅ All comprehensive checks passed! Push allowed."
         echo ""

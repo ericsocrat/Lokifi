@@ -169,18 +169,28 @@ class TestProfileCRUD:
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
     async def test_get_my_profile_success(
-        self, mock_service_class, mock_current_user, mock_db_session, sample_profile_response
+        self,
+        mock_service_class,
+        mock_current_user,
+        mock_db_session,
+        sample_profile_response,
     ):
         """Test getting current user's profile successfully."""
         # Mock ProfileService instance and method
         mock_service = mock_service_class.return_value
-        mock_service.get_profile_by_user_id = AsyncMock(return_value=sample_profile_response)
+        mock_service.get_profile_by_user_id = AsyncMock(
+            return_value=sample_profile_response
+        )
 
-        result = await get_my_profile(current_user=mock_current_user, db=mock_db_session)
+        result = await get_my_profile(
+            current_user=mock_current_user, db=mock_db_session
+        )
 
         assert isinstance(result, ProfileResponse)
         assert result.username == sample_profile_response.username
-        mock_service.get_profile_by_user_id.assert_awaited_once_with(mock_current_user.id)
+        mock_service.get_profile_by_user_id.assert_awaited_once_with(
+            mock_current_user.id
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
@@ -200,7 +210,11 @@ class TestProfileCRUD:
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
     async def test_update_my_profile_success(
-        self, mock_service_class, mock_current_user, mock_db_session, sample_profile_response
+        self,
+        mock_service_class,
+        mock_current_user,
+        mock_db_session,
+        sample_profile_response,
     ):
         """Test updating current user's profile successfully."""
         mock_service = mock_service_class.return_value
@@ -216,11 +230,15 @@ class TestProfileCRUD:
         )
 
         result = await update_my_profile(
-            profile_data=profile_data, current_user=mock_current_user, db=mock_db_session
+            profile_data=profile_data,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, ProfileResponse)
-        mock_service.update_profile.assert_awaited_once_with(mock_current_user.id, profile_data)
+        mock_service.update_profile.assert_awaited_once_with(
+            mock_current_user.id, profile_data
+        )
 
     @pytest.mark.asyncio
     async def test_update_profile_username_conflict(self, mock_db_session):
@@ -285,7 +303,11 @@ class TestPublicProfileAccess:
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
     async def test_get_profile_by_id_success(
-        self, mock_service_class, mock_db_session, sample_public_profile, mock_current_user
+        self,
+        mock_service_class,
+        mock_db_session,
+        sample_public_profile,
+        mock_current_user,
     ):
         """Test getting public profile by ID successfully."""
         mock_service = mock_service_class.return_value
@@ -298,12 +320,18 @@ class TestPublicProfileAccess:
 
         assert isinstance(result, PublicProfileResponse)
         assert result.username == sample_public_profile.username
-        mock_service.get_public_profile.assert_awaited_once_with(profile_id, mock_current_user.id)
+        mock_service.get_public_profile.assert_awaited_once_with(
+            profile_id, mock_current_user.id
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
     async def test_get_profile_by_username_success(
-        self, mock_service_class, mock_db_session, sample_public_profile, mock_current_user
+        self,
+        mock_service_class,
+        mock_db_session,
+        sample_public_profile,
+        mock_current_user,
     ):
         """Test getting public profile by username successfully."""
         mock_service = mock_service_class.return_value
@@ -336,7 +364,9 @@ class TestPublicProfileAccess:
 
         with pytest.raises(HTTPException) as exc_info:
             await get_profile_by_username(
-                username="nonexistent", db=mock_db_session, current_user=mock_current_user
+                username="nonexistent",
+                db=mock_db_session,
+                current_user=mock_current_user,
             )
 
         assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
@@ -345,7 +375,11 @@ class TestPublicProfileAccess:
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
     async def test_search_profiles_success(
-        self, mock_service_class, mock_db_session, sample_public_profile, mock_current_user
+        self,
+        mock_service_class,
+        mock_db_session,
+        sample_public_profile,
+        mock_current_user,
     ):
         """Test searching profiles successfully."""
         mock_service = mock_service_class.return_value
@@ -361,7 +395,11 @@ class TestPublicProfileAccess:
         mock_service.search_profiles = AsyncMock(return_value=search_response)
 
         result = await search_profiles(
-            q="test", page=1, page_size=20, db=mock_db_session, current_user=mock_current_user
+            q="test",
+            page=1,
+            page_size=20,
+            db=mock_db_session,
+            current_user=mock_current_user,
         )
 
         assert isinstance(result, ProfileSearchResponse)
@@ -393,7 +431,11 @@ class TestUserSettings:
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
     async def test_update_user_settings_success(
-        self, mock_service_class, mock_current_user, mock_db_session, sample_user_settings
+        self,
+        mock_service_class,
+        mock_current_user,
+        mock_db_session,
+        sample_user_settings,
     ):
         """Test updating user settings successfully."""
         mock_service = mock_service_class.return_value
@@ -404,7 +446,9 @@ class TestUserSettings:
         )
 
         result = await update_user_settings(
-            settings_data=settings_data, current_user=mock_current_user, db=mock_db_session
+            settings_data=settings_data,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert isinstance(result, UserSettingsResponse)
@@ -414,7 +458,9 @@ class TestUserSettings:
 
     @pytest.mark.asyncio
     @patch("app.core.security.validate_email")
-    async def test_update_user_settings_invalid_email(self, mock_validate_email, mock_db_session):
+    async def test_update_user_settings_invalid_email(
+        self, mock_validate_email, mock_db_session
+    ):
         """Test updating user settings with invalid email format (400 Bad Request)."""
         from app.services.profile_service import ProfileService
 
@@ -440,7 +486,9 @@ class TestUserSettings:
 
     @pytest.mark.asyncio
     @patch("app.core.security.validate_email")
-    async def test_update_user_settings_email_conflict(self, mock_validate_email, mock_db_session):
+    async def test_update_user_settings_email_conflict(
+        self, mock_validate_email, mock_db_session
+    ):
         """Test updating user settings with email already in use (409 Conflict)."""
         from app.services.profile_service import ProfileService
 
@@ -520,7 +568,9 @@ class TestNotificationPreferencesAndDeletion:
 
         assert isinstance(result, NotificationPreferencesResponse)
         assert result.email_enabled == sample_notification_preferences.email_enabled
-        mock_service.get_notification_preferences.assert_awaited_once_with(mock_current_user.id)
+        mock_service.get_notification_preferences.assert_awaited_once_with(
+            mock_current_user.id
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.profile.ProfileService")
@@ -537,7 +587,9 @@ class TestNotificationPreferencesAndDeletion:
             return_value=sample_notification_preferences
         )
 
-        prefs_data = NotificationPreferencesUpdateRequest(email_enabled=False, push_enabled=True)
+        prefs_data = NotificationPreferencesUpdateRequest(
+            email_enabled=False, push_enabled=True
+        )
 
         result = await update_notification_preferences(
             prefs_data=prefs_data, current_user=mock_current_user, db=mock_db_session
@@ -580,7 +632,9 @@ class TestNotificationPreferencesAndDeletion:
         prefs_data = NotificationPreferencesUpdateRequest(email_enabled=False)
 
         with pytest.raises(HTTPException) as exc_info:
-            await profile_service.update_notification_preferences(uuid.uuid4(), prefs_data)
+            await profile_service.update_notification_preferences(
+                uuid.uuid4(), prefs_data
+            )
 
         assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
         assert "Notification preferences not found" in exc_info.value.detail
@@ -610,7 +664,9 @@ class TestNotificationPreferencesAndDeletion:
         mock_db_session.execute = AsyncMock()
         mock_db_session.commit = AsyncMock()
 
-        result = await delete_account(current_user=mock_current_user, db=mock_db_session)
+        result = await delete_account(
+            current_user=mock_current_user, db=mock_db_session
+        )
 
         # Verify response
         assert result.success is True

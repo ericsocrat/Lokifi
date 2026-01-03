@@ -104,7 +104,9 @@ class SecurityAlertManager:
         self.smtp_username = os.getenv("SMTP_USERNAME", "")
         self.smtp_password = os.getenv("SMTP_PASSWORD", "")
         self.from_email = os.getenv("FROM_EMAIL", "security@lokifi.app")
-        self.to_emails = os.getenv("SECURITY_ALERT_EMAILS", "admin@lokifi.app").split(",")
+        self.to_emails = os.getenv("SECURITY_ALERT_EMAILS", "admin@lokifi.app").split(
+            ","
+        )
 
         # Webhook configuration
         self.webhook_url = os.getenv("SECURITY_WEBHOOK_URL", "")
@@ -155,7 +157,9 @@ class SecurityAlertManager:
 
         # Keep only recent alerts (last 24 hours)
         cutoff_time = datetime.now(timezone.utc) - timedelta(hours=24)
-        self.alert_history = [a for a in self.alert_history if a.timestamp > cutoff_time]
+        self.alert_history = [
+            a for a in self.alert_history if a.timestamp > cutoff_time
+        ]
 
         return success_count > 0
 
@@ -168,7 +172,10 @@ class SecurityAlertManager:
             AlertPriority.CRITICAL: 3,
         }
 
-        return priority_levels[alert.priority] >= priority_levels[self.config.priority_threshold]
+        return (
+            priority_levels[alert.priority]
+            >= priority_levels[self.config.priority_threshold]
+        )
 
     def _is_rate_limited(self, alert: Alert) -> bool:
         """Check if similar alert was sent recently"""
@@ -190,7 +197,9 @@ class SecurityAlertManager:
         cutoff_time = datetime.now(timezone.utc) - timedelta(
             minutes=self.config.rate_limit_minutes * 2
         )
-        self.rate_limit_cache = {k: v for k, v in self.rate_limit_cache.items() if v > cutoff_time}
+        self.rate_limit_cache = {
+            k: v for k, v in self.rate_limit_cache.items() if v > cutoff_time
+        }
 
     async def _send_email_alert(self, alert: Alert):
         """Send alert via email"""
@@ -325,7 +334,9 @@ class SecurityAlertManager:
             headers["Authorization"] = f"Bearer {self.webhook_secret}"
 
         try:
-            response = requests.post(self.webhook_url, json=payload, headers=headers, timeout=10)
+            response = requests.post(
+                self.webhook_url, json=payload, headers=headers, timeout=10
+            )
             response.raise_for_status()
         except Exception as e:
             logger.error(f"Failed to send webhook alert: {e}")
@@ -353,18 +364,29 @@ class SecurityAlertManager:
                 {
                     "color": (
                         "danger"
-                        if alert.severity in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]
+                        if alert.severity
+                        in [SecuritySeverity.HIGH, SecuritySeverity.CRITICAL]
                         else "warning"
                     ),
                     "title": f"{emoji} {alert.title}",
                     "text": alert.message,
                     "fields": [
-                        {"title": "Severity", "value": alert.severity.value.upper(), "short": True},
-                        {"title": "Event Type", "value": alert.event_type.value, "short": True},
+                        {
+                            "title": "Severity",
+                            "value": alert.severity.value.upper(),
+                            "short": True,
+                        },
+                        {
+                            "title": "Event Type",
+                            "value": alert.event_type.value,
+                            "short": True,
+                        },
                         {
                             "title": "Timestamp",
                             "value": (
-                                alert.timestamp.strftime("%Y-%m-%d %H:%M:%S timezone.utc")
+                                alert.timestamp.strftime(
+                                    "%Y-%m-%d %H:%M:%S timezone.utc"
+                                )
                                 if alert.timestamp
                                 else "N/A"
                             ),
@@ -406,8 +428,16 @@ class SecurityAlertManager:
 
         # Type narrowing: explicit list type for fields
         fields: list[dict[str, str]] = [
-            {"name": "Severity", "value": alert.severity.value.upper(), "inline": "True"},
-            {"name": "Priority", "value": alert.priority.value.upper(), "inline": "True"},
+            {
+                "name": "Severity",
+                "value": alert.severity.value.upper(),
+                "inline": "True",
+            },
+            {
+                "name": "Priority",
+                "value": alert.priority.value.upper(),
+                "inline": "True",
+            },
             {"name": "Event Type", "value": alert.event_type.value, "inline": "True"},
         ]
 
@@ -425,10 +455,18 @@ class SecurityAlertManager:
         }
 
         if alert.source_ip:
-            fields.append({"name": "Source IP", "value": alert.source_ip, "inline": "True"})
+            fields.append(
+                {"name": "Source IP", "value": alert.source_ip, "inline": "True"}
+            )
 
         if alert.affected_user:
-            fields.append({"name": "Affected User", "value": alert.affected_user, "inline": "True"})
+            fields.append(
+                {
+                    "name": "Affected User",
+                    "value": alert.affected_user,
+                    "inline": "True",
+                }
+            )
 
         payload = {"embeds": [embed]}
 
@@ -460,7 +498,9 @@ class SecurityAlertManager:
         event_type_counts = {}
 
         for alert in recent_alerts:
-            severity_counts[alert.severity.value] = severity_counts.get(alert.severity.value, 0) + 1
+            severity_counts[alert.severity.value] = (
+                severity_counts.get(alert.severity.value, 0) + 1
+            )
             event_type_counts[alert.event_type.value] = (
                 event_type_counts.get(alert.event_type.value, 0) + 1
             )

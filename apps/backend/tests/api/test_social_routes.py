@@ -229,7 +229,8 @@ class TestFollowEndpoints:
 
         # Act
         response = client.post(
-            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser",
+            headers={"Authorization": "Bearer test_token"},
         )
 
         # Assert
@@ -242,7 +243,12 @@ class TestFollowEndpoints:
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_follow_already_following(
-        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2, mock_db_follow
+        self,
+        mock_get_session,
+        mock_require_handle,
+        mock_db_user,
+        mock_db_user_2,
+        mock_db_follow,
     ):
         """Test follow when already following"""
         # Arrange
@@ -259,7 +265,8 @@ class TestFollowEndpoints:
 
         # Act
         response = client.post(
-            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser",
+            headers={"Authorization": "Bearer test_token"},
         )
 
         # Assert
@@ -271,7 +278,9 @@ class TestFollowEndpoints:
 
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
-    def test_follow_self_error(self, mock_get_session, mock_require_handle, mock_db_user):
+    def test_follow_self_error(
+        self, mock_get_session, mock_require_handle, mock_db_user
+    ):
         """Test follow self returns error"""
         # Arrange
         mock_require_handle.return_value = "testuser"
@@ -286,7 +295,8 @@ class TestFollowEndpoints:
 
         # Act
         response = client.post(
-            "/api/social/follow/testuser", headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/testuser",
+            headers={"Authorization": "Bearer test_token"},
         )
 
         # Assert
@@ -296,7 +306,12 @@ class TestFollowEndpoints:
     @patch("app.api.routes.social.require_handle")
     @patch("app.api.routes.social.get_session")
     def test_unfollow_success(
-        self, mock_get_session, mock_require_handle, mock_db_user, mock_db_user_2, mock_db_follow
+        self,
+        mock_get_session,
+        mock_require_handle,
+        mock_db_user,
+        mock_db_user_2,
+        mock_db_follow,
     ):
         """Test successful unfollow operation"""
         # Arrange
@@ -313,7 +328,8 @@ class TestFollowEndpoints:
 
         # Act
         response = client.delete(
-            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser",
+            headers={"Authorization": "Bearer test_token"},
         )
 
         # Assert
@@ -343,7 +359,8 @@ class TestFollowEndpoints:
 
         # Act
         response = client.delete(
-            "/api/social/follow/anotheruser", headers={"Authorization": "Bearer test_token"}
+            "/api/social/follow/anotheruser",
+            headers={"Authorization": "Bearer test_token"},
         )
 
         # Assert
@@ -401,11 +418,17 @@ class TestPostEndpoints:
 
         mock_session.refresh.side_effect = set_timestamps
 
-        payload = {"handle": "testuser", "content": "Test post content", "symbol": "BTC"}
+        payload = {
+            "handle": "testuser",
+            "content": "Test post content",
+            "symbol": "BTC",
+        }
 
         # Act
         response = client.post(
-            "/api/social/posts", json=payload, headers={"Authorization": "Bearer test_token"}
+            "/api/social/posts",
+            json=payload,
+            headers={"Authorization": "Bearer test_token"},
         )
 
         # Assert
@@ -425,7 +448,9 @@ class TestPostEndpoints:
         mock_get_session.return_value.__enter__.return_value = mock_session
 
         # Mock query results (post, user) tuples
-        mock_session.execute.return_value.all.return_value = [(mock_db_post, mock_db_user)]
+        mock_session.execute.return_value.all.return_value = [
+            (mock_db_post, mock_db_user)
+        ]
 
         # Act
         response = client.get("/api/social/posts")
@@ -439,14 +464,18 @@ class TestPostEndpoints:
         assert data[0]["content"] == "Test post content"
 
     @patch("app.api.routes.social.get_session")
-    def test_list_posts_with_symbol_filter(self, mock_get_session, mock_db_user, mock_db_post):
+    def test_list_posts_with_symbol_filter(
+        self, mock_get_session, mock_db_user, mock_db_post
+    ):
         """Test posts listing with symbol filter"""
         # Arrange
         mock_session = MagicMock()
         mock_get_session.return_value.__enter__.return_value = mock_session
 
         # Mock query results
-        mock_session.execute.return_value.all.return_value = [(mock_db_post, mock_db_user)]
+        mock_session.execute.return_value.all.return_value = [
+            (mock_db_post, mock_db_user)
+        ]
 
         # Act
         response = client.get("/api/social/posts?symbol=BTC")
@@ -458,7 +487,9 @@ class TestPostEndpoints:
         # Symbol filtering is done at database level, we just verify endpoint accepts param
 
     @patch("app.api.routes.social.get_session")
-    def test_list_posts_with_pagination(self, mock_get_session, mock_db_user, mock_db_post):
+    def test_list_posts_with_pagination(
+        self, mock_get_session, mock_db_user, mock_db_post
+    ):
         """Test posts listing with pagination"""
         # Arrange
         mock_session = MagicMock()
@@ -485,7 +516,9 @@ class TestFeedEndpoint:
     """Tests for personalized feed endpoint"""
 
     @patch("app.api.routes.social.get_session")
-    def test_feed_with_follows(self, mock_get_session, mock_db_user, mock_db_user_2, mock_db_post):
+    def test_feed_with_follows(
+        self, mock_get_session, mock_db_user, mock_db_user_2, mock_db_post
+    ):
         """Test feed for user with follows"""
         # Arrange
         mock_session = MagicMock()

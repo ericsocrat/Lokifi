@@ -548,7 +548,9 @@ class TestPerformanceAnalyzer:
         assert len(performance_analyzer.metrics_history) == 1
 
     @pytest.mark.asyncio
-    async def test_analyze_metrics_with_object(self, performance_analyzer, sample_system_metrics):
+    async def test_analyze_metrics_with_object(
+        self, performance_analyzer, sample_system_metrics
+    ):
         """Test analyze_metrics with SystemMetrics object."""
         await performance_analyzer.analyze_metrics(sample_system_metrics)
 
@@ -647,7 +649,9 @@ class TestAdvancedMonitoringSystem:
 
     @pytest.mark.asyncio
     @patch("app.services.advanced_monitoring.db_manager")
-    async def test_check_database_health_healthy(self, mock_db_manager, monitoring_system):
+    async def test_check_database_health_healthy(
+        self, mock_db_manager, monitoring_system
+    ):
         """Test database health check when healthy."""
         # Mock session
         mock_result = MagicMock()
@@ -669,7 +673,9 @@ class TestAdvancedMonitoringSystem:
 
     @pytest.mark.asyncio
     @patch("app.services.advanced_monitoring.db_manager")
-    async def test_check_database_health_unhealthy(self, mock_db_manager, monitoring_system):
+    async def test_check_database_health_unhealthy(
+        self, mock_db_manager, monitoring_system
+    ):
         """Test database health check when unhealthy."""
 
         # Mock session to raise exception
@@ -688,7 +694,9 @@ class TestAdvancedMonitoringSystem:
 
     @pytest.mark.asyncio
     @patch("app.services.advanced_monitoring.advanced_redis_client")
-    async def test_check_redis_health_healthy(self, mock_redis_client, monitoring_system):
+    async def test_check_redis_health_healthy(
+        self, mock_redis_client, monitoring_system
+    ):
         """Test Redis health check when healthy."""
         mock_redis_client.is_available = AsyncMock(return_value=True)
         mock_redis_client.get_metrics = AsyncMock(
@@ -702,7 +710,9 @@ class TestAdvancedMonitoringSystem:
 
     @pytest.mark.asyncio
     @patch("app.services.advanced_monitoring.advanced_redis_client")
-    async def test_check_redis_health_unavailable(self, mock_redis_client, monitoring_system):
+    async def test_check_redis_health_unavailable(
+        self, mock_redis_client, monitoring_system
+    ):
         """Test Redis health check when unavailable."""
         mock_redis_client.is_available = AsyncMock(return_value=False)
 
@@ -854,7 +864,9 @@ class TestAdvancedMonitoringSystem:
 
         # Mock health checks
         for service in monitoring_system.health_checks:
-            monitoring_system.health_checks[service] = AsyncMock(return_value={"status": "healthy"})
+            monitoring_system.health_checks[service] = AsyncMock(
+                return_value={"status": "healthy"}
+            )
 
         # Execute
         dashboard = await monitoring_system.get_dashboard_data()

@@ -55,7 +55,8 @@ async def get_platform_messaging_stats(
 
 @router.get("/admin/messaging/performance")
 async def get_performance_metrics(
-    minutes_back: int = Query(10, ge=1, le=60), admin_user: User = Depends(get_admin_user)
+    minutes_back: int = Query(10, ge=1, le=60),
+    admin_user: User = Depends(get_admin_user),
 ):
     """Get performance metrics and system health."""
     try:
@@ -102,9 +103,13 @@ async def get_moderation_stats(
 
         return {
             "blocked_words_count": len(moderation_service.get_blocked_words()),
-            "blocked_words": moderation_service.get_blocked_words()[:20],  # First 20 for preview
+            "blocked_words": moderation_service.get_blocked_words()[
+                :20
+            ],  # First 20 for preview
             "user_warning_counts": len(moderation_service.user_warning_counts),
-            "total_warnings_issued": sum(moderation_service.user_warning_counts.values()),
+            "total_warnings_issued": sum(
+                moderation_service.user_warning_counts.values()
+            ),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
@@ -118,7 +123,9 @@ async def get_moderation_stats(
 
 @router.post("/admin/messaging/moderation/blocked-words")
 async def add_blocked_words(
-    words: list[str], admin_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
+    words: list[str],
+    admin_user: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Add words to the blocked list."""
     try:
@@ -136,13 +143,16 @@ async def add_blocked_words(
     except Exception as e:
         logger.error(f"Error adding blocked words: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to add blocked words"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to add blocked words",
         )
 
 
 @router.delete("/admin/messaging/moderation/blocked-words")
 async def remove_blocked_words(
-    words: list[str], admin_user: User = Depends(get_admin_user), db: AsyncSession = Depends(get_db)
+    words: list[str],
+    admin_user: User = Depends(get_admin_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Remove words from the blocked list."""
     try:
@@ -189,7 +199,9 @@ async def get_active_connections(admin_user: User = Depends(get_admin_user)):
 
 
 @router.post("/admin/messaging/broadcast")
-async def admin_broadcast_message(message: str, admin_user: User = Depends(get_admin_user)):
+async def admin_broadcast_message(
+    message: str, admin_user: User = Depends(get_admin_user)
+):
     """Send administrative broadcast message to all connected users."""
     try:
         online_users = connection_manager.get_online_users()
@@ -276,5 +288,6 @@ async def comprehensive_health_check(
     except Exception as e:
         logger.error(f"Error in comprehensive health check: {e}")
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Health check failed"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Health check failed",
         )

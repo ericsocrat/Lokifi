@@ -111,7 +111,10 @@ class ContentModerator:
 
         if not content or not content.strip():
             return ModerationResult(
-                level=ModerationLevel.SAFE, categories=[], confidence=1.0, reason="Empty content"
+                level=ModerationLevel.SAFE,
+                categories=[],
+                confidence=1.0,
+                reason="Empty content",
             )
 
         detected_categories = []
@@ -136,7 +139,9 @@ class ContentModerator:
             reasons.append(f"High toxicity score: {toxicity_score:.2f}")
 
         # Determine moderation level
-        level = self._determine_moderation_level(detected_categories, highest_confidence, user_id)
+        level = self._determine_moderation_level(
+            detected_categories, highest_confidence, user_id
+        )
 
         # Update user tracking
         if user_id and detected_categories:
@@ -180,7 +185,10 @@ class ContentModerator:
         return min(1.0, toxic_count / len(words) * 5)  # Reduced scale
 
     def _determine_moderation_level(
-        self, categories: list[ModerationCategory], confidence: float, user_id: int | None
+        self,
+        categories: list[ModerationCategory],
+        confidence: float,
+        user_id: int | None,
     ) -> ModerationLevel:
         """Determine appropriate moderation level."""
 

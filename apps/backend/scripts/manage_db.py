@@ -22,7 +22,9 @@ def cli():
 
 @cli.command()
 @click.option(
-    "--source", default="sqlite+aiosqlite:///./data/lokifi.sqlite", help="Source database URL"
+    "--source",
+    default="sqlite+aiosqlite:///./data/lokifi.sqlite",
+    help="Source database URL",
 )
 @click.option("--target", required=True, help="Target database URL (PostgreSQL)")
 @click.option("--batch-size", default=1000, help="Migration batch size")
@@ -101,7 +103,9 @@ def metrics():
 
 @cli.command()
 @click.option("--batch-size", default=1000, help="Archival batch size")
-@click.option("--dry-run", is_flag=True, help="Show what would be archived without doing it")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be archived without doing it"
+)
 def archive(batch_size: int, dry_run: bool):
     """Archive old conversations"""
 
@@ -122,10 +126,14 @@ def archive(batch_size: int, dry_run: bool):
         if dry_run:
             click.echo("🔍 DRY RUN - No data will be modified")
 
-        click.echo(f"🗂️  Archiving conversations older than {settings.ARCHIVE_THRESHOLD_DAYS} days")
+        click.echo(
+            f"🗂️  Archiving conversations older than {settings.ARCHIVE_THRESHOLD_DAYS} days"
+        )
 
         if not dry_run:
-            stats = await archival_service.archive_old_conversations(batch_size=batch_size)
+            stats = await archival_service.archive_old_conversations(
+                batch_size=batch_size
+            )
 
             click.echo("✅ Archival completed!")
             click.echo(f"   Threads archived: {stats.threads_archived}")
@@ -177,7 +185,9 @@ def cleanup():
 
         archival_service = DataArchivalService(settings)
 
-        click.echo(f"🗑️  Deleting conversations older than {settings.DELETE_THRESHOLD_DAYS} days")
+        click.echo(
+            f"🗑️  Deleting conversations older than {settings.DELETE_THRESHOLD_DAYS} days"
+        )
 
         stats = await archival_service.delete_expired_conversations()
 
@@ -274,7 +284,9 @@ def info():
 
 
 @cli.command()
-@click.option("--days", type=int, help="Force delete data older than X days (DANGEROUS)")
+@click.option(
+    "--days", type=int, help="Force delete data older than X days (DANGEROUS)"
+)
 @click.confirmation_option(prompt="This will permanently delete data. Are you sure?")
 def emergency_cleanup(days: int | None):
     """Emergency cleanup for critical storage situations"""
@@ -294,11 +306,15 @@ def emergency_cleanup(days: int | None):
         if task_result["success"]:
             click.echo("✅ Emergency cleanup completed!")
             click.echo(f"   Space freed: {task_result['space_freed_mb']:.2f} MB")
-            click.echo(f"   Messages archived: {task_result['archive_stats']['messages_archived']}")
+            click.echo(
+                f"   Messages archived: {task_result['archive_stats']['messages_archived']}"
+            )
             click.echo(
                 f"   Messages compressed: {task_result['compress_stats']['messages_compressed']}"
             )
-            click.echo(f"   Messages deleted: {task_result['delete_stats']['messages_deleted']}")
+            click.echo(
+                f"   Messages deleted: {task_result['delete_stats']['messages_deleted']}"
+            )
         else:
             click.echo(f"❌ Emergency cleanup failed: {task_result['error']}")
 

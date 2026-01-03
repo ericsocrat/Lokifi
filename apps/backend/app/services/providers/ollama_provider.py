@@ -79,11 +79,15 @@ class OllamaProvider(AIProvider):
                                 yield chunk
                         return
                     except (httpx.RequestError, httpx.HTTPStatusError, Exception):
-                        raise ProviderError(f"Model {model} not available and could not be pulled")
+                        raise ProviderError(
+                            f"Model {model} not available and could not be pulled"
+                        )
 
                 elif response.status_code != 200:
                     error_text = await response.aread()
-                    raise ProviderError(f"Ollama API error: {response.status_code} - {error_text}")
+                    raise ProviderError(
+                        f"Ollama API error: {response.status_code} - {error_text}"
+                    )
 
                 async for chunk in self._process_stream(response, model, messages):
                     yield chunk
@@ -136,7 +140,9 @@ class OllamaProvider(AIProvider):
                             "provider": "ollama",
                             "eval_duration": chunk_data.get("eval_duration"),
                             "load_duration": chunk_data.get("load_duration"),
-                            "prompt_eval_duration": chunk_data.get("prompt_eval_duration"),
+                            "prompt_eval_duration": chunk_data.get(
+                                "prompt_eval_duration"
+                            ),
                         },
                     )
                     break

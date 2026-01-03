@@ -21,7 +21,8 @@ except ImportError:
 
 # Default to PostgreSQL (Docker container setup)
 DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql+asyncpg://lokifi:lokifi_dev_password@localhost:5432/lokifi_db"
+    "DATABASE_URL",
+    "postgresql+asyncpg://lokifi:lokifi_dev_password@localhost:5432/lokifi_db",
 )
 
 # Create async engine

@@ -85,7 +85,8 @@ async def batch_fetch_prices_endpoint(request: BatchRequest):
     """
     # TODO: Implement with TypeScript service
     raise HTTPException(
-        status_code=501, detail="Batch fetching coming soon. Service integration in progress."
+        status_code=501,
+        detail="Batch fetching coming soon. Service integration in progress.",
     )
 
 

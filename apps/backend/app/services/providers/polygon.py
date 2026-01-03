@@ -16,11 +16,16 @@ def _tf(timeframe: str):
 
 async def fetch_ohlc(symbol: str, timeframe: str, limit: int):
     mult, unit = _tf(timeframe)
-    url = (
-        f"https://api.polygon.io/v2/aggs/ticker/{symbol}/range/{mult}/{unit}/2024-01-01/2025-12-31"
-    )
+    url = f"https://api.polygon.io/v2/aggs/ticker/{symbol}/range/{mult}/{unit}/2024-01-01/2025-12-31"
     data = await _get(url, {"apiKey": settings.POLYGON_KEY, "limit": limit})
     return [
-        {"ts": r["t"], "o": r["o"], "h": r["h"], "l": r["l"], "c": r["c"], "v": r.get("v", 0)}
+        {
+            "ts": r["t"],
+            "o": r["o"],
+            "h": r["h"],
+            "l": r["l"],
+            "c": r["c"],
+            "v": r.get("v", 0),
+        }
         for r in data.get("results", [])
     ][-limit:]

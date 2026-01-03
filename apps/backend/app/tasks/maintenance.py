@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 # Initialize Celery app
 settings = Settings()
-celery_app = Celery("lokifi_maintenance", broker=settings.redis_url, backend=settings.redis_url)
+celery_app = Celery(
+    "lokifi_maintenance", broker=settings.redis_url, backend=settings.redis_url
+)
 
 # Configure Celery
 celery_app.conf.update(
@@ -185,7 +187,9 @@ def monthly_maintenance_task() -> dict[str, Any]:
         asyncio.set_event_loop(loop)
         try:
             result = loop.run_until_complete(run_full_maintenance())
-            logger.info(f"Monthly maintenance completed: {result['maintenance_results']}")
+            logger.info(
+                f"Monthly maintenance completed: {result['maintenance_results']}"
+            )
             return result
         finally:
             loop.close()
@@ -295,8 +299,12 @@ def emergency_cleanup_task(force_delete_days: int | None = None) -> dict[str, An
             before_metrics = await archival_service.get_storage_metrics()
 
             # Run aggressive cleanup
-            archive_stats = await archival_service.archive_old_conversations(batch_size=10000)
-            compress_stats = await archival_service.compress_old_messages(batch_size=5000)
+            archive_stats = await archival_service.archive_old_conversations(
+                batch_size=10000
+            )
+            compress_stats = await archival_service.compress_old_messages(
+                batch_size=5000
+            )
             delete_stats = await archival_service.delete_expired_conversations()
 
             # Vacuum database
@@ -331,7 +339,9 @@ def emergency_cleanup_task(force_delete_days: int | None = None) -> dict[str, An
         asyncio.set_event_loop(loop)
         try:
             result = loop.run_until_complete(emergency_cleanup())
-            logger.info(f"Emergency cleanup completed: freed {result['space_freed_mb']:.2f}MB")
+            logger.info(
+                f"Emergency cleanup completed: freed {result['space_freed_mb']:.2f}MB"
+            )
             return result
         finally:
             loop.close()

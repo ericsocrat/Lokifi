@@ -32,7 +32,9 @@ async def get_security_status():
 
 
 @router.get("/security/dashboard")
-async def get_security_dashboard(current_user: dict[str, Any] = Depends(get_current_user)):
+async def get_security_dashboard(
+    current_user: dict[str, Any] = Depends(get_current_user),
+):
     """Get comprehensive security dashboard (requires authentication)"""
 
     # Only allow admin users to access detailed security info
@@ -186,7 +188,11 @@ async def security_health_check():
         elif summary.get("suspicious_ips", 0) > 20:
             overall_status = "at-risk"
 
-        return {"status": overall_status, "details": health_status, "monitoring_active": True}
+        return {
+            "status": overall_status,
+            "details": health_status,
+            "monitoring_active": True,
+        }
 
     except Exception:
         return {
@@ -218,12 +224,16 @@ async def get_security_config(current_user: dict[str, Any] = Depends(get_current
             "require_special": security_config.PASSWORD_REQUIRE_SPECIAL,
             "min_criteria": security_config.PASSWORD_MIN_CRITERIA,
         },
-        "environment": "production" if security_config.is_production() else "development",
+        "environment": (
+            "production" if security_config.is_production() else "development"
+        ),
     }
 
 
 @router.get("/security/alerts/config")
-async def get_alert_configuration(current_user: dict[str, Any] = Depends(get_current_user)):
+async def get_alert_configuration(
+    current_user: dict[str, Any] = Depends(get_current_user),
+):
     """Get current alert configuration (admin only)"""
 
     stats = security_alert_manager.get_alert_statistics()
@@ -234,7 +244,9 @@ async def get_alert_configuration(current_user: dict[str, Any] = Depends(get_cur
             "enabled": security_alert_manager.config.enabled,
             "priority_threshold": security_alert_manager.config.priority_threshold.value,
             "rate_limit_minutes": security_alert_manager.config.rate_limit_minutes,
-            "channels": [c.value for c in (security_alert_manager.config.channels or [])],
+            "channels": [
+                c.value for c in (security_alert_manager.config.channels or [])
+            ],
         },
         "channel_status": {
             "email_configured": bool(security_alert_manager.smtp_username),
@@ -257,12 +269,19 @@ async def send_test_alert(current_user: dict[str, Any] = Depends(get_current_use
             message="This is a test alert from the Lokifi security monitoring system.",
             event_type=SecurityEventType.CONFIGURATION_CHANGE,
             source_ip="127.0.0.1",
-            additional_data={"test": True, "user": str(current_user.get("sub", "unknown"))},
+            additional_data={
+                "test": True,
+                "user": str(current_user.get("sub", "unknown")),
+            },
         )
 
         return {
             "success": success,
-            "message": "Test alert sent successfully" if success else "Failed to send test alert",
+            "message": (
+                "Test alert sent successfully"
+                if success
+                else "Failed to send test alert"
+            ),
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 

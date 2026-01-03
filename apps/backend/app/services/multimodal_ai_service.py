@@ -74,13 +74,17 @@ class MultiModalAIService:
 
         # Process based on file type
         if file_extension in self.supported_image_types:
-            processed_data = await self._process_image(content, file.filename or "unknown")
+            processed_data = await self._process_image(
+                content, file.filename or "unknown"
+            )
         elif file_extension in self.supported_document_types:
             processed_data = await self._process_document(
                 content, file.filename or "unknown", file_extension
             )
         else:
-            raise UnsupportedFileTypeError(f"File type {file_extension} is not supported")
+            raise UnsupportedFileTypeError(
+                f"File type {file_extension} is not supported"
+            )
 
         # Store file metadata
         file_metadata = {
@@ -138,7 +142,9 @@ class MultiModalAIService:
             async for chunk in provider.stream_chat(messages):
                 if chunk.content:
                     yield StreamChunk(
-                        id=str(uuid.uuid4()), content=chunk.content, is_complete=chunk.is_complete
+                        id=str(uuid.uuid4()),
+                        content=chunk.content,
+                        is_complete=chunk.is_complete,
                     )
 
         except Exception as e:
@@ -146,7 +152,12 @@ class MultiModalAIService:
             yield f"Sorry, I encountered an error analyzing the image: {e!s}"
 
     async def analyze_document_with_ai(
-        self, document_text: str, user_prompt: str, filename: str, user_id: int, thread_id: int
+        self,
+        document_text: str,
+        user_prompt: str,
+        filename: str,
+        user_id: int,
+        thread_id: int,
     ) -> AsyncGenerator[StreamChunk | str]:
         """Analyze document content using AI."""
 
@@ -169,13 +180,17 @@ class MultiModalAIService:
             Please analyze the document and provide a helpful response based on the user's request.
             """
 
-            messages = [AIProviderMessage(role=MessageRole.USER, content=analysis_prompt)]
+            messages = [
+                AIProviderMessage(role=MessageRole.USER, content=analysis_prompt)
+            ]
 
             # Stream response from AI
             async for chunk in provider.stream_chat(messages):
                 if chunk.content:
                     yield StreamChunk(
-                        id=str(uuid.uuid4()), content=chunk.content, is_complete=chunk.is_complete
+                        id=str(uuid.uuid4()),
+                        content=chunk.content,
+                        is_complete=chunk.is_complete,
                     )
 
         except Exception as e:
@@ -287,7 +302,9 @@ class MultiModalAIService:
                     "extension": extension,
                 },
                 "text_content": (
-                    text_content[:1000] + "..." if len(text_content) > 1000 else text_content
+                    text_content[:1000] + "..."
+                    if len(text_content) > 1000
+                    else text_content
                 ),
             }
 
@@ -300,7 +317,9 @@ class MultiModalAIService:
         try:
             # Simple PDF text extraction fallback
             # In production, use pypdf2 or pdfplumber
-            return "PDF content extraction not available - install PyPDF2 for full support"
+            return (
+                "PDF content extraction not available - install PyPDF2 for full support"
+            )
 
         except Exception as e:
             raise FileProcessingError(f"Failed to extract PDF text: {e!s}")
@@ -316,7 +335,9 @@ class MultiModalAIService:
         except Exception as e:
             raise FileProcessingError(f"Failed to extract DOCX text: {e!s}")
 
-    async def get_file_processing_stats(self, user_id: int, days_back: int = 30) -> dict[str, Any]:
+    async def get_file_processing_stats(
+        self, user_id: int, days_back: int = 30
+    ) -> dict[str, Any]:
         """Get file processing statistics for a user."""
 
         # This would typically query a file_uploads table

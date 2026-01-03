@@ -84,7 +84,9 @@ class TestNewsServiceInit:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # All providers return None
             mock_marketaux.return_value = None
@@ -115,7 +117,9 @@ class TestNewsServiceHappyPath:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux succeeds
             mock_marketaux.return_value = [
@@ -155,14 +159,21 @@ class TestNewsServiceHappyPath:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux fails
             mock_marketaux.side_effect = Exception("Marketaux error")
 
             # NewsAPI succeeds
             mock_newsapi.return_value = [
-                {"id": 1, "symbol": "TSLA", "title": "Tesla News 1", "source": "NewsAPI"}
+                {
+                    "id": 1,
+                    "symbol": "TSLA",
+                    "title": "Tesla News 1",
+                    "source": "NewsAPI",
+                }
             ]
 
             result = await news.get_news("TSLA")
@@ -186,7 +197,9 @@ class TestNewsServiceHappyPath:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux fails
             mock_marketaux.side_effect = Exception("Marketaux error")
@@ -228,7 +241,9 @@ class TestNewsServiceProviderCascade:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux succeeds
             mock_marketaux.return_value = [{"id": "1", "title": "News"}]
@@ -250,7 +265,9 @@ class TestNewsServiceProviderCascade:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux returns empty
             mock_marketaux.return_value = []
@@ -275,7 +292,9 @@ class TestNewsServiceProviderCascade:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # All providers fail
             mock_marketaux.side_effect = Exception("Error 1")
@@ -302,10 +321,14 @@ class TestNewsServiceProviderCascade:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux returns 10 items
-            mock_marketaux.return_value = [{"id": i, "title": f"News {i}"} for i in range(10)]
+            mock_marketaux.return_value = [
+                {"id": i, "title": f"News {i}"} for i in range(10)
+            ]
 
             # Request only 3 items
             result = await news.get_news("AAPL", limit=3)
@@ -332,9 +355,15 @@ class TestNewsServiceProviderCascade:
             call_order.append("fmp")
             return [{"id": 1, "title": "News"}]
 
-        with patch("app.services.providers.marketaux.fetch_news", side_effect=mock_marketaux_fn):
-            with patch("app.services.providers.newsapi.fetch_news", side_effect=mock_newsapi_fn):
-                with patch("app.services.providers.fmp.fetch_news", side_effect=mock_fmp_fn):
+        with patch(
+            "app.services.providers.marketaux.fetch_news", side_effect=mock_marketaux_fn
+        ):
+            with patch(
+                "app.services.providers.newsapi.fetch_news", side_effect=mock_newsapi_fn
+            ):
+                with patch(
+                    "app.services.providers.fmp.fetch_news", side_effect=mock_fmp_fn
+                ):
                     result = await news.get_news("AAPL")
 
                     # Verify order: marketaux → newsapi → fmp
@@ -360,7 +389,9 @@ class TestNewsServiceErrorHandling:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux rate limited
             mock_marketaux.side_effect = HTTPStatusError(
@@ -388,7 +419,9 @@ class TestNewsServiceErrorHandling:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux server error
             mock_marketaux.side_effect = HTTPStatusError(
@@ -417,7 +450,9 @@ class TestNewsServiceErrorHandling:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux network error
             mock_marketaux.side_effect = ConnectError("Network timeout")
@@ -441,7 +476,9 @@ class TestNewsServiceErrorHandling:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux general exception
             mock_marketaux.side_effect = ValueError("Invalid data")
@@ -477,7 +514,9 @@ class TestNewsServiceEdgeCases:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux succeeds with data
             mock_marketaux.return_value = [{"id": 1, "title": "News"}]
@@ -498,7 +537,9 @@ class TestNewsServiceEdgeCases:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux returns 3 items
             mock_marketaux.return_value = [{"id": i} for i in range(3)]
@@ -519,7 +560,9 @@ class TestNewsServiceEdgeCases:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux succeeds
             mock_marketaux.return_value = [{"id": 1, "symbol": "BRK.B"}]
@@ -541,7 +584,9 @@ class TestNewsServiceEdgeCases:
             patch(
                 "app.services.providers.newsapi.fetch_news", new_callable=AsyncMock
             ) as mock_newsapi,
-            patch("app.services.providers.fmp.fetch_news", new_callable=AsyncMock) as mock_fmp,
+            patch(
+                "app.services.providers.fmp.fetch_news", new_callable=AsyncMock
+            ) as mock_fmp,
         ):
             # Marketaux returns None
             mock_marketaux.return_value = None

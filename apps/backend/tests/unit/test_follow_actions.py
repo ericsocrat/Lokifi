@@ -24,7 +24,9 @@ async def _register(client, email, username):
 
 
 async def _login(client, email):
-    return await client.post("/api/auth/login", json={"email": email, "password": "TestUser123!"})
+    return await client.post(
+        "/api/auth/login", json={"email": email, "password": "TestUser123!"}
+    )
 
 
 @pytest.mark.anyio

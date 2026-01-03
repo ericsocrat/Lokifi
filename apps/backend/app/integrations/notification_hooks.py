@@ -77,7 +77,9 @@ class NotificationIntegration:
 
     @staticmethod
     async def on_dm_message_sent(
-        sender_data: dict[str, Any], recipient_data: dict[str, Any], message_data: dict[str, Any]
+        sender_data: dict[str, Any],
+        recipient_data: dict[str, Any],
+        message_data: dict[str, Any],
     ):
         """
         Hook called when a direct message is sent
@@ -101,13 +103,17 @@ class NotificationIntegration:
                 thread_id=message_data.get("thread_id", ""),
             )
 
-            logger.info(f"DM notification integration: {sender.username} -> {recipient.username}")
+            logger.info(
+                f"DM notification integration: {sender.username} -> {recipient.username}"
+            )
 
         except Exception as e:
             logger.error(f"Failed to process DM notification integration: {e}")
 
     @staticmethod
-    async def on_ai_response_completed(user_data: dict[str, Any], ai_response_data: dict[str, Any]):
+    async def on_ai_response_completed(
+        user_data: dict[str, Any], ai_response_data: dict[str, Any]
+    ):
         """
         Hook called when AI finishes responding to a user
 
@@ -187,7 +193,11 @@ async def notify_dm_received(
             "display_name": recipient_username,
             "avatar_url": None,
         },
-        message_data={"id": message_id, "content": message_content, "thread_id": thread_id},
+        message_data={
+            "id": message_id,
+            "content": message_content,
+            "thread_id": thread_id,
+        },
     )
 
 

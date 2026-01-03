@@ -132,7 +132,9 @@ class IndicesService:
                 }
 
                 if self.client is None:
-                    logger.warning("Redis client not initialized for Alpha Vantage request")
+                    logger.warning(
+                        "Redis client not initialized for Alpha Vantage request"
+                    )
                     return self._get_fallback_indices(limit)
 
                 resp = await self.client.get(url, params=params)
@@ -144,7 +146,9 @@ class IndicesService:
 
                     # Parse Alpha Vantage response
                     current_price = float(quote.get("05. price", 0))
-                    change_percent = float(quote.get("10. change percent", "0").replace("%", ""))
+                    change_percent = float(
+                        quote.get("10. change percent", "0").replace("%", "")
+                    )
 
                     indices.append(
                         {
@@ -159,7 +163,9 @@ class IndicesService:
                         }
                     )
 
-                    logger.info(f"✅ Fetched {symbol} from Alpha Vantage: ${current_price:,.2f}")
+                    logger.info(
+                        f"✅ Fetched {symbol} from Alpha Vantage: ${current_price:,.2f}"
+                    )
 
                 # Small delay to respect rate limits (5 requests/minute for free tier)
                 await httpx.AsyncClient().aclose()  # Small delay
@@ -169,7 +175,9 @@ class IndicesService:
                 continue
 
         if indices:
-            logger.info(f"✅ Alpha Vantage: Fetched {len(indices)} indices successfully")
+            logger.info(
+                f"✅ Alpha Vantage: Fetched {len(indices)} indices successfully"
+            )
 
         return indices
 
@@ -233,7 +241,9 @@ class IndicesService:
                             }
                         )
 
-                logger.info(f"✅ Yahoo Finance: Fetched {len(indices)} indices successfully")
+                logger.info(
+                    f"✅ Yahoo Finance: Fetched {len(indices)} indices successfully"
+                )
 
         except Exception as e:
             logger.error(f"❌ Yahoo Finance failed: {e}")

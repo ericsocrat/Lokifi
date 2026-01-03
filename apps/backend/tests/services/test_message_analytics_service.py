@@ -198,7 +198,9 @@ class TestGetUserMessageStats:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         assert isinstance(stats, UserMessageStats)
         assert stats.user_id == sample_user_id
@@ -229,7 +231,9 @@ class TestGetUserMessageStats:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         assert stats.total_messages == 0
         assert stats.total_conversations == 0
@@ -252,7 +256,9 @@ class TestGetUserMessageStats:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=7)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=7
+        )
 
         assert stats.total_messages == 50
         assert stats.total_conversations == 5
@@ -273,7 +279,9 @@ class TestGetUserMessageStats:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         assert stats.username == "Unknown"
 
@@ -292,7 +300,9 @@ class TestGetUserMessageStats:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         # Should use max(total_conversations, 1) to avoid division by zero
         assert stats.avg_messages_per_conversation == 100.0
@@ -360,7 +370,9 @@ class TestGetConversationAnalytics:
     ):
         """Test analytics returns None when user is not a participant."""
         # Mock participant verification returning None
-        mock_db_session.execute.return_value = Mock(scalar_one_or_none=Mock(return_value=None))
+        mock_db_session.execute.return_value = Mock(
+            scalar_one_or_none=Mock(return_value=None)
+        )
 
         analytics = await analytics_service.get_conversation_analytics(
             conversation_id=sample_conversation_id,
@@ -458,7 +470,9 @@ class TestGetPlatformStatistics:
     """Test get_platform_statistics method."""
 
     @pytest.mark.asyncio
-    async def test_get_platform_statistics_complete(self, analytics_service, mock_db_session):
+    async def test_get_platform_statistics_complete(
+        self, analytics_service, mock_db_session
+    ):
         """Test getting complete platform statistics."""
         execute_results = [
             # Total messages
@@ -494,7 +508,9 @@ class TestGetPlatformStatistics:
         assert "generated_at" in stats
 
     @pytest.mark.asyncio
-    async def test_get_platform_statistics_no_activity(self, analytics_service, mock_db_session):
+    async def test_get_platform_statistics_no_activity(
+        self, analytics_service, mock_db_session
+    ):
         """Test platform statistics with no activity."""
         execute_results = [
             Mock(scalar=Mock(return_value=0)),  # No messages
@@ -611,9 +627,13 @@ class TestGetTrendingConversations:
     ):
         """Test trending conversations with custom limit."""
         # Create 5 trending conversations
-        trending_data = [(uuid.uuid4(), 40 - (i * 5), datetime.now(timezone.utc)) for i in range(5)]
+        trending_data = [
+            (uuid.uuid4(), 40 - (i * 5), datetime.now(timezone.utc)) for i in range(5)
+        ]
 
-        mock_db_session.execute.return_value = Mock(all=Mock(return_value=trending_data))
+        mock_db_session.execute.return_value = Mock(
+            all=Mock(return_value=trending_data)
+        )
 
         trending = await analytics_service.get_trending_conversations(
             user_id=sample_user_id, limit=3
@@ -694,7 +714,9 @@ class TestEdgeCasesAndErrorHandling:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         # Should default to 0 when None
         assert stats.total_messages == 0
@@ -725,7 +747,9 @@ class TestEdgeCasesAndErrorHandling:
         assert analytics.total_participants == 0
 
     @pytest.mark.asyncio
-    async def test_platform_stats_null_scalars(self, analytics_service, mock_db_session):
+    async def test_platform_stats_null_scalars(
+        self, analytics_service, mock_db_session
+    ):
         """Test platform statistics when database returns None."""
         execute_results = [
             Mock(scalar=Mock(return_value=None)),
@@ -757,7 +781,9 @@ class TestEdgeCasesAndErrorHandling:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         # Should strip whitespace
         assert stats.most_active_day == "Wednesday"
@@ -777,7 +803,9 @@ class TestEdgeCasesAndErrorHandling:
 
         mock_db_session.execute.side_effect = execute_results
 
-        stats = await analytics_service.get_user_message_stats(user_id=sample_user_id, days_back=30)
+        stats = await analytics_service.get_user_message_stats(
+            user_id=sample_user_id, days_back=30
+        )
 
         # Should convert to int
         assert isinstance(stats.most_active_hour, int)
@@ -871,7 +899,9 @@ class TestTimeBasedCalculations:
         assert mock_db_session.execute.call_count == 5
 
     @pytest.mark.asyncio
-    async def test_platform_stats_uses_30_day_period(self, analytics_service, mock_db_session):
+    async def test_platform_stats_uses_30_day_period(
+        self, analytics_service, mock_db_session
+    ):
         """Test platform statistics uses 30-day period."""
         execute_results = [
             Mock(scalar=Mock(return_value=1000)),
@@ -893,7 +923,9 @@ class TestTimeBasedCalculations:
         """Test trending conversations uses 24-hour activity window."""
         mock_db_session.execute.return_value = Mock(all=Mock(return_value=[]))
 
-        await analytics_service.get_trending_conversations(user_id=sample_user_id, limit=10)
+        await analytics_service.get_trending_conversations(
+            user_id=sample_user_id, limit=10
+        )
 
         # Verify execute was called (query uses 24-hour window)
         assert mock_db_session.execute.called

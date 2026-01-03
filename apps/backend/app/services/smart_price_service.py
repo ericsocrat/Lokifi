@@ -82,7 +82,9 @@ class SmartPriceService:
         except Exception:
             pass
 
-    async def get_price(self, symbol: str, force_refresh: bool = False) -> PriceData | None:
+    async def get_price(
+        self, symbol: str, force_refresh: bool = False
+    ) -> PriceData | None:
         cache_key = f"price:{symbol}"
         if not force_refresh:
             cached = await self._get_cached(cache_key)
@@ -103,7 +105,9 @@ class SmartPriceService:
             logger.error(f"Error fetching price for {symbol}: {e}")
             return None
 
-    async def _fetch_price(self, client: httpx.AsyncClient, symbol: str) -> PriceData | None:
+    async def _fetch_price(
+        self, client: httpx.AsyncClient, symbol: str
+    ) -> PriceData | None:
         """Fetch price from correct provider (no duplicates)"""
         try:
             # Get unified service to determine asset type
@@ -190,7 +194,9 @@ class SmartPriceService:
         crypto_symbols = [s for s in unique_symbols if unified.is_crypto(s)]
         stock_symbols = [s for s in unique_symbols if not unified.is_crypto(s)]
 
-        logger.info(f"📦 Batch request: {len(crypto_symbols)} cryptos, {len(stock_symbols)} stocks")
+        logger.info(
+            f"📦 Batch request: {len(crypto_symbols)} cryptos, {len(stock_symbols)} stocks"
+        )
 
         # Check cache first for all symbols
         uncached_cryptos = []
@@ -225,7 +231,9 @@ class SmartPriceService:
         if uncached_stocks:
             import asyncio
 
-            stock_tasks = [self.get_price(symbol, force_refresh) for symbol in uncached_stocks]
+            stock_tasks = [
+                self.get_price(symbol, force_refresh) for symbol in uncached_stocks
+            ]
             stock_results = await asyncio.gather(*stock_tasks, return_exceptions=True)
 
             for symbol, result in zip(uncached_stocks, stock_results, strict=False):

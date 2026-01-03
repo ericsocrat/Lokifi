@@ -11,4 +11,6 @@ class User(Base):
     handle: Mapped[str | None] = mapped_column(String(32), unique=True)
     name: Mapped[str | None] = mapped_column(String(128))
     avatar_url: Mapped[str | None]
-    created_at: Mapped[str] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    created_at: Mapped[str] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now()
+    )

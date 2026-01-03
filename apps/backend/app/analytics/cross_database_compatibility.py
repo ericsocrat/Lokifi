@@ -32,7 +32,9 @@ class DatabaseDialect:
         elif "postgresql" in dialect_name:
             return DatabaseDialect.POSTGRESQL
         else:
-            logger.warning(f"Unknown dialect: {dialect_name}, defaulting to SQLite compatibility")
+            logger.warning(
+                f"Unknown dialect: {dialect_name}, defaulting to SQLite compatibility"
+            )
             return DatabaseDialect.SQLITE
 
 
@@ -160,7 +162,9 @@ class AnalyticsQueryBuilder:
         self.query_builder = CrossDatabaseQuery(self.dialect)
         logger.info(f"Analytics initialized for dialect: {self.dialect}")
 
-    def user_activity_by_hour(self, session: Session, days_back: int = 7) -> list[dict[str, Any]]:
+    def user_activity_by_hour(
+        self, session: Session, days_back: int = 7
+    ) -> list[dict[str, Any]]:
         """Get user activity grouped by hour with cross-database compatibility"""
 
         try:
@@ -213,7 +217,9 @@ class AnalyticsQueryBuilder:
             logger.error(f"Error in user_activity_by_hour: {e}")
             return self._fallback_user_activity(session, days_back)
 
-    def notification_analytics(self, session: Session, days_back: int = 30) -> dict[str, Any]:
+    def notification_analytics(
+        self, session: Session, days_back: int = 30
+    ) -> dict[str, Any]:
         """Get notification analytics with cross-database compatibility"""
 
         try:
@@ -254,7 +260,9 @@ class AnalyticsQueryBuilder:
             for row in result:
                 count_val = int(row[2]) if row[2] else 0  # count column
                 read_rate_val = float(row[3]) if row[3] else 0.0  # read_rate column
-                delivery_rate_val = float(row[4]) if row[4] else 0.0  # delivery_rate column
+                delivery_rate_val = (
+                    float(row[4]) if row[4] else 0.0
+                )  # delivery_rate column
 
                 # By type
                 if row[0] not in analytics["by_type"]:  # type column
@@ -288,7 +296,9 @@ class AnalyticsQueryBuilder:
             # Calculate overall averages
             if total_count > 0:
                 analytics["overall_metrics"]["total_notifications"] = total_count
-                analytics["overall_metrics"]["avg_read_rate"] = total_read_rate / total_count
+                analytics["overall_metrics"]["avg_read_rate"] = (
+                    total_read_rate / total_count
+                )
                 analytics["overall_metrics"]["avg_delivery_rate"] = (
                     total_delivery_rate / total_count
                 )
@@ -299,7 +309,9 @@ class AnalyticsQueryBuilder:
             logger.error(f"Error in notification_analytics: {e}")
             return self._fallback_notification_analytics(session, days_back)
 
-    def user_engagement_metrics(self, session: Session, days_back: int = 30) -> dict[str, Any]:
+    def user_engagement_metrics(
+        self, session: Session, days_back: int = 30
+    ) -> dict[str, Any]:
         """Get user engagement metrics with cross-database compatibility"""
 
         try:
@@ -354,8 +366,12 @@ class AnalyticsQueryBuilder:
                 "users": users[:20],  # Top 20 users
                 "summary": {
                     "total_users": total_users,
-                    "avg_engagement_rate": total_engagement / total_users if total_users > 0 else 0,
-                    "active_users": len([u for u in users if u["total_notifications"] > 0]),
+                    "avg_engagement_rate": (
+                        total_engagement / total_users if total_users > 0 else 0
+                    ),
+                    "active_users": len(
+                        [u for u in users if u["total_notifications"] > 0]
+                    ),
                 },
             }
 
@@ -405,7 +421,9 @@ class AnalyticsQueryBuilder:
             """
             )
 
-            result = session.execute(message_query, {"cutoff_date": cutoff_date}).first()
+            result = session.execute(
+                message_query, {"cutoff_date": cutoff_date}
+            ).first()
 
             if not result:
                 return {
@@ -428,7 +446,9 @@ class AnalyticsQueryBuilder:
 
     # Fallback methods for when complex queries fail
 
-    def _fallback_user_activity(self, session: Session, days_back: int) -> list[dict[str, Any]]:
+    def _fallback_user_activity(
+        self, session: Session, days_back: int
+    ) -> list[dict[str, Any]]:
         """Simplified fallback for user activity"""
         logger.info("Using fallback user activity query")
 
@@ -462,7 +482,9 @@ class AnalyticsQueryBuilder:
             logger.error(f"Fallback user activity failed: {e}")
             return []
 
-    def _fallback_notification_analytics(self, session: Session, days_back: int) -> dict[str, Any]:
+    def _fallback_notification_analytics(
+        self, session: Session, days_back: int
+    ) -> dict[str, Any]:
         """Simplified fallback for notification analytics"""
         logger.info("Using fallback notification analytics")
 
@@ -477,10 +499,14 @@ class AnalyticsQueryBuilder:
             """
             )
 
-            result = session.execute(simple_query, {"cutoff_date": cutoff_date}).scalar()
+            result = session.execute(
+                simple_query, {"cutoff_date": cutoff_date}
+            ).scalar()
 
             return {
-                "by_type": {"unknown": {"count": result, "read_rate": 0.5, "delivery_rate": 0.8}},
+                "by_type": {
+                    "unknown": {"count": result, "read_rate": 0.5, "delivery_rate": 0.8}
+                },
                 "by_priority": {
                     "normal": {"count": result, "read_rate": 0.5, "delivery_rate": 0.8}
                 },
@@ -496,17 +522,25 @@ class AnalyticsQueryBuilder:
             logger.error(f"Fallback notification analytics failed: {e}")
             return {"error": "All analytics queries failed", "fallback": True}
 
-    def _fallback_user_engagement(self, session: Session, days_back: int) -> dict[str, Any]:
+    def _fallback_user_engagement(
+        self, session: Session, days_back: int
+    ) -> dict[str, Any]:
         """Simplified fallback for user engagement"""
         logger.info("Using fallback user engagement query")
 
         return {
             "users": [],
-            "summary": {"total_users": 0, "avg_engagement_rate": 0.0, "active_users": 0},
+            "summary": {
+                "total_users": 0,
+                "avg_engagement_rate": 0.0,
+                "active_users": 0,
+            },
             "fallback": True,
         }
 
-    def _fallback_message_analytics(self, session: Session, days_back: int) -> dict[str, Any]:
+    def _fallback_message_analytics(
+        self, session: Session, days_back: int
+    ) -> dict[str, Any]:
         """Simplified fallback for message analytics"""
         logger.info("Using fallback message analytics")
 
@@ -626,7 +660,9 @@ def initialize_analytics(engine: Engine):
 def get_analytics() -> AnalyticsQueryBuilder:
     """Get analytics query builder instance"""
     if not analytics_query_builder:
-        raise RuntimeError("Analytics not initialized - call initialize_analytics(engine) first")
+        raise RuntimeError(
+            "Analytics not initialized - call initialize_analytics(engine) first"
+        )
     return analytics_query_builder
 
 

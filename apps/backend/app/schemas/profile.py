@@ -13,7 +13,9 @@ from pydantic import BaseModel, Field, HttpUrl
 class ProfileUpdateRequest(BaseModel):
     """Profile update request schema."""
 
-    username: str | None = Field(None, min_length=3, max_length=30, pattern="^[a-zA-Z0-9_]+$")
+    username: str | None = Field(
+        None, min_length=3, max_length=30, pattern="^[a-zA-Z0-9_]+$"
+    )
     display_name: str | None = Field(None, min_length=1, max_length=100)
     bio: str | None = Field(None, max_length=500)
     avatar_url: HttpUrl | None = None

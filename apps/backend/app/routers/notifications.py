@@ -77,8 +77,12 @@ class NotificationPreferencesRequest(BaseModel):
     email_enabled: bool | None = None
     push_enabled: bool | None = None
     in_app_enabled: bool | None = None
-    quiet_hours_start: str | None = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
-    quiet_hours_end: str | None = Field(None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$")
+    quiet_hours_start: str | None = Field(
+        None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
+    )
+    quiet_hours_end: str | None = Field(
+        None, pattern=r"^([0-1][0-9]|2[0-3]):[0-5][0-9]$"
+    )
     timezone: str | None = None
     daily_digest_enabled: bool | None = None
     weekly_digest_enabled: bool | None = None
@@ -128,12 +132,16 @@ router = APIRouter(prefix="/notifications", tags=["J6 Notifications"])
 @cache_notifications(ttl=120)  # Cache for 2 minutes
 async def get_notifications(
     request: Request,
-    limit: int = Query(50, ge=1, le=100, description="Number of notifications to retrieve"),
+    limit: int = Query(
+        50, ge=1, le=100, description="Number of notifications to retrieve"
+    ),
     offset: int = Query(0, ge=0, description="Pagination offset"),
     unread_only: bool = Query(False, description="Only return unread notifications"),
     type_filter: str | None = Query(None, description="Filter by notification type"),
     category_filter: str | None = Query(None, description="Filter by category"),
-    include_dismissed: bool = Query(False, description="Include dismissed notifications"),
+    include_dismissed: bool = Query(
+        False, description="Include dismissed notifications"
+    ),
     current_user: User = Depends(get_current_user),
 ):
     """
@@ -180,7 +188,9 @@ async def get_notifications(
 
 @router.get("/unread-count")
 @cache_notifications(ttl=60)  # Cache for 1 minute (frequently updated)
-async def get_unread_count(request: Request, current_user: User = Depends(get_current_user)):
+async def get_unread_count(
+    request: Request, current_user: User = Depends(get_current_user)
+):
     """Get the count of unread notifications for the current user"""
     try:
         unread_count = await notification_service.get_unread_count(current_user.id)
@@ -215,12 +225,18 @@ async def get_notification_stats(current_user: User = Depends(get_current_user))
             by_priority=stats.by_priority,
             avg_read_time_seconds=stats.avg_read_time_seconds,
             most_recent=stats.most_recent.isoformat() if stats.most_recent else None,
-            oldest_unread=stats.oldest_unread.isoformat() if stats.oldest_unread else None,
+            oldest_unread=(
+                stats.oldest_unread.isoformat() if stats.oldest_unread else None
+            ),
         )
 
     except Exception as e:
-        logger.error(f"Failed to get notification stats for user {current_user.id}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to get notification statistics")
+        logger.error(
+            f"Failed to get notification stats for user {current_user.id}: {e}"
+        )
+        raise HTTPException(
+            status_code=500, detail="Failed to get notification statistics"
+        )
 
 
 @router.post("/mark-read")
@@ -235,7 +251,9 @@ async def mark_notifications_as_read(
             failed_count = 0
 
             for notification_id in request.notification_ids:
-                success = await notification_service.mark_as_read(notification_id, current_user.id)
+                success = await notification_service.mark_as_read(
+                    notification_id, current_user.id
+                )
                 if success:
                     success_count += 1
                 else:
@@ -262,8 +280,12 @@ async def mark_notifications_as_read(
             )
 
     except Exception as e:
-        logger.error(f"Failed to mark notifications as read for user {current_user.id}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to mark notifications as read")
+        logger.error(
+            f"Failed to mark notifications as read for user {current_user.id}: {e}"
+        )
+        raise HTTPException(
+            status_code=500, detail="Failed to mark notifications as read"
+        )
 
 
 @router.post("/{notification_id}/read")
@@ -272,7 +294,9 @@ async def mark_notification_as_read(
 ):
     """Mark a specific notification as read"""
     try:
-        success = await notification_service.mark_as_read(notification_id, current_user.id)
+        success = await notification_service.mark_as_read(
+            notification_id, current_user.id
+        )
 
         if success:
             return JSONResponse(
@@ -289,7 +313,9 @@ async def mark_notification_as_read(
         raise
     except Exception as e:
         logger.error(f"Failed to mark notification {notification_id} as read: {e}")
-        raise HTTPException(status_code=500, detail="Failed to mark notification as read")
+        raise HTTPException(
+            status_code=500, detail="Failed to mark notification as read"
+        )
 
 
 @router.post("/{notification_id}/dismiss")
@@ -298,7 +324,9 @@ async def dismiss_notification(
 ):
     """Dismiss a specific notification"""
     try:
-        success = await notification_service.dismiss_notification(notification_id, current_user.id)
+        success = await notification_service.dismiss_notification(
+            notification_id, current_user.id
+        )
 
         if success:
             return JSONResponse(
@@ -319,10 +347,14 @@ async def dismiss_notification(
 
 
 @router.post("/{notification_id}/click")
-async def click_notification(notification_id: str, current_user: User = Depends(get_current_user)):
+async def click_notification(
+    notification_id: str, current_user: User = Depends(get_current_user)
+):
     """Record a click on a notification"""
     try:
-        success = await notification_service.click_notification(notification_id, current_user.id)
+        success = await notification_service.click_notification(
+            notification_id, current_user.id
+        )
 
         if success:
             return JSONResponse(
@@ -339,7 +371,9 @@ async def click_notification(notification_id: str, current_user: User = Depends(
         raise
     except Exception as e:
         logger.error(f"Failed to record click for notification {notification_id}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to record notification click")
+        raise HTTPException(
+            status_code=500, detail="Failed to record notification click"
+        )
 
 
 @router.get("/preferences", response_model=NotificationPreferencesResponse)
@@ -367,13 +401,18 @@ async def get_notification_preferences(current_user: User = Depends(get_current_
         )
 
     except Exception as e:
-        logger.error(f"Failed to get notification preferences for user {current_user.id}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to get notification preferences")
+        logger.error(
+            f"Failed to get notification preferences for user {current_user.id}: {e}"
+        )
+        raise HTTPException(
+            status_code=500, detail="Failed to get notification preferences"
+        )
 
 
 @router.put("/preferences")
 async def update_notification_preferences(
-    request: NotificationPreferencesRequest, current_user: User = Depends(get_current_user)
+    request: NotificationPreferencesRequest,
+    current_user: User = Depends(get_current_user),
 ):
     """Update notification preferences for the current user"""
     try:
@@ -383,13 +422,19 @@ async def update_notification_preferences(
             content={
                 "message": "Notification preferences updated",
                 "user_id": current_user.id,
-                "updated_fields": [k for k, v in request.model_dump().items() if v is not None],
+                "updated_fields": [
+                    k for k, v in request.model_dump().items() if v is not None
+                ],
             }
         )
 
     except Exception as e:
-        logger.error(f"Failed to update notification preferences for user {current_user.id}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to update notification preferences")
+        logger.error(
+            f"Failed to update notification preferences for user {current_user.id}: {e}"
+        )
+        raise HTTPException(
+            status_code=500, detail="Failed to update notification preferences"
+        )
 
 
 @router.post("/test")
@@ -423,8 +468,12 @@ async def create_test_notification(
         )
 
     except Exception as e:
-        logger.error(f"Failed to create test notification for user {current_user.id}: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create test notification")
+        logger.error(
+            f"Failed to create test notification for user {current_user.id}: {e}"
+        )
+        raise HTTPException(
+            status_code=500, detail="Failed to create test notification"
+        )
 
 
 @router.delete("/cleanup")
@@ -437,7 +486,10 @@ async def cleanup_expired_notifications(
         background_tasks.add_task(notification_service.cleanup_expired_notifications)
 
         return JSONResponse(
-            content={"message": "Notification cleanup started", "initiated_by": current_user.id}
+            content={
+                "message": "Notification cleanup started",
+                "initiated_by": current_user.id,
+            }
         )
 
     except Exception as e:

@@ -32,7 +32,9 @@ async def cache_statistics(request: Request) -> dict[str, Any]:
         return {"status": "success", "cache_stats": stats, "cache_enabled": True}
     except Exception as e:
         logger.error(f"Failed to get cache stats: {e}")
-        raise HTTPException(status_code=500, detail="Failed to retrieve cache statistics")
+        raise HTTPException(
+            status_code=500, detail="Failed to retrieve cache statistics"
+        )
 
 
 @router.post("/clear")
@@ -42,7 +44,10 @@ async def clear_cache() -> dict[str, Any]:
     try:
         success = await clear_all_cache()
         if success:
-            return {"status": "success", "message": "All cache data cleared successfully"}
+            return {
+                "status": "success",
+                "message": "All cache data cleared successfully",
+            }
         else:
             raise HTTPException(status_code=500, detail="Failed to clear cache")
     except Exception as e:
@@ -68,7 +73,11 @@ async def clear_cache_pattern(pattern: str) -> dict[str, Any]:
 
     try:
         deleted_count = await cache.clear_pattern(f"cache:{pattern}:*")
-        return {"status": "success", "deleted_keys": deleted_count, "pattern": f"cache:{pattern}:*"}
+        return {
+            "status": "success",
+            "deleted_keys": deleted_count,
+            "pattern": f"cache:{pattern}:*",
+        }
     except Exception as e:
         logger.error(f"Failed to clear cache pattern: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -82,7 +91,11 @@ async def cache_health_check() -> dict[str, Any]:
         client = await cache.get_client()
         await client.ping()
 
-        return {"status": "healthy", "redis_connection": "active", "cache_system": "operational"}
+        return {
+            "status": "healthy",
+            "redis_connection": "active",
+            "cache_system": "operational",
+        }
     except Exception as e:
         logger.error(f"Cache health check failed: {e}")
         return {"status": "unhealthy", "error": str(e), "redis_connection": "failed"}

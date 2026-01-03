@@ -35,7 +35,9 @@ def upgrade() -> None:
     # Add new columns to match model
     op.add_column(
         "notification_preferences",
-        sa.Column("in_app_enabled", sa.Boolean(), nullable=False, server_default="true"),
+        sa.Column(
+            "in_app_enabled", sa.Boolean(), nullable=False, server_default="true"
+        ),
     )
     op.add_column(
         "notification_preferences",
@@ -46,23 +48,35 @@ def upgrade() -> None:
         sa.Column("quiet_hours_start", sa.String(length=5), nullable=True),
     )
     op.add_column(
-        "notification_preferences", sa.Column("quiet_hours_end", sa.String(length=5), nullable=True)
+        "notification_preferences",
+        sa.Column("quiet_hours_end", sa.String(length=5), nullable=True),
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("timezone", sa.String(length=50), nullable=False, server_default="UTC"),
+        sa.Column(
+            "timezone", sa.String(length=50), nullable=False, server_default="UTC"
+        ),
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("daily_digest_enabled", sa.Boolean(), nullable=False, server_default="false"),
+        sa.Column(
+            "daily_digest_enabled", sa.Boolean(), nullable=False, server_default="false"
+        ),
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("weekly_digest_enabled", sa.Boolean(), nullable=False, server_default="false"),
+        sa.Column(
+            "weekly_digest_enabled",
+            sa.Boolean(),
+            nullable=False,
+            server_default="false",
+        ),
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("digest_time", sa.String(length=5), nullable=False, server_default="09:00"),
+        sa.Column(
+            "digest_time", sa.String(length=5), nullable=False, server_default="09:00"
+        ),
     )
 
 
@@ -86,11 +100,15 @@ def downgrade() -> None:
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("email_messages", sa.Boolean(), nullable=False, server_default="true"),
+        sa.Column(
+            "email_messages", sa.Boolean(), nullable=False, server_default="true"
+        ),
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("email_ai_responses", sa.Boolean(), nullable=False, server_default="true"),
+        sa.Column(
+            "email_ai_responses", sa.Boolean(), nullable=False, server_default="true"
+        ),
     )
     op.add_column(
         "notification_preferences",
@@ -106,7 +124,9 @@ def downgrade() -> None:
     )
     op.add_column(
         "notification_preferences",
-        sa.Column("push_ai_responses", sa.Boolean(), nullable=False, server_default="true"),
+        sa.Column(
+            "push_ai_responses", sa.Boolean(), nullable=False, server_default="true"
+        ),
     )
     op.add_column(
         "notification_preferences",

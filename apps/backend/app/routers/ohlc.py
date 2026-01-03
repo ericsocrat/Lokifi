@@ -70,7 +70,9 @@ def convert_to_yahoo_symbol(symbol: str) -> str:
 
 @router.get("/", response_model=OHLCResponse)
 async def ohlc(
-    symbol: str = Query(..., description="Ticker or crypto id (e.g., AAPL, BTC, bitcoin, BTCUSD)"),
+    symbol: str = Query(
+        ..., description="Ticker or crypto id (e.g., AAPL, BTC, bitcoin, BTCUSD)"
+    ),
     timeframe: Timeframe = "1h",
     limit: int = 500,
 ):

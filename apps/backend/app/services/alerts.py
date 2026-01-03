@@ -199,14 +199,20 @@ class AlertEvaluator:
             cfg = a.config
             window_min = int(cfg.get("window_minutes", 60))
             bars_needed = max(2, window_min * 60 // 60)  # heuristic: at least 2 bars
-            bars = await get_ohlc(symbol=a.symbol, timeframe=tf, limit=max(2, bars_needed))
+            bars = await get_ohlc(
+                symbol=a.symbol, timeframe=tf, limit=max(2, bars_needed)
+            )
             first = float(bars[0]["close"])
             last = float(bars[-1]["close"])
             pct = ((last - first) / first) * 100.0 if first != 0 else 0.0
             direction = cfg.get("direction", "up")  # up|down|abs
             thresh = float(cfg.get("threshold_pct", 1.0))
             if direction == "up" and pct >= thresh:
-                return True, {"pct_change": pct, "threshold_pct": thresh, "direction": direction}
+                return True, {
+                    "pct_change": pct,
+                    "threshold_pct": thresh,
+                    "direction": direction,
+                }
             if direction == "down" and pct <= -abs(thresh):
                 return True, {
                     "pct_change": pct,
@@ -214,8 +220,16 @@ class AlertEvaluator:
                     "direction": direction,
                 }
             if direction == "abs" and abs(pct) >= abs(thresh):
-                return True, {"pct_change": pct, "threshold_pct": thresh, "direction": direction}
-            return False, {"pct_change": pct, "threshold_pct": thresh, "direction": direction}
+                return True, {
+                    "pct_change": pct,
+                    "threshold_pct": thresh,
+                    "direction": direction,
+                }
+            return False, {
+                "pct_change": pct,
+                "threshold_pct": thresh,
+                "direction": direction,
+            }
 
         else:
             return False, {"reason": "unknown_type"}
@@ -224,7 +238,9 @@ class AlertEvaluator:
 # Singleton-like module state
 STORE_PATH = os.getenv(
     "LOKIFI_ALERTS_PATH",
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "data", "alerts.json"),
+    os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), "..", "data", "alerts.json"
+    ),
 )
 store = AlertStore(STORE_PATH)
 hub = SSEHub()

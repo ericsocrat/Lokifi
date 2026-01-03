@@ -280,7 +280,8 @@ def log_function_call(func):
         try:
             result = func(*args, **kwargs)
             func_logger.debug(
-                f"Completed {func.__name__}", extra={"function": func.__name__, "success": True}
+                f"Completed {func.__name__}",
+                extra={"function": func.__name__, "success": True},
             )
             return result
         except Exception as e:

@@ -309,7 +309,9 @@ class TestCacheOperations:
 
         await crypto_service._set_cache("test_key", {"data": "value"}, ttl=600)
 
-        mock_redis.set.assert_called_once_with("test_key", {"data": "value"}, expire=600)
+        mock_redis.set.assert_called_once_with(
+            "test_key", {"data": "value"}, expire=600
+        )
 
     @pytest.mark.asyncio
     @patch("app.services.crypto_discovery_service.advanced_redis_client")
@@ -329,7 +331,9 @@ class TestCacheOperations:
         await crypto_service._set_cache("test_key", {"data": "value"})
 
         # Should use default TTL of 3600 seconds
-        mock_redis.set.assert_called_once_with("test_key", {"data": "value"}, expire=3600)
+        mock_redis.set.assert_called_once_with(
+            "test_key", {"data": "value"}, expire=3600
+        )
 
 
 # ============================================================================
@@ -387,7 +391,9 @@ class TestGetTopCryptos:
         with patch.object(
             crypto_service, "_fetch_top_cryptos", new_callable=AsyncMock
         ) as mock_fetch:
-            expected_cryptos = [CryptoAsset(**coin) for coin in sample_coingecko_response]
+            expected_cryptos = [
+                CryptoAsset(**coin) for coin in sample_coingecko_response
+            ]
             mock_fetch.return_value = expected_cryptos
 
             cryptos = await crypto_service.get_top_cryptos(limit=2)
@@ -440,7 +446,9 @@ class TestFetchTopCryptos:
     """Test _fetch_top_cryptos internal method."""
 
     @pytest.mark.asyncio
-    async def test_fetch_top_cryptos_success(self, crypto_service, sample_coingecko_response):
+    async def test_fetch_top_cryptos_success(
+        self, crypto_service, sample_coingecko_response
+    ):
         """Test successful crypto fetching from API."""
         mock_client = AsyncMock()
         mock_response = Mock()
@@ -662,7 +670,9 @@ class TestSearchCryptos:
         mock_redis.get = AsyncMock(return_value=None)  # Cache miss
         mock_redis.set = AsyncMock()
 
-        with patch.object(crypto_service, "_search_cryptos", new_callable=AsyncMock) as mock_search:
+        with patch.object(
+            crypto_service, "_search_cryptos", new_callable=AsyncMock
+        ) as mock_search:
             mock_search.return_value = [
                 CryptoAsset(
                     id="ethereum",
@@ -704,7 +714,9 @@ class TestSearchCryptos:
         mock_redis.get = AsyncMock(return_value=None)
         mock_redis.set = AsyncMock()
 
-        with patch.object(crypto_service, "_search_cryptos", new_callable=AsyncMock) as mock_search:
+        with patch.object(
+            crypto_service, "_search_cryptos", new_callable=AsyncMock
+        ) as mock_search:
             mock_search.return_value = []
 
             results = await crypto_service.search_cryptos("nonexistent", limit=50)
@@ -771,7 +783,9 @@ class TestInternalSearchCryptos:
 
         mock_client.get = AsyncMock(return_value=search_response)
 
-        results = await crypto_service._search_cryptos(mock_client, "nonexistent", limit=50)
+        results = await crypto_service._search_cryptos(
+            mock_client, "nonexistent", limit=50
+        )
 
         assert results == []
 
@@ -846,7 +860,10 @@ class TestEdgeCases:
 
             with (
                 patch.object(
-                    crypto_service, "_get_cached", new_callable=AsyncMock, return_value=None
+                    crypto_service,
+                    "_get_cached",
+                    new_callable=AsyncMock,
+                    return_value=None,
                 ),
                 patch.object(crypto_service, "_set_cache", new_callable=AsyncMock),
             ):

@@ -116,7 +116,9 @@ async def websocket_ai_chat(
     # Authenticate user
     user = get_user_from_token(token, db)
     if not user:
-        await websocket.close(code=status.WS_1008_POLICY_VIOLATION, reason="Invalid token")
+        await websocket.close(
+            code=status.WS_1008_POLICY_VIOLATION, reason="Invalid token"
+        )
         return
 
     await manager.connect(websocket, user.id)
@@ -136,7 +138,10 @@ async def websocket_ai_chat(
             # Validate message format
             if not isinstance(message_data, dict) or "type" not in message_data:
                 await manager.send_personal_message(
-                    {"type": "error", "error": "Message must be JSON object with 'type' field"},
+                    {
+                        "type": "error",
+                        "error": "Message must be JSON object with 'type' field",
+                    },
                     user.id,
                 )
                 continue
@@ -145,11 +150,18 @@ async def websocket_ai_chat(
                 await handle_chat_message(message_data, user, db)
             elif message_data["type"] == "ping":
                 await manager.send_personal_message(
-                    {"type": "pong", "timestamp": datetime.now(timezone.utc).isoformat()}, user.id
+                    {
+                        "type": "pong",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                    },
+                    user.id,
                 )
             else:
                 await manager.send_personal_message(
-                    {"type": "error", "error": f"Unknown message type: {message_data['type']}"},
+                    {
+                        "type": "error",
+                        "error": f"Unknown message type: {message_data['type']}",
+                    },
                     user.id,
                 )
 
@@ -213,7 +225,9 @@ async def handle_chat_message(message_data: dict, user: User, db: Session):
                         "token_count": chunk.token_count,
                         "created_at": chunk.created_at.isoformat(),
                         "completed_at": (
-                            chunk.completed_at.isoformat() if chunk.completed_at else None
+                            chunk.completed_at.isoformat()
+                            if chunk.completed_at
+                            else None
                         ),
                         "error": chunk.error,
                     },
@@ -222,17 +236,32 @@ async def handle_chat_message(message_data: dict, user: User, db: Session):
 
     except RateLimitError as e:
         await manager.send_personal_message(
-            {"type": "error", "thread_id": thread_id, "error": "rate_limit", "message": str(e)},
+            {
+                "type": "error",
+                "thread_id": thread_id,
+                "error": "rate_limit",
+                "message": str(e),
+            },
             user.id,
         )
     except SafetyFilterError as e:
         await manager.send_personal_message(
-            {"type": "error", "thread_id": thread_id, "error": "safety_filter", "message": str(e)},
+            {
+                "type": "error",
+                "thread_id": thread_id,
+                "error": "safety_filter",
+                "message": str(e),
+            },
             user.id,
         )
     except ProviderError as e:
         await manager.send_personal_message(
-            {"type": "error", "thread_id": thread_id, "error": "provider_error", "message": str(e)},
+            {
+                "type": "error",
+                "thread_id": thread_id,
+                "error": "provider_error",
+                "message": str(e),
+            },
             user.id,
         )
     except Exception as e:

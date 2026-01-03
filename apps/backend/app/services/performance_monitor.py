@@ -43,14 +43,24 @@ class PerformanceMonitor:
         self.metrics: dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
         self.websocket_connections: dict[uuid.UUID, datetime] = {}
         self.message_latencies: deque = deque(maxlen=100)
-        self.api_response_times: dict[str, deque] = defaultdict(lambda: deque(maxlen=100))
+        self.api_response_times: dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=100)
+        )
 
     def record_metric(
-        self, name: str, value: float, unit: str = "", tags: dict[str, str] | None = None
+        self,
+        name: str,
+        value: float,
+        unit: str = "",
+        tags: dict[str, str] | None = None,
     ):
         """Record a performance metric."""
         metric = PerformanceMetric(
-            name=name, value=value, unit=unit, timestamp=datetime.now(timezone.utc), tags=tags or {}
+            name=name,
+            value=value,
+            unit=unit,
+            timestamp=datetime.now(timezone.utc),
+            tags=tags or {},
         )
         self.metrics[name].append(metric)
 
@@ -67,17 +77,23 @@ class PerformanceMonitor:
     def record_websocket_connection(self, user_id: uuid.UUID):
         """Record WebSocket connection."""
         self.websocket_connections[user_id] = datetime.now(timezone.utc)
-        self.record_metric("websocket_connections", len(self.websocket_connections), "count")
+        self.record_metric(
+            "websocket_connections", len(self.websocket_connections), "count"
+        )
 
     def record_websocket_disconnection(self, user_id: uuid.UUID):
         """Record WebSocket disconnection."""
         if user_id in self.websocket_connections:
-            connection_time = datetime.now(timezone.utc) - self.websocket_connections[user_id]
+            connection_time = (
+                datetime.now(timezone.utc) - self.websocket_connections[user_id]
+            )
             self.record_metric(
                 "websocket_session_duration", connection_time.total_seconds(), "seconds"
             )
             del self.websocket_connections[user_id]
-        self.record_metric("websocket_connections", len(self.websocket_connections), "count")
+        self.record_metric(
+            "websocket_connections", len(self.websocket_connections), "count"
+        )
 
     def record_message_latency(self, latency_ms: float):
         """Record message delivery latency."""
@@ -112,8 +128,12 @@ class PerformanceMonitor:
             latencies = list(self.message_latencies)
             summary["message_delivery"] = {
                 "avg_latency_ms": sum(latencies) / len(latencies),
-                "p95_latency_ms": sorted(latencies)[int(len(latencies) * 0.95)] if latencies else 0,
-                "p99_latency_ms": sorted(latencies)[int(len(latencies) * 0.99)] if latencies else 0,
+                "p95_latency_ms": (
+                    sorted(latencies)[int(len(latencies) * 0.95)] if latencies else 0
+                ),
+                "p99_latency_ms": (
+                    sorted(latencies)[int(len(latencies) * 0.99)] if latencies else 0
+                ),
             }
 
         return summary
@@ -188,7 +208,9 @@ class PerformanceMonitor:
                     "avg_response_time_ms": sum(times) / len(times),
                     "min_response_time_ms": min(times),
                     "max_response_time_ms": max(times),
-                    "p95_response_time_ms": sorted(times)[int(len(times) * 0.95)] if times else 0,
+                    "p95_response_time_ms": (
+                        sorted(times)[int(len(times) * 0.95)] if times else 0
+                    ),
                     "request_count": len(times),
                 }
 
@@ -198,7 +220,8 @@ class PerformanceMonitor:
         """Get WebSocket connection statistics."""
         now = datetime.now(timezone.utc)
         connection_ages = [
-            (now - conn_time).total_seconds() for conn_time in self.websocket_connections.values()
+            (now - conn_time).total_seconds()
+            for conn_time in self.websocket_connections.values()
         ]
 
         return {
@@ -277,7 +300,9 @@ class PerformanceMiddleware:
                 if message["type"] == "http.response.start":
                     response_time = (time.time() - start_time) * 1000
                     endpoint = f"{scope['method']} {scope['path']}"
-                    performance_monitor.record_api_response_time(endpoint, response_time)
+                    performance_monitor.record_api_response_time(
+                        endpoint, response_time
+                    )
                 await send(message)
 
             await self.app(scope, receive, send_wrapper)

@@ -155,11 +155,17 @@ class TestDMConversationManagement:
     @pytest.mark.asyncio
     @patch("app.routers.conversations.ConversationService")
     async def test_create_or_get_dm_conversation_success(
-        self, mock_service_class, sample_conversation, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_conversation,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Create or get DM conversation successfully"""
         mock_service = MagicMock()
-        mock_service.get_or_create_dm_conversation = AsyncMock(return_value=sample_conversation)
+        mock_service.get_or_create_dm_conversation = AsyncMock(
+            return_value=sample_conversation
+        )
         mock_service_class.return_value = mock_service
 
         other_user_id = uuid.uuid4()
@@ -186,7 +192,9 @@ class TestDMConversationManagement:
 
         other_user_id = uuid.uuid4()
         with pytest.raises(HTTPException) as exc_info:
-            await create_or_get_dm_conversation(other_user_id, mock_current_user, mock_db_session)
+            await create_or_get_dm_conversation(
+                other_user_id, mock_current_user, mock_db_session
+            )
 
         assert exc_info.value.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
         assert "Failed to create conversation" in exc_info.value.detail
@@ -194,7 +202,11 @@ class TestDMConversationManagement:
     @pytest.mark.asyncio
     @patch("app.routers.conversations.ConversationService")
     async def test_get_user_conversations_success(
-        self, mock_service_class, sample_conversation, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_conversation,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Get user conversations with pagination"""
         mock_service = MagicMock()
@@ -214,12 +226,18 @@ class TestDMConversationManagement:
 
         assert isinstance(result, ConversationListResponse)
         assert len(result.conversations) == 1
-        mock_service.get_user_conversations.assert_called_once_with(mock_current_user.id, 1, 20)
+        mock_service.get_user_conversations.assert_called_once_with(
+            mock_current_user.id, 1, 20
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.conversations.ConversationService")
     async def test_get_conversation_success(
-        self, mock_service_class, sample_conversation, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        sample_conversation,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Get specific conversation details"""
         mock_service = MagicMock()
@@ -235,7 +253,9 @@ class TestDMConversationManagement:
         mock_service.get_user_conversations = AsyncMock(return_value=conversation_list)
         mock_service_class.return_value = mock_service
 
-        result = await get_conversation(conversation_id, mock_current_user, mock_db_session)
+        result = await get_conversation(
+            conversation_id, mock_current_user, mock_db_session
+        )
 
         assert isinstance(result, ConversationResponse)
         assert result.id == conversation_id
@@ -275,7 +295,9 @@ class TestMessageHandling:
 
     @pytest.mark.asyncio
     @patch("app.routers.conversations.connection_manager")
-    @patch("app.routers.conversations.process_mentions_in_content", new_callable=AsyncMock)
+    @patch(
+        "app.routers.conversations.process_mentions_in_content", new_callable=AsyncMock
+    )
     @patch("app.routers.conversations.trigger_dm_notification", new_callable=AsyncMock)
     @patch("app.routers.conversations.ConversationService")
     @patch("app.routers.conversations.MessageModerationService")
@@ -308,7 +330,9 @@ class TestMessageHandling:
 
         mock_moderation.moderate_message = AsyncMock(
             return_value=ModerationResult(
-                action=ModerationAction.ALLOW, sanitized_content=None, flagged_content=[]
+                action=ModerationAction.ALLOW,
+                sanitized_content=None,
+                flagged_content=[],
             )
         )
         mock_moderation_class.return_value = mock_moderation
@@ -349,7 +373,11 @@ class TestMessageHandling:
     @pytest.mark.asyncio
     @patch("app.routers.conversations.RateLimitService")
     async def test_send_message_rate_limit_exceeded(
-        self, mock_rate_limit_class, sample_message_create, mock_current_user, mock_db_session
+        self,
+        mock_rate_limit_class,
+        sample_message_create,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Handle rate limit exceeded (429)"""
         mock_rate_limiter = MagicMock()
@@ -359,7 +387,10 @@ class TestMessageHandling:
         conversation_id = uuid.uuid4()
         with pytest.raises(HTTPException) as exc_info:
             await send_message(
-                conversation_id, sample_message_create, mock_current_user, mock_db_session
+                conversation_id,
+                sample_message_create,
+                mock_current_user,
+                mock_db_session,
             )
 
         assert exc_info.value.status_code == status.HTTP_429_TOO_MANY_REQUESTS
@@ -401,7 +432,10 @@ class TestMessageHandling:
         conversation_id = uuid.uuid4()
         with pytest.raises(HTTPException) as exc_info:
             await send_message(
-                conversation_id, sample_message_create, mock_current_user, mock_db_session
+                conversation_id,
+                sample_message_create,
+                mock_current_user,
+                mock_db_session,
             )
 
         assert exc_info.value.status_code == status.HTTP_400_BAD_REQUEST
@@ -444,7 +478,11 @@ class TestMessageHandling:
     @patch("app.routers.conversations.connection_manager")
     @patch("app.routers.conversations.ConversationService")
     async def test_mark_messages_read_success(
-        self, mock_service_class, mock_connection_manager, mock_current_user, mock_db_session
+        self,
+        mock_service_class,
+        mock_connection_manager,
+        mock_current_user,
+        mock_db_session,
     ):
         """✅ Test: Mark messages as read with WebSocket broadcast"""
         mock_service = MagicMock()
@@ -493,7 +531,9 @@ class TestMessageHandling:
         conversation_id = mock_message.conversation_id
         message_id = mock_message.id
 
-        await delete_message(conversation_id, message_id, mock_current_user, mock_db_session)
+        await delete_message(
+            conversation_id, message_id, mock_current_user, mock_db_session
+        )
 
         # Verify commit was called
         mock_db_session.commit.assert_called_once()
@@ -509,7 +549,9 @@ class TestMessageHandling:
         message_id = uuid.uuid4()
 
         with pytest.raises(HTTPException) as exc_info:
-            await delete_message(conversation_id, message_id, mock_current_user, mock_db_session)
+            await delete_message(
+                conversation_id, message_id, mock_current_user, mock_db_session
+            )
 
         assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
         assert "Message not found or not authorized to delete" in exc_info.value.detail
@@ -564,7 +606,9 @@ class TestMessageSearch:
     ):
         """✅ Test: Handle search failure (500)"""
         mock_search_service = MagicMock()
-        mock_search_service.search_messages = AsyncMock(side_effect=Exception("Search error"))
+        mock_search_service.search_messages = AsyncMock(
+            side_effect=Exception("Search error")
+        )
         mock_search_service_class.return_value = mock_search_service
 
         with pytest.raises(HTTPException) as exc_info:
@@ -669,7 +713,9 @@ class TestAnalytics:
 
         assert result["total_messages"] == 100
         assert result["total_conversations"] == 10
-        mock_analytics.get_user_message_stats.assert_called_once_with(mock_current_user.id, 30)
+        mock_analytics.get_user_message_stats.assert_called_once_with(
+            mock_current_user.id, 30
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.conversations.MessageAnalyticsService")
@@ -686,11 +732,16 @@ class TestAnalytics:
         mock_analytics_data.messages_by_day = {}
         mock_analytics_data.messages_by_user = {}
         mock_analytics_data.avg_response_time_minutes = 15.5
-        mock_analytics.get_conversation_analytics = AsyncMock(return_value=mock_analytics_data)
+        mock_analytics.get_conversation_analytics = AsyncMock(
+            return_value=mock_analytics_data
+        )
         mock_analytics_class.return_value = mock_analytics
 
         result = await get_conversation_analytics(
-            conversation_id, days_back=30, current_user=mock_current_user, db=mock_db_session
+            conversation_id,
+            days_back=30,
+            current_user=mock_current_user,
+            db=mock_db_session,
         )
 
         assert str(result["conversation_id"]) == str(conversation_id)
@@ -707,7 +758,9 @@ class TestAnalytics:
         """✅ Test: Get trending conversations"""
         mock_analytics = MagicMock()
         mock_trending = [{"conversation_id": str(uuid.uuid4()), "activity_score": 100}]
-        mock_analytics.get_trending_conversations = AsyncMock(return_value=mock_trending)
+        mock_analytics.get_trending_conversations = AsyncMock(
+            return_value=mock_trending
+        )
         mock_analytics_class.return_value = mock_analytics
 
         result = await get_trending_conversations(
@@ -716,7 +769,9 @@ class TestAnalytics:
 
         assert "trending_conversations" in result
         assert len(result["trending_conversations"]) == 1
-        mock_analytics.get_trending_conversations.assert_called_once_with(mock_current_user.id, 10)
+        mock_analytics.get_trending_conversations.assert_called_once_with(
+            mock_current_user.id, 10
+        )
 
 
 # ============================================================================
@@ -794,7 +849,10 @@ class TestEdgeCases:
         conversation_id = uuid.uuid4()
         with pytest.raises(HTTPException) as exc_info:
             await get_conversation_analytics(
-                conversation_id, days_back=30, current_user=mock_current_user, db=mock_db_session
+                conversation_id,
+                days_back=30,
+                current_user=mock_current_user,
+                db=mock_db_session,
             )
 
         assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND

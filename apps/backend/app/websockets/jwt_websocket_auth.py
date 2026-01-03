@@ -37,7 +37,9 @@ class WebSocketJWTAuth:
         if expires_delta:
             expire = datetime.now(timezone.utc) + expires_delta
         else:
-            expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+            expire = datetime.now(timezone.utc) + timedelta(
+                minutes=settings.JWT_EXPIRE_MINUTES
+            )
 
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
@@ -168,7 +170,9 @@ class AuthenticatedWebSocketManager:
                 # Remove from Redis
                 await self._remove_connection_from_redis(connection_id, user_id)
 
-                logger.info(f"✅ WebSocket disconnected: {connection_id} for user {user_id}")
+                logger.info(
+                    f"✅ WebSocket disconnected: {connection_id} for user {user_id}"
+                )
 
         except Exception as e:
             logger.error(f"WebSocket disconnection error: {e}")
@@ -185,7 +189,9 @@ class AuthenticatedWebSocketManager:
                         await websocket.send_text(json.dumps(message))
                         sent_count += 1
                     except Exception as e:
-                        logger.warning(f"Failed to send message to {connection_id}: {e}")
+                        logger.warning(
+                            f"Failed to send message to {connection_id}: {e}"
+                        )
                         await self.disconnect(connection_id)
 
         return sent_count
@@ -207,10 +213,14 @@ class AuthenticatedWebSocketManager:
 
         return sent_count
 
-    async def _store_connection_in_redis(self, connection_id: str, user_auth: dict[str, Any]):
+    async def _store_connection_in_redis(
+        self, connection_id: str, user_auth: dict[str, Any]
+    ):
         """Store connection info in Redis for multi-instance coordination"""
         try:
-            connection_key = self.redis_key_manager.websocket_connection_key(connection_id)
+            connection_key = self.redis_key_manager.websocket_connection_key(
+                connection_id
+            )
             user_id = user_auth["user_id"]
 
             connection_data = {
@@ -221,7 +231,9 @@ class AuthenticatedWebSocketManager:
             }
 
             # Store connection data with TTL
-            await redis_client.set(connection_key, json.dumps(connection_data), ttl=3600)
+            await redis_client.set(
+                connection_key, json.dumps(connection_data), ttl=3600
+            )
 
             # Store user connection mapping (per-connection tracking)
             user_connections_key = self.redis_key_manager._build_key(
@@ -236,7 +248,9 @@ class AuthenticatedWebSocketManager:
         """Remove connection info from Redis"""
         try:
             # Since our redis client doesn't have delete method, we'll set with very short TTL
-            connection_key = self.redis_key_manager.websocket_connection_key(connection_id)
+            connection_key = self.redis_key_manager.websocket_connection_key(
+                connection_id
+            )
             user_connections_key = self.redis_key_manager._build_key(
                 RedisKeyspace.USERS, user_id, "connections", connection_id
             )
@@ -276,7 +290,9 @@ class AuthenticatedWebSocketManager:
             }
 
             # Store presence with TTL
-            await redis_client.set(presence_key, json.dumps(presence_data), ttl=300)  # 5 minutes
+            await redis_client.set(
+                presence_key, json.dumps(presence_data), ttl=300
+            )  # 5 minutes
             await redis_client.set(
                 heartbeat_key, datetime.now(timezone.utc).isoformat(), ttl=60
             )  # 1 minute heartbeat
@@ -286,7 +302,9 @@ class AuthenticatedWebSocketManager:
 
 
 # FastAPI WebSocket endpoint with JWT authentication
-async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: str | None = None):
+async def websocket_endpoint_with_auth(
+    websocket: WebSocket, user_id: str | None = None
+):
     """WebSocket endpoint with JWT authentication"""
     auth_manager = AuthenticatedWebSocketManager()
     connection_id = None
@@ -294,7 +312,9 @@ async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: str | None
 
     try:
         # Authenticate the connection
-        user_auth = await auth_manager.auth_handler.authenticate_websocket(websocket, None)
+        user_auth = await auth_manager.auth_handler.authenticate_websocket(
+            websocket, None
+        )
 
         if not user_auth:
             await websocket.close(code=1008, reason="Authentication failed")
@@ -317,10 +337,14 @@ async def websocket_endpoint_with_auth(websocket: WebSocket, user_id: str | None
                     await websocket.send_text(json.dumps({"type": "pong"}))
 
                 elif message.get("type") == "typing":
-                    await handle_typing_indicator(user_auth["user_id"], message.get("room"), True)
+                    await handle_typing_indicator(
+                        user_auth["user_id"], message.get("room"), True
+                    )
 
                 elif message.get("type") == "stop_typing":
-                    await handle_typing_indicator(user_auth["user_id"], message.get("room"), False)
+                    await handle_typing_indicator(
+                        user_auth["user_id"], message.get("room"), False
+                    )
 
                 else:
                     # Echo message back for now
@@ -354,7 +378,9 @@ async def handle_typing_indicator(user_id: str, room: str, is_typing: bool):
 
         if is_typing:
             # Add user to typing set (simplified - just store with TTL)
-            await redis_client.set(f"{typing_key}:{user_id}", "1", ttl=10)  # 10 seconds TTL
+            await redis_client.set(
+                f"{typing_key}:{user_id}", "1", ttl=10
+            )  # 10 seconds TTL
         else:
             # Remove user from typing (set very short TTL)
             await redis_client.set(f"{typing_key}:{user_id}", "deleted", ttl=1)

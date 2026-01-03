@@ -83,9 +83,15 @@ class TestSMA:
 
         assert result[0] is None
         assert result[1] is None
-        assert result[2] is not None and abs(result[2] - 2.5) < 0.01  # (1.5 + 2.3 + 3.7) / 3
-        assert result[3] is not None and abs(result[3] - 3.367) < 0.01  # (2.3 + 3.7 + 4.1) / 3
-        assert result[4] is not None and abs(result[4] - 4.567) < 0.01  # (3.7 + 4.1 + 5.9) / 3
+        assert (
+            result[2] is not None and abs(result[2] - 2.5) < 0.01
+        )  # (1.5 + 2.3 + 3.7) / 3
+        assert (
+            result[3] is not None and abs(result[3] - 3.367) < 0.01
+        )  # (2.3 + 3.7 + 4.1) / 3
+        assert (
+            result[4] is not None and abs(result[4] - 4.567) < 0.01
+        )  # (3.7 + 4.1 + 5.9) / 3
 
     def test_sma_negative_values(self):
         """Test SMA with negative values"""
@@ -100,8 +106,12 @@ class TestSMA:
         values = [1.0, -2.0, 3.0, -4.0, 5.0]
         result = sma(values, period=3)
 
-        assert result[2] is not None and abs(result[2] - 0.667) < 0.01  # (1 + -2 + 3) / 3
-        assert result[3] is not None and abs(result[3] - (-1.0)) < 0.01  # (-2 + 3 + -4) / 3
+        assert (
+            result[2] is not None and abs(result[2] - 0.667) < 0.01
+        )  # (1 + -2 + 3) / 3
+        assert (
+            result[3] is not None and abs(result[3] - (-1.0)) < 0.01
+        )  # (-2 + 3 + -4) / 3
 
 
 # ============================================================================
@@ -245,7 +255,23 @@ class TestRSI:
 
     def test_rsi_all_increasing_values(self):
         """Test RSI=100 when all values increase (no losses)"""
-        values = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0]
+        values = [
+            1.0,
+            2.0,
+            3.0,
+            4.0,
+            5.0,
+            6.0,
+            7.0,
+            8.0,
+            9.0,
+            10.0,
+            11.0,
+            12.0,
+            13.0,
+            14.0,
+            15.0,
+        ]
         result = rsi(values, period=5)
 
         # After period, RSI should be 100 (no losses)

@@ -124,7 +124,9 @@ class TestProfileRetrieval:
         assert result.username == "testuser"
 
     @pytest.mark.asyncio
-    async def test_get_profile_by_user_id_not_found(self, profile_service, mock_db_session):
+    async def test_get_profile_by_user_id_not_found(
+        self, profile_service, mock_db_session
+    ):
         """Test retrieving profile by user ID when profile doesn't exist"""
         # Arrange
         user_id = uuid.uuid4()
@@ -140,7 +142,9 @@ class TestProfileRetrieval:
         assert result is None
 
     @pytest.mark.asyncio
-    async def test_get_profile_by_username_found(self, profile_service, mock_db_session):
+    async def test_get_profile_by_username_found(
+        self, profile_service, mock_db_session
+    ):
         """Test retrieving profile by username when profile exists"""
         # Arrange
         username = "testuser"
@@ -163,7 +167,9 @@ class TestProfileRetrieval:
         assert result.username == username
 
     @pytest.mark.asyncio
-    async def test_get_profile_by_username_not_found(self, profile_service, mock_db_session):
+    async def test_get_profile_by_username_not_found(
+        self, profile_service, mock_db_session
+    ):
         """Test retrieving profile by username when profile doesn't exist"""
         # Arrange
         username = "nonexistent"
@@ -244,7 +250,9 @@ class TestProfileUpdate:
         reason="Requires database for default field values (follower_count, created_at)"
     )
     @pytest.mark.asyncio
-    async def test_update_profile_bio_only(self, profile_service, mock_db_session, sample_user_ids):
+    async def test_update_profile_bio_only(
+        self, profile_service, mock_db_session, sample_user_ids
+    ):
         """Test updating profile bio without username change
 
         NOTE: Profile model requires database defaults for:
@@ -287,7 +295,9 @@ class TestUserSettingsUpdate:
     """Test suite for user settings update operations"""
 
     @pytest.mark.asyncio
-    async def test_update_user_settings_not_found(self, profile_service, mock_db_session):
+    async def test_update_user_settings_not_found(
+        self, profile_service, mock_db_session
+    ):
         """Test updating settings when user doesn't exist returns 404"""
         # Arrange
         user_id = uuid.uuid4()
@@ -394,7 +404,9 @@ class TestNotificationPreferences:
         mock_db_session.execute.return_value = mock_result
 
         # Act
-        result = await profile_service.update_notification_preferences(user_id, prefs_data)
+        result = await profile_service.update_notification_preferences(
+            user_id, prefs_data
+        )
 
         # Assert
         assert mock_db_session.execute.called
@@ -452,7 +464,9 @@ class TestPublicProfile:
         mock_db_session.execute.return_value = mock_result
 
         # Act
-        result = await profile_service.get_public_profile(profile_id, current_user_id=None)
+        result = await profile_service.get_public_profile(
+            profile_id, current_user_id=None
+        )
 
         # Assert
         assert result is not None
@@ -469,7 +483,9 @@ class TestProfileSearch:
     """Test suite for profile search functionality"""
 
     @pytest.mark.asyncio
-    async def test_search_profiles_empty_results(self, profile_service, mock_db_session):
+    async def test_search_profiles_empty_results(
+        self, profile_service, mock_db_session
+    ):
         """Test searching profiles with no matches"""
         # Arrange
         query = "nonexistent"
@@ -531,7 +547,9 @@ class TestProfileSearch:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query, page=page, page_size=page_size)
+        result = await profile_service.search_profiles(
+            query, page=page, page_size=page_size
+        )
 
         # Assert
         assert len(result.profiles) == 2
@@ -590,7 +608,9 @@ class TestProfileServiceEdgeCases:
         assert result is not None
 
     @pytest.mark.asyncio
-    async def test_search_profiles_special_characters(self, profile_service, mock_db_session):
+    async def test_search_profiles_special_characters(
+        self, profile_service, mock_db_session
+    ):
         """Test searching profiles with special characters in query"""
         # Arrange
         query = "test@#$%"
@@ -937,7 +957,9 @@ class TestNotificationPreferencesDatabaseInteractions:
             "app.services.profile_service.NotificationPreferencesResponse.model_validate",
             return_value=mock_response,
         ):
-            result = await profile_service.update_notification_preferences(user_id, prefs_data)
+            result = await profile_service.update_notification_preferences(
+                user_id, prefs_data
+            )
 
         # Assert - Verify database operations
         assert mock_db_session.execute.call_count == 2  # SELECT + UPDATE
@@ -997,7 +1019,9 @@ class TestNotificationPreferencesDatabaseInteractions:
             "app.services.profile_service.NotificationPreferencesResponse.model_validate",
             return_value=mock_response,
         ):
-            result = await profile_service.update_notification_preferences(user_id, prefs_data)
+            result = await profile_service.update_notification_preferences(
+                user_id, prefs_data
+            )
 
         # Assert - Verify database operations
         assert mock_db_session.execute.call_count == 2  # SELECT + UPDATE
@@ -1057,7 +1081,9 @@ class TestNotificationPreferencesDatabaseInteractions:
             "app.services.profile_service.NotificationPreferencesResponse.model_validate",
             return_value=mock_response,
         ):
-            result = await profile_service.update_notification_preferences(user_id, prefs_data)
+            result = await profile_service.update_notification_preferences(
+                user_id, prefs_data
+            )
 
         # Assert - Only SELECT, no UPDATE
         assert mock_db_session.execute.call_count == 1  # Only SELECT
@@ -1105,7 +1131,9 @@ class TestFollowServiceIntegration:
 
         # Mock FollowService.is_following to return True
         # Patch at module level where FollowService is imported from
-        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+        with patch(
+            "app.services.follow_service.FollowService"
+        ) as mock_follow_service_cls:
             mock_follow_service = MagicMock()
             mock_follow_service.is_following = AsyncMock(return_value=True)
             mock_follow_service_cls.return_value = mock_follow_service
@@ -1146,7 +1174,9 @@ class TestFollowServiceIntegration:
 
         # Mock FollowService.is_following to return False
         # Patch at module level where FollowService is imported from
-        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+        with patch(
+            "app.services.follow_service.FollowService"
+        ) as mock_follow_service_cls:
             mock_follow_service = MagicMock()
             mock_follow_service.is_following = AsyncMock(return_value=False)
             mock_follow_service_cls.return_value = mock_follow_service
@@ -1183,7 +1213,9 @@ class TestFollowServiceIntegration:
 
         # Act (no current_user_id)
         # Patch at module level where FollowService is imported from
-        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+        with patch(
+            "app.services.follow_service.FollowService"
+        ) as mock_follow_service_cls:
             result = await profile_service.get_public_profile(profile_id=profile_id)
 
             # Assert
@@ -1272,9 +1304,13 @@ class TestFollowServiceIntegration:
         }
 
         # Patch at module level where FollowService is imported from
-        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
+        with patch(
+            "app.services.follow_service.FollowService"
+        ) as mock_follow_service_cls:
             mock_follow_service = MagicMock()
-            mock_follow_service.batch_follow_status = AsyncMock(return_value=mock_follow_map)
+            mock_follow_service.batch_follow_status = AsyncMock(
+                return_value=mock_follow_map
+            )
             mock_follow_service_cls.return_value = mock_follow_service
 
             # Act
@@ -1288,7 +1324,8 @@ class TestFollowServiceIntegration:
 
             # Verify batch_follow_status was called with correct arguments
             mock_follow_service.batch_follow_status.assert_awaited_once_with(
-                current_user_id=current_user_id, target_user_ids=[user1_id, user2_id, user3_id]
+                current_user_id=current_user_id,
+                target_user_ids=[user1_id, user2_id, user3_id],
             )
 
             # Verify response includes follow status for each profile
@@ -1360,8 +1397,12 @@ class TestFollowServiceIntegration:
 
         # Act (no current_user_id)
         # Patch at module level where FollowService is imported from
-        with patch("app.services.follow_service.FollowService") as mock_follow_service_cls:
-            result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        with patch(
+            "app.services.follow_service.FollowService"
+        ) as mock_follow_service_cls:
+            result = await profile_service.search_profiles(
+                query=query, page=1, page_size=10
+            )
 
             # Assert
             # Verify FollowService was NOT instantiated (no current_user_id)
@@ -1444,7 +1485,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        result = await profile_service.search_profiles(
+            query=query, page=1, page_size=10
+        )
 
         # Assert
         assert result.total == 2
@@ -1488,7 +1531,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        result = await profile_service.search_profiles(
+            query=query, page=1, page_size=10
+        )
 
         # Assert
         assert result.total == 1
@@ -1529,7 +1574,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        result = await profile_service.search_profiles(
+            query=query, page=1, page_size=10
+        )
 
         # Assert
         assert result.total == 1
@@ -1599,7 +1646,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        result = await profile_service.search_profiles(
+            query=query, page=1, page_size=10
+        )
 
         # Assert - Verify ordering
         assert result.total == 3
@@ -1667,7 +1716,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=page, page_size=page_size)
+        result = await profile_service.search_profiles(
+            query=query, page=page, page_size=page_size
+        )
 
         # Assert - Pagination metadata
         assert result.total == 5
@@ -1727,7 +1778,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=page, page_size=page_size)
+        result = await profile_service.search_profiles(
+            query=query, page=page, page_size=page_size
+        )
 
         # Assert - Page 2 metadata
         assert result.total == 5
@@ -1773,7 +1826,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=page, page_size=page_size)
+        result = await profile_service.search_profiles(
+            query=query, page=page, page_size=page_size
+        )
 
         # Assert - Last page metadata
         assert result.total == 5
@@ -1799,7 +1854,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        result = await profile_service.search_profiles(
+            query=query, page=1, page_size=10
+        )
 
         # Assert - Empty results
         assert result.total == 0
@@ -1844,7 +1901,9 @@ class TestSearchAndPagination:
         mock_db_session.execute.side_effect = [mock_profiles_result, mock_count_result]
 
         # Act
-        result = await profile_service.search_profiles(query=query, page=1, page_size=10)
+        result = await profile_service.search_profiles(
+            query=query, page=1, page_size=10
+        )
 
         # Assert - Count matches actual results
         assert result.total == 3

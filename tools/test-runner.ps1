@@ -108,13 +108,17 @@ param(
     [switch]$Coverage,
     [switch]$Gate,
     [switch]$PreCommit,
+    [switch]$FastCheck,
+    [switch]$Quiet,
     [switch]$Parallel,
     [switch]$Verbose,
     [switch]$Watch,
     [switch]$DryRun,
     [switch]$SelfTest,
     [switch]$CIMode,
-    [int]$Timeout = 300
+    [int]$Timeout = 300,
+    [int]$CoverageThreshold = 15,
+    [switch]$GenerateReport
 )
 
 $ErrorActionPreference = 'Continue'
@@ -290,7 +294,8 @@ function Invoke-BackendTests {
         [string]$Match,
         [switch]$Coverage,
         [switch]$Quick,
-        [switch]$Verbose
+        [switch]$Verbose,
+        [switch]$Quiet
     )
 
     # Use script-level paths configuration
@@ -332,7 +337,11 @@ function Invoke-BackendTests {
         }
 
         # Verbosity
-        if ($Verbose) {
+        if ($Quiet) {
+            $pytestArgs += '-q'
+            $pytestArgs += '--tb=no'
+            $pytestArgs += '--no-header'
+        } elseif ($Verbose) {
             $pytestArgs += '-vv'
             $pytestArgs += '--tb=long'
         } else {
@@ -392,7 +401,8 @@ function Invoke-FrontendTests {
         [switch]$Coverage,
         [switch]$Quick,
         [switch]$Verbose,
-        [switch]$Watch
+        [switch]$Watch,
+        [switch]$Quiet
     )
 
     # Use script-level paths configuration
@@ -438,7 +448,10 @@ function Invoke-FrontendTests {
         }
 
         # Verbosity
-        if ($Verbose) {
+        if ($Quiet) {
+            $testArgs += '--reporter=basic'
+            $testArgs += '--hideSkippedTests'
+        } elseif ($Verbose) {
             $testArgs += '--reporter=verbose'
         }
 
@@ -536,6 +549,102 @@ function Invoke-QuickTests {
 # Pre-commit Tests
 # ============================================================================
 
+function Invoke-FastQualityChecks {
+    <#
+    .SYNOPSIS
+    Run fast quality checks for pre-commit validation (lint, format, typecheck)
+    #>
+    Write-TestLog 'Running fast quality checks...' -Level Info
+    $Config = $script:Paths
+    $allPassed = $true
+    $startTime = Get-Date
+
+    # Frontend quality checks
+    Write-Host ''
+    Write-Host '📦 Frontend Quality Checks' -ForegroundColor Cyan
+    Write-Host '─────────────────────────────' -ForegroundColor Gray
+
+    Push-Location $Config.FrontendDir
+    try {
+        # TypeScript type checking
+        Write-Host '  🔍 TypeScript type checking...' -ForegroundColor White -NoNewline
+        $typecheckOutput = npm run typecheck 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $typecheckOutput -ForegroundColor Red }
+        }
+
+        # ESLint
+        Write-Host '  🔍 ESLint checking...' -ForegroundColor White -NoNewline
+        $lintOutput = npm run lint 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $lintOutput -ForegroundColor Red }
+        }
+    } finally {
+        Pop-Location
+    }
+
+    # Backend quality checks
+    Write-Host ''
+    Write-Host '🐍 Backend Quality Checks' -ForegroundColor Cyan
+    Write-Host '─────────────────────────────' -ForegroundColor Gray
+
+    Push-Location $Config.BackendDir
+    try {
+        # Activate virtual environment
+        $venvActivate = Join-Path $Config.BackendDir 'venv\Scripts\Activate.ps1'
+        if (Test-Path $venvActivate) {
+            & $venvActivate
+        }
+
+        # Ruff linting
+        Write-Host '  🔍 Ruff linting...' -ForegroundColor White -NoNewline
+        $ruffOutput = ruff check . 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $ruffOutput -ForegroundColor Red }
+        }
+
+        # Black formatting check
+        Write-Host '  🔍 Black formatting...' -ForegroundColor White -NoNewline
+        $blackOutput = black . --check 2>&1
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host ' ✅' -ForegroundColor Green
+        } else {
+            Write-Host ' ❌' -ForegroundColor Red
+            $allPassed = $false
+            if (-not $Quiet) { Write-Host $blackOutput -ForegroundColor Red }
+        }
+    } finally {
+        Pop-Location
+    }
+
+    $duration = (Get-Date) - $startTime
+    Write-Host ''
+    Write-Host "⏱️  Duration: $($duration.TotalSeconds.ToString('F2'))s" -ForegroundColor Gray
+    Write-Host ''
+
+    if ($allPassed) {
+        Write-Host '✅ All quality checks passed! 🎉' -ForegroundColor Green
+        Write-TestLog 'Fast quality checks passed!' -Level Success
+        return 0
+    } else {
+        Write-Host '❌ Quality checks failed!' -ForegroundColor Red
+        Write-TestLog 'Fast quality checks failed' -Level Error
+        return 1
+    }
+}
+
 function Invoke-PreCommitTests {
     Write-TestLog 'Running pre-commit test suite...' -Level Info
 
@@ -547,20 +656,30 @@ function Invoke-PreCommitTests {
     )
 
     $allPassed = $true
+    $startTime = Get-Date
 
     foreach ($test in $tests) {
-        Write-TestLog "Running $($test.Name) tests..." -Level Info
+        if (-not $Quiet) {
+            Write-TestLog "Running $($test.Name) tests..." -Level Info
+        }
 
         if ($test.Type -eq 'backend') {
-            $result = Invoke-BackendTests -Category $test.Category -Quick:$test.Quick
+            $result = Invoke-BackendTests -Category $test.Category -Quick:$test.Quick -Quiet:$Quiet
         } else {
-            $result = Invoke-FrontendTests -Category $test.Category -Quick:$test.Quick
+            $result = Invoke-FrontendTests -Category $test.Category -Quick:$test.Quick -Quiet:$Quiet
         }
 
         if ($result -ne 0) {
             $allPassed = $false
             Write-TestLog "$($test.Name) tests failed!" -Level Error
         }
+    }
+
+    $duration = (Get-Date) - $startTime
+
+    if (-not $Quiet) {
+        Write-Host ''
+        Write-Host "⏱️  Duration: $($duration.TotalSeconds.ToString('F2'))s" -ForegroundColor Gray
     }
 
     if ($allPassed) {
@@ -931,7 +1050,17 @@ function Invoke-TestRunner {
 
     try {
         # Handle special modes
-        if ($Smart) {
+        if ($FastCheck) {
+            if ($DryRun) {
+                if (-not $CIMode) {
+                    Write-TestLog 'Would run fast quality checks (lint, format, typecheck)' -Level Info
+                }
+                $testResults = @{ mode = 'fastcheck-dryrun' }
+                $exitCode = 0
+            } else {
+                $exitCode = Invoke-FastQualityChecks
+            }
+        } elseif ($Smart) {
             if ($DryRun) {
                 $changedFiles = Get-ChangedFiles
                 $affectedTests = Get-AffectedTests -ChangedFiles $changedFiles

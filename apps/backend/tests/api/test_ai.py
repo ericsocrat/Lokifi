@@ -105,7 +105,12 @@ class TestThreadManagement:
     @patch("app.routers.ai.get_current_user")
     @patch("app.routers.ai.get_db")
     async def test_create_thread_success(
-        self, mock_get_db, mock_get_user, mock_ai_service, mock_current_user, sample_thread
+        self,
+        mock_get_db,
+        mock_get_user,
+        mock_ai_service,
+        mock_current_user,
+        sample_thread,
     ):
         """Test successful thread creation"""
         mock_get_user.return_value = mock_current_user
@@ -117,7 +122,9 @@ class TestThreadManagement:
         from app.routers.ai import create_thread
 
         result = await create_thread(
-            thread_data=thread_data, current_user=mock_current_user, db=mock_get_db.return_value
+            thread_data=thread_data,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         assert isinstance(result, AIThreadResponse)
@@ -134,7 +141,9 @@ class TestThreadManagement:
     ):
         """Test thread creation failure handling"""
         mock_get_user.return_value = mock_current_user
-        mock_ai_service.create_thread = AsyncMock(side_effect=Exception("Database error"))
+        mock_ai_service.create_thread = AsyncMock(
+            side_effect=Exception("Database error")
+        )
 
         thread_data = AIThreadCreate(title="New Thread")
 
@@ -155,7 +164,12 @@ class TestThreadManagement:
     @patch("app.routers.ai.get_current_user")
     @patch("app.routers.ai.get_db")
     async def test_get_threads_success(
-        self, mock_get_db, mock_get_user, mock_ai_service, mock_current_user, sample_thread
+        self,
+        mock_get_db,
+        mock_get_user,
+        mock_ai_service,
+        mock_current_user,
+        sample_thread,
     ):
         """Test retrieving user threads"""
         mock_get_user.return_value = mock_current_user
@@ -164,7 +178,10 @@ class TestThreadManagement:
         from app.routers.ai import get_threads
 
         result = await get_threads(
-            limit=50, offset=0, current_user=mock_current_user, db=mock_get_db.return_value
+            limit=50,
+            offset=0,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         assert isinstance(result, list)
@@ -187,7 +204,10 @@ class TestThreadManagement:
         from app.routers.ai import get_threads
 
         await get_threads(
-            limit=200, offset=0, current_user=mock_current_user, db=mock_get_db.return_value
+            limit=200,
+            offset=0,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         # Verify limit was capped at 100
@@ -200,7 +220,12 @@ class TestThreadManagement:
     @patch("app.routers.ai.get_current_user")
     @patch("app.routers.ai.get_db")
     async def test_update_thread_success(
-        self, mock_get_db, mock_get_user, mock_ai_service, mock_current_user, sample_thread
+        self,
+        mock_get_db,
+        mock_get_user,
+        mock_ai_service,
+        mock_current_user,
+        sample_thread,
     ):
         """Test successful thread update"""
         mock_get_user.return_value = mock_current_user
@@ -288,7 +313,9 @@ class TestThreadManagement:
 
         with pytest.raises(HTTPException) as exc_info:
             await delete_thread(
-                thread_id=999, current_user=mock_current_user, db=mock_get_db.return_value
+                thread_id=999,
+                current_user=mock_current_user,
+                db=mock_get_db.return_value,
             )
 
         # Router raises 404, but may be caught and re-raised as 500
@@ -311,7 +338,12 @@ class TestMessageHandling:
     @patch("app.routers.ai.get_current_user")
     @patch("app.routers.ai.get_db")
     async def test_get_thread_messages_success(
-        self, mock_get_db, mock_get_user, mock_ai_service, mock_current_user, sample_message
+        self,
+        mock_get_db,
+        mock_get_user,
+        mock_ai_service,
+        mock_current_user,
+        sample_message,
     ):
         """Test retrieving thread messages"""
         mock_get_user.return_value = mock_current_user
@@ -320,7 +352,10 @@ class TestMessageHandling:
         from app.routers.ai import get_thread_messages
 
         result = await get_thread_messages(
-            thread_id=1, limit=50, current_user=mock_current_user, db=mock_get_db.return_value
+            thread_id=1,
+            limit=50,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         assert isinstance(result, list)
@@ -336,13 +371,18 @@ class TestMessageHandling:
     ):
         """Test 404 when thread doesn't exist"""
         mock_get_user.return_value = mock_current_user
-        mock_ai_service.get_thread_messages = AsyncMock(side_effect=ValueError("Thread not found"))
+        mock_ai_service.get_thread_messages = AsyncMock(
+            side_effect=ValueError("Thread not found")
+        )
 
         from app.routers.ai import get_thread_messages
 
         with pytest.raises(HTTPException) as exc_info:
             await get_thread_messages(
-                thread_id=999, limit=50, current_user=mock_current_user, db=mock_get_db.return_value
+                thread_id=999,
+                limit=50,
+                current_user=mock_current_user,
+                db=mock_get_db.return_value,
             )
 
         assert exc_info.value.status_code == status.HTTP_404_NOT_FOUND
@@ -361,7 +401,10 @@ class TestMessageHandling:
         from app.routers.ai import get_thread_messages
 
         await get_thread_messages(
-            thread_id=1, limit=200, current_user=mock_current_user, db=mock_get_db.return_value
+            thread_id=1,
+            limit=200,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         # Verify limit was capped at 100
@@ -398,7 +441,9 @@ class TestProviderAndRateLimit:
             error=None,
         )
 
-        mock_ai_service.get_provider_status = AsyncMock(return_value={"openai": provider_info})
+        mock_ai_service.get_provider_status = AsyncMock(
+            return_value={"openai": provider_info}
+        )
 
         from app.routers.ai import get_provider_status
 
@@ -434,7 +479,9 @@ class TestProviderAndRateLimit:
         assert isinstance(result, RateLimitResponse)
         assert result.requests_made == 5
         assert result.window_seconds == 3600
-        mock_ai_service.get_rate_limit_status.assert_called_once_with(mock_current_user.id)
+        mock_ai_service.get_rate_limit_status.assert_called_once_with(
+            mock_current_user.id
+        )
 
     @pytest.mark.asyncio
     @patch("app.routers.ai.ai_service")
@@ -473,7 +520,9 @@ class TestExportImport:
     ):
         """Test exporting conversations as JSON"""
         mock_get_user.return_value = mock_current_user
-        mock_exporter.export_conversations = MagicMock(return_value='{"conversations": []}')
+        mock_exporter.export_conversations = MagicMock(
+            return_value='{"conversations": []}'
+        )
 
         from app.routers.ai import export_conversations
 
@@ -523,7 +572,9 @@ class TestExportImport:
     ):
         """Test exporting specific threads by IDs"""
         mock_get_user.return_value = mock_current_user
-        mock_exporter.export_conversations = MagicMock(return_value='{"conversations": []}')
+        mock_exporter.export_conversations = MagicMock(
+            return_value='{"conversations": []}'
+        )
 
         from app.routers.ai import export_conversations
 
@@ -551,7 +602,11 @@ class TestExportImport:
         """Test successful conversation import"""
         mock_get_user.return_value = mock_current_user
         mock_importer.import_conversations = MagicMock(
-            return_value={"success": True, "imported_conversations": 5, "imported_messages": 50}
+            return_value={
+                "success": True,
+                "imported_conversations": 5,
+                "imported_messages": 50,
+            }
         )
 
         # Create mock file
@@ -630,11 +685,15 @@ class TestAnalytics:
         mock_metrics.provider_usage = {"openai": 80, "anthropic": 20}
         mock_metrics.model_usage = {"gpt-4": 60, "gpt-3.5": 40}
 
-        mock_analytics_service.get_conversation_metrics = AsyncMock(return_value=mock_metrics)
+        mock_analytics_service.get_conversation_metrics = AsyncMock(
+            return_value=mock_metrics
+        )
 
         from app.routers.ai import get_conversation_metrics
 
-        result = await get_conversation_metrics(days_back=30, current_user=mock_current_user)
+        result = await get_conversation_metrics(
+            days_back=30, current_user=mock_current_user
+        )
 
         assert result["metrics"]["total_conversations"] == 10
         assert result["metrics"]["total_messages"] == 100
@@ -690,7 +749,10 @@ class TestEdgeCases:
         from app.routers.ai import get_threads
 
         result = await get_threads(
-            limit=50, offset=0, current_user=mock_current_user, db=mock_get_db.return_value
+            limit=50,
+            offset=0,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         assert isinstance(result, list)
@@ -710,7 +772,10 @@ class TestEdgeCases:
         from app.routers.ai import get_thread_messages
 
         result = await get_thread_messages(
-            thread_id=1, limit=50, current_user=mock_current_user, db=mock_get_db.return_value
+            thread_id=1,
+            limit=50,
+            current_user=mock_current_user,
+            db=mock_get_db.return_value,
         )
 
         assert isinstance(result, list)
@@ -725,7 +790,9 @@ class TestEdgeCases:
     ):
         """Test export failure handling"""
         mock_get_user.return_value = mock_current_user
-        mock_exporter.export_conversations = MagicMock(side_effect=Exception("Export failed"))
+        mock_exporter.export_conversations = MagicMock(
+            side_effect=Exception("Export failed")
+        )
 
         from app.routers.ai import export_conversations
 

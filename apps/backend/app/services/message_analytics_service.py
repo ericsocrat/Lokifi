@@ -57,16 +57,22 @@ class MessageAnalyticsService:
         # Total messages sent
         messages_count_stmt = select(func.count(Message.id)).where(
             and_(
-                Message.sender_id == user_id, Message.created_at >= cutoff_date, ~Message.is_deleted
+                Message.sender_id == user_id,
+                Message.created_at >= cutoff_date,
+                ~Message.is_deleted,
             )
         )
         result = await self.db.execute(messages_count_stmt)
         total_messages = result.scalar() or 0
 
         # Total active conversations
-        conversations_count_stmt = select(func.count(func.distinct(Message.conversation_id))).where(
+        conversations_count_stmt = select(
+            func.count(func.distinct(Message.conversation_id))
+        ).where(
             and_(
-                Message.sender_id == user_id, Message.created_at >= cutoff_date, ~Message.is_deleted
+                Message.sender_id == user_id,
+                Message.created_at >= cutoff_date,
+                ~Message.is_deleted,
             )
         )
         result = await self.db.execute(conversations_count_stmt)
@@ -94,7 +100,9 @@ class MessageAnalyticsService:
         )
         result = await self.db.execute(most_active_day_stmt)
         most_active_day_row = result.first()
-        most_active_day = most_active_day_row[0].strip() if most_active_day_row else None
+        most_active_day = (
+            most_active_day_row[0].strip() if most_active_day_row else None
+        )
 
         # Most active hour
         most_active_hour_stmt = (
@@ -115,7 +123,9 @@ class MessageAnalyticsService:
         )
         result = await self.db.execute(most_active_hour_stmt)
         most_active_hour_row = result.first()
-        most_active_hour = int(most_active_hour_row[0]) if most_active_hour_row else None
+        most_active_hour = (
+            int(most_active_hour_row[0]) if most_active_hour_row else None
+        )
 
         # Get username
         user_stmt = select(User.username).where(User.id == user_id)
@@ -257,7 +267,8 @@ class MessageAnalyticsService:
             "active_users": active_users,
             "total_conversations": total_conversations,
             "avg_messages_per_user": total_messages / max(active_users, 1),
-            "avg_messages_per_conversation": total_messages / max(total_conversations, 1),
+            "avg_messages_per_conversation": total_messages
+            / max(total_conversations, 1),
             "messages_by_type": messages_by_type,
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }
@@ -284,7 +295,8 @@ class MessageAnalyticsService:
             )
             .where(
                 and_(
-                    Message.created_at >= datetime.now(timezone.utc) - timedelta(hours=24),
+                    Message.created_at
+                    >= datetime.now(timezone.utc) - timedelta(hours=24),
                     ~Message.is_deleted,
                 )
             )

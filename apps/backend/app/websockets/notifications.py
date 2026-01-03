@@ -196,7 +196,9 @@ class NotificationWebSocketManager:
                     )
 
             except Exception as e:
-                logger.warning(f"Failed to send message to WebSocket for user {user_id}: {e}")
+                logger.warning(
+                    f"Failed to send message to WebSocket for user {user_id}: {e}"
+                )
                 failed_connections.append(websocket)
                 self.connection_stats["connection_errors"] += 1
 
@@ -245,7 +247,9 @@ class NotificationWebSocketManager:
             sent_count = await self.send_to_user(str(notification.user_id), message)
 
             # Also send updated unread count
-            unread_count = await notification_service.get_unread_count(str(notification.user_id))
+            unread_count = await notification_service.get_unread_count(
+                str(notification.user_id)
+            )
             unread_message = {
                 "type": "unread_count",
                 "data": {
@@ -356,7 +360,9 @@ class NotificationWebSocketManager:
         stale_connections = []
 
         for websocket, metadata in self.connection_metadata.items():
-            if (current_time - metadata["last_activity"]).total_seconds() > timeout_seconds:
+            if (
+                current_time - metadata["last_activity"]
+            ).total_seconds() > timeout_seconds:
                 stale_connections.append((websocket, metadata["user_id"]))
 
         for websocket, user_id in stale_connections:

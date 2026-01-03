@@ -111,7 +111,9 @@ class TestConnectionManagerInitialization:
         assert connection_manager.redis_client is not None
 
     @pytest.mark.asyncio
-    async def test_initialize_redis_success(self, connection_manager, mock_redis_client):
+    async def test_initialize_redis_success(
+        self, connection_manager, mock_redis_client
+    ):
         """Test successful Redis initialization"""
         with patch.object(connection_manager, "redis_client", mock_redis_client):
             await connection_manager.initialize_redis()
@@ -120,7 +122,9 @@ class TestConnectionManagerInitialization:
             mock_redis_client.is_available.assert_called_once()
 
     @pytest.mark.asyncio
-    async def test_initialize_redis_unavailable(self, connection_manager, mock_redis_client):
+    async def test_initialize_redis_unavailable(
+        self, connection_manager, mock_redis_client
+    ):
         """Test Redis initialization when Redis is unavailable"""
         mock_redis_client.is_available.return_value = False
 
@@ -154,8 +158,12 @@ class TestConnectionManagement:
     ):
         """Test connecting a new user"""
         with patch("app.services.websocket_manager.redis_client", mock_redis_client):
-            with patch("app.services.websocket_manager.performance_monitor") as mock_monitor:
-                with patch.object(connection_manager, "_send_backfill", new_callable=AsyncMock):
+            with patch(
+                "app.services.websocket_manager.performance_monitor"
+            ) as mock_monitor:
+                with patch.object(
+                    connection_manager, "_send_backfill", new_callable=AsyncMock
+                ):
                     await connection_manager.connect(mock_websocket, sample_user_id)
 
         mock_websocket.accept.assert_called_once()
@@ -175,7 +183,9 @@ class TestConnectionManagement:
 
         with patch("app.services.websocket_manager.redis_client", mock_redis_client):
             with patch("app.services.websocket_manager.performance_monitor"):
-                with patch.object(connection_manager, "_send_backfill", new_callable=AsyncMock):
+                with patch.object(
+                    connection_manager, "_send_backfill", new_callable=AsyncMock
+                ):
                     await connection_manager.connect(mock_ws1, sample_user_id)
                     await connection_manager.connect(mock_ws2, sample_user_id)
 
@@ -191,17 +201,23 @@ class TestConnectionManagement:
         # First connect
         with patch("app.services.websocket_manager.redis_client", mock_redis_client):
             with patch("app.services.websocket_manager.performance_monitor"):
-                with patch.object(connection_manager, "_send_backfill", new_callable=AsyncMock):
+                with patch.object(
+                    connection_manager, "_send_backfill", new_callable=AsyncMock
+                ):
                     await connection_manager.connect(mock_websocket, sample_user_id)
 
         # Then disconnect
         with patch("app.services.websocket_manager.redis_client", mock_redis_client):
-            with patch("app.services.websocket_manager.performance_monitor") as mock_monitor:
+            with patch(
+                "app.services.websocket_manager.performance_monitor"
+            ) as mock_monitor:
                 await connection_manager.disconnect(mock_websocket, sample_user_id)
 
         assert sample_user_id not in connection_manager.active_connections
         mock_redis_client.remove_websocket_session.assert_called_once()
-        mock_monitor.record_websocket_disconnection.assert_called_once_with(sample_user_id)
+        mock_monitor.record_websocket_disconnection.assert_called_once_with(
+            sample_user_id
+        )
 
     async def test_disconnect_one_of_multiple_connections(
         self, connection_manager, sample_user_id, mock_redis_client
@@ -215,7 +231,9 @@ class TestConnectionManagement:
         # Connect both
         with patch("app.services.websocket_manager.redis_client", mock_redis_client):
             with patch("app.services.websocket_manager.performance_monitor"):
-                with patch.object(connection_manager, "_send_backfill", new_callable=AsyncMock):
+                with patch.object(
+                    connection_manager, "_send_backfill", new_callable=AsyncMock
+                ):
                     await connection_manager.connect(mock_ws1, sample_user_id)
                     await connection_manager.connect(mock_ws2, sample_user_id)
 
@@ -260,7 +278,9 @@ class TestMessageBroadcasting:
         # Should not raise exception
         await connection_manager.send_personal_message(message, sample_user_id)
 
-    async def test_send_personal_message_connection_fails(self, connection_manager, sample_user_id):
+    async def test_send_personal_message_connection_fails(
+        self, connection_manager, sample_user_id
+    ):
         """Test handling failed message send"""
         mock_ws_fail = AsyncMock(spec=WebSocket)
         mock_ws_fail.send_text = AsyncMock(side_effect=Exception("Connection lost"))
@@ -311,7 +331,9 @@ class TestMessageBroadcasting:
         participant_ids = {mock_message_response.sender_id, user2_id}
 
         with patch.object(connection_manager, "redis_client", mock_redis_client):
-            await connection_manager.broadcast_new_message(mock_message_response, participant_ids)
+            await connection_manager.broadcast_new_message(
+                mock_message_response, participant_ids
+            )
 
         # Sender excluded, only user2 receives
         mock_ws2.send_text.assert_called_once()
@@ -319,7 +341,11 @@ class TestMessageBroadcasting:
         # This is a known limitation tested separately
 
     async def test_broadcast_typing_indicator(
-        self, connection_manager, sample_user_id, sample_conversation_id, mock_redis_client
+        self,
+        connection_manager,
+        sample_user_id,
+        sample_conversation_id,
+        mock_redis_client,
     ):
         """Test broadcasting typing indicator"""
         user2_id = uuid.uuid4()

@@ -433,14 +433,19 @@ class TestUserBehaviorTracking:
             moderator.moderate_content("I hate you idiot", user_id=user_id)
 
         # Next violation should be blocked
-        result = moderator.moderate_content("Another harassment message", user_id=user_id)
+        result = moderator.moderate_content(
+            "Another harassment message", user_id=user_id
+        )
         assert result.level == ModerationLevel.BLOCKED
 
     def test_old_violations_cleaned_up(self, moderator):
         """Test violations older than 30 days are removed."""
         user_id = 123
         moderator.user_violations[user_id] = [
-            (datetime.now(timezone.utc) - timedelta(days=35), ModerationCategory.HARASSMENT),
+            (
+                datetime.now(timezone.utc) - timedelta(days=35),
+                ModerationCategory.HARASSMENT,
+            ),
             (datetime.now(timezone.utc) - timedelta(days=5), ModerationCategory.SPAM),
         ]
 
@@ -644,7 +649,10 @@ class TestAISafetyChecks:
         # Override to ensure warning level for test
         with patch.object(moderator, "moderate_content") as mock_moderate:
             mock_moderate.return_value = ModerationResult(
-                level=ModerationLevel.WARNING, categories=[], confidence=0.3, reason="test"
+                level=ModerationLevel.WARNING,
+                categories=[],
+                confidence=0.3,
+                reason="test",
             )
             assert moderator.is_content_safe_for_ai(content) is True
 

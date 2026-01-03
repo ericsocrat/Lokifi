@@ -135,7 +135,9 @@ class TestFollowServiceIntegration:
             await follow_service.follow_user(follower.id, followee.id)
 
         # Test pagination: page 1, page_size 2 (should return 2 of 3 followers)
-        result = await follow_service.get_followers(user_id=followee.id, page=1, page_size=2)
+        result = await follow_service.get_followers(
+            user_id=followee.id, page=1, page_size=2
+        )
 
         # Verify pagination worked correctly
         assert result is not None
@@ -146,14 +148,18 @@ class TestFollowServiceIntegration:
         assert result.has_next is True  # More pages available
 
         # Test page 2 (should return remaining 1 follower)
-        result_page2 = await follow_service.get_followers(user_id=followee.id, page=2, page_size=2)
+        result_page2 = await follow_service.get_followers(
+            user_id=followee.id, page=2, page_size=2
+        )
 
         assert len(result_page2.followers) == 1  # Remaining follower
         assert result_page2.page == 2
         assert result_page2.has_next is False  # No more pages
         assert result_page2.page == 2
 
-    async def test_follow_user_idempotent_with_database(self, follow_service, test_users):
+    async def test_follow_user_idempotent_with_database(
+        self, follow_service, test_users
+    ):
         """
         Test following same user twice returns existing relationship (with database).
 
@@ -197,7 +203,9 @@ class TestFollowServiceIntegration:
         result_after = await integration_db_session.execute(query)
         assert result_after.scalar_one_or_none() is None
 
-    async def test_follow_yourself_fails_with_database(self, follow_service, test_users):
+    async def test_follow_yourself_fails_with_database(
+        self, follow_service, test_users
+    ):
         """Test cannot follow yourself (database constraint)."""
         user = test_users[0]
 
@@ -210,7 +218,9 @@ class TestFollowServiceIntegration:
         assert exc_info.value.status_code == 400
         assert "Cannot follow yourself" in exc_info.value.detail
 
-    async def test_follow_nonexistent_user_fails_with_database(self, follow_service, test_users):
+    async def test_follow_nonexistent_user_fails_with_database(
+        self, follow_service, test_users
+    ):
         """Test following non-existent user fails (database foreign key)."""
         follower = test_users[0]
         nonexistent_id = uuid.uuid4()

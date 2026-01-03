@@ -273,7 +273,8 @@ class TestSystemPerformanceMetrics:
         analytics.performance_counters["errors"] = 2
 
         with patch(
-            "app.services.notification_analytics.redis_client.is_available", return_value=True
+            "app.services.notification_analytics.redis_client.is_available",
+            return_value=True,
         ):
             metrics = await analytics.get_system_performance_metrics()
 
@@ -286,7 +287,8 @@ class TestSystemPerformanceMetrics:
     async def test_system_performance_empty_timing_data(self, analytics):
         """Test system performance with no timing data."""
         with patch(
-            "app.services.notification_analytics.redis_client.is_available", return_value=False
+            "app.services.notification_analytics.redis_client.is_available",
+            return_value=False,
         ):
             metrics = await analytics.get_system_performance_metrics()
 
@@ -297,7 +299,8 @@ class TestSystemPerformanceMetrics:
     async def test_system_performance_redis_unavailable(self, analytics):
         """Test system performance when Redis unavailable."""
         with patch(
-            "app.services.notification_analytics.redis_client.is_available", return_value=False
+            "app.services.notification_analytics.redis_client.is_available",
+            return_value=False,
         ):
             metrics = await analytics.get_system_performance_metrics()
 
@@ -334,7 +337,11 @@ class TestHealthScoreCalculation:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={"delivery_rate": 95.0, "read_rate": 80.0, "engagement_rate": 50.0},
+                return_value={
+                    "delivery_rate": 95.0,
+                    "read_rate": 80.0,
+                    "engagement_rate": 50.0,
+                },
             ),
             patch.object(
                 analytics,
@@ -342,7 +349,8 @@ class TestHealthScoreCalculation:
                 return_value=SystemPerformanceMetrics(error_rate=1.0),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=True
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=True,
             ),
         ):
             score = await analytics.calculate_system_health_score()
@@ -357,7 +365,11 @@ class TestHealthScoreCalculation:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={"delivery_rate": 100.0, "read_rate": 100.0, "engagement_rate": 100.0},
+                return_value={
+                    "delivery_rate": 100.0,
+                    "read_rate": 100.0,
+                    "engagement_rate": 100.0,
+                },
             ),
             patch.object(
                 analytics,
@@ -365,7 +377,8 @@ class TestHealthScoreCalculation:
                 return_value=SystemPerformanceMetrics(error_rate=0.0),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=True
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=True,
             ),
         ):
             score = await analytics.calculate_system_health_score()
@@ -380,7 +393,11 @@ class TestHealthScoreCalculation:
             patch.object(
                 analytics,
                 "get_comprehensive_metrics",
-                return_value={"delivery_rate": 95.0, "read_rate": 80.0, "engagement_rate": 50.0},
+                return_value={
+                    "delivery_rate": 95.0,
+                    "read_rate": 80.0,
+                    "engagement_rate": 50.0,
+                },
             ),
             patch.object(
                 analytics,
@@ -388,7 +405,8 @@ class TestHealthScoreCalculation:
                 return_value=SystemPerformanceMetrics(error_rate=1.0),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=False
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=False,
             ),
         ):
             score = await analytics.calculate_system_health_score()
@@ -401,7 +419,9 @@ class TestHealthScoreCalculation:
         """Test health score error handling."""
         # Simulate exception
         with patch.object(
-            analytics, "get_comprehensive_metrics", side_effect=Exception("Database error")
+            analytics,
+            "get_comprehensive_metrics",
+            side_effect=Exception("Database error"),
         ):
             score = await analytics.calculate_system_health_score()
 
@@ -423,13 +443,18 @@ class TestGetDashboardData:
         with (
             patch.object(analytics, "get_comprehensive_metrics", return_value={}),
             patch.object(
-                analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()
+                analytics,
+                "get_user_engagement_metrics",
+                return_value=UserEngagementMetrics(),
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=True
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=True,
             ),
             patch.object(analytics, "calculate_system_health_score", return_value=85.5),
         ):
@@ -450,13 +475,18 @@ class TestGetDashboardData:
         with (
             patch.object(analytics, "get_comprehensive_metrics", return_value={}),
             patch.object(
-                analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()
+                analytics,
+                "get_user_engagement_metrics",
+                return_value=UserEngagementMetrics(),
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=True
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=True,
             ),
             patch.object(analytics, "calculate_system_health_score", return_value=85.5),
         ):
@@ -469,7 +499,9 @@ class TestGetDashboardData:
         """Test dashboard data error handling."""
         # Simulate exception
         with patch.object(
-            analytics, "get_comprehensive_metrics", side_effect=Exception("Database error")
+            analytics,
+            "get_comprehensive_metrics",
+            side_effect=Exception("Database error"),
         ):
             data = await analytics.get_dashboard_data()
 
@@ -483,13 +515,18 @@ class TestGetDashboardData:
         with (
             patch.object(analytics, "get_comprehensive_metrics", return_value={}),
             patch.object(
-                analytics, "get_user_engagement_metrics", return_value=UserEngagementMetrics()
+                analytics,
+                "get_user_engagement_metrics",
+                return_value=UserEngagementMetrics(),
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=False
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=False,
             ),
             patch.object(analytics, "calculate_system_health_score", return_value=75.0),
         ):
@@ -528,14 +565,21 @@ class TestConcurrentMetricsCollection:
 
         with (
             patch.object(
-                analytics, "get_comprehensive_metrics", side_effect=mock_comprehensive_metrics
+                analytics,
+                "get_comprehensive_metrics",
+                side_effect=mock_comprehensive_metrics,
             ),
-            patch.object(analytics, "get_user_engagement_metrics", side_effect=mock_user_metrics),
             patch.object(
-                analytics, "get_system_performance_metrics", side_effect=mock_system_metrics
+                analytics, "get_user_engagement_metrics", side_effect=mock_user_metrics
+            ),
+            patch.object(
+                analytics,
+                "get_system_performance_metrics",
+                side_effect=mock_system_metrics,
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=True
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=True,
             ),
             patch.object(analytics, "calculate_system_health_score", return_value=85.0),
         ):
@@ -593,10 +637,13 @@ class TestEdgeCasesAndErrorHandling:
                 },
             ),
             patch.object(
-                analytics, "get_system_performance_metrics", return_value=SystemPerformanceMetrics()
+                analytics,
+                "get_system_performance_metrics",
+                return_value=SystemPerformanceMetrics(),
             ),
             patch(
-                "app.services.notification_analytics.redis_client.is_available", return_value=True
+                "app.services.notification_analytics.redis_client.is_available",
+                return_value=True,
             ),
         ):
             score = await analytics.calculate_system_health_score()
@@ -721,11 +768,11 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good"
-            if overall_score >= 75
-            else "fair"
-            if overall_score >= 50
-            else "poor"
+            else (
+                "good"
+                if overall_score >= 75
+                else "fair" if overall_score >= 50 else "poor"
+            )
         )
         assert status == "excellent"
 
@@ -735,11 +782,11 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good"
-            if overall_score >= 75
-            else "fair"
-            if overall_score >= 50
-            else "poor"
+            else (
+                "good"
+                if overall_score >= 75
+                else "fair" if overall_score >= 50 else "poor"
+            )
         )
         assert status == "good"
 
@@ -749,11 +796,11 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good"
-            if overall_score >= 75
-            else "fair"
-            if overall_score >= 50
-            else "poor"
+            else (
+                "good"
+                if overall_score >= 75
+                else "fair" if overall_score >= 50 else "poor"
+            )
         )
         assert status == "fair"
 
@@ -763,10 +810,10 @@ class TestHealthScoreBreakdown:
         status = (
             "excellent"
             if overall_score >= 90
-            else "good"
-            if overall_score >= 75
-            else "fair"
-            if overall_score >= 50
-            else "poor"
+            else (
+                "good"
+                if overall_score >= 75
+                else "fair" if overall_score >= 50 else "poor"
+            )
         )
         assert status == "poor"

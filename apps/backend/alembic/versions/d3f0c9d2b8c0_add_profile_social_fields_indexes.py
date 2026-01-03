@@ -26,15 +26,20 @@ def upgrade() -> None:
             sa.Column("is_public", sa.Boolean(), server_default="true", nullable=False)
         )
         batch_op.add_column(
-            sa.Column("follower_count", sa.Integer(), server_default="0", nullable=False)
+            sa.Column(
+                "follower_count", sa.Integer(), server_default="0", nullable=False
+            )
         )
         batch_op.add_column(
-            sa.Column("following_count", sa.Integer(), server_default="0", nullable=False)
+            sa.Column(
+                "following_count", sa.Integer(), server_default="0", nullable=False
+            )
         )
 
     # Backfill counts (safe no-op initially)
     # Backfill follower_count (number of users following this user)
-    op.execute("""
+    op.execute(
+        """
         UPDATE profiles p SET follower_count = sub.fcount
         FROM (
             SELECT followee_id AS user_id, COUNT(*)::int AS fcount
@@ -42,10 +47,12 @@ def upgrade() -> None:
             GROUP BY followee_id
         ) sub
         WHERE p.user_id = sub.user_id;
-    """)
+    """
+    )
 
     # Backfill following_count (number of users this user follows)
-    op.execute("""
+    op.execute(
+        """
         UPDATE profiles p SET following_count = sub.fcount
         FROM (
             SELECT follower_id AS user_id, COUNT(*)::int AS fcount
@@ -53,7 +60,8 @@ def upgrade() -> None:
             GROUP BY follower_id
         ) sub
         WHERE p.user_id = sub.user_id;
-    """)
+    """
+    )
 
     # Indexes on follows
     op.create_index("ix_follows_follower_id", "follows", ["follower_id"])

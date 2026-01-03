@@ -121,12 +121,16 @@ class RedisClient:
 
         try:
             await self.client.setex(
-                f"notification:{notification_id}", ttl, json.dumps(notification_data, default=str)
+                f"notification:{notification_id}",
+                ttl,
+                json.dumps(notification_data, default=str),
             )
         except RedisError as e:
             logger.warning(f"Failed to cache notification {notification_id}: {e}")
 
-    async def get_cached_notification(self, notification_id: str) -> dict[str, Any] | None:
+    async def get_cached_notification(
+        self, notification_id: str
+    ) -> dict[str, Any] | None:
         """Get cached notification data"""
         if not await self.is_available() or not self.client:
             return None
@@ -141,7 +145,9 @@ class RedisClient:
             logger.warning(f"Failed to get cached notification {notification_id}: {e}")
             return None
 
-    async def cache_unread_count(self, user_id: str, count: int, ttl: int = 300) -> None:
+    async def cache_unread_count(
+        self, user_id: str, count: int, ttl: int = 300
+    ) -> None:
         """Cache user's unread notification count"""
         if not await self.is_available() or not self.client:
             return
@@ -159,7 +165,9 @@ class RedisClient:
         try:
             count = await self.client.get(f"unread_count:{user_id}")
             if count:
-                decoded_count = count.decode("utf-8") if isinstance(count, bytes) else count
+                decoded_count = (
+                    count.decode("utf-8") if isinstance(count, bytes) else count
+                )
                 return int(decoded_count)
             return None
         except (RedisError, ValueError) as e:
@@ -180,7 +188,9 @@ class RedisClient:
             logger.warning(f"Failed to invalidate cache for {user_id}: {e}")
 
     # Pub/Sub Methods for Real-time Notifications
-    async def publish_notification(self, user_id: str, notification_data: dict[str, Any]) -> None:
+    async def publish_notification(
+        self, user_id: str, notification_data: dict[str, Any]
+    ) -> None:
         """Publish notification to user's channel"""
         if not await self.is_available() or not self.client:
             return
@@ -230,7 +240,9 @@ class RedisClient:
 
         try:
             await self.client.hset(
-                f"websocket_sessions:{user_id}", connection_id, json.dumps(metadata, default=str)
+                f"websocket_sessions:{user_id}",
+                connection_id,
+                json.dumps(metadata, default=str),
             )
         except RedisError as e:
             logger.warning(f"Failed to store WebSocket session for {user_id}: {e}")
@@ -277,7 +289,9 @@ class RedisClient:
 
         try:
             await self.client.hset(
-                f"websocket_sessions:{user_id}", session_id, json.dumps(metadata, default=str)
+                f"websocket_sessions:{user_id}",
+                session_id,
+                json.dumps(metadata, default=str),
             )
         except RedisError as e:
             logger.warning(f"Failed to add WebSocket session for {user_id}: {e}")
@@ -290,7 +304,8 @@ class RedisClient:
         try:
             sessions = await self.client.hgetall(f"websocket_sessions:{user_id}")
             return [
-                key.decode("utf-8") if isinstance(key, bytes) else key for key in sessions.keys()
+                key.decode("utf-8") if isinstance(key, bytes) else key
+                for key in sessions.keys()
             ]
         except RedisError as e:
             logger.warning(f"Failed to get WebSocket sessions for {user_id}: {e}")

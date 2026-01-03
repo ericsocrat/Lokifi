@@ -86,7 +86,9 @@ async def health_check(service: SmartPriceService = Depends(get_price_service)):
 
 @router.get("/all", response_model=UnifiedAssetsResponse)
 async def get_all_assets(
-    limit_per_type: int = Query(default=10, ge=1, le=100, description="Assets per type"),
+    limit_per_type: int = Query(
+        default=10, ge=1, le=100, description="Assets per type"
+    ),
     types: str = Query(
         default="crypto,stocks,indices,forex", description="Comma-separated asset types"
     ),
@@ -140,7 +142,9 @@ async def get_all_assets(
         type_list = [t.strip() for t in types.split(",") if t.strip()]
 
         if not type_list:
-            raise HTTPException(status_code=400, detail="At least one asset type required")
+            raise HTTPException(
+                status_code=400, detail="At least one asset type required"
+            )
 
         # Validate types
         valid_types = {"crypto", "stocks", "indices", "forex"}
@@ -151,7 +155,9 @@ async def get_all_assets(
                 detail=f"Invalid asset types: {invalid_types}. Valid: {valid_types}",
             )
 
-        logger.info(f"🌐 Fetching unified assets: {type_list} (limit: {limit_per_type})")
+        logger.info(
+            f"🌐 Fetching unified assets: {type_list} (limit: {limit_per_type})"
+        )
 
         # Check if data is cached
         from app.core.advanced_redis_client import advanced_redis_client
@@ -173,7 +179,9 @@ async def get_all_assets(
         if not is_cached:
             # Use the unified service to fetch all types
             data = await service.get_all_assets(
-                limit_per_type=limit_per_type, types=type_list, force_refresh=force_refresh
+                limit_per_type=limit_per_type,
+                types=type_list,
+                force_refresh=force_refresh,
             )
 
             # Cache the result for 30 seconds
@@ -217,9 +225,13 @@ async def get_price(
     service: SmartPriceService = Depends(get_price_service),
 ):
     try:
-        price_data = await service.get_price(symbol.upper(), force_refresh=force_refresh)
+        price_data = await service.get_price(
+            symbol.upper(), force_refresh=force_refresh
+        )
         if not price_data:
-            raise HTTPException(status_code=404, detail=f"Price not available for {symbol}")
+            raise HTTPException(
+                status_code=404, detail=f"Price not available for {symbol}"
+            )
         return PriceResponse(
             symbol=price_data.symbol,
             price=price_data.price,
@@ -247,7 +259,9 @@ async def get_batch_prices(
 ):
     try:
         symbols = [s.upper() for s in request.symbols]
-        price_data_dict = await service.get_batch_prices(symbols, force_refresh=force_refresh)
+        price_data_dict = await service.get_batch_prices(
+            symbols, force_refresh=force_refresh
+        )
         data, failed, cache_hits, api_calls = {}, [], 0, 0
         for symbol in symbols:
             if symbol in price_data_dict:
@@ -420,7 +434,9 @@ async def get_ohlcv_data(
         ohlcv = await service.get_ohlcv(symbol.upper(), period, force_refresh)
 
         if not ohlcv:
-            raise HTTPException(status_code=404, detail=f"OHLCV data not available for {symbol}")
+            raise HTTPException(
+                status_code=404, detail=f"OHLCV data not available for {symbol}"
+            )
 
         return OHLCVResponse(
             symbol=symbol.upper(),
@@ -464,7 +480,9 @@ class CryptoSearchResponse(BaseModel):
 
 @router.get("/crypto/top", response_model=CryptoListResponse)
 async def get_top_cryptocurrencies(
-    limit: int = Query(default=100, ge=1, le=300, description="Number of cryptos to return"),
+    limit: int = Query(
+        default=100, ge=1, le=300, description="Number of cryptos to return"
+    ),
     force_refresh: bool = Query(default=False, description="Force refresh from API"),
     service: CryptoDiscoveryService = Depends(get_crypto_service),
 ):
@@ -484,10 +502,14 @@ async def get_top_cryptocurrencies(
     - Getting current market overview
     """
     try:
-        cryptos = await service.get_top_cryptos(limit=limit, force_refresh=force_refresh)
+        cryptos = await service.get_top_cryptos(
+            limit=limit, force_refresh=force_refresh
+        )
 
         return CryptoListResponse(
-            success=True, count=len(cryptos), cryptos=[crypto.to_dict() for crypto in cryptos]
+            success=True,
+            count=len(cryptos),
+            cryptos=[crypto.to_dict() for crypto in cryptos],
         )
     except Exception as e:
         logger.error(f"Error fetching top cryptos: {e}")
@@ -525,7 +547,9 @@ async def search_cryptocurrencies(
 
 
 @router.get("/crypto/mapping", response_model=dict[str, str])
-async def get_crypto_symbol_mapping(service: CryptoDiscoveryService = Depends(get_crypto_service)):
+async def get_crypto_symbol_mapping(
+    service: CryptoDiscoveryService = Depends(get_crypto_service),
+):
     """
     Get symbol → CoinGecko ID mapping
 

@@ -175,7 +175,9 @@ class TestGetProfileMethods:
         mock_db.execute.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_get_profile_by_user_id_not_found(self, service, mock_db, sample_user_id):
+    async def test_get_profile_by_user_id_not_found(
+        self, service, mock_db, sample_user_id
+    ):
         """Test getting profile by user ID when profile doesn't exist."""
         # Mock database query
         mock_result = MagicMock()
@@ -190,7 +192,9 @@ class TestGetProfileMethods:
         mock_db.execute.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_get_profile_by_username_found(self, service, mock_db, sample_profile):
+    async def test_get_profile_by_username_found(
+        self, service, mock_db, sample_profile
+    ):
         """Test getting profile by username when profile exists."""
         # Mock database query
         mock_result = MagicMock()
@@ -229,7 +233,9 @@ class TestUpdateProfile:
     """Test profile update functionality."""
 
     @pytest.mark.asyncio
-    async def test_update_profile_success(self, service, mock_db, sample_user_id, sample_profile):
+    async def test_update_profile_success(
+        self, service, mock_db, sample_user_id, sample_profile
+    ):
         """Test successful profile update."""
         # Setup update data
         update_request = ProfileUpdateRequest(bio="New bio", display_name="New Name")
@@ -280,8 +286,12 @@ class TestUpdateProfile:
         existing_profile.username = "existinguser"
 
         # Mock get_profile_by_user_id and get_profile_by_username
-        with patch.object(service, "get_profile_by_user_id", return_value=sample_profile):
-            with patch.object(service, "get_profile_by_username", return_value=existing_profile):
+        with patch.object(
+            service, "get_profile_by_user_id", return_value=sample_profile
+        ):
+            with patch.object(
+                service, "get_profile_by_username", return_value=existing_profile
+            ):
                 # Execute and verify exception
                 with pytest.raises(HTTPException) as exc_info:
                     await service.update_profile(sample_user_id, update_request)
@@ -295,7 +305,9 @@ class TestUpdateProfile:
     ):
         """Test update profile with same username (no conflict)."""
         # Setup - update with same username
-        update_request = ProfileUpdateRequest(username=sample_profile.username, bio="New bio")
+        update_request = ProfileUpdateRequest(
+            username=sample_profile.username, bio="New bio"
+        )
 
         # Mock get_profile_by_user_id
         with patch.object(
@@ -322,7 +334,9 @@ class TestUpdateProfile:
         update_request = ProfileUpdateRequest(bio="Updated bio only")
 
         # Mock get_profile_by_user_id
-        with patch.object(service, "get_profile_by_user_id", return_value=sample_profile):
+        with patch.object(
+            service, "get_profile_by_user_id", return_value=sample_profile
+        ):
             mock_db.execute = AsyncMock()
             mock_db.commit = AsyncMock()
             mock_db.refresh = AsyncMock()
@@ -343,7 +357,9 @@ class TestUpdateProfile:
         update_request = ProfileUpdateRequest()
 
         # Mock get_profile_by_user_id
-        with patch.object(service, "get_profile_by_user_id", return_value=sample_profile):
+        with patch.object(
+            service, "get_profile_by_user_id", return_value=sample_profile
+        ):
             mock_db.execute = AsyncMock()
             mock_db.commit = AsyncMock()
             mock_db.refresh = AsyncMock()
@@ -390,7 +406,9 @@ class TestUpdateUserSettings:
         mock_db.refresh.assert_awaited_once_with(sample_user)
 
     @pytest.mark.asyncio
-    async def test_update_user_settings_not_found(self, service, mock_db, sample_user_id):
+    async def test_update_user_settings_not_found(
+        self, service, mock_db, sample_user_id
+    ):
         """Test update user settings when user doesn't exist."""
         # Setup
         settings_request = UserSettingsUpdateRequest(full_name="Test")
@@ -514,7 +532,9 @@ class TestNotificationPreferences:
         mock_db.refresh = AsyncMock()
 
         # Execute
-        result = await service.update_notification_preferences(sample_user_id, prefs_request)
+        result = await service.update_notification_preferences(
+            sample_user_id, prefs_request
+        )
 
         # Verify
         assert isinstance(result, NotificationPreferencesResponse)
@@ -539,7 +559,9 @@ class TestNotificationPreferences:
         mock_db.flush = AsyncMock()
 
         # Execute
-        result = await service.update_notification_preferences(sample_user_id, prefs_request)
+        result = await service.update_notification_preferences(
+            sample_user_id, prefs_request
+        )
 
         # Verify - should create new preferences
         assert isinstance(result, NotificationPreferencesResponse)
@@ -568,7 +590,9 @@ class TestPublicProfile:
         mock_follow_result = MagicMock()
         mock_follow_result.scalar_one_or_none.return_value = None  # Not following
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profile_result, mock_follow_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profile_result, mock_follow_result]
+        )
 
         # Execute
         result = await service.get_public_profile(sample_profile_id, sample_user_id)
@@ -580,7 +604,9 @@ class TestPublicProfile:
         assert mock_db.execute.await_count == 2
 
     @pytest.mark.asyncio
-    async def test_get_public_profile_not_found(self, service, mock_db, sample_profile_id):
+    async def test_get_public_profile_not_found(
+        self, service, mock_db, sample_profile_id
+    ):
         """Test getting public profile when profile doesn't exist."""
         # Mock database query
         mock_result = MagicMock()
@@ -637,7 +663,13 @@ class TestPublicProfile:
 
     @pytest.mark.asyncio
     async def test_get_public_profile_is_following(
-        self, service, mock_db, sample_profile_id, sample_user_id, sample_profile, sample_follow
+        self,
+        service,
+        mock_db,
+        sample_profile_id,
+        sample_user_id,
+        sample_profile,
+        sample_follow,
     ):
         """Test public profile shows is_following status."""
         # Mock database queries
@@ -645,9 +677,13 @@ class TestPublicProfile:
         mock_profile_result.scalar_one_or_none.return_value = sample_profile
 
         mock_follow_result = MagicMock()
-        mock_follow_result.scalar_one_or_none.return_value = sample_follow  # Is following
+        mock_follow_result.scalar_one_or_none.return_value = (
+            sample_follow  # Is following
+        )
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profile_result, mock_follow_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profile_result, mock_follow_result]
+        )
 
         # Execute
         result = await service.get_public_profile(sample_profile_id, sample_user_id)
@@ -666,7 +702,9 @@ class TestPublicProfile:
         mock_db.execute = AsyncMock(return_value=mock_result)
 
         # Execute - no current_user_id
-        result = await service.get_public_profile(sample_profile_id, current_user_id=None)
+        result = await service.get_public_profile(
+            sample_profile_id, current_user_id=None
+        )
 
         # Verify
         assert isinstance(result, PublicProfileResponse)
@@ -683,7 +721,9 @@ class TestSearchProfiles:
     """Test profile search functionality."""
 
     @pytest.mark.asyncio
-    async def test_search_profiles_success(self, service, mock_db, sample_profile, sample_user_id):
+    async def test_search_profiles_success(
+        self, service, mock_db, sample_profile, sample_user_id
+    ):
         """Test successful profile search."""
         # Mock database queries
         mock_profiles_result = MagicMock()
@@ -692,7 +732,9 @@ class TestSearchProfiles:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 1
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute
         result = await service.search_profiles("john", current_user_id=sample_user_id)
@@ -714,7 +756,9 @@ class TestSearchProfiles:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 0
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute
         result = await service.search_profiles("nonexistent")
@@ -734,7 +778,9 @@ class TestSearchProfiles:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 50  # Total 50 results
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute - page 2, page_size 10
         result = await service.search_profiles("john", page=2, page_size=10)
@@ -746,7 +792,9 @@ class TestSearchProfiles:
         assert result.has_next is True  # (2-1)*10 + 10 = 20 < 50
 
     @pytest.mark.asyncio
-    async def test_search_profiles_no_pagination(self, service, mock_db, sample_profile):
+    async def test_search_profiles_no_pagination(
+        self, service, mock_db, sample_profile
+    ):
         """Test profile search last page (no next page)."""
         # Mock database queries
         mock_profiles_result = MagicMock()
@@ -755,7 +803,9 @@ class TestSearchProfiles:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 15
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute - page 2, page_size 20 (offset 20 >= total 15)
         result = await service.search_profiles("john", page=2, page_size=20)
@@ -766,13 +816,20 @@ class TestSearchProfiles:
     @pytest.mark.asyncio
     @patch("app.services.profile_enhanced.FollowService")
     async def test_search_profiles_with_follow_status(
-        self, mock_follow_service_class, service, mock_db, sample_profile, sample_user_id
+        self,
+        mock_follow_service_class,
+        service,
+        mock_db,
+        sample_profile,
+        sample_user_id,
     ):
         """Test profile search includes follow status when user authenticated."""
         # Mock FollowService
         mock_follow_service = MagicMock()
         mock_follow_service.batch_follow_status = AsyncMock(
-            return_value={sample_profile.user_id: {"is_following": True, "is_follower": False}}
+            return_value={
+                sample_profile.user_id: {"is_following": True, "is_follower": False}
+            }
         )
         mock_follow_service_class.return_value = mock_follow_service
 
@@ -783,7 +840,9 @@ class TestSearchProfiles:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 1
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute
         result = await service.search_profiles("john", current_user_id=sample_user_id)
@@ -793,7 +852,9 @@ class TestSearchProfiles:
         mock_follow_service.batch_follow_status.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_search_profiles_anonymous_user(self, service, mock_db, sample_profile):
+    async def test_search_profiles_anonymous_user(
+        self, service, mock_db, sample_profile
+    ):
         """Test profile search as anonymous user (no follow status)."""
         # Mock database queries
         mock_profiles_result = MagicMock()
@@ -802,7 +863,9 @@ class TestSearchProfiles:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 1
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute - no current_user_id
         result = await service.search_profiles("john", current_user_id=None)
@@ -830,11 +893,15 @@ class TestDeleteUserAccount:
         await service.delete_user_account(sample_user_id)
 
         # Verify - should execute 4 delete statements
-        assert mock_db.execute.await_count == 4  # NotificationPreference, Follow, Profile, User
+        assert (
+            mock_db.execute.await_count == 4
+        )  # NotificationPreference, Follow, Profile, User
         mock_db.commit.assert_awaited_once()
 
     @pytest.mark.asyncio
-    async def test_delete_user_account_rollback_on_error(self, service, mock_db, sample_user_id):
+    async def test_delete_user_account_rollback_on_error(
+        self, service, mock_db, sample_user_id
+    ):
         """Test user account deletion rolls back on error."""
         # Mock database to raise exception
         mock_db.execute = AsyncMock(side_effect=Exception("Database error"))
@@ -912,7 +979,9 @@ class TestExportUserData:
         assert result["stats"]["following_count"] == 1
 
     @pytest.mark.asyncio
-    async def test_export_user_data_user_not_found(self, service, mock_db, sample_user_id):
+    async def test_export_user_data_user_not_found(
+        self, service, mock_db, sample_user_id
+    ):
         """Test user data export when user doesn't exist."""
         # Mock database query to return None
         mock_result = MagicMock()
@@ -927,7 +996,9 @@ class TestExportUserData:
         assert "User not found" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_export_user_data_minimal(self, service, mock_db, sample_user_id, sample_user):
+    async def test_export_user_data_minimal(
+        self, service, mock_db, sample_user_id, sample_user
+    ):
         """Test user data export with minimal data (no profile, prefs, follows)."""
         # Mock database queries
         mock_user_result = MagicMock()
@@ -991,7 +1062,11 @@ class TestProfileActivityStats:
         mock_following_result.scalar.return_value = 50
 
         mock_db.execute = AsyncMock(
-            side_effect=[mock_profile_result, mock_followers_result, mock_following_result]
+            side_effect=[
+                mock_profile_result,
+                mock_followers_result,
+                mock_following_result,
+            ]
         )
 
         # Execute
@@ -1006,7 +1081,9 @@ class TestProfileActivityStats:
         assert mock_db.execute.await_count == 3
 
     @pytest.mark.asyncio
-    async def test_get_profile_activity_stats_not_found(self, service, mock_db, sample_user_id):
+    async def test_get_profile_activity_stats_not_found(
+        self, service, mock_db, sample_user_id
+    ):
         """Test getting profile activity stats when profile doesn't exist."""
         # Mock database query
         mock_result = MagicMock()
@@ -1036,7 +1113,11 @@ class TestProfileActivityStats:
         mock_following_result.scalar.return_value = None  # Null count
 
         mock_db.execute = AsyncMock(
-            side_effect=[mock_profile_result, mock_followers_result, mock_following_result]
+            side_effect=[
+                mock_profile_result,
+                mock_followers_result,
+                mock_following_result,
+            ]
         )
 
         # Execute
@@ -1192,7 +1273,9 @@ class TestEdgeCases:
         mock_count_result = MagicMock()
         mock_count_result.scalar.return_value = 0
 
-        mock_db.execute = AsyncMock(side_effect=[mock_profiles_result, mock_count_result])
+        mock_db.execute = AsyncMock(
+            side_effect=[mock_profiles_result, mock_count_result]
+        )
 
         # Execute - empty query
         result = await service.search_profiles("")

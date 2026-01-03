@@ -50,7 +50,11 @@ class ForexService:
             {"base": "GBP", "quote": "EUR", "name": "British Pound / Euro"},
             {"base": "GBP", "quote": "JPY", "name": "British Pound / Japanese Yen"},
             {"base": "GBP", "quote": "CHF", "name": "British Pound / Swiss Franc"},
-            {"base": "GBP", "quote": "AUD", "name": "British Pound / Australian Dollar"},
+            {
+                "base": "GBP",
+                "quote": "AUD",
+                "name": "British Pound / Australian Dollar",
+            },
             # Other major pairs
             {"base": "AUD", "quote": "USD", "name": "Australian Dollar / US Dollar"},
             {"base": "NZD", "quote": "USD", "name": "New Zealand Dollar / US Dollar"},
@@ -72,12 +76,20 @@ class ForexService:
             {"base": "EUR", "quote": "CAD", "name": "Euro / Canadian Dollar"},
             {"base": "EUR", "quote": "NZD", "name": "Euro / New Zealand Dollar"},
             {"base": "GBP", "quote": "CAD", "name": "British Pound / Canadian Dollar"},
-            {"base": "GBP", "quote": "NZD", "name": "British Pound / New Zealand Dollar"},
+            {
+                "base": "GBP",
+                "quote": "NZD",
+                "name": "British Pound / New Zealand Dollar",
+            },
             {"base": "AUD", "quote": "JPY", "name": "Australian Dollar / Japanese Yen"},
             # Additional pairs
             {"base": "CHF", "quote": "JPY", "name": "Swiss Franc / Japanese Yen"},
             {"base": "CAD", "quote": "JPY", "name": "Canadian Dollar / Japanese Yen"},
-            {"base": "NZD", "quote": "JPY", "name": "New Zealand Dollar / Japanese Yen"},
+            {
+                "base": "NZD",
+                "quote": "JPY",
+                "name": "New Zealand Dollar / Japanese Yen",
+            },
             {"base": "EUR", "quote": "NOK", "name": "Euro / Norwegian Krone"},
             {"base": "EUR", "quote": "SEK", "name": "Euro / Swedish Krona"},
             {"base": "GBP", "quote": "SEK", "name": "British Pound / Swedish Krona"},
@@ -126,7 +138,9 @@ class ForexService:
                         if pair_data:
                             forex_pairs.append(pair_data)
                     except Exception as e:
-                        logger.error(f"Error fetching pair {pair['base']}/{pair['quote']}: {e}")
+                        logger.error(
+                            f"Error fetching pair {pair['base']}/{pair['quote']}: {e}"
+                        )
                         continue
 
             # Cache the results with JSON serialization for type safety
@@ -134,8 +148,12 @@ class ForexService:
                 try:
                     # Pattern: JSON serialization for Redis (list[dict] → str)
                     forex_json = json.dumps(forex_pairs)
-                    await self.redis_client.set(cache_key, forex_json, ttl=self.cache_ttl)
-                    logger.info(f"Cached {len(forex_pairs)} forex pairs for {self.cache_ttl}s")
+                    await self.redis_client.set(
+                        cache_key, forex_json, ttl=self.cache_ttl
+                    )
+                    logger.info(
+                        f"Cached {len(forex_pairs)} forex pairs for {self.cache_ttl}s"
+                    )
                 except Exception as e:
                     logger.warning(f"Redis cache write failed: {e}")
 
@@ -148,7 +166,9 @@ class ForexService:
             logger.error(f"Error in get_forex_pairs: {e}")
             return []
 
-    async def _fetch_forex_rate(self, client: httpx.AsyncClient, pair: dict) -> dict | None:
+    async def _fetch_forex_rate(
+        self, client: httpx.AsyncClient, pair: dict
+    ) -> dict | None:
         """
         Fetch a single forex rate from ExchangeRate-API
 
@@ -222,5 +242,7 @@ class ForexService:
             logger.error(f"HTTP error fetching {pair['base']}/{pair['quote']}: {e}")
             return None
         except Exception as e:
-            logger.error(f"Error parsing forex data for {pair['base']}/{pair['quote']}: {e}")
+            logger.error(
+                f"Error parsing forex data for {pair['base']}/{pair['quote']}: {e}"
+            )
             return None

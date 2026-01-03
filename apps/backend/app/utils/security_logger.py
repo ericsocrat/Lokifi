@@ -31,7 +31,9 @@ file_handler.setLevel(logging.INFO)
 class SecurityJSONFormatter(logging.Formatter):
     def format(self, record):
         log_entry = {
-            "timestamp": datetime.fromtimestamp(record.created, timezone.utc).isoformat(),
+            "timestamp": datetime.fromtimestamp(
+                record.created, timezone.utc
+            ).isoformat(),
             "level": record.levelname,
             "event_type": getattr(record, "event_type", "unknown"),
             "message": record.getMessage(),
@@ -214,7 +216,9 @@ class SecurityMonitor:
                         severity=SecuritySeverity.HIGH,
                         message=f"Brute force attempt detected from {client_ip}",
                         client_ip=client_ip,
-                        additional_data={"failed_attempts": len(self.failed_attempts[client_ip])},
+                        additional_data={
+                            "failed_attempts": len(self.failed_attempts[client_ip])
+                        },
                     )
                 )
             )
@@ -245,7 +249,9 @@ class SecurityMonitor:
                         message=f"Potential data breach attempt from {client_ip}",
                         client_ip=client_ip,
                         additional_data={
-                            "rate_violations": len(self.rate_limit_violations[client_ip])
+                            "rate_violations": len(
+                                self.rate_limit_violations[client_ip]
+                            )
                         },
                     )
                 )
@@ -323,7 +329,9 @@ security_monitor = SecurityMonitor()
 
 
 # Convenience functions for common security events
-async def log_auth_failure(client_ip: str, user_id: str | None = None, endpoint: str | None = None):
+async def log_auth_failure(
+    client_ip: str, user_id: str | None = None, endpoint: str | None = None
+):
     """Log authentication failure"""
     await security_monitor.log_security_event(
         SecurityEvent(
@@ -400,7 +408,9 @@ async def log_input_validation_failure(
     )
 
 
-async def log_unauthorized_access(client_ip: str, endpoint: str, user_id: str | None = None):
+async def log_unauthorized_access(
+    client_ip: str, endpoint: str, user_id: str | None = None
+):
     """Log unauthorized access attempt"""
     await security_monitor.log_security_event(
         SecurityEvent(

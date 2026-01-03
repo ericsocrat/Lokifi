@@ -79,7 +79,9 @@ class AIContextManager:
             provider_messages = []
             for msg in recent_messages:
                 role = MessageRole.USER if msg.role == "user" else MessageRole.ASSISTANT
-                provider_messages.append(AIProviderMessage(role=role, content=msg.content))
+                provider_messages.append(
+                    AIProviderMessage(role=role, content=msg.content)
+                )
 
             # Check if we need to summarize older context
             total_message_count = (
@@ -94,7 +96,9 @@ class AIContextManager:
 
             return provider_messages, context_summary
 
-    async def update_user_preferences(self, user_id: int, preferences: dict[str, Any]) -> None:
+    async def update_user_preferences(
+        self, user_id: int, preferences: dict[str, Any]
+    ) -> None:
         """Update user preferences for AI interactions."""
 
         # Store in cache (in production, store in database)
@@ -121,8 +125,20 @@ class AIContextManager:
             style_indicators = {
                 "formal": ["please", "thank you", "appreciate", "kindly", "would you"],
                 "casual": ["hey", "cool", "awesome", "yeah", "ok", "thanks"],
-                "technical": ["algorithm", "function", "implementation", "optimize", "debug"],
-                "creative": ["imagine", "creative", "brainstorm", "innovative", "design"],
+                "technical": [
+                    "algorithm",
+                    "function",
+                    "implementation",
+                    "optimize",
+                    "debug",
+                ],
+                "creative": [
+                    "imagine",
+                    "creative",
+                    "brainstorm",
+                    "innovative",
+                    "design",
+                ],
             }
 
             style_scores = {}
@@ -175,7 +191,9 @@ class AIContextManager:
 
         try:
             # Use AI to create summary
-            provider = await ai_provider_manager.get_primary_provider()  # Use available method
+            provider = (
+                await ai_provider_manager.get_primary_provider()
+            )  # Use available method
             if provider:
                 summary_prompt = f"""
                 Please create a concise summary of this AI conversation. Focus on:
@@ -206,7 +224,9 @@ class AIContextManager:
                         summary=parsed_summary.get("summary", "Conversation summary"),
                         key_points=parsed_summary.get("key_points", []),
                         user_preferences={},
-                        conversation_tone=parsed_summary.get("conversation_tone", "neutral"),
+                        conversation_tone=parsed_summary.get(
+                            "conversation_tone", "neutral"
+                        ),
                         topic_tags=parsed_summary.get("topic_tags", []),
                         created_at=datetime.now(timezone.utc),
                     )
@@ -298,7 +318,9 @@ class AIContextManager:
 
         return None
 
-    async def get_user_context_across_threads(self, user_id: int, limit: int = 5) -> dict[str, Any]:
+    async def get_user_context_across_threads(
+        self, user_id: int, limit: int = 5
+    ) -> dict[str, Any]:
         """Get context about user across all their conversations."""
 
         with self.session_factory() as db:
@@ -334,7 +356,9 @@ class AIContextManager:
                 ),
                 "total_conversations": len(recent_threads),
                 "context_insights": {
-                    "prefers_detailed": any("technical" in style for style in communication_styles),
+                    "prefers_detailed": any(
+                        "technical" in style for style in communication_styles
+                    ),
                     "casual_communication": "casual" in communication_styles,
                     "active_user": len(recent_threads) > 2,
                 },
