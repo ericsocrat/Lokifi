@@ -409,9 +409,9 @@ class ConversationService:
                 .where(
                     Message.conversation_id == conversation.id,
                     Message.created_at
-                    > select(Message.created_at).where(
-                        Message.id == current_participant[0].last_read_message_id
-                    ),
+                    > select(Message.created_at)
+                    .where(Message.id == current_participant[0].last_read_message_id)
+                    .scalar_subquery(),
                     ~Message.is_deleted,
                 )
             )

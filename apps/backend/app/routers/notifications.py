@@ -115,8 +115,8 @@ class MarkAsReadRequest(BaseModel):
     notification_ids: list[str] | None = None  # If None, marks all as read
 
 
-class TestNotificationRequest(BaseModel):
-    """Request model for creating test notifications"""
+class SampleNotificationRequest(BaseModel):
+    """Request model for creating test/sample notifications"""
 
     type: str = "system_alert"
     title: str = "Test Notification"
@@ -439,7 +439,7 @@ async def update_notification_preferences(
 
 @router.post("/test")
 async def create_test_notification(
-    request: TestNotificationRequest,
+    request: SampleNotificationRequest,
     background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
 ):
