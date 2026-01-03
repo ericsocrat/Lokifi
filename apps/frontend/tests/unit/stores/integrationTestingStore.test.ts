@@ -596,6 +596,9 @@ describe('integrationTestingStore', () => {
     it(
       'should run a test suite and track execution',
       async () => {
+        // Mock Math.random to return < 0.8, ensuring simulated tests pass (threshold is < 0.8)
+        const mockRandom = vi.spyOn(Math, 'random').mockReturnValue(0.5);
+
         const { createTestSuite, addTestCase, runTestSuite } =
           useIntegrationTestingStore.getState();
 
@@ -682,6 +685,9 @@ describe('integrationTestingStore', () => {
         expect(execution?.results).toHaveLength(1);
         expect(suite?.lastExecutionId).toBe(executionId);
         expect(suite?.executionIds).toContain(executionId);
+
+        // Restore Math.random
+        mockRandom.mockRestore();
       },
       { timeout: 15000 }
     );
