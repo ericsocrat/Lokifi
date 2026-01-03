@@ -441,7 +441,11 @@ class TestGetDashboardData:
     async def test_get_dashboard_data_structure(self, analytics):
         """Test dashboard data has correct structure."""
         with (
-            patch.object(analytics, "get_comprehensive_metrics", return_value={}),
+            patch.object(
+                analytics,
+                "get_comprehensive_metrics",
+                return_value=NotificationMetrics(),
+            ),
             patch.object(
                 analytics,
                 "get_user_engagement_metrics",
@@ -473,7 +477,11 @@ class TestGetDashboardData:
     async def test_get_dashboard_data_custom_period(self, analytics):
         """Test dashboard data with custom period."""
         with (
-            patch.object(analytics, "get_comprehensive_metrics", return_value={}),
+            patch.object(
+                analytics,
+                "get_comprehensive_metrics",
+                return_value=NotificationMetrics(),
+            ),
             patch.object(
                 analytics,
                 "get_user_engagement_metrics",
@@ -513,7 +521,11 @@ class TestGetDashboardData:
     async def test_get_dashboard_data_redis_status(self, analytics):
         """Test dashboard includes Redis status."""
         with (
-            patch.object(analytics, "get_comprehensive_metrics", return_value={}),
+            patch.object(
+                analytics,
+                "get_comprehensive_metrics",
+                return_value=NotificationMetrics(),
+            ),
             patch.object(
                 analytics,
                 "get_user_engagement_metrics",

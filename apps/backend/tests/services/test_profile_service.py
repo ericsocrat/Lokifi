@@ -940,6 +940,7 @@ class TestNotificationPreferencesDatabaseInteractions:
             user_id=user_id,
             email_enabled=False,  # Updated value
             push_enabled=True,
+            in_app_enabled=True,
             email_follows=True,
             email_messages=True,
             email_ai_responses=False,
@@ -1002,6 +1003,7 @@ class TestNotificationPreferencesDatabaseInteractions:
             user_id=user_id,
             email_enabled=False,
             push_enabled=False,
+            in_app_enabled=True,
             email_follows=True,
             email_messages=True,
             email_ai_responses=False,
@@ -1064,6 +1066,7 @@ class TestNotificationPreferencesDatabaseInteractions:
             user_id=user_id,
             email_enabled=True,
             push_enabled=True,
+            in_app_enabled=True,
             email_follows=True,
             email_messages=True,
             email_ai_responses=False,
