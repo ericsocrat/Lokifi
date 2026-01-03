@@ -336,24 +336,27 @@ function Invoke-BackendTests {
             $pytestArgs += $Match
         }
 
-        # Verbosity
+        # Verbosity and coverage terminal output
         if ($Quiet) {
             $pytestArgs += '-q'
             $pytestArgs += '--tb=no'
             $pytestArgs += '--no-header'
+            # Quiet: suppress verbose coverage table, just show summary percentage
+            $pytestArgs += '--cov-report='
         } elseif ($Verbose) {
             $pytestArgs += '-vv'
             $pytestArgs += '--tb=long'
+            $pytestArgs += '--cov-report=term-missing'
         } else {
             $pytestArgs += '-v'
             $pytestArgs += '--tb=short'
+            $pytestArgs += '--cov-report=term-missing'
         }
 
-        # Coverage
+        # Additional coverage outputs (if explicitly requested)
         if ($Coverage) {
             $pytestArgs += '--cov=app'
             $pytestArgs += '--cov-report=html'
-            $pytestArgs += '--cov-report=term'
             $pytestArgs += "--cov-report=json:$($Config.BackendTestResults)/backend-coverage.json"
         }
 
@@ -418,8 +421,8 @@ function Invoke-FrontendTests {
             npm install
         }
 
-        # Build test command
-        $testArgs = @('test')
+        # Build test command - need '--' to separate npm args from vitest args
+        $testArgs = @('test', '--')
 
         if (-not $Watch) {
             $testArgs += '--run'
@@ -447,17 +450,21 @@ function Invoke-FrontendTests {
             $testArgs += '--coverage.reporter=json-summary'
         }
 
-        # Verbosity
+        # Verbosity - use dot reporter for quiet mode (minimal output)
         if ($Quiet) {
-            $testArgs += '--reporter=basic'
-            $testArgs += '--hideSkippedTests'
+            $testArgs += '--reporter=dot'
         } elseif ($Verbose) {
             $testArgs += '--reporter=verbose'
         }
 
         Write-TestLog "npm $($testArgs -join ' ')" -Level Info
 
-        npm @testArgs | Out-Host
+        # In Quiet mode, suppress stderr (expected errors from tests)
+        if ($Quiet) {
+            npm @testArgs 2>$null | Out-Host
+        } else {
+            npm @testArgs | Out-Host
+        }
 
         $exitCode = $LASTEXITCODE
 
