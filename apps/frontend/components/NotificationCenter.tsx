@@ -95,11 +95,12 @@ export const NotificationCenter: React.FC<NotificationCenterProps> = ({
       switch (sortBy) {
         case 'oldest':
           return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
           const aPriority = priorityOrder[a.priority as keyof typeof priorityOrder] || 2;
           const bPriority = priorityOrder[b.priority as keyof typeof priorityOrder] || 2;
           return bPriority - aPriority;
+        }
         case 'newest':
         default:
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();

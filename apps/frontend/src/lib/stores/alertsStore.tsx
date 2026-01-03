@@ -627,7 +627,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
               }
               break;
 
-            case 'email':
+            case 'email': {
               // Email would be handled by backend API
               const emailResponse = await fetch('/api/alerts/send-email', {
                 method: 'POST',
@@ -643,6 +643,7 @@ export const useAlertsStore = create<AlertsState & AlertsActions>()(
                 throw new Error('Email sending failed');
               }
               break;
+            }
 
             case 'auto_trade':
               if (FLAGS.paperTrading && action.tradeAction) {

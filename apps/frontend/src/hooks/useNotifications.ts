@@ -331,7 +331,7 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
           const data = JSON.parse(event.data);
 
           switch (data.type) {
-            case 'new_notification':
+            case 'new_notification': {
               const newNotification = data.data;
               setNotifications((prev) => [newNotification, ...prev.slice(0, maxNotifications - 1)]);
               setUnreadCount(data.unread_count || ((prev) => prev + 1));
@@ -346,12 +346,13 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
                 });
               }
               break;
+            }
 
             case 'unread_count_update':
               setUnreadCount(data.data.unread_count);
               break;
 
-            case 'notification_read':
+            case 'notification_read': {
               const readId = data.data.notification_id;
               setNotifications((prev) =>
                 prev.map((n) =>
@@ -359,11 +360,13 @@ export const useNotifications = (options: UseNotificationsOptions = {}): UseNoti
                 )
               );
               break;
+            }
 
-            case 'notification_dismissed':
+            case 'notification_dismissed': {
               const dismissedId = data.data.notification_id;
               setNotifications((prev) => prev.filter((n) => n.id !== dismissedId));
               break;
+            }
 
             case 'keepalive':
               // Respond to keepalive

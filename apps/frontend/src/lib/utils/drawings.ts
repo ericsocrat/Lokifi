@@ -195,10 +195,11 @@ export function updateDrawingGeometry(d: Drawing, p: Point): Drawing {
     case 'group':
       // Groups don't have their own geometry - they contain child drawings
       return d;
-    default:
+    default: {
       // TypeScript exhaustiveness check
       const _exhaustive: never = d;
       return _exhaustive;
+    }
   }
 }
 

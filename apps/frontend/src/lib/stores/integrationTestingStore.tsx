@@ -1592,7 +1592,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             content = JSON.stringify(executions, null, 2);
             mimeType = 'application/json';
             break;
-          case 'csv':
+          case 'csv': {
             const headers = 'ID,Suite,Environment,Status,Duration,Pass Rate';
             const rows = executions
               .map(
@@ -1603,6 +1603,7 @@ export const useIntegrationTestingStore = create<IntegrationTestingStore>()(
             content = `${headers}\n${rows}`;
             mimeType = 'text/csv';
             break;
+          }
           case 'xml':
             content = `<?xml version="1.0"?><executions>${executions
               .map((e) => `<execution id="${e.id}" status="${e.status}"/>`)

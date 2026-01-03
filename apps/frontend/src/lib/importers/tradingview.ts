@@ -40,10 +40,9 @@ function toNumber(v: string | undefined): number | null {
 
 function parseDateToUnixSeconds(s: string): number | null {
   const t = s.trim();
-  // numeric seconds or ms
-  if (/^-?\d+(\.\d+)?$/.test(t)) {
-    const num = Number(t);
-    if (!Number.isFinite(num)) return null;
+  // numeric seconds or ms - use Number.isFinite instead of regex to avoid ReDoS
+  const num = Number(t);
+  if (Number.isFinite(num)) {
     if (num > 1e12) return Math.round(num / 1000); // ms
     if (num > 1e10) return Math.round(num / 1000); // ms-ish
     if (num > 1e9) return Math.round(num); // seconds
@@ -102,7 +101,7 @@ export function parseTradingViewCSV(csv: string): TVImport {
       break;
     }
     // Try to pick up a symbol/timeframe style metadata line
-    if (!symbol && cols.length >= 1 && /[A-Z0-9:_\-\/]+/i.test(cols[0])) symbol = cols[0];
+    if (!symbol && cols.length >= 1 && /[A-Z0-9:_\-/]+/i.test(cols[0])) symbol = cols[0];
     if (
       !timeframe &&
       cols.length >= 2 &&
