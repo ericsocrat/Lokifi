@@ -1,4 +1,10 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get __dirname equivalent in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -13,9 +19,11 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false, // Security: Remove X-Powered-By header
 
-  // Next.js 16: Add turbopack config for monorepo compatibility
+  // Next.js 16: Turbopack config for monorepo - must use absolute path to monorepo root
+  // This resolves "Next.js inferred your workspace root, but it may not be correct" error
+  // Note: outputFileTracingRoot and turbopack.root must have the same value
   turbopack: {
-    root: process.cwd(),
+    root: path.resolve(__dirname, '../..'), // Points to lokifi/ (monorepo root)
   },
 
   // Force ESM handling for lightweight-charts v5 (ESM-only package)
@@ -26,7 +34,8 @@ const nextConfig = {
   },
 
   // Fix for Docker builds - ensure output tracing works correctly
-  outputFileTracingRoot: process.env.DOCKER_BUILD ? undefined : process.cwd(),
+  // Must match turbopack.root for Next.js 16 compatibility
+  outputFileTracingRoot: process.env.DOCKER_BUILD ? undefined : path.resolve(__dirname, '../..'),
   output: 'standalone',
 
   // Security headers
