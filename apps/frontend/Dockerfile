@@ -1,6 +1,8 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
-COPY package.json package-lock.json ./
+# Copy package files (use --ignore-missing to handle monorepo where package-lock is at root)
+COPY package.json ./
+# package-lock.json may not exist in npm workspaces monorepo context
 RUN apk add --no-cache python3 make g++ git
 # Use npm install instead of npm ci to handle package-lock.json discrepancies
 RUN npm install --legacy-peer-deps

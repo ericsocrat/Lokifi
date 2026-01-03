@@ -105,8 +105,8 @@ services:
   # Frontend - Next.js (Using pre-built image from CI)
   frontend:
     build:
-      context: ../../apps/frontend
-      dockerfile: Dockerfile
+      context: ../..
+      dockerfile: apps/frontend/Dockerfile.ci
     image: lokifi-frontend:latest
     container_name: lokifi-frontend-ci
     environment:
