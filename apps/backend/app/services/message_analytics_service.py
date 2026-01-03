@@ -127,8 +127,8 @@ class MessageAnalyticsService:
             int(most_active_hour_row[0]) if most_active_hour_row else None
         )
 
-        # Get username
-        user_stmt = select(User.username).where(User.id == user_id)
+        # Get user display name (using full_name since User model doesn't have username)
+        user_stmt = select(User.full_name).where(User.id == user_id)
         result = await self.db.execute(user_stmt)
         username = result.scalar() or "Unknown"
 
@@ -201,9 +201,9 @@ class MessageAnalyticsService:
         result = await self.db.execute(messages_by_day_stmt)
         messages_by_day = {str(row[0]): row[1] for row in result.all()}
 
-        # Messages by user
+        # Messages by user (using full_name since User model doesn't have username)
         messages_by_user_stmt = (
-            select(User.username, func.count(Message.id).label("message_count"))
+            select(User.full_name, func.count(Message.id).label("message_count"))
             .join(User, Message.sender_id == User.id)
             .where(
                 and_(
@@ -212,7 +212,7 @@ class MessageAnalyticsService:
                     ~Message.is_deleted,
                 )
             )
-            .group_by(User.username)
+            .group_by(User.full_name)
             .order_by(desc("message_count"))
         )
         result = await self.db.execute(messages_by_user_stmt)

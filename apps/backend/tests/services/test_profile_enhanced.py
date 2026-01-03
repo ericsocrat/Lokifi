@@ -130,7 +130,7 @@ def sample_follow(sample_user_id):
     return Follow(
         id=uuid.uuid4(),
         follower_id=sample_user_id,
-        following_id=uuid.uuid4(),
+        followee_id=uuid.uuid4(),
         created_at=datetime(2024, 1, 5, tzinfo=timezone.utc),
     )
 
