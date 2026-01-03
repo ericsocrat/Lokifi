@@ -12,7 +12,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from pydantic import Field
+from pydantic import ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 # Import existing components
@@ -63,10 +63,11 @@ class EnhancedSettings(BaseSettings):
     ENVIRONMENT: str = Field(default="development", description="Environment name")
     DEBUG: bool = Field(default=False, description="Debug mode")
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
-        extra = "ignore"  # Allow extra fields from .env without validation errors
+    model_config = ConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore",  # Allow extra fields from .env without validation errors
+    )
 
 
 # Global settings instance

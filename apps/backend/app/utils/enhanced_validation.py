@@ -11,7 +11,7 @@ from typing import Any, ClassVar
 from urllib.parse import urlparse
 
 import bleach
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from app.core.security_config import security_config
 
@@ -194,13 +194,14 @@ class InputSanitizer:
 class SecureValidationModel(BaseModel):
     """Base Pydantic model with enhanced security validation"""
 
-    class Config:
+    model_config = ConfigDict(
         # Validate all fields on assignment
-        validate_assignment = True
+        validate_assignment=True,
         # Don't allow extra fields
-        extra = "forbid"
+        extra="forbid",
         # Use enum values
-        use_enum_values = True
+        use_enum_values=True,
+    )
 
     @field_validator("*", mode="before")
     @classmethod
