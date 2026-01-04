@@ -193,7 +193,7 @@ describe('DrawingLayer Component', () => {
 
   describe('Snap Functionality', () => {
     it('should apply grid snap when enabled', () => {
-      const snapPxToGrid = vi.spyOn(chartMapModule, 'snapPxToGrid');
+      const _snapPxToGrid = vi.spyOn(chartMapModule, 'snapPxToGrid');
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         drawingSettings: {
@@ -212,7 +212,7 @@ describe('DrawingLayer Component', () => {
     });
 
     it('should apply price level snap when enabled', () => {
-      const snapYToPriceLevels = vi.spyOn(chartMapModule, 'snapYToPriceLevels');
+      const _snapYToPriceLevels = vi.spyOn(chartMapModule, 'snapYToPriceLevels');
       (useChartStore as any).mockReturnValue({
         ...mockStoreState,
         drawingSettings: {
@@ -364,7 +364,7 @@ describe('DrawingLayer Component', () => {
     });
 
     it('should use requestAnimationFrame for smooth rendering', async () => {
-      const rafSpy = vi.spyOn(window, 'requestAnimationFrame');
+      const _rafSpy = vi.spyOn(window, 'requestAnimationFrame');
 
       const { container } = render(<DrawingLayer />);
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;

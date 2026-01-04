@@ -168,7 +168,7 @@ const createMockThread = (symbol: string, overrides = {}) => ({
 
 // Helper to reset store between tests
 const resetStore = () => {
-  const store = useSocialStore.getState();
+  const _store = useSocialStore.getState();
   useSocialStore.setState({
     // User state
     currentUser: null,

@@ -94,7 +94,7 @@ vi.mock('@/services/marketData', () => {
         losers: [mockAssets.get('TSLA')!],
         trending: [mockAssets.get('AAPL')!],
       }),
-      getHistoricalData: (symbol: string, period: string) => [
+      getHistoricalData: (_symbol: string, _period: string) => [
         { timestamp: Date.now() - 86400000 * 2, price: 148.0 },
         { timestamp: Date.now() - 86400000, price: 149.0 },
         { timestamp: Date.now(), price: 150.5 },
@@ -303,7 +303,8 @@ describe('useMarketData Hooks', () => {
     it('updates on market data changes', async () => {
       const { result } = renderHook(() => useMarketStats());
 
-      const initialStats = result.current;
+      // Store initial reference (not used, but confirms setup)
+      const _initialStats = result.current;
 
       act(() => {
         marketData._triggerUpdate();

@@ -83,7 +83,7 @@ test.describe('Visual Regression Tests', () => {
     }
   });
 
-  test('Responsive layout on mobile', async ({ page, viewport }) => {
+  test('Responsive layout on mobile', async ({ page, viewport: _viewport }) => {
     await page.setViewportSize({ width: 375, height: 667 });
     await page.waitForSelector('canvas', { timeout: 10000 });
     await page.waitForTimeout(1000);

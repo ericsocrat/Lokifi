@@ -13,7 +13,7 @@ vi.mock('@/lib/utils/featureFlags', () => ({
 }));
 
 // Helper function to create mock ChartInstance
-function createMockChart(overrides?: Partial<ChartInstance>): ChartInstance {
+function _createMockChart(overrides?: Partial<ChartInstance>): ChartInstance {
   return {
     id: `chart-${Date.now()}`,
     symbol: 'BTCUSDT',

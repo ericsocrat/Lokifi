@@ -65,13 +65,13 @@ export const handlers = [
     let body: any;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch (_error) {
       return HttpResponse.json({ detail: 'Invalid or oversized request body' }, { status: 400 });
     }
 
     const email = body?.email || '';
     const username = body?.username || '';
-    const password = body?.password || '';
+    const _password = body?.password || '';  // Password is validated but not returned in response
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

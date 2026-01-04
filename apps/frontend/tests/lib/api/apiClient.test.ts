@@ -440,11 +440,11 @@ describe('APIClient', () => {
     });
 
     it.skip('aborts previous request when new request starts', async () => {
-      let requestCount = 0;
+      let _requestCount = 0;
 
       server.use(
         http.get(`${API_URL}/api/symbols`, async () => {
-          requestCount++;
+          _requestCount++;
           // Simulate a slow request that can be aborted
           await new Promise((resolve) => setTimeout(resolve, 100));
 

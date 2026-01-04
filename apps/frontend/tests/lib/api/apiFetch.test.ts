@@ -121,10 +121,8 @@ describe('apiFetch', () => {
     });
 
     it('includes credentials for cookie handling', async () => {
-      let requestCredentials: RequestCredentials | undefined;
-
       server.use(
-        http.get(`${API_BASE}/test`, ({ request }) => {
+        http.get(`${API_BASE}/test`, () => {
           // Check if credentials are included
           return HttpResponse.json({ success: true });
         })

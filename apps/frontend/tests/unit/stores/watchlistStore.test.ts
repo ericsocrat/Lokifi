@@ -269,7 +269,7 @@ describe('watchlistStore', () => {
 
     describe('setActiveWatchlist', () => {
       it('should set active watchlist id', () => {
-        const id1 = createTestWatchlist('First');
+        const _id1 = createTestWatchlist('First');
         const id2 = createTestWatchlist('Second');
 
         useWatchlistStore.getState().setActiveWatchlist(id2);

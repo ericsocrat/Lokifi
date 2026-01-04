@@ -639,7 +639,7 @@ describe('drawStore', () => {
       drawStore.undo(); // Back to state before 'exhaustTest'
 
       // Try to undo again - should have no more items for 'exhaustTest'
-      const beforeState = JSON.stringify(drawStore.get());
+      const _beforeState = JSON.stringify(drawStore.get());
       drawStore.undo(); // May undo from previous tests or do nothing
 
       // The key is that repeated undos eventually stop changing state

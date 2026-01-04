@@ -3,7 +3,7 @@ import * as path from 'path';
 import { describe, expect, it } from 'vitest';
 
 // Helper function to parse JSONC (JSON with Comments)
-const parseJsonc = (content: string) => {
+const _parseJsonc = (content: string) => {
   try {
     // For VS Code configuration files, we'll just check if they're syntactically valid
     // by attempting to read them with a more permissive approach
@@ -588,7 +588,7 @@ describe.skip('Documentation Folder Structure', () => {
         const filePath = path.join(DOCS_DIR, file.toString());
         const content = await fs.readFile(filePath, 'utf-8');
 
-        for (const { wrong, correct, message } of terminologyRules) {
+        for (const { wrong, correct: _correct, message } of terminologyRules) {
           const matches = content.match(wrong);
           if (matches) {
             expect(false, `${file}: ${message}. Found: ${matches.join(', ')}`).toBe(true);
