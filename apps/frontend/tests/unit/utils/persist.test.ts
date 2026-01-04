@@ -1,4 +1,5 @@
 import type { PersistSnapshot } from '@/lib/utils/persist';
+import type { Drawing } from '@/lib/utils/drawings';
 import { listVersions, loadCurrent, saveCurrent, saveVersion } from '@/lib/utils/persist';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -77,7 +78,7 @@ describe('Persist Module', () => {
     });
 
     it('converts Set to Array for selection', () => {
-      const drawings: any[] = [];
+      const drawings: Drawing[] = [];
       const selection = new Set(['id1', 'id2', 'id3']);
 
       saveCurrent(drawings, selection);
@@ -88,7 +89,7 @@ describe('Persist Module', () => {
     });
 
     it('handles empty drawings and selection', () => {
-      const drawings: any[] = [];
+      const drawings: Drawing[] = [];
       const selection = new Set<string>();
 
       saveCurrent(drawings, selection);
@@ -218,7 +219,7 @@ describe('Persist Module', () => {
       }));
       localStorageMock.getItem.mockReturnValue(JSON.stringify(existingVersions));
 
-      const drawings: any[] = [];
+      const drawings: Drawing[] = [];
       const selection = new Set<string>();
 
       saveVersion(drawings, selection);
@@ -258,7 +259,7 @@ describe('Persist Module', () => {
     it('handles JSON parsing errors when loading versions', () => {
       localStorageMock.getItem.mockReturnValue('invalid json');
 
-      const drawings: any[] = [];
+      const drawings: Drawing[] = [];
       const selection = new Set<string>();
 
       // Should not throw, fallback to saveCurrent

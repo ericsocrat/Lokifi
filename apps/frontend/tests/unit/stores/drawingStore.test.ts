@@ -1,4 +1,4 @@
-import { useDrawingStore } from '@/lib/stores/drawingStore';
+import { type DrawingObject, useDrawingStore } from '@/lib/stores/drawingStore';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 describe('DrawingStore', () => {
@@ -178,8 +178,8 @@ describe('DrawingStore', () => {
     expect(objects).toHaveLength(2);
     expect(duplicateId).not.toBe(originalId);
 
-    const original = objects.find((obj: any) => obj.id === originalId);
-    const duplicate = objects.find((obj: any) => obj.id === duplicateId);
+    const original = objects.find((obj: DrawingObject) => obj.id === originalId);
+    const duplicate = objects.find((obj: DrawingObject) => obj.id === duplicateId);
 
     expect(duplicate?.type).toBe(original?.type);
     expect(duplicate?.style.text).toBe(original?.style.text);
@@ -206,7 +206,7 @@ describe('DrawingStore', () => {
     moveObject(objectId, 50, -20);
 
     const { objects } = useDrawingStore.getState();
-    const movedObject = objects.find((obj: any) => obj.id === objectId);
+    const movedObject = objects.find((obj: DrawingObject) => obj.id === objectId);
 
     expect(movedObject?.points).toEqual([
       { x: 50, y: 80 },
