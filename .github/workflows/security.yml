@@ -42,7 +42,7 @@ jobs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🎯 Check changed files
         uses: dorny/paths-filter@v3
@@ -86,10 +86,10 @@ jobs:
             build-mode: none
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🔍 Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
@@ -97,7 +97,7 @@ jobs:
           queries: security-extended,security-and-quality
 
       - name: 🔬 Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:${{ matrix.language }}"
 
@@ -114,12 +114,12 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: package-lock.json
 
@@ -184,7 +184,7 @@ jobs:
 
       - name: 📊 Upload npm audit SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: apps/frontend/npm-audit.sarif
           category: npm-audit
@@ -192,7 +192,7 @@ jobs:
 
       - name: 📈 Upload npm audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: npm-audit-report
           path: apps/frontend/npm-audit.json
@@ -213,12 +213,12 @@ jobs:
     timeout-minutes: 8
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.14"
+          python-version: "3.13"
           cache: "pip"
           cache-dependency-path: apps/backend/requirements-dev.txt
 
@@ -288,7 +288,7 @@ jobs:
 
       - name: 📊 Upload pip-audit SARIF
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: apps/backend/pip-audit.sarif
           category: pip-audit
@@ -296,7 +296,7 @@ jobs:
 
       - name: 📈 Upload pip-audit report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: pip-audit-report
           path: apps/backend/pip-audit.json

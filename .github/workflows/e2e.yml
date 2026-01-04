@@ -52,7 +52,7 @@ jobs:
       e2e: ${{ steps.filter.outputs.e2e }}
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🎯 Check changed files
         uses: dorny/paths-filter@v3
@@ -79,7 +79,7 @@ jobs:
     timeout-minutes: 8
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: lokifi
           POSTGRES_PASSWORD: lokifi2025
@@ -92,7 +92,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
         ports:
           - 6379:6379
         options: >-
@@ -105,7 +105,7 @@ jobs:
         working-directory: apps/frontend
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: � Setup E2E environment
         uses: ./.github/actions/setup-e2e
@@ -120,7 +120,7 @@ jobs:
 
       - name: 📊 Upload E2E report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-critical-report
           path: apps/frontend/playwright-report/
@@ -129,7 +129,7 @@ jobs:
 
       - name: 📸 Upload test screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-critical-screenshots
           path: apps/frontend/test-results/
@@ -148,7 +148,7 @@ jobs:
     timeout-minutes: 15
     services:
       postgres:
-        image: postgres:16-alpine
+        image: postgres:18-alpine
         env:
           POSTGRES_USER: lokifi
           POSTGRES_PASSWORD: lokifi2025
@@ -161,7 +161,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       redis:
-        image: redis:7-alpine
+        image: redis:8-alpine
         ports:
           - 6379:6379
         options: >-
@@ -179,7 +179,7 @@ jobs:
         working-directory: apps/frontend
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: � Setup E2E environment
         uses: ./.github/actions/setup-e2e
@@ -194,7 +194,7 @@ jobs:
 
       - name: 📊 Upload E2E report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-full-${{ matrix.browser }}-${{ matrix.shard }}-report
           path: apps/frontend/playwright-report/
@@ -203,7 +203,7 @@ jobs:
 
       - name: 📸 Upload test screenshots
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: e2e-full-${{ matrix.browser }}-${{ matrix.shard }}-screenshots
           path: apps/frontend/test-results/
@@ -225,7 +225,7 @@ jobs:
         working-directory: apps/frontend
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: � Setup E2E environment
         uses: ./.github/actions/setup-e2e
@@ -299,7 +299,7 @@ jobs:
 
       - name: 📊 Upload visual regression report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: visual-regression-report
           path: apps/frontend/playwright-report/
@@ -308,7 +308,7 @@ jobs:
 
       - name: 📸 Upload visual diffs
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: visual-regression-diffs
           path: apps/frontend/test-results/
@@ -317,7 +317,7 @@ jobs:
 
       - name: 💬 Comment on PR with visual changes
         if: github.event_name == 'pull_request' && failure()
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             github.rest.issues.createComment({
@@ -341,7 +341,7 @@ jobs:
         working-directory: apps/frontend
     steps:
       - name: 📥 Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: 🚀 Setup E2E Environment
         uses: ./.github/actions/setup-e2e
@@ -356,7 +356,7 @@ jobs:
 
       - name: 📊 Upload performance report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: performance-report
           path: apps/frontend/playwright-report/
