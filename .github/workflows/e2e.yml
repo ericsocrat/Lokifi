@@ -36,6 +36,11 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Permissions for workflow
+permissions:
+  contents: write  # Required for committing visual regression baselines
+  pull-requests: read
+
 jobs:
   # Detect which parts of codebase changed
   changes:
